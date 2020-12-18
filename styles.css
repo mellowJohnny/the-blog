@@ -1,0 +1,24 @@
+p {
+    font-family:Arial, Helvetica, sans-serif; 
+    font-size:14px;
+    color:darkcyan;
+  }
+
+
+
+.navigation {
+    font-family:Arial, Helvetica, sans-serif;
+    color:darkslategrey;
+}
+
+.navigation li {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 11px;
+    background-image: url();
+}
+
+.facts {
+    font-family:Arial;
+    color:darkslategrey;
+}
