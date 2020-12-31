@@ -1,7 +1,15 @@
-body {
-    margin-left: 0px;
-    margin-right: 0px;
-}
+.bg { 
+    /* The image used */
+    background-image: url("./images/blogBackground.jpg");
+  
+    /* Full height */
+    height: 100%; 
+  
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
 
 p {
     font-family: 'Caveat', cursive;
@@ -10,7 +18,7 @@ p {
 
 .navigation {
     width: 100%;
-    background-color: rgb(52, 105, 165);
+    background-color: rgb(57, 125, 236);
     font-family: Arial, Helvetica, sans-serif;
     font-size: 14px;
     
@@ -25,7 +33,7 @@ p {
 
 .navigation li {
     display: inline-block;
-    padding-left: 10px;
+    padding: 10px;
 }
 
 .navigation a{
@@ -36,34 +44,47 @@ p {
     font-family: 'Bungee Outline', cursive;
     font-size: 100px;
     color: white;
-    background-color:rgb(52, 105, 165);
+    background-color:rgb(44, 82, 137);
     width: 100%;
     height: 80px;
     margin-top: 0px;
     margin-bottom: 10px;
 }
 
-.intro {
-    font-family: 'Caveat';
-    color:rgb(34, 38, 41);
-    width: 800px;
-    min-width: 300px;
-    overflow: scroll;
-    margin-left: 15px;
+.section-style p {
+    font-family: 'Caveat', cursive;
+    font-size: 40px;
+    margin: 20px;
+    position: relative;
+    top: 10px;
+}
+
+.section-style-intro p {
+    font-family: 'Caveat', cursive;
+    font-size: 24px;
+    margin: 20px auto;
+    width: 900px;
+    
 }
 
 .blog-entry p {
-    font-family: Arial, Helvetica, sans-serif; 
-    font-size:14px;
-    width: 800px;
-    min-width: 300px;
+    font-family: 'Caveat';
+    color:rgb(34, 38, 41);
+    font-size: 24px;
     overflow: scroll;
     margin-left: 15px;
+    background: rgb(207, 206, 206);
+    width: 900px;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 3px auto;
+    overflow: scroll;
 }
 
-.footer {
+.footer p {
     font-size: 10px;
     font-family: 'Audiowide', cursive;
-    position: absolute;
-    margin-left: 15px;
+    position: fixed;
+    margin-left: 12px;
+    display: inline-block;
 }
