@@ -5,7 +5,7 @@ html {
 
 body {
     height:100%;
-    background-color: #fff;
+    background-color: rgb(160, 188, 240);
     color: #333;
     font: 1.2em / 1.5 Helvetica Neue, Helvetica, Arial, sans-serif;
     padding: 0;
@@ -16,17 +16,15 @@ body {
     box-sizing: inherit;
 }
 
-/* Background class */
+/* Background class 
 .bg { 
-    /* The image used */
+
     background-image: url("./images/blogBackground.jpg");
-    /* Full height */
     height: 100%; 
-    /* Center and scale the image nicely */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-  }
+  } */
 
 section {
     height: 100%
@@ -62,10 +60,10 @@ section {
     
 }
 
-.blog-entry p {
-    font-family: 'Caveat';
+.blog-entry {
+    font-family: 'Nunito';
     color:rgb(34, 38, 41);
-    font-size: 24px;
+    font-size: 20px;
     margin-left: 15px;
     background: rgb(207, 206, 206);
     width: 900px;
