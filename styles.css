@@ -6,10 +6,8 @@
   }
   
   .flex-container > div {
-    background: rgb(207, 206, 206);
     width: 900px;
     margin-left: 15px;
-    border-radius: 2px;
     padding: 5px;
     overflow: scroll;
     margin: 3px;
@@ -18,21 +16,21 @@
 body {
     height:100%;
     background-color: rgb(160, 188, 240);
-    color: #333;
 }
 
-.page-header {
+.masthead {
     font-family: 'Bungee Outline';
     font-size: 8vw;  /* makes font-size responsive... */
-    color: white;
+    color: rgb(194, 220, 245);
     background-color:rgb(44, 82, 137);
-    padding: 10px;
+    padding-top: 10px;
+    padding-left: 10px;
 }
 
 .section-style p {
     font-family: 'Caveat', cursive;
     font-size: 40px;
-    margin: 20px;
+    margin: 5px;
     position: relative;
     top: 10px;
 }
@@ -40,13 +38,16 @@ body {
 .section-style-intro p {
     font-family: 'Caveat', cursive;
     font-size: 24px;
-    margin: 20px auto;
+    margin: 5px auto;
     width: 900px;
-    
+    overflow: scroll;
+
 }
 
 .blog-entry {
     font-family: 'Nunito';
+    background: rgb(207, 206, 206);
+    border-radius: 3px;
     color:rgb(34, 38, 41);
     font-size: 16px;
     text-align: left;
