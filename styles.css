@@ -1,39 +1,24 @@
-html {
-    height:100%;
-    box-sizing: border-box;
-}
+/* Set up the flex container */
+.flex-container {
+    display: flex;
+    justify-content: center;
+    
+  }
+  
+  .flex-container > div {
+    background: rgb(207, 206, 206);
+    width: 900px;
+    margin-left: 15px;
+    border-radius: 2px;
+    padding: 5px;
+    overflow: scroll;
+    margin: 3px;
+  }
 
 body {
     height:100%;
     background-color: rgb(160, 188, 240);
     color: #333;
-    font: 1.2em / 1.5 Helvetica Neue, Helvetica, Arial, sans-serif;
-    padding: 0;
-    margin: 0;
-}
-
-* {
-    box-sizing: inherit;
-}
-
-/* Background class 
-.bg { 
-
-    background-image: url("./images/blogBackground.jpg");
-    height: 100%; 
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-  } */
-
-section {
-    height: 100%
-}
-
-.wrapper {
-    min-height: 100%;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
 }
 
 .page-header {
@@ -63,24 +48,9 @@ section {
 .blog-entry {
     font-family: 'Nunito';
     color:rgb(34, 38, 41);
-    font-size: 20px;
-    margin-left: 15px;
-    background: rgb(207, 206, 206);
-    width: 900px;
-    min-width: 300;
-    border-radius: 5px;
-    padding: 5px;
-    margin: 3px auto;
-    overflow: scroll;
-}
-
-.page-body {
-    padding: 20px;
-}
-
-.preview {
-    height: 400px;
-    overflow: auto;
+    font-size: 16px;
+    text-align: left;
+    
 }
 
 .page-footer {
