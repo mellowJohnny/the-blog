@@ -35,8 +35,9 @@ function geoFindMe() {
   function success(position) {
     const latitude  = position.coords.latitude;
     const longitude = position.coords.longitude;
-    myLat = latitude;
-    myLong = longitude;
+    // Shave a few decimals off for display purposes...
+    myLat = latitude.toFixed(2);
+    myLong = longitude.toFixed(2);
   
     status.textContent = '';
     mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
@@ -122,7 +123,7 @@ const createVenueHTML = (name, location, iconSource) => {
             <br>
             Condition: ${currentDay.weather[0].description}
             <br>
-            Wind Speed: ${currentDay.wind.speed} km/h
+            Wind Speed: ${Math.round(currentDay.wind.speed)} km/h
             <br>
             Wind Direction: ${degreesToRose(degNumber)}
             <br>
