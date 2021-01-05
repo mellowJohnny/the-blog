@@ -110,21 +110,24 @@ const createVenueHTML = (name, location, iconSource) => {
         }      
       };
       // This creates and returns the formatted data...
-    return `
-          <h4>Weather for: ${weekDays[(new Date()).getDay()]} in ${cityName} </h4>
-          <h4>Temperature: ${currentTemp}&deg;C</h4>
-          <h4>Low: ${minTemp}&deg;C</h4>
-          <h4>High: ${maxTemp}&deg;C</h4>
-          <h4>Condition: ${currentDay.weather[0].description}</h4>
-          <h4>Wind Speed: ${currentDay.wind.speed} km/h</h4>
-          <h4>Wind Direction: ${degreesToRose(degNumber)} </h4>
-          <h4>Visibility: ${currentDay.visibility} km</h4>
-        <img src="https://openweathermap.org/img/wn/${currentDay.weather[0].icon}@2x.png">`;
+    return `${weekDays[(new Date()).getDay()]} in ${cityName}:
+            <br>
+            <img src="https://openweathermap.org/img/wn/${currentDay.weather[0].icon}@2x.png">
+            <br>
+            Temperature: ${currentTemp}&deg;C
+            <br>
+            Low: ${minTemp}&deg;C
+            <br>
+            High: ${maxTemp}&deg;C
+            <br>
+            Condition: ${currentDay.weather[0].description}
+            <br>
+            Wind Speed: ${currentDay.wind.speed} km/h
+            <br>
+            Wind Direction: ${degreesToRose(degNumber)}
+            <br>
+            Visibility: ${currentDay.visibility} km`;
   }
-      // Not needed - orginally the services returned temp in Kelvin, but we can also call 
-      // it using "&units=metric" to get celsius & km/h etc...
-      // const kelvinToFahrenheit = k => ((k - 273.15) * 9 / 5 + 32).toFixed(0);
-      // const kelvinToCelsius = k => (k - 273.15).toFixed(0);
   
   // ------------------------------------------ End Helper Functions -------------------------
 
