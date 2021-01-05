@@ -54,6 +54,19 @@ body {
     
 }
 
+.weather {
+    width: 270px;
+    height: 260px;
+    padding: 20px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  #weather {
+    display: flex;
+    justify-content: space-around;
+    min-height: 150px;
+  }
+
 .page-footer {
     font-size: 10px;
     font-family: 'Audiowide', cursive;
