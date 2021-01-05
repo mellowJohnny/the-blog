@@ -1,3 +1,5 @@
+/* Global Variables...*/
+
 // Foursquare API Info
 const clientId = 'XSIR0UAH5ZDNPXPSLCWJLZ00Z55BOPIKVIZKBQFLRIDY2BVN';
 const clientSecret = 'SQWXOPKY5OLFGNMY4SFRKHXUGA5MVN1SEWRTZ2O5XGM0KRBJ';
@@ -7,6 +9,11 @@ const url = 'https://api.foursquare.com/v2/venues/explore?near=';
 const openWeatherKey = '49f84d9cdb7907dfd2b02085e270372e';
 const weatherUrl = 'https://api.openweathermap.org/data/2.5/weather';
 
+// Hold the latitude & longitude set by the geoFindMe() function
+// These get passed in dynamically to the getForecast() function
+let myLat = 0;
+let myLong = 0;
+
 // Page Elements
 const $input = $('#city');
 const $submit = $('#button');
@@ -15,6 +22,41 @@ const $container = $('.container');
 const $venueDivs = [$("#venue1"), $("#venue2"), $("#venue3"), $("#venue4"), $("#venue5", $("#venue6"))];
 const $weatherDiv = $("#weather1");
 const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+// Geolocation
+function geoFindMe() {
+
+  const status = document.querySelector('#status');
+  const mapLink = document.querySelector('#map-link');
+  
+  mapLink.href = '';
+  mapLink.textContent = '';
+  
+  function success(position) {
+    const latitude  = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    myLat = latitude;
+    myLong = longitude;
+  
+    status.textContent = '';
+    mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
+    mapLink.textContent = `Latitude: ${myLat} °, Longitude: ${myLong} °`;
+    executeSearch();
+  }
+  
+  function error() {
+    status.textContent = 'Unable to retrieve your location';
+  }
+  
+  if(!navigator.geolocation) {
+    status.textContent = 'Geolocation is not supported by your browser';
+  } else {
+    status.textContent = 'Locating…';
+    navigator.geolocation.getCurrentPosition(success, error);
+  }
+  
+  }
+  
 
 // -------------------------------- Helper Functions... -----------------------------
 const createVenueHTML = (name, location, iconSource) => {
@@ -32,6 +74,7 @@ const createVenueHTML = (name, location, iconSource) => {
     const currentTemp = (currentDay.main.temp).toFixed(0);
     const minTemp = (currentDay.main.temp_min).toFixed(0);
     const maxTemp = (currentDay.main.temp_max).toFixed(0);
+    const cityName = currentDay.name;
 
     // Function to convert wind direction from degrees to a compass point:
     // JSON returns a String for wind direction, need to convert it to Number, then compare it,
@@ -67,14 +110,15 @@ const createVenueHTML = (name, location, iconSource) => {
         }      
       };
       // This creates and returns the formatted data...
-    return `<h2>${weekDays[(new Date()).getDay()]}</h2>
-          <h2>Temperature: ${currentTemp}&deg;C</h2>
-          <h2>Low: ${minTemp}&deg;C</h2>
-          <h2>High: ${maxTemp}&deg;C</h2>
-          <h2>Condition: ${currentDay.weather[0].description}</h2>
-          <h2>Wind Speed: ${currentDay.wind.speed} km/h</h2>
-          <h2>Wind Direction: ${degreesToRose(degNumber)} </h2>
-          <h2>Visibility: ${currentDay.visibility} km</h2>
+    return `
+          <h4>Weather for: ${weekDays[(new Date()).getDay()]} in ${cityName} </h4>
+          <h4>Temperature: ${currentTemp}&deg;C</h4>
+          <h4>Low: ${minTemp}&deg;C</h4>
+          <h4>High: ${maxTemp}&deg;C</h4>
+          <h4>Condition: ${currentDay.weather[0].description}</h4>
+          <h4>Wind Speed: ${currentDay.wind.speed} km/h</h4>
+          <h4>Wind Direction: ${degreesToRose(degNumber)} </h4>
+          <h4>Visibility: ${currentDay.visibility} km</h4>
         <img src="https://openweathermap.org/img/wn/${currentDay.weather[0].icon}@2x.png">`;
   }
       // Not needed - orginally the services returned temp in Kelvin, but we can also call 
@@ -103,7 +147,9 @@ const getVenues = async () => {
 }
 
 const getForecast = async () => {
-  const urlToFetch = `${weatherUrl}?&q=${$input.val()}&units=metric&APPID=${openWeatherKey}`;
+  // Dynamically pass in the latitude & longitude fetched from geoFindMe()
+  const urlToFetch = `${weatherUrl}?&lat=${myLat}&lon=${myLong}&units=metric&APPID=${openWeatherKey}`;
+  
   try {
     const response = await fetch(urlToFetch);
     if (response.ok){

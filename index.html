@@ -51,15 +51,15 @@
                 </div>
                </div>
             </section> 
-            <!-- Weather submission form -->
+            
+            <!-- Need to change lat & long coordinates to city name... -->
             <section>
-              <div class="section-style">
-                <h2>Current Weather - Enter Your City</h2>
+            <div class="section-style">
+                <h2>Current Weather for...</h2>
+                <p id = "status"></p> 
+                <p id = "map-link"></p> 
               </div>
-              <form autocomplete="off">
-                <input type="text" id="city"/>
-                <button id="button" type="submit">Submit</button>
-              </form>
+
               <!-- Display the weather result data -->
               <section id="weather">
                   <div class="weather" id="weather1">
@@ -71,6 +71,19 @@
             <p>© 2021 Christian Couillard</p>
       </div>
   </section>
+
+  <!-- Fire the weather querry on page load... -->
+  <script>
+    window.addEventListener('load', (event) => {
+        geoFindMe();
+      });
+  </script>
+
+
+  <script>
+    
+  </script>
+
   <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="helpers.js"></script>
     <script src="main.js"></script>
