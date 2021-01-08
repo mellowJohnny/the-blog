@@ -81,4 +81,5 @@ body {
     font-size: 10px;
     font-family: 'Audiowide', cursive;
     padding: 20px;
+    display: inline;
 }
