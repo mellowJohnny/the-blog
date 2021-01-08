@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com"> 
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Bungee+Outline&family=Caveat&family=Fira+Code:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <title>Wee Little CMS</title>
     
@@ -29,15 +33,32 @@
     </script>
 </head>
 <body>
-    <form>
-        <label>Blog Post Title:</label>
-        <input type="text" id="title">
-        <label>Author:</label>
-        <input type="text" id="author">
-        <label>Post Body:</label>
-        <input type="text" id="postBody">
-        <!-- set button onClick method to call function we defined passing input values as parameters -->
-        <button type="button" onclick="callAPI(document.getElementById('title').value,document.getElementById('author').value,document.getElementById('postBody').value)">Submit Post</button>
-    </form>
+    <section>
+        <div>
+            <header class="masthead">the hella files</header>
+            <div class="section-style">
+                <p>...wee little cms</p>
+              </div>
+              <br>
+            <main>
+                <form class="form-style">
+                    <label>Blog Post Title:</label>
+                    <br>
+                    <input type="text" id="title">
+                    <br><br>
+                    <label>Author:</label>
+                    <br>
+                    <input type="text" id="author">
+                    <br><br>
+                    <label>Post Body:</label>
+                    <br><br>
+                    <textarea id="postBody"></textarea>
+                    <br><br><br>
+                    <!-- set button onClick method to call function we defined passing input values as parameters -->
+                    <button class="input-button" type="button" onclick="callAPI(document.getElementById('title').value,document.getElementById('author').value,document.getElementById('postBody').value)">Submit Post</button>
+                </form>
+            </main>
+        </div>
+    </section>
 </body>
 </html>
