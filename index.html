@@ -37,8 +37,8 @@
                 body: raw,
                 redirect: 'follow'
             };
-            // make API call with parameters and use promises to get response
-            fetch("https://uh4s9jdnj5.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
+            // make API call to BlogPost endpoint with parameters and use promises to get response
+            fetch("https://dpcjvl46j2.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
             .then(response => response.text())
             .then(result => alert(JSON.parse(result).body))
             .catch(error => console.log('error', error));
@@ -47,12 +47,14 @@
 </head>
 <body>
     <form>
-        <label>First Name :</label>
-        <input type="text" id="fName">
-        <label>Last Name :</label>
-        <input type="text" id="lName">
+        <label>Blog Post Title:</label>
+        <input type="text" id="title">
+        <label>Author:</label>
+        <input type="text" id="author">
+        <label>Post Body:</label>
+        <input type="text" id="postBody">
         <!-- set button onClick method to call function we defined passing input values as parameters -->
-        <button type="button" onclick="callAPI(document.getElementById('fName').value,document.getElementById('lName').value)">Call API</button>
+        <button type="button" onclick="callAPI(document.getElementById('title').value,document.getElementById('author').value,document.getElementById('postBody').value)">Submit Post</button>
     </form>
 </body>
 </html>
