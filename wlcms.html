@@ -25,12 +25,13 @@
                 body: raw,
                 redirect: 'follow'
             };
-            // make API call to BlogPost endpoint with parameters and use promises to get response
+            // make API call to BlogPost endpoint on AWS API Gateway with parameters and use promises to get response
             
             fetch("https://s4ge5t9w06.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
             .then(response => response.text())
             .then(result => alert(JSON.parse(result).body))
-            .catch(error => console.log('error', error));
+            .catch(error => alert('error', error)); // Alert if error...
+           // .catch(error => console.log('error', error)); 
         }
     </script>
 </head>
