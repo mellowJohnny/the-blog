@@ -20,7 +20,7 @@ body {
 
 .body-cms {
   height:100%;
-  background-color: rgb(59, 112, 209);
+  background-color: rgb(124, 151, 201);
 }
 
 .masthead {
@@ -36,7 +36,7 @@ body {
   font-family: 'Bungee Outline';
   font-size: 8vw;  /* makes font-size responsive... */
   color: rgb(18, 70, 119);
-  background-color:rgb(204, 102, 51);
+  background-color:rgb(73, 111, 155);
   padding-top: 10px;
   padding-left: 10px;
 }
