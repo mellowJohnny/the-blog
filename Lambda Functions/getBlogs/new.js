@@ -9,11 +9,11 @@ const AWS = require('aws-sdk');
 // Set the region
 AWS.config.update({region: 'us-east-2'});
 
-exports.handler = async (event, context) => {
+exports.handler = function (event, context, callback) {
 
   // Step 1: Create DynamoDB service object
   const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
-  //const documentClient = new AWS.DynamoDB.DocumentClient({region: 'us-east-2'});
+  // const documentClient = new AWS.DynamoDB.DocumentClient({region: 'us-east-2'});
   
   // Step 2: Create a variable to hold our parameters:
   const params = {
@@ -21,14 +21,15 @@ exports.handler = async (event, context) => {
   }
 
   // Step 3: Call scan() from the DynamoDB API to fetch all Blog Posts:
-  //documentClient.scan(params, function(err, data) { Note: This seems to return "undefined" when used instead of DynamoDB service object
-  try {
-    const data = await ddb.scan(params).promise();
+  ddb.scan(params, function(err, data) {
+  if (err) {
+    console.log("Error:", err);
+  } else {
+    //console.log("Success", data.Items);
     data.Items.forEach(function(element, index, array) {
-      console.log(element.ID.S + " (" + element.postBody.S + ")")
-      });
-    }
-    catch (err) {
-    console.log(err);
-      }
-  } // end handler
+      console.log(element.ID.S + " (" + element.postBody.S + ")");
+    });
+  }
+});
+  
+}

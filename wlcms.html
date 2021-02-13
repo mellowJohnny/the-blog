@@ -22,17 +22,17 @@
               <br>
             <main>
                 <form class="form-style">
-                    <label>Blog Post Title:</label>
+                    <label>Blog Post Title (required)</label>
                     <br>
-                    <input type="text" id="title">
+                    <input type="text" id="title" required>
                     <br><br>
-                    <label>Author:</label>
+                    <label>Author (required)</label>
                     <br>
-                    <input type="text" id="author">
+                    <input type="text" id="author" required>
                     <br><br>
-                    <label>Post Body:</label>
+                    <label>Post Body (required)</label>
                     <br><br>
-                    <textarea id="postBody"></textarea>
+                    <textarea id="postBody" required></textarea>
                     <br><br><br>
                     <button type="button" onclick="callBlogPostAPI(document.getElementById('title').value,document.getElementById('author').value,document.getElementById('postBody').value)">Submit Post</button>
                 </form>
