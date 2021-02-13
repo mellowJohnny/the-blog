@@ -198,14 +198,14 @@ const executeSearch = () => {
   return false;
 }
 
-$submit.click(executeSearch)
+// $submit.click(executeSearch)
 
 /*
 AWS Lambda call - createBlogPost
 */
 
 // define the callAPI function that takes the blog title, author and post body as parameters:
-let callBlogPostAPI = (title,author,postBody)=>{
+function callBlogPostAPI (title,author,postBody){
 // instantiate a headers object
 let myHeaders = new Headers();
 // add content type header to object
