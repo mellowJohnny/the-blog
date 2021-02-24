@@ -1,33 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>JSON Test</title>
-</head>
-<body>
-    <div id="myData"></div>
-    <script>
-        fetch('blogs.json')
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (data) {
-                appendData(data);
-            })
-            .catch(function (err) {
-                console.log('error: ' + err);
-            });
-        function appendData(data) {
-            var mainContainer = document.getElementById("myData");
-            for (var i = 0; i < data.length; i++) {
-                var div = document.createElement("div");
-                div.innerHTML = 'Author: ' + data[i].author + ' ' + data[i].postBody;
-                mainContainer.appendChild(div);
-            }
-        }
-    </script>
-</body>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="./styles.css">
+        <link rel="preconnect" href="https://fonts.gstatic.com"> 
+        <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Bungee+Outline&family=Caveat&family=Fira+Code:wght@300&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200&display=swap" rel="stylesheet">
+      </head>
 
+      <body>
+          <h1>Raw Blog Posts, y'all!</h1>
+            
+             <p id="blogsDiv"></p>
+
+          <script>
+                // Dynamically pass in the latitude & longitude fetched from geoFindMe()
+                const urlToFetch = `https://kuefte6pgk.execute-api.us-east-2.amazonaws.com/dev`;
+                    
+                fetch(urlToFetch)
+                    .then(function (response) {
+                        const jsonResponse = response.json();
+                        return jsonResponse;
+                    })
+                    .then(function (data) {
+                        // 'data' is an Object at this point...let's see what they are!
+                        // console.log('JSON Object Props: ' + Object.getOwnPropertyNames(data));
+                        console.log(data.body);
+                        appendData(data);
+                    })
+                    .catch(function (err) {
+                        console.log('error: ' + err);
+                    });
+
+                function appendData(data) {
+                    // Grab the "length" of the JSON object....
+                    const jsonLength = Object.keys(data).length;
+                    console.log('Inside appendData...' + 'data.length is:' + Object.keys(data).length)
+                    var mainContainer = document.getElementById("blogsDiv");
+                    for (var i = 0; i < jsonLength; i++) {
+                        var div = document.createElement("div");
+                        div.innerHTML = data.body;
+                        mainContainer.appendChild(div);
+                    }
+                }
+          </script>
+      </body>
 </html>
