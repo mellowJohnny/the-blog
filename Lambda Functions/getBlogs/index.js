@@ -13,6 +13,8 @@ exports.handler = async (event, context) => {
 
   // Step 1: Create DynamoDB Document Client - provided better formatted JSON 
   const documentClient = new AWS.DynamoDB.DocumentClient({region: 'us-east-2'});
+  let responseBody = "";
+  let statusCode = 0;
   
   // Step 2: Create a variable to hold our parameters:
   const params = {
@@ -22,6 +24,8 @@ exports.handler = async (event, context) => {
   // Step 3: Call scan() from the DynamoDB API to fetch all Blog Posts:
   try {
     const data = await documentClient.scan(params).promise();
+    responseBody = JSON.stringify(data);
+    statusCode = 200;
     data.Items.forEach(function(element, index, array) {
       console.log(element.ID + " (" + element.postBody + ")")
       });

@@ -9,11 +9,12 @@ const AWS = require('aws-sdk');
 // Set the region
 AWS.config.update({region: 'us-east-2'});
 
-exports.handler = function (event, context, callback) {
+exports.handler = async (event, context) => {
 
-  // Step 1: Create DynamoDB service object
-  const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
-  // const documentClient = new AWS.DynamoDB.DocumentClient({region: 'us-east-2'});
+  // Step 1: Create DynamoDB Document Client - provided better formatted JSON 
+  const documentClient = new AWS.DynamoDB.DocumentClient({region: 'us-east-2'});
+  let responseBody = "";
+  let statusCode = 0;
   
   // Step 2: Create a variable to hold our parameters:
   const params = {
@@ -21,15 +22,24 @@ exports.handler = function (event, context, callback) {
   }
 
   // Step 3: Call scan() from the DynamoDB API to fetch all Blog Posts:
-  ddb.scan(params, function(err, data) {
-  if (err) {
-    console.log("Error:", err);
-  } else {
-    //console.log("Success", data.Items);
-    data.Items.forEach(function(element, index, array) {
-      console.log(element.ID.S + " (" + element.postBody.S + ")");
-    });
-  }
-});
-  
-}
+  try {
+    const data = await documentClient.scan(params).promise();
+    responseBody = JSON.stringify(data);
+    statusCode = 200;
+    }
+    catch (err) {
+      responseBody = `Unable to fetch blogs: ${err}`;
+      statusCode = 403; 
+      console.log(err);
+      }
+
+      const response = {
+        statusCode: statusCode,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: responseBody
+      };
+      
+      return response;
+  } // end handler

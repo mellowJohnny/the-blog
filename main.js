@@ -20,7 +20,7 @@ const $submit = $('#button');
 const $destination = $('#destination');
 const $container = $('.container');
 const $venueDivs = [$("#venue1"), $("#venue2"), $("#venue3"), $("#venue4"), $("#venue5", $("#venue6"))];
-const $weatherDiv = $("#weather1");
+const $weatherDiv = $("#weather1"); // This is the connection to the HTML page Div ID on line 73
 const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 // Geolocation
@@ -113,7 +113,7 @@ const createVenueHTML = (name, location, iconSource) => {
       // This creates and returns the formatted data...
     return `${weekDays[(new Date()).getDay()]} in ${cityName}:
             <br>
-            <img src="https://openweathermap.org/img/wn/${currentDay.weather[0].icon}@2x.png">
+            <img src="https://openweathermap.org/img/wn/${currentDay.weather[0].icon}.png">
             <br>
             Temperature: ${currentTemp}&deg;C
             <br>
@@ -121,7 +121,7 @@ const createVenueHTML = (name, location, iconSource) => {
             <br>
             High: ${maxTemp}&deg;C
             <br>
-            Condition: ${currentDay.weather[0].description}
+            Conditions: ${currentDay.weather[0].description}
             <br>
             Wind Speed: ${Math.round(currentDay.wind.speed)} km/h
             <br>

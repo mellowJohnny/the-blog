@@ -9,29 +9,45 @@
 
       <body>
           <h1>Raw Blog Posts</h1>
+            <!-- 
+                Let's create an Object called blogs to invoke the JavaScript function
+                we wrote to fetch all our Blogs posts
+             -->
+             <p id="blogsDiv"></p>
 
           <script>
-                async function getBlogs() {
+
+                const executeSearch = () => {
+                    //$blogsDiv.empty();
+                    getBlogs().then(blogs => renderBlogs(blogs));
+                    return false;
+                }
+                
+                const getBlogs = async () => {
+                    // Dynamically pass in the latitude & longitude fetched from geoFindMe()
                     const urlToFetch = `https://kuefte6pgk.execute-api.us-east-2.amazonaws.com/dev`;
-    
+                    
                     try {
-                     const response = await fetch(urlToFetch);
-                     if (response.ok){
+                    const response = await fetch(urlToFetch);
+                    if (response.ok){
                         const jsonResponse = await response.json();
-                        console.log(jsonResponse);
-                        return jsonResponse;
-                         }
-                     }
+                        console.log(jsonResponse.body);
+                        
+                        return jsonResponse.body;
+                    }
+                    }
                     catch(error){
-                        console.log(error);
-                     }
-                 }
-                 // Call getBlogPosts.... 
-                 const allBlogs = getBlogs();
-                 console.log(allBlogs);
+                    console.log(error);
+                    }
+                }
+                 
+                 document.getElementById("blogsDiv").innerHTML = getBlogs(); 
+                 
           </script>
+
+            
+        
+
+
       </body>
-
-
-
 </html>
