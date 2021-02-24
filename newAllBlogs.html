@@ -31,6 +31,7 @@
                     const response = await fetch(urlToFetch);
                     if (response.ok){
                         const jsonResponse = await response.json();
+                        // Loop here and populate DIV...
                         console.log(jsonResponse.body);
                         
                         return jsonResponse.body;
