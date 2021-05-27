@@ -111,23 +111,18 @@ const createVenueHTML = (name, location, iconSource) => {
         }      
       };
       // This creates and returns the formatted data...
-    return `${weekDays[(new Date()).getDay()]} in ${cityName}:
-            <br>
-            <img src="https://openweathermap.org/img/wn/${currentDay.weather[0].icon}.png">
-            <br>
-            Temperature: ${currentTemp}&deg;C
-            <br>
-            Low: ${minTemp}&deg;C
-            <br>
-            High: ${maxTemp}&deg;C
-            <br>
-            Conditions: ${currentDay.weather[0].description}
-            <br>
-            Wind Speed: ${Math.round(currentDay.wind.speed)} km/h
-            <br>
-            Wind Direction: ${degreesToRose(degNumber)}
-            <br>
-            Visibility: ${currentDay.visibility} km`;
+    return `
+          <table border='0'>
+            <tr>
+              <td colspan='6'><em>${weekDays[(new Date()).getDay()]} in ${cityName}:</em></td>
+            </tr>
+            <tr>
+              <td><img src="https://openweathermap.org/img/wn/${currentDay.weather[0].icon}.png"> &nbsp </td><td>Temperature: ${currentTemp}&deg;C</td>
+              <td>Low: ${minTemp}&deg;C</td> &nbsp <td>High: ${maxTemp}&deg;C</td>
+              <td>Conditions: ${currentDay.weather[0].description}, Wind ${Math.round(currentDay.wind.speed)} km/h from the ${degreesToRose(degNumber)}</td>
+              <td>Visibility: ${currentDay.visibility} km</td>
+            </tr>
+          </table> `;
   }
   
   // ------------------------------------------ End Helper Functions -------------------------
@@ -246,3 +241,5 @@ function callBlogPostAPI (title,author,postBody){
       console.log(error);
     }
   }
+
+  
