@@ -5,10 +5,10 @@
     
   }
   
-  .flex-container > div {
+  .flex-container div {
     width: 900px;
     margin-left: 15px;
-    padding: 5px;
+    padding: 1px;
     overflow: scroll;
     margin: 3px;
   }

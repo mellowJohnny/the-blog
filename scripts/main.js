@@ -113,14 +113,20 @@ const createVenueHTML = (name, location, iconSource) => {
       // This creates and returns the formatted data...
     return `
           <table border='0'>
-            <tr>
-              <td colspan='6'><em>${weekDays[(new Date()).getDay()]} in ${cityName}:</em></td>
+            <tr span='6'>
+              <td colspan='6'><strong>${weekDays[(new Date()).getDay()]} in ${cityName}:</strong></td>
             </tr>
             <tr>
-              <td><img src="https://openweathermap.org/img/wn/${currentDay.weather[0].icon}.png"> &nbsp </td><td>Temperature: ${currentTemp}&deg;C</td>
-              <td>Low: ${minTemp}&deg;C</td> &nbsp <td>High: ${maxTemp}&deg;C</td>
-              <td>Conditions: ${currentDay.weather[0].description}, Wind ${Math.round(currentDay.wind.speed)} km/h from the ${degreesToRose(degNumber)}</td>
-              <td>Visibility: ${currentDay.visibility} km</td>
+              <td>
+                <img src="https://openweathermap.org/img/wn/${currentDay.weather[0].icon}.png"> &nbsp 
+              </td>
+              <td>
+                Current Temperature: ${currentTemp}&deg;C &nbsp
+                Low: ${minTemp}&deg;C &nbsp 
+                High: ${maxTemp}&deg;C &nbsp <br>
+                Conditions: ${currentDay.weather[0].description}, wind ${Math.round(currentDay.wind.speed)} km/h from the ${degreesToRose(degNumber)},
+                visibility ${currentDay.visibility}km 
+              </td>
             </tr>
           </table> `;
   }
