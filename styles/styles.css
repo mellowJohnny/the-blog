@@ -75,6 +75,8 @@ body {
   text-align: left;
 }
 
+
+
 .modal {
   font-family: 'Nunito';
   color:rgb(34, 38, 41);
@@ -84,7 +86,7 @@ body {
 
 .weather-style p {
   font-family: 'Nunito', cursive;
-  font-size: 10px;
+  font-size: 14px;
   margin: 5px;
   position: relative;
   top: 10px;
@@ -92,7 +94,7 @@ body {
  /* The weather box */
 .weather {
     font-family: 'Nunito', cursive;
-    font-size: 10px;
+    font-size: 14px;
     width: 80%;
     height: 150px;
     padding: 3px;
