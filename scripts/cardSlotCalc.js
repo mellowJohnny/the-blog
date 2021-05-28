@@ -44,7 +44,7 @@ function computeGridSpace(card) {
       // After fixing the page number, use SweetAlert to pop a modal with the Card Slot & Page Number
       swal({
         title: "Nice!",
-        text: `This card goes in slot ${cardSlot} on page ${nextPage}`,
+        text: `Card ${cardNum} goes in slot ${cardSlot} on page ${nextPage}`,
         icon: "success",
         button: "Next Card",
         className: "modal",
@@ -55,7 +55,7 @@ function computeGridSpace(card) {
     // Page number is an Integer, use SweetAlert to pop a modal with the Card Slot & Page Number
       swal({
         title: "Nice!",
-        text: `This card goes in slot ${cardSlot} on page ${page}`,
+        text: `Card ${cardNum} goes in slot ${cardSlot} on page ${page}`,
         icon: "success",
         button: "Next Card",
         className: "modal",
