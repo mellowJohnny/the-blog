@@ -17,6 +17,9 @@ body {
     height:100%;
     /* background-color: rgb(160, 188, 240); */
     background-color: rgb(242,250,245);
+
+    /* Set a default font size for the page, then use em to set relative sizes to this */
+    font-size: 18px;
 }
 
 .body-cms {
@@ -26,7 +29,7 @@ body {
 
 .masthead {
     font-family: 'Spicy Rice';
-    font-size: 8vw;  /* makes font-size responsive... */
+    font-size: 2em;  /* makes font-size responsive... */
     /* color: rgb(194, 220, 245); */
     color: #3FA7D6;
     background-color:rgb(44, 82, 137);
