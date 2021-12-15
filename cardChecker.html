@@ -11,6 +11,8 @@
     <script src="scripts/cardSlotCalc.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     
+    
+    
 </head>
 
 <body class="body-cms">
@@ -51,12 +53,16 @@
                         </tr>
                         <tr>
                             <td align="center">
-                                <input size="6" type="text" id="card" required>
+                                <input size="6" type="text" id="card">
                             </td>
                         </tr> 
                         <tr>
                             <td align="center">
-                                <button type="button" class="input-button" onclick="computeGridSpace(document.getElementById('card').value)">Submit</button>
+                                <button type="button" 
+                                    class="input-button" 
+                                    onclick="computeGridSpace(document.getElementById('card').value)">
+                                    Submit
+                                </button>
                             </td>
                         </tr>
                     </table>
@@ -66,7 +72,7 @@
         </div>
     </section>
     <footer class="page-footer">
-        <p>© 2021 Christian Couillard</p>
+        <p>&copy; 2021 Christian Couillard</p>
         <a href="index.html">home</a>
         <a href="allBlogs.html">All Blogs</a>
       </footer>
@@ -74,6 +80,20 @@
       
 
 </body>
+
+<script>
+     document.addEventListener("keyup", function(event) {
+        if (event.key === 'Enter') {
+            computeGridSpace(document.getElementById('card').value);
+            }
+        }); 
+
+  /*  function enterKeyPressed(event) {
+      if (event.keyCode == 13) {
+        computeGridSpace(document.getElementById('card').value);
+      }
+   }  */ 
+</script>
 
 </html>
 

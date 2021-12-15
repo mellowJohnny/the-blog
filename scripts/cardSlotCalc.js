@@ -7,7 +7,7 @@ function computeGridSpace(card) {
     // Convert our String card number to an Integer
     cardNum = parseInt(card);
 
-    if (isNaN(cardNum) || cardNum === 0){
+   if (isNaN(cardNum) || cardNum === 0){
       console.log("not a number!")
       swal({
         title: "Please Enter A Number",
