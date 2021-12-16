@@ -21,6 +21,19 @@ function quadSolver(input1,input2,input3) {
     
 
    // Next, make sure all numbers are numbers...
+   // First Number must be negative...
+
+   if (isNaN(numOne) || numOne < 0){
+    console.log("not a number!")
+    swal({
+      title: "Your First Value Must Be A Positive Number",
+      text: `Don't get me started on why, but the square of a neagtive really messes things up...`,
+      icon: "warning",
+      button: "I'll Play Nice",
+      className: "modal",
+    });
+    return;
+  }
 
    if (isNaN(numOne) || numOne === 0){
     console.log("not a number!")
