@@ -59,6 +59,7 @@ function quadSolver(input1,input2,input3) {
     root1 = Math.sqrt(root1);
     root1 = (-b) + root1;
     root1 = (root1) / (2 * a)
+    console.log(`Root1 is ${root1}`);
     
     // Solve for root2
     console.log(`Solving Root2 with A = ${a}, B = ${b}, C = ${c}:`);
@@ -66,6 +67,7 @@ function quadSolver(input1,input2,input3) {
     root2 = Math.sqrt(root2);
     root2 = (-b) - root2
     root2 = (root2) / (2 * a)
+    console.log(`Root1 is ${root2}`);
     
     swal({
         title: "Nice!",
