@@ -12,6 +12,8 @@ function quadSolver(input1,input2,input3) {
     var root1 = 0;
     var root2 = 0;
 
+    console.log(a,b,b);
+
    // Next, make sure all numbers are numbers...
 
    if (isNaN(a) || a === 0){
