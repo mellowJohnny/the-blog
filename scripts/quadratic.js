@@ -70,10 +70,7 @@ function quadSolver(input1,input2,input3) {
         className: "modal",
       });
 
-    // console.log(`Given A = ${a}, B = ${b}, C = ${c}:`)
-    // console.log(`Root 1 is ${root1}`)
-    // console.log(`Root 2 is ${root2}`)
 
 }
 
-// quadSolver(2,5,3);
+
