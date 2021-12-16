@@ -61,6 +61,7 @@ function quadSolver(input1,input2,input3) {
     // Solve for root1
     console.log(`Solving Root1 with A = ${numOne}, B = ${numTwo}, C = ${numThree}:`);
     root1 = (numTwo * numTwo) - (4 * numOne * numThree);
+    console.log(`Solving for Root1 ${root1}:`);
     root1 = Math.sqrt(root1);
     root1 = (-numTwo) + root1;
     root1 = (root1) / (2 * numOne)
