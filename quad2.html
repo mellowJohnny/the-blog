@@ -17,8 +17,6 @@
 </head>
 
 <body class="body-cms">
-<h1>Quad-O-Matic</h1>
-
     <section>
         <div>
             <header class="masthead-cms">the hella files</header>
@@ -35,6 +33,45 @@
                 </p>
             </div>
         </div>
+        <div>
+            <br>
+            <main>
+                <form class="form-style" >
+                    <table class="table-style">
+                        <tr>
+                            <td align="center">
+                                <label> Enter Card Number </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                <input size="6" type="text" id="input1">
+                            </td>
+                        </tr> 
+                        <tr>
+                            <td align="center">
+                                <input size="6" type="text" id="input2">
+                            </td>
+                        </tr> 
+                        <tr>
+                            <td align="center">
+                                <input size="6" type="text" id="input3">
+                            </td>
+                        </tr> 
+                        <tr>
+                            <td align="center">
+                                <button type="button" 
+                                    class="input-button" 
+                                    onclick="quadSolver(document.getElementById('input1').value, document.getElementById('input2').value, document.getElementById('input3').value)">
+                                    Submit
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </main>
+
+</div>
         </div>
         </section>
 </body>
