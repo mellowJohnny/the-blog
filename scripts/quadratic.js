@@ -12,7 +12,8 @@ function quadSolver(input1,input2,input3) {
     var root1 = 0;
     var root2 = 0;
 
-    console.log(a,b,b);
+    console.log(`Numbers are A = ${a}, B = ${b}, C = ${c}:`);
+    
 
    // Next, make sure all numbers are numbers...
 
