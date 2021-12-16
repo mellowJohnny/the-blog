@@ -6,18 +6,23 @@ Let's solve the Quadratic Equation
 function quadSolver(input1,input2,input3) {
 
     // Set some variables & convert our String input numbers to Integers
-    const a = parseInt(input1);
-    const b = parseInt(input2);
-    const c = parseInt(input3);
+    const a = input1;
+    const b = input2;
+    const c = input3;
+
+    numOne = parseInt(a);
+    numTwo = parseInt(b);
+    numThree = parseInt(c);
+
     var root1 = 0;
     var root2 = 0;
 
-    console.log(`Numbers are A = ${a}, B = ${b}, C = ${c}:`);
+    console.log(`Numbers are A = ${numOne}, B = ${numTwo}, C = ${numThree}:`);
     
 
    // Next, make sure all numbers are numbers...
 
-   if (isNaN(a) || a === 0){
+   if (isNaN(numOne) || numOne === 0){
     console.log("not a number!")
     swal({
       title: "Your First Value Is Not A Number",
@@ -29,7 +34,7 @@ function quadSolver(input1,input2,input3) {
     return;
   }
 
-  if (isNaN(b) || b === 0){
+  if (isNaN(numTwo) || numTwo === 0){
     console.log("not a number!")
     swal({
       title: "Your Second Value Is Not A Number",
@@ -41,7 +46,7 @@ function quadSolver(input1,input2,input3) {
     return;
   }
 
-  if (isNaN(c) || c === 0){
+  if (isNaN(numThree) || numThree === 0){
     console.log("not a number!")
     swal({
       title: "Your Third Value Is Not A Number",
@@ -54,19 +59,19 @@ function quadSolver(input1,input2,input3) {
   }
     
     // Solve for root1
-    console.log(`Solving Root1 with A = ${a}, B = ${b}, C = ${c}:`);
-    root1 = (b * b) - (4 * a * c);
+    console.log(`Solving Root1 with A = ${numOne}, B = ${numTwo}, C = ${numThree}:`);
+    root1 = (numTwo * numTwo) - (4 * numOne * numThree);
     root1 = Math.sqrt(root1);
-    root1 = (-b) + root1;
-    root1 = (root1) / (2 * a)
+    root1 = (-numTwo) + root1;
+    root1 = (root1) / (2 * numOne)
     console.log(`Root1 is ${root1}`);
     
     // Solve for root2
-    console.log(`Solving Root2 with A = ${a}, B = ${b}, C = ${c}:`);
-    root2 = (b * b) - (4 * a * c)
+    console.log(`Solving Root2 with A = ${numOne}, B = ${numTwo}, C = ${numThree}:`);
+    root2 = (numTwo * numTwo) - (4 * numOne * numThree)
     root2 = Math.sqrt(root2);
-    root2 = (-b) - root2
-    root2 = (root2) / (2 * a)
+    root2 = (-numTwo) - root2
+    root2 = (root2) / (2 * numOne)
     console.log(`Root1 is ${root2}`);
     
     swal({
