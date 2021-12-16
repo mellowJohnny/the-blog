@@ -54,12 +54,14 @@ function quadSolver(input1,input2,input3) {
   }
     
     // Solve for root1
+    console.log(`Solving Root1 with A = ${a}, B = ${b}, C = ${c}:`);
     root1 = (b * b) - (4 * a * c);
     root1 = Math.sqrt(root1);
     root1 = (-b) + root1;
     root1 = (root1) / (2 * a)
     
     // Solve for root2
+    console.log(`Solving Root2 with A = ${a}, B = ${b}, C = ${c}:`);
     root2 = (b * b) - (4 * a * c)
     root2 = Math.sqrt(root2);
     root2 = (-b) - root2
