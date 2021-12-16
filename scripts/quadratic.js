@@ -10,9 +10,9 @@ function quadSolver(input1,input2,input3) {
     const b = input2;
     const c = input3;
 
-    numOne = parseInt(a);
-    numTwo = parseInt(b);
-    numThree = parseInt(c);
+    const numOne = parseInt(a);
+    const numTwo = parseInt(b);
+    const numThree = parseInt(c);
 
     var root1 = 0;
     var root2 = 0;
@@ -72,7 +72,7 @@ function quadSolver(input1,input2,input3) {
     root2 = Math.sqrt(root2);
     root2 = (-numTwo) - root2
     root2 = (root2) / (2 * numOne)
-    console.log(`Root1 is ${root2}`);
+    console.log(`Root2 is ${root2}`);
     
     swal({
         title: "Nice!",
