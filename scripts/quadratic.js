@@ -64,7 +64,7 @@ function quadSolver(input1,input2,input3) {
     
     swal({
         title: "Nice!",
-        text: `Root 1 is: ${root1}, Root 2 is:${cardSlot}`,
+        text: `Root 1 is: ${root1}, Root 2 is:${root2}`,
         icon: "success",
         button: "Math is Fun!  Let's try again!",
         className: "modal",
