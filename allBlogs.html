@@ -29,10 +29,10 @@
                            if (key === "body"){
                             console.log('Found the body property...');
                             console.log('Here is the value of "body": ' + value);
-                            console.log('Value is a:' + typeof value);
+                            console.log('body is a:' + typeof value);  // String
                             // At this point 'value' is a string...let's see if we can turn it into an Object
                             const blogPostObj = JSON.parse(value);
-                            console.log('The blogPost property is:' + blogPostObj.entries);
+                            console.log(blogPostObj);
 
                             // Parse the JSON Object so we can get access to it's properties
                            // var obj = JSON.parse(value);
