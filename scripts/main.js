@@ -60,14 +60,14 @@ function geoFindMe() {
   
 
 // -------------------------------- Helper Functions... -----------------------------
-const createVenueHTML = (name, location, iconSource) => {
+ /** const createVenueHTML = (name, location, iconSource) => {
     return `<h2>${name}</h2>
     <img class="venueimage" src="${iconSource}"/>
     <h3>Address:</h3>
     <p>${location.address}</p>
     <p>${location.city}</p>
     <p>${location.country}</p>`;
-  }
+  } **/
   
   
   const createWeatherHTML = (currentDay) => {
@@ -134,7 +134,7 @@ const createVenueHTML = (name, location, iconSource) => {
   // ------------------------------------------ End Helper Functions -------------------------
 
 // Add AJAX functions here:
-const getVenues = async () => {
+/** const getVenues = async () => {
   const city = $input.val();
   const urlToFetch = url + city + '&limit=10' + '&client_id=' + clientId + '&client_secret=' + clientSecret + '&v=20201125';
   try {
@@ -149,7 +149,7 @@ const getVenues = async () => {
   catch(error) {
     console.log(error);
   }
-}
+} **/
 
 const getForecast = async () => {
   // Dynamically pass in the latitude & longitude fetched from geoFindMe()
@@ -170,23 +170,10 @@ const getForecast = async () => {
 
 
 // Render functions
-/** const renderVenues = (venues) => {
-  $venueDivs.forEach(($venue, index) => {
-    // Add your code here:
-    const venue = venues[index];
-    const venueIcon = venue.categories[0].icon;
-    const venueImgSrc = venueIcon.prefix + 'bg_64' + venueIcon.suffix;
-    let venueContent = createVenueHTML(venue.name, venue.location, venueImgSrc);
-    $venue.append(venueContent);
-  });
-  $destination.append(`<h2>${venues[0].location.city}</h2>`);
-} **/
-
 const renderForecast = (day) => {
   const weatherContent = createWeatherHTML(day);
   $weatherDiv.append(weatherContent);
 };
-
 
 const executeSearch = () => {
   $venueDivs.forEach(venue => venue.empty());
@@ -198,7 +185,7 @@ const executeSearch = () => {
   return false;
 }
 
-// $submit.click(executeSearch)
+
 
 /*
 AWS Lambda call - createBlogPost
