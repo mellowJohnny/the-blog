@@ -24,7 +24,7 @@ if('geolocation' in navigator) {
   } */
 
   // Possible callback candidate
-    getForecast(latitude,longitude) = async () => {
+    getForecast = async (latitude,longitude) => {
     const myLat = latitude;
     const myLong = longitude;
     const urlToFetch = `${openWeatherUrl}?&lat=${myLat}&lon=${myLong}&units=metric&APPID=${openWeatherKey}`;
