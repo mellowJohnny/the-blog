@@ -3,6 +3,7 @@ if('geolocation' in navigator) {
     navigator.geolocation.getCurrentPosition((position) => {
        const lat = position.coords.latitude;
        const long = position.coords.longitude;
+       console.log(`Latitude is ${lat}, Longitude is ${long}`);
         sendGeo(lat,long);
       });
   } else {
@@ -10,5 +11,5 @@ if('geolocation' in navigator) {
   }
 
   function sendGeo() {
-    console.log(`Latitude is ${lat}, Longitude is ${long}`);
+    
   }
