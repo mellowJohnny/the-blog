@@ -32,12 +32,8 @@
                             // At this point 'value' is a string...let's see if we can turn it into an Object
                             const blogPostArray = JSON.parse(value);
                             console.log(blogPostArray); // This is an Array.  Yay!
-
-                            // Parse the JSON Object so we can get access to it's properties
-                           // var obj = JSON.parse(value);
-                            // console.log('Here is the value of "Oject.keys": ' + Object.keys(obj));
-                            // console.log('Here is the value of "postBody": ' + obj.postBody);
-                            
+                            console.log(blogPostArray.length);
+                            // Loop over the array and get each Blog post
                             for (var i = 0; i < blogPostArray.length; i++) {
                                 console.log('We made it!');
                              }
