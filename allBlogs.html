@@ -33,7 +33,7 @@
                             const blogPostArray = JSON.parse(value);
                             console.log(blogPostArray); // This is an Array.  Yay!
                             console.log(Object.entries(blogPostArray));
-                            console.log(blogPostArray.Array);
+                            console.log('First Item in the JSON array:' + blogPostArray.Items[0]);
 
                             // Loop over the array and get each Blog post
                             for (var i = 0; i < blogPostArray.length; i++) {
