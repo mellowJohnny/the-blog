@@ -26,11 +26,11 @@ const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
 // Geolocation
 function geoFindMe() {
 
-  const status = document.querySelector('#status');
-  const mapLink = document.querySelector('#map-link');
+  // const status = document.querySelector('#status');
+  // const mapLink = document.querySelector('#map-link');
   
-  mapLink.href = '';
-  mapLink.textContent = '';
+ // mapLink.href = '';
+ // mapLink.textContent = '';
   
   function success(position) {
     const latitude  = position.coords.latitude;
