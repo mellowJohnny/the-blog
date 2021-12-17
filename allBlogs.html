@@ -18,7 +18,7 @@
                 fetch(urlToFetch)
                     .then(function (response) {
                         const jsonResponse = response.json();
-                        console.log("here is the raw json response..." + jsonResponse);
+                        console.log("here is the raw response..." + response);
                         return jsonResponse;
                     })
                     .then(function (data) {
