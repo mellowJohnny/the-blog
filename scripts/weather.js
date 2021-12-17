@@ -1,6 +1,6 @@
 // Global Variables
 
-const weatherUrl = 'https://api.openweathermap.org/data/2.5/weather';
+const openWeatherUrl = 'https://api.openweathermap.org/data/2.5/weather';
 
 // Get geolocation from the Browser, if available..
 if('geolocation' in navigator) {
@@ -16,17 +16,18 @@ if('geolocation' in navigator) {
   }
 
   // Geolocation callback...does it work?
+  /** 
   function sendGeo(latitude,longitude) {
     const myLat = latitude;
     const myLong = longitude;
     console.log(`sendGeo says... ${myLat} & ${myLong}`);
-  }
+  } */
 
   // Possible callback candidate
     getForecast(latitude,longitude) = async () => {
     const myLat = latitude;
     const myLong = longitude;
-    const urlToFetch = `${weatherUrl}?&lat=${myLat}&lon=${myLong}&units=metric&APPID=${openWeatherKey}`;
+    const urlToFetch = `${openWeatherUrl}?&lat=${myLat}&lon=${myLong}&units=metric&APPID=${openWeatherKey}`;
     
     try {
       const response = await fetch(urlToFetch);
