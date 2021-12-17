@@ -10,6 +10,8 @@ if('geolocation' in navigator) {
     /* geolocation IS NOT available */
   }
 
-  function sendGeo() {
-    
+  function sendGeo(latitude,longitude) {
+    const myLat = latitude;
+    const myLong = longitude;
+    console.log(`sendGeo says... ${myLat} & ${myLong}`);
   }
