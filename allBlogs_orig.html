@@ -30,8 +30,9 @@
                            if (key === "body"){
                             console.log('Found the body property...');
                             console.log('Here is the value of "body": ' + value);
+                            console.log('Here is the value of "postBody": ' + value.postBody);
                             var obj = JSON.parse(value);
-                            console.log('Here is the value of "Oject.keys": 'Object.keys(obj));
+                            console.log(Object.keys(obj));
 
                             for (var i = 0; i < value.length; i++) {
                                 console.log('We made it!');
