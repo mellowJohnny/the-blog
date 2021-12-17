@@ -52,7 +52,8 @@
                 function appendData(data) {
                     // Grab the "length" of the JSON object....
                     const jsonLength = Object.keys(data).length;
-                    // console.log('Inside appendData...' + 'data.length is:' + Object.keys(data).length)
+                    console.log('Inside appendData...' + 'data.length is:' + Object.keys(data).length)
+
                     document.getElementById("blogsDiv").innerHTML = data.body;
 
                     /**
