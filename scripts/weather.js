@@ -8,21 +8,22 @@ if('geolocation' in navigator) {
        const lat = position.coords.latitude;
        const long = position.coords.longitude;
         // Our callback to getForcast()
-        getForecast(lat,long);
+        getWeather(lat,long);
       });
   } else {
     /* geolocation IS NOT available */
   }
 
   // Geolocation callback...does it work?
-  /** 
-  function sendGeo(latitude,longitude) {
+
+  function getWeather(latitude,longitude) {
     const myLat = latitude;
     const myLong = longitude;
-    console.log(`sendGeo says... ${myLat} & ${myLong}`);
-  } */
+    console.log(`getWeather says... ${myLat} & ${myLong}`);
+  } 
 
   // Possible callback candidate
+  /** 
   const getForecast = async () => {
     
     const urlToFetch = `${weatherUrl}?&lat=${myLat}&lon=${myLong}&units=metric&APPID=${openWeatherKey}`;
@@ -38,4 +39,4 @@ if('geolocation' in navigator) {
     catch(error){
       console.log(error);
     }
-  }
+  } */
