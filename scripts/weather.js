@@ -20,6 +20,8 @@ if('geolocation' in navigator) {
     const myLong = longitude;
     console.log(`getWeather says... ${myLat} & ${myLong}`)
 
+    
+
 // The Big Lebowski...
     const fetchForecast = async () => {
         const urlToFetch = `${weatherUrl}?&lat=${myLat}&lon=${myLong}&units=metric&APPID=${openWeatherKey}`;
