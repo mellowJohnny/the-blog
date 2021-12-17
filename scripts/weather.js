@@ -10,5 +10,5 @@ if('geolocation' in navigator) {
   }
 
   function sendGeo() {
-    console.log('Latitude is ${lat}, Longitude is ${long})
+    console.log(`Latitude is ${lat}, Longitude is ${long}`);
   }

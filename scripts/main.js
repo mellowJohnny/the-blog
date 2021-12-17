@@ -25,12 +25,6 @@ const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
 
 // Geolocation
 function geoFindMe() {
-
-  // const status = document.querySelector('#status');
-  // const mapLink = document.querySelector('#map-link');
-  
- // mapLink.href = '';
- // mapLink.textContent = '';
   
   function success(position) {
     const latitude  = position.coords.latitude;
@@ -40,8 +34,7 @@ function geoFindMe() {
     myLong = longitude.toFixed(2);
   
     status.textContent = '';
-   // mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
-   // mapLink.textContent = `Latitude: ${myLat} °, Longitude: ${myLong} °`;
+   
     executeSearch();
   }
   
@@ -60,16 +53,7 @@ function geoFindMe() {
   
 
 // -------------------------------- Helper Functions... -----------------------------
- /** const createVenueHTML = (name, location, iconSource) => {
-    return `<h2>${name}</h2>
-    <img class="venueimage" src="${iconSource}"/>
-    <h3>Address:</h3>
-    <p>${location.address}</p>
-    <p>${location.city}</p>
-    <p>${location.country}</p>`;
-  } **/
-  
-  
+
   const createWeatherHTML = (currentDay) => {
     // Set up some temprature variables we need...rounding them to a single digit
     const currentTemp = (currentDay.main.temp).toFixed(0);
@@ -132,24 +116,6 @@ function geoFindMe() {
   }
   
   // ------------------------------------------ End Helper Functions -------------------------
-
-// Add AJAX functions here:
-/** const getVenues = async () => {
-  const city = $input.val();
-  const urlToFetch = url + city + '&limit=10' + '&client_id=' + clientId + '&client_secret=' + clientSecret + '&v=20201125';
-  try {
-    const response = await fetch(urlToFetch);
-    if (response.ok){
-      const jsonResponse = await response.json();
-      const venues = jsonResponse.response.groups[0].items.map(item => item.venue);
-      console.log(venues);
-    return venues;
-    }
-  }
-  catch(error) {
-    console.log(error);
-  }
-} **/
 
 const getForecast = async () => {
   // Dynamically pass in the latitude & longitude fetched from geoFindMe()
