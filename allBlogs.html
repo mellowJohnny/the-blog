@@ -18,13 +18,12 @@
                 fetch(urlToFetch)
                     .then(function (response) {
                         const jsonResponse = response.json();
-                        console.log("here is the raw response..." + response);
-                        return jsonResponse;
+                        return jsonResponse; // Our Promise object
                     })
                     .then(function (data) {
                         // 'data' is an Object at this point...
                         const jsonArray = Object.entries(data);
-                        console.log("The data is" + data);
+                        console.log("The data is..." + Object.entries(data));
 
                        // Print the value of the 'body' property of JSON object
                        for (const [key, value] of Object.entries(data)) {
