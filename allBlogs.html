@@ -23,7 +23,6 @@
                     .then(function (data) {
                         // 'data' is an Object at this point...
                         const jsonArray = Object.entries(data);
-                        console.log("The data is..." + Object.entries(data));
 
                        // Print the value of the 'body' property of JSON object
                        for (const [key, value] of Object.entries(data)) {
@@ -32,7 +31,7 @@
                             console.log('Here is the value of "body": ' + value);
                             // At this point 'value' is an array with one element - our JSON object
                             // Let's get the JSON object element out of the array and assign it to a new String variable
-                            const jsonBlog = value[0];
+                            const jsonBlog = value[1];
                             console.log("Do we have it? jsonBlog is:" + jsonBlog);
 
                             // Parse the JSON Object so we can get access to it's properties
