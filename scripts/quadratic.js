@@ -35,7 +35,7 @@ function quadSolver(input1,input2,input3) {
     return;
   }
 
-   if (isNaN(numOne) || numOne === 0){
+   if (isNaN(numOne)){
     console.log("not a number!")
     swal({
       title: "Your First Value Is Not A Number",
@@ -47,7 +47,7 @@ function quadSolver(input1,input2,input3) {
     return;
   }
 
-  if (isNaN(numTwo) || numTwo === 0){
+  if (isNaN(numTwo)){
     console.log("not a number!")
     swal({
       title: "Your Second Value Is Not A Number",
@@ -59,7 +59,7 @@ function quadSolver(input1,input2,input3) {
     return;
   }
 
-  if (isNaN(numThree) || numThree === 0){
+  if (isNaN(numThree)){
     console.log("not a number!")
     swal({
       title: "Your Third Value Is Not A Number",
@@ -72,24 +72,18 @@ function quadSolver(input1,input2,input3) {
   }
     
     // Solve for root1
-    console.log(`Solving Root1 with A = ${numOne}, B = ${numTwo}, C = ${numThree}:`);
     root1 = (numTwo * numTwo) - (4 * numOne * numThree);
-    console.log(`Step 1: Root1 is ${root1}:`);
-    root1 = Math.sqrt(root1);
-    console.log(`Step 2: Squaring....${root1}:`);
+    root1 = Math.sqrt(root1); // This *must* be a positive number - calling Math.sqrt on a negative returns NaN
     root1 = (-numTwo) + root1;
-    console.log(`Step 3: -2nd number + ${root1}:`);
     root1 = (root1) / (2 * numOne)
-    console.log(`Step 4: ${root1} divided by 2x 1st num`);
-    //console.log(`Root1 is ${root1}`);
+    root1 = Math.round(root1 * 1000) / 1000
     
     // Solve for root2
-    
     root2 = (numTwo * numTwo) - (4 * numOne * numThree)
-    root2 = Math.sqrt(root2);
+    root2 = Math.sqrt(root2); // This *must* be a positive number - calling Math.sqrt on a negative returns NaN
     root2 = (-numTwo) - root2
     root2 = (root2) / (2 * numOne)
-    
+    root2 = Math.round(root2 * 1000) / 1000
     
     swal({
         title: "Nice!",
