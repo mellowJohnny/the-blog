@@ -35,7 +35,7 @@ function geoFindMe() {
   
     status.textContent = '';
    
-    executeSearch();
+    executeSearch(); // calls getForcast
   }
   
   function error() {
