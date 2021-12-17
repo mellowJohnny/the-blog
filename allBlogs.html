@@ -38,7 +38,7 @@
                             // console.log('Here is the value of "Oject.keys": ' + Object.keys(obj));
                             // console.log('Here is the value of "postBody": ' + obj.postBody);
                             
-                            for (var i = 0; i < value.length; i++) {
+                            for (var i = 0; i < value.body.length; i++) {
                                 console.log('We made it!');
                              }
                         }
@@ -50,20 +50,9 @@
                     });
 
                 function appendData(data) {
-                    // Grab the "length" of the JSON object....
-                    const jsonLength = Object.keys(data).length;
-                    console.log('Inside appendData...' + 'data.length is:' + Object.keys(data).length)
-
+                    // Put the raw data into the blogsDiv...
                     document.getElementById("blogsDiv").innerHTML = data.body;
 
-                    /**
-                    var mainContainer = document.getElementById("blogsDiv");
-                    
-                    for (var i = 0; i < jsonLength; i++) {
-                        var div = document.createElement("div");
-                        div.innerHTML = data.body;
-                        mainContainer.appendChild(div);
-                    } **/
                 }
           </script>
       </body>
