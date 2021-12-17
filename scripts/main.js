@@ -170,7 +170,7 @@ const getForecast = async () => {
 
 
 // Render functions
-const renderVenues = (venues) => {
+/** const renderVenues = (venues) => {
   $venueDivs.forEach(($venue, index) => {
     // Add your code here:
     const venue = venues[index];
@@ -180,7 +180,7 @@ const renderVenues = (venues) => {
     $venue.append(venueContent);
   });
   $destination.append(`<h2>${venues[0].location.city}</h2>`);
-}
+} **/
 
 const renderForecast = (day) => {
   const weatherContent = createWeatherHTML(day);
