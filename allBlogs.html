@@ -18,6 +18,7 @@
                 fetch(urlToFetch)
                     .then(function (response) {
                         const jsonResponse = response.json();
+                        console.log("here is the raw json response..." + jsonResponse);
                         return jsonResponse;
                     })
                     .then(function (data) {
