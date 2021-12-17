@@ -40,8 +40,8 @@ function geoFindMe() {
     myLong = longitude.toFixed(2);
   
     status.textContent = '';
-    mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
-    mapLink.textContent = `Latitude: ${myLat} °, Longitude: ${myLong} °`;
+   // mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
+   // mapLink.textContent = `Latitude: ${myLat} °, Longitude: ${myLong} °`;
     executeSearch();
   }
   
