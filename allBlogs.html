@@ -28,11 +28,10 @@
                        for (const [key, value] of Object.entries(data)) {
                            if (key === "body"){
                             console.log('Found the body property...');
-                            console.log('Here is the value of "body": ' + value);
-                            console.log('body is a:' + typeof value);  // String
+                            console.log('Here is the value of "body": ' + value);  // Prints out all the Blogs, but it's a String
                             // At this point 'value' is a string...let's see if we can turn it into an Object
-                            const blogPostObj = JSON.parse(value);
-                            console.log(blogPostObj);
+                            const blogPostArray = JSON.parse(value);
+                            console.log(blogPostArray); // This is an Array.  Yay!
 
                             // Parse the JSON Object so we can get access to it's properties
                            // var obj = JSON.parse(value);
@@ -54,7 +53,7 @@
                     // Grab the "length" of the JSON object....
                     const jsonLength = Object.keys(data).length;
                     // console.log('Inside appendData...' + 'data.length is:' + Object.keys(data).length)
-                    document.getElementById("blogsDiv").innerHTML = data.postBody;
+                    document.getElementById("blogsDiv").innerHTML = data;
 
                     /**
                     var mainContainer = document.getElementById("blogsDiv");
