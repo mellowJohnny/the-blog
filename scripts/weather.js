@@ -1,5 +1,4 @@
 // Global Variables
-
 const openWeatherUrl = 'https://api.openweathermap.org/data/2.5/weather';
 
 // Get geolocation from the Browser, if available..
@@ -24,10 +23,9 @@ if('geolocation' in navigator) {
   } */
 
   // Possible callback candidate
-    function getForecast(latitude,longitude) {
-    let myLat = latitude;
-    let myLong = longitude;
-    const urlToFetch = `${openWeatherUrl}?&lat=${myLat}&lon=${myLong}&units=metric&APPID=${openWeatherKey}`;
+  const getForecast = async () => {
+    
+    const urlToFetch = `${weatherUrl}?&lat=${myLat}&lon=${myLong}&units=metric&APPID=${openWeatherKey}`;
     
     try {
       const response = await fetch(urlToFetch);
