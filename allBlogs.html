@@ -29,10 +29,8 @@
                            if (key === "body"){
                             console.log('Found the body property...');
                             console.log('Here is the value of "body": ' + value);
+                            console.log('value is a:' typeof value);
                             // At this point 'value' is an array with one element - our JSON object
-                            // Let's get the JSON object element out of the array and assign it to a new String variable
-                            const jsonBlog = value[1];
-                            console.log("Do we have it? jsonBlog is:" + jsonBlog);
 
                             // Parse the JSON Object so we can get access to it's properties
                            // var obj = JSON.parse(value);
