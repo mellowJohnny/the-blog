@@ -49,12 +49,16 @@
                     // Grab the "length" of the JSON object....
                     const jsonLength = Object.keys(data).length;
                     // console.log('Inside appendData...' + 'data.length is:' + Object.keys(data).length)
+                    document.getElementById("blogsDiv").innerHTML = data.postBody;
+
+                    /**
                     var mainContainer = document.getElementById("blogsDiv");
+                    
                     for (var i = 0; i < jsonLength; i++) {
                         var div = document.createElement("div");
                         div.innerHTML = data.body;
                         mainContainer.appendChild(div);
-                    }
+                    } **/
                 }
           </script>
       </body>
