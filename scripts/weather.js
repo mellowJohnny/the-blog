@@ -14,29 +14,28 @@ if('geolocation' in navigator) {
     /* geolocation IS NOT available */
   }
 
-  // Geolocation callback...does it work?
-
+  // Geolocation callback...
   function getWeather(latitude,longitude) {
     const myLat = latitude;
     const myLong = longitude;
     console.log(`getWeather says... ${myLat} & ${myLong}`);
+
+// The Big Lebowski...
+    const fetchForecast = async () => {
+        const urlToFetch = `${weatherUrl}?&lat=${myLat}&lon=${myLong}&units=metric&APPID=${openWeatherKey}`;
+        
+        try {
+          const response = await fetch(urlToFetch);
+          if (response.ok){
+            const jsonResponse = await response.json();
+            console.log(jsonResponse);
+            return jsonResponse;
+          }
+        }
+        catch(error){
+          console.log(error);
+        }
+      }
   } 
 
-  // Possible callback candidate
-  /** 
-  const getForecast = async () => {
-    
-    const urlToFetch = `${weatherUrl}?&lat=${myLat}&lon=${myLong}&units=metric&APPID=${openWeatherKey}`;
-    
-    try {
-      const response = await fetch(urlToFetch);
-      if (response.ok){
-        const jsonResponse = await response.json();
-        console.log(jsonResponse);
-        return jsonResponse;
-      }
-    }
-    catch(error){
-      console.log(error);
-    }
-  } */
+  
