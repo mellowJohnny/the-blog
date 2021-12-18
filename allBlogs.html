@@ -29,17 +29,19 @@
                            if (key === "body"){
                             console.log('Found the body property...');
                             console.log('Here is the value of "body": ' + value);  // Prints out all the Blogs, but it's a String
-                            console.log(Object.entries(value));
-                            
-                            for (const [key, value] of Object.entries(value)) { // This is the value of the body property
+                            // Convert the JSON String to an Object
+                            const blogPostArray = JSON.parse(value);
+                           // console.log(Object.entries(blogPostArray));
+                            // NOw that the body is a JSO Object, lets print the key value pairs:
+                            for (const [key, value] of Object.entries(blogPostArray)) { 
                                 console.log('In the value for loop');
                                 console.log(`${key}: ${value}`);
                             }
                             
-                            // At this point 'value' is a string...let's see if we can turn it into an Object
-                            const blogPostArray = JSON.parse(value);
-                            console.log(blogPostArray); // This is an Array.  Yay!
-                            console.log(Object.entries(blogPostArray));
+                            
+                            
+                           // console.log(blogPostArray); // This is an Array.  Yay!
+                           // console.log(Object.entries(blogPostArray));
                             
                             
 
