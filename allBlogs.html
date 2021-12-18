@@ -29,6 +29,7 @@
                            if (key === "body"){
                             console.log('Found the body property...');
                             console.log('Here is the value of "body": ' + value);  // Prints out all the Blogs, but it's a String
+                            console.log(Object.entries(value));
                             
                             for (const [key, value] of Object.entries(value)) { // This is the value of the body property
                                 console.log('In the value for loop');
