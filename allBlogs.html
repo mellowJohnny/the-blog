@@ -26,9 +26,9 @@
                         console.log(`Here's the data returned by the Lambda call: ${data}`)
 
                         // 'data' is an Object at this point...
-                      //  const jsonArray = Object.entries(data);
-                        const newThang = JSON.parse(data);
-                        console.log(`here's my newTThang ${Object.entries(newThang)}`);
+                        const jsonArray = Object.entries(data);
+                        //const newThang = JSON.parse(data);
+                        console.log(`here's my newTThang ${jsonArray}`);
                       
                         // Print the value of the 'body' property of JSON object
                         /**
