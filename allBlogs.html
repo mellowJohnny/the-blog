@@ -41,10 +41,11 @@
 
                             // Prints out all the Blogs, but it's a String
                             console.log('Here is the value of "body": ' + value);  
-                            console.log(typeof value);
+                            console.log(`body is currently a ${typeof value}`);
                             // Convert the JSON String to an Object
                             const blogPostArray = JSON.parse(value);
-                            console.log(blogPostArray);
+                            console.log(`After parsing the body contents we now have: ${blogPostArray}`);
+                            console.log(`Its datatype is now a ${typeof value}`);
                             // console.log(`after parsing the string: ${Object.entries(blogPostArray)}`);
                             // console.log(typeof blogPostArray);
 
