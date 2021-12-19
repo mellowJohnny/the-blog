@@ -134,7 +134,6 @@ const renderForecast = (day) => {
 };
 
 const executeSearch = () => {
-  $weatherDiv.empty();
   $destination.empty();
   $container.css("visibility", "visible");
   
