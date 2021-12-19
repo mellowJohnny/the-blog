@@ -66,9 +66,11 @@
                                     for (var i = 0; i < key.length; i++) {
                                         console.log(`The value of each key in Items is: ${value}`);
                                         console.log(typeof value);
-                                        console.log(Object.entries(value));
+                                        // Convert to an array
+                                        const blog = Object.entries(value));
+                                        console.log(`The new blog array looks like this: ${blog}`);
                                        // const myValue = JSON.parse(key[i]); bfrreaking
-                                        console.log('The value is now.....' + myValue);
+                                       // console.log('The value is now.....' + myValue);
                                      }
                                 }
                             }
