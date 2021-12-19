@@ -26,13 +26,14 @@
                         console.log(`Here's the data returned by the Lambda call: ${data}`)
 
                         // 'data' is an Object at this point...
-                        const returnedData = Object.entries(data);
-                        console.log(`Returned Data is a ${typeof returnedData}`);
+                        // Let's return an array of the object's properties
+                        const returnedData = Object.entries(data);  
+                        console.log(`The Object of the returned Data is a ${typeof returnedData}`);
                         console.log(`Here's the data returned by the Lambda call: ${returnedData}`);
                       
-                        // Print the value of the 'body' property of JSON object
-                        /**
-                       for (const [key, value] of Object.entries(data)) {
+                        
+                    
+                       for (const [key, value] of returnedData) {
                            // "body" is the name of the record returned by dynamoDB which holds the blog post
                            // Step 1 - get just the body property
                            if (key === "body"){
@@ -75,7 +76,7 @@
                                 console.log('We made it!');
                              }
                         }
-                    } **/
+                    } 
                         appendData(data);
                     })
                     .catch(function (err) {
