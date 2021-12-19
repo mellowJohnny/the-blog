@@ -61,10 +61,11 @@
       });
 
   function addBlog(postBody, author, date, title) {
-      
       // Populate the blogsDiv...
+      // First, cleanup the JSON double quotes...
+      const cleanTitle = JSON.parse(title);
       var blogBody = document.getElementById("blogsDiv");
-      blogBody.innerHTML += "<strong>" + title + "</strong> <p>" + author + "<p>" + date + "<p>" + postBody + "<br /> <br />"; 
+      blogBody.innerHTML += "<strong>" + cleanTitle + "</strong> <p>" + author + "<p>" + date + "<p>" + postBody + "<br /> <br />"; 
      
   }
 </script>
