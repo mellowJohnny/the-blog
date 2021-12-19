@@ -33,23 +33,20 @@
                             // Convert the JSON String to an Object
                             const blogPostArray = JSON.parse(value);
                             console.log(Object.entries(blogPostArray));
-                            // Now that the body is a JSO Object, lets print the key value pairs:
+                            // Now that the body is a JSON Object, lets print the key value pairs:
+                            // The "Items" key holds our actual postBody, author, time & ID fields
+                            // So let's grab just the Items key 
                             for (const [key, value] of Object.entries(blogPostArray)) { 
                                 console.log(`In the value for loop: ${key}: ${value}`);
             
                                 if (key === "Items"){
                                     console.log('Found the Items!');
                                     console.log(`Now let's see what the entries are... ${Object.entries(value)}`);
+                                    // Now let's convert to a JSON Object
+                                    const blogRecord = JSON.parse(value);
                                 }
                             }
                             
-                            
-                            
-                           // console.log(blogPostArray); // This is an Array.  Yay!
-                           // console.log(Object.entries(blogPostArray));
-                            
-                            
-
                             // Loop over the array and get each Blog post
                             for (var i = 0; i < blogPostArray.length; i++) {
                                 console.log('We made it!');
