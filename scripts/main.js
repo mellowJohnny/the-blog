@@ -135,7 +135,7 @@ const renderForecast = (day) => {
 
 const executeSearch = () => {
   
-  $container.css("visibility", "visible");
+ 
   
   getForecast().then(forecast => renderForecast(forecast));
   return false;
