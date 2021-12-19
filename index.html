@@ -50,9 +50,7 @@
                * data on the page - let's call it once for each blog post
                **/
               for (var i = 0; i < blogPostArray.Items.length; i++) {
-                  // console.log(`Blog Post #${i}:`);
-                  // console.log(blogPostArray.Items[i].postBody);
-                  addBlog(blogPostArray.Items[i].postBody);
+                  addBlog(blogPostArray.Items[i].postBody,blogPostArray.Items[i].author,blogPostArray.Items[i].time,blogPostArray.Items[i].ID);
                }
           }
       } 
@@ -62,10 +60,11 @@
           console.log('Something went wrong...: ' + err);
       });
 
-  function addBlog(data) {
-      // Put the raw data into the blogsDiv...
-      var blogBody = document.getElementById("blogsDiv")
-      blogBody.innerHTML += data + "<br /> <br />"; 
+  function addBlog(postBody, author, date, title) {
+      
+      // Populate the blogsDiv...
+      var blogBody = document.getElementById("blogsDiv");
+      blogBody.innerHTML += "<strong>" + title + "</strong> <p>" + author + "<p>" + date + "<p>" + postBody + "<br /> <br />"; 
      
   }
 </script>
@@ -99,7 +98,7 @@
             <section>
               <div class="flex-container">
                 <div class="blog-entry" id="blogsDiv">
-                
+                  
                 </div>
               </div>
             </section> 
