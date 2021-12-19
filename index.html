@@ -62,7 +62,9 @@
 
   function addBlog(postBody, author, date, title) {
       // Populate the blogsDiv...
-      // First, cleanup the JSON double quotes...
+
+      // First, cleanup the JSON double quotes we get back 
+      // We parsed the first object we got back, but that didn't parse the contents of the inner properties
       const cleanTitle = JSON.parse(title);
       const cleanAuthor = JSON.parse(author);
       // Setup a variable to hold the reference to our Div, 'cause we got work to do!

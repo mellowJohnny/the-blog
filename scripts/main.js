@@ -14,16 +14,6 @@ const weatherUrl = 'https://api.openweathermap.org/data/2.5/weather';
 let myLat = 0;
 let myLong = 0;
 
-// Page Elements
-/** 
-const $input = $('#city');
-const $submit = $('#button');
-const $destination = $('#destination');
-const $container = $('.container');
-const $venueDivs = [$("#venue1"), $("#venue2"), $("#venue3"), $("#venue4"), $("#venue5", $("#venue6"))];
-const $weatherDiv = $("#weather1"); // This is the connection to the HTML page Div ID on line 73
-const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-*/
 
 // Geolocation
 function geoFindMe() {
@@ -144,7 +134,6 @@ const renderForecast = (day) => {
 };
 
 const executeSearch = () => {
-  $venueDivs.forEach(venue => venue.empty());
   $weatherDiv.empty();
   $destination.empty();
   $container.css("visibility", "visible");
