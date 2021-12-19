@@ -22,28 +22,17 @@
                         return jsonResponse; // Our Promise object
                     })
                     .then(function (data) {
-                        
-
-                        // 'data' is an Object at this point...
-                        // First let's return an array of the object's properties
-                        const returnedData = Object.entries(data);  
-                        // console.log(`The Object of the returned Data is a ${typeof returnedData}`);
-                        // console.log(`Here's the data returned by the Lambda call: ${returnedData}`);
+                    // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
+                    // First let's return an array of the object's properties
+                        const returnedData = Object.entries(data); 
                       
-                        
-                        // Next let's just get the 'body' property returned by the Lambda call
+                    // Next let's just get the 'body' property returned by the Lambda call
                        for (const [key, value] of returnedData) {
                            if (key === "body"){
-                            // console.log('Found the body property...');
-
-                            // Prints out all the Blogs, but it's a String
-                           // console.log('Here is the value of "body": ' + value);  
-                           // console.log(`body is currently a ${typeof value}`); // returns String
                             // Now that we have the 'body', we need to convert the JSON String to a JSON Object
-                            // So that we can pull out the properties of each blog post
+                            // so that we can pull out the properties of each blog post
                             const blogPostArray = JSON.parse(value);
-                          //  console.log(`After parsing the body contents Items[0]postBody is: ${blogPostArray.Items[0].postBody}`);
-                            
+                          
                             // Now that the data we got back is a JSON object, let's loop over all the Posts...
                             // The 'Items' property is an array holding all our blog posts
                             // So let's loop through that array and display the fields we want
@@ -51,48 +40,6 @@
                                 console.log(`Blog Post #${i}:`);
                                 console.log(blogPostArray.Items[i].postBody);
                              }
-                            
-                            
-                            // Let's try converting the Items[0] array toa string...
-                           // const myBlog = JSON.stringify(blogPostArray.Items[0]);
-                           // console.log(`Items[0] now looks like this: ${myBlog}`);
-                          //  console.log(`Its datatype is now a ${typeof blogPostArray}`);
-                            // console.log(`after parsing the string: ${Object.entries(blogPostArray)}`);
-                            // console.log(typeof blogPostArray);
-
-                            // console.log(`This is the value for each Object.entries(blogPostArray`));
-                            // Now that the body is a JSON Object, lets print the key value pairs:
-                            // The "Items" key holds our actual postBody, author, time & ID fields
-                            // So let's grab just the Items key 
-
-                            /**
-                            for (const [key, value] of Object.entries(blogPostArray)) { 
-                                console.log(`In the value for loop: ${key}: ${value}`);
-            
-                                if (key === "Items"){
-                                    console.log('Found the Items!');
-                                    console.log(`Now let's see what the entries are... ${Object.entries(value)}`);
-                                    // Items is an array - let's try converting the 1st element to a JSON Object
-                                    console.log('Here is the length of "Items": ' + key.length);
-
-                                    // Let's loop through the elements in the "Items" array:
-                                    for (var i = 0; i < key.length; i++) {
-                                        console.log(`The value of each key in Items is: ${value}`);
-                                        console.log(typeof value);
-                                        // Convert to an array
-                                        const blog = Object.entries(value);
-                                        console.log(`The new blog array looks like this: ${blog}`);
-                                       // const myValue = JSON.parse(key[i]); bfrreaking
-                                       // console.log('The value is now.....' + myValue);
-                                     }
-                                }
-                            }
-                            **/
-
-                            // Loop over the array and get each Blog post
-                           // for (var i = 0; i < blogPostArray.length; i++) {
-                             //   console.log('We made it!');
-                           //  }
                         }
                     } 
                         appendData(data);
