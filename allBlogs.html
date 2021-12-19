@@ -22,17 +22,26 @@
                         return jsonResponse; // Our Promise object
                     })
                     .then(function (data) {
+                        // Let's see what the data object holds:
+                        console.log(`Her's the data returned by the Lambda call: ${data}`)
+                        
                         // 'data' is an Object at this point...
                         const jsonArray = Object.entries(data);
 
                        // Print the value of the 'body' property of JSON object
                        for (const [key, value] of Object.entries(data)) {
+                           // "body" is the name of the record returned by dynamoDB which holds the blog post
+                           // Step 1 - get just the body property
                            if (key === "body"){
                             console.log('Found the body property...');
-                            console.log('Here is the value of "body": ' + value);  // Prints out all the Blogs, but it's a String
+
+                            // Prints out all the Blogs, but it's a String
+                            console.log('Here is the value of "body": ' + value);  
+
                             // Convert the JSON String to an Object
                             const blogPostArray = JSON.parse(value);
-                            console.log(Object.entries(blogPostArray));
+
+                            // console.log(`This is the value for each Object.entries(blogPostArray`));
                             // Now that the body is a JSON Object, lets print the key value pairs:
                             // The "Items" key holds our actual postBody, author, time & ID fields
                             // So let's grab just the Items key 
