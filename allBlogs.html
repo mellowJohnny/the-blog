@@ -45,7 +45,7 @@
                             for (var i = 0; i < blogPostArray.Items.length; i++) {
                                 // console.log(`Blog Post #${i}:`);
                                 // console.log(blogPostArray.Items[i].postBody);
-                                appendData(blogPostArray.Items[i].postBody);
+                                addBlog(blogPostArray.Items[i].postBody);
                              }
                         }
                     } 
@@ -55,9 +55,11 @@
                         console.log('Something went wrong...: ' + err);
                     });
 
-                function appendData(data) {
+                function addBlog(data) {
                     // Put the raw data into the blogsDiv...
-                    document.getElementById("blogsDiv").innerHTML = data;
+                    var blogBody = document.getElementById("blogsDiv")
+                    blogBody.innerHTML += data; 
+                   // document.getElementById("blogsDiv").innerHTML = data;
 
                 }
           </script>
