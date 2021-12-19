@@ -64,8 +64,10 @@
       // Populate the blogsDiv...
       // First, cleanup the JSON double quotes...
       const cleanTitle = JSON.parse(title);
+      const cleanAuthor = JSON.parse(author);
+      // Setup a variable to hold the reference to our Div, 'cause we got work to do!
       var blogBody = document.getElementById("blogsDiv");
-      blogBody.innerHTML += "<strong>" + cleanTitle + "</strong> <p>" + author + "<p>" + date + "<p>" + postBody + "<br /> <br />"; 
+      blogBody.innerHTML += "<strong>" + cleanTitle + "</strong> <p>" + cleanAuthor + "<p>" + date + "<p>" + postBody + "<br /> <br />"; 
      
   }
 </script>
