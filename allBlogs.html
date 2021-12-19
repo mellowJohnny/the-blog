@@ -40,7 +40,7 @@
                             console.log(typeof value);
                             // Convert the JSON String to an Object
                             const blogPostArray = JSON.parse(value);
-
+                            console.log(`after parsing the string: ${Object.entries(blogPostArray)}`);
                             // console.log(`This is the value for each Object.entries(blogPostArray`));
                             // Now that the body is a JSON Object, lets print the key value pairs:
                             // The "Items" key holds our actual postBody, author, time & ID fields
@@ -58,6 +58,7 @@
                                     for (var i = 0; i < key.length; i++) {
                                         console.log(`The value of each key in Items is: ${value}`);
                                         console.log(typeof value);
+                                        console.log(Object.entries(value));
                                         const myValue = JSON.parse(key[i]);
                                         console.log('The value is now.....' + myValue);
                                      }
