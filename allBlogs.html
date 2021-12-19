@@ -51,8 +51,8 @@
                                 if (key === "Items"){
                                     console.log('Found the Items!');
                                     console.log(`Now let's see what the entries are... ${Object.entries(value)}`);
-                                    // Now let's convert to a JSON Object
-                                    const blogRecord = JSON.parse(value[0]);
+                                    // Items is an array - let's try converting the 1st element to a JSON Object
+                                    const blogRecord = JSON.parse(key[0]);
                                     console.log(`Do we finally have something? ${blogRecord}`);
                                 }
                             }
