@@ -26,10 +26,12 @@
                         console.log(`Here's the data returned by the Lambda call: ${data}`)
 
                         // 'data' is an Object at this point...
-                        const jsonArray = Object.entries(data);
+                      //  const jsonArray = Object.entries(data);
                         const newThang = JSON.parse(data);
                         console.log(`here's my newTThang ${Object.entries(newThang)}`);
-                       // Print the value of the 'body' property of JSON object
+                      
+                        // Print the value of the 'body' property of JSON object
+                        /**
                        for (const [key, value] of Object.entries(data)) {
                            // "body" is the name of the record returned by dynamoDB which holds the blog post
                            // Step 1 - get just the body property
@@ -62,7 +64,7 @@
                                         console.log(`The value of each key in Items is: ${value}`);
                                         console.log(typeof value);
                                         console.log(Object.entries(value));
-                                        const myValue = JSON.parse(key[i]);
+                                       // const myValue = JSON.parse(key[i]); bfrreaking
                                         console.log('The value is now.....' + myValue);
                                      }
                                 }
@@ -73,7 +75,7 @@
                                 console.log('We made it!');
                              }
                         }
-                    }
+                    } **/
                         appendData(data);
                     })
                     .catch(function (err) {
