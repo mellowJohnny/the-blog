@@ -23,11 +23,12 @@
                     })
                     .then(function (data) {
                         // Let's see what the data object holds:
-                        console.log(`Her's the data returned by the Lambda call: ${data}`)
+                        console.log(`Here's the data returned by the Lambda call: ${data}`)
 
                         // 'data' is an Object at this point...
                         const jsonArray = Object.entries(data);
-
+                        const newThang = JSON.parse(data);
+                        console.log(`here's my newTThang ${Object.entries(newThang)}`);
                        // Print the value of the 'body' property of JSON object
                        for (const [key, value] of Object.entries(data)) {
                            // "body" is the name of the record returned by dynamoDB which holds the blog post
