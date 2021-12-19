@@ -47,7 +47,7 @@
                             console.log(`After parsing the body contents Items[0]postBody is: ${blogPostArray.Items[0].postBody}`);
                             
                             // Let's loop over all the Posts...
-                            for (var i = 0; i < blogPostArray.length; i++) {
+                            for (var i = 0; i < blogPostArray.Items.length; i++) {
                                 console.log(`Blog Post #${i}:`);
                                 console.log(blogPostArray.Items[i].postBody);
                              }
