@@ -44,7 +44,7 @@
                             console.log(`body is currently a ${typeof value}`); // returns String
                             // Convert the JSON String to an Object
                             const blogPostArray = JSON.parse(value);
-                            console.log(`After parsing the body contents Items[0] is: ${blogPostArray.Items[0]}`);
+                            console.log(`After parsing the body contents Items[0] is: ${blogPostArray.Items[0].postBody}`);
                             // Let's try converting the Items[0] array toa string...
                             const myBlog = JSON.stringify(blogPostArray.Items[0]);
                             console.log(`Items[0] now looks like this: ${myBlog}`);
