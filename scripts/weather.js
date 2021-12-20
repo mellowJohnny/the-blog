@@ -7,6 +7,7 @@ let long = "";
 // Get geolocation from the Browser, if available..
 if('geolocation' in navigator) {
     /* geolocation is available */
+    status.textContent = 'Locating…';
     navigator.geolocation.getCurrentPosition((position) => {
        lat = position.coords.latitude;
        long = position.coords.longitude;
