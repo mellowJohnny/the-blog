@@ -40,19 +40,62 @@ if('geolocation' in navigator) {
         const stringVersion = JSON.stringify(jsonResponse);
 
         // Step 1: Now that jsonResponse is our JSON forcast let's get the values we want to display
+        const city = jsonResponse.name;
         const temp = jsonResponse.main.temp;
+        const humidity = jsonResponse.main.humidity;
         const feelsLike = jsonResponse.main.feels_like;
+        const wind = jsonResponse.wind.speed;
+        const windDirection = jsonResponse.deg;
         console.log(`The current temp is ${temp} degrees, feels like ${feelsLike}`);
 
-        // Now that we have all the fields we want, let's populate the HTML DIV
+        // Step 2: Now that we have all the fields we want, let's populate the HTML DIV
         const weatherForcast = document.getElementById("weather");
-        weatherForcast.innerHTML = `The Current Temprature is ${temp} <br> Feels Like: ${feelsLike}`;
+        weatherForcast.innerHTML = `
+                          The Current Temprature for ${city} is ${temp} <br> 
+                          Feels Like: ${feelsLike} <br>
+                          Wind: ${wind} km/h from the ${degreesToRose(windDirection)} <br>
+                          Humidity: ${humidity} <br>
+                          `;
       }
     }
     catch(error){
       console.log(error);
     }
   } 
+
+  /**
+   * Since the Weather response does not use compass rose directions, let's do it ourselves!
+   * @param {*} degNumber 
+   * @returns 
+   */
+  const degreesToRose =  degNumber => {
+    if (degNumber >= 0 && degNumber <= 29){
+        return 'North';
+    }
+    else if (degNumber >= 30 && degNumber <= 59){
+        return 'North East';
+    }
+    else if (degNumber >= 60 && degNumber <= 119){
+        return 'East';
+    }
+    else if (degNumber >= 120 && degNumber <= 149){
+        return 'South East';
+    }
+    else if (degNumber >= 150 && degNumber <= 209){
+        return 'South';
+    }
+    else if (degNumber >= 210 && degNumber <= 239){
+        return 'South West';
+    }
+    else if (degNumber >= 240 && degNumber <= 299){
+        return 'West';
+    }
+    else if (degNumber >= 300 && degNumber <= 329){
+        return 'North West';
+    }
+    else if (degNumber >= 330 && degNumber <= 360){
+        return 'North';
+    }      
 
 
   /**
