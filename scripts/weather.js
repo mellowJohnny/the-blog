@@ -30,7 +30,7 @@ if('geolocation' in navigator) {
       if (response.ok){
         const jsonResponse = await response.json();
         // Parse it just so we can colsole.log it
-        const forecast = JSON.parse(jsonResponse);
+        const forecast = JSON.stringify(jsonResponse);
         console.log(`Here is the forcast... ${forecast}`);
         return jsonResponse;
       }
