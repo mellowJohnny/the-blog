@@ -53,7 +53,7 @@ if('geolocation' in navigator) {
         weatherForcast.innerHTML = `
                           The Current Temprature for ${city} is ${temp} <br> 
                           Feels Like: ${feelsLike} <br>
-                          Wind: ${wind} km/h from the ${degreesToRose(windDirection)} <br>
+                          Wind: ${wind} km/h from the ${windDirection} <br>
                           Humidity: ${humidity}% <br>
                           `;
       }
