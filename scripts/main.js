@@ -1,6 +1,7 @@
 
-/*
-AWS Lambda call - createBlogPost
+/** 
+ * AWS Lambda call - createBlogPost
+ * Called from the wlcms.html page
 */
 
 // define the callAPI function that takes the blog title, author and post body as parameters:
@@ -26,24 +27,66 @@ function callBlogPostAPI (title,author,postBody){
   .catch(error => console.log('error', error));
   }
 
-  /*
-  *  getBlogPosts API call - API exposed via AWS API Gateway
-  
-  const getBlogs = async () => {
-    // Dynamically pass in the latitude & longitude fetched from geoFindMe()
-    const urlToFetch = `https://kuefte6pgk.execute-api.us-east-2.amazonaws.com/dev`;
-    
-    try {
-      const response = await fetch(urlToFetch);
-      if (response.ok){
-        const jsonResponse = await response.json();
-        console.log(jsonResponse);
-        return jsonResponse;
-      }
-    }
-    catch(error){
-      console.log(error);
-    }
-  } */
+  /** 
+  * AWS Lambda call - createBlogPost
+  * Called from the wlcms.html page
+  */
 
+  function fetchAllBlogs() {
+
+   const urlToFetch = `https://kuefte6pgk.execute-api.us-east-2.amazonaws.com/dev`;
+      
+   fetch(urlToFetch)
+       .then(function (response) {
+           const jsonResponse = response.json();
+           return jsonResponse; // Our Promise object
+       })
+       .then(function (data) {
+       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
+       // First let's return an array of the object's properties
+           const returnedData = Object.entries(data); 
+         
+       // Next let's just get the 'body' property returned by the Lambda call
+          for (const [key, value] of returnedData) {
+              if (key === "body"){
+               /** 
+                * Now that we have the 'body' key, we need to convert the value 
+                * (currently a JSON String) to a JSON Object 
+                * so that we can pull out the properties of each blog post 
+                **/ 
+               const blogPostArray = JSON.parse(value);
+             
+               /** Now that the data we got back is a JSON object, let's loop over all the Posts...
+                * The 'Items' property holds an array of all the blog posts 
+                * Let's loop through that array and display the fields we want!
+                * We created a function to control the display of the blog post
+                * data on the page - let's call it once for each blog post
+                **/
+               for (var i = 0; i < blogPostArray.Items.length; i++) {
+                   addBlog(blogPostArray.Items[i].postBody,blogPostArray.Items[i].author,blogPostArray.Items[i].time,blogPostArray.Items[i].ID);
+                }
+           }
+       } 
+           
+       })
+       .catch(function (err) {
+           console.log('Something went wrong...: ' + err);
+       });
+      }
+
+   function addBlog(postBody, author, date, title) {
+       // Populate the blogsDiv...
+ 
+       // First, cleanup the JSON double quotes we get back 
+       // We parsed the first object we got back, but that didn't parse the contents of the inner properties
+       const cleanTitle = JSON.parse(title);
+       const cleanAuthor = JSON.parse(author);
+      //  const cleanDate = JSON.parse(date);
+       // const cleanPostBody = JSON.parse(postBody);
+ 
+       // Setup a variable to hold the reference to our Div, 'cause we got work to do!
+       var blogBody = document.getElementById("blogsDiv");
+       blogBody.innerHTML += "<strong>" + cleanTitle + "</strong> <p> <strong>" + cleanAuthor + " </strong> <p> <strong>" + date + "</strong> <p>" + postBody + "<br /> <br />"; 
+      
+   }
   
