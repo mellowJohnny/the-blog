@@ -96,7 +96,7 @@ if('geolocation' in navigator) {
     else if (degNumber >= 330 && degNumber <= 360){
         return 'North';
     }      
-
+  }
 
   /**
    * For Reference, here is an example JSON Weather response
