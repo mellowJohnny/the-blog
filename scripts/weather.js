@@ -36,13 +36,13 @@ if('geolocation' in navigator) {
         // This is our JSON Object containing the weather forecast
         const jsonResponse = await response.json();
 
-        // Stringify the response just in case we want to print the whole thing
+        // Stringify the response just in case we ever want to print the whole thing
         const stringVersion = JSON.stringify(jsonResponse);
 
         // Step 1: Now that jsonResponse is our JSON forcast let's get the values we want to display
         const temp = jsonResponse.main.temp;
-        // const feelsLike = jsonResponse.main.feels_like;
-        console.log(`The current temp is ${temp} degrees`);
+        const feelsLike = jsonResponse.main.feels_like;
+        console.log(`The current temp is ${temp} degrees, feels like ${feelsLike}`);
         // return jsonResponse;
 
         const weatherForcast = document.getElementById("weather");
@@ -53,3 +53,49 @@ if('geolocation' in navigator) {
       console.log(error);
     }
   } 
+
+
+  /**
+   * For Reference, here is an example JSON Weather response
+   * 
+   * {
+   * "coord":
+   *    {"lon":-79.6863,"lat":43.4702},
+   * "weather":
+   *    [{"id":804,"main":"Clouds","description":"overcast clouds","icon":"04d"}],
+   * "base":"stations",
+   * "main":
+   *    {
+   *      "temp":3.8,
+   *      "feels_like":2.81,
+   *      "temp_min":2.63,
+   *      "temp_max":4.35,
+   *      "pressure":1008,
+   *      "humidity":71
+   *    },
+   * "visibility":10000,
+   * "wind":
+   *        {
+   *         "speed":1.34,
+   *         "deg":240,
+   *         "gust":5.36
+   *         },
+   * "clouds":
+   *        {
+   *         "all":100
+   *          },
+   * "dt":1640032100,
+   * "sys":
+   *       {
+   *        "type":2,
+   *        "id":2010070,
+   *        "country":"CA",
+   *        "sunrise":1640004485,
+   *        "sunset":1640036693
+   *         },
+   * "timezone":-18000,
+   * "id":6092122,
+   * "name":"Oakville",
+   * "cod":200
+   * }
+   */
