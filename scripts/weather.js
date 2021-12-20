@@ -46,7 +46,7 @@ if('geolocation' in navigator) {
         // return jsonResponse;
 
         const weatherForcast = document.getElementById("weather");
-        weatherForcast.innerHTML = "The Current Temprature is " + temp;
+        weatherForcast.innerHTML = "The Current Temprature is " + temp + <br> + stringVersion;
       }
     }
     catch(error){
