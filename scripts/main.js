@@ -1,10 +1,3 @@
-/* Global Variables...*/
-
-// Foursquare API Info
-const clientId = 'XSIR0UAH5ZDNPXPSLCWJLZ00Z55BOPIKVIZKBQFLRIDY2BVN';
-const clientSecret = 'SQWXOPKY5OLFGNMY4SFRKHXUGA5MVN1SEWRTZ2O5XGM0KRBJ';
-const url = 'https://api.foursquare.com/v2/venues/explore?near=';
-
 
 /*
 AWS Lambda call - createBlogPost
@@ -35,7 +28,7 @@ function callBlogPostAPI (title,author,postBody){
 
   /*
   *  getBlogPosts API call - API exposed via AWS API Gateway
-  */
+  
   const getBlogs = async () => {
     // Dynamically pass in the latitude & longitude fetched from geoFindMe()
     const urlToFetch = `https://kuefte6pgk.execute-api.us-east-2.amazonaws.com/dev`;
@@ -51,6 +44,6 @@ function callBlogPostAPI (title,author,postBody){
     catch(error){
       console.log(error);
     }
-  }
+  } */
 
   
