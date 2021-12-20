@@ -36,8 +36,8 @@ if('geolocation' in navigator) {
         //console.log(`In getWeather() - here is the forcast... ${forecast}`);
         
         // Let's set up an Object to hold the forecast
-        var forecast = JSON.parse(jsonResponse);
-        var temp = forecast.main.temp;
+        // var forecast = JSON.parse(jsonResponse);
+        var temp = jsonResponse.main.temp;
         console.log(`The current temp is ${temp} degrees`);
         return jsonResponse;
       }
