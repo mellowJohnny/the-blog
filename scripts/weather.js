@@ -7,7 +7,6 @@ let long = "";
 // Get geolocation from the Browser, if available..
 if('geolocation' in navigator) {
     /* geolocation is available */
-    status.textContent = 'Locating…';
     navigator.geolocation.getCurrentPosition((position) => {
        lat = position.coords.latitude;
        long = position.coords.longitude;
@@ -16,6 +15,7 @@ if('geolocation' in navigator) {
       });
   } else {
     /* geolocation IS NOT available */
+    document.getElementById("weather").innerHTML = "<p>Current location unavilable...</p>";
   }
 
   // This is our Geolocation callback...we call it asynchronously becasue we don't want tit o block page load
