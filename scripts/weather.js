@@ -1,13 +1,15 @@
 // Global Variables
 const openWeatherUrl = 'https://api.openweathermap.org/data/2.5/weather';
 const openWeatherKey = '49f84d9cdb7907dfd2b02085e270372e';
+let lat = "";
+let long = "";
 
 // Get geolocation from the Browser, if available..
 if('geolocation' in navigator) {
     /* geolocation is available */
     navigator.geolocation.getCurrentPosition((position) => {
-       const lat = position.coords.latitude;
-       const long = position.coords.longitude;
+       lat = position.coords.latitude;
+       long = position.coords.longitude;
         // Our callback to getForcast()
         getWeather(lat,long);
       });
