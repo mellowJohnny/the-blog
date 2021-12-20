@@ -31,7 +31,7 @@ if('geolocation' in navigator) {
         const jsonResponse = await response.json();
         // Parse it just so we can colsole.log it
         const forecast = JSON.stringify(jsonResponse);
-        console.log(`Here is the forcast... ${forecast}`);
+        console.log(`In getWeather() - here is the forcast... ${forecast}`);
         return jsonResponse;
       }
     }
@@ -47,7 +47,7 @@ if('geolocation' in navigator) {
       const response = await fetch(urlToFetch);
       if (response.ok){
         const jsonResponse = await response.json();
-        console.log(`Here is the forcast... ${jsonResponse}`);
+        console.log(`In fetchForecast() - here is the forcast... ${jsonResponse}`);
         return jsonResponse;
       }
     }
