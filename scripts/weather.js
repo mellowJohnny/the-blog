@@ -54,7 +54,7 @@ if('geolocation' in navigator) {
                           The Current Temprature for ${city} is ${temp} <br> 
                           Feels Like: ${feelsLike} <br>
                           Wind: ${wind} km/h from the ${degreesToRose(windDirection)} <br>
-                          Humidity: ${humidity} <br>
+                          Humidity: ${humidity}% <br>
                           `;
       }
     }
@@ -69,31 +69,34 @@ if('geolocation' in navigator) {
    * @returns 
    */
   const degreesToRose =  degNumber => {
-    if (degNumber >= 0 && degNumber <= 29){
+    // Let's make sure the param passed is an Integer...
+    const direction = parseInt(degNumber);
+
+    if (direction >= 0 && direction <= 29){
         return 'North';
     }
-    else if (degNumber >= 30 && degNumber <= 59){
+    else if (direction >= 30 && direction <= 59){
         return 'North East';
     }
-    else if (degNumber >= 60 && degNumber <= 119){
+    else if (direction >= 60 && direction <= 119){
         return 'East';
     }
-    else if (degNumber >= 120 && degNumber <= 149){
+    else if (direction >= 120 && direction <= 149){
         return 'South East';
     }
-    else if (degNumber >= 150 && degNumber <= 209){
+    else if (direction >= 150 && direction <= 209){
         return 'South';
     }
-    else if (degNumber >= 210 && degNumber <= 239){
+    else if (direction >= 210 && direction <= 239){
         return 'South West';
     }
-    else if (degNumber >= 240 && degNumber <= 299){
+    else if (direction >= 240 && direction <= 299){
         return 'West';
     }
-    else if (degNumber >= 300 && degNumber <= 329){
+    else if (direction >= 300 && direction <= 329){
         return 'North West';
     }
-    else if (degNumber >= 330 && degNumber <= 360){
+    else if (direction >= 330 && direction <= 360){
         return 'North';
     }      
   }
