@@ -43,10 +43,10 @@ if('geolocation' in navigator) {
         const temp = jsonResponse.main.temp;
         const feelsLike = jsonResponse.main.feels_like;
         console.log(`The current temp is ${temp} degrees, feels like ${feelsLike}`);
-        // return jsonResponse;
 
+        // Now that we have all the fields we want, let's populate the HTML DIV
         const weatherForcast = document.getElementById("weather");
-        weatherForcast.innerHTML = "The Current Temprature is " + temp + "<br>" + stringVersion;
+        weatherForcast.innerHTML = `The Current Temprature is ${temp} <br> Feels Like: ${feelsLike}`;
       }
     }
     catch(error){
