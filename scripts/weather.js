@@ -22,6 +22,7 @@ if('geolocation' in navigator) {
     const myLat = latitude;
     const myLong = longitude;
     console.log(`getWeather says... ${myLat} & ${myLong}`)
+    fetchForecast;
     
     const fetchForecast = async () => {
         const urlToFetch = `${weatherUrl}?&lat=${myLat}&lon=${myLong}&units=metric&APPID=${openWeatherKey}`;
@@ -30,7 +31,7 @@ if('geolocation' in navigator) {
           const response = await fetch(urlToFetch);
           if (response.ok){
             const jsonResponse = await response.json();
-            console.log(`weather.js says... ${jsonResponse}`);
+            console.log(`Here is the forcast... ${jsonResponse}`);
             return jsonResponse;
           }
         }
