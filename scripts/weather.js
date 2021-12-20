@@ -35,10 +35,11 @@ if('geolocation' in navigator) {
 
         // This is our JSON Object containing the weather forecast
         const jsonResponse = await response.json();
-        // Step 1: Now that jsonResponse represents our forcast as a JSON Object
-        // let's get the values we want to display
+
+        // Step 1: Now that jsonResponse is our JSON forcast let's get the values we want to display
         const temp = jsonResponse.main.temp;
-        console.log(`The current temp is ${temp} degrees`);
+        const feelsLike = jsonResponse.current.feels_like;
+        console.log(`The current temp is ${temp} degrees, feels like ${feelsLike}`);
         // return jsonResponse;
       }
     }
