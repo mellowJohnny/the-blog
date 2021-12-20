@@ -18,29 +18,39 @@ if('geolocation' in navigator) {
   }
 
   // Geolocation callback...
-  function getWeather(latitude,longitude) {
+  async function getWeather(latitude,longitude) {
     const myLat = latitude;
     const myLong = longitude;
+    const urlToFetch = `${openWeatherUrl}?&lat=${myLat}&lon=${myLong}&units=metric&APPID=${openWeatherKey}`;
     console.log(`getWeather says... ${myLat} & ${myLong}`)
-    fetchForecast;
-    
-    const fetchForecast = async () => {
-        const urlToFetch = `${weatherUrl}?&lat=${myLat}&lon=${myLong}&units=metric&APPID=${openWeatherKey}`;
-        
-        try {
-          const response = await fetch(urlToFetch);
-          if (response.ok){
-            const jsonResponse = await response.json();
-            console.log(`Here is the forcast... ${jsonResponse}`);
-            return jsonResponse;
-          }
-        }
-        catch(error){
-          console.log(error);
-        }
-      }
 
-      
+    // Now that we have the latitude & longitude, let's get the weather forecast
+    try {
+      const response = await fetch(urlToFetch);
+      if (response.ok){
+        const jsonResponse = await response.json();
+        console.log(`Here is the forcast... ${jsonResponse}`);
+        return jsonResponse;
+      }
+    }
+    catch(error){
+      console.log(error);
+    }
   } 
 
+  const fetchForecast = async () => {
+    const urlToFetch = `${weatherUrl}?&lat=${myLat}&lon=${myLong}&units=metric&APPID=${openWeatherKey}`;
+    
+    try {
+      const response = await fetch(urlToFetch);
+      if (response.ok){
+        const jsonResponse = await response.json();
+        console.log(`Here is the forcast... ${jsonResponse}`);
+        return jsonResponse;
+      }
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
   
