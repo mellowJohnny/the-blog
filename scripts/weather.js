@@ -58,7 +58,7 @@ if('geolocation' in navigator) {
 
         // Wind speed is meters per second - multiply by 3.6 to get KM/h
         const windMpS  = jsonResponse.wind.speed; 
-        const wind = windMpS * 3.6;
+        const wind = (windMpS * 3.6).toFixed();
         const windDirection = jsonResponse.wind.deg;
 
         // Sunrise comes as a Unix timestamp...convert it
