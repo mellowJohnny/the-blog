@@ -88,10 +88,31 @@ function callBlogPostAPI (title,author,postBody){
        // Magic Date fixing action...
         function fixDate(date){
             const d = new Date(date);
-            const day = d.getDay();
+            let day = d.getDay();
             const month = d.getMonth(); 
             const year = d.getFullYear(); 
-            return day + ", " + month + year;
+            if (dayNum === "1"){
+                day = "Monday";
+            }
+            if (dayNum === "2"){
+                day = "Tuesday";
+            }
+            if (dayNum === "3"){
+                day = "Wednesday";
+            }
+            if (dayNum === "4"){
+                day = "Thursday";
+            }
+            if (dayNum === "5"){
+                day = "Friday";
+            }
+            if (dayNum === "6"){
+                day = "Saturday";
+            }
+            if (dayNum === "0"){
+                day = "Sunday";
+            }
+            return day + ", " + month + " " + year;
         }
  
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
