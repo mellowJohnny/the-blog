@@ -91,25 +91,25 @@ function callBlogPostAPI (title,author,postBody){
             let day = d.getDay();
             const month = d.getMonth(); 
             const year = d.getFullYear(); 
-            if (day === "1"){
+            if (day === 1){
                 day = "Monday";
             }
-            if (day === "2"){
+            if (day === 2){
                 day = "Tuesday";
             }
-            if (day === "3"){
+            if (day === 3){
                 day = "Wednesday";
             }
-            if (day === "4"){
+            if (day === 4){
                 day = "Thursday";
             }
-            if (day === "5"){
+            if (day === 5){
                 day = "Friday";
             }
-            if (day === "6"){
+            if (day === 6){
                 day = "Saturday";
             }
-            if (day === "0"){
+            if (day === 0){
                 day = "Sunday";
             }
             return day + ", " + month + " " + year;
