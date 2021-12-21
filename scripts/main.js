@@ -66,7 +66,7 @@ function callBlogPostAPI (title,author,postBody){
                 * data on the page - let's call it once for each blog post
                 **/
                for (var i = 0; i < blogPostArray.Items.length; i++) {
-                   addBlog(blogPostArray.Items[i].postBody,blogPostArray.Items[i].author,blogPostArray.Items[i].time,blogPostArray.Items[i].ID);
+                   addBlog(blogPostArray.Items[i].postBody,blogPostArray.Items[i].author,blogPostArray.Items[i].time,blogPostArray.Items[i].title);
                 }
            }
        } 
