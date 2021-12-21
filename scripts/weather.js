@@ -61,7 +61,7 @@ if('geolocation' in navigator) {
         // Step 2: Now that we have all the fields we want, let's populate the HTML DIV
         const weatherForcast = document.getElementById("weather");
         weatherForcast.innerHTML = `<p>
-                          Current Weather Conditions for <strong> ${city}:</strong> <br>
+                          Weather Conditions for <strong> ${city}:</strong> <br>
                           Temprature: ${temp}&deg C, Feels Like: ${feelsLike}&deg C <br>
                           Wind: ${wind} km/h from the ${degreesToRose(windDirection)}, Humidity: ${humidity}% <br>
                           Sunrise ${getTime(sunrise)} AM, Sunset ${getTime(sunset)} PM 
