@@ -227,4 +227,8 @@ function callBlogPostAPI (title,author,postBody){
             return dayName;
         }
     }
+
+function generateRandomString(length){
+        return Math.random().toString(20).substr(2, length)
+        }
   

@@ -26,6 +26,7 @@
                     <label>Blog Post Title (required)</label>
                     <br>
                     <input type="text" id="title" required>
+                    <br><br>
                     <label>Type (Required)</label>
                     <br>
                     <input type="text" id="type" required>
@@ -38,7 +39,13 @@
                     <br><br>
                     <textarea id="postBody" required></textarea>
                     <br><br><br>
-                    <button type="button" onclick="callBlogPostAPI(document.getElementById('title').value,document.getElementById('author').value,document.getElementById('postBody').value,document.getElementById('type').value)">Submit Post</button>
+                    <button type="button" onclick="callBlogPostAPI(
+                                                    document.getElementById('title').value,
+                                                    document.getElementById('author').value,
+                                                    document.getElementById('postBody').value,
+                                                    document.getElementById('type').value)">
+                                                    Submit Post
+                    </button>
                 </form>
             </main>
         </div>
