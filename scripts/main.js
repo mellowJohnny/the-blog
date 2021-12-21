@@ -88,9 +88,20 @@ function callBlogPostAPI (title,author,postBody){
        // Magic Date fixing action...
         function fixDate(date){
             const d = new Date(date);
-            let day = d.getDay();
-            const month = d.getMonth(); 
+            const day = d.getDay();
+            const weekDay = getDayOfTheWeek(day);
+            const monthNum = d.getMonth(); 
+            const month = getMonthName(monthNum);
             const year = d.getFullYear(); 
+            
+            return weekDay + ", " + month + " " + year;
+        }
+/**
+ * Helper function to get the day name, given an Integer value
+ * @param {*} day 
+ */
+        function getDayOfTheWeek(day){
+
             if (day === 1){
                 day = "Monday";
             }
@@ -112,7 +123,48 @@ function callBlogPostAPI (title,author,postBody){
             if (day === 0){
                 day = "Sunday";
             }
-            return day + ", " + month + " " + year;
+        }
+/**
+ * Helper function to get the month name, given an Integer value
+ * @param {*} month 
+ */
+        function getMonthName(month){
+            if (day === 0){
+                day = "January";
+            }
+            if (day === 1){
+                day = "February";
+            }
+            if (day === 2){
+                day = "March";
+            }
+            if (day === 3){
+                day = "April";
+            }
+            if (day === 4){
+                day = "May";
+            }
+            if (day === 5){
+                day = "June";
+            }
+            if (day === 6){
+                day = "July";
+            }
+            if (day === 7){
+                day = "August";
+            }
+            if (day === 8){
+                day = "September";
+            }
+            if (day === 9){
+                day = "October";
+            }
+            if (day === 10){
+                day = "November";
+            }
+            if (day === 11){
+                day = "December";
+            }
         }
  
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
