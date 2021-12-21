@@ -50,7 +50,7 @@ if('geolocation' in navigator) {
         const rise = jsonResponse.sys.sunrise;
         // Sunrise comes as milliseconds...convert it
         const sunrise = msToTime(rise);
-        const set = jsonResponse.sys.sunset;
+        const sunset = jsonResponse.sys.sunset;
 
         // Magic Date fixing action...
         function getTime(date){
