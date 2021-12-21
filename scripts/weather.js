@@ -46,13 +46,18 @@ if('geolocation' in navigator) {
         const humidity = jsonResponse.main.humidity;
         const feelsLike = jsonResponse.main.feels_like;
         const windMpS  = jsonResponse.wind.speed; 
+        
         // In meters per second.  Multiply by 3.6 to get KM/h
         const wind = windMpS * 3.6;
         const windDirection = jsonResponse.wind.deg;
+
         // Sunrise comes as a Unix timestamp...convert it
         const rise = jsonResponse.sys.sunrise;
         const sunrise = convertUnixTime(rise);
-        const sunset = jsonResponse.sys.sunset;
+
+        // Sunet also comes as a Unix timestamp...convert it
+        const set = jsonResponse.sys.sunset;
+        const sunset = convertUnixTime(rise);
 
         // Magic Date fixing action...
         function getTime(date){
