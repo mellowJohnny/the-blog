@@ -93,8 +93,8 @@ function callBlogPostAPI (title,author,postBody){
             const monthNum = d.getMonth(); 
             const month = getMonthName(monthNum);
             const year = d.getFullYear(); 
-            
-            return weekDay + ", " + month + " " + year;
+            const dateNum = d.getDate(); // Gets the day of the month
+            return weekDay + ", " + month + " " + dateNum + "," + year;
         }
 /**
  * Helper function to get the day name, given an Integer value
