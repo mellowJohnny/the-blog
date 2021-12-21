@@ -45,11 +45,13 @@ if('geolocation' in navigator) {
         const temp = jsonResponse.main.temp;
         const humidity = jsonResponse.main.humidity;
         const feelsLike = jsonResponse.main.feels_like;
-        const wind = jsonResponse.wind.speed;
+        const windMpS  = jsonResponse.wind.speed; 
+        // In meters per second.  Multiply by 3.6 to get KM/h
+        const wind = windMpS * 3.6;
         const windDirection = jsonResponse.wind.deg;
+        // Sunrise comes as a Unix timestamp...convert it
         const rise = jsonResponse.sys.sunrise;
-        // Sunrise comes as milliseconds...convert it
-        const sunrise = msToTime(rise);
+        const sunrise = convertUnixTime(rise);
         const sunset = jsonResponse.sys.sunset;
 
         // Magic Date fixing action...
@@ -113,15 +115,11 @@ if('geolocation' in navigator) {
     }      
   }
 
-  function msToTime(s) {
-    var ms = s % 1000;
-    s = (s - ms) / 1000;
-    var secs = s % 60;
-    s = (s - secs) / 60;
-    var mins = s % 60;
-    var hrs = (s - mins) / 60;
+  function convertUnixTime(unixTime) {
+    const ms = unixTime * 1000;
+    const newTime = new Date(ms);
   
-    return hrs + ':' + mins + ':' + secs + '.' + ms;
+    return newTime;
   }
 
   /**
