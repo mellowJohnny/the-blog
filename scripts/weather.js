@@ -47,13 +47,14 @@ if('geolocation' in navigator) {
         const feelsLike = jsonResponse.main.feels_like;
         const wind = jsonResponse.wind.speed;
         const windDirection = jsonResponse.wind.deg;
-        let rise = jsonResponse.sys.sunrise;
-        let set = jsonResponse.sys.sunset;
+        const sunrise = jsonResponse.sys.sunrise;
+        const sunset = jsonResponse.sys.sunset;
+
         // Magic Date fixing action...
         function getTime(date){
           const d = new Date(date);
-          const hour = d.getHours(); // => 9
-          const minutes = d.getMinutes(); // =>  30
+          const hour = d.getHours(); 
+          const minutes = d.getMinutes(); 
           return hour + ":" + minutes;
         }
 
