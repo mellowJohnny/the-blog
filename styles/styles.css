@@ -103,7 +103,7 @@ body {
 }
  /* The weather box */
 .weather {
-    font-family: 'Nunito', cursive;
+    font-family: 'Arial', cursive;
     font-size: 14px;
     width: 80%;
     height: 150px;
