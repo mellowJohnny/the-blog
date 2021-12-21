@@ -50,16 +50,20 @@ if('geolocation' in navigator) {
         let rise = jsonResponse.sys.sunrise;
         let set = jsonResponse.sys.sunset;
         // Magic Date fixing action...
-        const sunrise = Date(rise);
-        const sunset = Date(set);
+        function getTime(date){
+          const d = new Date(date);
+          const hour = d.getHours(); // => 9
+          const minutes = d.getMinutes(); // =>  30
+          return hour + ":" + minutes;
+        }
 
         // Step 2: Now that we have all the fields we want, let's populate the HTML DIV
         const weatherForcast = document.getElementById("weather");
         weatherForcast.innerHTML = `
-                          <strong>Current Weather Conditions for ${city}:</strong> <br>
+                          Current Weather Conditions for <strong>${city}:</strong> <br>
                           ${temp}&deg C, Feels Like: ${feelsLike}&deg C <br>
                           Wind: ${wind} km/h from the ${degreesToRose(windDirection)}, Humidity: ${humidity}% <br>
-                          Sunrise ${sunrise} AM, Sunset ${sunset} PM 
+                          Sunrise ${getTime(sunrise)} AM, Sunset ${getTime(sunset)} PM 
                           `;
       }
     }
