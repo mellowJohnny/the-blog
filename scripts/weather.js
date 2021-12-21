@@ -47,9 +47,10 @@ if('geolocation' in navigator) {
         const feelsLike = jsonResponse.main.feels_like;
         const wind = jsonResponse.wind.speed;
         const windDirection = jsonResponse.wind.deg;
-        const sunrise = jsonResponse.sys.sunrise;
-        const sunset = jsonResponse.sys.sunset;
-        console.log(`Sunrise should be ${sunrise}`);
+        const rise = jsonResponse.sys.sunrise;
+        // Sunrise comes as milliseconds...convert it
+        const sunrise = msToTime(rise);
+        const set = jsonResponse.sys.sunset;
 
         // Magic Date fixing action...
         function getTime(date){
@@ -110,6 +111,17 @@ if('geolocation' in navigator) {
     else if (direction >= 330 && direction <= 360){
         return 'North';
     }      
+  }
+
+  function msToTime(s) {
+    var ms = s % 1000;
+    s = (s - ms) / 1000;
+    var secs = s % 60;
+    s = (s - secs) / 60;
+    var mins = s % 60;
+    var hrs = (s - mins) / 60;
+  
+    return hrs + ':' + mins + ':' + secs + '.' + ms;
   }
 
   /**
