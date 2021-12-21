@@ -88,8 +88,8 @@ function callBlogPostAPI (title,author,postBody){
        // Magic Date fixing action...
         function fixDate(date){
             const d = new Date(date);
-            const day = d.getDay();
-            const weekDay = getDayOfTheWeek(day);
+            const dayNum = d.getDay();
+            const weekDay = getDayOfTheWeek(dayNum);
             const monthNum = d.getMonth(); 
             const month = getMonthName(monthNum);
             const year = d.getFullYear(); 
