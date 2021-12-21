@@ -129,41 +129,41 @@ function callBlogPostAPI (title,author,postBody){
  * @param {*} month 
  */
         function getMonthName(month){
-            if (day === 0){
-                day = "January";
+            if (month === 0){
+                month = "January";
             }
-            if (day === 1){
-                day = "February";
+            if (month === 1){
+                month = "February";
             }
-            if (day === 2){
-                day = "March";
+            if (month === 2){
+                month = "March";
             }
-            if (day === 3){
-                day = "April";
+            if (month === 3){
+                month = "April";
             }
-            if (day === 4){
-                day = "May";
+            if (month === 4){
+                month = "May";
             }
-            if (day === 5){
-                day = "June";
+            if (month === 5){
+                month = "June";
             }
-            if (day === 6){
-                day = "July";
+            if (month === 6){
+                month = "July";
             }
-            if (day === 7){
-                day = "August";
+            if (month === 7){
+                month = "August";
             }
-            if (day === 8){
-                day = "September";
+            if (month === 8){
+                month = "September";
             }
-            if (day === 9){
-                day = "October";
+            if (month === 9){
+                month = "October";
             }
-            if (day === 10){
-                day = "November";
+            if (month === 10){
+                month = "November";
             }
-            if (day === 11){
-                day = "December";
+            if (month === 11){
+                month = "December";
             }
         }
  
