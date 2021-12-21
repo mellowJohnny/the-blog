@@ -29,6 +29,13 @@ body {
     font-size: 18px;
 }
 
+hr {
+  height:2px;
+  border-width:0;
+  color:gray;
+  background-color:gray
+}
+
 .body-cms {
   height:100%;
   background-color: rgb(124, 151, 201);
