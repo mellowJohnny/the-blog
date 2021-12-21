@@ -88,14 +88,23 @@ function callBlogPostAPI (title,author,postBody){
        // Magic Date fixing action...
         function fixDate(date){
             const d = new Date(date);
+            // Get the day of the week as an Interger, then convert it to the name
             const dayNum = d.getDay();
             const weekDay = getDayOfTheWeek(dayNum);
+
+            // Get the month as an Intger, convert it to the name
             const monthNum = d.getMonth(); 
             const month = getMonthName(monthNum);
+            // Get the year
             const year = d.getFullYear(); 
-            const dateNum = d.getDate(); // Gets the day of the month
+
+            // Gets the day of the month
+            const dateNum = d.getDate(); 
+
+            // Smoosh it all together and send it back...
             return weekDay + ", " + month + " " + dateNum + "," + year;
         }
+        
 /**
  * Helper function to get the day name, given an Integer value
  * @param {*} day 
