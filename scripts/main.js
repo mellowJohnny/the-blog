@@ -84,11 +84,11 @@ function callBlogPostAPI (title,author,postBody){
        const cleanTitle = JSON.parse(title);
        const cleanAuthor = JSON.parse(author);
        const cleanDate = JSON.parse(date);
-       // const cleanPostBody = JSON.parse(postBody);
+       const cleanPostBody = JSON.parse(postBody);
  
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
        var blogBody = document.getElementById("blogsDiv");
-       blogBody.innerHTML += "<strong>" + cleanTitle + "</strong> <p> <strong>" + cleanAuthor + " </strong> <p> <strong>" + cleanDate + "</strong> <p>" + postBody + "<br /> <br />"; 
+       blogBody.innerHTML += "<strong>" + cleanTitle + "</strong> <p> <strong>" + cleanAuthor + " </strong> <p> <strong>" + cleanDate + "</strong> <p>" + cleanPostBody + "<br /> <br />"; 
       
    }
   
