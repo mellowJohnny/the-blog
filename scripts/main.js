@@ -99,8 +99,14 @@ function callBlogPostAPI (title,author,postBody){
        fixDate(date);
         
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
-       var blogBody = document.getElementById("blogsDiv");
-       blogBody.innerHTML += "<strong>" + cleanTitle + "</strong> <p> <strong>" + cleanAuthor + " </strong> <p> <strong>" + fixDate(date) + "</strong> <p>" + cleanPostBody + "<br /> <br />"; 
+       let blogBody = document.getElementById("blogsDiv");
+       blogBody.innerHTML += 
+                    `<p>
+                    <strong>${cleanTitle}</strong> <br>
+                    <strong>${cleanAuthor}</strong> <br>
+                    <strong>${fixDate(date)}</strong> <br> 
+                    <p>${cleanPostBody} 
+                    <hr/> <br/>`; 
       
    }
 
