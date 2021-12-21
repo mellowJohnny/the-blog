@@ -88,20 +88,23 @@ function callBlogPostAPI (title,author,postBody){
    function addBlog(postBody, author, date, title) {
        // Populate the blogsDiv...
  
-       // First, cleanup the JSON double quotes we get back 
+       // Cleanup the JSON we get back so it's back to a String 
        // We parsed the first object we got back, but that didn't parse the contents of the inner properties
+       // so we need to explicitly parse title, author, and the blog
        const cleanTitle = JSON.parse(title);
        const cleanAuthor = JSON.parse(author);
        const cleanPostBody = JSON.parse(postBody);
-       // Pass the Date Object to our Magic Date fixer...
+
+       // Format the Date by passing it to our Magic Date fixer...
        fixDate(date);
         
-
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
        var blogBody = document.getElementById("blogsDiv");
        blogBody.innerHTML += "<strong>" + cleanTitle + "</strong> <p> <strong>" + cleanAuthor + " </strong> <p> <strong>" + fixDate(date) + "</strong> <p>" + cleanPostBody + "<br /> <br />"; 
       
    }
+
+   // ----------------------------- Date Helper Functions ----------------------------
 
    /**
     * Fixes our Raw Date object coming back from the JSON response
