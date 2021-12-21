@@ -100,70 +100,89 @@ function callBlogPostAPI (title,author,postBody){
  * Helper function to get the day name, given an Integer value
  * @param {*} day 
  */
-        function getDayOfTheWeek(day){
+        function getDayOfTheWeek(dayNum){
 
-            if (day === 1){
-                day = "Monday";
+            if (dayNum === 1){
+                dayName = "Monday";
+                return dayName;
             }
-            if (day === 2){
-                day = "Tuesday";
+            if (dayNum === 2){
+                dayName = "Tuesday";
+                return dayName;
             }
-            if (day === 3){
-                day = "Wednesday";
+            if (dayNum === 3){
+                dayName = "Wednesday";
+                return dayName;
             }
-            if (day === 4){
-                day = "Thursday";
+            if (dayNum === 4){
+                dayName = "Thursday";
+                return dayName;
             }
-            if (day === 5){
-                day = "Friday";
+            if (dayNum === 5){
+                dayName = "Friday";
+                return dayName;
             }
-            if (day === 6){
-                day = "Saturday";
+            if (dayNum === 6){
+                dayName = "Saturday";
+                return dayName;
             }
-            if (day === 0){
-                day = "Sunday";
+            if (dayNum === 0){
+                dayName = "Sunday";
+                return dayName;
             }
         }
 /**
  * Helper function to get the month name, given an Integer value
  * @param {*} month 
  */
-        function getMonthName(month){
-            if (month === 0){
+        function getMonthName(monthNum){
+            if (monthNum === 0){
                 month = "January";
+                return month;
             }
-            if (month === 1){
+            if (monthNum === 1){
                 month = "February";
+                return month;
             }
-            if (month === 2){
+            if (monthNum === 2){
                 month = "March";
+                return month;
             }
-            if (month === 3){
+            if (monthNum === 3){
                 month = "April";
+                return month;
             }
-            if (month === 4){
+            if (monthNum === 4){
                 month = "May";
+                return month;
             }
-            if (month === 5){
+            if (monthNum === 5){
                 month = "June";
+                return month;
             }
-            if (month === 6){
+            if (monthNum === 6){
                 month = "July";
+                return month;
             }
-            if (month === 7){
+            if (monthNum === 7){
                 month = "August";
+                return month;
             }
-            if (month === 8){
+            if (monthNum === 8){
                 month = "September";
+                return month;
             }
-            if (month === 9){
+            if (monthNum === 9){
                 month = "October";
+                return month;
             }
-            if (month === 10){
+            if (monthNum === 10){
                 month = "November";
+                return month;
             }
-            if (month === 11){
+            if (monthNum === 11){
                 month = "December";
+                return month;
             }
         }
  
