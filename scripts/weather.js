@@ -45,13 +45,13 @@ if('geolocation' in navigator) {
 
         // Let's round the temp values to one decimal
         const t = jsonResponse.main.temp;
-        const temp = t.toFixed(1);
+        const temp = t.toFixed();
         const fL = jsonResponse.main.feels_like;
-        const feelsLike = fL.toFixed(1);
+        const feelsLike = fL.toFixed();
         const mnT = jsonResponse.main.temp_min;
-        const minTemp = mnT.toFixed(1);
+        const minTemp = mnT.toFixed();
         const mxT = jsonResponse.main.temp_max;
-        const maxTemp = mxT.toFixed(1);
+        const maxTemp = mxT.toFixed();
 
         const humidity = jsonResponse.main.humidity;
         
