@@ -102,9 +102,9 @@ function callBlogPostAPI (title,author,postBody){
             const dateNum = d.getDate(); 
 
             // Smoosh it all together and send it back...
-            return weekDay + ", " + month + " " + dateNum + "," + year;
+            return weekDay + ", " + month + " " + dateNum + ", " + year;
         }
-        
+
 /**
  * Helper function to get the day name, given an Integer value
  * @param {*} day 
