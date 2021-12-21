@@ -56,7 +56,7 @@ if('geolocation' in navigator) {
         const humidity = jsonResponse.main.humidity;
         
 
-        // Wind speed is meters per second - multiply by 3.6 to get KM/h
+        // Wind speed is returned as m/s - multiply by 3.6 to get Km/h
         const windMpS  = jsonResponse.wind.speed; 
         const wind = (windMpS * 3.6).toFixed();
         const windDirection = jsonResponse.wind.deg;
@@ -84,8 +84,9 @@ if('geolocation' in navigator) {
         // Step 2: Now that we have all the fields we want, let's populate the HTML DIV
         const weatherForcast = document.getElementById("weather");
         weatherForcast.innerHTML = `<p>
-                          <strong> ${city} Weather:</strong> <br>
+                          <strong> Today's ${city} Weather:</strong> <br>
                           Temprature: ${temp}&deg C, Feels Like: ${feelsLike}&deg C <br>
+                          Low: ${minTemp}, High: ${maxTemp}<br>
                           Wind: ${wind} km/h from the ${degreesToRose(windDirection)}, Humidity: ${humidity}% <br>
                           Sunrise ${getTime(sunrise)} AM, Sunset ${getTime(sunset)} PM 
                           </p>`;
