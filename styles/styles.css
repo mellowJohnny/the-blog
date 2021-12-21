@@ -105,6 +105,7 @@ body {
 .weather {
     font-family: 'Arial', cursive;
     font-size: 14px;
+    color:rgb(53, 52, 52)
     width: 80%;
     height: 150px;
     padding: 3px;
