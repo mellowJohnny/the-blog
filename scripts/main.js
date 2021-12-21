@@ -83,12 +83,22 @@ function callBlogPostAPI (title,author,postBody){
        // We parsed the first object we got back, but that didn't parse the contents of the inner properties
        const cleanTitle = JSON.parse(title);
        const cleanAuthor = JSON.parse(author);
-       //const cleanDate = JSON.parse(date);
        const cleanPostBody = JSON.parse(postBody);
+
+       // Magic Date fixing action...
+        function fixDate(date){
+            const d = new Date(date);
+            const day = d.getDay();
+            const month = d.getMonth(); 
+            const year = d.getFullYear(); 
+            return day + ", " + month + year;
+        }
  
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
        var blogBody = document.getElementById("blogsDiv");
-       blogBody.innerHTML += "<strong>" + cleanTitle + "</strong> <p> <strong>" + cleanAuthor + " </strong> <p> <strong>" + date + "</strong> <p>" + cleanPostBody + "<br /> <br />"; 
+       blogBody.innerHTML += "<strong>" + cleanTitle + "</strong> <p> <strong>" + cleanAuthor + " </strong> <p> <strong>" + fixDate(date) + "</strong> <p>" + cleanPostBody + "<br /> <br />"; 
       
    }
+
+   
   
