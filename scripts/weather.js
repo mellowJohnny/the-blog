@@ -48,9 +48,9 @@ if('geolocation' in navigator) {
         const temp = t.toFixed(1);
         const fL = jsonResponse.main.feels_like;
         const feelsLike = fL.toFixed(1);
-        const mnT = jsonResponse.temp_min;
+        const mnT = jsonResponse.main.temp_min;
         const minTemp = mnT.toFixed(1);
-        const mxT = jsonResponse.temp_max;
+        const mxT = jsonResponse.main.temp_max;
         const maxTemp = mxT.toFixed(1);
 
         const humidity = jsonResponse.main.humidity;
