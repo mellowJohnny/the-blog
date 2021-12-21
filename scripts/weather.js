@@ -42,14 +42,22 @@ if('geolocation' in navigator) {
 
         // Step 1: Now that jsonResponse is our JSON forcast let's get the values we want to display
         const city = jsonResponse.name;
-        // Let's cut the temp to two digits
-        const t = jsonResponse.main.temp;
-        const temp = t.toFixed(2);
-        const humidity = jsonResponse.main.humidity;
-        const feelsLike = jsonResponse.main.feels_like;
-        const windMpS  = jsonResponse.wind.speed; 
 
-        // In meters per second.  Multiply by 3.6 to get KM/h
+        // Let's round the temp values to one decimal
+        const t = jsonResponse.main.temp;
+        const temp = t.toFixed(1);
+        const fL = jsonResponse.main.feels_like;
+        const feelsLike = fL.toFixed(1);
+        const mnT = jsonResponse.temp_min;
+        const minTemp = mnT.toFixed(1);
+        const mxT = jsonResponse.temp_max;
+        const maxTemp = mxT.toFixed(1);
+
+        const humidity = jsonResponse.main.humidity;
+        
+
+        // Wind speed is meters per second - multiply by 3.6 to get KM/h
+        const windMpS  = jsonResponse.wind.speed; 
         const wind = windMpS * 3.6;
         const windDirection = jsonResponse.wind.deg;
 
