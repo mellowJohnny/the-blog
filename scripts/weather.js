@@ -42,20 +42,26 @@ if('geolocation' in navigator) {
 
         // Step 1: Now that jsonResponse is our JSON forcast let's get the values we want to display
         const city = jsonResponse.name;
-        const temp = jsonResponse.main.temp;
+        // Let's cut the temp to two digits
+        const t = jsonResponse.main.temp;
+        const temp = t.toFixed(2);
         const humidity = jsonResponse.main.humidity;
         const feelsLike = jsonResponse.main.feels_like;
         const windMpS  = jsonResponse.wind.speed; 
-        
+
         // In meters per second.  Multiply by 3.6 to get KM/h
         const wind = windMpS * 3.6;
         const windDirection = jsonResponse.wind.deg;
 
         // Sunrise comes as a Unix timestamp...convert it
+        // Once converted we can then run it through our magic getTime() formatter :-)
+        // We do this as we send the content to the .innerHTML of the DIV
         const rise = jsonResponse.sys.sunrise;
         const sunrise = convertUnixTime(rise);
 
         // Sunet also comes as a Unix timestamp...convert it
+        // Once converted we can then run it through our magic getTime() formatter :-)
+        // We do this as we send the content to the .innerHTML of the DIV
         const set = jsonResponse.sys.sunset;
         const sunset = convertUnixTime(rise);
 
