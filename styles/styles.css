@@ -87,13 +87,14 @@ hr {
     color:rgb(34, 38, 41);
     font-size: 16px;
     text-align: left;
+    padding: 25px;
 } 
-
+/*
 .blog-body {
   padding: 5px;
   margin: 5px;
   border:cornflowerblue 10px;
-}
+} */
 
 .blurb p {
   font-family: 'Nunito';
