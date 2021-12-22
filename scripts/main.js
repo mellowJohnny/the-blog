@@ -108,9 +108,9 @@ function callBlogPostAPI (title,author,postBody,type){
        let blogBody = document.getElementById("blogsDiv");
        blogBody.innerHTML += 
                     `<p>
-                    <strong>${cleanTitle}</strong> 
-                    <strong>${cleanAuthor}</strong> 
-                    <strong>${fixDate(date)}</strong> 
+                    <strong>${cleanTitle}</strong> <br>
+                    <strong>${cleanAuthor}</strong> <br>
+                    <strong>${fixDate(date)}</strong> <br>
                     ${cleanPostBody} 
                     <hr/> </p>`;
    }
