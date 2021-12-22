@@ -80,7 +80,7 @@ hr {
 
 }
 
-.blog-entry {
+.blog-entry p {
     font-family: 'Nunito';
     background: rgb(224, 236, 241);
     border-radius: 3px;
@@ -88,7 +88,6 @@ hr {
     font-size: 16px;
     text-align: left;
     padding: 5px;
-    border:cornflowerblue 10px;
 } 
 /*
 .blog-body {
