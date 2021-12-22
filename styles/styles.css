@@ -31,9 +31,10 @@ body {
 
 hr {
   height:2px;
+  width: 50%;
   border-width:0;
   color:gray;
-  background-color:gray
+  background-color:rgb(106, 178, 226)
 }
 
 .body-cms {
