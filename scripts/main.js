@@ -10,10 +10,13 @@
 function callBlogPostAPI (title,author,postBody,type){
   // instantiate a headers object
   let myHeaders = new Headers();
+
   // add content type header to object
   myHeaders.append("Content-Type", "application/json");
+
   // using built in JSON utility package turn object to string and store in a variable
   let raw = JSON.stringify({"title":title,"author":author,"postBody":postBody,"type":type});
+
   // create a JSON object with parameters for API call and store in a variable
   let requestOptions = {
     method: 'POST',
@@ -62,11 +65,14 @@ function callBlogPostAPI (title,author,postBody,type){
                /** Now that the data we got back is a JSON object, let's loop over all the Posts...
                 * The 'Items' property holds an array of all the blog posts 
                 * Let's loop through that array and display the fields we want!
-                * We created a function to control the display of the blog post
-                * data on the page - let's call it once for each blog post
+                * We call the displayBlog() function to control the display of the blog post
+                * It gets called it once for each blog post, essentially populating each blog post one at a time
                 **/
                for (var i = 0; i < blogPostArray.Items.length; i++) {
-                   addBlog(blogPostArray.Items[i].postBody,blogPostArray.Items[i].author,blogPostArray.Items[i].time,blogPostArray.Items[i].title);
+                   displayBlog(blogPostArray.Items[i].postBody,
+                    blogPostArray.Items[i].author,
+                    blogPostArray.Items[i].time,
+                    blogPostArray.Items[i].title);
                 }
            }
        } 
@@ -85,7 +91,7 @@ function callBlogPostAPI (title,author,postBody,type){
  * @param {*} title 
  */
 
-   function addBlog(postBody, author, date, title) {
+   function displayBlog(postBody, author, date, title) {
        // Populate the blogsDiv...
  
        // Cleanup the JSON we get back so it's back to a String 
@@ -106,7 +112,7 @@ function callBlogPostAPI (title,author,postBody,type){
                     <strong>${cleanAuthor}</strong> <br>
                     <strong>${fixDate(date)}</strong> <br> 
                     <p>${cleanPostBody} 
-                    <hr/> `; 
+                    <hr/> <br>`; 
       
    }
 
