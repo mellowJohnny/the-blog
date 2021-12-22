@@ -7,13 +7,13 @@
  * @param {*} postBody 
  */
 
-function callBlogPostAPI (title,author,postBody){
+function callBlogPostAPI (title,author,postBody,type){
   // instantiate a headers object
   let myHeaders = new Headers();
   // add content type header to object
   myHeaders.append("Content-Type", "application/json");
   // using built in JSON utility package turn object to string and store in a variable
-  let raw = JSON.stringify({"title":title,"author":author,"postBody":postBody});
+  let raw = JSON.stringify({"title":title,"author":author,"postBody":postBody,"type":type});
   // create a JSON object with parameters for API call and store in a variable
   let requestOptions = {
     method: 'POST',
@@ -227,8 +227,4 @@ function callBlogPostAPI (title,author,postBody){
             return dayName;
         }
     }
-
-function generateRandomString(length){
-        return Math.random().toString(20).substr(2, length)
-        }
   
