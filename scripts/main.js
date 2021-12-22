@@ -112,8 +112,7 @@ function callBlogPostAPI (title,author,postBody,type){
                     <strong>${cleanAuthor}</strong> <br>
                     <strong>${fixDate(date)}</strong> <br> 
                     ${cleanPostBody} </p>
-                    <hr/> `; 
-      
+                    <hr/> `;
    }
 
    // ----------------------------- Date Helper Functions ----------------------------
