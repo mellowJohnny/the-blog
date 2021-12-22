@@ -89,7 +89,7 @@ hr {
     text-align: left;
 } 
 
-.blog-body {
+#blog-body {
   padding: 5px;
   margin: 5px;
 }

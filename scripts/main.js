@@ -107,7 +107,7 @@ function callBlogPostAPI (title,author,postBody,type){
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
        let blogBody = document.getElementById("blogsDiv");
        blogBody.innerHTML += 
-                    `<p class="blog-body">
+                    `<p id="blog-body">
                     <strong>${cleanTitle}</strong> <br>
                     <strong>${cleanAuthor}</strong> <br>
                     <strong>${fixDate(date)}</strong> <br> 
