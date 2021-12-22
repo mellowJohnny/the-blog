@@ -107,12 +107,12 @@ function callBlogPostAPI (title,author,postBody,type){
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
        let blogBody = document.getElementById("blogsDiv");
        blogBody.innerHTML += 
-                    `
+                    `<p>
                     <strong>${cleanTitle}</strong> <br>
                     <strong>${cleanAuthor}</strong> <br>
                     <strong>${fixDate(date)}</strong> <br> 
                     ${cleanPostBody} 
-                    <hr/> `;
+                    <hr/> </p>`;
    }
 
    // ----------------------------- Date Helper Functions ----------------------------

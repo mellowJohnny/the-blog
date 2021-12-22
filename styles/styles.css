@@ -80,7 +80,7 @@ hr {
 
 }
 
-.blog-entry {
+.blog-entry p {
     font-family: 'Nunito';
     background: rgb(224, 236, 241);
     border-radius: 3px;
