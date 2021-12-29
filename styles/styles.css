@@ -59,7 +59,6 @@ hr {
 .masthead {
     font-family: 'Spicy Rice';
     font-size: 8vw;  /* makes font-size responsive... */
-    /* color: rgb(194, 220, 245); */
     color: #3FA7D6;
     background-color:rgb(44, 82, 137);
     padding-top: 10px;
