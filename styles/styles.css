@@ -100,12 +100,6 @@ hr {
     text-align: left;
     padding: 5px;
 } 
-/*
-.blog-body {
-  padding: 5px;
-  margin: 5px;
-  border:cornflowerblue 10px;
-} */
 
 .blurb p {
   font-family: 'Nunito';
@@ -132,10 +126,9 @@ hr {
 .weather {
     font-family: 'Arial', cursive;
     font-size: 14px;
-    color:rgb(53, 52, 52);
+    color:rgb(169, 220, 243);
     width: 80%;
     height: 150px;
-    padding: 3px;
   }
 
   #weather {
