@@ -142,6 +142,7 @@ table {
     color:rgb(169, 220, 243);
     width: 80%;
     height: 150px; 
+    overflow: scroll;
   }
 
   #weather {
