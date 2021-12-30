@@ -110,7 +110,7 @@ function callBlogPostAPI (title,author,postBody,type){
                     `<p>
                     <strong>${cleanTitle}</strong> <br>
                     <strong>${cleanAuthor}</strong> <br>
-                    <strong>${fixDate(date)}</strong> <br>
+                    <strong>${fixDate(date)}</strong> <br><br>
                     ${cleanPostBody} 
                     </p> <hr/> `;
    }
