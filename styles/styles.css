@@ -55,8 +55,10 @@ table {
   border-collapse: collapse;
  }
 
- table, tr, td {
+ .mast-table, tr, td {
+  border-collapse: collapse;
   border: none;
+  background-color:rgb(44, 82, 137);
  }
 
 .body-cms {
