@@ -52,11 +52,11 @@ hr {
 }
 
 table {
-  border-collapse:collapse;
+  border-collapse: collapse;
  }
 
  table, tr, td {
-  border:none;
+  border: none;
  }
 
 .body-cms {
@@ -135,8 +135,8 @@ table {
     font-family: 'Arial', cursive;
     font-size: 14px;
     color:rgb(169, 220, 243);
-    /*width: 80%;
-    height: 150px; */
+    width: 80%;
+    height: 150px; 
   }
 
   #weather {
