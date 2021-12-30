@@ -51,6 +51,14 @@ hr {
   background-color:rgb(106, 178, 226)
 }
 
+table {
+  border-collapse:collapse;
+ }
+
+ table, tr, td {
+  border:none;
+ }
+
 .body-cms {
   height:100%;
   background-color: rgb(124, 151, 201);
