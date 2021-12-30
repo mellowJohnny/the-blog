@@ -59,6 +59,8 @@ table {
   border-collapse: collapse;
   border: none;
   background-color:rgb(44, 82, 137);
+  text-align: left;
+  vertical-align: center;
  }
 
 .body-cms {
@@ -137,7 +139,7 @@ table {
     font-family: 'Arial', cursive;
     font-size: 14px;
     color:rgb(169, 220, 243);
-    width: 100%;
+    width: 80%;
     height: 150px; 
   }
 
