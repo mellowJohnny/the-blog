@@ -109,8 +109,8 @@ function callBlogPostAPI (title,author,postBody,type){
        blogBody.innerHTML += 
                     `<p>
                     <strong>${cleanTitle}</strong> <br>
-                    <strong>${cleanAuthor}</strong> <br>
-                    <strong>${fixDate(date)}</strong> <br><br>
+                    ${cleanAuthor} <br>
+                    ${fixDate(date)} <br><br>
                     ${cleanPostBody} 
                     </p> <hr/> `;
    }
