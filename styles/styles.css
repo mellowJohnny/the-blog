@@ -45,7 +45,11 @@
   border: none;
   text-align: middle;
   vertical-align: middle;
-  padding: 10px;
+  width: 100%;
+}
+
+.nav-td {
+  width:70%;
 }
 
 body {
