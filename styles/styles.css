@@ -189,6 +189,11 @@ table {
       border-radius: 2px;
       }
 
+      .form-center {
+        display:flex;
+        justify-content: center;
+      }
+
     textarea {
       width: 40%;
       height: 150px;
