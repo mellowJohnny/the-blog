@@ -95,15 +95,6 @@ table {
     padding-left: 10px;
 }
 
-.masthead-cms {
-  font-family: 'Spicy Rice';
-  font-size: 8vw;  /* makes font-size responsive... */
-  color: #3FA7D6;
-  background-color:rgb(44, 82, 137);
-  padding-top: 10px;
-  padding-left: 10px;
-}
-
 .section-style p {
     font-family: 'Caveat', cursive;
     font-size: 40px;
