@@ -16,7 +16,7 @@
   
   .flex-container div {
     width: 900px;
-   /* padding: 10px; */
+    padding: 30px; 
     overflow: scroll;
     margin: 15px; /** This sets the margins on the blog posts **/
   }
