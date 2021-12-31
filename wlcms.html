@@ -21,33 +21,38 @@
               <br>
             <main>
                 <form class="form-style">
-                    <label>Blog Post Title (required)</label>
-                    <br>
-                    <input type="text" id="title" required>
-                    <br><br>
+
+                    <label>Blog Post Title (required)</label><br>
+                    <input type="text" id="title" required><br><br>
+
                     <label>Type (Required)</label><br>
-                    <select id="type" name="type" class="form-style">
-                        <option value="tech">Technology</option>
-                        <option value="cards">Hockey Cards</option>
-                        <option value="general">General Observations</option>
-                    </select>
-                    <br><br>
+                    <div>
+                        <select id="type" name="type" class="form-style">
+                         <option value="tech">Technology</option>
+                         <option value="cards">Hockey Cards</option>
+                         <option value="general">General Observations</option>
+                        </select>
+                    </div><br><br>
+
                     <label>Author (required)</label> <br>
-                    <select id="author" name="author" class="form-style">
-                        <option value="Christian Couillard">Christian Couillard</option>
-                    </select>
-                    <br>
-                    <br><br>
-                    <label>Post Body (required)</label>
-                    <br><br>
+                    <div>
+                        <select id="author" name="author" class="form-style">
+                            <option value="Christian Couillard">Christian Couillard</option>
+                        </select>
+                    </div><br><br>
+
+                    <label>Post Body (required)</label><br>
                     <textarea id="postBody" required></textarea>
                     <br><br><br>
-                    <button class="input-button" type="button" onclick="callBlogPostAPI(
-                                                    document.getElementById('title').value,
-                                                    document.getElementById('author').value,
-                                                    document.getElementById('postBody').value,
-                                                    document.getElementById('type').value)">
-                                                    Submit Post</button>
+
+                    <button class="input-button" type="button" 
+                        onclick="callBlogPostAPI(
+                                document.getElementById('title').value,
+                                document.getElementById('author').value,
+                                document.getElementById('postBody').value,
+                                document.getElementById('type').value)">
+                        Submit Post
+                    </button>
                 </form>
             </main>
         </div>
