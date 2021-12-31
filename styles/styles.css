@@ -91,7 +91,7 @@ table {
     font-size: 8vw;  /* makes font-size responsive... */
     color: #3FA7D6;
     background-color:rgb(44, 82, 137);
-    padding-top: 5px;
+    padding-top: 1px;
     padding-left: 10px;
 }
 
