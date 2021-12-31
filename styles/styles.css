@@ -80,6 +80,7 @@ table {
   background-color:rgb(44, 82, 137);
   text-align: left;
   vertical-align: middle;
+  width: 100%;
  }
 
 .body-cms {
