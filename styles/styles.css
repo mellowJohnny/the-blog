@@ -40,10 +40,7 @@
   color:rgb(11, 62, 100);
 }
 
-/**
-Navigation link formating 
-**/
-
+/** Navigation link formating **/
 .nav-td {
   margin: 15px;
   padding: 20px;
@@ -94,7 +91,7 @@ table {
     font-size: 8vw;  /* makes font-size responsive... */
     color: #3FA7D6;
     background-color:rgb(44, 82, 137);
-    padding-top: 10px;
+    padding-top: 5px;
     padding-left: 10px;
 }
 
