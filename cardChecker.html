@@ -43,27 +43,13 @@
             <br>
             <main>
                 <form class="form-style" >
-                    <table class="table-style">
-                        <tr>
-                            <td align="center">
-                                <label> Enter Card Number </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="center">
-                                <input size="6" type="text" id="card">
-                            </td>
-                        </tr> 
-                        <tr>
-                            <td>
-                                <button type="button" 
-                                    class="input-button" 
-                                    onclick="computeGridSpace(document.getElementById('card').value)">
-                                    Submit
-                                </button>
-                            </td>
-                        </tr>
-                    </table>
+                    <label> Enter Card Number </label>
+                    <input size="6" type="text" id="card" title="cardNumber">
+                    <button type="button" class="input-button" 
+                            onclick="computeGridSpace(document.getElementById('card').value)">
+                            Submit
+                    </button>
+                            
                 </form>
             </main>
             </div>
