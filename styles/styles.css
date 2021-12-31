@@ -164,7 +164,7 @@ table {
     font-size: 14px;
     }
 
-  .form-style input {
+  .form-style input select {
     margin: 5px;
     position: relative;
     top: 10px;
