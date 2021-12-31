@@ -161,14 +161,14 @@ table {
 
   .form-style {
     font-family: 'Audiowide', cursive;
-    font-size: 14px;
+    font-size: 12px;
     }
 
   .form-style input {
     margin: 5px;
     position: relative;
     top: 10px;
-    width: 50%;
+    width: 40%;
     padding: 5px;
     margin: 8px 0;
     box-sizing: border-box;
@@ -190,7 +190,7 @@ table {
       }
 
     textarea {
-      width: 50%;
+      width: 40%;
       height: 150px;
       box-sizing: border-box;
       border: 2px solid rgb(7, 74, 138);
