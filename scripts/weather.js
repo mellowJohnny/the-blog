@@ -38,7 +38,7 @@ if('geolocation' in navigator) {
         const jsonResponse = await response.json();
 
         // Stringify the response just in case we ever want to print the whole thing
-        const stringVersion = JSON.stringify(jsonResponse);
+        // const stringVersion = JSON.stringify(jsonResponse);
 
         // Step 1: Now that jsonResponse is our JSON forcast let's get the values we want to display
         const city = jsonResponse.name;
@@ -61,17 +61,13 @@ if('geolocation' in navigator) {
         const wind = (windMpS * 3.6).toFixed();
         const windDirection = jsonResponse.wind.deg;
 
-        // Sunrise comes as a Unix timestamp...convert it
+        // Sunrise & Sunset comes as a Unix timestamp...convert it
         // Once converted we can then run it through our magic getTime() formatter :-)
         // We do this as we send the content to the .innerHTML of the DIV
         const rise = jsonResponse.sys.sunrise;
         const sunrise = convertUnixTime(rise);
-
-        // Sunet also comes as a Unix timestamp...convert it
-        // Once converted we can then run it through our magic getTime() formatter :-)
-        // We do this as we send the content to the .innerHTML of the DIV
         const set = jsonResponse.sys.sunset;
-        const sunset = convertUnixTime(rise);
+        const sunset = convertUnixTime(set);
 
         // Magic Date fixing action...
         function getTime(date){
