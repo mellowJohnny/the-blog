@@ -19,7 +19,7 @@
     margin-left: 15px;
     padding: 10px;
     overflow: scroll;
-    margin: 3px;
+    margin: 3px; /** This sets the margins on the blog posts **/
   }
 
   img {
@@ -74,7 +74,7 @@ table {
   border-collapse: collapse;
  }
 
- .mast-table, tr, td {
+ .mast-table {
   border-collapse: collapse;
   border: none;
   background-color:rgb(44, 82, 137);
