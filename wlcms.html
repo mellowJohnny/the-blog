@@ -23,11 +23,11 @@
                 <form class="form-style">
 
                     <label>Blog Post Title (required)</label><br>
-                    <input type="text" id="title" required><br><br>
+                    <input type="text" id="title" required title="blogPostTitle"><br><br>
 
                     <label>Type (Required)</label><br>
                     <div>
-                        <select id="type" name="type" class="form-style">
+                        <select id="type" name="type" class="form-style" title="blogType">
                          <option value="tech">Technology</option>
                          <option value="cards">Hockey Cards</option>
                          <option value="general">General Observations</option>
@@ -36,13 +36,13 @@
 
                     <label>Author (required)</label> <br>
                     <div>
-                        <select id="author" name="author" class="form-style">
+                        <select id="author" name="author" class="form-style" title="author">
                             <option value="Christian Couillard">Christian Couillard</option>
                         </select>
                     </div><br><br>
 
                     <label>Post Body (required)</label><br>
-                    <textarea id="postBody" required></textarea>
+                    <textarea id="postBody" required title="blogBody"></textarea>
                     <br><br><br>
 
                     <button class="input-button" type="button" 
