@@ -41,16 +41,12 @@
 }
 
 /**
-.table-nav {
-  border-collapse: collapse;
-  border: none;
-  text-align: middle;
-  vertical-align: middle;
-}**/
+Navigation link formating 
+**/
 
 .nav-td {
   margin: 15px;
-  padding: 25px;
+  padding: 20px;
 }
 
 
