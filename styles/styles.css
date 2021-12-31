@@ -74,13 +74,12 @@ table {
   border-collapse: collapse;
  }
 
- .mast-table {
+ .mast-table, tr, td {
   border-collapse: collapse;
   border: none;
   background-color:rgb(44, 82, 137);
   text-align: left;
   vertical-align: middle;
-  
  }
 
 .body-cms {
