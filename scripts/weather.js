@@ -88,7 +88,8 @@ if('geolocation' in navigator) {
                           <strong> Today's ${city} Weather:</strong> <br>
                           Temp: ${temp}&deg C, Feels Like: ${feelsLike}&deg C <br>
                           Low: ${minTemp}&deg C, High: ${maxTemp}&deg C<br>
-                          Wind: ${wind} km/h from the ${degreesToRose(windDirection)}, Humidity: ${humidity}% <br>
+                          Wind: ${degreesToRose(windDirection)}, ${wind} km/h <br>
+                          Humidity: ${humidity}% <br>
                           Sunrise ${getTime(sunrise)} AM, Sunset ${getTime(sunset)} PM 
                           </p>`;
       }
