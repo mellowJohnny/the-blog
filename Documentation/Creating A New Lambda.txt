@@ -1,0 +1,64 @@
+How To Create A New Lambda Function & and Expose the API
+
+Steps:
+	- create a new Lambda Function
+	- authorize it to use DynamoDB
+	- expose it on AWS API Gateway
+	- calling it from your web application
+
+1. Create a new Lambda function in us-east-2
+	Author from scratch
+	Choose node.js runtime
+2. Write the code you need for the function
+3. Set up a default test event - just accept all the defaults
+4. Enable CORS - click the Actions dropdown and select "Enable CORS".  Leave everything as-is and click Enable
+5. Authorize the new function to use the existing DynamoDB resource
+	Under the "Configuration" tab click the role listed under "ExecutionRole"
+	This will open up a new window and take you to the AIM Management Console
+	Click the "Add inline policy" link to add a new permission
+	Click the JSON tab - here is an example:
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:Query"
+            ],
+            "Resource": "arn:aws:dynamodb:us-east-2:339740904141:table/BlogPost"
+        }
+    ]
+}
+* Basically Lambda functions exposed as APIs must be given permission to access a DynamoDB table
+	
+6. Expose the function using API Gateway
+	In the API Gateway Console click "API" on the left
+	In the RestAPI box click "Build"
+	Click the "New API" button
+	Select "Edge Optimized"
+	Click "Create"
+	Click "Resources" from the left nav if you need to
+	Click the "/", then choose the method you need (GET or POST usually)
+	Click the "Lambda Function" radio button for "Integration Type"
+	Give the Lambda function a name
+	Click Save
+	Click the "Actions" dropdown again and choose "Enable CORS"
+	Leave the config as-is and click Enable
+7. Now DEPLOY the API or you'll Neve be able to call it :-)
+	In the "Actions" dropdown select "Deploy API"
+	Choose "New Stage" from the "Deployment Stage"
+	Enter the same of the stage this API is in - dev, pre-prod, prod, whatever.  This basically gets tacked on to the end of the URL expose by API Gateway to help identify which version you are calling
+	Choose "Deploy"
+	*** Copy and save the URL - you'll need it to call from the web app! ***
+
+Example: https://s4ge5t9w06.execute-api.us-east-2.amazonaws.com/dev
+	
+
+
+
+
+** Don't forget to click DEPLOY **

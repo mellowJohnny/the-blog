@@ -1,0 +1,64 @@
+Blogs:
+
+{
+ "id": "1640119360299",
+ "postBody": "\"Happy New Year!  For the first post of the year I want to talk a little bit about the iPad Experiment I started in late 2019.\\n                <p>\\n                When iPadOS 13 was launched in 2019 it came with a bunch of cool new features like mouse support, split screen, and other new stuff with hopes of bringing the iPad a bit closer to a MacBook replacement.  Given the amount I (used to) travel, the idea was to bring just my iPad along with me on business trips, leaving the heavy-ish 16\\\" MacBook Pro at home.  Given that on most business trips I'm consuming content and rarely need to create anything, it seemed feasible.\\n                </p>\\n                  <strong>The set-up</strong>\\n                <p>\\n                  A little background info - in 2019 there were three iPads in the range: iPad Pro, iPad Air, and regular iPad.  At the time the iPad Air was about $200 more than the regular iPad, had a negligible screen size bump, slightly better performance, and still had the Home button.  So for $200 extra it did not seem like enough of an upgrade.  And the Pro was (and still is) out of reach / not what I need.  So I bought the 6th generation iPad (the 7th had not been released yet) and paired it with a Logitec Logi keyboard case.   \\n                </p>\\n                \\n                <p>\\n                  2021 Update:  After receiving the 4th gen iPad Air for my birthday I have renewed faith that the iPad can make for a fabulous travel companion. Given the new Air is more powerful than the old iPad Pro, there really is nothing it can't do.  The combination of iOS 14 and a mouse really makes it feel almost like the old 11\\\" MacBook Air.  I've also gone back to a \\\"normal\\\" case with the Apple wireless \\\"Magic\\\" keyboard.  Not sure was constitutes magic these days, but it's just a nice aluminum Bluetooth keyboard.  No magic.  So although there is a bit of a weight penalty when travelling, overall it' a more comfortable setup.  \\n                </p>\\n                <strong>Pros & Cons</strong>\\n                <p>\\n                  <strong>Pros</strong> - Lightweight, all-day battery life, great for consuming content & light work stuff.  After work it a great screen for Netflix and of course games.\\n                  <br><br>\\n                  <strong>Cons</strong> - I've realised most of the limitations I've encountered are related to the Apps themselves, not limitations of the hardware.  Multitasking is very useful, but it's not perfect. The Microsoft Office Apps are good, but still lack all the functionality of the desktop.  Teams in particular is missing the \\\"Planner\\\" functionality I sometimes need, and Powerpoint seems to crash any time I try to re-size something.  But at least I've never lost work.  Hardware-wise you'll also be forced to use the 2nd gen Apple Pencil, so if you don't already have one that's an extra cash outlay.\\n                </p>\\n                <p>Overall I'm happy with the setup - for about 95% of the things I need to do it's a perfect travel companion.  And to honest, I'm rarely creating anything new on a business trip - I come prepared with what I need.  And if I need to update an Office file, no problem.  \\n                  <br>\\n<p>Total cost of the 64 GB WiFi 4th gen iPad Air + Magic Keyboard + Apple Pencil + Magic Mouse (no case) would run you about CAD $1,340 plus tax.  By comparison, the latest 13\\\" MacBook Air in the cheapest configuration runs CAD $1299 plus tax.  Food for thought. \\n                </p>\"",
+ "time": "2021-12-21T15:54:00.415Z",
+ "author": "\"Christian Couillard \"",
+ "title": "\"The iPad Experiment, Pt. I\"",
+ "type": "\"tech\""
+}
+
+
+{
+ "id": "1640119360301",
+ "postBody": "\"If you've just finished reading the post just above the one, you'll see that I didn't feel like the iPad Air (3rd generation) was worth the extra money. <br> Apple released the 4th generation and I completely changed my mind.  Why?  Well, because after its release it was better / more powerful / sweeter-looking that the iPad Pro.  Sure, it's cost waaaaaay more than it used to, but da-yum! it's awesome.  I got one in blue, and immediately began using it with my previous keyboard / mouse setup.  <br>But then something else happened - Apple release the magic keyboard.  And magic it is...not only does it attach the Air magnetically so it floats just over the keyboard, but the keyboard itself is a \\\"real\\\" Apple keyboard, scissor keys and all.  And it's backlit.  And it lights up automatically based on input from the Air's ambient light sensor, so it turns on automagically. And is has a trackpad.  Oui, a trackpad!  The down side?  It's costs about the same as a regular iPad.  For a keyboard.  That lets you type.  And move the cursor around.  <br>But....I got one anyway (with the help of Air Canada Aeroplan).\\n\\nSo how is it?  It amazing.  The keys are awesome, the build-in trackpad means I don't need to carry a mouse + external Magic Keyboard, and it's a case.  It's everything.  It doesn't need to be charged either - it sucks power from the Air via the magical magnetic backside.  And it has a USB-C passthrough port so you can charge the Air and still have a accessory connected (like an external drive) connected to the Air's USB-C port. And the Magic Mouse still works if you want to connect it too, which I do most of the time. <br> The drawback?  It's ridiculously expensive, and it's pretty heavy.  The weight of the Air + Magic Keyboard combined is almost as much as a MacBook Air.  And almost as expensive.\\n\\nSo is it need?  Nope.  Not even close.  But it's a nice luxury, and for travel lets me get even more stealth.  Wherever I am I've got a keyboard, trackpad, can work in the dark, and don't need to charge it.\"",
+ "time": "2021-12-18T15:54:00.415Z",
+ "author": "\"Christian Couillard\"",
+ "title": "\"iPad Experiment Update #2\"",
+ "type": "\"tech\""
+}
+
+{
+ "id": "1640119451858",
+ "postBody": "\"Hard to believe there is no song (at least that I could find) called <em>Tuesday Morning Quarterback</em>.  Frank Sinatra wrote a song called <em>Monday Morning Quarterback</em>, but that's not what I'm going for.  <br>No, I'm looking for a song about a person who wakes up on <em><strong>Tuesday</em></strong> morning and has an epiphany about what they should have done differently.  Better.  Second-guessing what they did on the week-end.  But it's too late, it's already Tuesday.  <br>Maybe Metallica will write one some day (kinda like <a href=\\\"https://www.metallica.com/songs/song-25931.html\\\" target=\\\"blank\\\">Frantic</a> I guess, but a shorter timeframe). <br>Until then, I guess we will just have to wait...\"",
+ "time": "2021-12-21T15:54:00.415Z",
+ "author": "\"Christian Couillard\"",
+ "title": "\"Tuesday Morning Quarterback\"",
+ "type": "\"tech\""
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
