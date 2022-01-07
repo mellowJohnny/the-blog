@@ -1,6 +1,6 @@
 
 /**
- * This is the main AWS call used to create a NEW BLOG POST
+ * This is the main AWS call used to CREATE a NEW BLOG POST
  * Called from the wlcms.html page
  * @param {*} title 
  * @param {*} author 
@@ -34,7 +34,7 @@ function callBlogPostAPI (title,author,postBody,type){
 
  /** 
     * This is the main AWS call used to FETCH ALL BLOG POSTS
-    * AWS Lambda call - getBlogPost
+    * AWS Lambda call - getBlogs end-point
     * Called from the index.html page
   */
 
