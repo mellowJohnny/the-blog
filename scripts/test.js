@@ -13,12 +13,12 @@
     fetch(urlToFetch)
         .then(function (response) {
             const jsonResponse = response.json();
+
+        // Let's print what we have so far...
+        console.log(`We are back from DynamoDB: ${jsonResponse}`);
             return jsonResponse; // Our Promise object
         })
         .then(function (data) {
-
-        // Let's print what we have so far...
-        console.log(`We are back from DynamoDB: ${data}`);
 
         // 'data' is an Object at this point...this is basically the record set returned by dynamoDB
         // First let's return an array of the object's properties
