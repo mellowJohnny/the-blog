@@ -16,9 +16,13 @@
             return jsonResponse; // Our Promise object
         })
         .then(function (data) {
-        // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
+
+        // Let's print what we have so far...
+        console.log(`We are back from DynamoDB: ${data}`);
+
+        // 'data' is an Object at this point...this is basically the record set returned by dynamoDB
         // First let's return an array of the object's properties
-            const returnedData = Object.entries(data); 
+        const returnedData = Object.entries(data); 
           
         // Next let's just get the 'body' property returned by the Lambda call
            for (const [key, value] of returnedData) {
