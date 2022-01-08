@@ -28,6 +28,9 @@
                     <label>Blog Post Title (required)</label><br>
                     <input type="text" id="title" required title="blogPostTitle"><br><br>
 
+                    <label>Blog Post Image</label><br>
+                    <input type="text" id="img" title="img"><br><br>
+
                     <label>Type (Required)</label><br>
                     <div>
                         <select id="blogType" name="blogType" class="form-style" title="blogType">
@@ -52,6 +55,7 @@
                     <button class="input-button" type="button" 
                         onclick="callBlogPostAPI(
                                 document.getElementById('title').value,
+                                document.getElementById('img').value,
                                 document.getElementById('author').value,
                                 document.getElementById('postBody').value,
                                 document.getElementById('blogType').value)">
