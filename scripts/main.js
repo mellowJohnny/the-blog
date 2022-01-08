@@ -74,8 +74,8 @@ function callBlogPostAPI (title,author,postBody,type){
                    displayBlog(blogPostArray.Items[i].postBody,
                     blogPostArray.Items[i].author,
                     blogPostArray.Items[i].time,
-                    blogPostArray.Items[i].img,
-                    blogPostArray.Items[i].title);
+                    blogPostArray.Items[i].title,
+                    blogPostArray.Items[i].img);
                 }
            }
        } 
@@ -118,7 +118,7 @@ function callBlogPostAPI (title,author,postBody,type){
                     <i>${fixDate(date)}</i> <br><br>
                     ${cleanPostBody} 
                     <br>
-                    <img src=${cleanImg}></img>
+                    <img src="${cleanImg}"></img>
                     </p> <hr/> `;
    }
 
