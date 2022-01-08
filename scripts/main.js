@@ -42,7 +42,7 @@ function callBlogPostAPI (title,author,postBody,type){
 
    // **OLD** const urlToFetch = `https://kuefte6pgk.execute-api.us-east-2.amazonaws.com/dev`;
 
-   const urlToFetch = `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev`;
+   const urlToFetch = `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev?blogType=99`;
       
    fetch(urlToFetch)
        .then(function (response) {
