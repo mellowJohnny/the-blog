@@ -74,6 +74,7 @@ function callBlogPostAPI (title,author,postBody,type){
                    displayBlog(blogPostArray.Items[i].postBody,
                     blogPostArray.Items[i].author,
                     blogPostArray.Items[i].time,
+                    blogPostArray.Items[i].img,
                     blogPostArray.Items[i].title);
                 }
            }
@@ -91,9 +92,10 @@ function callBlogPostAPI (title,author,postBody,type){
  * @param {*} author 
  * @param {*} date 
  * @param {*} title 
+ * @param {*} img
  */
 
-   function displayBlog(postBody, author, date, title) {
+   function displayBlog(postBody, author, date, title, img) {
        // Populate the blogsDiv...
  
        // Cleanup the JSON we get back so it's back to a String 
@@ -102,6 +104,7 @@ function callBlogPostAPI (title,author,postBody,type){
        const cleanTitle = JSON.parse(title);
        const cleanAuthor = JSON.parse(author);
        const cleanPostBody = JSON.parse(postBody);
+       const cleanImg = JSON.parse(img);
 
        // Format the Date by passing it to our Magic Date fixer...
        fixDate(date);
@@ -114,6 +117,8 @@ function callBlogPostAPI (title,author,postBody,type){
                     <i>${cleanAuthor} </i><br>
                     <i>${fixDate(date)}</i> <br><br>
                     ${cleanPostBody} 
+                    <br>
+                    <img src=${cleanImg}></img>
                     </p> <hr/> `;
    }
 
