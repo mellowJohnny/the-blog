@@ -17,8 +17,11 @@
   
 
   <script>
+    // First get the page param passed from whereveer we just came from...
+    const blogType = urlParams.get('blogType')
+    console.log(`Page param is ${blogType}`)
     window.addEventListener('load', (event) => {
-      fetchAllBlogs('tech');
+      fetchAllBlogs(blogType);
       });
   </script>
 
