@@ -38,13 +38,25 @@ function callBlogPostAPI (title,author,postBody,type){
     * Called from the index.html page
   */
 
-  function fetchAllBlogs() {
+  function fetchAllBlogs(blogType) {
+    // Set up a global variable to hold the API URL
+    let urlToFetch = "";
 
-   // **OLD** const urlToFetch = `https://kuefte6pgk.execute-api.us-east-2.amazonaws.com/dev`;
+    // First check the blogType param to see which API we should call...
+    switch(blogType) {
+        case "home":
+          // call to getBlogs API
+          urlToFetch = `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev`;
+          break;
+        case "tech":
+          // call to getTechBlogs API
+          urlToFetch = ``;
+          break;
+        default:
+          // code block
+      }
 
-   const urlToFetch = `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev?blogType=99`;
-      
-   fetch(urlToFetch)
+    fetch(urlToFetch)
        .then(function (response) {
            const jsonResponse = response.json();
            return jsonResponse; // Our Promise object

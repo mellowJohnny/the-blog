@@ -17,9 +17,11 @@
   <script src="scripts/weather.js"></script>
   <script type="text/javascript" src="https://external-production.codecademy.com/assets/relay.js"></script>
 
+
+  <!-- This calls the fetchAllBlogs() function on page load.  It is responsible for calling the underlying AWS web service -->
   <script>
     window.addEventListener('load', (event) => {
-      fetchAllBlogs();
+      fetchAllBlogs('home');
       });
   </script>
 
@@ -43,6 +45,7 @@
     <nav>
       <table class="top-nav">
         <tr>
+          <td class="nav-td"><a href="tech.html">Tech</a> </td>
           <td class="nav-td"><a href="cardChecker.html">Card Slot Calculator</a></td>
           <td class="nav-td"><a href="quad2.html">The Quad-O-Matic</a></td>
           <td class="nav-td"><a href="wlcms.html">WLCMS</a> </td>
