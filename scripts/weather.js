@@ -141,11 +141,6 @@ if('geolocation' in navigator) {
   }
 
 
-  
-  var x = window.matchMedia("(max-width: 700px)")
-  weatherBreak(x) // Call listener function at run time
-  x.addListener(weatherBreak) // Attach listener function on state changes
-
   /**
    * For Reference, here is an example JSON Weather response
    * 
