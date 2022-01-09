@@ -18,7 +18,8 @@
 
   <script>
     // First get the page param passed from whereveer we just came from...
-    const blogType = URLSearchParams.get('blogType');
+    let params = new URLSearchParams(document.location.search);
+    let blogType = params.get("blogType");
     console.log(`Page param is ${blogType}`)
     window.addEventListener('load', (event) => {
       fetchAllBlogs(blogType);
