@@ -50,7 +50,7 @@ function callBlogPostAPI (title,author,postBody,type){
           break;
         case "tech":
           // call to getTechBlogs API
-          urlToFetch = ``;
+          urlToFetch = `https://pxjb1hvu0m.execute-api.us-east-2.amazonaws.com/dev`;
           break;
         default:
           // code block
