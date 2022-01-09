@@ -140,18 +140,7 @@ if('geolocation' in navigator) {
     return newTime;
   }
 
-/**
- * Function to send less weather info at specific breakpoint 
- * @param {*} x 
- */
 
-  function weatherBreak(x) {
-    if (x.matches) { // If media query matches
-      document.body.style.backgroundColor = "yellow";
-    } else {
-      document.body.style.backgroundColor = "pink";
-    }
-  }
   
   var x = window.matchMedia("(max-width: 700px)")
   weatherBreak(x) // Call listener function at run time
