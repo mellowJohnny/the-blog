@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<html lang="en-ca">
+  <title>the hella files...</title>
+  <head>
+    <meta charset="utf-8"> 
+    <link rel="stylesheet" type="text/css" href="styles/styles.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com"> 
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Fira+Code:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200&display=swap" rel="stylesheet">
+  </head>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="scripts/main.js"></script>
+  <script src="scripts/weather.js"></script>
+  
+
+  <script>
+    window.addEventListener('load', (event) => {
+      fetchAllBlogs();
+      });
+  </script>
+
+<body>
+  <section>
+    <table class="mast-table">
+      <tr>
+        <td width="80%">
+          <div>
+           <header class="masthead">the hella files</header>
+        </td>
+        <td width="20%" >
+          <!-- Display current weather from weather.js -->
+          <section>
+            <div class="weather" id="weather">Waiting for the Weather Forecast...</div> 
+        </td>
+        </tr>
+      </table>
+  </section>
+  <div>
+    <nav>
+      <table class="top-nav">
+        <tr>
+          <td class="nav-td"><a href="index.html">Home</a> </td>
+          <td class="nav-td"><a href="cardChecker.html">Card Slot Calculator</a></td>
+          <td class="nav-td"><a href="quad2.html">The Quad-O-Matic</a></td>
+          <td class="nav-td"><a href="wlcms.html">WLCMS</a> </td>
+        </tr>
+      </table>
+    </nav>
+  </div>
+
+          <main>
+            <section>
+              <div class="section-style">
+                <p>Welcome to the hella files...</p>
+              </div>
+              <div class="flex-container">
+                <div class="section-style-intro">
+                <p>But why another blog!  Too many already you say?  True.  I don't disagree.
+                    But I need some place to put my stuff and play around with web technologies.  So suck it up.
+                    Besides, I'll try to be funny - at the very least you can expect sarcasm, and self-deprication.
+                </p>
+                </div>
+              </div>
+            </section>
+            <section>
+              <div class="flex-container">
+                <div class="blog-entry" id="blogsDiv"></div>
+              </div>
+            </section> 
+          </main>
+
+          <footer class="page-footer">
+            <p>&copy; 2022 Christian Couillard</p>
+            <a href="test.html">Fester Bestertester</a>
+          </footer>
+      </div>
+  </section>
+
+</body>
+
+</html>
