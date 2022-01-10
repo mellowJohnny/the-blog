@@ -5,50 +5,71 @@
 <html lang="en-ca">
     <title>Wee Little Card Checker</title>
     <head>
-        <meta charset="utf-8"> 
+        <meta charset="utf-8">  
         <link rel="stylesheet" type="text/css" href="styles/styles.css">
         <link rel="preconnect" href="https://fonts.gstatic.com"> 
         <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Fira+Code:wght@300&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200&display=swap" rel="stylesheet">
     </head>
 
-<script src="scripts/cardSlotCalc.js"></script>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="scripts/cardSlotCalc.js"></script>
+    <script src="scripts/weather.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
 
 <body>
     <section>
-        <div>
-            <header class="masthead">the hella files</header>
-            <div class="section-style">
-                <p>...the wee little card checker</p>
-            </div>
-            <div class="flex-container">
-            <div class="blog-entry">
-                <p>
-                    Let's say you have an incomplete set of sports cards but you want to begin adding to standard 9x9 UltraPro pages. 
-                    First you figure out how many pages you need, and load a binder. Then you start adding in the cards....and counting empty slots to ensure the cards you <em>do</em> have are in the right slot for a given page.
-                    <br>
-                    But what if you mis-count those empty slots? Depending on where you miscounted, you later realise half the cards
-                    are now in the spot...and now all those cards need to be moved. One. By. One. Wouldn't it be great if you already knew exactly which slot a given card would occupy, regardless of the page?
-                    <br><br>
-                    Now you can!
-                    <br><br>
-                    Just enter the card number below, and find out exactly which slot to put the card in!  It even tells you which page!
-                </p>
-            </div>
-        </div>
-        <div>
+        <table class="mast-table">
+          <tr>
+            <td width="80%">
+              <div>
+               <header class="masthead">the hella files</header>
+            </td>
+            <td width="20%" >
+              <!-- Display current weather from weather.js -->
+              <section>
+                <div class="weather" id="weather">Waiting for the Weather Forecast...</div> 
+            </td>
+            </tr>
+          </table>
+      </section>
+      <div>
+        <nav>
+          <table class="top-nav">
+            <tr>
+              <td class="nav-td"><a href="index.html">Home</a> </td>
+              <td class="nav-td"><a href="tech.html?blogType=tech">Tech</a></td>
+              <td class="nav-td"><a href="quad2.html">Quad-O-Matic</a></td>
+            </tr>
+          </table>
+        </nav>
+      </div>
             <br>
+
             <main>
-                <div class="form-center">
+                <div class="blog-entry">
                     <form>
-                        <label class="form-style"> Enter Card Number </label><br>
-                        <input size="6" type="text" id="card" title="cardNumber"><br><br>
-                        <button type="button" class="input-button" 
-                                onclick="computeGridSpace(document.getElementById('card').value)">
-                                Submit
-                        </button>     
+                        <div >  
+                            <table class="table-style">
+                                <tr>
+                                    <th colspan="2">
+                                        <label> Enter Card Number: </label>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input size="6" type="text" id="card" title="cardNumber"><br><br>
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <td>
+                                        <button type="button" class="input-button" 
+                                        onclick="computeGridSpace(document.getElementById('card').value)">
+                                        Submit
+                                </button>  
+                                    </td>
+                                </tr>
+                        </table>
                     </form>
                 </div>
             </main>
