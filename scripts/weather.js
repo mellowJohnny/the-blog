@@ -136,8 +136,7 @@ if('geolocation' in navigator) {
   function convertUnixTime(unixTime) {
     const ms = unixTime * 1000;
     const newTime = new Date(ms);
-    const time = newTime.toDateString()
-    return time;
+    return newTime;
   }
 
 
