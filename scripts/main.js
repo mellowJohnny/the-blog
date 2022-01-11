@@ -134,6 +134,29 @@ function callBlogPostAPI (title,author,postBody,type){
                     </p> <hr/> `;
    }
 
+   function cmsLogOut() {
+    
+    // instantiate a headers object
+    let myHeaders = new Headers();
+
+    // add content type header to object
+    myHeaders.append("Content-Type", "application/json");
+
+    // create a JSON object with parameters for API call and store in a variable
+    let requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+    };
+  
+    // make API call to BlogPost endpoint with parameters and use promises to get response
+    fetch("https://mellowjohnny.auth.us-east-1.amazoncognito.com/logout?client_id=1m22cfonep7l85th9ut1obk0pe&logout_uri=https://mellowjohnny/logout", requestOptions)
+        .then(response => response.text())
+        .then(result => alert(JSON.parse(result).body))
+        .catch(error => console.log('error', error));
+  }
+
    // ----------------------------- Date Helper Functions ----------------------------
 
    /**
