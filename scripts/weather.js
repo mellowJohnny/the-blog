@@ -74,11 +74,11 @@ if('geolocation' in navigator) {
           const d = new Date(date);
           const hour = d.getHours(); 
           const min = d.getMinutes(); 
-          const minutes = str_pad_left(min,'0',2);
+          const minutes = padLeft(min,'0',2);
           return hour + ":" + minutes;
         }
-        // Add the trailing 0 to time so 3:1 is 3:01
-        function str_pad_left(string,pad,length) {
+        // Add the trailing 0 to time so '3:1 pm' is '3:01 pm'
+        function padLeft(string,pad,length) {
           return (new Array(length+1).join(pad)+string).slice(-length);
       }
 
