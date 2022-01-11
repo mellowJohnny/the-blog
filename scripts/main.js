@@ -146,7 +146,6 @@ function callBlogPostAPI (title,author,postBody,type){
     let requestOptions = {
         method: 'GET',
         headers: myHeaders,
-        body: raw,
         redirect: 'follow'
     };
   
