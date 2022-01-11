@@ -133,7 +133,7 @@ function callBlogPostAPI (title,author,postBody,type){
                     <img src="${cleanImg}"></img>
                     </p> <hr/> `;
    }
-
+/** 
    function cmsLogOut() {
     
     // instantiate a headers object
@@ -155,6 +155,7 @@ function callBlogPostAPI (title,author,postBody,type){
         .then(result => alert(JSON.parse(result).body))
         .catch(error => console.log('error', error));
   }
+  */ 
 
    // ----------------------------- Date Helper Functions ----------------------------
 
