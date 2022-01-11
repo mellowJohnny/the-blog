@@ -73,7 +73,8 @@ if('geolocation' in navigator) {
         function getTime(date){
           const d = new Date(date);
           const hour = d.getHours(); 
-          const minutes = '0'+d.getMinutes().slice(-2); 
+          const min = d.getMinutes(); 
+          const minutes = '0'+ min.slice(-2); 
           return hour + ":" + minutes;
         }
 
