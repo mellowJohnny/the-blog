@@ -1,0 +1,50 @@
+exports.handler = async (event, context) => {
+
+  // Step 1: Create DynamoDB Document Client - provided better formatted JSON 
+  const documentClient = new AWS.DynamoDB.DocumentClient({region: 'us-east-2'});
+  let responseBody = "";
+  let statusCode = 0;
+  // This returns a JSON object as a String 
+ // let t = JSON.stringify(`${event.pathParameters.type}`);
+  let t = JSON.stringify(`${event.type}`);
+  let blog = t.replace(/"/g, '');
+  let blogType = parseInt(blog);
+  
+  // Step 2: Create a variable to hold our parameters:
+
+ var params = {
+    TableName : "Blogs",
+    KeyConditionExpression: "#type = :blogType",
+    ExpressionAttributeNames:{
+        "#type": "blogType" 
+    },
+    ExpressionAttributeValues: {
+        ":blogType": blogType
+    }
+
+}; // end handler
+
+  // Step 3: Call query() from the DynamoDB API to fetch all Blog Posts
+  // Send back stringified JSON...
+  try {
+    const data = await documentClient.query(params).promise();
+    responseBody = JSON.stringify(data);
+    statusCode = 200;
+    }
+    catch (err) {
+      responseBody = `Unable to fetch blogs: ${err}`;
+      statusCode = 403; 
+      console.log(err);
+      }
+
+      const response = {
+        statusCode: statusCode,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: responseBody
+      };
+      
+      return response;
+  }; // end handler
+  
