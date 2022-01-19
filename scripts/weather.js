@@ -92,11 +92,11 @@ if('geolocation' in navigator) {
         weatherForcast.innerHTML = `<p>
                           <br>
                           <strong> Today's ${city} Weather:</strong> <br>
-                          Temp: ${temp}&deg C, Feels Like: ${feelsLike}&deg C <br>
-                          Low: ${minTemp}&#8451;, High: ${maxTemp}&deg C<br>
+                          Temp: ${temp}&#8451;, Feels Like: ${feelsLike}&#8451;<br>
+                          Low: ${minTemp}&#8451;, High: ${maxTemp}&#8451;<br>
                           Wind: ${degreesToRose(windDirection)}, ${wind} km/h <br>
                           Humidity: ${humidity}% <br>
-                          &#9788; ${getTime(sunrise)} am, Sunset ${getTime(sunset)} pm 
+                          &#9788; ${getTime(sunrise)} am, &#9790; ${getTime(sunset)} pm 
                           </p>`;
       }
     }
