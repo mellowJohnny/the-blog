@@ -1,3 +1,8 @@
+
+/**
+ * Logic & Formatting for the Weather Widget
+ */
+
 // Global Variables
 const openWeatherUrl = 'https://api.openweathermap.org/data/2.5/weather';
 const openWeatherKey = '49f84d9cdb7907dfd2b02085e270372e';
@@ -88,10 +93,10 @@ if('geolocation' in navigator) {
                           <br>
                           <strong> Today's ${city} Weather:</strong> <br>
                           Temp: ${temp}&deg C, Feels Like: ${feelsLike}&deg C <br>
-                          Low: ${minTemp}&deg C, High: ${maxTemp}&deg C<br>
+                          Low: ${minTemp}&#8451;, High: ${maxTemp}&deg C<br>
                           Wind: ${degreesToRose(windDirection)}, ${wind} km/h <br>
                           Humidity: ${humidity}% <br>
-                          Sunrise ${getTime(sunrise)} am, Sunset ${getTime(sunset)} pm 
+                          &#9788; ${getTime(sunrise)} am, Sunset ${getTime(sunset)} pm 
                           </p>`;
       }
     }
