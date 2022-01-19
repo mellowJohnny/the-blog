@@ -96,7 +96,7 @@ if('geolocation' in navigator) {
                           Low: ${minTemp}&#8451;, High: ${maxTemp}&#8451;<br>
                           Wind: ${degreesToRose(windDirection)}, ${wind} km/h <br>
                           Humidity: ${humidity}% <br>
-                          &#9788; ${getTime(sunrise)} am, &#9790; ${getTime(sunset)} pm 
+                          &#9788; ${getTime(sunrise)} am, &#9789; ${getTime(sunset)} pm 
                           </p>`;
       }
     }
