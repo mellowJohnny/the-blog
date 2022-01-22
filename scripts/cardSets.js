@@ -41,17 +41,16 @@
                    displayBlog(blogPostArray.Items[i].postBody,
                     blogPostArray.Items[i].year,
                     blogPostArray.Items[i].mfg,
-                    blogPostArray.Items[i].setName,
-                   // blogPostArray.Items[i].img);
+                    blogPostArray.Items[i].setName);
                 }
-           }
-       } 
-           
+            }
+        }
+        
        })
        .catch(function (err) {
            console.log('Something went wrong...: ' + err);
        });
-      }
+}
 
 /**
  * Function to DISPLAY Blogs dynamically
