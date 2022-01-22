@@ -86,6 +86,9 @@ function callBlogPostAPI (title,author,postBody,type){
                 * We call the displayBlog() function to control the display of the blog post
                 * It gets called it once for each blog post, essentially populating each blog post one at a time
                 **/
+         
+// Should be put an if in here to check which type of blogs we have to format?
+
                for (var i = 0; i < blogPostArray.Items.length; i++) {
                    displayBlog(blogPostArray.Items[i].postBody,
                     blogPostArray.Items[i].author,
