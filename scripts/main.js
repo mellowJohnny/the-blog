@@ -87,10 +87,6 @@ function callBlogPostAPI (title,author,postBody,type){
           // call to getBlogs API
           urlToFetch = `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev`;
           break;
-        case "cards":
-            // call to getBlogs API
-            urlToFetch = ``;
-            break;
         case "tech":
           // call to getTechBlogs API
           urlToFetch = `https://bbzcidv1df.execute-api.us-east-2.amazonaws.com/dev`;
