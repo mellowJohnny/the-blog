@@ -25,11 +25,9 @@
             <main>
                 <form class="form-style">
 
-                    <label>Set Name (required)</label><br>
+                    <label>Set Name</label><br>
                         <input type="text" id="setName" title="setName"><br><br>
-                    <label>Release Year (Required)</label> <br>
-                        <input type="text" id="year" title="year"><br><br>
-                    <label>Manufacter</label><br>
+                    <label>Manufacturer</label><br>
                         <div>
                             <select id="mfg" name="mfg" class="form-style" title="mfg">
                             <option value="O-Pee-Chee">O-Pee-Chee</option>
@@ -38,13 +36,14 @@
                             <option value="Pro Set">Pro Set</option>
                             </select>
                         </div><br><br>
-                    <label>Review</label><br>
+                    <label>Release Year</label> <br>
+                        <input type="text" id="year" title="year"><br><br>
+                    <label>Set Review Text</label><br>
                         <textarea id="postBody" title="postBody"></textarea><br><br>
                     <br>
                     <button class="input-button" type="button" 
                         onclick="callCreateCardSetAPI(
                                 document.getElementById('setName').value,
-                               // document.getElementById('img').value,
                                 document.getElementById('mfg').value,
                                 document.getElementById('year').value,
                                 document.getElementById('postBody').value)">
