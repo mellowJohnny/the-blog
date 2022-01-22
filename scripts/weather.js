@@ -77,14 +77,14 @@ if('geolocation' in navigator) {
         // Magic Date fixing action...also return Hours in 12 hr format...
         function getTime(date){
           const d = new Date(date);
-          const hour = d.getHours(); // comes in 24h time format
+          let hour = d.getHours(); // comes in 24h time format
           const min = d.getMinutes(); 
           // Call the padLeft() function to fix the weird missing 0 problem
           const minutes = padLeft(min,'0',2); 
 
           // Convert to 12h time if needed...
           if (hour >= 13) {
-            const hour = hour - 12; 
+            hour = hour - 12; 
           }
 
           return hour + ":" + minutes;
