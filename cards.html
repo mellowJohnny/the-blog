@@ -12,19 +12,13 @@
   </head>
 
   <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-  <script src="scripts/main.js"></script>
   <script src="scripts/cardSets.js"></script>
   <script src="scripts/weather.js"></script>
   
 
   <script>
-    // First get the page param passed from whereveer we just came from...
-    // On page load pass the blogType param to the fetchAllBlogs() function
-    // which will then call the appropriate API based on the value for blogType
-    let params = new URLSearchParams(document.location.search);
-    let blogType = params.get("blogType");
     window.addEventListener('load', (event) => {
-      fetchAllBlogs(blogType);
+      fetchAllCardSets();
       });
   </script>
 
