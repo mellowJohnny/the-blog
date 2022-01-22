@@ -74,13 +74,14 @@ if('geolocation' in navigator) {
         const set = jsonResponse.sys.sunset;
         const sunset = convertUnixTime(set);
 
-        // Magic Date fixing action...
+        // Magic Date fixing action...also return Hours in 12 hr format...
         function getTime(date){
           const d = new Date(date);
-          const hour = d.getHours(); 
+          const hour24 = d.getHours(); // 24h time format
+          const hour12 = hour24 - 12; // 12h time if you want it
           const min = d.getMinutes(); 
           const minutes = padLeft(min,'0',2);
-          return hour + ":" + minutes;
+          return hour12 + ":" + minutes;
         }
         // Add the trailing 0 to time so '3:1 pm' is '3:01 pm'
         function padLeft(string,pad,length) {
