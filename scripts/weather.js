@@ -80,13 +80,14 @@ if('geolocation' in navigator) {
           const hour24 = d.getHours(); // 24h time format
           const hour12 = hour24 - 12; // 12h time if you want it
           const min = d.getMinutes(); 
-          const minutes = padLeft(min,'0',2);
+          const minutes = padLeft(min,'0',2); // Call the padLeft function to fix the missing 0 problem
           return hour12 + ":" + minutes;
         }
+
         // Add the trailing 0 to time so '3:1 pm' is '3:01 pm'
         function padLeft(string,pad,length) {
           return (new Array(length+1).join(pad)+string).slice(-length);
-      }
+        }
 
         // Step 2: Now that we have all the fields we want, let's populate the HTML DIV
         const weatherForcast = document.getElementById("weather");
