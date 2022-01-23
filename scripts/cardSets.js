@@ -6,7 +6,7 @@
 
  function fetchAllCardSets() {
     // Set up a global variable to hold the API URL
-    const urlToFetch = `https://tx7romovbd.execute-api.us-east-2.amazonaws.com/dev/`;
+    const urlToFetch = `https://tx7romovbd.execute-api.us-east-2.amazonaws.com/dev`;
           
     fetch(urlToFetch)
        .then(function (response) {
