@@ -77,8 +77,8 @@
        blogBody.innerHTML += 
                     `<p>
                     <strong>${cleanSetName}</strong> <br>
-                    <i>${cleanYear} </i><br>
-                    <i>${cleanMFG}</i> <br><br>
+                    <i>Release Year: ${cleanYear} </i><br>
+                    <i>Manufacturer: ${cleanMFG}</i> <br><br>
                     ${cleanPostBody} 
                     </p> <hr/> `;
    }
