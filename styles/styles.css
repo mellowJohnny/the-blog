@@ -103,11 +103,10 @@ select {
 
 textarea {
   width: 50%;
-  height: 500px;
+  height: 350px;
   box-sizing: border-box;
   border: 2px solid rgb(7, 74, 138);
   border-radius: 2px;
-  background-color: #e4e4e4;
   resize: none;
   overflow: scroll;
 } 
