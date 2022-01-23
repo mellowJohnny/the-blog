@@ -42,7 +42,7 @@ function callBlogPostAPI (title,author,postBody,type){
  * @param {*} postBody 
  */
 
- function callCreateCardSetAPI(setName,year,postBody,mfg){
+ function callCreateCardSetAPI(setName,size,year,postBody,mfg){
     // instantiate a headers object
     let myHeaders = new Headers();
   
@@ -50,7 +50,7 @@ function callBlogPostAPI (title,author,postBody,type){
     myHeaders.append("Content-Type", "application/json");
   
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"setName":setName,"year":year,"postBody":postBody,"mfg":mfg});
+    let raw = JSON.stringify({"setName":setName,"size":size,"year":year,"postBody":postBody,"mfg":mfg});
   
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {

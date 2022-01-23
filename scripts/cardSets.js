@@ -36,6 +36,7 @@
                    displayBlog(cardSetArray.Items[i].postBody,
                     cardSetArray.Items[i].year,
                     cardSetArray.Items[i].mfg,
+                    cardSetArray.Items[i].size,
                     cardSetArray.Items[i].setName);
                 }
             }
@@ -65,6 +66,7 @@
        const cleanYear = JSON.parse(year);
        const cleanMFG = JSON.parse(mfg);
        const cleanSetName = JSON.parse(setName);
+       const cleanSetSize = JSON.parse(size);
        const cleanPostBody = JSON.parse(postBody);
        
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
@@ -72,6 +74,7 @@
        blogBody.innerHTML += 
                     `<p>
                     <strong>${cleanSetName}</strong> <br>
+                    <i>Release Year: ${cleanSetSize} </i><br>
                     <i>Release Year: ${cleanYear} </i><br>
                     <i>Manufacturer: ${cleanMFG}</i> <br><br>
                     ${cleanPostBody} 

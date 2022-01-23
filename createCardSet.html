@@ -27,6 +27,8 @@
 
                     <label>Set Name</label><br>
                     <input type="text" id="setName" title="setName"><br><br>
+                    <label>Set Size</label><br>
+                    <input type="text" id="size" title="size"><br><br>
                     <label>Manufacturer</label><br><br>
                     <select id="mfg" name="mfg" title="mfg" style="font-size:14px;">
                         <option value="O-Pee-Chee">O-Pee-Chee</option>
@@ -42,6 +44,7 @@
                     <button class="input-button" type="button" 
                         onclick="callCreateCardSetAPI(
                                 document.getElementById('setName').value,
+                                document.getElementById('size').value,
                                 document.getElementById('year').value,
                                 document.getElementById('postBody').value,
                                 document.getElementById('mfg').value)">
