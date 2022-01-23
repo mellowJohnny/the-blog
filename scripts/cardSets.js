@@ -21,21 +21,16 @@
        // Next let's just get the 'body' property returned by the Lambda call
           for (const [key, value] of returnedData) {
               if (key === "body"){
-               /** 
-                * Now that we have the 'body' key, we need to convert the value 
-                * (currently a JSON String) to a JSON Object 
-                * so that we can pull out the properties of each blog post 
-                **/ 
+
+            // Now that we have the 'body' key, we need to convert the value (currently a JSON String) to a JSON Object 
+            // so that we can pull out the properties of each blog post 
                const cardSetArray = JSON.parse(value);
              
-               /** Now that the data we got back is a JSON object, let's loop over all the Posts...
-                * The 'Items' property holds an array of all the blog posts 
-                * Let's loop through that array and display the fields we want!
-                * We call the displayBlog() function to control the display of the blog post
-                * It gets called it once for each blog post, essentially populating each blog post one at a time
-                **/
-         
-// Should be put an if in here to check which type of blogs we have to format?
+            // Now that the data we got back is a JSON object, let's loop over all the Posts...
+            // The 'Items' property holds an array of all the blog posts 
+            // Let's loop through that array and display the fields we want!
+            // We call the displayBlog() function to control the display of the blog post
+            // It gets called it once for each blog post, essentially populating each blog post one at a time
 
                for (var i = 0; i < cardSetArray.Items.length; i++) {
                    displayBlog(cardSetArray.Items[i].postBody,
