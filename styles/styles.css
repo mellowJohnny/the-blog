@@ -79,7 +79,7 @@ table {
 
  input[type=text] {
   width: 40%;
-  padding: 12px 20px;
+  padding: 6px 10px;
   margin: 8px 0;
   display: inline-block;
   border: 1px solid #ccc;
@@ -88,7 +88,7 @@ table {
 }
 
 select {
-  width: 30%;
+  width: 10%;
 }
 
 .input-button {
@@ -107,7 +107,7 @@ input[type=submit]:hover {
 
 input [type=textarea] {
   width: 50%;
-  height: 150px;
+  height: 500px;
   box-sizing: border-box;
   border: 2px solid rgb(7, 74, 138);
   border-radius: 2px;
