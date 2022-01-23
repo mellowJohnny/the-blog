@@ -93,10 +93,6 @@ select {
   font-size: 45px;
 }
 
-label {
-  padding-left: 2%;
-}
-
 .input-button {
   background-color: #256386;
   border: none;
