@@ -82,14 +82,13 @@ table {
   box-sizing: border-box;
 }
 
-input[type=submit] {
-  width: 50%;
-  background-color: #4CAF50;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
+.input-button {
+  background-color: #256386;
   border: none;
-  border-radius: 4px;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
   cursor: pointer;
 }
 
@@ -206,33 +205,7 @@ input [type=textarea] {
     min-height: 50px;
   }
 
-
-  .form-style-card input {
-      margin: 5px;
-      position: relative;
-      top: 10px;
-      width: 10px;
-      padding: 12px 20px;
-      margin: 8px 0;
-      box-sizing: border-box;
-      border: 2px solid rgb(7, 74, 138);
-      border-radius: 2px;
-  }
-
-  .form-center {
-      display:flex;
-      justify-content: center;
-  }
-
-    .input-button_OLD {
-      background-color: #256386;
-      border: none;
-      color: white;
-      padding: 16px 32px;
-      text-decoration: none;
-      margin: 4px 2px;
-      cursor: pointer;
-    }
+    
 
 /* Table Stuff */
 .table-style {
