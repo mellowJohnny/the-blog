@@ -6,7 +6,7 @@
 
  function fetchAllCardSets() {
     // Set up a global variable to hold the API URL
-    const urlToFetch = `https://sk3zq7hax8.execute-api.us-east-2.amazonaws.com/dev`;
+    const urlToFetch = `https://sk3zq7hax8.execute-api.us-east-2.amazonaws.com/dev/`;
           
     fetch(urlToFetch)
        .then(function (response) {
@@ -26,7 +26,7 @@
                 * (currently a JSON String) to a JSON Object 
                 * so that we can pull out the properties of each blog post 
                 **/ 
-               const blogPostArray = JSON.parse(value);
+               const cardSetArray = JSON.parse(value);
              
                /** Now that the data we got back is a JSON object, let's loop over all the Posts...
                 * The 'Items' property holds an array of all the blog posts 
@@ -37,15 +37,15 @@
          
 // Should be put an if in here to check which type of blogs we have to format?
 
-               for (var i = 0; i < blogPostArray.Items.length; i++) {
-                   displayBlog(blogPostArray.Items[i].postBody,
-                    blogPostArray.Items[i].year,
-                    blogPostArray.Items[i].mfg,
-                    blogPostArray.Items[i].setName);
+               for (var i = 0; i < cardSetArray.Items.length; i++) {
+                   displayBlog(cardSetArray.Items[i].postBody,
+                    cardSetArray.Items[i].year,
+                    cardSetArray.Items[i].mfg,
+                    cardSetArray.Items[i].setName);
                 }
             }
         }
-        
+
        })
        .catch(function (err) {
            console.log('Something went wrong...: ' + err);
