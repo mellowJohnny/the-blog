@@ -72,12 +72,6 @@ table {
   border-collapse: collapse;
  }
 
-div.form
-{
-    display: block;
-    text-align: center;
-}
-
 form {
   font-family: 'Caveat', cursive;
   font-size: 20px;
@@ -107,9 +101,6 @@ select {
   cursor: pointer;
 }
 
-input[type=submit]:hover {
-  background-color: #45a049;
-}
 
 input [type=textarea] {
   width: 50%;
