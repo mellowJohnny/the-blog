@@ -169,12 +169,9 @@ table {
     min-height: 50px;
   }
 
-  .form-style {
+  .form-style input select {
     font-family: 'Audiowide', cursive;
-    font-size: 20px;
-    }
-
-  .form-style input {
+    font-size: 16px;
     margin: 5px;
     position: relative;
     top: 10px;
