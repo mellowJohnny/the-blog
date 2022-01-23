@@ -27,16 +27,17 @@
                const cardSetArray = JSON.parse(value);
              
             // Now that the data we got back is a JSON object, let's loop over all the Posts...
-            // The 'Items' property holds an array of all the blog posts 
+            // The 'Items' property holds an array of all the set reviews 
             // Let's loop through that array and display the fields we want!
-            // We call the displayBlog() function to control the display of the blog post
-            // It gets called it once for each blog post, essentially populating each blog post one at a time
+            // We call the displayBlog() function to control the display
+            // calling it once for each set review, essentially populating each review one at a time
 
                for (var i = 0; i < cardSetArray.Items.length; i++) {
                    displayBlog(cardSetArray.Items[i].postBody,
                     cardSetArray.Items[i].year,
                     cardSetArray.Items[i].mfg,
                     cardSetArray.Items[i].size,
+                    cardSetArray.Items[i].subsets,
                     cardSetArray.Items[i].setName);
                 }
             }
@@ -52,21 +53,26 @@
  * Function to DISPLAY Blogs dynamically
  * @param {*} postBody 
  * @param {*} year 
- * @param {*} mfg 
+ * @param {*} mfg
+ * @param {*} size
+ * @param {*} subsets 
  * @param {*} setName 
  */
 
-   function displayBlog(postBody, year, mfg, size, setName) {
+   function displayBlog(postBody, year, mfg, size, subsets, setName) {
        // Populate the blogsDiv...
  
        // Cleanup the JSON we get back so it's back to a String 
        // We parsed the first object we got back, but that didn't parse the contents of the inner properties
        // so we need to explicitly parse title, author, and the blog
+       const cleanPostBody = JSON.parse(postBody);
        const cleanYear = JSON.parse(year);
        const cleanMFG = JSON.parse(mfg);
-       const cleanSetName = JSON.parse(setName);
        const cleanSetSize = JSON.parse(size);
-       const cleanPostBody = JSON.parse(postBody);
+       const cleanSubsets = JSON.parse(subsets);
+       const cleanSetName = JSON.parse(setName);
+       
+       
        
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
        let blogBody = document.getElementById("cardSetsDiv");
@@ -74,6 +80,7 @@
                     `<p>
                     <strong>${cleanSetName}</strong> <br>
                     <i>Set Size: ${cleanSetSize} cards</i><br>
+                    <i>Sub Sets & Inserts: ${cleanSubsets} </i><br>
                     <i>Release Year: ${cleanYear} </i><br>
                     <i>Manufacturer: ${cleanMFG}</i> <br><br>
                     ${cleanPostBody} 

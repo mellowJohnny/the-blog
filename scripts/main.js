@@ -37,9 +37,11 @@ function callBlogPostAPI (title,author,postBody,type){
  * This is the main AWS call used to CREATE a NEW CARDS POST
  * Called from the wlcms.html page
  * @param {*} setName 
- * @param {*} mfg
- * @param {*} year 
+ * @param {*} size
+ * @param {*} subsets
+ * @param {*} year
  * @param {*} postBody 
+ * @param {*} mfg 
  */
 
  function callCreateCardSetAPI(setName,size,year,postBody,mfg){
@@ -50,7 +52,7 @@ function callBlogPostAPI (title,author,postBody,type){
     myHeaders.append("Content-Type", "application/json");
   
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"setName":setName,"size":size,"year":year,"postBody":postBody,"mfg":mfg});
+    let raw = JSON.stringify({"setName":setName,"size":size,"subsets":subsets,"year":year,"postBody":postBody,"mfg":mfg});
   
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
