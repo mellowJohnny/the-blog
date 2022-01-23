@@ -112,6 +112,15 @@ table {
 
 }
 
+.cards-intro p {
+  font-family: 'Caveat', cursive;
+  font-size: 18px;
+  margin: 5px auto;
+  width: 900px;
+  overflow: scroll;
+
+}
+
 .blog-entry {
     font-family: 'Nunito';
     background: rgb(224, 236, 241);
