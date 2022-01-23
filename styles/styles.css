@@ -75,7 +75,7 @@ table {
 form {
   font-family: 'Caveat', cursive;
   font-size: 20px;
-  padding-left: 3%;
+  padding-left: 2%;
  }
 
  input[type=text] {
@@ -91,6 +91,10 @@ form {
 select {
   width: 10%;
   font-size: 45px;
+}
+
+label {
+  padding-left: 3%;
 }
 
 .input-button {
