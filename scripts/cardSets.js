@@ -57,7 +57,7 @@
  * @param {*} img
  */
 
-   function displayBlog(postBody, year, mfg, setName) {
+   function displayBlog(postBody, year, mfg, setName, size) {
        // Populate the blogsDiv...
  
        // Cleanup the JSON we get back so it's back to a String 
