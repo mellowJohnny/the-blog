@@ -44,7 +44,7 @@ function callBlogPostAPI (title,author,postBody,type){
  * @param {*} mfg 
  */
 
- function callCreateCardSetAPI(setName,size,year,postBody,mfg){
+ function callCreateCardSetAPI(setName,size,subsets,year,postBody,mfg){
     // instantiate a headers object
     let myHeaders = new Headers();
   
