@@ -169,19 +169,50 @@ table {
     min-height: 50px;
   }
 
-  .form-style {
+  .form-style_OLD {
     font-family: 'Audiowide', cursive;
-    font-size: 16px;
+    font-size: 14px;
     margin: 5px;
     position: relative;
     top: 10px;
-    width: 40%;
+    width: 80%;
     padding: 5px;
     margin: 8px 0;
     box-sizing: border-box;
     border: 2px solid rgb(7, 74, 138);
     border-radius: 2px;
     background-color: #e4e4e4;
+    }
+
+    input[type=text], select {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    input[type=submit] {
+      width: 100%;
+      background-color: #4CAF50;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    input[type=submit]:hover {
+      background-color: #45a049;
+    }
+    
+    div {
+      border-radius: 5px;
+      background-color: #f2f2f2;
+      padding: 20px;
     }
 
     .form-style-card input {
