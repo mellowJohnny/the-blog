@@ -101,8 +101,7 @@ select {
   cursor: pointer;
 }
 
-
-input [type=textarea] {
+textarea {
   width: 50%;
   height: 500px;
   box-sizing: border-box;
