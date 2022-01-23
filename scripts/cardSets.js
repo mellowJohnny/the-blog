@@ -71,11 +71,7 @@
        const cleanMFG = JSON.parse(mfg);
        const cleanSetName = JSON.parse(setName);
        const cleanPostBody = JSON.parse(postBody);
-     //  const cleanImg = JSON.parse(img);
-
-       // Format the Date by passing it to our Magic Date fixer...
-       fixDate(date);
-        
+       
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
        let blogBody = document.getElementById("cardSetsDiv");
        blogBody.innerHTML += 
