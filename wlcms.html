@@ -17,13 +17,22 @@
 <body>
     <section>
         <div>
-            <header class="masthead">the hella files</header>
+            <header class="masthead">the hella files CMS</header>
 
             <div>
                 <nav>
                   <table class="top-nav">
                     <tr>
-                      <td class="nav-td"><a href="createCardSet.html">New Card Set Review</a> </td>
+                      <td class="nav-td"><a href="createBlogPost.html">New Blog Post</a> </td>
+                    </tr>
+                    <tr>
+                      <td class="nav-td"><a href="createCardSet.html">New Card Set</a> </td>
+                    </tr>
+                    <tr>
+                      <td class="nav-td"><a href="">Upadte Card Set</a> </td>
+                    </tr>
+                    <tr>
+                      <td class="nav-td"><a href="">Upadte Blog Post</a> </td>
                     </tr>
                   </table>
                 </nav>
@@ -35,41 +44,7 @@
               <br>
               
             <main>
-                <form class="form-style">
-
-                    <label>Blog Post Title (required)</label><br>
-                    <input type="text" id="title" required title="blogPostTitle"><br><br>
-
-                    <label>Type (required)</label><br>
-                    <div>
-                        <select id="blogType" name="blogType" class="form-style" title="blogType">
-                         <option value="1">Technology</option>
-                         <option value="2">Hockey Cards</option>
-                         <option value="3">General Observations</option>
-                         <option value="99">Home Page</option>
-                        </select>
-                    </div><br><br>
-
-                    <label>Author (required)</label> <br>
-                    <div>
-                        <select id="author" name="author" class="form-style" title="author">
-                            <option value="Christian Couillard">Christian Couillard</option>
-                        </select>
-                    </div><br><br>
-
-                    <label>Post Body (required)</label><br>
-                    <textarea id="postBody" required title="blogBody"></textarea>
-                    <br><br>
-                    <button class="input-button" type="button" 
-                        onclick="callCreateBlogPostAPI(
-                                document.getElementById('title').value,
-                               // document.getElementById('img').value,
-                                document.getElementById('author').value,
-                                document.getElementById('postBody').value,
-                                document.getElementById('blogType').value)">
-                        Submit Post
-                    </button>
-                </form>
+              <p>What would you like to do?</p>
             </main>
         </div>
     </section>

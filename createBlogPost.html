@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<html lang="en">
+    <title>new blog post...</title>
+    <head>
+        <meta charset="utf-8"> 
+        <link rel="stylesheet" type="text/css" href="styles/styles.css">
+        <link rel="preconnect" href="https://fonts.gstatic.com"> 
+        <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Fira+Code:wght@300&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200&display=swap" rel="stylesheet">
+      </head>
+
+<script src="scripts/cms.js"></script>
+
+<body>
+    <section>
+        <div>
+            <header class="masthead">the hella files</header>
+
+            <div>
+                <nav>
+                  <table class="top-nav">
+                    <tr>
+                      <td class="nav-td"><a href="wlcms.html">Back To CMS</a> </td>
+                    </tr>
+                  </table>
+                </nav>
+              </div>
+
+            <div class="section-style">
+                <p>...author a blog post</p>
+              </div>
+              <br>
+              
+            <main>
+                <form class="form-style">
+
+                    <label>Blog Post Title (required)</label><br>
+                    <input type="text" id="title" required title="blogPostTitle"><br><br>
+
+                    <label>Type (required)</label><br>
+                    <div>
+                        <select id="blogType" name="blogType" class="form-style" title="blogType">
+                         <option value="1">Technology</option>
+                         <option value="2">Hockey Cards</option>
+                         <option value="3">General Observations</option>
+                         <option value="99">Home Page</option>
+                        </select>
+                    </div><br><br>
+
+                    <label>Author (required)</label> <br>
+                    <div>
+                        <select id="author" name="author" class="form-style" title="author">
+                            <option value="Christian Couillard">Christian Couillard</option>
+                        </select>
+                    </div><br><br>
+
+                    <label>Post Body (required)</label><br>
+                    <textarea id="postBody" required title="blogBody"></textarea>
+                    <br><br>
+                    <button class="input-button" type="button" 
+                        onclick="callCreateBlogPostAPI(
+                                document.getElementById('title').value,
+                               // document.getElementById('img').value,
+                                document.getElementById('author').value,
+                                document.getElementById('postBody').value,
+                                document.getElementById('blogType').value)">
+                        Submit Post
+                    </button>
+                </form>
+            </main>
+        </div>
+    </section>
+    <footer class="page-footer">
+        <p>&copy; 2022 Christian Couillard</p>
+        <a href="index.html">home</a> &nbsp; &nbsp; <a href="s3Example.html">S3</a>
+      </footer>
+
+      
+
+</body>
+
+</html>
+
+
+
