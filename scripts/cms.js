@@ -6,7 +6,7 @@
  * @param {*} postBody 
  */
 
- function callBlogPostAPI (title,author,postBody,type){
+ function callCreateBlogPostAPI (title,author,postBody,type){
     // instantiate a headers object
     let myHeaders = new Headers();
   
