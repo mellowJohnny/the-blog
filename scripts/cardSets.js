@@ -79,10 +79,10 @@
        blogBody.innerHTML += 
                     `<p>
                     <strong>${cleanSetName}</strong> <br>
-                    <strong><i>Set Size: ${cleanSetSize} cards</strong></i><br>
-                    <strong><i>Sub Sets & Inserts: ${cleanSubsets}</strong> </i><br>
-                    <strong><i>Release Year: ${cleanYear}</strong> </i><br>
-                    <strong><i>Manufacturer: ${cleanMFG}</strong></i> <br><br>
+                    <strong><i>Set Size:</i></strong> ${cleanSetSize} cards<br>
+                    <strong><i>Sub Sets & Inserts:</i></strong> ${cleanSubsets} <br>
+                    <strong><i>Release Year:</i></strong> ${cleanYear} <br>
+                    <strong><i>Manufacturer:</i></strong> ${cleanMFG} <br><br>
                     ${cleanPostBody} 
                     </p> <hr/> `;
    }
