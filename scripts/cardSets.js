@@ -24,7 +24,10 @@
 
             // Now that we have the 'body' key, we need to convert the value (currently a JSON String) to a JSON Object 
             // so that we can pull out the properties of each blog post 
-               const cardSetArray = JSON.parse(value);
+
+            // ------------- DO WE NEED TO PARSE IF WE DON'T HAVE ""?
+               // const cardSetArray = JSON.parse(value);
+               const cardSetArray = value;
              
             // Now that the data we got back is a JSON object, let's loop over all the Posts...
             // The 'Items' property holds an array of all the set reviews 
