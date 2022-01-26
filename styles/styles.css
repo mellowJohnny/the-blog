@@ -220,7 +220,7 @@ textarea {
   text-align: left;
 }
 
-.card-table-style {
+.card-table-style td {
   margin-left: 100px;
   margin-right: 100px;
   font-family: 'Nunito';
