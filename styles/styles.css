@@ -221,12 +221,12 @@ textarea {
 }
 
 .card-table-style td {
-  margin-left: 100px;
-  margin-right: 100px;
+  margin-left: 150px;
+  margin-right: 150px;
   font-family: 'Nunito';
   font-size: 16px;
   text-align: left;
-  padding: 10px;
+  padding: 5px;
 }
 
 .page-footer {
