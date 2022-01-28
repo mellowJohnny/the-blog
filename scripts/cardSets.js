@@ -87,7 +87,7 @@
                     <table class="card-table-style">
                         <tr>
                             <td><strong>${cleanSetName}</strong></td> 
-                            <td rowspan="6"><img src="${cleanHeaderImg}"></img></td>
+                            <td rowspan="6"><img src="${cleanHeaderImg}" class="table-img"></img></td>
                         </tr>
                         <tr>
                             <td><strong><i>Set Size:</i></strong> ${cleanSetSize} cards</td>
