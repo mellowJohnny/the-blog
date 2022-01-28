@@ -220,9 +220,9 @@ textarea {
   text-align: left;
 }
 
-.card-table-style td {
-  margin-left: 150px;
-  margin-right: 150px;
+.card-table-style {
+  margin-left: 100px;
+  margin-right: 100px;
   font-family: 'Nunito';
   font-size: 16px;
   text-align: left;
@@ -231,11 +231,11 @@ textarea {
 }
 
 .table-header-img {
-  width: 50%;
+  width: 75%;
 }
 
 .table-footer-img {
-  width: 100%;
+  width: 90%;
 }
 
 .page-footer {
