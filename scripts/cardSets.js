@@ -107,7 +107,17 @@
                     <br>
                     ${cleanPostBody} 
                     </p> 
-                    <img src="${cleanFooterImg}" class="table-footer-img"></img>
+                    <table class="set-details-table-style">
+                        <th>
+                            <td style="text-align:center">...and the winners are...</td>
+                        </th>
+                            
+                        <tr>
+                            <td>
+                            <img src="${cleanFooterImg}" class="table-footer-img"></img>
+                            </td>
+                        </tr>
+                    
                     
                     <hr/> `;
    }
