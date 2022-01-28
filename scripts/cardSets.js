@@ -38,6 +38,7 @@
                     cardSetArray.Items[i].mfg,
                     cardSetArray.Items[i].size,
                     cardSetArray.Items[i].subsets,
+                    cardSetArray.Items[i].img,
                     cardSetArray.Items[i].setName);
                 }
             }
@@ -56,10 +57,11 @@
  * @param {*} mfg
  * @param {*} size
  * @param {*} subsets 
+ * @param {*} img
  * @param {*} setName 
  */
 
-   function displayBlog(postBody, year, mfg, size, subsets, setName) {
+   function displayBlog(postBody, year, mfg, size, subsets, img, setName) {
        // Populate the blogsDiv...
  
        // Cleanup the JSON we get back so it's back to a String 
@@ -70,6 +72,7 @@
        const cleanMFG = JSON.parse(mfg);
        const cleanSetSize = JSON.parse(size);
        const cleanSubsets = JSON.parse(subsets);
+       const cleanImage = JSON.parse(img);
        const cleanSetName = JSON.parse(setName);
        
        
@@ -78,6 +81,7 @@
        let blogBody = document.getElementById("cardSetsDiv");
        blogBody.innerHTML += 
                     `<p>
+                    <img src="${cleanImage}"></img>
                     <strong>${cleanSetName}</strong> <br>
                     <strong><i>Set Size:</i></strong> ${cleanSetSize} cards<br>
                     <strong><i>Sub Sets & Inserts:</i></strong> ${cleanSubsets} <br>
