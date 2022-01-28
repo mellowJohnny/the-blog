@@ -87,8 +87,6 @@
                     <table border="1">
                         <tr>
                             <td><strong>${cleanSetName}</strong></td> 
-                        </tr>
-                        <tr>
                             <td rowspan="5"><img src="${cleanHeaderImg}"></img></td>
                         </tr>
                         <tr>
