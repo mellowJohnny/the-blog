@@ -92,7 +92,7 @@
                         <tr>
                             <td><strong><i>Set Size:</i></strong> ${cleanSetSize} cards</td>
                         </tr>
-                        <td>
+                        <tr>
                             <td><strong><i>Sub Sets & Inserts:</i></strong> ${cleanSubsets} </td>
                         </tr>
                         <tr>
