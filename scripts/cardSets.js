@@ -38,7 +38,8 @@
                     cardSetArray.Items[i].mfg,
                     cardSetArray.Items[i].size,
                     cardSetArray.Items[i].subsets,
-                    cardSetArray.Items[i].img,
+                    cardSetArray.Items[i].headerImg,
+                    cardSetArray.Items[i].footerImg,
                     cardSetArray.Items[i].setName);
                 }
             }
@@ -57,11 +58,12 @@
  * @param {*} mfg
  * @param {*} size
  * @param {*} subsets 
- * @param {*} img
+ * @param {*} headerImg
+ * @param {*} footerImg
  * @param {*} setName 
  */
 
-   function displayBlog(postBody, year, mfg, size, subsets, img, setName) {
+   function displayBlog(postBody, year, mfg, size, subsets, headerImg, footerImg, setName) {
        // Populate the blogsDiv...
  
        // Cleanup the JSON we get back so it's back to a String 
@@ -72,7 +74,8 @@
        const cleanMFG = JSON.parse(mfg);
        const cleanSetSize = JSON.parse(size);
        const cleanSubsets = JSON.parse(subsets);
-       const cleanImage = JSON.parse(img);
+       const cleanHeaderImg = JSON.parse(headerImg);
+       const cleanFooterImg = JSON.parse(footerImg);
        const cleanSetName = JSON.parse(setName);
        
        
@@ -81,12 +84,15 @@
        let blogBody = document.getElementById("cardSetsDiv");
        blogBody.innerHTML += 
                     `<p>
-                    <img src="${cleanImage}"></img>
+                    <img src="${cleanHeaderImg}"></img>
                     <strong>${cleanSetName}</strong> <br>
                     <strong><i>Set Size:</i></strong> ${cleanSetSize} cards<br>
                     <strong><i>Sub Sets & Inserts:</i></strong> ${cleanSubsets} <br>
                     <strong><i>Release Year:</i></strong> ${cleanYear} <br>
                     <strong><i>Manufacturer:</i></strong> ${cleanMFG} <br><br>
                     ${cleanPostBody} 
-                    </p> <hr/> `;
+                    </p> 
+                    <img src="${cleanFooterImg}"></img>
+                    
+                    <hr/> `;
    }
