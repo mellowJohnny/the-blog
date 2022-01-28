@@ -33,6 +33,10 @@
     width: 50%;
   }
 
+  .table-img {
+    width: 100%;
+  }
+
 .top-nav {
   font-family: 'Nunito';
   font-size: 16px;
