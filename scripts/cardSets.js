@@ -87,7 +87,7 @@
                     <table border="1">
                         <tr>
                             <td><strong>${cleanSetName}</strong></td> 
-                            <td rowspan="5"><img src="${cleanHeaderImg}"></img></td>
+                            <td rowspan="6"><img src="${cleanHeaderImg}"></img></td>
                         </tr>
                         <tr>
                             <td><strong><i>Set Size:</i></strong> ${cleanSetSize} cards</td>
