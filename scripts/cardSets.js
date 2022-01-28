@@ -83,8 +83,7 @@
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
        let blogBody = document.getElementById("cardSetsDiv");
        blogBody.innerHTML += 
-                    `
-                    <table class="set-details-table-style">
+                    `<table class="set-details-table-style">
                         <tr>
                             <td style="width:500px""><strong>${cleanSetName}</strong></td> 
                             <td rowspan="5" style="text-align:center">
@@ -112,10 +111,10 @@
                             <td style="text-align:left"><strong>...and the winners are...</strong></td>
                         </tr>
                         <tr>
-                            <td>
+                            <td style="text-align:center">
                             <img src="${cleanFooterImg}" class="table-footer-img"></img>
                             </td>
                         </tr>
                     </table>
-                    <hr/> <br><br>`;
+                   <br> <hr/> <br><br>`;
    }
