@@ -84,9 +84,9 @@
        let blogBody = document.getElementById("cardSetsDiv");
        blogBody.innerHTML += 
                     `<p>
-                    <table class="card-table-style">
+                    <table class="card-table-style" border="1">
                         <tr>
-                            <td style="width:400px""><strong>${cleanSetName}</strong></td> 
+                            <td style="width:450px""><strong>${cleanSetName}</strong></td> 
                             <td rowspan="6" style="text-align:center">
                                 <img src="${cleanHeaderImg}" class="table-header-img"></img>
                             </td>
