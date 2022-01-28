@@ -86,10 +86,10 @@
                     `<p>
                     <table border="1">
                         <tr>
-                            <td rowspan="5"><img src="${cleanHeaderImg}"></img></td>
+                            <td><strong>${cleanSetName}</strong></td> 
                         </tr>
                         <tr>
-                            <td><strong>${cleanSetName}</strong></td>
+                            <td rowspan="5"><img src="${cleanHeaderImg}"></img></td>
                         </tr>
                         <tr>
                             <td><strong><i>Set Size:</i></strong> ${cleanSetSize} cards</td>
