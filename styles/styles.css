@@ -226,7 +226,7 @@ textarea {
   font-family: 'Nunito';
   font-size: 16px;
   text-align: left;
-  table-layout: auto;
+  table-layout: fixed;
 }
 
 .table-header-img {
