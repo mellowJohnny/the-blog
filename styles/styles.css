@@ -220,13 +220,21 @@ textarea {
   text-align: left;
 }
 
+.set-details-table-style td{
+  margin-left: 5px;
+  margin-right: 5px;
+  font-family: 'Nunito';
+  font-size: 16px;
+  text-align: left;
+  padding: 10px;
+}
+
 .card-table-style td{
   margin-left: 5px;
   margin-right: 5px;
   font-family: 'Nunito';
   font-size: 16px;
   text-align: left;
-  padding: 20px;
 }
 
 .table-header-img {
