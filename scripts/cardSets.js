@@ -84,12 +84,27 @@
        let blogBody = document.getElementById("cardSetsDiv");
        blogBody.innerHTML += 
                     `<p>
-                    <img src="${cleanHeaderImg}"></img>
-                    <strong>${cleanSetName}</strong> <br>
-                    <strong><i>Set Size:</i></strong> ${cleanSetSize} cards<br>
-                    <strong><i>Sub Sets & Inserts:</i></strong> ${cleanSubsets} <br>
-                    <strong><i>Release Year:</i></strong> ${cleanYear} <br>
-                    <strong><i>Manufacturer:</i></strong> ${cleanMFG} <br><br>
+                    <table>
+                        <tr>
+                            <td><img src="${cleanHeaderImg}"></img></td>
+                        </tr>
+                        <tr>
+                            <td><strong>${cleanSetName}</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong><i>Set Size:</i></strong> ${cleanSetSize} cards</td>
+                        </tr>
+                        <td>
+                            <td><strong><i>Sub Sets & Inserts:</i></strong> ${cleanSubsets} </td>
+                        </tr>
+                        <tr>
+                            <td><strong><i>Release Year:</i></strong> ${cleanYear} </td>
+                        </tr>
+                        <tr>
+                            <td><strong><i>Manufacturer:</i></strong> ${cleanMFG}</td>
+                        </tr>
+                    </table>
+                    <br><br>
                     ${cleanPostBody} 
                     </p> 
                     <img src="${cleanFooterImg}"></img>
