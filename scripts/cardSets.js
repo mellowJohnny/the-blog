@@ -107,7 +107,7 @@
                     <br>
                     ${cleanPostBody} 
                     </p> 
-                    <table>
+                    <table class="set-footer-table-style">
                         <tr>
                             <td style="text-align:left"><strong>...and the winners are...</strong></td>
                         </tr>

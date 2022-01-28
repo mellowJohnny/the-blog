@@ -237,6 +237,10 @@ textarea {
   text-align: left;
 }
 
+.set-footer-table-style td {
+  padding: 10px;
+}
+
 .table-header-img {
     width: 95%;
 }
