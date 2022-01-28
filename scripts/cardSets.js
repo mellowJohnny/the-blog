@@ -86,7 +86,7 @@
                     `<p>
                     <table border="1">
                         <tr>
-                            <td colspan="5"><img src="${cleanHeaderImg}"></img></td>
+                            <td rowspan="5"><img src="${cleanHeaderImg}"></img></td>
                         </tr>
                         <tr>
                             <td><strong>${cleanSetName}</strong></td>
