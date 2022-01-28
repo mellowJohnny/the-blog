@@ -238,7 +238,8 @@ textarea {
 }
 
 .table-header-img {
-  width: 75%;
+    width: 400px,
+    height: auto;
 }
 
 .table-footer-img {
