@@ -86,7 +86,7 @@
                     `<p>
                     <table class="card-table-style">
                         <tr>
-                            <td><strong>${cleanSetName}</strong></td> 
+                            <td style="width:400px""><strong>${cleanSetName}</strong></td> 
                             <td rowspan="6" style="text-align:center">
                                 <img src="${cleanHeaderImg}" class="table-header-img"></img>
                             </td>
