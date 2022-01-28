@@ -102,7 +102,7 @@
                             <td><strong><i>Manufacturer:</i></strong> ${cleanMFG}</td>
                         </tr>
                     </table>
-                    <br><br>
+                    <br>
                     ${cleanPostBody} 
                     </p> 
                     <img src="${cleanFooterImg}" class="table-footer-img"></img>
