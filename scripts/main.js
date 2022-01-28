@@ -105,7 +105,7 @@
                     <strong><i>${fixDate(date)}</i></strong> <br><br>
                     ${cleanPostBody} 
                     <br>
-                    <img src="${cleanImg}"></img>
+                    <img src="${cleanImg}" class="blog-img"></img>
                     </p> <hr/> `;
    }
 

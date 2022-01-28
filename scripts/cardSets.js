@@ -105,7 +105,7 @@
                     <br><br>
                     ${cleanPostBody} 
                     </p> 
-                    <img src="${cleanFooterImg}"></img>
+                    <img src="${cleanFooterImg}" class="table-img"></img>
                     
                     <hr/> `;
    }
