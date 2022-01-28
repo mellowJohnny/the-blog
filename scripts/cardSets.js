@@ -83,7 +83,7 @@
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
        let blogBody = document.getElementById("cardSetsDiv");
        blogBody.innerHTML += 
-                    `<p>
+                    `
                     <table class="set-details-table-style">
                         <tr>
                             <td style="width:500px""><strong>${cleanSetName}</strong></td> 
