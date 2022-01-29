@@ -86,10 +86,8 @@
                     `<br>
                     <table class="set-details-table-style">
                         <tr>
-                            <td style="width:500px""><strong>${cleanSetName}</strong></td> 
-                        </tr>
-                        <tr>
-                            <td rowspan="4" style="text-align:center">
+                            <td style="width:500px"><strong>${cleanSetName}</strong></td> 
+                            <td rowspan="5" style="text-align:center">
                                 <img src="${cleanHeaderImg}" class="table-header-img"></img>
                             </td>
                         </tr>
