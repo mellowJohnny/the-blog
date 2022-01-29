@@ -226,7 +226,7 @@ textarea {
   font-family: 'Nunito';
   font-size: 16px;
   text-align: left;
-  padding: 10px;
+  
 }
 
 .card-table-style td{
@@ -235,6 +235,7 @@ textarea {
   font-family: 'Nunito';
   font-size: 16px;
   text-align: left;
+  padding: 10px;
 }
 
 .set-footer-table-style td {
