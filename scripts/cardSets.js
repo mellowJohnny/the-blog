@@ -90,7 +90,7 @@
                         </tr>
                         <tr>
                             <td><strong><i>Set Size:</i></strong> ${cleanSetSize} cards</td>
-                            <td rowspan="4" style="text-align:center">
+                            <td rowspan="3" style="text-align:center">
                                 <img src="${cleanHeaderImg}" class="table-header-img"></img>
                             </td>
                         </tr>
