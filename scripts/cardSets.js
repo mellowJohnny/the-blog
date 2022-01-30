@@ -84,7 +84,7 @@
        let blogBody = document.getElementById("cardSetsDiv");
        blogBody.innerHTML += 
                     `
-                    <table class="set-details-table-style">
+                    <table class="set-details-table-style" border="1">
                         <tr>
                             <td style="width:400px;font-size:20px"><strong>${cleanSetName}</strong></td><td></td>
                         </tr>
