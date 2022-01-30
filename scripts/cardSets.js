@@ -86,11 +86,9 @@
                     `
                     <table class="set-details-table-style" border="1">
                         <tr>
-                            <td style="width:400px;font-size:20px"><strong>${cleanSetName}</strong></td><td></td>
+                            <td style="width:400px;font-size:20px"><strong>${cleanSetName}</strong></td>
                         </tr>
-                        <tr>
-                            <td></td>
-                        </tr>
+                        
                         <tr>
                             <td><strong><i>Set Size:</i></strong> ${cleanSetSize} cards</td>
                             <td rowspan="6" style="text-align:center"><img src="${cleanHeaderImg}" class="table-header-img"></img></td>
