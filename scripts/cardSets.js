@@ -108,7 +108,7 @@
                         </tr>
                         
                     </table>
-                    <br>
+                    
                     ${cleanPostBody} 
                     </p> 
                     <table class="set-footer-table-style">
