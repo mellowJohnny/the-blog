@@ -95,7 +95,7 @@
                             
                         </tr>
                         <tr>
-                            <td><strong><i>Sub Sets & Inserts:</i></strong> ${cleanSubsets} </td>
+                            <td><strong><i>Subsets & Inserts:</i></strong> ${cleanSubsets} </td>
                         </tr>
                         <tr>
                             <td><strong><i>Release Year:</i></strong> ${cleanYear} </td>
