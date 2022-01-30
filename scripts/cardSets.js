@@ -103,6 +103,9 @@
                         <tr>
                             <td><strong><i>Manufacturer:</i></strong> ${cleanMFG}</td>
                         </tr>
+                        <tr>
+                            <td></td>
+                        </tr>
                     </table>
                     <br>
                     ${cleanPostBody} 
