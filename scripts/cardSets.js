@@ -86,16 +86,16 @@
                     `
                     <table class="set-details-table-style">
                         <tr>
-                            <td style="width:500px;font-size:20px"><strong>${cleanSetName}</strong></td> 
-                            <td rowspan="5" style="text-align:center">
-                                <img src="${cleanHeaderImg}" class="table-header-img"></img>
-                            </td>
+                            <td style="width:400px;font-size:20px"><strong>${cleanSetName}</strong></td>
+                            <td rowspan="6" style="text-align:center"><img src="${cleanHeaderImg}" class="table-header-img"></img></td>
                         </tr>
+                        
                         <tr>
                             <td><strong><i>Set Size:</i></strong> ${cleanSetSize} cards</td>
+                            
                         </tr>
                         <tr>
-                            <td><strong><i>Sub Sets & Inserts:</i></strong> ${cleanSubsets} </td>
+                            <td><strong><i>Subsets & Inserts:</i></strong> ${cleanSubsets} </td>
                         </tr>
                         <tr>
                             <td><strong><i>Release Year:</i></strong> ${cleanYear} </td>
@@ -103,8 +103,12 @@
                         <tr>
                             <td><strong><i>Manufacturer:</i></strong> ${cleanMFG}</td>
                         </tr>
+                        <tr>
+                            <td></td>
+                        </tr>
+                        
                     </table>
-                    <br>
+                    
                     ${cleanPostBody} 
                     </p> 
                     <table class="set-footer-table-style">
