@@ -112,7 +112,7 @@
                             <td><strong><i>Manufacturer:</i></strong> ${cleanMFG}</td>
                         </tr>
                         <tr>
-                            <td><strong><i>Arbritrary Star Rating&copy;:</i></strong> ${cleanStars}</td>
+                            <td><strong><i>Arbritrary Star Rating:</i></strong> ${cleanStars}</td>
                         </tr>
                         
                     </table>
