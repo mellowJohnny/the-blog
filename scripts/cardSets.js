@@ -65,7 +65,7 @@
  * @param {*} setName 
  */
 
-   function displayBlog(postBody, year, mfg, size, subsets, headerImg, footerImg, setName) {
+   function displayBlog(postBody, year, mfg, size, subsets, stars, headerImg, footerImg, setName) {
        // Populate the blogsDiv...
  
        // Cleanup the JSON we get back so it's back to a String 
@@ -76,12 +76,16 @@
        const cleanMFG = JSON.parse(mfg);
        const cleanSetSize = JSON.parse(size);
        const cleanSubsets = JSON.parse(subsets);
-       const cleanStars = JSON.parse(stars);
+       const numStars = JSON.parse(stars);
+       let cleanStars = "";
        const cleanHeaderImg = JSON.parse(headerImg);
        const cleanFooterImg = JSON.parse(footerImg);
        const cleanSetName = JSON.parse(setName);
-       
-       
+
+       // Generate n number of "Star" emojis, one per rating number
+       for (i=0; i>numStars; i++){
+        cleanStars += "&#127775 "; 
+       }
        
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
        let blogBody = document.getElementById("cardSetsDiv");
