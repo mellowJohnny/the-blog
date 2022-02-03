@@ -76,14 +76,15 @@
        const cleanMFG = JSON.parse(mfg);
        const cleanSetSize = JSON.parse(size);
        const cleanSubsets = JSON.parse(subsets);
-       const numStars = JSON.parse(stars);
+       const starsString = JSON.parse(stars);
+       const numStars = parseInt(starsString);
        let cleanStars = "";
        const cleanHeaderImg = JSON.parse(headerImg);
        const cleanFooterImg = JSON.parse(footerImg);
        const cleanSetName = JSON.parse(setName);
 
        // Generate n number of "Star" emojis, one per rating number
-       for (i=0; i>numStars; i++){
+       for (let i=0; i < numStars; i++){
         cleanStars += "&#127775 "; 
        }
        
