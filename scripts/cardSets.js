@@ -38,6 +38,7 @@
                     cardSetArray.Items[i].mfg,
                     cardSetArray.Items[i].size,
                     cardSetArray.Items[i].subsets,
+                    cardSetArray.Items[i].stars,
                     cardSetArray.Items[i].headerImg,
                     cardSetArray.Items[i].footerImg,
                     cardSetArray.Items[i].setName);
@@ -58,6 +59,7 @@
  * @param {*} mfg
  * @param {*} size
  * @param {*} subsets 
+ * @param {*} stars
  * @param {*} headerImg
  * @param {*} footerImg
  * @param {*} setName 
@@ -74,6 +76,7 @@
        const cleanMFG = JSON.parse(mfg);
        const cleanSetSize = JSON.parse(size);
        const cleanSubsets = JSON.parse(subsets);
+       const cleanStars = JSON.parse(stars);
        const cleanHeaderImg = JSON.parse(headerImg);
        const cleanFooterImg = JSON.parse(footerImg);
        const cleanSetName = JSON.parse(setName);
@@ -104,7 +107,7 @@
                             <td><strong><i>Manufacturer:</i></strong> ${cleanMFG}</td>
                         </tr>
                         <tr>
-                            <td></td>
+                            <td><strong><i>Stars:</i></strong> ${cleanStars}</td>
                         </tr>
                         
                     </table>

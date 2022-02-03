@@ -45,6 +45,13 @@
                     <input type="text" id="size" title="size"><br><br>
                     <label>Sub Sets / Inserts</label><br>
                     <input type="text" id="subsets" title="subsets"><br><br>
+                    <select id="stars" name="stars" title="stars">
+                      <option value="1">One</option>
+                      <option value="2">Two</option>
+                      <option value="3">Three</option>
+                      <option value="4">Four</option>
+                      <option value="5">Five</option>
+                  </select>
                     <label>Manufacturer</label><br><br>
                     <select id="mfg" name="mfg" title="mfg">
                         <option value="O-Pee-Chee">O-Pee-Chee</option>
@@ -62,6 +69,7 @@
                                 document.getElementById('setName').value,
                                 document.getElementById('size').value,
                                 document.getElementById('subsets').value,
+                                document.getElementById('stars').value,
                                 document.getElementById('year').value,
                                 document.getElementById('postBody').value,
                                 document.getElementById('mfg').value)">
