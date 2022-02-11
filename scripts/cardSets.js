@@ -95,7 +95,7 @@
                     <table class="set-details-table-style">
                         <tr>
                             <td style="width:400px;font-size:20px"><strong>${cleanSetName}</strong></td>
-                            <td rowspan="6" style="text-align:center"><img src="${cleanHeaderImg}" class="table-header-img"></img></td>
+                            <td rowspan="6" style="text-align:center"><img src="${cleanHeaderImg}" class="blog-img"></img></td>
                         </tr>
                         
                         <tr>
@@ -125,7 +125,7 @@
                         </tr>
                         <tr>
                             <td style="text-align:center">
-                            <img src="${cleanFooterImg}" class="table-footer-img"></img>
+                            <img src="${cleanFooterImg}" class="blog-img"></img>
                             </td>
                         </tr>
                     </table>
