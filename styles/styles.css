@@ -257,6 +257,12 @@ textarea {
     width: 100%;
 }
 
+.card-middle-img {
+  width: 80%;
+  height: 500px;
+  width: 1200px;
+}
+
 .table-footer-img {
   width: 90%;
 }
