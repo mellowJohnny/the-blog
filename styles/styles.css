@@ -219,6 +219,10 @@ textarea {
     min-height: 50px;
   }
 
+.caption {
+  font-family: "Comforter";
+  font-size: 16px;
+}
     
 
 /* Table Stuff */
