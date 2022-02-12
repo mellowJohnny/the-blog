@@ -112,7 +112,7 @@
                             <td><strong><i>Manufacturer:</i></strong> ${cleanMFG}</td>
                         </tr>
                         <tr>
-                            <td><strong><i>Arbritrary Star Rating:</i></strong> ${cleanStars}</td>
+                            <td><strong><i>Hella Star Rating:</i></strong> ${cleanStars}</td>
                         </tr>
                         
                     </table>
@@ -121,7 +121,7 @@
                     </p> 
                     <table class="set-footer-table-style">
                         <tr>
-                            <td style="text-align:left"><strong>...and the winners are...</strong></td>
+                            <td style="text-align:left" class="caption"><strong>...and the winners are...</strong></td>
                         </tr>
                         <tr>
                             <td style="text-align:center">
