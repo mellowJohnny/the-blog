@@ -270,6 +270,12 @@ textarea {
   padding-right: 200px;
 }
 
+.card-8x10-img {
+  width: 80%;
+  padding-left: 200px;
+  padding-right: 200px;
+}
+
 .table-footer-img {
   width: 90%;
 }
