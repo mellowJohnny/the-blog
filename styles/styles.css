@@ -276,7 +276,7 @@ textarea {
   margin-right: auto;
   border: 2px solid;
   border-color: rgb(22, 86, 138);
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
 .table-footer-img {
@@ -286,7 +286,7 @@ textarea {
   margin-right: auto;
   border: 1px solid;
   border-color: rgb(22, 86, 138);
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
 .page-footer {
