@@ -266,7 +266,7 @@ textarea {
   border: 1px solid;
   border-color: rgb(22, 86, 138);
   border-radius: 2px;
-  box-shadow: 5px 10px 18px #81c2e0;
+  box-shadow: 5px 10px 18px #888888;
 }
 
 .card-middle-img {
@@ -278,6 +278,7 @@ textarea {
   border: 2px solid;
   border-color: rgb(22, 86, 138);
   border-radius: 2px;
+  box-shadow: 5px 10px 18px #888888;
 }
 
 .table-footer-img {
@@ -288,6 +289,7 @@ textarea {
   border: 1px solid;
   border-color: rgb(22, 86, 138);
   border-radius: 2px;
+  box-shadow: 5px 10px 18px #888888;
 }
 
 .page-footer {
