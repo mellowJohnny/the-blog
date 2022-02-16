@@ -273,8 +273,10 @@ textarea {
 .card-8x10-img {
   width: 50%;
   display: block;
-  padding-left: 250px;
-  padding-right: 200px;
+  margin-left: auto;
+  margin-right: auto;
+  /*padding-left: 250px;
+  padding-right: 200px; */
   border: 2px solid;
   border-color: rgb(52, 155, 240);
 }
