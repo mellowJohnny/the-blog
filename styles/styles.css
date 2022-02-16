@@ -263,28 +263,12 @@ textarea {
 }
 
 .card-middle-img {
-  /*width: 80%;
-  height: 300px;
-  width: 600px;
-  padding-left: 200px;
-  padding-right: 200px; */
   width: 50%;
   display: block;
   margin-left: auto;
   margin-right: auto;
   border: 2px solid;
-  border-color: rgb(52, 155, 240);
-}
-
-.card-8x10-img {
-  width: 50%;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  /*padding-left: 250px;
-  padding-right: 200px; */
-  border: 2px solid;
-  border-color: rgb(52, 155, 240);
+  border-color: rgb(12, 72, 121);
 }
 
 .table-footer-img {
