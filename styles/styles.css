@@ -259,10 +259,15 @@ textarea {
 }
 
 .table-header-img {
-    width: 100%;
+    /* width: 100%; */
+  width: 50%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .card-middle-img {
+  /* First four values center the image */
   width: 50%;
   display: block;
   margin-left: auto;
