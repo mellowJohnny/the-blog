@@ -85,7 +85,7 @@
        // Generate n number of "Star" emojis, one per rating number
        let cleanStars = "";
        for (let i=0; i < numStars; i++){
-        cleanStars += "&#129349 "; 
+        cleanStars += "&#127775 "; 
        }
        
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
@@ -112,7 +112,7 @@
                             <td><strong><i>Manufacturer:</i></strong> ${cleanMFG}</td>
                         </tr>
                         <tr>
-                            <td><strong><i>Hella Star Rating:</i></strong> ${cleanStars}</td>
+                            <td><strong><i>Hella Rating:</i></strong> ${cleanStars}</td>
                         </tr>
                         
                     </table>
