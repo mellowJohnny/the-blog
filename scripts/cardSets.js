@@ -85,7 +85,7 @@
        // Generate n number of "Star" emojis, one per rating number
        let cleanStars = "";
        for (let i=0; i < numStars; i++){
-        cleanStars += "&#127775 "; 
+        cleanStars += "&#129349"; 
        }
        
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
