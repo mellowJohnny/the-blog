@@ -234,6 +234,7 @@ textarea {
   text-align: left;
 }
 
+/* Used the style the first table displaying the main set details */
 .set-details-table-style td{
   table-layout: fixed;
   margin-left: 5px;
@@ -241,7 +242,7 @@ textarea {
   font-family: 'Arial';
   font-size: 18px;
   text-align: left;
-  padding: 11px;
+  padding: 10px;
 }
 
 .card-table-style td{
