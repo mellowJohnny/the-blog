@@ -98,7 +98,7 @@
                     <table class="set-details-table-style">
                         <tr>
                             <td style="width:400px;font-size:20px"><strong>${cleanSetName}</strong></td>
-                            <td rowspan="6" style="text-align:center"><img src="${cleanHeaderImg}" class="table-header-img"></img></td>
+                            <td rowspan="7" style="text-align:center"><img src="${cleanHeaderImg}" class="table-header-img"></img></td>
                         </tr>
                         
                         <tr>
