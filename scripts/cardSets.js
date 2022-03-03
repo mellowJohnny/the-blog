@@ -39,6 +39,7 @@
                     cardSetArray.Items[i].size,
                     cardSetArray.Items[i].subsets,
                     cardSetArray.Items[i].stars,
+                    cardSetArray.Items[i].formats,
                     cardSetArray.Items[i].headerImg,
                     cardSetArray.Items[i].footerImg,
                     cardSetArray.Items[i].setName);
@@ -60,12 +61,13 @@
  * @param {*} size
  * @param {*} subsets 
  * @param {*} stars
+ * @param {*} formats
  * @param {*} headerImg
  * @param {*} footerImg
  * @param {*} setName 
  */
 
-   function displayBlog(postBody, year, mfg, size, subsets, stars, headerImg, footerImg, setName) {
+   function displayBlog(postBody, year, mfg, size, subsets, stars, formats, headerImg, footerImg, setName) {
        // Populate the blogsDiv...
  
        // Cleanup the JSON we get back so it's back to a String 
@@ -77,6 +79,7 @@
        const cleanSetSize = JSON.parse(size);
        const cleanSubsets = JSON.parse(subsets);
        const starsString = JSON.parse(stars);
+       const cleanFormats = JSON.parse(formats);
        const numStars = parseInt(starsString);
        const cleanHeaderImg = JSON.parse(headerImg);
        const cleanFooterImg = JSON.parse(footerImg);
@@ -107,6 +110,9 @@
                         </tr>
                         <tr>
                             <td><strong><i>Release Year:</i></strong> ${cleanYear} </td>
+                        </tr>
+                        <tr>
+                            <td><strong><i>Available Formats:</i></strong> ${cleanFormats} </td>
                         </tr>
                         <tr>
                             <td><strong><i>Manufacturer:</i></strong> ${cleanMFG}</td>
