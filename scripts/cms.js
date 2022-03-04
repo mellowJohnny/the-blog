@@ -44,12 +44,13 @@
    * @param {*} size
    * @param {*} subsets
    * @param {*} stars
+   * @param {*} formats
    * @param {*} year
    * @param {*} postBody 
    * @param {*} mfg 
    */
   
-   function callCreateCardSetAPI(setName,size,subsets,stars,year,postBody,mfg){
+   function callCreateCardSetAPI(setName,size,subsets,stars,formats,year,postBody,mfg){
       // instantiate a headers object
       let myHeaders = new Headers();
     
@@ -57,7 +58,7 @@
       myHeaders.append("Content-Type", "application/json");
     
       // using built in JSON utility package turn object to string and store in a variable
-      let raw = JSON.stringify({"setName":setName,"size":size,"subsets":subsets,"stars":stars,"year":year,"postBody":postBody,"mfg":mfg});
+      let raw = JSON.stringify({"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":postBody,"mfg":mfg});
     
       // create a JSON object with parameters for API call and store in a variable
       let requestOptions = {
