@@ -6,8 +6,10 @@
 
  function fetchTest() {
 
+    const year = '2022';
+
     // Test endpoint
-    const urlToFetch = `https://c9kzoz1g13.execute-api.us-east-2.amazonaws.com/dev?year=2022`;
+    const urlToFetch = `https://c9kzoz1g13.execute-api.us-east-2.amazonaws.com/dev?year=${year}`;
 
        
     fetch(urlToFetch)
