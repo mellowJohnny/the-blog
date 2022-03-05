@@ -34,7 +34,7 @@
                  * so that we can pull out the properties of each blog post 
                  **/ 
                 const blogPostArray = JSON.parse(value);
-              
+                console.log(`in the for loop: ${value}`);  
                 /** Now that the data we got back is a JSON object, let's loop over all the Posts...
                  * The 'Items' property holds an array of all the blog posts 
                  * Let's loop through that array and display the fields we want!
