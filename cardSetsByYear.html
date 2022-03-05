@@ -24,6 +24,7 @@
   <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
   <!-- <script src="scripts/helper.js"></script> -->
   <script src="scripts/main.js"></script>
+  <script src="scripts/cardSetsByYear.js"></script>
   <script src="scripts/weather.js"></script>
   <script type="text/javascript" src="https://external-production.codecademy.com/assets/relay.js"></script>
 
@@ -31,7 +32,7 @@
   <!-- This calls the fetchAllBlogs() function on page load.  It is responsible for calling the underlying AWS web service -->
   <script>
     window.addEventListener('load', (event) => {
-      fetchAllBlogs('home');
+        fetchCardSetsByYear('1991');
       });
   </script>
 
@@ -91,8 +92,7 @@
 
           <footer class="page-footer">
             <p>&copy; 2022 Christian Couillard</p>
-            <a href="https://mellowjohnny.auth.us-east-2.amazoncognito.com/login?response_type=code&client_id=1m22cfonep7l85th9ut1obk0pe&redirect_uri=https://www.mellowjohnny.cc/wlcms.html">
-                WLCMS</a> | <a href="cardSetsByYear.html">Fester Bestertester</a>
+            
           </footer>
       </div>
   </section>
