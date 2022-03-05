@@ -22,10 +22,9 @@
         // 'data' is an Object at this point...this is basically the record set returned by dynamoDB
         // First let's return an array of the object's properties
         const returnedData = Object.entries(data); 
-        // const cleanData = JSON.parse(returnedData);
-
+       
         // Let's print what we have so far...
-        console.log(`We are back from our API call: ${returnedData}`);  
+        // console.log(`We are back from our API call: ${returnedData}`);  
         
         // Next let's just get the 'body' property returned by the Lambda call
            for (const [key, value] of returnedData) {
@@ -33,10 +32,9 @@
                 /** 
                  * Now that we have the 'body' key, we need to convert the value 
                  * (currently a JSON String) to a JSON Object 
-                 * so that we can pull out the properties of each blog post 
                  **/ 
                 const myYear = JSON.parse(value);
-                console.log(`in the for loop: ${myYear}`);  
+               // console.log(`in the for loop: ${myYear}`);  
                 
                  displayBlog(myYear);
                 
