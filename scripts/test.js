@@ -1,15 +1,15 @@
 /** 
     * TEST AWS call 
-    * AWS Lambda call 
-    * Called from the test.html page
+    * fetchTest() is called onload from the test.html page
+    * Which is responsible for passing in the year we display
   */
 
- function fetchTest() {
+ function fetchTest(year) {
 
-    const year = '1991';
+    const passedYear = year;
 
     // Test endpoint
-    const urlToFetch = `https://c9kzoz1g13.execute-api.us-east-2.amazonaws.com/dev?year=${year}`;
+    const urlToFetch = `https://c9kzoz1g13.execute-api.us-east-2.amazonaws.com/dev?year=${passedYear}`;
 
        
     fetch(urlToFetch)
