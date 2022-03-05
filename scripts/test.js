@@ -23,7 +23,7 @@
         const cleanData = JSON.parse(returnedData);
 
         // Let's print what we have so far...
-        console.log(`We are back from DynamoDB: ${cleanData}`);  
+        console.log(`We are back from our API call: ${cleanData}`);  
         
         // Next let's just get the 'body' property returned by the Lambda call
            for (const [key, value] of returnedData) {
