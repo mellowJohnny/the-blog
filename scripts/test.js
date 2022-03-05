@@ -36,7 +36,7 @@
                 const myYear = JSON.parse(value);
                 console.log(`in the for loop: ${myYear}`);  
                 
-                 displayBlog(myYear));
+                 displayBlog(myYear);
                 
             }
         } 
