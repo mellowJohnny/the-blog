@@ -9,7 +9,7 @@
     const passedYear = year;
 
     // Test endpoint
-    const urlToFetch = `https://c9kzoz1g13.execute-api.us-east-2.amazonaws.com/dev?year=${passedYear}`;
+    const urlToFetch = `https://bbouxnxiz7.execute-api.us-east-2.amazonaws.com/dev?year=${passedYear}`;
 
        
     fetch(urlToFetch)
