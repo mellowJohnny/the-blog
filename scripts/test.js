@@ -33,17 +33,18 @@
                  * (currently a JSON String) to a JSON Object 
                  * so that we can pull out the properties of each blog post 
                  **/ 
-                const blogPostArray = JSON.parse(value);
-                console.log(`in the for loop: ${value}`);  
+                const myYear = JSON.parse(value);
+                console.log(`in the for loop: ${myYear}`);  
+                
                 /** Now that the data we got back is a JSON object, let's loop over all the Posts...
                  * The 'Items' property holds an array of all the blog posts 
                  * Let's loop through that array and display the fields we want!
                  * We call the displayBlog() function to control the display of the blog post
                  * It gets called it once for each blog post, essentially populating each blog post one at a time
                  **/
-                for (var i = 0; i < blogPostArray.Items.length; i++) {
-                    displayBlog(blogPostArray.Items[i].year);
-                 }
+               // for (var i = 0; i < blogPostArray.Items.length; i++) {
+                 //   displayBlog(blogPostArray.Items[i].year);
+                // }
             }
         } 
             
