@@ -29,7 +29,9 @@
   <script type="text/javascript" src="https://external-production.codecademy.com/assets/relay.js"></script>
 
 
-  <!-- This calls the fetchAllBlogs() function on page load.  It is responsible for calling the underlying AWS web service -->
+  <!-- This calls the fetchCardSetsByYear() function on page load, dynamically passing the year we want to fetch sets from
+    It is responsible for calling the underlying AWS web service 
+  -->
   <script>
     window.addEventListener('load', (event) => {
         fetchCardSetsByYear('1991');
