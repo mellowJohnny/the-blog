@@ -7,7 +7,7 @@
  function fetchCardSetsByYear(year) {
 
     // Set up a global variable to hold the API URL
-    const urlToFetch = `https://bbouxnxiz7.execute-api.us-east-2.amazonaws.com/dev?year=${year}`;
+    const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}`;
           
     fetch(urlToFetch)
        .then(function (response) {
