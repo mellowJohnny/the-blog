@@ -41,6 +41,9 @@
     window.addEventListener('load', (event) => {
         fetchCardSetsByYear(year);
       });
+
+    /* Let's also use the year to dynamically populate our page header... */  
+    document.getElementById('dynamicYear').innerHTML = `...${year}`;
   </script>
 
 <body>
@@ -64,10 +67,10 @@
       <p>
       <table class="top-nav">
         <tr>
-          <td class="nav-td"><a href="tech.html?blogType=tech">Tech</a> </td>
-          <td class="nav-td"><a href="cardChecker.html">The Card-O-Matic</a></td>
-          <td class="nav-td"><a href="quad2.html">The Quad-O-Matic</a></td>
-           </td>
+            <td class="nav-td"><a href="index.html">Home</a></td>
+            <td class="nav-td"><a href="tech.html?blogType=tech">Tech</a> </td>
+            <td class="nav-td"><a href="cardChecker.html">The Card-O-Matic</a></td>
+            <td class="nav-td"><a href="quad2.html">The Quad-O-Matic</a></td>
         </tr>
       </table>
     </p>
@@ -77,7 +80,9 @@
           <main>
             <section>
               <div class="section-style">
-                <p>...</p>
+                <!-- The year value dynamically displayed here is set up in the top script where we extract the year
+                param from the URL  -->  
+                <p id="dynamicYear"></p>
               </div>
               <div class="flex-container">
                 <div class="section-style-intro">
