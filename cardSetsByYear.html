@@ -35,14 +35,11 @@
         let params = new URLSearchParams(document.location.search);
         let year = params.get("year");
 
-        /*
-        const queryString = window.location.search;  
-        const urlParams = new URLSearchParams(queryString);
-        const year = urlParams.get('year'); */
-        /* Let's also use the year to dynamically populate our page header... */ 
-
-        /* This calls the fetchCardSetsByYear() function on page load, dynamically passing the year we want to fetch sets from
-        It is responsible for calling the underlying AWS web service */
+        /* 
+        *   Call to fetchCardSetsByYear() on page load, dynamically passing the set year we want to fetch
+        *   It is responsible for calling the underlying AWS web service
+        *   Can also use the year to dynamically populate our page header...removed for now
+        */  
         window.addEventListener('load', (event) => {
             fetchCardSetsByYear(year);
             /* renderYearHeader(year); */
@@ -84,14 +81,13 @@
           <main>
             <section>
               <div class="section-style">
-                <!-- The year value dynamically displayed here is set up in the top script where we extract the year
-                param from the URL  -->  
+                <!-- The year value dynamically displayed here is set up in the top script where we extract the year param from the URL  -->  
                 <p id="pageHeader"></p>
               </div>
               <div class="flex-container">
-                <div class="section-style-intro">
+                <div class="cards-intro">
                 <p>Ah...the late '80s / early '90s<br>
-                  Miami Vice, acid-wash jeans, those teal San Jose Sharks jerseys...and a hockey card explosion.  Consider the 1989-90 NHL season 
+                  Miami Vice, acid wash jeans, those teal San Jose Sharks jerseys...and a hockey card explosion.  Consider the 1989-90 NHL season 
                   featured exactly two main sets - Topps for the US market, and O-Pee-Chee for Canada. Three years later there were thirteen (13!) 
                   sets between the US and Canadian - sixteen if you include the French versions of the Upper Deck & Parkhurst sets, plus McDonald's. 
                   You can see why, with the sheer volume of cards produced during these heady days, the era earned the <a href="cards.html">Junk Wax</a> moniker.  </p>
