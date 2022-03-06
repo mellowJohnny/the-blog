@@ -38,7 +38,8 @@
     const urlParams = new URLSearchParams(queryString);
     const year = urlParams.get('year')
     /* Let's also use the year to dynamically populate our page header... */  
-    document.getElementById("dynamicYear").innerHTML = year;
+    let pageHeader = document.getElementById("dynamicYear");
+    pageHeader.innerHTML = year;
 
     window.addEventListener('load', (event) => {
         fetchCardSetsByYear(year);
