@@ -50,7 +50,10 @@
   color:rgb(11, 62, 100);
 }
 
-/** Navigation link formating **/
+.set-o-matic-picker {
+  text-align: center;
+}
+
 .set-nav-td {
   margin: 15px;
   padding: 20px;
