@@ -35,14 +35,13 @@
     const queryString = window.location.search;  
     const urlParams = new URLSearchParams(queryString);
     const year = urlParams.get('year');
-    /* Let's also use the year to dynamically populate our page header... */  
-    let pageHeader = document.getElementById("dynamicYear");
-    pageHeader.innerHTML = year;
+    /* Let's also use the year to dynamically populate our page header... */ 
 
     /* This calls the fetchCardSetsByYear() function on page load, dynamically passing the year we want to fetch sets from
     It is responsible for calling the underlying AWS web service */
     window.addEventListener('load', (event) => {
         fetchCardSetsByYear(year);
+        renderYearHeader(year);
       });
   </script>
 </head>

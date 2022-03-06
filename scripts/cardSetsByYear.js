@@ -138,3 +138,8 @@
                     </table>
                    <br> <hr/> <br><br>`;
    }
+
+function renderYearHeader(year) {
+    let pageHeader = document.getElementById("dynamicYear");
+    pageHeader.innerHTML = `...${year}`;
+}
