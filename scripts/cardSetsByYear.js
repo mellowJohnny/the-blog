@@ -139,7 +139,12 @@
                    <br> <hr/> <br><br>`;
    }
 
+
+/* 
+    Function called on page load to dynamically pass in the year pulled from the request 
+    and render the pager header 
+*/
 function renderYearHeader(year) {
-    let pageHeader = document.getElementById("dynamicYear");
+    let pageHeader = document.getElementById("pageHeader");
     pageHeader.innerHTML = `...card sets from ${year}`;
 }
