@@ -29,18 +29,18 @@
   <script type="text/javascript" src="https://external-production.codecademy.com/assets/relay.js"></script>
 
 
-  <!-- This calls the fetchCardSetsByYear() function on page load, dynamically passing the year we want to fetch sets from
-    It is responsible for calling the underlying AWS web service 
-  -->
+  
   <script>
     /* Let's get the URL params from the request, and extract the year */  
     const queryString = window.location.search;  
     const urlParams = new URLSearchParams(queryString);
-    const year = urlParams.get('year')
+    const year = urlParams.get('year');
     /* Let's also use the year to dynamically populate our page header... */  
     let pageHeader = document.getElementById("dynamicYear");
     pageHeader.innerHTML = year;
 
+    /* This calls the fetchCardSetsByYear() function on page load, dynamically passing the year we want to fetch sets from
+    It is responsible for calling the underlying AWS web service */
     window.addEventListener('load', (event) => {
         fetchCardSetsByYear(year);
       });
