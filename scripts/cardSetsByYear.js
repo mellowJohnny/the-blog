@@ -141,5 +141,5 @@
 
 function renderYearHeader(year) {
     let pageHeader = document.getElementById("dynamicYear");
-    pageHeader.innerHTML = `...${year}`;
+    pageHeader.innerHTML = `...card sets from ${year}`;
 }
