@@ -165,12 +165,11 @@ textarea {
     margin: 5px auto;
     width: 900px;
     overflow: scroll;
-
 }
 
 .cards-intro {
   font-family: 'Work Sans', sans-serif;
-  font-size: 16px;
+  font-size: 24px;
   margin: 5px auto;
   width: 950px;
   overflow: scroll;
