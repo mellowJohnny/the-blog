@@ -33,10 +33,10 @@
             const cardSetArray = JSON.parse(value);
 
             // ** DEBUG **
-            console.log(`Array Count is: ${cardSetArray.Items.Count}`);
+            console.log(`Array length is: ${cardSetArray.Items.length}`);
 
             // Check to see if we have any results...    
-            if (cardSetArray.Items.Count = 0) {
+            if (cardSetArray.Items.length === 0) {
                 console.log("No Results...");
 
                 // If we have no results, stop processing
