@@ -43,12 +43,11 @@
                 return;
             }
 
-               
             // Now that the data we got back is a JSON object, let's loop over all the Posts...
             // The 'Items' property holds an array of all the set reviews 
             // Let's loop through that array and display the fields we want!
-            // We call the displayBlog() function to control the display
-            // calling it once for each set review, essentially populating each review one at a time
+            // We call the displayBlog() function to control the display, calling it once
+            // for each set review, essentially populating each review one at a time
 
                for (var i = 0; i < cardSetArray.Items.length; i++) {
                    displayBlog(cardSetArray.Items[i].postBody,
@@ -67,6 +66,9 @@
 
        })
        .catch(function (err) {
+           // Error...return a friendly message
+           let blogBody = document.getElementById("blogsDiv");
+           blogBody.innerHTML = `...Houston...ah, there's been a problem...`;
            console.log('Something went wrong...: ' + err);
        });
 }
