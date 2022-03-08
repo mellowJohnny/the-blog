@@ -68,7 +68,7 @@
        .catch(function (err) {
            // Error...return a friendly message
            let blogBody = document.getElementById("blogsDiv");
-           blogBody.innerHTML = `...Houston...ah, there's been a problem...`;
+           blogBody.innerHTML = `...Okay, Houston...we've had a problem here...`;
            console.log('Something went wrong...: ' + err);
        });
 }
