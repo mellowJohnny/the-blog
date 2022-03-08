@@ -39,6 +39,10 @@
             if (cardSetArray.Items.length === 0) {
                 console.log("No Results...");
 
+                // Return a friendly message about no results...
+                let blogBody = document.getElementById("blogsDiv");
+                blogBody.innerHTML = `<p>...These arne't the droids you are looking for...</p>`;
+
                 // If we have no results, stop processing
                 return;
             }
