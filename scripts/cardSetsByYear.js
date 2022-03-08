@@ -22,14 +22,8 @@
        // *** DEBUG ***    
            console.log(`Here is what DynamoDB returned: ${returnedData}`);
 
-       // Check to see if we have any results...    
-         if (returnedData === null) {
-           console.log("No Results...");
-
-           // If we have no results, stop processing
-           return;
-       }
        
+
        // Next let's just get the 'body' property returned by the Lambda call
           for (const [key, value] of returnedData) {
               if (key === "body"){
@@ -37,6 +31,18 @@
             // Now that we have the 'body' key, we need to convert the value (currently a JSON String) to a JSON Object 
             // so that we can pull out the properties of each blog post 
             const cardSetArray = JSON.parse(value);
+
+            // ** DEBUG **
+            console.log(`Array Count is: ${cardSetArray.Items.Count}`);
+
+            // Check to see if we have any results...    
+            if (cardSetArray.Items.Count = 0) {
+                console.log("No Results...");
+
+                // If we have no results, stop processing
+                return;
+            }
+
                
             // Now that the data we got back is a JSON object, let's loop over all the Posts...
             // The 'Items' property holds an array of all the set reviews 
