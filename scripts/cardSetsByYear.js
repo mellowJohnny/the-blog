@@ -32,16 +32,12 @@
             // so that we can pull out the properties of each blog post 
             const cardSetArray = JSON.parse(value);
 
-            // ** DEBUG **
-            console.log(`Array length is: ${cardSetArray.Items.length}`);
-
             // Check to see if we have any results...    
             if (cardSetArray.Items.length === 0) {
-                console.log("No Results...");
 
-                // Return a friendly message about no results...
+                // No results...return a friendly message
                 let blogBody = document.getElementById("blogsDiv");
-                blogBody.innerHTML = `<p>...These arne't the droids you are looking for...</p>`;
+                blogBody.innerHTML = `...these aren't the droids you're looking for...`;
 
                 // If we have no results, stop processing
                 return;
