@@ -37,7 +37,7 @@
 
                 // No results...return a friendly message
                 let blogBody = document.getElementById("blogsDiv");
-                blogBody.innerHTML = `...these aren't the droids you're looking for...`;
+                blogBody.innerHTML = `..these aren't the droids you're looking for...`;
 
                 // If we have no results, stop processing
                 return;
