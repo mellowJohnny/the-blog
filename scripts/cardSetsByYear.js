@@ -18,6 +18,8 @@
        // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
        // First let's return an array of the object's properties
            const returnedData = Object.entries(data); 
+
+       // *** DEBUG ***    
            console.log(`Here is what DynamoDB returned: ${returnedData}`);
 
        // Check to see if we have any results...    
@@ -27,6 +29,7 @@
            // If we have no results, stop processing
            return;
        }
+       
        // Next let's just get the 'body' property returned by the Lambda call
           for (const [key, value] of returnedData) {
               if (key === "body"){
