@@ -151,6 +151,15 @@ textarea {
     padding-left: 10px;
 }
 
+.quad-masthead {
+  font-family: 'Spicy Rice';
+  font-size: 8vw;  /* makes font-size responsive... */
+  color: #3FA7D6;
+  background-color:rgb(243, 14, 167);
+  padding-top: 1px;
+  padding-left: 10px;
+}
+
 .section-style p {
     font-family: 'Caveat', cursive;
     font-size: 40px;
