@@ -10,23 +10,11 @@
     * Called from the index.html page
   */
 
-  function fetchAllBlogs(blogType) {
+  function fetchBlogs(blogType) {
+      
     // Set up a global variable to hold the API URL
-    let urlToFetch = "";
-
-    // First check the blogType param to see which API we should call...
-    switch(blogType) {
-        case "home":
-          // call to getBlogs API
-          urlToFetch = `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev`;
-          break;
-        case "tech":
-          // call to getTechBlogs API
-          urlToFetch = `https://bbzcidv1df.execute-api.us-east-2.amazonaws.com/dev`;
-          break;
-        default:
-          // code block
-      }
+    const urlToFetch = `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`;
+          
 
     fetch(urlToFetch)
        .then(function (response) {
