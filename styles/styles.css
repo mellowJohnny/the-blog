@@ -155,7 +155,7 @@ textarea {
   font-family: 'Spicy Rice';
   font-size: 8vw;  /* makes font-size responsive... */
   color: #3FA7D6;
-  background-color:rgb(243, 14, 167);
+  background-color:rgb(247, 74, 195);
   padding-top: 1px;
   padding-left: 10px;
 }
@@ -231,6 +231,15 @@ textarea {
     font-family: 'Arial', cursive;
     font-size: 14px;
     color:rgb(169, 220, 243);
+    width: 80%;
+    height: 150px; 
+    
+  }
+
+  .quad-weather {
+    font-family: 'Arial', cursive;
+    font-size: 14px;
+    color:rgb(247, 74, 195);
     width: 80%;
     height: 150px; 
     
