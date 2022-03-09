@@ -64,7 +64,7 @@
 body {
     height:100%;
     /* background-color: rgb(160, 188, 240); */
-    background-color: rgb(212, 231, 241);
+    background-color: rgb(229, 239, 245);
 
     /* Set a default font size for the page, then use em to set relative sizes to this */
     font-size: 18px;
@@ -132,6 +132,15 @@ textarea {
   border-collapse: collapse;
   border: none;
   background-color:rgb(44, 82, 137);
+  text-align: left;
+  vertical-align: middle;
+  width: 100%;
+ }
+
+ .quad-mast-table {
+  border-collapse: collapse;
+  border: none;
+  background-color:rgb(247, 74, 195);
   text-align: left;
   vertical-align: middle;
   width: 100%;
@@ -239,7 +248,7 @@ textarea {
   .quad-weather {
     font-family: 'Arial', cursive;
     font-size: 14px;
-    color:rgb(247, 74, 195);
+    color:rgb(169, 220, 243);
     width: 80%;
     height: 150px; 
     
