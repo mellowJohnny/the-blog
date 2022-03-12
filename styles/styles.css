@@ -83,6 +83,11 @@ a {
   color: rgb(12, 101, 136);
 }
 
+.header-link {
+  text-decoration: none;
+  color: #3FA7D6;
+}
+
 table {
   border-collapse: collapse;
  }
