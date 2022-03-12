@@ -142,15 +142,6 @@ textarea {
   width: 100%;
  }
 
- .quad-mast-table {
-  border-collapse: collapse;
-  border: none;
-  background-color:rgb(247, 74, 195);
-  text-align: left;
-  vertical-align: middle;
-  width: 100%;
- }
-
 .body-cms {
   height:100%;
   background-color: rgb(124, 151, 201);
@@ -163,15 +154,6 @@ textarea {
     background-color:rgb(44, 82, 137);
     padding-top: 1px;
     padding-left: 10px;
-}
-
-.quad-masthead {
-  font-family: 'Spicy Rice';
-  font-size: 8vw;  /* makes font-size responsive... */
-  color: #3FA7D6;
-  background-color:rgb(247, 74, 195);
-  padding-top: 1px;
-  padding-left: 10px;
 }
 
 .section-style p {
