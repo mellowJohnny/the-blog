@@ -151,8 +151,6 @@
                         </tr>
                     </table>
                    <br> 
-                    <!-- Some React!! -->
-                    <div id="like_button_container" class="input-button"></div>
                    <hr/> 
                    <br>
                    <br>`;
