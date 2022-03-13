@@ -150,13 +150,19 @@
                             </td>
                         </tr>
                     </table>
-                   <br> <hr/> <br><br>`;
+                   <br> 
+                    <!-- Some React!! -->
+                    <div id="like_button_container" class="input-button"></div>
+                   <hr/> 
+                   <br>
+                   <br>`;
    }
 
 
 /* 
     Function called on page load to dynamically pass in the year pulled from the request 
-    and render the pager header 
+    and render the pager header.
+    Currently NOT CALLED...
 */
 function renderYearHeader(year) {
     let pageHeader = document.getElementById("pageHeader");
