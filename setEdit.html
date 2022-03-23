@@ -19,9 +19,7 @@
             let setID = params.get("setID");
 
             /* TEST - CAN WE PRINT THE setID?  */
-            let blogBody = document.getElementById("editSetDiv");
-            blogBody.innerHTML += 
-                    `<p>The setID is ${setID}</p>`;
+            document.getElementById("editSetDiv").innerHTML += `<p>The setID is ${setID}</p>`;
 
             /* 
             *   Call to fetchCardSetsByID() on page load, dynamically passing the set year we want to fetch
