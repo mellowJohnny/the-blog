@@ -151,7 +151,7 @@ function displayCardSets(setID, setName) {
   // Cleanup the JSON we get back so it's back to a String 
   // We parsed the first object we got back, but that didn't parse the contents of the inner properties
   // so we need to explicitly parse title, author, and the blog
-  const cleanSetID = JSON.parse(setID);
+  const cleanSetID = setID;
   const cleanSetName = JSON.parse(setName);
   
   // Setup a variable to hold the reference to our Div, 'cause we got work to do!
@@ -172,12 +172,13 @@ function displayCardSets(setID, setName) {
 
 /** 
  * This function fetches a single card set, given it's ID
- * 
+ * and parses out the individual fields
+ * It the calls populateCardSet() which in turn populates the HTML form on setEdit.html
  * **/
 
-function fetchCardSetsByID(id) {
+function fetchCardSetByID(id) {
   // Set up a global variable to hold the API URL
-  const urlToFetch = `https://.execute-api.us-east-2.amazonaws.com/dev?setID=${id}`;
+  const urlToFetch = ` https://733bwunxq6.execute-api.us-east-2.amazonaws.com/dev?setID=${id}`;
         
   fetch(urlToFetch)
      .then(function (response) {
@@ -215,9 +216,14 @@ function fetchCardSetsByID(id) {
           // for each set review, essentially populating each review one at a time
 
              for (var i = 0; i < cardSetArray.Items.length; i++) {
-                 editCardSet(
-                  cardSetArray.Items[i].setID,
-                  cardSetArray.Items[i].setName);
+                 populateCardSet(cardSetArray.Items[i].postBody,
+                    cardSetArray.Items[i].year,
+                    cardSetArray.Items[i].mfg,
+                    cardSetArray.Items[i].size,
+                    cardSetArray.Items[i].subsets,
+                    cardSetArray.Items[i].stars,
+                    cardSetArray.Items[i].formats,
+                    cardSetArray.Items[i].setName);
               }
           }
       }
@@ -229,6 +235,18 @@ function fetchCardSetsByID(id) {
          blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
          console.log('Something went wrong...: ' + err);
      });
+}
+
+/** This function calls the associated DIV on the Set Update form and populates it with the current value */
+function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName) {
+    document.getElementById("postBody").defaultValue = postBody;
+    document.getElementById("year").defaultValue = year;
+    document.getElementById("mfg").defaultValue = mfg;
+    document.getElementById("size").defaultValue = size;
+    document.getElementById("subsets").defaultValue = subsets;
+    document.getElementById("stars").defaultValue = stars;
+    document.getElementById("formats").defaultValue = formats;
+    document.getElementById("setName").defaultValue = setName;
 }
 
 

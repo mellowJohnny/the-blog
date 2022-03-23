@@ -18,18 +18,15 @@
             let params = new URLSearchParams(document.location.search);
             let setID = params.get("setID");
 
-            /* TEST - CAN WE PRINT THE setID?  */
-            document.getElementById("editSetDiv").innerHTML += `<p>The setID is ${setID}</p>`;
-
             /* 
             *   Call to fetchCardSetsByID() on page load, dynamically passing the set year we want to fetch
             *   It is responsible for calling the underlying AWS web service
-            *   Can also use the year to dynamically populate our page header...removed for now
+            *   Can also use the year to dynamically populate our page header...removed for now   */ 
              
             window.addEventListener('load', (event) => {
-                fetchCardSetsByID(setID);
+                fetchCardSetByID(setID);
             }); 
-            */ 
+          
         </script>
     </head>
 
