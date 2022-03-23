@@ -2,25 +2,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <html lang="en-ca">
-  <title>the hella files...</title>
+  <title>the hella files...Hockey Junk Wax - A Brief History...</title>
   <head>
     <meta charset="utf-8"> 
+    <meta description="The sports card hobby exploded at the tail end of the '80s and early 1990s, and the hockey card market was no exception. New market entrants, an explosion of sets, and rampant over-production. But was it all bad?">
+
+    <!-- Load the Google Fonts -->
     <link rel="stylesheet" type="text/css" href="styles/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com"> 
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Nunito:wght@200&display=swap&family=Special+Elite&family=Work+Sans:ital,wght@0,400;1,500&display=swap" rel="stylesheet" crossorigin="anonymous">
-  </head>
+  
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX" crossorigin="anonymous"></script>
+   
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JMGVGK09QX');
+    </script> 
 
-  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-  <script src="scripts/cardSets.js"></script>
-  <script src="scripts/weather.js"></script>
-  <!--
-  <script>
-    window.addEventListener('load', (event) => {
-      fetchAllCardSets();
-      });
-  </script>
-  -->
+    <!-- Load the hella files JS Scripts -->
+    <script src="scripts/cardSets.js"></script>  
+  
+  </head>
 
 <body>
   <section>
@@ -28,12 +34,14 @@
       <tr>
         <td width="80%">
           <div>
-            <header class="masthead"><a href="index.html" class="header-link">the hella files</a></header>
+            <header class="masthead">
+              <a href="index.html" class="header-link">the hella files</a>
+            </header>
         </td>
         <td width="20%" >
           <!-- Display current weather from weather.js -->
           <section>
-            <div class="weather" id="weather">Waiting for the Weather Forecast...</div> 
+          <!--  <div class="weather" id="weather">Waiting for the Weather Forecast...</div> -->
         </td>
         </tr>
       </table>

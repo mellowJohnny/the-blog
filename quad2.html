@@ -2,18 +2,27 @@
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <html lang="en-ca">
-    <title>the quad-o-matic...</title>
+    <title>the hella files...A Quadratic Equation Calculator</title>
 <head>
     <meta charset="utf-8"> 
+    <meta description="Remember Quadratic Equations? Looking for a quick and easy way to calculate two roots given three intercepts? Look no further!">
     <link rel="stylesheet" type="text/css" href="styles/styles.css">
     <link rel="preconnect" href="https://fonts.gstatic.com"> 
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Nunito:wght@200&display=swap&family=Special+Elite&family=Work+Sans:ital,wght@0,400;1,500&display=swap" rel="stylesheet" crossorigin="anonymous">
     
-  <title>The Quad-O-Matic</title>
-    
     <script src="scripts/quadratic.js"></script>
-    <script src="scripts/weather.js"></script>
+   <!-- <script src="scripts/weather.js"></script> -->
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX" crossorigin="anonymous"></script>
+   
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JMGVGK09QX');
+    </script> 
     
 </head>
 
@@ -27,7 +36,7 @@
           </td>
           <td width="20%" >
             <!-- Display current weather from weather.js -->
-              <div class="weather" id="weather">Waiting for the Weather Forecast...</div> 
+            <!--  <div class="weather" id="weather">Waiting for the Weather Forecast...</div> -->
           </td>
           </tr>
         </table>
