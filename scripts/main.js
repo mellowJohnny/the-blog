@@ -87,8 +87,8 @@
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
        let blogBody = document.getElementById("blogsDiv");
        blogBody.innerHTML += 
-                    `<p>
-                    <h1 class="blog-title">${cleanTitle}</h1> <br>
+                    `
+                    <h1 class="blog-title">${cleanTitle}</h1> 
                     <strong><i>${cleanAuthor} </i></strong><br>
                     <strong><i>${fixDate(date)}</i></strong> <br><br>
                     ${cleanPostBody} 
