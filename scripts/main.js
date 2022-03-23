@@ -93,7 +93,10 @@
                     ${cleanPostBody} 
                     <br>
                     <img src="${cleanImg}" class="blog-img"></img>
-                    </p> <hr/><p></p> `;
+                    </p> 
+                    <hr/>
+                    <br>
+                    <br> `;
    }
 
 
