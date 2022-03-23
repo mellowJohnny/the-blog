@@ -74,8 +74,9 @@
        // Populate the blogsDiv...
  
        // Cleanup the JSON we get back so it's back to a String 
-       // We parsed the first object we got back, but that didn't parse the contents of the inner properties
-       // so we need to explicitly parse title, author, and the blog
+       // We parsed the first object we got back (the outer DynamoDB record), but that didn't parse the contents 
+       // of the inner properties. 
+       // We need to explicitly parse title, author, and the blog
        const cleanTitle = JSON.parse(title);
        const cleanAuthor = JSON.parse(author);
        const cleanPostBody = JSON.parse(postBody);
@@ -108,7 +109,7 @@
 
    function fixDate(date){
     const d = new Date(date);
-    // Get the day of the week as an Interger, then convert it to the name
+    // Get the day of the week as an Integer, then convert it to the name of the day
     const dayNum = d.getDay();
     const weekDay = getDayOfTheWeek(dayNum);
 
