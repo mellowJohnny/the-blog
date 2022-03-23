@@ -75,6 +75,102 @@
       .catch(error => console.log('error', error));
       }
 
+/**
+ * fetchAllCardSets Function
+ * Used to fetch all cards sets to be able present a list of all card set reviews 
+ * This will then allow CMS users to select a single set to be subsequently updated in the CMS
+ */
+
+ function fetchAllCardSets() {
+
+  // Set up a global variable to hold the API URL
+  const urlToFetch = `https://tx7romovbd.execute-api.us-east-2.amazonaws.com/dev`;
+        
+  fetch(urlToFetch)
+     .then(function (response) {
+         const jsonResponse = response.json();
+         return jsonResponse; // Our Promise object
+     })
+     .then(function (data) {
+     // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
+     // First let's return an array of the object's properties
+         const returnedData = Object.entries(data); 
+
+     // Next let's just get the 'body' property returned by the Lambda call
+        for (const [key, value] of returnedData) {
+            if (key === "body"){
+
+          // Now that we have the 'body' key, we need to convert the value (currently a JSON String) to a JSON Object 
+          // so that we can pull out the properties of each blog post 
+          const cardSetArray = JSON.parse(value);
+
+          // Check to see if we have any results...    
+          if (cardSetArray.Items.length === 0) {
+
+              // No results...return a friendly message
+              let blogBody = document.getElementById("editBlogsDiv");
+              blogBody.innerHTML = `...these aren't the Droids you're looking for...`;
+
+              // If we have no results, stop processing
+              return;
+          }
+
+          // Now that the data we got back is a JSON object, let's loop over all the Posts...
+          // The 'Items' property holds an array of all the set reviews 
+          // Let's loop through that array and display the fields we want!
+          // We call the displayBlog() function to control the display, calling it once
+          // for each set review, essentially populating each review one at a time
+
+             for (var i = 0; i < cardSetArray.Items.length; i++) {
+                 displayCardSets(
+                  cardSetArray.Items[i].setID,
+                  cardSetArray.Items[i].setName);
+              }
+          }
+      }
+
+     })
+     .catch(function (err) {
+         // Error...return a friendly message
+         let blogBody = document.getElementById("editBlogsDiv");
+         blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
+         console.log('Something went wrong...: ' + err);
+     });
+}
+
+/**
+* Function to Fetch All Card Sets 
+* Used by CMS to present Card Set names to allow for an individual set to be updated
+* Called by fetchAllCardSets()
+* @param {*} setID
+* @param {*} setName 
+*/
+
+function displayCardSets(setID, setName) {
+
+  // Cleanup the JSON we get back so it's back to a String 
+  // We parsed the first object we got back, but that didn't parse the contents of the inner properties
+  // so we need to explicitly parse title, author, and the blog
+  const cleanSetID = JSON.parse(setID);
+  const cleanSetName = JSON.parse(setName);
+  
+  // Setup a variable to hold the reference to our Div, 'cause we got work to do!
+  let blogBody = document.getElementById("editBlogsDiv");
+  blogBody.innerHTML += 
+               `
+               <table class="set-details-table-style">
+                   <tr>
+                       <td style="width:400px;font-size:20px">
+                          <a href="editSet.html?setID=${cleanSetID}">
+                          <strong>${cleanSetName}</strong>
+                          </a>
+                       </td>
+                   </tr>
+               </table>
+               `;
+}
+
+
 
 
 
