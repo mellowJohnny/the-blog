@@ -91,11 +91,10 @@
                     <strong><i>${cleanAuthor} </i></strong><br>
                     <strong><i>${fixDate(date)}</i></strong> <br><br>
                     ${cleanPostBody} 
-                    <br>
+                    <br><br>
                     <img src="${cleanImg}" class="blog-img"></img>
                     </p> 
-                    <hr/>
-                    <br> `;
+                    <hr/>`;
    }
 
 
