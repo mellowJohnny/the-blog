@@ -150,7 +150,8 @@ function displayCardSets(setID, setName) {
 
   // Cleanup the JSON we get back so it's back to a String 
   // We parsed the first object we got back, but that didn't parse the contents of the inner properties
-  // so we need to explicitly parse title, author, and the blog
+  // so we need to explicitly parse setName as it will come back with double-quotes around it.
+  // setID comes back as a string with no extra quotes so no need to JSON.parse() it
   const cleanSetID = setID;
   const cleanSetName = JSON.parse(setName);
   
