@@ -6,6 +6,11 @@
 
  function fetchCardSetsByYear(year) {
 
+    const currentYear = year;
+
+    // Call the Page Header function to dynamically create & populate the page header
+    renderYearHeader(currentYear);
+
     // Set up a global variable to hold the API URL
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}`;
           
@@ -160,7 +165,6 @@
 /* 
     Function called on page load to dynamically pass in the year pulled from the request 
     and render the pager header.
-    Currently NOT CALLED...
 */
 function renderYearHeader(year) {
     let pageHeader = document.getElementById("pageHeader");
