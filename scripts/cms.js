@@ -161,7 +161,7 @@ function displayCardSets(setID, setName) {
                <table class="set-details-table-style">
                    <tr>
                        <td style="width:400px;font-size:20px">
-                          <a href="editSet.html?setID=${cleanSetID}">
+                          <a href="setEdit.html?setID=${cleanSetID}">
                           <strong>${cleanSetName}</strong>
                           </a>
                        </td>
