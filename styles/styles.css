@@ -190,6 +190,11 @@ textarea {
     padding: 5px;
 }
 
+.blog-title h1 {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 18px;
+}
+
 .card-entry {
     font-family: 'Nunito';
     background: rgb(224, 236, 241);
