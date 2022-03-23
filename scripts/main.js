@@ -95,7 +95,6 @@
                     <img src="${cleanImg}" class="blog-img"></img>
                     </p> 
                     <hr/>
-                    <br>
                     <br> `;
    }
 
