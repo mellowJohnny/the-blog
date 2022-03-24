@@ -291,12 +291,12 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
       };
 
     // *** DEBUG ***
-    console.log(`Here's the request object: ${requestOptions}`)
+   // console.log(`Here's the request object: ${requestOptions}`)
     
     // Make API call to updateCardSet API endpoint in API Gateway with parameters and use promises to get response
     fetch("https://bb8yehibjb.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
     .then(response => response.text())
-    .then(result => alert(JSON.parse(result).body))
+   // .then(result => alert(JSON.parse(result).body))
     .catch(error => console.log('error', error));
     
 }
