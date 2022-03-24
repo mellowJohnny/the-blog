@@ -280,7 +280,7 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
     let raw = JSON.stringify({"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":postBody,"mfg":mfg});
     
     // *** DEBUG ***
-    console.log(`Here's the JSON object: ${raw}`)
+   // console.log(`Here's the JSON object: ${raw}`)
 
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
@@ -289,6 +289,9 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
       body: raw,
       redirect: 'follow'
       };
+
+    // *** DEBUG ***
+    console.log(`Here's the request object: ${requestOptions}`)
     
     // Make API call to updateCardSet API endpoint in API Gateway with parameters and use promises to get response
     fetch("https://bb8yehibjb.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
