@@ -268,6 +268,7 @@ function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName) {
 
 function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
     // instantiate a headers object
+    console.log(`In updateCardSet: Set Name: ${setName}, Size: ${size}, Subsets: ${subsets}, Stars: ${stars}, Formats: ${formats}, Year: ${year}, Body: ${postBody}, Manufacturer: ${mfg}`)
     let myHeaders = new Headers();
     
     // add content type header to object
