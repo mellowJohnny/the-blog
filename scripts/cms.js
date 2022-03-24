@@ -266,6 +266,32 @@ function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName) {
     document.getElementById("setName").defaultValue = cleanSetName;
 }
 
+function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
+    // instantiate a headers object
+    let myHeaders = new Headers();
+    
+    // add content type header to object
+    myHeaders.append("Content-Type", "application/json");
+  
+    // using built in JSON utility package turn object to string and store in a variable
+    let raw = JSON.stringify({"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":postBody,"mfg":mfg});
+  
+    // create a JSON object with parameters for API call and store in a variable
+    let requestOptions = {
+      method: 'PUT',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+      };
+    
+    // make API call to updateCardSet API endpoint with parameters and use promises to get response
+    fetch("https://bb8yehibjb.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
+    .then(response => response.text())
+    .then(result => alert(JSON.parse(result).body))
+    .catch(error => console.log('error', error));
+    
+}
+
 
 
 
