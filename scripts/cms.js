@@ -240,14 +240,31 @@ function fetchCardSetByID(id) {
 
 /** This function calls the associated DIV on the Set Update form and populates it with the current value */
 function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName) {
-    document.getElementById("postBody").defaultValue = postBody;
-    document.getElementById("year").defaultValue = year;
-    document.getElementById("mfg").defaultValue = mfg;
-    document.getElementById("size").defaultValue = size;
-    document.getElementById("subsets").defaultValue = subsets;
-    document.getElementById("stars").defaultValue = stars;
-    document.getElementById("formats").defaultValue = formats;
-    document.getElementById("setName").defaultValue = setName;
+
+    // Cleanup the JSON we get back so it's back to a String 
+    // We parsed the first object we got back, but that didn't parse the contents of the inner properties
+    // so we need to explicitly parse all the properties we need to send back
+    const cleanPostBody = JSON.parse(postBody);
+    const cleanYear = JSON.parse(year);
+    const cleanMFG = JSON.parse(mfg);
+    const cleanSetSize = JSON.parse(size);
+    const cleanSubsets = JSON.parse(subsets);
+    const starsString = JSON.parse(stars);
+    const cleanFormats = JSON.parse(formats);
+    const numStars = parseInt(starsString);
+    const cleanSetName = JSON.parse(setName);
+
+    // Now that we have cleaned up the data we got back from DynamDB, let's
+    // populate the form on setEdit.html with the values as defaults
+
+    document.getElementById("postBody").defaultValue = cleanPostBody;
+    document.getElementById("year").defaultValue = cleanYear;
+    document.getElementById("mfg").defaultValue = cleanMFG;
+    document.getElementById("size").defaultValue = cleanSetSize;
+    document.getElementById("subsets").defaultValue = cleanSubsets;
+    document.getElementById("stars").defaultValue = numStars;
+    document.getElementById("formats").defaultValue = cleanFormats;
+    document.getElementById("setName").defaultValue = cleanSetName;
 }
 
 
