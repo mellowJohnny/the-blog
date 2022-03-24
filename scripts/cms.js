@@ -203,7 +203,7 @@ function fetchCardSetByID(id) {
           if (cardSetArray.Items.length === 0) {
 
               // No results...return a friendly message
-              let blogBody = document.getElementById("editSetDiv");
+              let blogBody = document.getElementById("errorDiv");
               blogBody.innerHTML = `...these aren't the Droids you're looking for...`;
 
               // If we have no results, stop processing
@@ -232,7 +232,7 @@ function fetchCardSetByID(id) {
      })
      .catch(function (err) {
          // Error...return a friendly message
-         let blogBody = document.getElementById("editSetDiv");
+         let blogBody = document.getElementById("errorDiv");
          blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
          console.log('Something went wrong...: ' + err);
      });
@@ -254,9 +254,8 @@ function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName) {
     const numStars = parseInt(starsString);
     const cleanSetName = JSON.parse(setName);
 
-    // Now that we have cleaned up the data we got back from DynamDB, let's
+    // Now that we have cleaned up the data we got back from DynamoDB, let's
     // populate the form on setEdit.html with the values as defaults
-
     document.getElementById("postBody").defaultValue = cleanPostBody;
     document.getElementById("year").defaultValue = cleanYear;
     document.getElementById("mfg").defaultValue = cleanMFG;
