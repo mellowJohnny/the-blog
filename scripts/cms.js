@@ -362,6 +362,111 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
     
 }
 
+// ----------------------------- Update Blog Post ---------------------------------------
+
+/** 
+ * This function is used to UPDATE an existing Blog Post
+ * Calls the updateBlogPost API which updates the matching record in DynamoDB
+ * 
+ * @param {*} title
+ * @param {*} postBody 
+ * 
+ **/
+
+ function updateBlogPost(title,postBody) {
+    // Let's change the state of the button, now that we've clicked it...
+    document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
+    document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
+
+    // instantiate a headers object
+    let myHeaders = new Headers();
+    
+    // add content type header to object
+    myHeaders.append("Content-Type", "application/json");
+  
+    // using built in JSON utility package turn object to string and store in a variable
+    let raw = JSON.stringify({"title":title,"postBody":postBody});
+
+    // create a JSON object with parameters for API call and store in a variable
+    let requestOptions = {
+      method: 'PUT',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+      };
+
+    // Make call to updateCardSet API endpoint in API Gateway with parameters and use promises to get response
+    fetch("https://.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
+    .then(response => response.text())
+    .then(result => alert(JSON.parse(result).body))
+    .catch(error => console.log('error', error));
+    
+}
+
+/**
+ * This Function is used to fetch all records from the Blog table in DynamoDB
+ * The API limits the data returned to only the name of the blog and it's ID  
+ * It is used by the CMS users to allow Users to select a single blog to be updated
+ * Calls the getBlogs API exposed by AWS API Gateway
+ */
+
+ function fetchAllBlogs() {
+
+    // Set up a global variable to hold the API URL
+    const urlToFetch = `https://.execute-api.us-east-2.amazonaws.com/dev`;
+          
+    fetch(urlToFetch)
+       .then(function (response) {
+           const jsonResponse = response.json();
+           return jsonResponse; // Our Promise object
+       })
+       .then(function (data) {
+       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
+       // First let's return an array of the object's properties
+           const returnedData = Object.entries(data); 
+  
+       // Next let's just get the 'body' property returned by the Lambda call
+          for (const [key, value] of returnedData) {
+              if (key === "body"){
+  
+            // Now that we have the 'body' key, we need to convert the value (currently a JSON String) to a JSON Object 
+            // so that we can pull out the properties of each blog post 
+            const cardSetArray = JSON.parse(value);
+  
+            // Check to see if we have any results...    
+            if (cardSetArray.Items.length === 0) {
+  
+                // No results...return a friendly message
+                let blogBody = document.getElementById("editBlogsDiv");
+                blogBody.innerHTML = `...these aren't the Droids you're looking for...`;
+  
+                // If we have no results, stop processing
+                return;
+            }
+  
+            // Now that the data we got back is a JSON object, let's loop over all the Posts...
+            // The 'Items' property holds an array of all the set reviews 
+            // Let's loop through that array and display the fields we want!
+            // We call the displayBlog() function to control the display, calling it once
+            // for each set review, essentially populating each review one at a time
+  
+               for (var i = 0; i < cardSetArray.Items.length; i++) {
+                   displayCardSets(
+                    cardSetArray.Items[i].setID,
+                    cardSetArray.Items[i].setName);
+                }
+            }
+        }
+  
+       })
+       .catch(function (err) {
+           // Error...return a friendly message
+           let blogBody = document.getElementById("editBlogsDiv");
+           blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
+           console.log('Something went wrong...: ' + err);
+       });
+  }
+
 
 
 
