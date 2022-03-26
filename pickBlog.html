@@ -3,27 +3,32 @@
 
 
 <html lang="en">
-    <title>the wee little cms...</title>
+    <title>the wee little cms...pick a blog to update</title>
     <head>
         <meta charset="utf-8"> 
         <link rel="stylesheet" type="text/css" href="styles/styles.css">
         <link rel="preconnect" href="https://fonts.gstatic.com"> 
         <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Fira+Code:wght@300&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200&display=swap" rel="stylesheet">
-      </head>
+        
+        <script src="scripts/cms.js"></script>
 
-<script src="scripts/cms.js"></script>
+        <!--  This calls the fetchAllCardSets() function on page load.  
+              It is responsible for calling the underlying AWS web service -->
+        <script>
+          window.addEventListener('load', (event) => {
+            fetchAllCardSets();
+            });
+        </script>
+
+        
+          
+      </head>
 
 <body>
     <section>
         <div>
-            <header class="masthead">the hella files cms</header>
-
-            <div class="header-style">
-                <h1>...what would you like to do?</h1>
-              </div>
-              <br>
-              
+            <header class="masthead">the hella files cms</header>  
             <main>
               <div>
                 <nav>
@@ -31,25 +36,23 @@
                     <tr>
                       <td class="nav-td"><a href="createBlogPost.html">...new blog post</a> </td>
                       <td class="nav-td"><a href="createCardSet.html">...new card set</a> </td>
-                      <td class="nav-td"><a href="pickCardSet.html">...update a card set</a> </td>
-                      <td class="nav-td"><a href="blogEdit.html">....update blog post</a> </td>
-                      <td class="nav-td"><a href="index.html">...exit</a> </td>
+                      <td class="nav-td"><a href="wlcms.html">...home</a> </td>
                     </tr>
                   </table>
                 </nav>
               </div>
+              <div class="header-style">
+                <h1>...pick the blog you want to edit</h1>
+              </div>
+              <br>
+              <section>
+                <div class="flex-container">
+                  <div id="editBlogsDiv"></div>
+                </div>
+              </section> 
             </main>
         </div>
     </section>
     <footer class="page-footer">
         <p>&copy; 2022 Christian Couillard</p>
-    </footer>
-
-      
-
-</body>
-
-</html>
-
-
-
+      </footer>
