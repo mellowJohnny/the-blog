@@ -19,7 +19,11 @@
  * 
  */
 
- function callCreateBlogPostAPI (title,author,postBody,type){
+ function createBlogPost (title,author,postBody,type){
+    // Let's change the state of the button, now that we've clicked it...
+    document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
+    document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
+
     // instantiate a headers object
     let myHeaders = new Headers();
   
@@ -49,7 +53,7 @@
   
   /**
    * This is the main AWS call used to CREATE a NEW CARDS POST
-   * The callCreateCardSetAPI() function is called from the wlcms.html page
+   * The createCardSet() function is called from the wlcms.html page
    * Calls the createCardSet API exposed by AWS API Gateway 
    * 
    * @param {*} setName 
