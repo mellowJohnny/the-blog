@@ -109,6 +109,8 @@ if('geolocation' in navigator) {
     }
     catch(error){
       console.log(error);
+      const errorMsg = document.getElementById("weather");
+        errorMsg.innerHTML = `<p>Unable to fetch weather...</p>`;
     }
   } 
 
