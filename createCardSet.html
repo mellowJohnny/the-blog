@@ -67,8 +67,8 @@
                     <input type="text" id="year" title="year"><br><br>
                     <label>Set Review Text</label><br>
                     <textarea id="postBody" title="postBody"></textarea><br><br>
-                    <button class="input-button" type="button" 
-                        onclick="callCreateCardSetAPI(
+                    <button class="input-button" type="button" id="cmsSubmitButton"
+                        onclick="createCardSet(
                                 document.getElementById('setName').value,
                                 document.getElementById('size').value,
                                 document.getElementById('subsets').value,
