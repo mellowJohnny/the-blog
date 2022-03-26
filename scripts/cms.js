@@ -403,6 +403,7 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
     
 }
 
+
 /**
  * This Function is used to fetch all records from the Blog table in DynamoDB
  * The API limits the data returned to only the name of the blog and it's ID  
@@ -437,7 +438,7 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
             if (cardSetArray.Items.length === 0) {
   
                 // No results...return a friendly message
-                let blogBody = document.getElementById("editBlogsDiv");
+                let blogBody = document.getElementById("listBlogsDiv");
                 blogBody.innerHTML = `...these aren't the Droids you're looking for...`;
   
                 // If we have no results, stop processing
@@ -451,9 +452,9 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
             // for each set review, essentially populating each review one at a time
   
                for (var i = 0; i < cardSetArray.Items.length; i++) {
-                   displayCardSets(
-                    cardSetArray.Items[i].setID,
-                    cardSetArray.Items[i].setName);
+                   displayBlogs(
+                    cardSetArray.Items[i].time,
+                    cardSetArray.Items[i].title);
                 }
             }
         }
@@ -461,11 +462,48 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
        })
        .catch(function (err) {
            // Error...return a friendly message
-           let blogBody = document.getElementById("editBlogsDiv");
+           let blogBody = document.getElementById("listBlogsDiv");
            blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
            console.log('Something went wrong...: ' + err);
        });
   }
+
+  // ----------------- displayBlogs Helper Function -------------------------
+
+/**
+* Helper function Called by fetchAllCardSets() to apply HTML formatting a Card Set record 
+* Used by CMS to present Card Set names to allow for an individual set to be updated, passing the ID to setEdit.html
+* 
+* @param {*} time
+* @param {*} title 
+*
+*/
+
+function displayBlogs(title, postBody) {
+
+    // Cleanup the JSON we get back so it's back to a String 
+    // We parsed the first object we got back, but that didn't parse the contents of the inner properties
+    // so we need to explicitly parse setName as it will come back with double-quotes around it.
+    // setID comes back as a string with no extra quotes so no need to JSON.parse() it
+    const cleanTitle = JSON.parse(title);
+    const cleanTime = JSON.parse(time);
+    
+    // Setup a variable to hold the reference to our Div, 'cause we got work to do!
+    let blogBody = document.getElementById("editBlogsDiv");
+    blogBody.innerHTML += 
+                 `
+                 <table class="set-details-table-style">
+                     <tr>
+                         <td style="width:400px;font-size:20px">
+                            <a href="blogEdit.html?setID=${cleanTime}">
+                            <strong>${cleanTitle}</strong>
+                            </a>
+                         </td>
+                     </tr>
+                 </table>
+                 `;
+  }
+
 
 
 
