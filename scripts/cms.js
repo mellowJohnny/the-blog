@@ -327,7 +327,7 @@ function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName) {
 function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
     // Let's change the state of the button, now that we've clicked it...
     document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
-    document.getElementById('cmsSubmitButton').value = "Thanks!";
+    document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
     // instantiate a headers object
     let myHeaders = new Headers();
