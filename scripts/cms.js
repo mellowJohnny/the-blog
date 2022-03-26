@@ -1,12 +1,22 @@
 
-// ----------------------------- Create New Blog Post ---------------------------------------
+
+/** This Script defines all the functions used by the CMS
+ * section of the site to both create and update existing 
+ * blog posts and card set reviews
+ */
+
+// --------------------- Create New Blog Post ----------------------------
 
 /**
  * This is the main AWS call used to CREATE a NEW BLOG POST
  * Called from the wlcms.html page
+ * Calls the createBlogPost API exposed by AWS API Gateway
+ * 
  * @param {*} title 
  * @param {*} author 
  * @param {*} postBody 
+ * @param {*} type
+ * 
  */
 
  function callCreateBlogPostAPI (title,author,postBody,type){
@@ -35,11 +45,13 @@
     }
   
   
-  // -------------------------------- Create New Card Post -------------------------------------------------------
+  // -------------------- Create New Card Set --------------------------------------
   
   /**
    * This is the main AWS call used to CREATE a NEW CARDS POST
-   * Called from the wlcms.html page
+   * The callCreateCardSetAPI() function is called from the wlcms.html page
+   * Calls the createCardSet API exposed by AWS API Gateway 
+   * 
    * @param {*} setName 
    * @param {*} size
    * @param {*} subsets
@@ -48,6 +60,7 @@
    * @param {*} year
    * @param {*} postBody 
    * @param {*} mfg 
+   * 
    */
   
    function callCreateCardSetAPI(setName,size,subsets,stars,formats,year,postBody,mfg){
@@ -75,10 +88,13 @@
       .catch(error => console.log('error', error));
       }
 
+// ----------------- Fetch All Card Sets For Update ---------------------------------------
+
 /**
- * fetchAllCardSets Function
- * Used to fetch all cards sets to be able present a list of all card set reviews 
- * This will then allow CMS users to select a single set to be subsequently updated in the CMS
+ * This Function is used to fetch all records from the Card table in DynamoDB
+ * The API limits the data returned to only the name of the card set and it's ID  
+ * It is used by the CMS users to allow Users to select a single set to be updated
+ * Calls the getCardSets API exposed by AWS API Gateway
  */
 
  function fetchAllCardSets() {
@@ -138,12 +154,15 @@
      });
 }
 
+// ----------------- displayCardSets Helper Function -------------------------
+
 /**
-* Function to Fetch All Card Sets 
-* Used by CMS to present Card Set names to allow for an individual set to be updated
-* Called by fetchAllCardSets()
+* Helper function Called by fetchAllCardSets() to apply HTML formatting a Card Set record 
+* Used by CMS to present Card Set names to allow for an individual set to be updated, passing the ID to setEdit.html
+* 
 * @param {*} setID
 * @param {*} setName 
+*
 */
 
 function displayCardSets(setID, setName) {
@@ -171,11 +190,17 @@ function displayCardSets(setID, setName) {
                `;
 }
 
+// ---------------- Fetch Card Set by ID - Populates the CMS Form For Update --------------------------
+
 /** 
  * This function fetches a single card set, given it's ID
  * and parses out the individual fields
  * It the calls populateCardSet() which in turn populates the HTML form on setEdit.html
- * **/
+ * Calls the getCardSetByID API exposed by AWS API Gateway
+ * 
+ * @param {*} id
+ * 
+ **/
 
 function fetchCardSetByID(id) {
   // Set up a global variable to hold the API URL
@@ -238,6 +263,22 @@ function fetchCardSetByID(id) {
      });
 }
 
+// ----------------- populateCardSet Helper Function -------------------------
+
+/**
+* Helper function Called by fetchCardSetByID() 
+* Used by CMS to pre-populate each form field for a given Card Set 
+* 
+* @param {*} postBody
+* @param {*} year 
+* @param {*} mfg
+* @param {*} size
+* @param {*} subsets
+* @param {*} stars
+* @param {*} formats
+* @param {*} setName
+*/
+
 /** This function calls the associated DIV on the Set Update form and populates it with the current value */
 function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName) {
 
@@ -265,6 +306,23 @@ function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName) {
     document.getElementById("formats").defaultValue = cleanFormats;
     document.getElementById("setName").defaultValue = cleanSetName;
 }
+
+// ----------------------------- Update Card Set ---------------------------------------
+
+/** 
+ * This function is used to UPDATE an existing Card Set review
+ * Calls the updateCardSet API which updates the matching record in DynamoDB
+ * 
+ * @param {*} setName
+ * @param {*} size 
+ * @param {*} subsets
+ * @param {*} stars
+ * @param {*} formats
+ * @param {*} year
+ * @param {*} postBody
+ * @param {*} mfg
+ * 
+ **/
 
 function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
     // instantiate a headers object
