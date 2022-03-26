@@ -342,7 +342,7 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
       redirect: 'follow'
       };
 
-    // Make API call to updateCardSet API endpoint in API Gateway with parameters and use promises to get response
+    // Make call to updateCardSet API endpoint in API Gateway with parameters and use promises to get response
     fetch("https://bb8yehibjb.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
     .then(response => response.text())
     .then(result => alert(JSON.parse(result).body))
