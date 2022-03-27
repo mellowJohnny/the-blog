@@ -362,7 +362,7 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
     
 }
 
-// ----------------------------- Update Blog Post ---------------------------------------
+// ---------------- Update Blog Post ----------------------------
 
 /** 
  * This function is used to UPDATE an existing Blog Post
@@ -396,7 +396,7 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
       };
 
     // Make call to updateCardSet API endpoint in API Gateway with parameters and use promises to get response
-    fetch("https://.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
+    fetch("https://836pk40tsl.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
     .then(response => response.text())
     .then(result => alert(JSON.parse(result).body))
     .catch(error => console.log('error', error));
