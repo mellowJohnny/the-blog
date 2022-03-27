@@ -595,15 +595,15 @@ function displayBlogs(title, blogID) {
       // We parsed the first object we got back, but that didn't parse the contents of the inner properties
       // so we need to explicitly parse all the properties we need to send back
       const cleanPostBody = JSON.parse(postBody);
-      const cleanBlogType = JSON.parse(blogType);
-      const cleanTime = JSON.parse(time);
+      //const cleanBlogType = JSON.parse(blogType);
+      //const cleanTime = JSON.parse(time);
       const cleanTitle = JSON.parse(title);
   
       // Now that we have cleaned up the data we got back from DynamoDB, let's
       // populate the form on setEdit.html with the values as defaults
       document.getElementById("postBody").defaultValue = cleanPostBody;
-      document.getElementById("blogType").defaultValue = cleanBlogType;
-      document.getElementById("time").defaultValue = cleanTime;
+      document.getElementById("blogType").defaultValue = blogType;
+      document.getElementById("time").defaultValue = time;
       document.getElementById("title").defaultValue = cleanTitle;
       
   }
