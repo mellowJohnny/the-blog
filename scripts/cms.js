@@ -453,7 +453,7 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
   
                for (var i = 0; i < cardSetArray.Items.length; i++) {
                    displayBlogs(
-                    cardSetArray.Items[i].time,
+                    cardSetArray.Items[i].blogID,
                     cardSetArray.Items[i].title);
                 }
             }
@@ -474,34 +474,32 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
 * Helper function Called by fetchAllCardSets() to apply HTML formatting a Card Set record 
 * Used by CMS to present Card Set names to allow for an individual set to be updated, passing the ID to setEdit.html
 * 
-* @param {*} time
+* @param {*} blogID
 * @param {*} title 
 *
 */
 
-function displayBlogs(title, postBody) {
+function displayBlogs(title, blogID) {
 
     // Cleanup the JSON we get back so it's back to a String 
     // We parsed the first object we got back, but that didn't parse the contents of the inner properties
     // so we need to explicitly parse setName as it will come back with double-quotes around it.
     // setID comes back as a string with no extra quotes so no need to JSON.parse() it
     const cleanTitle = JSON.parse(title);
-    const cleanTime = JSON.parse(time);
+    const cleanBlogID = JSON.parse(blogID);
     
     // Setup a variable to hold the reference to our Div, 'cause we got work to do!
     let blogBody = document.getElementById("editBlogsDiv");
     blogBody.innerHTML += 
-                 `
-                 <table class="set-details-table-style">
+                 `<table class="set-details-table-style">
                      <tr>
                          <td style="width:400px;font-size:20px">
-                            <a href="blogEdit.html?setID=${cleanTime}">
+                            <a href="blogEdit.html?setID=${cleanBlogID}">
                             <strong>${cleanTitle}</strong>
                             </a>
                          </td>
                      </tr>
-                 </table>
-                 `;
+                 </table>`;
   }
 
 
