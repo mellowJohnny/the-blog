@@ -406,9 +406,9 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
 
 /**
  * This Function is used to fetch all records from the Blog table in DynamoDB
- * The API limits the data returned to only the name of the blog and it's time (used as ID)  
+ * The API limits the data returned to only the name of the blog and its blogID  
  * It is used by the CMS users to allow Users to select a single blog to be updated
- * Calls the getBlogs API exposed by AWS API Gateway
+ * Calls the getBlogsForUpdate API exposed by AWS API Gateway
  */
 
  function getBlogsForUpdate() {
@@ -471,8 +471,8 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
   // ----------------- displayBlogs Helper Function -------------------------
 
 /**
-* Helper function Called by fetchAllCardSets() to apply HTML formatting a Card Set record 
-* Used by CMS to present Card Set names to allow for an individual set to be updated, passing the ID to setEdit.html
+* Helper function Called by fetchAllCardSets() to apply HTML formatting a Blog record 
+* Used by CMS to present Blog titles to allow for an individual blog to be updated, passing the blogID to blogEdit.html
 * 
 * @param {*} blogID
 * @param {*} title 
