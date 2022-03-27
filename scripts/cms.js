@@ -414,7 +414,7 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
  function getBlogsForUpdate() {
 
     // Set up a global variable to hold the API URL
-    const urlToFetch = `https://qdnu5i7p6i.execute-api.us-east-2.amazonaws.com/dev`;
+    const urlToFetch = `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev/`;
           
     fetch(urlToFetch)
        .then(function (response) {
