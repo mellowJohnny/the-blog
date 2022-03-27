@@ -486,7 +486,7 @@ function displayBlogs(title, blogID) {
     // so we need to explicitly parse setName as it will come back with double-quotes around it.
     // setID comes back as a string with no extra quotes so no need to JSON.parse() it
     const cleanTitle = JSON.parse(title);
-    const cleanBlogID = JSON.parse(blogID);
+    //const cleanBlogID = JSON.parse(blogID);
     
     // Setup a variable to hold the reference to our Div, 'cause we got work to do!
     let blogBody = document.getElementById("editBlogsDiv");
@@ -494,7 +494,7 @@ function displayBlogs(title, blogID) {
                  `<table class="set-details-table-style">
                      <tr>
                          <td style="width:400px;font-size:20px">
-                            <a href="blogEdit.html?setID=${cleanBlogID}">
+                            <a href="blogEdit.html?setID=${blogID}">
                             <strong>${cleanTitle}</strong>
                             </a>
                          </td>
