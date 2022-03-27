@@ -14,6 +14,21 @@
 
 <script src="scripts/cms.js"></script>
 
+<script>
+  /* Let's get the URL params from the request, and extract the year */  
+  let params = new URLSearchParams(document.location.search);
+  let blogID = params.get("blogID");
+
+  /* 
+  *   Call to fetchCardSetsByID() on page load, dynamically passing the set year we want to fetch
+  *   It is responsible for calling the underlying AWS web service
+  *   Can also use the year to dynamically populate our page header...removed for now   */ 
+   
+  window.addEventListener('load', (event) => {
+      fetchBlogByID(blogID);
+  }); 
+</script>
+
 <body>
     <section>
         <div>

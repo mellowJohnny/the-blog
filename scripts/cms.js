@@ -503,6 +503,102 @@ function displayBlogs(title, blogID) {
                  </table>`;
   }
 
+  // ---------------- Fetch Blog by ID - Populates the CMS Form For Update --------------------------
+
+/** 
+ * This function fetches a single blog, given it's ID
+ * and parses out the individual fields
+ * It the calls populateBlog() which in turn populates the HTML form on blogEdit.html
+ * Calls the getBlogByID API exposed by AWS API Gateway
+ * 
+ * @param {*} id
+ * 
+ **/
+
+
+  function fetchBlogByID(id) {
+    // Set up a global variable to hold the API URL
+    const urlToFetch = `https://gcd40hir88.execute-api.us-east-2.amazonaws.com/dev?blogID=${id}`;
+          
+    fetch(urlToFetch)
+       .then(function (response) {
+           const jsonResponse = response.json();
+           return jsonResponse; // Our Promise object
+       })
+       .then(function (data) {
+       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
+       // First let's return an array of the object's properties
+           const returnedData = Object.entries(data); 
+  
+       // Next let's just get the 'body' property returned by the Lambda call
+          for (const [key, value] of returnedData) {
+              if (key === "body"){
+  
+            // Now that we have the 'body' key, we need to convert the value (currently a JSON String) to a JSON Object 
+            // so that we can pull out the properties of each blog post 
+            const blogArray = JSON.parse(value);
+  
+            // Check to see if we have any results...    
+            if (blogArray.Items.length === 0) {
+  
+                // No results...return a friendly message
+                let blogBody = document.getElementById("errorDiv");
+                blogBody.innerHTML = `...these aren't the Droids you're looking for...`;
+  
+                // If we have no results, stop processing
+                return;
+            }
+  
+            // Now that the data we got back is a JSON object, let's loop over all the Posts...
+            // The 'Items' property holds an array of all the set reviews 
+            // Let's loop through that array and display the fields we want!
+            // We call the displayBlog() function to control the display, calling it once
+            // for each set review, essentially populating each review one at a time
+  
+               for (var i = 0; i < blogArray.Items.length; i++) {
+                   populateBlog(
+                    blogArray.Items[i].postBody,
+                    blogArray.Items[i].title);
+                }
+            }
+        }
+  
+       })
+       .catch(function (err) {
+           // Error...return a friendly message
+           let blogBody = document.getElementById("errorDiv");
+           blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
+           console.log('Something went wrong...: ' + err);
+       });
+  }
+  
+  // ----------------- populateCardSet Helper Function -------------------------
+  
+  /**
+  * Helper function Called by fetchBlogByID() 
+  * Used by CMS to pre-populate each form field for a given Card Set 
+  * 
+  * @param {*} postBody
+  * @param {*} title
+  */
+  
+  /** This function calls the associated DIV on the Set Update form and populates it with the current value */
+  function populateBlog(postBody,title,) {
+  
+      // Cleanup the JSON we get back so it's back to a String 
+      // We parsed the first object we got back, but that didn't parse the contents of the inner properties
+      // so we need to explicitly parse all the properties we need to send back
+      const cleanPostBody = JSON.parse(postBody);
+      const cleanTitle = JSON.parse(title);
+  
+      // Now that we have cleaned up the data we got back from DynamoDB, let's
+      // populate the form on setEdit.html with the values as defaults
+      document.getElementById("postBody").defaultValue = cleanPostBody;
+      document.getElementById("title").defaultValue = cleanTitle;
+      
+  }
+  
+
 
 
 
