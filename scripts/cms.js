@@ -489,7 +489,7 @@ function displayBlogs(title, blogID) {
     const cleanTitle = JSON.parse(title);
     const cleanBlogID = JSON.parse(blogID);
     
-    // Setup a variable to hold the reference to our Div, 'cause we got work to do!
+    // Setup a variable to hold the reference to our Div - this is how we connect to the HTML page from the JS function
     let blogBody = document.getElementById("listBlogsDiv");
     blogBody.innerHTML += 
                  `<table class="set-details-table-style">
