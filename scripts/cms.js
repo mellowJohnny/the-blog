@@ -406,15 +406,15 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
 
 /**
  * This Function is used to fetch all records from the Blog table in DynamoDB
- * The API limits the data returned to only the name of the blog and it's ID  
+ * The API limits the data returned to only the name of the blog and it's time (used as ID)  
  * It is used by the CMS users to allow Users to select a single blog to be updated
  * Calls the getBlogs API exposed by AWS API Gateway
  */
 
- function fetchAllBlogs() {
+ function getBlogsForUpdate() {
 
     // Set up a global variable to hold the API URL
-    const urlToFetch = `https://.execute-api.us-east-2.amazonaws.com/dev`;
+    const urlToFetch = `https://qdnu5i7p6i.execute-api.us-east-2.amazonaws.com/dev`;
           
     fetch(urlToFetch)
        .then(function (response) {
