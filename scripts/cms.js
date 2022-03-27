@@ -490,7 +490,7 @@ function displayBlogs(title, blogID) {
     const cleanBlogID = JSON.parse(blogID);
     
     // Setup a variable to hold the reference to our Div, 'cause we got work to do!
-    let blogBody = document.getElementById("editBlogsDiv");
+    let blogBody = document.getElementById("listBlogsDiv");
     blogBody.innerHTML += 
                  `<table class="set-details-table-style">
                      <tr>
