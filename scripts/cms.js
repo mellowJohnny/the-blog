@@ -362,48 +362,6 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
     
 }
 
-// ---------------- Update Blog Post ----------------------------
-
-/** 
- * This function is used to UPDATE an existing Blog Post
- * Calls the updateBlogPost API which updates the matching record in DynamoDB
- * 
- * @param {*} title
- * @param {*} blogType
- * @param {*} time
- * @param {*} postBody 
- * 
- **/
-
- function updateBlogPost(title,blogType,time,postBody) {
-    // Let's change the state of the button, now that we've clicked it...
-    document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
-    document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
-
-    // instantiate a headers object
-    let myHeaders = new Headers();
-    
-    // add content type header to object
-    myHeaders.append("Content-Type", "application/json");
-  
-    // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"title":title,"blogType":blogType,"time":time,"postBody":postBody});
-
-    // create a JSON object with parameters for API call and store in a variable
-    let requestOptions = {
-      method: 'PUT',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow'
-      };
-
-    // Make call to updateCardSet API endpoint in API Gateway with parameters and use promises to get response
-    fetch("https://836pk40tsl.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
-    .then(response => response.text())
-    .then(result => alert(JSON.parse(result).body))
-    .catch(error => console.log('error', error));
-    
-}
 
 
 /**
@@ -608,6 +566,48 @@ function displayBlogs(title, blogID) {
       
   }
   
+// ---------------- Update Blog Post ----------------------------
+
+/** 
+ * This function is used to UPDATE an existing Blog Post
+ * Calls the updateBlogPost API which updates the matching record in DynamoDB
+ * 
+ * @param {*} title
+ * @param {*} blogType
+ * @param {*} time
+ * @param {*} postBody 
+ * 
+ **/
+
+ function updateBlogPost(title,blogType,time,postBody) {
+    // Let's change the state of the button, now that we've clicked it...
+    document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
+    document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
+
+    // instantiate a headers object
+    let myHeaders = new Headers();
+    
+    // add content type header to object
+    myHeaders.append("Content-Type", "application/json");
+  
+    // using built in JSON utility package turn object to string and store in a variable
+    let raw = JSON.stringify({"title":title,"blogType":blogType,"time":time,"postBody":postBody});
+
+    // create a JSON object with parameters for API call and store in a variable
+    let requestOptions = {
+      method: 'PUT',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+      };
+
+    // Make call to updateCardSet API endpoint in API Gateway with parameters and use promises to get response
+    fetch("https://836pk40tsl.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
+    .then(response => response.text())
+    .then(result => alert(JSON.parse(result).body))
+    .catch(error => console.log('error', error));
+    
+}
 
 
 
