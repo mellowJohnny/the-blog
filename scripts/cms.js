@@ -373,7 +373,7 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
  * 
  **/
 
- function updateBlogPost(title,postBody) {
+ function updateBlogPost(title,blogType,time,postBody) {
     // Let's change the state of the button, now that we've clicked it...
     document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
@@ -385,7 +385,7 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
     myHeaders.append("Content-Type", "application/json");
   
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"title":title,"postBody":postBody});
+    let raw = JSON.stringify({"title":title,"blogType":blogType,"time":time,"postBody":postBody});
 
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
