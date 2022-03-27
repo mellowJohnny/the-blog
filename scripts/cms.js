@@ -432,10 +432,10 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
   
             // Now that we have the 'body' key, we need to convert the value (currently a JSON String) to a JSON Object 
             // so that we can pull out the properties of each blog post 
-            const cardSetArray = JSON.parse(value);
+            const blogArray = JSON.parse(value);
   
             // Check to see if we have any results...    
-            if (cardSetArray.Items.length === 0) {
+            if (blogArray.Items.length === 0) {
   
                 // No results...return a friendly message
                 let blogBody = document.getElementById("listBlogsDiv");
@@ -451,10 +451,10 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
             // We call the displayBlog() function to control the display, calling it once
             // for each set review, essentially populating each review one at a time
   
-               for (var i = 0; i < cardSetArray.Items.length; i++) {
+               for (var i = 0; i < blogArray.Items.length; i++) {
                    displayBlogs(
-                    cardSetArray.Items[i].blogID,
-                    cardSetArray.Items[i].title);
+                    blogArray.Items[i].title,
+                    blogArray.Items[i].blogID);
                 }
             }
         }
@@ -474,8 +474,8 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
 * Helper function Called by fetchAllCardSets() to apply HTML formatting a Blog record 
 * Used by CMS to present Blog titles to allow for an individual blog to be updated, passing the blogID to blogEdit.html
 * 
-* @param {*} blogID
 * @param {*} title 
+* @param {*} blogID 
 *
 */
 
