@@ -65,6 +65,10 @@
                     </select><br><br>
                     <label>Release Year</label><br>
                     <input type="text" id="year" title="year"><br><br>
+                    <label>Header Image Name</label><br>
+                    <input type="text" id="headerImgName" title="headerImgName"><br><br>
+                    <label>Footer Image Name</label><br>
+                    <input type="text" id="footerImgName" title="footerImgName"><br><br>
                     <label>Set Review Text</label><br>
                     <textarea id="postBody" title="postBody"></textarea><br><br>
                     <button class="input-button" type="button" id="cmsSubmitButton"
@@ -76,7 +80,9 @@
                                 document.getElementById('formats').value,
                                 document.getElementById('year').value,
                                 document.getElementById('postBody').value,
-                                document.getElementById('mfg').value)">
+                                document.getElementById('mfg').value,
+                                document.getElementById('headerImgName').value,
+                                document.getElementById('footerImgName').value)">
                         New Card Set
                     </button>
                 </form>

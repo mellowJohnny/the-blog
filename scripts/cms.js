@@ -5,7 +5,7 @@
  * blog posts and card set reviews
  */
 
-// --------------------- Create New Blog Post ----------------------------
+// **************************************** Create New Blog Post ***************************************************
 
 /**
  * This is the main AWS call used to CREATE a NEW BLOG POST
@@ -49,7 +49,7 @@
     }
   
   
-  // -------------------- Create New Card Set --------------------------------------
+  // ***************************************** Create New Card Set ******************************************
   
   /**
    * This is the main AWS call used to CREATE a NEW CARDS POST
@@ -64,10 +64,12 @@
    * @param {*} year
    * @param {*} postBody 
    * @param {*} mfg 
+   * @param {*} headerImgName
+   * @param {*} footerImgName
    * 
    */
   
-   function createCardSet(setName,size,subsets,stars,formats,year,postBody,mfg){
+   function createCardSet(setName,size,subsets,stars,formats,year,postBody,mfg,headerImgName,footerImgName){
       // Let's change the state of the button, now that we've clicked it...
       document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
       document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
@@ -79,7 +81,7 @@
       myHeaders.append("Content-Type", "application/json");
     
       // using built in JSON utility package turn object to string and store in a variable
-      let raw = JSON.stringify({"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":postBody,"mfg":mfg});
+      let raw = JSON.stringify({"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":postBody,"mfg":mfg,"headerImgName":headerImgName,"footerImgName":footerImgName});
     
       // create a JSON object with parameters for API call and store in a variable
       let requestOptions = {
@@ -96,7 +98,7 @@
       .catch(error => console.log('error', error));
       }
 
-// ----------------- Fetch All Card Sets For Update ---------------------------------------
+// ********************************** Fetch All Card Sets For Update **********************************
 
 /**
  * This Function is used to fetch all records from the Card table in DynamoDB
@@ -162,7 +164,7 @@
      });
 }
 
-// ----------------- displayCardSets Helper Function -------------------------
+// ************************************* displayCardSets Helper Function *************************************
 
 /**
 * Helper function Called by fetchAllCardSets() to apply HTML formatting a Card Set record 
@@ -198,7 +200,7 @@ function displayCardSets(setID, setName) {
                `;
 }
 
-// ---------------- Fetch Card Set by ID - Populates the CMS Form For Update --------------------------
+// ***************************** Fetch Card Set by ID - Populates the CMS Form For Update **************************
 
 /** 
  * This function fetches a single card set, given it's ID
@@ -271,7 +273,7 @@ function fetchCardSetByID(id) {
      });
 }
 
-// ----------------- populateCardSet Helper Function -------------------------
+// ***************************************** populateCardSet Helper Function **********************************
 
 /**
 * Helper function Called by fetchCardSetByID() 
@@ -315,7 +317,10 @@ function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName) {
     document.getElementById("setName").defaultValue = cleanSetName;
 }
 
-// ----------------------------- Update Card Set ---------------------------------------
+
+
+
+// *********************************************** Update Card Set ***************************************
 
 /** 
  * This function is used to UPDATE an existing Card Set review
@@ -364,6 +369,7 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
 
 
 
+// *********************************** Get Blogs For Update API Call **********************************
 /**
  * This Function is used to fetch all records from the Blog table in DynamoDB
  * The API limits the data returned to only the name of the blog and its blogID  
@@ -428,7 +434,10 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
        });
   }
 
-  // ----------------- displayBlogs Helper Function -------------------------
+
+
+
+  // ******************************* displayBlogs Helper Function ************************************
 
 /**
 * Helper function Called by fetchAllCardSets() to apply HTML formatting a Blog record 
@@ -463,7 +472,10 @@ function displayBlogs(title, blogID) {
                  </table>`;
   }
 
-  // ---------------- Fetch Blog by ID - Populates the CMS Form For Update --------------------------
+
+
+
+  // ******************************** Fetch Blog by ID - Populates the CMS Form For Update **************************
 
 /** 
  * This function fetches a single blog, given it's ID
@@ -534,7 +546,9 @@ function displayBlogs(title, blogID) {
        });
   }
   
-  // ----------------- populateCardSet Helper Function -------------------------
+
+
+  // *********************************** populateCardSet Helper Function *********************************
   
   /**
   * Helper function Called by fetchBlogByID() 
@@ -566,7 +580,7 @@ function displayBlogs(title, blogID) {
       
   }
   
-// ---------------- Update Blog Post ----------------------------
+// ************************************ Update Blog Post *******************************************
 
 /** 
  * This function is used to UPDATE an existing Blog Post
