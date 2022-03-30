@@ -138,7 +138,7 @@
                             <td><strong><i>Release Year:</i></strong> ${cleanYear} </td>
                         </tr>
                         <tr>
-                            <td><strong><i>Available Formats:</i></strong> ${cleanFormats} </td>
+                            <td><strong><i>Formats:</i></strong> ${cleanFormats} </td>
                         </tr>
                         <tr>
                             <td><strong><i>Manufacturer:</i></strong> ${cleanMFG}</td>
