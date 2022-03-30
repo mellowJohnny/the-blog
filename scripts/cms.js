@@ -337,7 +337,7 @@ function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName) {
  * 
  **/
 
-function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
+function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerImgName,footerImgName,mfg) {
     // Let's change the state of the button, now that we've clicked it...
     document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
@@ -349,7 +349,7 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,mfg) {
     myHeaders.append("Content-Type", "application/json");
   
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":postBody,"mfg":mfg});
+    let raw = JSON.stringify({"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":postBody,"headerImgName":headerImgName,"footerImgName":footerImgName,"mfg":mfg});
 
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
@@ -615,7 +615,7 @@ function displayBlogs(title, blogID) {
       redirect: 'follow'
       };
 
-    // Make call to updateCardSet API endpoint in API Gateway with parameters and use promises to get response
+    // Make call to updateBlogPost API endpoint in API Gateway with parameters and use promises to get response
     fetch("https://836pk40tsl.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
     .then(response => response.text())
     .then(result => alert(JSON.parse(result).body))

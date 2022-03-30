@@ -69,6 +69,10 @@
                                   <label>Manufacturer</label><br><br>
                                   <input type="text" id="mfg" title="mfg"><br><br>
                                   <label>Set Review Text</label><br>
+                                  <input type="text" id="headerImgName" title="headerImgName"><br><br>
+                                  <label>Set Review Text</label><br>
+                                  <input type="text" id="footerImgName" title="footerImgName"><br><br>
+                                  <label>Set Review Text</label><br>
                                   <textarea id="postBody" title="postBody"></textarea><br><br>
                                   
                                   <button class="input-button" type="button" id="cmsSubmitButton"
@@ -80,6 +84,8 @@
                                               document.getElementById('formats').value,
                                               document.getElementById('year').value,
                                               document.getElementById('postBody').value,
+                                              document.getElementById('headerImgName').value,
+                                              document.getElementById('footerImgName').value,
                                               document.getElementById('mfg').value)">
                                       Update Card Set
                                   </button>
