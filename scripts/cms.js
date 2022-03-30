@@ -259,7 +259,9 @@ function fetchCardSetByID(id) {
                     cardSetArray.Items[i].subsets,
                     cardSetArray.Items[i].stars,
                     cardSetArray.Items[i].formats,
-                    cardSetArray.Items[i].setName);
+                    cardSetArray.Items[i].setName,
+                    cardSetArray.Items[i].headerImgName,
+                    cardSetArray.Items[i].footerImgName);
               }
           }
       }
@@ -287,10 +289,12 @@ function fetchCardSetByID(id) {
 * @param {*} stars
 * @param {*} formats
 * @param {*} setName
+* @param {*} headerImgName
+* @param {*} footerImgName
 */
 
 /** This function calls the associated DIV on the Set Update form and populates it with the current value */
-function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName) {
+function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName,headerImgName,footerImgName) {
 
     // Cleanup the JSON we get back so it's back to a String 
     // We parsed the first object we got back, but that didn't parse the contents of the inner properties
@@ -304,6 +308,8 @@ function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName) {
     const cleanFormats = JSON.parse(formats);
     const numStars = parseInt(starsString);
     const cleanSetName = JSON.parse(setName);
+    const cleanHeaderImgName = JSON.parse(headerImgName);
+    const cleanFooterImgName = JSON.parse(footerImgName);
 
     // Now that we have cleaned up the data we got back from DynamoDB, let's
     // populate the form on setEdit.html with the values as defaults
@@ -315,6 +321,8 @@ function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName) {
     document.getElementById("stars").defaultValue = numStars;
     document.getElementById("formats").defaultValue = cleanFormats;
     document.getElementById("setName").defaultValue = cleanSetName;
+    document.getElementById("headerImgName").defaultValue = cleanHeaderImgName;
+    document.getElementById("footerImgName").defaultValue = cleanFooterImgName;
 }
 
 
