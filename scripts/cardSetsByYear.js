@@ -58,7 +58,9 @@
                     cardSetArray.Items[i].stars,
                     cardSetArray.Items[i].formats,
                     cardSetArray.Items[i].headerImg,
+                    cardSetArray.Items[i].headerImgName,
                     cardSetArray.Items[i].footerImg,
+                    cardSetArray.Items[i].footerImgName,
                     cardSetArray.Items[i].setName);
                 }
             }
@@ -83,11 +85,13 @@
  * @param {*} stars
  * @param {*} formats
  * @param {*} headerImg
+ * @param {*} headerImgName
  * @param {*} footerImg
+ * @param {*} footerImgName
  * @param {*} setName 
  */
 
-   function displayBlog(postBody, year, mfg, size, subsets, stars, formats, headerImg, footerImg, setName) {
+   function displayBlog(postBody, year, mfg, size, subsets, stars, formats, headerImg, headerImgName, footerImg, footerImgName, setName) {
        // Populate the blogsDiv...
  
        // Cleanup the JSON we get back so it's back to a String 
@@ -102,7 +106,9 @@
        const cleanFormats = JSON.parse(formats);
        const numStars = parseInt(starsString);
        const cleanHeaderImg = JSON.parse(headerImg);
+       const cleanHeaderImgName = JSON.parse(headerImgName);
        const cleanFooterImg = JSON.parse(footerImg);
+       const cleanFooterImgName = JSON.parse(footerImgName);
        const cleanSetName = JSON.parse(setName);
 
        // Generate n number of "Star" emojis, one per rating number
@@ -118,7 +124,7 @@
                     <table class="set-details-table-style">
                         <tr>
                             <td style="width:400px;font-size:20px"><strong>${cleanSetName}</strong></td>
-                            <td rowspan="7" style="text-align:center"><img src="${cleanHeaderImg}" class="table-header-img"></img></td>
+                            <td rowspan="7" style="text-align:center"><img src="${cleanHeaderImg}${cleanHeaderImgName}" class="table-header-img"></img></td>
                         </tr>
                         
                         <tr>
@@ -151,7 +157,7 @@
                         </tr>
                         <tr>
                             <td style="text-align:center">
-                            <img src="${cleanFooterImg}" class="table-footer-img"></img>
+                            <img src="${cleanFooterImg}${cleanFooterImgName}" class="table-footer-img"></img>
                             </td>
                         </tr>
                     </table>
