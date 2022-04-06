@@ -28,7 +28,8 @@
             }); 
 
             // Let's change the button back now that we are done...
-            window.addEventListener("unload", function(event) { 
+            window.addEventListener('unload', (event) => { 
+              console.log("Window closed!");
               document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
               document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
              });
@@ -93,7 +94,7 @@
                                               document.getElementById('postBody').value,
                                               document.getElementById('headerImgName').value,
                                               document.getElementById('footerImgName').value,
-                                              document.getElementById('mfg').value)">
+                                              document.getElementById('mfg').value)" >
                                       Update Card Set
                                   </button>
                                 
