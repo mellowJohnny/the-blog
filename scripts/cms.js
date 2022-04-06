@@ -351,11 +351,6 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerIm
     document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
-    // Let's change the button back now that we are done...
-    window.addEventListener("unload", function(event) { 
-        document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
-        document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
-    });
 
     // instantiate a headers object
     let myHeaders = new Headers();
