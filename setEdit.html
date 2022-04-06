@@ -36,8 +36,9 @@
              });
         </script>
         <script>
-          window.onunload = function(event) { 
+          window.onunload = (event) => { 
             console.log("Boss! The Window, she closed!");
+            document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
           };
         </script>
 
