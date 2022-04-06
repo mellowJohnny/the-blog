@@ -376,10 +376,10 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerIm
     .catch(error => console.log('error', error));
 
     // Let's change the button back now that we are done...
-    window.addEventListener("unload", function(event) { 
+   // window.addEventListener("unload", function(event) { 
         document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
         document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
-    });
+   // });
     
 }
 
