@@ -162,7 +162,8 @@ textarea {
 }
 
 .header-style h1{
-    font-family: 'Caveat', cursive;
+    font-family: 'Spicy Rice';
+   /* font-family: 'Caveat', cursive; */
     font-size: 38px;
     margin: 5px;
     position: relative;
