@@ -27,8 +27,7 @@
     // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
     // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
     // this makes it look like the button is waiting for the modal to close first :-)
-    updateSubmitButton();
-    //setTimeout(changeMeBack, 1500);
+    setTimeout(changeMeBack, 1500);
 
     // instantiate a headers object
     let myHeaders = new Headers();
@@ -83,8 +82,7 @@
       // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
       // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
       // this makes it look like the button is waiting for the modal to close first :-)
-      updateSubmitButton();
-      //setTimeout(changeMeBack, 1500);
+      setTimeout(changeMeBack, 1500);
 
       // instantiate a headers object
       let myHeaders = new Headers();
@@ -629,8 +627,7 @@ function displayBlogs(title, blogID) {
     // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
     // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
     // this makes it look like the button is waiting for the modal to close first :-)
-    updateSubmitButton();
-   // setTimeout(changeMeBack, 1500);
+    setTimeout(changeMeBack, 1500);
 
     // instantiate a headers object
     let myHeaders = new Headers();
@@ -659,12 +656,6 @@ function displayBlogs(title, blogID) {
 
 // ************* Helper function to change CMS Submit button back to initial state *************
 // Called by updateCardSet() after waiting 2 seconds
-
-
-function updateSubmitButton() {
-    // Let's wait a bit, then update the CMS Submit button!
-    setTimeout(changeMeBack, 1500);
-}
 
 function changeMeBack(){
     document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
