@@ -351,8 +351,8 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerIm
     document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
-    // Now start a timer and change the button state to reflect the submit event, passing in the number of seconds to wait
-    setTimeout(changeMeBack, 2000);
+    // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
+    setTimeout(changeMeBack, 500);
     
 
     // instantiate a headers object
@@ -640,7 +640,7 @@ function displayBlogs(title, blogID) {
 // Called by updateCardSet() after waiting 2 seconds
 
 function changeMeBack() {
-    console.log("in changeMeBack...")
+    // console.log("in changeMeBack...")
     document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
     document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
 
