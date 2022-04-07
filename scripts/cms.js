@@ -346,9 +346,11 @@ function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName,he
  **/
 
 function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerImgName,footerImgName,mfg) {
+    
     // Let's change the state of the button, now that we've clicked it...
     document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
+
 
     // instantiate a headers object
     let myHeaders = new Headers();
@@ -372,6 +374,12 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerIm
     .then(response => response.text())
     .then(result => alert(JSON.parse(result).body))
     .catch(error => console.log('error', error));
+
+    // Let's change the button back now that we are done...
+   // window.addEventListener("unload", function(event) { 
+    //    document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
+    //    document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
+   // });
     
 }
 

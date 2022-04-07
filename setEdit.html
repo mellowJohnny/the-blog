@@ -21,7 +21,8 @@
             /* 
             *   Call to fetchCardSetsByID() on page load, dynamically passing the set year we want to fetch
             *   It is responsible for calling the underlying AWS web service
-            *   Can also use the year to dynamically populate our page header...removed for now   */ 
+            *   Can also use the year to dynamically populate our page header...removed for now   
+            * */ 
              
             window.addEventListener('load', (event) => {
                 fetchCardSetByID(setID);
@@ -32,7 +33,21 @@
 			});
 			
 
+
+            // Let's change the button back now that we are done...
+            window.addEventListener('close', (event) => { 
+              console.log("Window closed!");
+              document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
+              document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
+             });
         </script>
+        <script>
+          window.onunload = (event) => { 
+            console.log("Boss! The Window, she closed!");
+            document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
+          };
+        </script>
+
     </head>
 
     <body>
@@ -92,7 +107,7 @@
                                               document.getElementById('postBody').value,
                                               document.getElementById('headerImgName').value,
                                               document.getElementById('footerImgName').value,
-                                              document.getElementById('mfg').value)">
+                                              document.getElementById('mfg').value)" >
                                       Update Card Set
                                   </button>
                                 
