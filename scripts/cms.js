@@ -664,9 +664,11 @@ function displayBlogs(title, blogID) {
 function updateSubmitButton() {
     // Let's wait a bit, then update the CMS Submit button!
     setTimeout(changeMeBack, 1500);
+}
+
+function changeMeBack(){
     document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
     document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
-
 }
 
 
