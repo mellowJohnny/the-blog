@@ -676,8 +676,8 @@ function displayBlogs(title, blogID) {
     }
 
     function changeMeBack(){
-        document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
-        document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
+        document.getElementById('cmsSubmitButton').style.backgroundColor = "#256386";
+        document.getElementById('cmsSubmitButton').innerHTML = "Update";
     }
 
 
