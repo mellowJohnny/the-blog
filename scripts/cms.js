@@ -21,13 +21,13 @@
 
  function createBlogPost (title,author,postBody,type){
     // Let's change the state of the button, now that we've clicked it...
-    document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
-    document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
+    cmsButtonSubmit();
+    
 
     // Now start a timer and change the button state to reflect the submit event, waiting 1500 milliseconds
     // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
     // this makes it look like the button is waiting for the modal to close first :-)
-    updateCMSButton();
+    cmsButtonReset();
     
 
     // instantiate a headers object
@@ -82,7 +82,7 @@
 
       // This function ultimately calls a timer, which then calls a 2nd function to actually update the button state
       // These two functions are independent so we can change the timer length or the HTML updates in just one place
-      updateCMSButton();
+      cmsButtonReset();
       
 
       // instantiate a headers object
@@ -134,13 +134,12 @@
 function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerImgName,footerImgName,mfg) {
     
     // Let's change the state of the button, now that we've clicked it...
-    document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
-    document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
+    cmsButtonSubmit();
 
     // And now lets change it back:
     // This function ultimately calls a timer, which then calls a 2nd function to actually update the button state
     // These two functions are independent so we can change the timer length or the HTML updates in just one place
-    updateCMSButton();
+    cmsButtonReset();
     
     // instantiate a headers object
     let myHeaders = new Headers();
@@ -182,8 +181,7 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerIm
 
  function updateBlogPost(title,blogType,time,postBody) {
     // Let's change the state of the button, now that we've clicked it...
-    document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
-    document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
+    cmsButtonSubmit();
 
     // And now lets change it back:
     // This function ultimately calls a timer, which then calls a 2nd function to actually update the button state
@@ -659,19 +657,28 @@ function displayBlogs(title, blogID) {
       document.getElementById("footerImgName").defaultValue = cleanFooterImgName;
   }
 
-// ************* Helper function to change CMS Submit button back to initial state *************
-// Called by each CRUD function
-function updateCMSButton() {
-    setTimeout(changeMeBack, 1000);
-};
+  // ************* Helper functions to change CMS Submit state *************
 
-// ************* Helper function to change CMS Submit button back to initial state *************
-// Called by updateCMSButton() after waiting 2 seconds
+    // Change the submit button colour & text on Submit
+    function cmsButtonSubmit() {
+        setTimeout(changeMe, 1000);
+    }
 
-function changeMeBack(){
-    document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
-    document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
-}
+    function changeMe() {
+        document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
+        document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
+    }
+
+
+    // Change the submit button colour & text back to initial state, post-Submit
+    function cmsButtonReset() {
+        setTimeout(changeMeBack, 1000);
+    }
+
+    function changeMeBack(){
+        document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
+        document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
+    }
 
 
 
