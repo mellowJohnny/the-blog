@@ -666,6 +666,7 @@ function displayBlogs(title, blogID) {
     }
 
     function changeMe() {
+        console.log("In Submit changeMe...")
         document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
         document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
     }
