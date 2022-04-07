@@ -639,6 +639,10 @@ function displayBlogs(title, blogID) {
     
 }
 
+function prestoChango{
+	console.log("PrestoChango y'all!")
+}
+
 
 
 
