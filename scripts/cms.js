@@ -666,7 +666,7 @@ function updateCMSButton() {
 // ************* Helper function to change CMS Submit button back to initial state *************
 // Called by updateCMSButton() after waiting 2 seconds
 
-function changeMeBack(){
+function updateCMSButton(){
     document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
     document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
 }
