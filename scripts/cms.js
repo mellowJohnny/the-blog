@@ -636,7 +636,9 @@ function displayBlogs(title, blogID) {
     
 }
 
-// *********************** function to change our CMS Submit button to reflect a state change / button click
+// ************* Helper function to change CMS Submit button back to initial state *************
+// Called by updateCardSet() after waiting 2 seconds
+
 function prestoChango() {
      
     document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
