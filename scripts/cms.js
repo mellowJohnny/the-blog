@@ -24,6 +24,9 @@
     document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
+    // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
+    setTimeout(changeMeBack, 500);
+
     // instantiate a headers object
     let myHeaders = new Headers();
   
@@ -73,6 +76,9 @@
       // Let's change the state of the button, now that we've clicked it...
       document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
       document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
+
+      // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
+        setTimeout(changeMeBack, 500);
 
       // instantiate a headers object
       let myHeaders = new Headers();
@@ -610,6 +616,9 @@ function displayBlogs(title, blogID) {
     // Let's change the state of the button, now that we've clicked it...
     document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
+
+    // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
+    setTimeout(changeMeBack, 500);
 
     // instantiate a headers object
     let myHeaders = new Headers();
