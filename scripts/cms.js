@@ -141,7 +141,7 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerIm
     // And now lets change it back:
     // This function ultimately calls a timer, which then calls a 2nd function to actually update the button state
     // These two functions are independent so we can change the timer length or the HTML updates in just one place
-    //cmsUpdateButtonReset();
+    cmsUpdateButtonReset();
     
     // instantiate a headers object
     let myHeaders = new Headers();
