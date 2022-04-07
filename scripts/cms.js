@@ -676,7 +676,7 @@ function displayBlogs(title, blogID) {
 
     function changeMeBack(){
         document.getElementById('cmsSubmitButton').style.backgroundColor = "#256386";
-        document.getElementById('cmsSubmitButton').innerHTML = "Create";
+        document.getElementById('cmsSubmitButton').innerHTML = "Submit Post";
     }
 
     // Change the UPDATE submit button colour & text back to initial state, post-Submit
@@ -686,7 +686,7 @@ function displayBlogs(title, blogID) {
 
     function changeMeBackCreate(){
         document.getElementById('cmsSubmitButton').style.backgroundColor = "#256386";
-        document.getElementById('cmsSubmitButton').innerHTML = "Update";
+        document.getElementById('cmsSubmitButton').innerHTML = "Update Post";
     }
 
 
