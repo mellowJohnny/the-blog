@@ -20,8 +20,9 @@
  */
 
  function createBlogPost (title,author,postBody,type){
+
     // Let's change the state of the button, now that we've clicked it...
-    cmsButtonSubmit();
+    cmsButtonSubmit;
     
 
     // Now start a timer and change the button state to reflect the submit event, waiting 1500 milliseconds
