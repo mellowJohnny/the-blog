@@ -25,7 +25,7 @@
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
     // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
-    setTimeout(changeMeBack, 500);
+    setTimeout(changeMeBack, 100);
 
     // instantiate a headers object
     let myHeaders = new Headers();
@@ -78,7 +78,7 @@
       document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
       // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
-        setTimeout(changeMeBack, 500);
+        setTimeout(changeMeBack, 100);
 
       // instantiate a headers object
       let myHeaders = new Headers();
@@ -358,7 +358,7 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerIm
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
     // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
-    setTimeout(changeMeBack, 500);
+    setTimeout(changeMeBack, 100);
     
 
     // instantiate a headers object
@@ -618,7 +618,7 @@ function displayBlogs(title, blogID) {
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
     // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
-    setTimeout(changeMeBack, 500);
+    setTimeout(changeMeBack, 100);
 
     // instantiate a headers object
     let myHeaders = new Headers();
