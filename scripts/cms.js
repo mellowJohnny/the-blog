@@ -134,9 +134,9 @@
 function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerImgName,footerImgName,mfg) {
     
     // Let's change the state of the button, now that we've clicked it...
-    document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
-    document.getElementById('cmsSubmitButton').innerHTML = "Crossing fingers...";
-    //cmsButtonSubmit();
+    //document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
+   // document.getElementById('cmsSubmitButton').innerHTML = "Crossing fingers...";
+    cmsButtonSubmit();
 
     // And now lets change it back:
     // This function ultimately calls a timer, which then calls a 2nd function to actually update the button state
