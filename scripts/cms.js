@@ -25,6 +25,8 @@
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
     // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
+    // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
+    // this makes it look like the button is waiting for the modal to close first :-)
     setTimeout(changeMeBack, 500);
 
     // instantiate a headers object
@@ -78,7 +80,9 @@
       document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
       // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
-        setTimeout(changeMeBack, 500);
+      // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
+      // this makes it look like the button is waiting for the modal to close first :-)
+      setTimeout(changeMeBack, 500);
 
       // instantiate a headers object
       let myHeaders = new Headers();
@@ -358,6 +362,8 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerIm
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
     // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
+    // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
+    // this makes it look like the button is waiting for the modal to close first :-)
     setTimeout(changeMeBack, 500);
     
 
@@ -618,6 +624,8 @@ function displayBlogs(title, blogID) {
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
     // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
+    // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
+    // this makes it look like the button is waiting for the modal to close first :-)
     setTimeout(changeMeBack, 500);
 
     // instantiate a headers object
