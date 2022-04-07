@@ -639,7 +639,7 @@ function displayBlogs(title, blogID) {
     
 }
 
-function prestoChango{
+function prestoChango() {
 	console.log("PrestoChango y'all!")
 }
 
