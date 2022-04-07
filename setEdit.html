@@ -26,6 +26,12 @@
             window.addEventListener('load', (event) => {
                 fetchCardSetByID(setID);
             }); 
+			
+			window.addEventListener("beforeunload", (event) => {
+				prestoChango(); 
+			});
+			
+
         </script>
     </head>
 
