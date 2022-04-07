@@ -351,6 +351,9 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerIm
     document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
+    // Now start a timer and change the button state to reflect the submit event, passing in the number of seconds to wait
+    setTimeout(prestoChango, 2000);
+    
 
     // instantiate a headers object
     let myHeaders = new Headers();
@@ -374,12 +377,6 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerIm
     .then(response => response.text())
     .then(result => alert(JSON.parse(result).body))
     .catch(error => console.log('error', error));
-
-    // Let's change the button back now that we are done...
-   // window.addEventListener("unload", function(event) { 
-    //    document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
-    //    document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
-   // });
     
 }
 
@@ -639,10 +636,13 @@ function displayBlogs(title, blogID) {
     
 }
 
+// *********************** function to change our CMS Submit button to reflect a state change / button click
 function prestoChango() {
-	console.log("PrestoChango y'all!")
-}
+     
+    document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
+    document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
 
+}
 
 
 
