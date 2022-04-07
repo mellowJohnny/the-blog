@@ -24,10 +24,11 @@
     document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
-    // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
+    // Now start a timer and change the button state to reflect the submit event, waiting 1500 milliseconds
     // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
     // this makes it look like the button is waiting for the modal to close first :-)
-    setTimeout(changeMeBack, 1500);
+    updateCMSButton();
+    
 
     // instantiate a headers object
     let myHeaders = new Headers();
@@ -79,10 +80,10 @@
       document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
       document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
-      // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
-      // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
-      // this makes it look like the button is waiting for the modal to close first :-)
-      setTimeout(changeMeBack, 1500);
+      // This function ultimately calls a timer, which then calls a 2nd function to actually update the button state
+      // These two functions are independent so we can change the timer length or the HTML updates in just one place
+      updateCMSButton();
+      
 
       // instantiate a headers object
       let myHeaders = new Headers();
@@ -361,10 +362,11 @@ function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerIm
     document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
-    // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
-    // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
-    // this makes it look like the button is waiting for the modal to close first :-)
-    setTimeout(changeMeBack, 1500);
+    // And now lets change it back:
+    // This function ultimately calls a timer, which then calls a 2nd function to actually update the button state
+    // These two functions are independent so we can change the timer length or the HTML updates in just one place
+    updateCMSButton();
+    
     
     
 
@@ -624,10 +626,11 @@ function displayBlogs(title, blogID) {
     document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
     document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
 
-    // Now start a timer and change the button state to reflect the submit event, waiting 500 milliseconds
-    // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
-    // this makes it look like the button is waiting for the modal to close first :-)
-    setTimeout(changeMeBack, 1500);
+    // And now lets change it back:
+    // This function ultimately calls a timer, which then calls a 2nd function to actually update the button state
+    // These two functions are independent so we can change the timer length or the HTML updates in just one place
+    updateCMSButton();
+    
 
     // instantiate a headers object
     let myHeaders = new Headers();
@@ -655,12 +658,20 @@ function displayBlogs(title, blogID) {
 }
 
 // ************* Helper function to change CMS Submit button back to initial state *************
-// Called by updateCardSet() after waiting 2 seconds
+// Called by each CRUD function
+function updateCMSButton() {
+    setTimeout(changeMeBack, 1000);
+};
+
+// ************* Helper function to change CMS Submit button back to initial state *************
+// Called by updateCMSButton() after waiting 2 seconds
 
 function changeMeBack(){
     document.getElementById('cmsSubmitButton').style.backgroundColor = "256386";
     document.getElementById('cmsSubmitButton').innerHTML = "Update Card Set";
 }
+
+
 
 
 
