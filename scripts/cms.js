@@ -404,6 +404,8 @@ function displayBlogs(title, blogID) {
   * Used by CMS to pre-populate each form field for a given Card Set 
   * 
   * @param {*} postBody
+  * @param {*} blogType
+  * @param {*} time
   * @param {*} title
   */
   
