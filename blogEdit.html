@@ -56,12 +56,20 @@
                     <label>Blog Post Title (required)</label><br>
                     <input type="text" id="title" required title="blogPostTitle">
                     <br><br>
+                    <label>Blog Type (required)</label><br>
+                    <input type="text" id="blogType" required title="blogType">
+                    <br><br>
+                    <label>Time (required)</label><br>
+                    <input type="text" id="time" required title="time">
+                    <br><br>
                     <label>Post Body (required)</label><br>
                     <textarea id="postBody" required title="postBody"></textarea>
                     <br><br>
                     <button class="input-button" type="button" id="cmsSubmitButton"
                         onclick="updateBlogPost(
                                 document.getElementById('title').value,
+                                document.getElementById('blogType').value,
+                                document.getElementById('time').value,
                                 document.getElementById('postBody').value
                                 )">
                         Update Post
