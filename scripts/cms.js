@@ -379,8 +379,8 @@ function displayBlogs(title, blogID) {
                for (var i = 0; i < blogArray.Items.length; i++) {
                    populateBlog(
                     blogArray.Items[i].postBody,
-                   // blogArray.Items[i].blogType,
-                    // blogArray.Items[i].time,
+                    blogArray.Items[i].blogType,
+                    blogArray.Items[i].time,
                     blogArray.Items[i].title);
                 }
             }
@@ -408,21 +408,21 @@ function displayBlogs(title, blogID) {
   */
   
   /** This function calls the associated DIV on the Set Update form and populates it with the current value */
-  function populateBlog(postBody,title,) {
+  function populateBlog(postBody,blogType,time,title,) {
   
       // Cleanup the JSON we get back so it's back to a String 
       // We parsed the first object we got back, but that didn't parse the contents of the inner properties
       // so we need to explicitly parse all the properties we need to send back
       const cleanPostBody = JSON.parse(postBody);
-      //const cleanBlogType = JSON.parse(blogType);
-      //const cleanTime = JSON.parse(time);
+      const cleanBlogType = JSON.parse(blogType);
+      const cleanTime = JSON.parse(time);
       const cleanTitle = JSON.parse(title);
   
       // Now that we have cleaned up the data we got back from DynamoDB, let's
       // populate the form on setEdit.html with the values as defaults
       document.getElementById("postBody").defaultValue = cleanPostBody;
-     // document.getElementById("blogType").defaultValue = blogType;
-     // document.getElementById("time").defaultValue = time;
+      document.getElementById("blogType").defaultValue = blogType;
+      document.getElementById("time").defaultValue = time;
       document.getElementById("title").defaultValue = cleanTitle;
       
   }
