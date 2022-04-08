@@ -661,7 +661,7 @@ function displayBlogs(title, blogID) {
 
     // Change the submit button colour & text on Submit
     function cmsButtonSubmit() {
-        document.getElementById('cmsSubmitButton').style.backgroundColor = "#6be07e";
+        document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
         document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
     }
 
