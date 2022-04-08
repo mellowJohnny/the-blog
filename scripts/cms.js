@@ -416,8 +416,8 @@ function displayBlogs(title, blogID) {
       // We parsed the first object we got back, but that didn't parse the contents of the inner properties
       // so we need to explicitly parse all the properties we need to send back
       const cleanPostBody = JSON.parse(postBody);
-      const cleanBlogType = JSON.parse(blogType);
-      const cleanTime = JSON.parse(time);
+      //const cleanBlogType = JSON.parse(blogType);
+      //const cleanTime = JSON.parse(time);
       const cleanTitle = JSON.parse(title);
   
       // Now that we have cleaned up the data we got back from DynamoDB, let's
