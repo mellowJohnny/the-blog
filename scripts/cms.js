@@ -24,8 +24,7 @@
     // Let's change the state of the button, now that we've clicked it...
     cmsButtonSubmit();
     
-
-    // Now start a timer and change the button state to reflect the submit event, waiting 1500 milliseconds
+    // Now start a timer and change the button state to reflect the submit event, waiting X milliseconds
     // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
     // this makes it look like the button is waiting for the modal to close first :-)
     cmsCreateButtonReset();
@@ -78,10 +77,11 @@
   
    function createCardSet(setName,size,subsets,stars,formats,year,postBody,mfg,headerImgName,footerImgName){
       // Let's change the state of the button, now that we've clicked it...
-        cmsButtonSubmit();
+      cmsButtonSubmit();
 
-      // This function ultimately calls a timer, which then calls a 2nd function to actually update the button state
-      // These two functions are independent so we can change the timer length or the HTML updates in just one place
+      // Now start a timer and change the button state to reflect the submit event, waiting X milliseconds
+      // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
+      // this makes it look like the button is waiting for the modal to close first :-)
       cmsCreateButtonReset();
       
 
@@ -134,8 +134,6 @@
 function updateCardSet(setName,size,subsets,stars,formats,year,postBody,headerImgName,footerImgName,mfg) {
     
     // Let's change the state of the button, now that we've clicked it...
-    //document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
-   // document.getElementById('cmsSubmitButton').innerHTML = "Crossing fingers...";
     cmsButtonSubmit();
 
     // And now lets change it back:
@@ -668,12 +666,7 @@ function displayBlogs(title, blogID) {
         document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
     }
 
-    function changeMe() {
-        
-    }
-
-
-    // Change the CREATE submit button colour & text back to initial state, post-Submit
+    // Post-Submit - change the CREATE submit button colour & text back to initial state 
     function cmsCreateButtonReset() {
         setTimeout(changeMeBack, 1000);
     }
@@ -683,7 +676,7 @@ function displayBlogs(title, blogID) {
         document.getElementById('cmsSubmitButton').innerHTML = "Submit Post";
     }
 
-    // Change the UPDATE submit button colour & text back to initial state, post-Submit
+    // Post-Submit - change the UPDATE submit button colour & text back to initial state, 
     function cmsUpdateButtonReset() {
         setTimeout(changeMeBackUpdate, 1000);
     }
