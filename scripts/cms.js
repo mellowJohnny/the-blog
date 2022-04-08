@@ -661,14 +661,13 @@ function displayBlogs(title, blogID) {
 
     // Change the submit button colour & text on Submit
     function cmsButtonSubmit() {
-        console.log("In CMSButtonSubmit...")
         document.getElementById('cmsSubmitButton').style.backgroundColor = "#36a5e6";
         document.getElementById('cmsSubmitButton').innerHTML = "Crossing Fingers...";
     }
 
     // Post-Submit - change the CREATE submit button colour & text back to initial state 
     function cmsCreateButtonReset() {
-        setTimeout(changeMeBack, 1000);
+        setTimeout(changeMeBack, 1500);
     }
 
     function changeMeBack(){
@@ -678,7 +677,7 @@ function displayBlogs(title, blogID) {
 
     // Post-Submit - change the UPDATE submit button colour & text back to initial state, 
     function cmsUpdateButtonReset() {
-        setTimeout(changeMeBackUpdate, 1000);
+        setTimeout(changeMeBackUpdate, 1500);
     }
 
     function changeMeBackUpdate(){
