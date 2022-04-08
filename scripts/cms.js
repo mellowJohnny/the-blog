@@ -408,7 +408,7 @@ function displayBlogs(title, blogID) {
   */
   
   /** This function calls the associated DIV on the Set Update form and populates it with the current value */
-  function populateBlog(postBody,time,title,) {
+  function populateBlog(postBody,title,) {
   
       // Cleanup the JSON we get back so it's back to a String 
       // We parsed the first object we got back, but that didn't parse the contents of the inner properties
