@@ -380,7 +380,7 @@ function displayBlogs(title, blogID) {
                    populateBlog(
                     blogArray.Items[i].postBody,
                    // blogArray.Items[i].blogType,
-                    blogArray.Items[i].time,
+                    // blogArray.Items[i].time,
                     blogArray.Items[i].title);
                 }
             }
@@ -404,7 +404,6 @@ function displayBlogs(title, blogID) {
   * Used by CMS to pre-populate each form field for a given Card Set 
   * 
   * @param {*} postBody
-  * @param {*} time
   * @param {*} title
   */
   
@@ -423,7 +422,7 @@ function displayBlogs(title, blogID) {
       // populate the form on setEdit.html with the values as defaults
       document.getElementById("postBody").defaultValue = cleanPostBody;
      // document.getElementById("blogType").defaultValue = blogType;
-      document.getElementById("time").defaultValue = time;
+     // document.getElementById("time").defaultValue = time;
       document.getElementById("title").defaultValue = cleanTitle;
       
   }
