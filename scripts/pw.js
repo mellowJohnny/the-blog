@@ -61,7 +61,7 @@ function randomString(length, chars) {
 function createPassword(){
     const pw = generatePassword()
     // Return some HTMLness
-    app.innerHTML += `<h1>${result}</h1> `;
+    app.innerHTML += `<h1>${pw}</h1> `;
     }
 
 var generatePassword = (
