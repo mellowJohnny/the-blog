@@ -3,32 +3,34 @@
 
 
 <html lang="en">
-    <title>edit blog post...</title>
+    <title>wee little password generator...</title>
     <head>
         <meta charset="utf-8"> 
         <link rel="stylesheet" type="text/css" href="styles/styles.css">
         <link rel="preconnect" href="https://fonts.gstatic.com"> 
         <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Fira+Code:wght@300&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200&display=swap" rel="stylesheet">
-      </head>
 
-<script src="scripts/pw.js"></script>
+        <!-- My Library -->
+        <script src="scripts/pw.js"></script>
+        
+        <!-- REACT Libraries-->
+        <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
 
-<script>
-  /* Let's get the URL params from the request, and extract the year */  
- // let params = new URLSearchParams(document.location.search);
-  //let blogID = params.get("blogID");
+        <!-- Babel JSX Compiler -->
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  /* 
-  *   Call to fetchCardSetsByID() on page load, dynamically passing the set year we want to fetch
-  *   It is responsible for calling the underlying AWS web service
-  *   Can also use the year to dynamically populate our page header...removed for now   */ 
-   
+    </head>
+
+<body>
+<script> 
   window.addEventListener('load', (event) => {
-    pwGenerator(5);
+    randomString(12,'#aA');
   }); 
 </script>
 
-<div id="pwDiv"></div>
+<div id="app"></div>
+</body>
 
 </html>
