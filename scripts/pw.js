@@ -19,6 +19,7 @@ function randomPWG() {
     const charSetOne = "abcdefghijklmnopqrstuvwxyz";
     const charSetTwo = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const charSetThree = "0123456789";
+    let pw = "";
 
     //Loop 12 times, pushing each character into the final array
     for (i=0; i>12; i++){
@@ -54,5 +55,22 @@ function randomString(length, chars) {
     // Return some HTMLness
     app.innerHTML += `<h1>${result}</h1> `;
 }
+
+
+//// NEXT!
+function createPassword(){
+    const pw = generatePassword()
+    // Return some HTMLness
+    app.innerHTML += `<h1>${result}</h1> `;
+    }
+
+var generatePassword = (
+    length = 20,
+    wishlist = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~!@-#$'
+  ) =>
+    Array.from(crypto.getRandomValues(new Uint32Array(length)))
+      .map((x) => wishlist[x % wishlist.length])
+      .join('')
+
 
 
