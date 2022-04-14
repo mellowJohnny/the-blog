@@ -9,7 +9,7 @@ function createPassword(){
     }
 
 var generatePassword = (
-    length = 20,
+    length = 12,
     wishlist = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~!@-#$'
   ) =>
     Array.from(crypto.getRandomValues(new Uint32Array(length)))
