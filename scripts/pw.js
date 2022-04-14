@@ -9,6 +9,7 @@ function pwGenerator_old(length) {
 
 function pwGenerator(length) {
     let pw  = '';
+	// This is the set a characters we will be choosing from
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	
    // Loop "length" number of times, rndomly picking a character from the array
