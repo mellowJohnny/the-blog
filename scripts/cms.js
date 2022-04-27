@@ -19,7 +19,8 @@
  * 
  */
 
- function createBlogPost (title,author,postBody,type){
+// NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
+ function createBlogPost (title,author,type){
 
     // Let's change the state of the button, now that we've clicked it...
     cmsButtonSubmit();
@@ -28,8 +29,10 @@
     // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
     // this makes it look like the button is waiting for the modal to close first :-)
     cmsCreateButtonReset();
-    
 
+    // Call the Tiny API to fetch the content from the editor...
+    const tinyBody = tinymce.activeEditor.getContent();
+    
     // instantiate a headers object
     let myHeaders = new Headers();
   
@@ -37,7 +40,7 @@
     myHeaders.append("Content-Type", "application/json");
   
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"title":title,"author":author,"postBody":postBody,"type":type});
+    let raw = JSON.stringify({"title":title,"author":author,"postBody":tinyBody,"type":type});
   
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
