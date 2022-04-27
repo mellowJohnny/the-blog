@@ -86,7 +86,8 @@
       cmsCreateButtonReset();
       
       // Call the Tiny API to fetch the content from the editor...
-      const tinyBody = tinymce.activeEditor.getContent({ format: 'text' });
+     // const tinyBody = tinymce.activeEditor.getContent({ format: 'text' });
+      const tinyBody = tinymce.activeEditor.getContent();
       console.log(`The body is: ${tinyBody}`)
 
       // instantiate a headers object
