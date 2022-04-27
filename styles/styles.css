@@ -338,3 +338,8 @@ textarea {
     padding: 20px;
     display: inline;
 }
+
+.password-style {
+	font-family: "Special Elite";
+	font-size: 16px;
+}
