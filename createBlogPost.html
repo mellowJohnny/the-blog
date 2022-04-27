@@ -67,14 +67,15 @@
                     </div><br><br>
 
                     <label>Post Body <sup>*</sup></label><br>
+
                     <textarea id="postBody" required title="blogBody"></textarea>
                     <br><br>
                     <button class="input-button" type="button" id="cmsSubmitButton"
                         onclick="createBlogPost(
                                 document.getElementById('title').value,
-                               // document.getElementById('img').value,
+                                document.getElementById('img').value,
                                 document.getElementById('author').value,
-                                document.getElementById('postBody').value,
+                                // document.getElementById('postBody').value,
                                 document.getElementById('blogType').value)">
                         Submit Post
                     </button>
