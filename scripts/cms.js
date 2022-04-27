@@ -75,7 +75,8 @@
    * 
    */
   
-   function createCardSet(setName,size,subsets,stars,formats,year,postBody,mfg,headerImgName,footerImgName){
+  // function createCardSet(setName,size,subsets,stars,formats,year,postBody,mfg,headerImgName,footerImgName)
+   function createCardSet(setName,size,subsets,stars,formats,year,mfg,headerImgName,footerImgName){
       // Let's change the state of the button, now that we've clicked it...
       cmsButtonSubmit();
 
@@ -84,6 +85,9 @@
       // this makes it look like the button is waiting for the modal to close first :-)
       cmsCreateButtonReset();
       
+      // Call the Tiny API to fetch the content from the editor...
+      const tinyBody = tinymce.activeEditor.getContent({ format: 'text' });
+      console.log(`The body is: ${tinyBody}`)
 
       // instantiate a headers object
       let myHeaders = new Headers();
@@ -92,7 +96,7 @@
       myHeaders.append("Content-Type", "application/json");
     
       // using built in JSON utility package turn object to string and store in a variable
-      let raw = JSON.stringify({"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":postBody,"mfg":mfg,"headerImgName":headerImgName,"footerImgName":footerImgName});
+      let raw = JSON.stringify({"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":tinyBody,"mfg":mfg,"headerImgName":headerImgName,"footerImgName":footerImgName});
     
       // create a JSON object with parameters for API call and store in a variable
       let requestOptions = {
