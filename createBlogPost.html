@@ -14,10 +14,13 @@
         <!-- TinyMCE Text Editor Scripts -->
         <script src="https://cdn.tiny.cloud/1/eg9hcu6cr4t0wvi6e6uqtb78mj1rycqrixpajuuenn3oaojw/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
         <script>
-          tinymce.init({
-            selector: '#postBody'
-            
-          });
+          tinymce.init(
+            {
+              selector: '#postBody',
+              plugins: 'link',
+              toolbar: 'link'
+            }
+            );
         </script>
       </head>
 
