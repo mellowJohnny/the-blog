@@ -11,7 +11,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Fira+Code:wght@300&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200&display=swap" rel="stylesheet">
       
-        <!-- TinyMCE Text Editor Script -->
+        <!-- TinyMCE Text Editor Scripts -->
         <script src="https://cdn.tiny.cloud/1/eg9hcu6cr4t0wvi6e6uqtb78mj1rycqrixpajuuenn3oaojw/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
         <script>
           tinymce.init({
@@ -82,6 +82,7 @@
 
                     <textarea id="postBody" title="postBody"></textarea><br><br>
 
+                    <!-- NOTE: Because we are using the TinyMCE Editor we don't call getElementById on the textarea, we use an API call in cms.js -->
                     <button class="input-button" type="button" id="cmsSubmitButton"
                         onclick="createCardSet(
                                 document.getElementById('setName').value,
@@ -90,7 +91,6 @@
                                 document.getElementById('stars').value,
                                 document.getElementById('formats').value,
                                 document.getElementById('year').value,
-                                // document.getElementById('postBody').value,
                                 document.getElementById('mfg').value,
                                 document.getElementById('headerImgName').value,
                                 document.getElementById('footerImgName').value)">

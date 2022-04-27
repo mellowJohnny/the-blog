@@ -75,8 +75,9 @@
    * 
    */
   
-  // function createCardSet(setName,size,subsets,stars,formats,year,postBody,mfg,headerImgName,footerImgName)
+  // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
    function createCardSet(setName,size,subsets,stars,formats,year,mfg,headerImgName,footerImgName){
+
       // Let's change the state of the button, now that we've clicked it...
       cmsButtonSubmit();
 
@@ -86,9 +87,7 @@
       cmsCreateButtonReset();
       
       // Call the Tiny API to fetch the content from the editor...
-     // const tinyBody = tinymce.activeEditor.getContent({ format: 'text' });
       const tinyBody = tinymce.activeEditor.getContent();
-      console.log(`The body is: ${tinyBody}`)
 
       // instantiate a headers object
       let myHeaders = new Headers();
