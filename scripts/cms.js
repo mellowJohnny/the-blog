@@ -65,6 +65,7 @@
    * The createCardSet() function is called from the wlcms.html page
    * Calls the createCardSet API exposed by AWS API Gateway 
    * 
+   * @param {*} blogStatus
    * @param {*} setName 
    * @param {*} size
    * @param {*} subsets
@@ -79,7 +80,7 @@
    */
   
   // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
-   function createCardSet(setName,size,subsets,stars,formats,year,mfg,headerImgName,footerImgName){
+   function createCardSet(blogStatus,setName,size,subsets,stars,formats,year,mfg,headerImgName,footerImgName){
 
       // Let's change the state of the button, now that we've clicked it...
       cmsButtonSubmit();
@@ -99,7 +100,7 @@
       myHeaders.append("Content-Type", "application/json");
     
       // using built in JSON utility package turn object to string and store in a variable
-      let raw = JSON.stringify({"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":tinyBody,"mfg":mfg,"headerImgName":headerImgName,"footerImgName":footerImgName});
+      let raw = JSON.stringify({"status":blogStatus,"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":tinyBody,"mfg":mfg,"headerImgName":headerImgName,"footerImgName":footerImgName});
     
       // create a JSON object with parameters for API call and store in a variable
       let requestOptions = {
