@@ -100,7 +100,7 @@
       myHeaders.append("Content-Type", "application/json");
     
       // using built in JSON utility package turn object to string and store in a variable
-      let raw = JSON.stringify({"status":blogStatus,"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":tinyBody,"mfg":mfg,"headerImgName":headerImgName,"footerImgName":footerImgName});
+      let raw = JSON.stringify({"blogStatus":blogStatus,"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":tinyBody,"mfg":mfg,"headerImgName":headerImgName,"footerImgName":footerImgName});
     
       // create a JSON object with parameters for API call and store in a variable
       let requestOptions = {
