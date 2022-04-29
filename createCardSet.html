@@ -50,40 +50,43 @@
       <div>
             <main>
                 <form class="form-style">
+                    <label>Status<sup>*</sup></label><br>
+                      <input type="radio" id="status" name="status" title="status" value="Staged"><br><br>
+                      <input type="radio" id="status" name="status" title="status" value="OK"><br><br>
                     <label>Set Name <sup>*</sup></label><br>
-                    <input type="text" id="setName" title="setName" required><br><br>
+                      <input type="text" id="setName" title="setName" required><br><br>
                     <label>Release Year <sup>*</sup></label><br>
-                    <input type="text" id="year" title="year" required><br><br>
+                      <input type="text" id="year" title="year" required><br><br>
                     <label>Set Size</label><br>
-                    <input type="text" id="size" title="size"><br><br>
+                      <input type="text" id="size" title="size"><br><br>
                     <label>Inserts</label><br>
-                    <input type="text" id="subsets" title="subsets"><br><br>
+                     <input type="text" id="subsets" title="subsets"><br><br>
                     <label>Star Rating</label><br>
-                    <select id="stars" name="stars" title="stars">
-                      <option value="1">One Star</option>
-                      <option value="2">Two Stars</option>
-                      <option value="3">Three Stars</option>
-                      <option value="4">Four Stars</option>
-                      <option value="5">Five Stars</option>
-                    </select><br><br>
+                     <select id="stars" name="stars" title="stars">
+                       <option value="1">One Star</option>
+                       <option value="2">Two Stars</option>
+                       <option value="3">Three Stars</option>
+                       <option value="4">Four Stars</option>
+                       <option value="5">Five Stars</option>
+                     </select><br><br>
                     <label>Formats</label><br>
-                    <input type="text" id="formats" title="formats"><br><br>
+                      <input type="text" id="formats" title="formats"><br><br>
                     <label>Manufacturer</label><br><br>
-                    <select id="mfg" name="mfg" title="mfg">
+                      <select id="mfg" name="mfg" title="mfg">
                         <option value="O-Pee-Chee">O-Pee-Chee</option>
                         <option value="Topps">Topps</option>
                         <option value="Upper Deck">Upper Deck</option>
                         <option value="Score">Score</option>
                         <option value="Pro Set">Pro Set</option>
                         <option value="Fleer">Fleer</option>
-                    </select><br><br>
+                      </select><br><br>
                     <label>Header Image Name</label><br>
-                    <input type="text" id="headerImgName" title="headerImgName"><br><br>
+                      <input type="text" id="headerImgName" title="headerImgName"><br><br>
                     <label>Footer Image Name</label><br>
-                    <input type="text" id="footerImgName" title="footerImgName"><br><br>
+                      <input type="text" id="footerImgName" title="footerImgName"><br><br>
                     <label>Set Review Text</label><br>
 
-                    <textarea id="postBody" title="postBody"></textarea><br><br>
+                     <textarea id="postBody" title="postBody"></textarea><br><br>
 
                     <!-- NOTE: Because we are using the TinyMCE Editor we don't call getElementById on the textarea, we use an API call in cms.js -->
                     <button class="input-button" type="button" id="cmsSubmitButton"
