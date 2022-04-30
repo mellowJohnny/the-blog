@@ -56,6 +56,11 @@
                           <main>
                               
                               <form class="form-style">
+                                 <label>Status<sup>*</sup></label><br>
+                                    <select id="blogStatus" name="blogStatus" title="blogStatus">
+                                      <option value="staged">Staging</option>
+                                      <option value="OK">Live</option>
+                                    </select><br><br>
                                   <label>Set Name</label><br>
                                   <input class="input-text-disabled" type="text" id="setName" title="setName" readonly disabled><br><br>
                                   <label>Release Year</label><br>
@@ -79,6 +84,7 @@
                                   
                                   <button class="input-button" type="button" id="cmsSubmitButton"
                                       onclick="updateCardSet(
+                                              document.getElementById('blogStatus').value,
                                               document.getElementById('setName').value,
                                               document.getElementById('size').value,
                                               document.getElementById('subsets').value,
