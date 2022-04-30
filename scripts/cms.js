@@ -128,6 +128,7 @@
  * This function is used to UPDATE an existing Card Set review
  * Calls the updateCardSet API which updates the matching record in DynamoDB
  * 
+ * @param {*} blogStatus
  * @param {*} setName
  * @param {*} size 
  * @param {*} subsets
