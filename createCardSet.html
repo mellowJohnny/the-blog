@@ -51,10 +51,10 @@
             <main>
                 <form class="form-style">
                     <label>Status<sup>*</sup></label><br>
-                      <input type="radio" id="blogStatus" name="blogStatus" title="blogStatus" value="Staged" checked>
-                        <label for="status">Staged</label><br>
-                      <input type="radio" id="blogStatus" name="blogStatus" title="blogStatus" value="OK">
-                        <label for="status">Live</label><br><br><br>
+                      <select id="blogStatus" name="blogStatus" title="blogStatus">
+                        <option value="staged">Staging</option>
+                        <option value="OK">Live</option>
+                    </select><br><br>
                     <label>Set Name <sup>*</sup></label><br>
                       <input type="text" id="setName" title="setName" required><br><br>
                     <label>Release Year <sup>*</sup></label><br>
