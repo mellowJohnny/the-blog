@@ -592,7 +592,7 @@ function displayBlogs(title, blogID) {
   
                for (var i = 0; i < cardSetArray.Items.length; i++) {
                    populateCardSet(
-                        cardSetArray.Items[i].status,
+                       // cardSetArray.Items[i].status,
                         cardSetArray.Items[i].postBody,
                         cardSetArray.Items[i].year,
                         cardSetArray.Items[i].mfg,
