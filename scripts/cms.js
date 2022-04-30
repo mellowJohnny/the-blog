@@ -635,12 +635,12 @@ function displayBlogs(title, blogID) {
   */
   
   /** This function calls the associated DIV on the Set Update form and populates it with the current value */
-  function populateCardSet(status,postBody,year,mfg,size,subsets,stars,formats,setName,headerImgName,footerImgName) {
+  function populateCardSet(postBody,year,mfg,size,subsets,stars,formats,setName,headerImgName,footerImgName) {
   
       // Cleanup the JSON we get back so it's back to a String 
       // We parsed the first object we got back, but that didn't parse the contents of the inner properties
       // so we need to explicitly parse all the properties we need to send back
-      const cleanStatus = JSON.parse(status);
+     // const cleanStatus = JSON.parse(status);
       const cleanPostBody = JSON.parse(postBody);
       const cleanYear = JSON.parse(year);
       const cleanMFG = JSON.parse(mfg);
@@ -655,7 +655,7 @@ function displayBlogs(title, blogID) {
   
       // Now that we have cleaned up the data we got back from DynamoDB, let's
       // populate the form on setEdit.html with the values as defaults
-      document.getElementById("blogStatus").defaultValue = cleanStatus;
+     // document.getElementById("blogStatus").defaultValue = cleanStatus;
       document.getElementById("postBody").defaultValue = cleanPostBody;
       document.getElementById("year").defaultValue = cleanYear;
       document.getElementById("mfg").defaultValue = cleanMFG;
