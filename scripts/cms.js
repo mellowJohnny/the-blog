@@ -140,7 +140,7 @@
  * 
  **/
 
-function updateCardSet(status,setName,size,subsets,stars,formats,year,postBody,headerImgName,footerImgName,mfg) {
+function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,postBody,headerImgName,footerImgName,mfg) {
     
     // Let's change the state of the button, now that we've clicked it...
     cmsButtonSubmit();
@@ -157,7 +157,7 @@ function updateCardSet(status,setName,size,subsets,stars,formats,year,postBody,h
     myHeaders.append("Content-Type", "application/json");
   
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"status":status,"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":postBody,"headerImgName":headerImgName,"footerImgName":footerImgName,"mfg":mfg});
+    let raw = JSON.stringify({"blogStatus":blogStatus,"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":postBody,"headerImgName":headerImgName,"footerImgName":footerImgName,"mfg":mfg});
 
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
@@ -592,7 +592,7 @@ function displayBlogs(title, blogID) {
   
                for (var i = 0; i < cardSetArray.Items.length; i++) {
                    populateCardSet(
-                        cardSetArray.Items[i].status,
+                        cardSetArray.Items[i].blogStatus,
                         cardSetArray.Items[i].postBody,
                         cardSetArray.Items[i].year,
                         cardSetArray.Items[i].mfg,
@@ -635,13 +635,13 @@ function displayBlogs(title, blogID) {
   */
   
   /** This function calls the associated DIV on the Set Update form and populates it with the current value */
-  function populateCardSet(status,postBody,year,mfg,size,subsets,stars,formats,setName,headerImgName,footerImgName) {
+  function populateCardSet(blogStatus,postBody,year,mfg,size,subsets,stars,formats,setName,headerImgName,footerImgName) {
   
       // Cleanup the JSON we get back so it's back to a String 
       // We parsed the first object we got back, but that didn't parse the contents of the inner properties
       // so we need to explicitly parse all the properties we need to send back
      
-      const cleanStatus = JSON.parse(status);
+      const cleanStatus = JSON.parse(blogStatus);
       const cleanPostBody = JSON.parse(postBody);
       const cleanYear = JSON.parse(year);
       const cleanMFG = JSON.parse(mfg);
@@ -656,7 +656,7 @@ function displayBlogs(title, blogID) {
   
       // Now that we have cleaned up the data we got back from DynamoDB, let's
       // populate the form on setEdit.html with the values as defaults
-      document.getElementById("status").defaultValue = cleanStatus;
+      document.getElementById("blogStatus").defaultValue = cleanStatus;
       document.getElementById("postBody").defaultValue = cleanPostBody;
       document.getElementById("year").defaultValue = cleanYear;
       document.getElementById("mfg").defaultValue = cleanMFG;
