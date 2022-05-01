@@ -140,7 +140,7 @@
  * 
  **/
 
-function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,postBody,headerImgName,footerImgName,mfg) {
+function updateCardSet(status,setName,size,subsets,stars,formats,year,postBody,headerImgName,footerImgName,mfg) {
     
     // Let's change the state of the button, now that we've clicked it...
     cmsButtonSubmit();
@@ -157,7 +157,7 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,postBo
     myHeaders.append("Content-Type", "application/json");
   
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"blogStatus":blogStatus,"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":postBody,"headerImgName":headerImgName,"footerImgName":footerImgName,"mfg":mfg});
+    let raw = JSON.stringify({"status":status,"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":postBody,"headerImgName":headerImgName,"footerImgName":footerImgName,"mfg":mfg});
 
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
@@ -656,7 +656,7 @@ function displayBlogs(title, blogID) {
   
       // Now that we have cleaned up the data we got back from DynamoDB, let's
       // populate the form on setEdit.html with the values as defaults
-      document.getElementById("blogStatus").defaultValue = cleanStatus;
+      document.getElementById("status").defaultValue = cleanStatus;
       document.getElementById("postBody").defaultValue = cleanPostBody;
       document.getElementById("year").defaultValue = cleanYear;
       document.getElementById("mfg").defaultValue = cleanMFG;

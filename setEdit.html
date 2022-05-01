@@ -62,7 +62,7 @@
                                       <option value="OK">Live</option>
                                     </select><br><br> -->
                                   <label>Publication Status</label><br>
-                                    <input type="text" id="blogStatus" title="blogStatus"><br><br>
+                                    <input type="text" id="status" title="status"><br><br>
                                  
                                   <label>Set Name</label><br>
                                     <input class="input-text-disabled" type="text" id="setName" title="setName" readonly disabled><br><br>
@@ -96,7 +96,7 @@
                                   
                                   <button class="input-button" type="button" id="cmsSubmitButton"
                                       onclick="updateCardSet(
-                                             // document.getElementById('blogStatus').value,
+                                              document.getElementById('status').value,
                                               document.getElementById('setName').value,
                                               document.getElementById('size').value,
                                               document.getElementById('subsets').value,
