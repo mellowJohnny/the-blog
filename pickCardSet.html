@@ -21,6 +21,14 @@
             });
         </script>
 
+        <!--  This calls the fetchAllStagedCardSets() function on page load.  
+              It is responsible for calling the underlying AWS web service -->
+        <script>
+          window.addEventListener('load', (event) => {
+            fetchAllStagedCardSets();
+           });
+        </script>
+
         
           
       </head>
@@ -47,6 +55,12 @@
               <section>
                 <div class="flex-container">
                   <div id="editBlogsDiv"></div>
+                </div>
+              </section> 
+              <p>These Card Sets are NOT Live yet...</p>
+              <section>
+                <div class="flex-container">
+                  <div id="stagedBlogsDiv"></div>
                 </div>
               </section> 
             </main>
