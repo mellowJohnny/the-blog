@@ -290,6 +290,11 @@ textarea {
   padding: 6px;
 }
 
+.cms-set-picker {
+  width: 500px;
+  margin-left: 20px;
+}
+
 .like-button-table {
   text-align: center;
 }
