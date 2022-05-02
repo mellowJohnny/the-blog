@@ -291,12 +291,8 @@ textarea {
 }
 
 .cms-set-picker {
-  width: 800px;
+  width: 700px;
   margin-left: 200px;
-}
-
-.cms-set-picker-tr tr{
-  width: 300px;
 }
 
 .like-button-table {
