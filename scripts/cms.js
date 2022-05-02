@@ -409,7 +409,7 @@ function displayBlogs(title, blogID) {
   
 
 
-  // *********************************** populateCardSet Helper Function *********************************
+  // *********************************** populateBlog Helper Function *********************************
   
   /**
   * Helper function Called by fetchBlogByID() 
@@ -443,7 +443,7 @@ function displayBlogs(title, blogID) {
 // ********************************** Fetch All Card Sets For Update **********************************
 
 /**
- * This Function is used to fetch all records from the Card table in DynamoDB
+ * This Function is used to fetch all records from the Card table in DynamoDB with status="OK"
  * The API limits the data returned to only the name of the card set and it's ID  
  * It is used by the CMS users to allow Users to select a single set to be updated
  * Calls the getCardSets API exposed by AWS API Gateway
@@ -509,7 +509,7 @@ function displayBlogs(title, blogID) {
   // ********************************** Fetch All Staged Card Sets For Update **********************************
 
 /**
- * This Function is used to fetch all records from the Card table in DynamoDB
+ * This Function is used to fetch all records from the Card table in DynamoDB with status="staged"
  * The API limits the data returned to only the name of the card set and it's ID  
  * It is used by the CMS users to allow Users to select a single set to be updated
  * Calls the getCardSets API exposed by AWS API Gateway
@@ -692,8 +692,7 @@ function displayBlogs(title, blogID) {
             // Now that the data we got back is a JSON object, let's loop over all the Posts...
             // The 'Items' property holds an array of all the set reviews 
             // Let's loop through that array and display the fields we want!
-            // We call the displayBlog() function to control the display, calling it once
-            // for each set review, essentially populating each review one at a time
+            // We call the populateCardSet() function to populate each field on the setUpdate.html CMS form
   
                for (var i = 0; i < cardSetArray.Items.length; i++) {
                    populateCardSet(
@@ -727,6 +726,7 @@ function displayBlogs(title, blogID) {
   * Helper function Called by fetchCardSetByID() 
   * Used by CMS to pre-populate each form field for a given Card Set 
   * 
+  * @param {*} blogStatus
   * @param {*} postBody
   * @param {*} year 
   * @param {*} mfg
@@ -741,7 +741,7 @@ function displayBlogs(title, blogID) {
   
   /** This function calls the associated DIV on the Set Update form and populates it with the current value */
   function populateCardSet(blogStatus,postBody,year,mfg,size,subsets,stars,formats,setName,headerImgName,footerImgName) {
-  
+
       // Cleanup the JSON we get back so it's back to a String 
       // We parsed the first object we got back, but that didn't parse the contents of the inner properties
       // so we need to explicitly parse all the properties we need to send back
@@ -758,11 +758,15 @@ function displayBlogs(title, blogID) {
       const cleanSetName = JSON.parse(setName);
       const cleanHeaderImgName = JSON.parse(headerImgName);
       const cleanFooterImgName = JSON.parse(footerImgName);
+
+      // Inserts postBody into 'current' TinyMCE Editor
+      tinymce.activeEditor.selection.setContent(cleanPostBody);
+  
   
       // Now that we have cleaned up the data we got back from DynamoDB, let's
       // populate the form on setEdit.html with the values as defaults
       document.getElementById("blogStatus").defaultValue = cleanStatus;
-      document.getElementById("postBody").defaultValue = cleanPostBody;
+      //document.getElementById("postBody").defaultValue = cleanPostBody;
       document.getElementById("year").defaultValue = cleanYear;
       document.getElementById("mfg").defaultValue = cleanMFG;
       document.getElementById("size").defaultValue = cleanSetSize;
