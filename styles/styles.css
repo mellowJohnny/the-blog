@@ -269,7 +269,7 @@ textarea {
   text-align: left;
 }
 
-/* Used the style the first table displaying the main set details */
+/* Used to style the first table displaying the main set details */
 .set-details-table-style td{
   table-layout: fixed;
   margin-left: 5px;
@@ -291,7 +291,7 @@ textarea {
 }
 
 .cms-set-picker {
-  width: 700px;
+  width: 800px;
   margin-left: 200px;
 }
 
