@@ -292,6 +292,11 @@ textarea {
 
 .cms-set-picker {
   width: 500px;
+  margin-left: 200px;
+}
+
+.cms-set-picker tr{
+  width: 100px;
   margin-left: 20px;
 }
 
