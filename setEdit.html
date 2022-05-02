@@ -30,6 +30,17 @@
 			
         </script>
 
+       <!-- TinyMCE Text Editor Scripts -->
+       <script src="https://cdn.tiny.cloud/1/eg9hcu6cr4t0wvi6e6uqtb78mj1rycqrixpajuuenn3oaojw/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+       <script>
+         tinymce.init({
+           selector: '#postBody',
+             plugins: 'undo redo styles bold italic alignleft aligncenter alignright alignjustify outdent indent advlist autolink link image lists charmap preview code wordcount',
+             toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | advlist autolink link image lists charmap preview code | wordcount',
+             width: 950
+         });
+       </script>
+
     </head>
 
     <body>
