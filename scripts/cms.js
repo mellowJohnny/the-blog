@@ -475,8 +475,8 @@ function displayBlogs(title, blogID) {
             if (cardSetArray.Items.length === 0) {
   
                 // No results...return a friendly message
-                let blogBody = document.getElementById("editBlogsDiv");
-                blogBody.innerHTML = `...these aren't the Droids you're looking for...`;
+                let blogBody = document.getElementById("stagedBlogsDiv");
+                blogBody.innerHTML = `...no card sets are currently staged`;
   
                 // If we have no results, stop processing
                 return;
