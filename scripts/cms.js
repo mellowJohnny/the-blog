@@ -339,8 +339,7 @@ function displayBlogs(title, blogID) {
   // ******************************** Fetch Blog by ID - Populates the CMS Form For Update **************************
 
 /** 
- * This function fetches a single blog, given it's ID
- * and parses out the individual fields
+ * This function fetches a single blog, given it's ID and parses out the individual fields
  * It the calls populateBlog() which in turn populates the HTML form on blogEdit.html
  * Calls the getBlogByID API exposed by AWS API Gateway
  * 
@@ -647,9 +646,8 @@ function displayBlogs(title, blogID) {
   // ***************************** Fetch Card Set by ID - Populates the CMS Form For Update **************************
   
   /** 
-   * This function fetches a single card set, given it's ID
-   * and parses out the individual fields
-   * It the calls populateCardSet() which in turn populates the HTML form on setEdit.html
+   * This function fetches a single card set, given it's ID and parses out the individual fields
+   * It then calls populateCardSet() which in turn populates the HTML form on setEdit.html
    * Calls the getCardSetByID API exposed by AWS API Gateway
    * 
    * @param {*} id
@@ -766,7 +764,6 @@ function displayBlogs(title, blogID) {
       // Now that we have cleaned up the data we got back from DynamoDB, let's
       // populate the form on setEdit.html with the values as defaults
       document.getElementById("blogStatus").defaultValue = cleanStatus;
-      //document.getElementById("postBody").defaultValue = cleanPostBody;
       document.getElementById("year").defaultValue = cleanYear;
       document.getElementById("mfg").defaultValue = cleanMFG;
       document.getElementById("size").defaultValue = cleanSetSize;
