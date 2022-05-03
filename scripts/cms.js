@@ -475,7 +475,7 @@ function displayBlogs(title, blogID) {
             if (cardSetArray.Items.length === 0) {
   
                 // No results...return a friendly message
-                let blogBody = document.getElementById("editBlogsDiv");
+                let blogBody = document.getElementById("noBlogsDiv");
                 blogBody.innerHTML = `...no card sets are currently live`;
   
                 // If we have no results, stop processing
@@ -541,7 +541,7 @@ function displayBlogs(title, blogID) {
             if (cardSetArray.Items.length === 0) {
   
                 // No results...return a friendly message
-                let blogBody = document.getElementById("stagedBlogsDiv");
+                let blogBody = document.getElementById("noStagedBlogsDiv");
                 blogBody.innerHTML = `...no card sets are currently staged`;
   
                 // If we have no results, stop processing

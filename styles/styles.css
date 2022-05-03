@@ -348,3 +348,8 @@ textarea {
 	font-family: "Special Elite";
 	font-size: 16px;
 }
+
+.error-msg {
+  font-family: 'Arial';
+  font-size: 18px;
+}
