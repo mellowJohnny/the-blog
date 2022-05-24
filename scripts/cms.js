@@ -354,7 +354,7 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
        })
        .catch(function (err) {
            // Error...return a friendly message
-           let blogBody = document.getElementById("listBlogsDiv");
+           let blogBody = document.getElementById("listStagedBlogsDiv");
            blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
            console.log('Something went wrong...: ' + err);
        });
