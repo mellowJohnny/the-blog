@@ -183,16 +183,16 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
 /** 
  * This function is used to UPDATE an existing Blog Post
  * Calls the updateBlogPost API which updates the matching record in DynamoDB
+ * NOTE: We don't pass in the postBody anymore as we fetch it via API call to TinyMCE
  * 
  * @param {*} title
  * @param {*} blogStatus
  * @param {*} blogType
  * @param {*} time
- * @param {*} postBody 
  * 
  **/
 
- function updateBlogPost(title,blogStatus,blogType,time,postBody) {
+ function updateBlogPost(title,blogStatus,blogType,time) {
     // Let's change the state of the button, now that we've clicked it...
     cmsButtonSubmit();
 
@@ -201,7 +201,7 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
     // These two functions are independent so we can change the timer length or the HTML updates in just one place
     cmsUpdateButtonReset();
     
-    // Call the Tiny API to fetch the content from the editor...
+    // Call the Tiny API to fetch the blogBody content from the editor...
     const tinyBody = tinymce.activeEditor.getContent();
 
     // instantiate a headers object
