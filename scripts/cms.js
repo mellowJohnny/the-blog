@@ -267,7 +267,7 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
   
                 // No results...return a friendly message
                 let blogBody = document.getElementById("noBlogsDiv");
-                blogBody.innerHTML = `...these aren't the Droids you're looking for...`;
+                blogBody.innerHTML = `these aren't the Droids you're looking for...`;
   
                 // If we have no results, stop processing
                 return;
@@ -333,7 +333,7 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
   
                 // No results...return a friendly message
                 let blogBody = document.getElementById("noStagedBlogsDiv");
-                blogBody.innerHTML = `...these aren't the Droids you're looking for...`;
+                blogBody.innerHTML = `these aren't the Droids you're looking for...`;
   
                 // If we have no results, stop processing
                 return;
@@ -476,7 +476,7 @@ function displayStagedBlogs(title, blogID) {
   
                 // No results...return a friendly message
                 let blogBody = document.getElementById("errorDiv");
-                blogBody.innerHTML = `...these aren't the Droids you're looking for...`;
+                blogBody.innerHTML = `these aren't the Droids you're looking for...`;
   
                 // If we have no results, stop processing
                 return;
@@ -786,7 +786,7 @@ function displayStagedBlogs(title, blogID) {
   
                 // No results...return a friendly message
                 let blogBody = document.getElementById("errorDiv");
-                blogBody.innerHTML = `...these aren't the Droids you're looking for...`;
+                blogBody.innerHTML = `these aren't the Droids you're looking for...`;
   
                 // If we have no results, stop processing
                 return;
