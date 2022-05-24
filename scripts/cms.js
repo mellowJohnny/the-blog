@@ -265,7 +265,7 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
             if (blogArray.Items.length === 0) {
   
                 // No results...return a friendly message
-                let blogBody = document.getElementById("listBlogsDiv");
+                let blogBody = document.getElementById("noBlogsDiv");
                 blogBody.innerHTML = `...these aren't the Droids you're looking for...`;
   
                 // If we have no results, stop processing
@@ -278,6 +278,7 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
             // We call the displayBlog() function to control the display, calling it once
             // for each set review, essentially populating each review one at a time
   
+            // NO ERROR - Ultimately calls the listBlogsDiv 
                for (var i = 0; i < blogArray.Items.length; i++) {
                    displayBlogs(
                     blogArray.Items[i].title,
@@ -289,7 +290,7 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
        })
        .catch(function (err) {
            // Error...return a friendly message
-           let blogBody = document.getElementById("listBlogsDiv");
+           let blogBody = document.getElementById("noBlogsDiv");
            blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
            console.log('Something went wrong...: ' + err);
        });
@@ -330,7 +331,7 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
             if (blogArray.Items.length === 0) {
   
                 // No results...return a friendly message
-                let blogBody = document.getElementById("listStagedBlogsDiv");
+                let blogBody = document.getElementById("noStagedBlogsDiv");
                 blogBody.innerHTML = `...these aren't the Droids you're looking for...`;
   
                 // If we have no results, stop processing
@@ -343,8 +344,9 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
             // We call the displayBlog() function to control the display, calling it once
             // for each set review, essentially populating each review one at a time
   
+            // NO ERROR - Ultimately calls the listStagedBlogsDiv 
                for (var i = 0; i < blogArray.Items.length; i++) {
-                   displayBlogs(
+                   displayStagedBlogs(
                     blogArray.Items[i].title,
                     blogArray.Items[i].blogID);
                 }
@@ -354,7 +356,7 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
        })
        .catch(function (err) {
            // Error...return a friendly message
-           let blogBody = document.getElementById("listStagedBlogsDiv");
+           let blogBody = document.getElementById("noStagedBlogsDiv");
            blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
            console.log('Something went wrong...: ' + err);
        });
@@ -386,6 +388,39 @@ function displayBlogs(title, blogID) {
     
     // Setup a variable to hold the reference to our Div - this is how we connect to the HTML page from the JS function
     let blogBody = document.getElementById("listBlogsDiv");
+    blogBody.innerHTML += 
+                 `<table class="set-details-table-style">
+                     <tr>
+                         <td style="width:400px;font-size:20px">
+                            <a href="blogEdit.html?blogID=${blogID}">
+                            <strong>${cleanTitle}</strong>
+                            </a>
+                         </td>
+                     </tr>
+                 </table>`;
+  }
+
+  /**
+* Helper function Called by getStagedBlogsForUpdate() to apply HTML formatting a Blog record 
+* Used by CMS to present Blog titles to allow for an individual blog to be updated, passing the blogID to blogEdit.html
+* 
+* @param {*} title 
+* @param {*} blogID 
+*
+*/
+
+function displayStagedBlogs(title, blogID) {
+
+    // Cleanup the JSON we get back so it's back to a String 
+    // We parsed the first object we got back, but that didn't parse the contents of the inner properties
+    // so we need to explicitly parse setName as it will come back with double-quotes around it.
+
+    // setID comes back as a string with no extra quotes so no need to JSON.parse() it (blogID does not!)
+    const cleanTitle = JSON.parse(title);
+    //const cleanBlogID = JSON.parse(blogID);
+    
+    // Setup a variable to hold the reference to our Div - this is how we connect to the HTML page from the JS function
+    let blogBody = document.getElementById("listStagedBlogsDiv");
     blogBody.innerHTML += 
                  `<table class="set-details-table-style">
                      <tr>
