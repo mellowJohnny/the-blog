@@ -295,6 +295,71 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
        });
   }
 
+  // *********************************** Get STAGED Blogs For Update API Call **********************************
+/**
+ * This Function is used to fetch all STAGED records from the Blog table in DynamoDB
+ * The API limits the data returned to only the name of the blog and its blogID  
+ * It is used by the CMS users to allow Users to select a single blog to be updated
+ * Calls the getStagedBlogsForUpdate API exposed by AWS API Gateway
+ */
+
+  function getStagedBlogsForUpdate() {
+
+    // Set up a global variable to hold the API URL
+    const urlToFetch = `https://sh8girwnxg.execute-api.us-east-2.amazonaws.com/dev`;
+          
+    fetch(urlToFetch)
+       .then(function (response) {
+           const jsonResponse = response.json();
+           return jsonResponse; // Our Promise object
+       })
+       .then(function (data) {
+       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
+       // First let's return an array of the object's properties
+           const returnedData = Object.entries(data); 
+  
+       // Next let's just get the 'body' property returned by the Lambda call
+          for (const [key, value] of returnedData) {
+              if (key === "body"){
+  
+            // Now that we have the 'body' key, we need to convert the value (currently a JSON String) to a JSON Object 
+            // so that we can pull out the properties of each blog post 
+            const blogArray = JSON.parse(value);
+  
+            // Check to see if we have any results...    
+            if (blogArray.Items.length === 0) {
+  
+                // No results...return a friendly message
+                let blogBody = document.getElementById("listStagedBlogsDiv");
+                blogBody.innerHTML = `...these aren't the Droids you're looking for...`;
+  
+                // If we have no results, stop processing
+                return;
+            }
+  
+            // Now that the data we got back is a JSON object, let's loop over all the Posts...
+            // The 'Items' property holds an array of all the set reviews 
+            // Let's loop through that array and display the fields we want!
+            // We call the displayBlog() function to control the display, calling it once
+            // for each set review, essentially populating each review one at a time
+  
+               for (var i = 0; i < blogArray.Items.length; i++) {
+                   displayBlogs(
+                    blogArray.Items[i].title,
+                    blogArray.Items[i].blogID);
+                }
+            }
+        }
+  
+       })
+       .catch(function (err) {
+           // Error...return a friendly message
+           let blogBody = document.getElementById("listBlogsDiv");
+           blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
+           console.log('Something went wrong...: ' + err);
+       });
+  }
+
 
 
 

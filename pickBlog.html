@@ -21,35 +21,60 @@
             });
         </script>
 
+         <!--  This calls the getStagedBlogsForUpdate() function on page load.  
+              It is responsible for calling the underlying AWS web service -->
+              <script>
+                window.addEventListener('load', (event) => {
+                  getStagedBlogsForUpdate();
+                 });
+              </script>
+
       </head>
 
 <body>
-    <section>
-        <div>
-            <header class="masthead">the hella files cms</header>  
-            <main>
-              <div>
-                <nav>
-                  <table class="top-nav">
-                    <tr>
-                      <td class="nav-td"><a href="index.html">Home</a> </td>
-                      <td class="nav-td"><a href="wlcms.html">Back To CMS</a> </td>
-                    </tr>
-                  </table>
-                </nav>
-              </div>
-              <div class="header-style">
-                <h1>...pick the blog you want to edit</h1>
-              </div>
-              <br>
-              <section>
-                <div class="flex-container">
-                  <div id="listBlogsDiv"></div>
+  <section>
+    <div>
+        <header class="masthead">the hella files cms</header>  
+        <main>
+          <div>
+            <nav>
+              <table class="top-nav">
+                <tr>
+                  <td class="nav-td"><a href="index.html">Home</a> </td>
+                  <td class="nav-td"><a href="wlcms.html">Back To CMS</a> </td>
+                </tr>
+              </table>
+            </nav>
+          </div>
+          <table class="cms-set-picker">
+            <tr>
+              <td>
+                <div class="header-style">
+                  <h1>...edit a live set</h1>
                 </div>
-              </section> 
-            </main>
-        </div>
-    </section>
+              </td>
+              <td>
+                <div class="header-style">
+                  <h1>...edit a staged set</h1>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top">
+                  <div id="listBlogsDiv"></div>
+                  <div id="noBlogsDiv" class="error-msg"></div>
+                </div>
+              </td>
+              <td valign="top">
+                  <div id="listStagedBlogsDiv"></div>
+                  <div id="noStagedBlogsDiv" class="error-msg"></div>
+                </div>
+              </td>
+            </tr>
+        </table>
+        </main> 
+    </div>
+</section>
     <footer class="page-footer">
         <p>&copy; 2022 Christian Couillard</p>
       </footer>
