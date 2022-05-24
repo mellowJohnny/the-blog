@@ -201,6 +201,8 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
     // These two functions are independent so we can change the timer length or the HTML updates in just one place
     cmsUpdateButtonReset();
     
+    // Call the Tiny API to fetch the content from the editor...
+    const tinyBody = tinymce.activeEditor.getContent();
 
     // instantiate a headers object
     let myHeaders = new Headers();
@@ -209,7 +211,7 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
     myHeaders.append("Content-Type", "application/json");
   
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"title":title,"blogStatus":blogStatus,"blogType":blogType,"time":time,"postBody":postBody});
+    let raw = JSON.stringify({"title":title,"blogStatus":blogStatus,"blogType":blogType,"time":time,"postBody":tinyBody});
 
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
