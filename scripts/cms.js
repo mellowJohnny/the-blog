@@ -532,10 +532,13 @@ function displayStagedBlogs(title, blogID) {
       const cleanPostBody = JSON.parse(postBody);
       const cleanTitle = JSON.parse(title);
       const cleanBlogStatus = JSON.parse(blogStatus);
+
+      // Inserts postBody into 'current' TinyMCE Editor
+      tinymce.activeEditor.selection.setContent(cleanPostBody);
   
       // Now that we have cleaned up the data we got back from DynamoDB, let's
       // populate the form on setEdit.html with the values as defaults
-      document.getElementById("postBody").defaultValue = cleanPostBody;
+     // document.getElementById("postBody").defaultValue = cleanPostBody;
       document.getElementById("blogStatus").defaultValue = cleanBlogStatus;
       document.getElementById("blogType").defaultValue = blogType;
       document.getElementById("time").defaultValue = time;
