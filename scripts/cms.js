@@ -1,8 +1,8 @@
 
 
-/** This Script defines all the functions used by the CMS
- * section of the site to both create and update existing 
- * blog posts and card set reviews
+/** This Script defines all the functions used by the CMS section of the site 
+ * to both CREATE and UPDATE existing blog posts and card set reviews
+ * There is no ability to delete a blog. Why would you want to? ;-)
  */
 
 // **************************************** Create New Blog Post ***************************************************
@@ -118,10 +118,6 @@
       }
 
 
-
-
-
-
 // *********************************************** Update Card Set ***************************************
 
 /** 
@@ -178,7 +174,8 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
     
 }
 
-// ************************************ Update Blog Post *******************************************
+
+// ********************************************* Update Blog Post *******************************************
 
 /** 
  * This function is used to UPDATE an existing Blog Post
@@ -229,9 +226,11 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
     
 }
 
-/**
- * Helper Functions
- */
+/*********************************************************************************************
+ ****************************************** Helper Functions *********************************
+ *********************************************************************************************/
+
+
 
 // *********************************** Get Blogs For Update API Call **********************************
 /**
@@ -403,7 +402,11 @@ function displayBlogs(title, blogID) {
                  </table>`;
   }
 
-  /**
+
+
+// ******************************* displayStagedBlogs Helper Function ************************************
+
+/**
 * Helper function Called by getStagedBlogsForUpdate() to apply HTML formatting a Blog record 
 * Used by CMS to present Blog titles to allow for an individual blog to be updated, passing the blogID to blogEdit.html
 * 
@@ -435,9 +438,6 @@ function displayStagedBlogs(title, blogID) {
                      </tr>
                  </table>`;
   }
-
-
-
 
   // ******************************** Fetch Blog by ID - Populates the CMS Form For Update **************************
 
@@ -615,6 +615,7 @@ function displayStagedBlogs(title, blogID) {
        });
   }
 
+
   // ********************************** Fetch All Staged Card Sets For Update **********************************
 
 /**
@@ -717,6 +718,8 @@ function displayStagedBlogs(title, blogID) {
                  `;
   }
 
+
+
   // ************************************* displayStagedCardSets Helper Function *************************************
   
   /**
@@ -753,6 +756,8 @@ function displayStagedBlogs(title, blogID) {
                  `;
   }
   
+
+
   // ***************************** Fetch Card Set by ID - Populates the CMS Form For Update **************************
   
   /** 
@@ -827,6 +832,8 @@ function displayStagedBlogs(title, blogID) {
            console.log('Something went wrong...: ' + err);
        });
   }
+
+  
   
   // ***************************************** populateCardSet Helper Function **********************************
   
