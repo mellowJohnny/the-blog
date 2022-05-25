@@ -1,7 +1,7 @@
 /** 
     * This is the main AWS call used to fetch ALL CARDS SET reviews
     * AWS API Gateway API call - getCardSets end-point
-    * Called from the index.html page
+    * Called from the cardSetsByYear.html page
   */
 
  function fetchAllCardSets() {
@@ -54,7 +54,9 @@
 }
 
 /**
- * Function to DISPLAY Blogs dynamically
+ * Function to FORMAT & DISPLAY Card Sets
+ * This function is responsible for the display and formatting of the JSON returned and parsed by fetchAllCardSets()
+ *  
  * @param {*} postBody 
  * @param {*} year 
  * @param {*} mfg
