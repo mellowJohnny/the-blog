@@ -269,7 +269,7 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
   
                 // No results...return a friendly message
                 let blogBody = document.getElementById("noBlogsDiv");
-                blogBody.innerHTML = `these aren't the Droids you're looking for...`;
+                blogBody.innerHTML = `...no card sets are currently staged`;
   
                 // If we have no results, stop processing
                 return;
