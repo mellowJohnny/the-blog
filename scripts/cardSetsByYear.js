@@ -50,7 +50,7 @@
             // for each set review, essentially populating each review one at a time
 
                for (var i = 0; i < cardSetArray.Items.length; i++) {
-                   displayBlog(cardSetArray.Items[i].postBody,
+                   displayCardSet(cardSetArray.Items[i].postBody,
                     cardSetArray.Items[i].year,
                     cardSetArray.Items[i].mfg,
                     cardSetArray.Items[i].size,
@@ -91,7 +91,7 @@
  * @param {*} setName 
  */
 
-   function displayBlog(postBody, year, mfg, size, subsets, stars, formats, headerImg, headerImgName, footerImg, footerImgName, setName) {
+   function displayCardSet(postBody, year, mfg, size, subsets, stars, formats, headerImg, headerImgName, footerImg, footerImgName, setName) {
        // Populate the blogsDiv...
  
        // Cleanup the JSON we get back so it's back to a String 
