@@ -351,6 +351,7 @@ textarea {
 
 .error-msg {
   font-family: 'Arial';
-  font-size: 18px;
-  color:rgb(11, 62, 100);
+  font-size: 20px;
+  color:rgb(134, 15, 15);
+  width:400px;
 }
