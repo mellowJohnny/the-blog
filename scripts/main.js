@@ -299,7 +299,7 @@ function renderYearHeader(year) {
     const dayNum = d.getDay();
     const weekDay = getDayOfTheWeek(dayNum);
 
-    // Get the month as an Intger, convert it to the name
+    // Get the month as an Integer, convert it to the name
     const monthNum = d.getMonth(); 
     const month = getMonthName(monthNum);
     // Get the year
