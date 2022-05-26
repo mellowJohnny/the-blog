@@ -142,7 +142,7 @@
             if (cardSetArray.Items.length === 0) {
 
                 // No results...return a friendly message
-                let blogBody = document.getElementById("blogsDiv");
+                let blogBody = document.getElementById("cardSetDiv");
                 blogBody.innerHTML = `...these aren't the Droids you're looking for...`;
 
                 // If we have no results, stop processing
@@ -175,7 +175,7 @@
        })
        .catch(function (err) {
            // Error...return a friendly message
-           let blogBody = document.getElementById("blogsDiv");
+           let blogBody = document.getElementById("cardSetDiv");
            blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
            console.log('Something went wrong...: ' + err);
        });
