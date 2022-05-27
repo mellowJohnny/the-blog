@@ -52,7 +52,7 @@
                 }    
              } 
 
-            //Pass the attribute to be sorted on
+            //Pass the attribute to be sorted on - remember, "Items" is the array of JSON blogPost items
             blogPostObject.Items.sort(getSortOrder("time"));     
            
              
