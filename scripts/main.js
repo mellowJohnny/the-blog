@@ -38,7 +38,7 @@
                const blogPostArray = JSON.parse(value);
 
                // A Little debug:
-               console.log(blogPostArray);
+               console.log(returnedData);
 
                function GetSortOrder(prop) {    
                 return function(a, b) {    
