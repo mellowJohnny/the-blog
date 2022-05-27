@@ -35,7 +35,7 @@
                 * (currently a JSON String) to a JSON Object 
                 * so that we can pull out the properties of each blog post 
                 **/ 
-               const blogPostArray = JSON.parse(value);
+               const blogPostObject = JSON.parse(value);
 
                // A Little debug:
                console.log(returnedData);
@@ -51,7 +51,7 @@
                 }    
             }    
 
-            blogPostArray.sort(GetSortOrder("time")); //Pass the attribute to be sorted on    
+            blogPostObject.Items.sort(GetSortOrder("time")); //Pass the attribute to be sorted on    
             document.write("Sorted by time : ");    
                 for (var item in blogPostArray) {    
                     document.write("<br>" + array[item].time);    
@@ -64,12 +64,12 @@
                 * It gets called it once for each blog post, essentially populating each blog post one at a time
                 **/
          
-               for (var i = 0; i < blogPostArray.Items.length; i++) {
-                   displayBlog(blogPostArray.Items[i].postBody,
-                    blogPostArray.Items[i].author,
-                    blogPostArray.Items[i].time,
-                    blogPostArray.Items[i].title,
-                    blogPostArray.Items[i].img);
+               for (var i = 0; i < blogPostObject.Items.length; i++) {
+                   displayBlog(blogPostObject.Items[i].postBody,
+                    blogPostObject.Items[i].author,
+                    blogPostObject.Items[i].time,
+                    blogPostObject.Items[i].title,
+                    blogPostObject.Items[i].img);
                 }
            }
        } 
