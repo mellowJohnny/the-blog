@@ -39,6 +39,23 @@
 
                // A Little debug:
                console.log(blogPostArray);
+
+               function GetSortOrder(prop) {    
+                return function(a, b) {    
+                    if (a[prop] > b[prop]) {    
+                        return 1;    
+                    } else if (a[prop] < b[prop]) {    
+                        return -1;    
+                    }    
+                    return 0;    
+                }    
+            }    
+
+            blogPostArray.sort(GetSortOrder("time")); //Pass the attribute to be sorted on    
+            document.write("Sorted by time : ");    
+                for (var item in blogPostArray) {    
+                    document.write("<br>" + array[item].EmployeeName);    
+                }   
              
                /** Now that the data we got back is a JSON object, let's loop over all the Posts...
                 * The 'Items' property holds an array of all the blog posts 
