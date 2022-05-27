@@ -55,7 +55,7 @@
             blogPostObject.Items.sort(GetSortOrder("time")); //Pass the attribute to be sorted on    
             document.write("Sorted by time : ");    
             for (var item in blogPostObject.Items) {    
-                document.write("<br>" + array[item].time);    
+                document.write("<br>" + blogPostObject.Items[item].time);    
                 }   
              
                /** Now that the data we got back is a JSON object, let's loop over all the Posts...
