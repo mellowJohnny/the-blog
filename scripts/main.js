@@ -37,9 +37,10 @@
                 **/ 
                const blogPostObject = JSON.parse(value);
 
-               // A Little debug:
+            // A Little debug:
                console.log(returnedData);
 
+            // Let's sort the Object by 'time':
                function GetSortOrder(prop) {    
                 return function(a, b) {    
                     if (a[prop] > b[prop]) {    
@@ -49,12 +50,12 @@
                     }    
                     return 0;    
                 }    
-            }    
+             }    
 
             blogPostObject.Items.sort(GetSortOrder("time")); //Pass the attribute to be sorted on    
             document.write("Sorted by time : ");    
-                for (var item in blogPostArray) {    
-                    document.write("<br>" + array[item].time);    
+            for (var item in blogPostObject.Items) {    
+                document.write("<br>" + array[item].time);    
                 }   
              
                /** Now that the data we got back is a JSON object, let's loop over all the Posts...
