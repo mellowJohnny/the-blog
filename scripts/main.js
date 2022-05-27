@@ -1,9 +1,10 @@
 /**
  * There are two main functions here used to either fetch Blogs or Card Sets
- * 1. fetchBlogs() is responsible for fetching all blogs given a blogType parameter
+ * 1. fetchBlogs() is responsible for fetching all blogs given a blogType parameter, then sorts the results
  * 2. fetchCardSetsByYear() is responsible for fetching all Card Sets given a year parameter
  */
 
+/************************** fetchBlogs() Function, also orders the results via getSortOrder ****************/
 
  /** 
     * This function calls an underlying AWS call used to FETCH ALL BLOG POSTS
@@ -30,17 +31,16 @@
        // Next let's just get the 'body' property returned by the Lambda call
           for (const [key, value] of returnedData) {
               if (key === "body"){
-               /** 
-                * Now that we have the 'body' key, we need to convert the value 
-                * (currently a JSON String) to a JSON Object 
-                * so that we can pull out the properties of each blog post 
-                **/ 
+                // Now that we have the 'body' key, we need to convert the value 
+                // (currently a JSON String) to a JSON Object 
+                // so that we can pull out the properties of each blog post 
                const blogPostObject = JSON.parse(value);
 
-            // A Little debug:
-               //console.log(returnedData);
+                // A Little debug:
+                // console.log(returnedData);
 
-            // Let's sort the Object by 'time' - earliest blogs first
+                // Let's sort the Object by 'time' - earliest blogs first
+                // If you want to reverse the sort order, switch the return values to -1 and 1 respectively
                function getSortOrder(property) {    
                 return function(a, b) {    
                     if (a[property] > b[property]) {    
@@ -52,19 +52,18 @@
                 }    
              } 
 
-            //Pass the attribute to be sorted on - remember, "Items" is the array of JSON blogPost items
+            // Call getSortOrder, passing the attribute we want to sort on
+            // Remember, "Items" is the array of JSON-formatted blogPosts
             blogPostObject.Items.sort(getSortOrder("time"));     
-           
-             
-               /** Now that the data we got back is a JSON object, let's loop over all the Posts...
-                * The 'Items' property holds an array of all the blog posts 
-                * Let's loop through that array and display the fields we want!
-                * We call the displayBlog() function to control the display of the blog post
-                * It gets called it once for each blog post, essentially populating each blog post one at a time
-                **/
+    
+            // Now that the data we got back is a JSON object, let's loop over all the Posts...
+            // The 'Items' property holds an array of all the blog posts 
+            // Let's loop through that array and display the fields we want!
+            // We call the displayBlog() function to control the display of the blog post
+            // It gets called it once for each blog post, essentially populating each blog post one at a time
          
-               for (var i = 0; i < blogPostObject.Items.length; i++) {
-                   displayBlog(blogPostObject.Items[i].postBody,
+            for (var i = 0; i < blogPostObject.Items.length; i++) {
+                displayBlog(blogPostObject.Items[i].postBody,
                     blogPostObject.Items[i].author,
                     blogPostObject.Items[i].time,
                     blogPostObject.Items[i].title,
