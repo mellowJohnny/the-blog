@@ -39,8 +39,8 @@
                 // A Little debug:
                 // console.log(returnedData);
 
-                // Let's sort the Object by 'time' - earliest blogs first
-                // If you want to reverse the sort order, switch the return values to -1 and 1 respectively
+                // Let's sort the Object by 'time' - newest blogs first
+                // If you want to reverse the sort order, switch the return values to 1 and -1 respectively
                function getSortOrder(property) {    
                 return function(a, b) {    
                     if (a[property] > b[property]) {    
