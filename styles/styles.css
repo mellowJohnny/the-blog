@@ -355,3 +355,7 @@ textarea {
   color:rgb(15, 134, 100);
   width:400px;
 }
+
+#cms-gif {
+  vertical-align: middle;
+}
