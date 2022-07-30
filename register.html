@@ -80,9 +80,70 @@
               </div>
             </section>
             <section>
-              <div class="flex-container">
-                <div class="blog-entry" id="blogsDiv"></div>
-              </div>
+              <main>
+                <form class="form-style">
+
+                    <label>user name (required)</label><br>
+                    <input type="text" id="userName" required title="userName">
+                    <br><br>
+                    <label>password (required)</label><br>
+                    <input type="text" id="password" required title="password">
+                    <br><br>
+                    <label>first name</label><br>
+                    <input class="text" type="text" id="firstName" disabled title="firstName">
+                    <br><br>
+                    <label>last name</label><br>
+                    <input class="text" type="text" id="lastName" disabled title="lastName">
+                    <br><br>
+                    <label>Favourite Team</label><br>
+                    <select id="favTeam" name="favTeam" title="favTeam">
+                      <option value="ducks">Anaheim Ducks</option>
+                      <option value="coyotes">Arizona Coyotes</option>
+                      <option value="bruins">Boston Bruins</option>
+                      <option value="sabres">Buffalo Sabres</option>
+                      <option value="flames">Calgary Flames</option>
+                      <option value="canes">Carolina Hurricanes</option>
+                      <option value="hawks">Chicago Blackhawks</option>
+                      <option value="avs">Colorado Avalanche</option>
+                      <option value="jackets">Columbus Blue Jackets</option>
+                      <option value="stars">Dallas Stars</option>
+                      <option value="wings">Detroit Red Wings</option>
+                      <option value="oilers">Edmonton Oilers</option>
+                      <option value="panthers">Florida Panthers</option>
+                      <option value="kings">Los Angeles Kings</option>
+                      <option value="wild">Minnesota Wild</option>
+                      <option value="habs">Montreal Canadiens</option>
+                      <option value="preds">Nashville Predators</option>
+                      <option value="devils">New Jersey Devils</option>
+                      <option value="islanders">New York Islanders</option>
+                      <option value="rangers">New York Rangers</option>
+                      <option value="sens">Ottawa Senators</option>
+                      <option value="flyers">Philadelphia Flyers</option>
+                      <option value="pens">Pittsburgh Penguins</option>
+                      <option value="sharks">San Jose Sharks</option>
+                      <option value="kraken">Seattle Kraken</option>
+                      <option value="blues">St. Louis Blues</option>
+                      <option value="bolts">Tampa Bay Lightning</option>
+                      <option value="leafs">Toronto Maple Leafs</option>
+                      <option value="canucks">Vancouver Canucks</option>
+                      <option value="knights">Vegas Golden Knights</option>
+                      <option value="caps">Washington Capitals</option>
+                      <option value="jets">Winnipeg Jets</option>
+                    </select>
+                    <br><br>
+                    <button class="input-button" type="button" id="regSubmitButton"
+                        onclick="updateBlogPost(
+                                document.getElementById('userName').value,
+                                document.getElementById('password').value,
+                                document.getElementById('firstName').value,
+                                document.getElementById('lastName').value,
+                                document.getElementById('favTeam').value)">
+                        Update Post
+                    </button>
+                </form>
+                <!-- This div is rendered if an error occurs... -->
+                <div id="errorDiv"></div>
+            </main>
             </section> 
           </main>
 
