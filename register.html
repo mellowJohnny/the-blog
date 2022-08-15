@@ -6,6 +6,7 @@
   <head>
     <meta charset="utf-8"> 
     <meta description="Welcome to the hella files. A blog with a focus on vintage and Junk Wax hockey card set reviews, tech, and software architecture.  The site also serves as a playground for AWS services like Lambda, DynamoDB, and Amplify.">
+    
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX"></script>
     <script>
@@ -15,6 +16,10 @@
       gtag('config', 'G-JMGVGK09QX');
     </script> 
 
+    <!-- Load the Hella File JavaScript files -->
+    <script src="scripts/main.js"></script>
+    <script src="scripts/weather.js"></script>
+
     <!-- Load the stylesheet -->
     <link rel="stylesheet" type="text/css" href="styles/styles.css">
 
@@ -22,18 +27,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com"> 
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Nunito:wght@200&display=swap&family=Special+Elite&family=Work+Sans:ital,wght@0,400;1,500&display=swap" rel="stylesheet" crossorigin="anonymous">
 
-    <!-- Load the Hella File JavaScript -->
-    <script src="scripts/main.js"></script>
-    <script src="scripts/weather.js"></script>
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX" crossorigin="anonymous"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-JMGVGK09QX');
-  </script> 
 
   </head>
 
@@ -79,6 +72,19 @@
                 </div>
               </div>
             </section>
+
+            <!-- reCAPTCHA Form -->
+            <section>
+              <form action="?" method="POST">
+                <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM"></div>
+                <br/>
+                <input type="submit" value="Submit">
+              </form>
+              <!-- Load the reCAPTCHA script -->
+              <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+            </section>
+
+            <!-- Registration Form -->
             <section>
               <main>
                 <form class="form-style">
