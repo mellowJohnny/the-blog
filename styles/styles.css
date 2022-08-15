@@ -21,6 +21,10 @@
     margin: 5px; 
   }
 
+  a:link, a:visited {
+    color: #3FA7D6;
+}
+
   .blog-img {
     border: 3px solid rgb(5, 60, 82);
     border-radius: 4px;
