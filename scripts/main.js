@@ -139,7 +139,7 @@ let globalSetName;
     const page = pageName;
 
     // Call the Page Header function to dynamically create & populate the page header
-    if (page === "junkWax") {
+    if (pageName === "junkWax") {
         renderYearHeader(currentYear);
     }
     else {
