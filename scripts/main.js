@@ -308,7 +308,7 @@ function renderYearHeader(year) {
     Function called to dynamically render the classic set H1 pager header.
 */
 function renderClassicHeader(setName) {
-    let pageHeader = document.getElementById("pageHeader");
+    let pageHeader = document.getElementById("classicPageHeader");
     pageHeader.innerHTML = `${setName}`;
 }
 
