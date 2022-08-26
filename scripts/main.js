@@ -243,7 +243,7 @@ var globalPageName = "";
             renderYearHeader(cleanYear);
         }
         else {
-            renderClassicHeader(cleanSetName);
+            renderSetNameHeader(cleanSetName);
         }
        
 
@@ -319,7 +319,7 @@ function renderYearHeader(year) {
 /* 
     Function called to dynamically render the classic set H1 pager header.
 */
-function renderClassicHeader(setName) {
+function renderSetNameHeader(setName) {
     // debug
     console.log(`In renderClassicHeader - setName is ${setName}`)
     let pageHeader = document.getElementById("classicPageHeader");
