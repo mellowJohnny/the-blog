@@ -135,15 +135,12 @@ let globalSetName;
 
   function fetchCardSetsByYear(year, pageName) {
 
-    const currentYear = year;
-    const page = pageName;
-
     // Call the Page Header function to dynamically create & populate the page header
     if (pageName === "junkWax") {
-        renderYearHeader(currentYear);
+        renderYearHeader(year);
     }
     else {
-        // anything?
+        renderClassicHeader(globalSetName);
     }
     
 
