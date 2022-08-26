@@ -38,6 +38,7 @@
         /* Let's get the URL params from the request, and extract the year */  
         let params = new URLSearchParams(document.location.search);
         let year = params.get("year");
+        let pageName = "junkWax";
 
         /* 
         *   Call to fetchCardSetsByYear() on page load, dynamically passing the set year we want to fetch
@@ -45,7 +46,7 @@
         *   Can also use the year to dynamically populate our page header...removed for now
         */  
         window.addEventListener('load', (event) => {
-            fetchCardSetsByYear(year);
+            fetchCardSetsByYear(year, pageName);
             /* renderYearHeader(year); */
         });
     </script>

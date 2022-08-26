@@ -130,7 +130,7 @@ let globalSetName;
  /** 
     * This function calls an underlying AWS call used to FETCH ALL card sets given a specific year
     * AWS API Gateway API call - getCardSets end-point
-    * Called from the cardSetsByYear.html page
+    * Called on page load from various pages
   */
 
   function fetchCardSetsByYear(year, pageName) {
