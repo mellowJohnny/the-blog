@@ -62,9 +62,14 @@
   text-align: center;
 }
 
-.set-nav-td {
+.junk-set-nav-td {
   margin: 1px;
   padding-left: 65px;
+}
+
+.classic-set-nav-td {
+  margin: 1px;
+  padding-left: 55px;
 }
 
 body {
