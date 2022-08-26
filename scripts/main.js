@@ -4,6 +4,11 @@
  * 2. fetchCardSetsByYear() is responsible for fetching all Card Sets given a year parameter
  */
 
+// Global Variables
+let globalSetName;
+
+
+
 /************************** fetchBlogs() Function, also orders the results via getSortOrder ****************/
 
  /** 
@@ -128,12 +133,19 @@
     * Called from the cardSetsByYear.html page
   */
 
-  function fetchCardSetsByYear(year) {
+  function fetchCardSetsByYear(year, pageName) {
 
     const currentYear = year;
+    const page = pageName;
 
     // Call the Page Header function to dynamically create & populate the page header
-    renderYearHeader(currentYear);
+    if (page === "junkWax") {
+        renderYearHeader(currentYear);
+    }
+    else {
+        // anything?
+    }
+    
 
     // Set up a global variable to hold the API URL
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}`;
@@ -217,6 +229,9 @@
 
    function displayCardSet(postBody, year, mfg, size, subsets, stars, formats, headerImg, headerImgName, footerImg, footerImgName, setName) {
        // Populate the blogsDiv...
+
+       // First populate our global variable with the name of the set (used by renderClassicHeader() )
+       globalSetName = setName;
  
        // Cleanup the JSON we get back so it's back to a String 
        // We parsed the first object we got back, but that didn't parse the contents of the inner properties
@@ -242,7 +257,7 @@
        }
 
        // Call the renderClassicHeader function to stuff the set name into the page H1
-       renderClassicHeader(cleanSetName);
+       // renderClassicHeader(cleanSetName);
        
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
        let blogBody = document.getElementById("cardSetDiv");
@@ -307,11 +322,11 @@ function renderYearHeader(year) {
 /* 
     Function called to dynamically render the classic set H1 pager header.
 */
-function renderClassicHeader(setName) {
+function renderClassicHeader(globalSetName) {
     // debug
-    console.log(`In renderClassicHeader - setName is ${setName}`)
+    console.log(`In renderClassicHeader - setName is ${globalSetName}`)
     let pageHeader = document.getElementById("classicPageHeader");
-    pageHeader.innerHTML = `${setName}`;
+    pageHeader.innerHTML = `${globalSetName}`;
 }
 
 
