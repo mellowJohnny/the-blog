@@ -5,7 +5,7 @@
  */
 
 // Global Variables
-let globalSetName;
+let globalSetName = "";
 
 
 
