@@ -38,15 +38,16 @@
         /* Let's get the URL params from the request, and extract the year */  
         let params = new URLSearchParams(document.location.search);
         let year = params.get("year");
+        let pageName = "classicWax";
 
         /* 
         *   Call to fetchCardSetsByYear() on page load, dynamically passing the set year we want to fetch
         *   fetchCardSetsByYear() is responsible for calling the underlying AWS web service
-        *   Can also use the year to dynamically populate our page header...removed for now
+        *   Also uses the year to dynamically populate our page header by calling renderYearHeader();
+        *   renderYearHeader(); switches on page name to display the header differently per page
         */  
         window.addEventListener('load', (event) => {
-            fetchCardSetsByYear(year);
-            /* renderYearHeader(year); */
+            fetchCardSetsByYear(year,pageName);
         });
     </script>
 </head>
