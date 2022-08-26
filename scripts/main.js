@@ -5,7 +5,7 @@
  */
 
 // Global Variables
-let globalSetName = "";
+var globalSetName = "";
 
 
 
@@ -140,7 +140,7 @@ let globalSetName = "";
         renderYearHeader(year);
     }
     else {
-        renderClassicHeader(globalSetName);
+        
     }
     
 
@@ -226,9 +226,6 @@ let globalSetName = "";
 
    function displayCardSet(postBody, year, mfg, size, subsets, stars, formats, headerImg, headerImgName, footerImg, footerImgName, setName) {
        // Populate the blogsDiv...
-
-       // First populate our global variable with the name of the set (used by renderClassicHeader() )
-       globalSetName = setName;
  
        // Cleanup the JSON we get back so it's back to a String 
        // We parsed the first object we got back, but that didn't parse the contents of the inner properties
@@ -246,6 +243,9 @@ let globalSetName = "";
        const cleanFooterImg = JSON.parse(footerImg);
        const cleanFooterImgName = JSON.parse(footerImgName);
        const cleanSetName = JSON.parse(setName);
+
+       // Nnow that we have the name of the set, render the Header in the HTML page...
+       renderClassicHeader(cleanSetName);
 
        // Generate n number of "Star" emojis, one per rating number
        let cleanStars = "";
@@ -308,7 +308,7 @@ let globalSetName = "";
 
 
 /* 
-    Function called on page load to dynamically pass in the year pulled from the request 
+    Function called by fetchCardSetsByYear() (called on page load) to dynamically pass in the year pulled from the request 
     and render the pager header.
 */
 function renderYearHeader(year) {
@@ -319,11 +319,11 @@ function renderYearHeader(year) {
 /* 
     Function called to dynamically render the classic set H1 pager header.
 */
-function renderClassicHeader(globalSetName) {
+function renderClassicHeader(setName) {
     // debug
-    console.log(`In renderClassicHeader - setName is ${globalSetName}`)
+    console.log(`In renderClassicHeader - setName is ${setName}`)
     let pageHeader = document.getElementById("classicPageHeader");
-    pageHeader.innerHTML = `${globalSetName}`;
+    pageHeader.innerHTML = `${setName}`;
 }
 
 
@@ -331,7 +331,7 @@ function renderClassicHeader(globalSetName) {
    // ----------------------------- Date Helper Functions ----------------------------
 
    /**
-    * Fixes our Raw Date object coming back from the JSON response
+    * Formats our Raw Date object coming back from the JSON response
     * @param {*} date 
     * @returns 
     */
