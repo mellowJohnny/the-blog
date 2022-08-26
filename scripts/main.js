@@ -308,8 +308,7 @@ var globalPageName = "";
 
 
 /* 
-    Function called by fetchCardSetsByYear() (called on page load) to dynamically pass in the year pulled from the request 
-    and render the pager header.
+    Function called to dynamically render the junk wax style H1 pager header.
 */
 function renderYearHeader(year) {
     let pageHeader = document.getElementById("pageHeader");
