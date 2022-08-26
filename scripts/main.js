@@ -240,6 +240,9 @@
        for (let i=0; i < numStars; i++){
         cleanStars += "&#127775 "; 
        }
+
+       // Call the renderClassicHeader function to stuff the set name into the page H1
+       renderClassicHeader(cleanSetName);
        
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
        let blogBody = document.getElementById("cardSetDiv");
@@ -299,6 +302,14 @@
 function renderYearHeader(year) {
     let pageHeader = document.getElementById("pageHeader");
     pageHeader.innerHTML = `...card sets from ${year}`;
+}
+
+/* 
+    Function called to dynamically render the classic set H1 pager header.
+*/
+function renderClassicHeader(setName) {
+    let pageHeader = document.getElementById("pageHeader");
+    pageHeader.innerHTML = `${setName}`;
 }
 
 
