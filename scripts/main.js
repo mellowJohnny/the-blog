@@ -244,7 +244,7 @@ var globalSetName = "";
        const cleanFooterImgName = JSON.parse(footerImgName);
        const cleanSetName = JSON.parse(setName);
 
-       // Nnow that we have the name of the set, render the Header in the HTML page...
+       // Now that we have the name of the set, render the Header in the HTML page...
        renderClassicHeader(cleanSetName);
 
        // Generate n number of "Star" emojis, one per rating number
