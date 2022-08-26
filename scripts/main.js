@@ -5,7 +5,8 @@
  */
 
 // Global Variables
-var globalSetName = "";
+var globalPageName = "";
+
 
 
 
@@ -134,15 +135,8 @@ var globalSetName = "";
   */
 
   function fetchCardSetsByYear(year, pageName) {
-
-    // Call the Page Header function to dynamically create & populate the page header
-    if (pageName === "junkWax") {
-        renderYearHeader(year);
-    }
-    else {
-        
-    }
-    
+    // Set the Global pageName variable
+    globalPageName = pageName;
 
     // Set up a global variable to hold the API URL
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}`;
@@ -244,8 +238,14 @@ var globalSetName = "";
        const cleanFooterImgName = JSON.parse(footerImgName);
        const cleanSetName = JSON.parse(setName);
 
-       // Now that we have the name of the set, render the Header in the HTML page...
-       renderClassicHeader(cleanSetName);
+       // Now that we have the name of the set, render one of two versions of the Header in the HTML page...
+        if (pageName === "junkWax") {
+            renderYearHeader(cleanYear);
+        }
+        else {
+            renderClassicHeader(cleanSetName);
+        }
+       
 
        // Generate n number of "Star" emojis, one per rating number
        let cleanStars = "";
