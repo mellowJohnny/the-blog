@@ -450,20 +450,6 @@ function renderClassicWaxHeader(setName) {
     */
 
     function submitRegistration() {
-        // First make sure reCAPTCHA was submitted successfully
-        console.log("Registration Submitted!")
-
-        // Set up a global variable to hold the API URL
-        const urlToFetch = `https://www.google.com/recaptcha/api/siteverify METHOD: POST`;
-          
-    fetch(urlToFetch)
-       .then(function (response) {
-           const jsonResponse = response.json();
-           return jsonResponse; // Our Promise object
-       })
-       .then(function (data) {
-       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
-       // First let's return an array of the object's properties
-           const returnedData = Object.entries(data); 
+        console.log("Form submitted!");
 
     }
