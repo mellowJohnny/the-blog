@@ -132,8 +132,19 @@
                     <form method="post" onsubmit="return submitUserForm();">
                       <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM" data-callback="verifyCaptcha"></div>
                       <div id="g-recaptcha-error"></div>
-                      <input type="submit" name="submit" value="Submit" />
+                      <button class="input-button" type="button" id="regSubmitButton"
+                        onclick="submitRegistration(
+                                document.getElementById('userName').value,
+                                document.getElementById('password').value,
+                                document.getElementById('firstName').value,
+                                document.getElementById('lastName').value,
+                                document.getElementById('favTeam').value)">
+                                sign Me UP!
+                      </button>
+                     <!--  <input type="submit" name="submit" value="Submit" /> -->
                   </form>
+                 
+                  <!-- reCAPTCHA Validation -->
                   <script src='https://www.google.com/recaptcha/api.js'></script>
                   <script>
                       var recaptcha_response = '';
@@ -170,7 +181,7 @@
                         
                       </section>
                     <br>
-                    <button class="input-button" type="button" id="regSubmitButton"
+                 <!--   <button class="input-button" type="button" id="regSubmitButton"
                         onclick="submitRegistration(
                                 document.getElementById('userName').value,
                                 document.getElementById('password').value,
@@ -178,8 +189,8 @@
                                 document.getElementById('lastName').value,
                                 document.getElementById('favTeam').value)">
                         sign Me UP!
-                    </button>
-                </form>
+                    </button> 
+                </form> -->
 
                 <!-- This div is rendered if an error occurs... -->
                 <div id="errorDiv"></div>
