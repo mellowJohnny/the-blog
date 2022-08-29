@@ -81,8 +81,10 @@
                 <form class="form-style">
 
                     <label>user name (required)</label><br>
+                    <div font-color="red" id="form-error"></div>
                     <input type="text" id="userName" required title="userName">
                     <br><br>
+                    <div font-color="red" id="form-error"></div>
                     <label>password (required)</label><br>
                     <input type="text" id="password" required title="password">
                     <br><br>
@@ -132,7 +134,8 @@
                     <!-- reCAPTCHA Form -->
                     <form action="?" method="POST">
                       <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM" data-callback="verifyCaptcha"></div>
-                      <div id="recaptcha-error"></div>
+                      <br>
+                      <div font-color="red" id="recaptcha-error"></div>
                     </form> <!-- End reCAPTCHA Form-->
                     <br>
                     <br>
