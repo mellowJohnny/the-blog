@@ -240,10 +240,10 @@ var globalPageName = "";
 
        // Now that we have the name of the set, render one of two versions of the Header in the HTML page...
         if (pageName === "junkWax") {
-            renderYearHeader(cleanYear);
+            renderJunkWaxHeader(cleanYear);
         }
         else {
-            renderSetNameHeader(cleanSetName);
+            renderClassicWaxHeader(cleanSetName);
         }
        
 
@@ -310,7 +310,7 @@ var globalPageName = "";
 /* 
     Function called to dynamically render the junk wax style H1 pager header.
 */
-function renderYearHeader(year) {
+function renderJunkWaxHeader(year) {
     let pageHeader = document.getElementById("pageHeader");
     pageHeader.innerHTML = `...card sets from ${year}`;
 }
@@ -318,11 +318,9 @@ function renderYearHeader(year) {
 /* 
     Function called to dynamically render the classic set H1 pager header.
 */
-function renderSetNameHeader(setName) {
-    // debug
-    console.log(`In renderClassicHeader - setName is ${setName}`)
+function renderClassicWaxHeader(setName) {
     let pageHeader = document.getElementById("classicPageHeader");
-    pageHeader.innerHTML = `${setName}`;
+    pageHeader.innerHTML = `...classic 80s Sets: ${setName}`;
 }
 
 
