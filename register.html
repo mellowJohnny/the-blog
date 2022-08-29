@@ -148,13 +148,12 @@
                   <!-- reCAPTCHA Validation -->
                   <script src='https://www.google.com/recaptcha/api.js'></script>
                   <script>
+                      // Set up our global variable - if it stays empty when the form is submitted
+                      // the User has not clicked the reCAPTCHA challenge. We will check this value in the submitRegistration() function
+                      recaptcha_response = "";
+
                       function verifyCaptcha(token) {
-                        // If we don't have a token, the User did not click the reCAPTCHA...
-                        if (token === null) {
-                          alert("Please click the little fuckin' button. I worked hard to put that here...");
-                        }
-                        
-                        
+                        // Dee Bug
                         console.log("In VERIFY...")
                         // Now that we have the token, we can pass it to our submitRegistration() form submission handler
                         // This works because variables declared in inline JS are globally scoped
