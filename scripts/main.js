@@ -457,9 +457,13 @@ function renderClassicWaxHeader(setName) {
         if (token === "") {
             // reCAPTCHA has not been attempted
             alert("Click the reCAPTCHA first, fucker!");
+            document.getElementById('recaptcha-error').innerHTML = 'Please click the reCAPTCHA checkbox before proceeding';
         }
         else {
             console.log(`reCAPTCHA token is: ${token}`);
+            // We could also go one step further here and validate the token by calling:
+            // https://www.google.com/recaptcha/api/siteverify METHOD: POST
+            // passing in the site's Secret key & the response token
             alert("Thanks for your submission, you fabulous human being!");
         }
 

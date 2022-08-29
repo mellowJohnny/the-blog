@@ -128,11 +128,14 @@
                       <option value="jets">Winnipeg Jets</option>
                     </select>
                     <br>
+                    <br>
                     <!-- reCAPTCHA Form -->
                     <form action="?" method="POST">
                       <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM" data-callback="verifyCaptcha"></div>
-                      <div id="g-recaptcha-error"></div>
+                      <div id="recaptcha-error"></div>
                     </form> <!-- End reCAPTCHA Form-->
+                    <br>
+                    <br>
                     <button class="input-button" type="button" id="regSubmitButton"
                         onclick="submitRegistration(
                                 recaptcha_response,
@@ -148,18 +151,21 @@
                   <!-- reCAPTCHA Validation -->
                   <script src='https://www.google.com/recaptcha/api.js'></script>
                   <script>
-                      // Set up our global variable - if it stays empty when the form is submitted
-                      // the User has not clicked the reCAPTCHA challenge. We will check this value in the submitRegistration() function
+                      // Set up our global variable - if it stays empty when the form is submitted the User has not clicked the reCAPTCHA challenge. 
+                      // We will check this value in the submitRegistration() function
                       recaptcha_response = "";
 
                       function verifyCaptcha(token) {
                         // Dee Bug
-                        console.log("In VERIFY...")
+                        // console.log("In VERIFY...")
+
                         // Now that we have the token, we can pass it to our submitRegistration() form submission handler
                         // This works because variables declared in inline JS are globally scoped
                         recaptcha_response = token;
-                        console.log(`Token is: ${recaptcha_response}`);
-                        document.getElementById('g-recaptcha-error').innerHTML = '';
+
+                        // Dee Bug
+                        // console.log(`Token is: ${recaptcha_response}`);
+                        
                       }
                   </script>
                 </section>
