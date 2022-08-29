@@ -129,27 +129,45 @@
                     </select>
                     <br>
                     <!-- reCAPTCHA Form -->
+                    <form method="post" onsubmit="return submitUserForm();">
+                      <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM" data-callback="verifyCaptcha"></div>
+                      <div id="g-recaptcha-error"></div>
+                      <input type="submit" name="submit" value="Submit" />
+                  </form>
+                  <script src='https://www.google.com/recaptcha/api.js'></script>
+                  <script>
+                      var recaptcha_response = '';
+                      function submitUserForm() {
+                          if(recaptcha_response.length == 0) {
+                            document.getElementById('g-recaptcha-error').innerHTML = '<span style="color:red;">This field is required.</span>';
+                          return false;
+                          }
+                          return true;
+                      }
+                   
+                      function verifyCaptcha(token) {
+                        recaptcha_response = token;
+                        document.getElementById('g-recaptcha-error').innerHTML = '';
+                      }
+                  </script>
+
+
+                  <!-- 
                       <section>
                         <form action="?" method="POST">
                           <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM"></div>
                           <br/>
-                         <!--  <input type="submit" value="Submit"> -->
+                         
+                        </form> -->
+                        <!-- The g-recaptcha-response string displays in an alert message upon submit.
+                        <form action="javascript:alert(grecaptcha.getResponse());">
+                          <div id="example1"></div>
+                          <br>
+                          <input type="submit" value="getResponse">
                         </form>
-<!-- The g-recaptcha-response string displays in an alert message upon submit. -->
-<form action="javascript:alert(grecaptcha.getResponse());">
-  <div id="example1"></div>
-  <br>
-  <input type="submit" value="getResponse">
-</form>
-<br>
-
-                        <!-- Load the reCAPTCHA script -->
-                        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-
-                        <script>
-                          const responseToken = grecaptcha.getResponse();
-                          console.log(`Response Key is: ${responseToken}`);
-                        </script>
+                        <br>
+                      -->
+                        
                       </section>
                     <br>
                     <button class="input-button" type="button" id="regSubmitButton"
@@ -162,9 +180,6 @@
                         sign Me UP!
                     </button>
                 </form>
-
-                
-
 
                 <!-- This div is rendered if an error occurs... -->
                 <div id="errorDiv"></div>
