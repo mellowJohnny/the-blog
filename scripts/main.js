@@ -449,7 +449,8 @@ function renderClassicWaxHeader(setName) {
     * Check to see if user has already registered by looking for an existing email address
     */
 
-    function submitRegistration() {
+    function submitRegistration(token) {
         console.log("Form submitted!");
+        console.log(`reCAPTCHA toke: ${token}`);
 
     }
