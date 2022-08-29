@@ -442,3 +442,15 @@ function renderClassicWaxHeader(setName) {
             return dayName;
         }
     }
+
+    /**
+    * Registration function
+    * Checks first of reCAPTCHA was submitted successfully
+    * Check to see if user has already registered by looking for an existing email address
+    */
+
+    function submitRegistration() {
+        // First make sure reCAPTCHA was submitted successfully
+        
+
+    }
