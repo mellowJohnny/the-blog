@@ -135,6 +135,14 @@
                           <br/>
                          <!--  <input type="submit" value="Submit"> -->
                         </form>
+<!-- The g-recaptcha-response string displays in an alert message upon submit. -->
+<form action="javascript:alert(grecaptcha.getResponse(widgetId1));">
+  <div id="example1"></div>
+  <br>
+  <input type="submit" value="getResponse">
+</form>
+<br>
+
                         <!-- Load the reCAPTCHA script -->
                         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
                       </section>
