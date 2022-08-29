@@ -132,6 +132,7 @@
                     <form action="?" method="POST">
                       <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM" data-callback="verifyCaptcha"></div>
                       <div id="g-recaptcha-error"></div>
+                    </form> <!-- End reCAPTCHA Form-->
                     <button class="input-button" type="button" id="regSubmitButton"
                         onclick="submitRegistration(
                                 recaptcha_response,
@@ -142,23 +143,11 @@
                                 document.getElementById('favTeam').value)">
                                 sign Me UP!
                       </button>
-                       <input type="submit" name="submit" value="Submit" /> 
-                  </form>
+                  </form> <!-- End Registration Form -->
                  
                   <!-- reCAPTCHA Validation -->
                   <script src='https://www.google.com/recaptcha/api.js'></script>
                   <script>
-                    /**
-                       var recaptcha_response = '';
-                      function submitUserForm() {
-                        console.log("In submitUserform()");
-                          if(recaptcha_response.length == 0) {
-                            document.getElementById('g-recaptcha-error').innerHTML = '<span style="color:red;">This field is required.</span>';
-                          return false;
-                          }
-                          return true;
-                      } **/
-                   
                       function verifyCaptcha(token) {
                         console.log("In VERIFY...")
                         recaptcha_response = token;
@@ -166,39 +155,8 @@
                         document.getElementById('g-recaptcha-error').innerHTML = '';
                       }
                   </script>
-
-
-                  <!-- 
-                      <section>
-                        <form action="?" method="POST">
-                          <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM"></div>
-                          <br/>
-                         
-                        </form> -->
-                        <!-- The g-recaptcha-response string displays in an alert message upon submit.
-                        <form action="javascript:alert(grecaptcha.getResponse());">
-                          <div id="example1"></div>
-                          <br>
-                          <input type="submit" value="getResponse">
-                        </form>
-                        <br>
-                      -->
-                        
-                      </section>
+                </section>
                     <br>
-                 <!--   <button class="input-button" type="button" id="regSubmitButton"
-                        onclick="submitRegistration(
-                                document.getElementById('userName').value,
-                                document.getElementById('password').value,
-                                document.getElementById('firstName').value,
-                                document.getElementById('lastName').value,
-                                document.getElementById('favTeam').value)">
-                        sign Me UP!
-                    </button> 
-                </form> -->
-
-                <!-- This div is rendered if an error occurs... -->
-                <div id="errorDiv"></div>
             </main>
             </section> 
           </main>
