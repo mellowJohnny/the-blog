@@ -452,5 +452,8 @@ function renderClassicWaxHeader(setName) {
     function submitRegistration() {
         // First make sure reCAPTCHA was submitted successfully
         console.log("Registration Submitted!")
+        grecaptcha.getResponse() {
+            
+        }
 
     }
