@@ -145,6 +145,11 @@
 
                         <!-- Load the reCAPTCHA script -->
                         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+                        <script>
+                          const responseToken = grecaptcha.getResponse();
+                          console.log(`Response Key is: ${responseToken}`);
+                        </script>
                       </section>
                     <br>
                     <button class="input-button" type="button" id="regSubmitButton"
