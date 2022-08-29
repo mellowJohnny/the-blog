@@ -149,7 +149,15 @@
                   <script src='https://www.google.com/recaptcha/api.js'></script>
                   <script>
                       function verifyCaptcha(token) {
+                        // If we don't have a token, the User did not click the reCAPTCHA...
+                        if (token === null) {
+                          alert("Please click the little fuckin' button. I worked hard to put that here...");
+                        }
+                        
+                        
                         console.log("In VERIFY...")
+                        // Now that we have the token, we can pass it to our submitRegistration() form submission handler
+                        // This works because variables declared in inline JS are globally scoped
                         recaptcha_response = token;
                         console.log(`Token is: ${recaptcha_response}`);
                         document.getElementById('g-recaptcha-error').innerHTML = '';
