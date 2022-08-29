@@ -449,14 +449,15 @@ function renderClassicWaxHeader(setName) {
     * Check to see if user has already registered by looking for an existing email address
     */
 
-    function submitRegistration(token) {
-        // First, check the value of token - if it's an empty string the User has not attempted the reCAPTCHA challenge
+    function submitRegistration(token, userName, password, firstName, lastName, favTeam) {
+        // Dee Bug
         console.log("Form submitted!");
         console.log(`Token is ${token}`);
 
+        // First, check the value of token - if it's an empty string the User has not attempted the reCAPTCHA challenge
         if (token === "") {
             // reCAPTCHA has not been attempted
-            alert("Click the reCAPTCHA first, fucker!");
+            // alert("Click the reCAPTCHA first, fucker!");
             document.getElementById('recaptcha-error').innerHTML = 'Please click the reCAPTCHA checkbox before proceeding';
         }
         else {
@@ -467,4 +468,13 @@ function renderClassicWaxHeader(setName) {
             alert("Thanks for your submission, you fabulous human being!");
         }
 
+        // Next, ensure we have a userName and password - they are required fields
+        if (userName || password === "") {
+            document.getElementById('form-error').innerHTML = 'Work with me here...this is a <i>Required</i> Field';
+        }
+        else{
+            // process the form
+            // Dee Bug
+            console.log(`Submitted values are ${userName} ${password} ${firstName} ${lastName} ${favTeam}`);
+        }
     }
