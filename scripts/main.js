@@ -164,7 +164,7 @@ var globalPageName = "";
 
                 // No results...return a friendly message
                 let blogBody = document.getElementById("cardSetDiv");
-                blogBody.innerHTML = `...these aren't the Droids you're looking for...`;
+                blogBody.innerHTML = `...this set has yet to be reviewed`;
 
                 // If we have no results, stop processing
                 return;
