@@ -157,6 +157,7 @@
                       }
                    
                       function verifyCaptcha(token) {
+                        console.log("In VERIFY...")
                         recaptcha_response = token;
                         document.getElementById('g-recaptcha-error').innerHTML = '';
                       }
