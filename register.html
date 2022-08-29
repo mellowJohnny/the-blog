@@ -159,6 +159,7 @@
                       function verifyCaptcha(token) {
                         console.log("In VERIFY...")
                         recaptcha_response = token;
+                        console.log(`Token is: ${recaptcha_response}`);
                         document.getElementById('g-recaptcha-error').innerHTML = '';
                       }
                   </script>
