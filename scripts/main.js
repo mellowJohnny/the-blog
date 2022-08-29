@@ -452,5 +452,11 @@ function renderClassicWaxHeader(setName) {
     function submitRegistration(token) {
         console.log("Form submitted!");
         console.log(`reCAPTCHA toke: ${token}`);
+        if (token === null) {
+            alert("Click the reCAPTCHA first, fucker!");
+        }
+        else {
+            alert("Thanks for your submission, you fabulous human being!");
+        }
 
     }
