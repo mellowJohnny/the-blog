@@ -129,10 +129,10 @@
                     </select>
                     <br>
                     <!-- reCAPTCHA Form -->
-                    <form method="post" onsubmit="return submitUserForm();">
+                    <form action="?" method="POST">
                       <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM" data-callback="verifyCaptcha"></div>
                       <div id="g-recaptcha-error"></div>
-                    <!--  <button class="input-button" type="button" id="regSubmitButton"
+                    <button class="input-button" type="button" id="regSubmitButton"
                         onclick="submitRegistration(
                                 document.getElementById('userName').value,
                                 document.getElementById('password').value,
@@ -140,14 +140,15 @@
                                 document.getElementById('lastName').value,
                                 document.getElementById('favTeam').value)">
                                 sign Me UP!
-                      </button> -->
+                      </button>
                        <input type="submit" name="submit" value="Submit" /> 
                   </form>
                  
                   <!-- reCAPTCHA Validation -->
                   <script src='https://www.google.com/recaptcha/api.js'></script>
                   <script>
-                      var recaptcha_response = '';
+                    /**
+                       var recaptcha_response = '';
                       function submitUserForm() {
                         console.log("In submitUserform()");
                           if(recaptcha_response.length == 0) {
@@ -155,7 +156,7 @@
                           return false;
                           }
                           return true;
-                      }
+                      } **/
                    
                       function verifyCaptcha(token) {
                         console.log("In VERIFY...")
