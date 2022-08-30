@@ -451,8 +451,8 @@ function renderClassicWaxHeader(setName) {
 
     function submitRegistration(token, userName, password, firstName, lastName, favTeam) {
         // Dee Bug
-       // console.log("Form submitted!");
-       // console.log(`Token is ${token}`);
+        console.log("Form submitted!");
+        console.log(`Token is ${token}`);
 
         // First, check the value of token - if it's an empty string the User has not attempted the reCAPTCHA challenge
         if (token === "") {
