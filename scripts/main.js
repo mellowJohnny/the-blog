@@ -463,6 +463,11 @@ function renderClassicWaxHeader(setName) {
         else {
             console.log(`Token is not null: reCAPTCHA token is: ${token}`);
 
+            // Before we validate the reCAPTCHA, let's be sure our required fields are filled out
+            if (userName || password === null) {
+                alert("please fill out the required fields)");
+            }
+
             // ************ TO DO - create Lambda to run verification **********************
             // We need to go one step further here and validate the token by calling:
             // https://www.google.com/recaptcha/api/siteverify METHOD: POST
