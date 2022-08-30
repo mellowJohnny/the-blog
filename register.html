@@ -96,6 +96,10 @@
                     <input class="text" type="password" id="password" required />
                     <br><br>
 
+                    <label>email (required) - in case you forget your password</label><br>
+                    <input class="text" type="text" id="email" required />
+                    <br><br>
+
                     <label>first name</label><br>
                     <input class="text" type="text" id="firstName" />
                     <br><br>
@@ -146,6 +150,7 @@
                                 recaptcha_response,
                                 document.getElementById('userName').value,
                                 document.getElementById('password').value,
+                                document.getElementById('email').value,
                                 document.getElementById('firstName').value,
                                 document.getElementById('lastName').value,
                                 document.getElementById('favTeam').value)">
