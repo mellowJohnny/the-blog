@@ -111,8 +111,7 @@ form {
 
  .recaptcha-desc {
     font-family: 'Work Sans', sans-serif;
-    font-size: 20px;
-    padding-left: 1.5%;
+    font-size: 18px;
  }
 
  input[type=text] {
