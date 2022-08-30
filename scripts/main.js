@@ -455,7 +455,7 @@ function renderClassicWaxHeader(setName) {
         console.log(`Token is ${token}`);
 
         // First, check the value of token - if it's an empty string the User has not attempted the reCAPTCHA challenge
-        if (token === "") {
+        if (token === "unset") {
             // reCAPTCHA has not been attempted
             // alert("Click the reCAPTCHA first, fucker!");
             document.getElementById('recaptcha-error').innerHTML = 'Please click the reCAPTCHA checkbox before proceeding';
@@ -464,7 +464,7 @@ function renderClassicWaxHeader(setName) {
         else {
             console.log(`reCAPTCHA token is: ${token}`);
 
-            // ************ TO DO **********************
+            // ************ TO DO - create Lambda to run verification **********************
             // We need to go one step further here and validate the token by calling:
             // https://www.google.com/recaptcha/api/siteverify METHOD: POST
             // passing in the site's Secret key & the response token
