@@ -5,7 +5,7 @@
 function createPassword(){
     const pw = generatePassword()
     // Return some HTMLness
-    app.innerHTML += `<h1>${pw}</h1> `;
+    app.innerHTML += `<h1 class="password-style">${pw}</h1> `;
     }
 
 var generatePassword = (
