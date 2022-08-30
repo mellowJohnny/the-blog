@@ -451,29 +451,34 @@ function renderClassicWaxHeader(setName) {
 
     function submitRegistration(token, userName, password, firstName, lastName, favTeam) {
         // Dee Bug
-        console.log("Form submitted!");
-        console.log(`Token is ${token}`);
+        console.log(`In submitRegistration! Token is ${token}`);
 
         // First, check the value of token - if it's an empty string the User has not attempted the reCAPTCHA challenge
         if (token === "unset") {
             // reCAPTCHA has not been attempted
             // alert("Click the reCAPTCHA first, fucker!");
             document.getElementById('recaptcha-error').innerHTML = 'Please click the reCAPTCHA checkbox before proceeding';
-            return;
+			return;
+            
         }
         else {
-            console.log(`reCAPTCHA token is: ${token}`);
+            console.log(`Token is not null: reCAPTCHA token is: ${token}`);
 
             // ************ TO DO - create Lambda to run verification **********************
             // We need to go one step further here and validate the token by calling:
             // https://www.google.com/recaptcha/api/siteverify METHOD: POST
             // passing in the site's Secret key & the response token
             // Otherwise a user could submit using the same token
+			
+			// Next, call the Lambda function to populate the database
+			
+			// Dee Bug
+			console.log('STUB: Form submitted successfully');
            
         }
 
-        // Next, ensure we have a userName and password - they are required fields
+
         
-        console.log('Form submitted successfully');
+        
         
     }
