@@ -464,7 +464,7 @@ function renderClassicWaxHeader(setName) {
             console.log(`Token is not null: reCAPTCHA token is: ${token}`);
 
             // Before we validate the reCAPTCHA, let's be sure our required fields are filled out
-            if (userName || password === "") {
+            if (userName === "" || password === "") {
                 alert("please fill out the required fields)");
                 // ERROR - bail out
                 return;
