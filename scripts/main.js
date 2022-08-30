@@ -473,12 +473,7 @@ function renderClassicWaxHeader(setName) {
         }
 
         // Next, ensure we have a userName and password - they are required fields
-        if (userName || password === "") {
-            document.getElementById('form-error').innerHTML = 'Work with me here...this is a <i>Required</i> Field';
-        }
-        else {
-            // process the form
-            // Dee Bug
-            console.log('Form submitted successfully');
-        }
+        
+        console.log('Form submitted successfully');
+        
     }
