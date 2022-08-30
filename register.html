@@ -78,6 +78,13 @@
             <!-- Registration Form -->
             <section>
               <main>
+                <!-- reCAPTCHA Form -->
+				          <div style="color:red" id="recaptcha-error"></div>
+                  <p>Before we get serious, prove you are not a bot...</p><br>
+                  <form action="?" method="POST">
+                    <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM" data-callback="verifyCaptcha"></div>
+                    <br>
+                  </form> <!-- End reCAPTCHA Form-->
                 <form class="form-style">
 
                     <label>user name (required)</label><br>
@@ -146,14 +153,8 @@
                       </button>
                   </form> <!-- End Registration Form -->
                   <br><br>
+
                   
-                  <!-- reCAPTCHA Form -->
-				          <div style="color:red" id="recaptcha-error"></div>
-                  
-                  <form action="?" method="POST">
-                    <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM" data-callback="verifyCaptcha"></div>
-                    <br>
-                  </form> <!-- End reCAPTCHA Form-->
                  
                   <!-- reCAPTCHA Validation -->
                   <script src='https://www.google.com/recaptcha/api.js'></script>
