@@ -479,6 +479,6 @@ function renderClassicWaxHeader(setName) {
         else {
             // process the form
             // Dee Bug
-            console.log(`Submitted values are ${userName} ${password} ${firstName} ${lastName} ${favTeam}`);
+            console.log('Form submitted successfully');
         }
     }
