@@ -457,9 +457,8 @@ function renderClassicWaxHeader(setName) {
         if (token === "unset") {
             // reCAPTCHA has not been attempted
             alert("Click the reCAPTCHA first, fucker!");
-            document.getElementById('recaptcha-error').innerHTML = 'Please click the reCAPTCHA checkbox before proceeding';
+            // ERROR - let's get outta here...
 			return;
-            
         }
         else {
             console.log(`Token is not null: reCAPTCHA token is: ${token}`);
