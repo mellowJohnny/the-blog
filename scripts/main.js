@@ -460,6 +460,7 @@ function renderClassicWaxHeader(setName) {
             // reCAPTCHA has not been attempted
             // alert("Click the reCAPTCHA first, fucker!");
             document.getElementById('recaptcha-error').innerHTML = 'Please click the reCAPTCHA checkbox before proceeding';
+			return;
             
         }
         else {
@@ -470,11 +471,16 @@ function renderClassicWaxHeader(setName) {
             // https://www.google.com/recaptcha/api/siteverify METHOD: POST
             // passing in the site's Secret key & the response token
             // Otherwise a user could submit using the same token
+			
+			// Next, call the Lambda function to populate the database
+			
+			// Dee Bug
+			console.log('STUB: Form submitted successfully');
            
         }
 
-        // Next, ensure we have a userName and password - they are required fields
+
         
-        console.log('Form submitted successfully');
+        
         
     }
