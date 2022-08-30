@@ -466,6 +466,8 @@ function renderClassicWaxHeader(setName) {
             // Before we validate the reCAPTCHA, let's be sure our required fields are filled out
             if (userName || password === "") {
                 alert("please fill out the required fields)");
+                // ERROR - bail out
+                return;
             }
 
             // ************ TO DO - create Lambda to run verification **********************
