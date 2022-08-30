@@ -453,6 +453,14 @@ function renderClassicWaxHeader(setName) {
         // Dee Bug
         console.log(`In submitRegistration! Token is ${token}`);
 
+         // Let's change the state of the button, now that we've clicked it...
+         cmsButtonSubmit();
+    
+        // Now start a timer and change the button state to reflect the submit event, waiting X milliseconds
+        // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
+        // this makes it look like the button is waiting for the modal to close first :-)
+        cmsCreateButtonReset();
+
         // First, check the value of token - if it's an empty string the User has not attempted the reCAPTCHA challenge
         if (token === "unset") {
             // reCAPTCHA has not been attempted
@@ -468,6 +476,7 @@ function renderClassicWaxHeader(setName) {
                 alert("please fill out the required fields)");
                 // ERROR - bail out
                 return;
+                }
             }
 
             // ************ TO DO - create Lambda to run verification **********************
@@ -478,16 +487,34 @@ function renderClassicWaxHeader(setName) {
 			
 			// Next, call the Lambda function to populate the database
 
+            // instantiate a headers object
+            let myHeaders = new Headers();
+        
+            // add content type header to object
+            myHeaders.append("Content-Type", "application/json");
+        
+            // using built in JSON utility package turn object to string and store in a variable
+            let raw = JSON.stringify({"userName":userName,"password":password,"firstName":firstName,"lastName":lastName,"favTeam":favTeam});
+        
+            // create a JSON object with parameters for API call and store in a variable
+            let requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+            };
+            
+            // make API call to BlogPost endpoint with parameters and use promises to get response
+            fetch("https://fhxy8nfpii.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
+            .then(response => response.text())
+            .then(result => alert(JSON.parse(result).body))
+            .catch(error => console.log('error', error));
+            
 			// Dee Bug
             console.log(`Form Data: ${userName} | ${password} | ${firstName} | ${lastName} | ${email} | ${favTeam}`)
 
 			// Dee Bug
-			console.log('STUB: Form submitted successfully');
+			// console.log('STUB: Form submitted successfully');
             alert("Thanks for registering you wonderful human!");
+        
         }
-
-
-        
-        
-        
-    }
