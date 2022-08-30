@@ -456,7 +456,7 @@ function renderClassicWaxHeader(setName) {
         // First, check the value of token - if it's an empty string the User has not attempted the reCAPTCHA challenge
         if (token === "unset") {
             // reCAPTCHA has not been attempted
-            // alert("Click the reCAPTCHA first, fucker!");
+            alert("Click the reCAPTCHA first, fucker!");
             document.getElementById('recaptcha-error').innerHTML = 'Please click the reCAPTCHA checkbox before proceeding';
 			return;
             
@@ -474,7 +474,7 @@ function renderClassicWaxHeader(setName) {
 			
 			// Dee Bug
 			console.log('STUB: Form submitted successfully');
-           
+            alert("Thanks for registering you wonderful human!");
         }
 
 
