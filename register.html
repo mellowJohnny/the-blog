@@ -134,14 +134,6 @@
                     </select>
                     <br>
                     <br>
-                    <!-- reCAPTCHA Form -->
-                    <form action="?" method="POST">
-                      <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM" data-callback="verifyCaptcha"></div>
-                      <br>
-                      <div font-color="red" id="recaptcha-error"></div>
-                    </form> <!-- End reCAPTCHA Form-->
-                    <br>
-                    <br>
                     <button class="input-button" type="button" id="regSubmitButton"
                         onclick="submitRegistration(
                                 recaptcha_response,
@@ -153,6 +145,13 @@
                                 sign Me UP!
                       </button>
                   </form> <!-- End Registration Form -->
+
+                  <!-- reCAPTCHA Form -->
+                  <form action="?" method="POST">
+                    <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM" data-callback="verifyCaptcha"></div>
+                    <br>
+                    <div font-color="red" id="recaptcha-error"></div>
+                  </form> <!-- End reCAPTCHA Form-->
                  
                   <!-- reCAPTCHA Validation -->
                   <script src='https://www.google.com/recaptcha/api.js'></script>
