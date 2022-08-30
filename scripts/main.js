@@ -477,7 +477,10 @@ function renderClassicWaxHeader(setName) {
             // Otherwise a user could submit using the same token
 			
 			// Next, call the Lambda function to populate the database
-			
+            
+			// Dee Bug
+            console.log(`Form Data: ${userName} | ${password} | ${firstName} | ${lastName} | ${favTeam}`)
+
 			// Dee Bug
 			console.log('STUB: Form submitted successfully');
             alert("Thanks for registering you wonderful human!");
