@@ -82,19 +82,19 @@
 
                     <label>user name (required)</label><br>
                     <div id="form-error"></div>
-                    <input type="text" id="userName" title="userName" required>
+                    <input class="text" type="text" id="userName" required />
                     <br><br>
 
                     <label>password (required)</label><br>
-                    <input type="text" id="password" title="password" required>
+                    <input class="text" type="password" id="password" required />
                     <br><br>
 
                     <label>first name</label><br>
-                    <input class="text" type="text" id="firstName" title="firstName">
+                    <input class="text" type="text" id="firstName" />
                     <br><br>
 
                     <label>last name</label><br>
-                    <input class="text" type="text" id="lastName" title="lastName">
+                    <input class="text" type="text" id="lastName" />
                     <br><br>
 
                     <label>favourite team</label><br>
@@ -134,7 +134,7 @@
                     </select>
                     <br>
                     <br>
-                    <button class="input-button" type="button" id="regSubmitButton"
+                    <button class="input-button" type="submit" id="regSubmitButton"
                         onclick="submitRegistration(
                                 recaptcha_response,
                                 document.getElementById('userName').value,
@@ -145,7 +145,7 @@
                                 sign Me UP!
                       </button>
                   </form> <!-- End Registration Form -->
-
+                  <br><br>
                   <!-- reCAPTCHA Form -->
                   <form action="?" method="POST">
                     <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM" data-callback="verifyCaptcha"></div>
@@ -174,10 +174,7 @@
                       }
                   </script>
                 </section>
-                    <br>
             </main>
-            </section> 
-          </main>
 
           <footer class="page-footer">
             <p>&copy; 2022 Christian Couillard</p>
