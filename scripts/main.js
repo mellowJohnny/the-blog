@@ -451,8 +451,8 @@ function renderClassicWaxHeader(setName) {
 
     function submitRegistration(token, userName, password, firstName, lastName, favTeam) {
         // Dee Bug
-        console.log("Form submitted!");
-        console.log(`Token is ${token}`);
+       // console.log("Form submitted!");
+       // console.log(`Token is ${token}`);
 
         // First, check the value of token - if it's an empty string the User has not attempted the reCAPTCHA challenge
         if (token === "") {
@@ -463,20 +463,20 @@ function renderClassicWaxHeader(setName) {
         }
         else {
             console.log(`reCAPTCHA token is: ${token}`);
+
+            // ************ TO DO **********************
             // We need to go one step further here and validate the token by calling:
             // https://www.google.com/recaptcha/api/siteverify METHOD: POST
             // passing in the site's Secret key & the response token
             // Otherwise a user could submit using the same token
-            alert("Thanks for your submission, you fabulous human being!");
-            return;
+           
         }
 
         // Next, ensure we have a userName and password - they are required fields
         if (userName || password === "") {
             document.getElementById('form-error').innerHTML = 'Work with me here...this is a <i>Required</i> Field';
-            return;
         }
-        else{
+        else {
             // process the form
             // Dee Bug
             console.log(`Submitted values are ${userName} ${password} ${firstName} ${lastName} ${favTeam}`);
