@@ -498,7 +498,9 @@ function renderClassicWaxHeader(setName) {
             // Using built in JSON utility package turn object to string and store in a variable
             let raw = JSON.stringify(
                 {
-                    "userName":userName
+                    "userName":userName,
+                    "password":password
+                   
                 });
         
             // Create a JSON object with parameters for API call and store in a variable
