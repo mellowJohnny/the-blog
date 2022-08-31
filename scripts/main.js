@@ -449,7 +449,7 @@ function renderClassicWaxHeader(setName) {
     * Check to see if user has already registered by looking for an existing email address
     */
 
-    function submitRegistration(token, userName, password, firstName, lastName, favTeam) {
+    function submitRegistration(token, userName, password, firstName, lastName, email, favTeam) {
         // Dee Bug
         console.log(`In submitRegistration! Token is ${token}`);
 
