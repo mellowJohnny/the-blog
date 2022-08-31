@@ -454,12 +454,12 @@ function renderClassicWaxHeader(setName) {
         console.log(`In submitRegistration! Token is ${token}`);
 
          // Let's change the state of the button, now that we've clicked it...
-         submitButtonClicked();
+       //  submitButtonClicked();
     
         // Now start a timer and change the button state to reflect the submit event, waiting X milliseconds
         // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
         // this makes it look like the button is waiting for the modal to close first :-)
-        submitButtonReset();
+       // submitButtonReset();
 
         // First, check the value of token - if it's an empty string the User has not attempted the reCAPTCHA challenge
         if (token === "unset") {
@@ -515,7 +515,7 @@ function renderClassicWaxHeader(setName) {
             };
             
             // make API call to BlogPost endpoint with parameters and use promises to get response
-            fetch("https://fhxy8nfpii.execute-api.us-east-2.amazonaws.com/dev/", requestOptions)
+            fetch("https://fhxy8nfpi.execute-api.us-east-2.amazonaws.com/dev/", requestOptions)
             .then(response => response.text())
             .then(result => alert(JSON.parse(result).body))
             .catch(error => console.log('error', error));
