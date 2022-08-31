@@ -515,7 +515,7 @@ function renderClassicWaxHeader(setName) {
             };
             
             // make API call to BlogPost endpoint with parameters and use promises to get response
-            fetch("https://fhxy8nfpi.execute-api.us-east-2.amazonaws.com/dev/", requestOptions)
+            fetch("", requestOptions)
             .then(response => response.text())
             .then(result => alert(JSON.parse(result).body))
             .catch(error => console.log('error', error));
