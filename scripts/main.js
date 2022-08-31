@@ -487,11 +487,32 @@ function renderClassicWaxHeader(setName) {
 			
 			// Next, call the Lambda function to populate the database
             // Dee Bug
-            console.log(`Form Data: ${userName}, ${password}, ${firstName}, ${lastName}, ${email}, ${favTeam}`)
+            console.log(`Form Data: ${userName}, ${password}, ${firstName}, ${lastName}, ${email}`)
            
             // ********************* API CALL GOES HERE ********************
+// instantiate a headers object
+let myHeaders = new Headers();
+  
+// add content type header to object
+myHeaders.append("Content-Type", "application/json");
 
-            
+// using built in JSON utility package turn object to string and store in a variable
+let raw = JSON.stringify({"title":userName,"author":password,"postBody":firstName,"type":lastName});
+
+// create a JSON object with parameters for API call and store in a variable
+let requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+  };
+
+// make API call to BlogPost endpoint with parameters and use promises to get response
+fetch("https://s4ge5t9w06.execute-api.us-east-2.amazonaws.com/dev ", requestOptions)
+.then(response => response.text())
+.then(result => alert(JSON.parse(result).body))
+.catch(error => console.log('error', error));
+
         }
     
 			
