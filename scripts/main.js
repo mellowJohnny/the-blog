@@ -486,17 +486,19 @@ function renderClassicWaxHeader(setName) {
             // Otherwise a user could submit using the same token
 			
 			// Next, call the Lambda function to populate the database
-
-            // instantiate a headers object
+            // Dee Bug
+            console.log(`Form Data: ${userName} | ${password} | ${firstName} | ${lastName} | ${email} | ${favTeam}`)
+            
+            // Instantiate a headers object
             let myHeaders = new Headers();
         
-            // add content type header to object
+            // Add content type header to object
             myHeaders.append("Content-Type", "application/json");
         
-            // using built in JSON utility package turn object to string and store in a variable
+            // Using built in JSON utility package turn object to string and store in a variable
             let raw = JSON.stringify({"userName":userName,"password":password,"firstName":firstName,"lastName":lastName,"favTeam":favTeam});
         
-            // create a JSON object with parameters for API call and store in a variable
+            // Create a JSON object with parameters for API call and store in a variable
             let requestOptions = {
             method: 'POST',
             headers: myHeaders,
@@ -509,13 +511,10 @@ function renderClassicWaxHeader(setName) {
             .then(response => response.text())
             .then(result => alert(JSON.parse(result).body))
             .catch(error => console.log('error', error));
-            
-			// Dee Bug
-            console.log(`Form Data: ${userName} | ${password} | ${firstName} | ${lastName} | ${email} | ${favTeam}`)
 
 			// Dee Bug
 			// console.log('STUB: Form submitted successfully');
-            alert("Thanks for registering you wonderful human!");
+            // alert("Thanks for registering you wonderful human!");
         
         }
 
