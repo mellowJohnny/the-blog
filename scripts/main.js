@@ -516,7 +516,7 @@ redirect: 'follow'
 };
 
 // make API call to BlogPost endpoint with parameters and use promises to get response
-fetch("https://fhxy8nfpii.execute-api.us-east-2.amazonaws.com/dev/", requestOptions)
+fetch("https://5w92v40ui9.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
 .then(response => response.text())
 .then(result => alert(JSON.parse(result).body))
 .catch(error => console.log('error', error));
