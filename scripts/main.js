@@ -508,7 +508,7 @@ function renderClassicWaxHeader(setName) {
                     };
                 
                 // make API call to cardPost endpoint with parameters and use promises to get response
-                fetch("https://b5m9o1cesj.execute-api.us-east-2.amazonaws.com/Dev", requestOptions)
+                fetch("https://05uss9ffij.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
                 .then(response => response.text())
                 .then(result => alert(JSON.parse(result).body))
                 .catch(error => console.log('error', error));
