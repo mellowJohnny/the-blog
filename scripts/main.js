@@ -497,7 +497,7 @@ let myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 
 // using built in JSON utility package turn object to string and store in a variable
-let raw = JSON.stringify({"title":userName,"author":password,"postBody":firstName,"type":lastName});
+let raw = JSON.stringify({});
 
 // create a JSON object with parameters for API call and store in a variable
 let requestOptions = {
