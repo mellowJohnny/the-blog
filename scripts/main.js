@@ -496,7 +496,10 @@ function renderClassicWaxHeader(setName) {
             myHeaders.append("Content-Type", "application/json");
         
             // Using built in JSON utility package turn object to string and store in a variable
-            let raw = JSON.stringify({"userName":userName,"password":password,"firstName":firstName,"lastName":lastName,"email":email,"favTeam":favTeam});
+            let raw = JSON.stringify(
+                {
+                    "userName":userName
+                });
         
             // Create a JSON object with parameters for API call and store in a variable
             let requestOptions = {
