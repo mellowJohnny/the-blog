@@ -497,7 +497,7 @@ let myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 
 // using built in JSON utility package turn object to string and store in a variable
-let raw = JSON.stringify({});
+let raw = JSON.stringify({"userName":userName,"password":password,"firstName":firstName,"lastName":lastName});
 
 // create a JSON object with parameters for API call and store in a variable
 let requestOptions = {
@@ -508,7 +508,7 @@ let requestOptions = {
   };
 
 // make API call to BlogPost endpoint with parameters and use promises to get response
-fetch("https://s4ge5t9w06.execute-api.us-east-2.amazonaws.com/dev ", requestOptions)
+fetch("https://b5m9o1cesj.execute-api.us-east-2.amazonaws.com/Dev", requestOptions)
 .then(response => response.text())
 .then(result => alert(JSON.parse(result).body))
 .catch(error => console.log('error', error));

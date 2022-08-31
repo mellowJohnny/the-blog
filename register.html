@@ -85,7 +85,7 @@
                     <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM" data-callback="verifyCaptcha"></div>
                     <br>
                   </form> <!-- End reCAPTCHA Form-->
-                <form class="form-style">
+                <form class="form-style" method="POST">
 
                     <label>user name (required)</label><br>
                     <div id="form-error"></div>
@@ -107,7 +107,7 @@
                     <label>last name</label><br>
                     <input class="text" type="text" id="lastName" title="lastName"/>
                     <br><br>
-<!-- 
+ 
                     <label>favourite team</label><br>
                     <select id="favTeam" name="favTeam" title="favTeam">
                       <option value="ducks">Anaheim Ducks</option>
@@ -142,7 +142,7 @@
                       <option value="knights">Vegas Golden Knights</option>
                       <option value="caps">Washington Capitals</option>
                       <option value="jets">Winnipeg Jets</option>
-                    </select> -->
+                    </select> 
                     <br>
                     <br>
                     <button class="input-button" type="submit" id="regSubmitButton"
@@ -152,8 +152,8 @@
                                 document.getElementById('password').value,
                                 document.getElementById('firstName').value,
                                 document.getElementById('lastName').value,
-                                document.getElementById('email').value
-                               // document.getElementById('favTeam').value
+                                document.getElementById('email').value,
+                                document.getElementById('favTeam').value
                                )">
                                 sign Me UP!
                       </button>
