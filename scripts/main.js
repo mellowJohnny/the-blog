@@ -490,32 +490,7 @@ function renderClassicWaxHeader(setName) {
             console.log(`Form Data: ${userName}, ${password}, ${firstName}, ${lastName}, ${email}, ${favTeam}`)
            
             // ********************* API CALL GOES HERE ********************
-            // instantiate a headers object
-                let myHeaders = new Headers();
-                
-                // add content type header to object
-                myHeaders.append("Content-Type", "application/json");
-                
-                // using built in JSON utility package turn object to string and store in a variable
-                let raw = JSON.stringify(
-                    {"userName":userName,
-                    "password":password,
-                    
-                });
-                
-                // create a JSON object with parameters for API call and store in a variable
-                let requestOptions = {
-                    method: 'POST',
-                    headers: myHeaders,
-                    body: raw,
-                    redirect: 'follow'
-                    };
-                
-                // make API call to createUser endpoint with parameters and use promises to get response
-                fetch("https://b5m9o1cesj.execute-api.us-east-2.amazonaws.com/Dev", requestOptions)
-                .then(response => response.text())
-                .then(result => alert(JSON.parse(result).body))
-                .catch(error => console.log('error', error));
+            
     }
 			
 
