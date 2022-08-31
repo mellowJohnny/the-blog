@@ -449,7 +449,7 @@ function renderClassicWaxHeader(setName) {
     * Check to see if user has already registered by looking for an existing email address
     */
 
-    function submitRegistration(token, userName, password, firstName, lastName, email, favTeam) {
+    function submitRegistration(token,userName,password,firstName,lastName,email,favTeam) {
         // Dee Bug
         // console.log(`In submitRegistration! Token is ${token}`);
 
@@ -460,7 +460,7 @@ function renderClassicWaxHeader(setName) {
         // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
         // this makes it look like the button is waiting for the modal to close first :-)
        // submitButtonReset();
-/**
+
         // First, check the value of token - if it's an empty string the User has not attempted the reCAPTCHA challenge
         if (token === "unset") {
             // reCAPTCHA has not been attempted
@@ -487,8 +487,8 @@ function renderClassicWaxHeader(setName) {
 			
 			// Next, call the Lambda function to populate the database
             // Dee Bug
-            console.log(`Form Data: ${userName} | ${password} | ${firstName} | ${lastName} | ${email} | ${favTeam}`)
-   **/         
+            console.log(`Form Data: ${userName}, ${password}, ${firstName}, ${lastName}, ${email}, ${favTeam}`)
+           
             // ********************* API CALL GOES HERE ********************
             // instantiate a headers object
                 let myHeaders = new Headers();
@@ -497,7 +497,11 @@ function renderClassicWaxHeader(setName) {
                 myHeaders.append("Content-Type", "application/json");
                 
                 // using built in JSON utility package turn object to string and store in a variable
-                let raw = JSON.stringify({"userName":userName,"password":password,"firstName":firstName,"lastName":lastName,"email":email,"favTeam":favTeam});
+                let raw = JSON.stringify(
+                    {"userName":userName,
+                    "password":password,
+                    
+                });
                 
                 // create a JSON object with parameters for API call and store in a variable
                 let requestOptions = {
@@ -507,7 +511,7 @@ function renderClassicWaxHeader(setName) {
                     redirect: 'follow'
                     };
                 
-                // make API call to cardPost endpoint with parameters and use promises to get response
+                // make API call to createUser endpoint with parameters and use promises to get response
                 fetch("https://b5m9o1cesj.execute-api.us-east-2.amazonaws.com/Dev", requestOptions)
                 .then(response => response.text())
                 .then(result => alert(JSON.parse(result).body))
