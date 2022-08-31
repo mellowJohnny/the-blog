@@ -489,37 +489,7 @@ function renderClassicWaxHeader(setName) {
             // Dee Bug
             console.log(`Form Data: ${userName} | ${password} | ${firstName} | ${lastName} | ${email} | ${favTeam}`)
             
-            // Instantiate a headers object
-            let myHeaders = new Headers();
-        
-            // Add content type header to object
-            myHeaders.append("Content-Type", "application/json");
-        
-            // Using built in JSON utility package turn object to string and store in a variable
-            let raw = JSON.stringify(
-                {
-                    "userName":userName,
-                    "password":password,
-                    "firstName":firstName,
-                    "lastName":lastName,
-                    "email":email,
-                    "favTeam":favTeam
-                });
-        
-            // Create a JSON object with parameters for API call and store in a variable
-            let requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: raw,
-            redirect: 'follow'
-            };
             
-            // make API call to BlogPost endpoint with parameters and use promises to get response
-            fetch("", requestOptions)
-            .then(response => response.text())
-            .then(result => alert(JSON.parse(result).body))
-            .catch(error => console.log('error', error));
-
 			// Dee Bug
 			// console.log('STUB: Form submitted successfully');
             // alert("Thanks for registering you wonderful human!");
