@@ -454,12 +454,12 @@ function renderClassicWaxHeader(setName) {
         console.log(`In submitRegistration! Token is ${token}`);
 
          // Let's change the state of the button, now that we've clicked it...
-         cmsButtonSubmit();
+         submitButtonClicked();
     
         // Now start a timer and change the button state to reflect the submit event, waiting X milliseconds
         // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
         // this makes it look like the button is waiting for the modal to close first :-)
-        cmsCreateButtonReset();
+        submitButtonReset();
 
         // First, check the value of token - if it's an empty string the User has not attempted the reCAPTCHA challenge
         if (token === "unset") {
@@ -518,3 +518,21 @@ function renderClassicWaxHeader(setName) {
             alert("Thanks for registering you wonderful human!");
         
         }
+
+    // ************* Helper functions to change CMS Submit state *************
+
+    // Change the submit button colour & text on Submit
+    function submitButtonClicked() {
+        document.getElementById('regSubmitButton').style.backgroundColor = "#36a5e6";
+        document.getElementById('regSubmitButton').innerHTML = "Crossing Fingers...";
+    }
+
+    // Post-Submit - change the CREATE submit button colour & text back to initial state 
+    function submitButtonReset() {
+        setTimeout(changeMeBack, 1500);
+    }
+
+    function changeMeBack(){
+        document.getElementById('regSubmitButton').style.backgroundColor = "#256386";
+        document.getElementById('regSubmitButton').innerHTML = "sign Me UP!";
+    }
