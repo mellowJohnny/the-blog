@@ -451,7 +451,7 @@ function renderClassicWaxHeader(setName) {
 
     function submitRegistration(token, userName, password, firstName, lastName, email, favTeam) {
         // Dee Bug
-        console.log(`In submitRegistration! Token is ${token}`);
+        // console.log(`In submitRegistration! Token is ${token}`);
 
          // Let's change the state of the button, now that we've clicked it...
        //  submitButtonClicked();
@@ -460,7 +460,7 @@ function renderClassicWaxHeader(setName) {
         // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
         // this makes it look like the button is waiting for the modal to close first :-)
        // submitButtonReset();
-
+/**
         // First, check the value of token - if it's an empty string the User has not attempted the reCAPTCHA challenge
         if (token === "unset") {
             // reCAPTCHA has not been attempted
@@ -488,7 +488,7 @@ function renderClassicWaxHeader(setName) {
 			// Next, call the Lambda function to populate the database
             // Dee Bug
             console.log(`Form Data: ${userName} | ${password} | ${firstName} | ${lastName} | ${email} | ${favTeam}`)
-            
+   **/         
             // ********************* API CALL GOES HERE ********************
             // instantiate a headers object
                 let myHeaders = new Headers();
@@ -508,7 +508,7 @@ function renderClassicWaxHeader(setName) {
                     };
                 
                 // make API call to cardPost endpoint with parameters and use promises to get response
-                fetch("https://05uss9ffij.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
+                fetch("https://b5m9o1cesj.execute-api.us-east-2.amazonaws.com/Dev", requestOptions)
                 .then(response => response.text())
                 .then(result => alert(JSON.parse(result).body))
                 .catch(error => console.log('error', error));
