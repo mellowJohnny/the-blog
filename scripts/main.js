@@ -498,8 +498,12 @@ function renderClassicWaxHeader(setName) {
             // Using built in JSON utility package turn object to string and store in a variable
             let raw = JSON.stringify(
                 {
-                    
-                   
+                    "userName":userName,
+                    "password":password,
+                    "firstName":firstName,
+                    "lastName":lastName,
+                    "email":email,
+                    "favTeam":favTeam
                 });
         
             // Create a JSON object with parameters for API call and store in a variable
@@ -511,7 +515,7 @@ function renderClassicWaxHeader(setName) {
             };
             
             // make API call to BlogPost endpoint with parameters and use promises to get response
-            fetch("https://fhxy8nfpii.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
+            fetch("https://fhxy8nfpii.execute-api.us-east-2.amazonaws.com/dev/", requestOptions)
             .then(response => response.text())
             .then(result => alert(JSON.parse(result).body))
             .catch(error => console.log('error', error));
