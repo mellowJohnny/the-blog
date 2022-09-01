@@ -462,6 +462,7 @@ function renderClassicWaxHeader(setName) {
        // submitButtonReset();
 
         // First, check the value of token - if it's an empty string the User has not attempted the reCAPTCHA challenge
+/** 
         if (token === "unset") {
             // reCAPTCHA has not been attempted
             alert("Click the reCAPTCHA first, fucker!");
@@ -471,13 +472,13 @@ function renderClassicWaxHeader(setName) {
         else {
             console.log(`Token is not null: reCAPTCHA token is: ${token}`);
 
-            // Before we validate the reCAPTCHA, let's be sure our required fields are filled out
+            // reCAPTCHA is good, let's be sure our required fields are filled out
             if (userName === "" || password === "") {
                 alert("please fill out the required fields!");
                 // ERROR - bail out
                 return;
                 }
-            }
+            } */
 
             // ************ TO DO - create Lambda to run verification **********************
             // We need to go one step further here and validate the token by calling:
@@ -489,29 +490,29 @@ function renderClassicWaxHeader(setName) {
             // Dee Bug
             console.log(`Form Data: ${userName}, ${password}, ${firstName}, ${lastName}, ${email}`)
            
-            // ********************* API CALL GOES HERE ********************
-// instantiate a headers object
-let myHeaders = new Headers();
-  
-// add content type header to object
-myHeaders.append("Content-Type", "application/json");
+            // ********************* createUser API CALL ********************
+            // instantiate a headers object
+            let myHeaders = new Headers();
+            
+            // add content type header to object
+            myHeaders.append("Content-Type", "application/json");
 
-// using built in JSON utility package turn object to string and store in a variable
-let raw = JSON.stringify({"userName":userName,"password":password,"firstName":firstName,"lastName":lastName});
+            // using built in JSON utility package turn object to string and store in a variable
+            let raw = JSON.stringify({"userName":userName,"password":password,"firstName":firstName,"lastName":lastName});
 
-// create a JSON object with parameters for API call and store in a variable
-let requestOptions = {
-  method: 'POST',
-  headers: myHeaders,
-  body: raw,
-  redirect: 'follow'
-  };
+            // create a JSON object with parameters for API call and store in a variable
+            let requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+            };
 
-// make API call to BlogPost endpoint with parameters and use promises to get response
-fetch("https://b5m9o1cesj.execute-api.us-east-2.amazonaws.com/Dev", requestOptions)
-.then(response => response.text())
-.then(result => alert(JSON.parse(result).body))
-.catch(error => console.log('error', error));
+            // make API call to createUser endpoint with parameters and use promises to get response
+            fetch("https://b5m9o1cesj.execute-api.us-east-2.amazonaws.com/Dev", requestOptions)
+            .then(response => response.text())
+            .then(result => alert(JSON.parse(result).body))
+            .catch(error => console.log('error', error));
 
         }
     
