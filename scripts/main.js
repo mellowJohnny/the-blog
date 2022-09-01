@@ -466,7 +466,7 @@ function renderClassicWaxHeader(setName) {
             // reCAPTCHA has not been attempted
             alert("Click the reCAPTCHA first, fucker!");
             // ERROR - let's get outta here...
-			// return;
+			return;
         }
         else {
             console.log(`Token is not null: reCAPTCHA token is: ${token}`);
@@ -475,7 +475,7 @@ function renderClassicWaxHeader(setName) {
             if (userName === "" || password === "") {
                 alert("please fill out the required fields!");
                 // ERROR - bail out
-                // return;
+                return;
                 }
             }
 
