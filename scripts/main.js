@@ -478,7 +478,8 @@ function renderClassicWaxHeader(setName) {
                 // ERROR - bail out
                 return;
                 }
-            } */
+            } 
+*/
 
             // ************ TO DO - create Lambda to run verification **********************
             // We need to go one step further here and validate the token by calling:
@@ -509,7 +510,7 @@ function renderClassicWaxHeader(setName) {
             };
 
             // make API call to createUser endpoint with parameters and use promises to get response
-            fetch("https://b5m9o1cesj.execute-api.us-east-2.amazonaws.com/Dev", requestOptions)
+            fetch("https://b5m9o1cesj.execute-api.us-east-2.amazonaws.com", requestOptions)
             .then(response => response.text())
             .then(result => alert(JSON.parse(result).body))
             .catch(error => console.log('error', error));
