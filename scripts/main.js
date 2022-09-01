@@ -499,7 +499,7 @@ function renderClassicWaxHeader(setName) {
             myHeaders.append("Content-Type", "application/json");
             myHeaders.append("Access-Control-Allow-Origin", "https://www.mellowjohnny.cc/register.html");
             myHeaders.append("Access-Control-Allow-Headers", "Content-Type");
-            myHeaders.append("Access-Control-Allow-Methods", "OPTIONS,POST,GET");
+            // myHeaders.append("Access-Control-Allow-Methods", "OPTIONS,POST,GET");
 
             // using built in JSON utility package turn object to string and store in a variable
             let raw = JSON.stringify({"userName":userName,"password":password,"firstName":firstName,"lastName":lastName});
