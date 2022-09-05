@@ -497,12 +497,11 @@ function renderClassicWaxHeader(setName) {
             
             // add content type header to object plus access control
             myHeaders.append("Content-Type", "application/json");
-            // myHeaders.append("Access-Control-Allow-Origin", "https://www.mellowjohnny.cc/register.html");
-            // myHeaders.append("Access-Control-Allow-Headers", "Content-Type");
-            // myHeaders.append("Access-Control-Allow-Methods", "OPTIONS,POST,GET");
 
             // using built in JSON utility package turn object to string and store in a variable
             let raw = JSON.stringify({"userName":userName,"password":password,"firstName":firstName,"lastName":lastName});
+            // Dee Bug
+            console.log(`JSON Data: ${raw}`);
 
             // create a JSON object with parameters for API call and store in a variable
             let requestOptions = {
