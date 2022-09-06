@@ -462,7 +462,7 @@ function renderClassicWaxHeader(setName) {
        // submitButtonReset();
 
         // First, check the value of token - if it's an empty string the User has not attempted the reCAPTCHA challenge
-/** 
+
         if (token === "unset") {
             // reCAPTCHA has not been attempted
             alert("Click the reCAPTCHA first, fucker!");
@@ -479,7 +479,7 @@ function renderClassicWaxHeader(setName) {
                 return;
                 }
             } 
-*/
+
 
             // ************ TO DO - create Lambda to run verification **********************
             // We need to go one step further here and validate the token by calling:
