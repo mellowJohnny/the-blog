@@ -489,7 +489,7 @@ function renderClassicWaxHeader(setName) {
 			
 			// Next, call the Lambda function to populate the database
             // Dee Bug
-            console.log(`Form Data: ${userName}, ${password}, ${firstName}, ${lastName}, ${email}`)
+            console.log(`Form Data: ${userName}, ${password}, ${firstName}, ${lastName}, ${email}, ${favTeam}`)
            
             // ********************* createUser API CALL ********************
             // instantiate a headers object
@@ -499,7 +499,7 @@ function renderClassicWaxHeader(setName) {
             myHeaders.append("Content-Type", "application/json");
 
             // using built in JSON utility package turn object to string and store in a variable
-            let raw = JSON.stringify({"userName":userName,"password":password,"firstName":firstName,"lastName":lastName});
+            let raw = JSON.stringify({"userName":userName,"password":password,"firstName":firstName,"lastName":lastName,"email":email,"favTeam":favTeam});
             // Dee Bug
             console.log(`JSON Data: ${raw}`);
 
