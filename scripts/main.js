@@ -465,7 +465,7 @@ function renderClassicWaxHeader(setName) {
 
         if (token === "unset") {
             // reCAPTCHA has not been attempted
-            alert("Click the reCAPTCHA first, fucker!");
+            alert("Click the reCAPTCHA first!");
             // ERROR - let's get outta here...
 			return;
         }
