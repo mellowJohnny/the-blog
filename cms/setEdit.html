@@ -29,6 +29,7 @@
             let params = new URLSearchParams(document.location.search);
             let setID = params.get("setID");
 
+
             /* 
             *   Call to fetchCardSetsByID() on page load, dynamically passing the set year we want to fetch
             *   It is responsible for calling the underlying AWS web service
@@ -69,10 +70,15 @@
                               <form class="form-style">
                                   <label>Publication Status</label><br>
 
-                                  
+                                  <!--  Next let's find out if the set's Publication Status -->
+                                  <script>
+                                    let pubStatus = document.getElementById("blogStatus");
+                                    console.log('Publication Status:' pubStatus);
+                                  </script>
+            
                                   <select id="blogStatus" name="blogStatus" title="blogStatus">
-                                    <option value="staged">Staging</option>
-                                    <option value="OK">Live</option>
+                                    <option value="staged">Staging</option> <!-- need to conditionally add "selected" attribute -->
+                                    <option value="OK">Live</option> <!-- was OK -->
                                 </select><br><br>
                                  
                                   <label>Set Name</label><br>
