@@ -880,7 +880,8 @@ function displayStagedBlogs(title, blogID) {
   
       // Now that we have cleaned up the data we got back from DynamoDB, let's
       // populate the form on setEdit.html with the values as defaults
-      document.getElementById("blogStatus").defaultValue = cleanStatus;
+      
+      // document.getElementById("blogStatus").defaultValue = cleanStatus;
       document.getElementById("year").defaultValue = cleanYear;
       document.getElementById("mfg").defaultValue = cleanMFG;
       document.getElementById("size").defaultValue = cleanSetSize;
