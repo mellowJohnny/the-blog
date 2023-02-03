@@ -890,7 +890,7 @@ function displayStagedBlogs(title, blogID) {
       document.getElementById("setName").defaultValue = cleanSetName;
       document.getElementById("headerImgName").defaultValue = cleanHeaderImgName;
       document.getElementById("footerImgName").defaultValue = cleanFooterImgName;
-      
+
     // Let's also check the value of the blog and make the default option in the HTML dropdown reflect the current state
       if(cleanStatus === "staged") {
         console.log('Set is Staged');
@@ -898,7 +898,7 @@ function displayStagedBlogs(title, blogID) {
       }
       else{
         console.log('Set is LIVE!');
-        document.getElementById("staged").setAttribute('selected','selected');
+        document.getElementById("live").setAttribute('selected','selected');
       }
   }
 
