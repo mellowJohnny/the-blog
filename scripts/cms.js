@@ -890,6 +890,13 @@ function displayStagedBlogs(title, blogID) {
       document.getElementById("setName").defaultValue = cleanSetName;
       document.getElementById("headerImgName").defaultValue = cleanHeaderImgName;
       document.getElementById("footerImgName").defaultValue = cleanFooterImgName;
+
+      if(cleanStatus === "staged") {
+        console.log('Set is Staged');
+      }
+      else{
+        console.log('Set is LIVE!');
+      }
   }
 
   // ************* Helper functions to change CMS Submit state *************
