@@ -538,3 +538,11 @@ function renderClassicWaxHeader(setName) {
         document.getElementById('regSubmitButton').style.backgroundColor = "#256386";
         document.getElementById('regSubmitButton').innerHTML = "sign Me UP!";
     }
+
+
+    //************************ Helper Function To Fetch Copyright Date ********************
+    function fetchCopyrightYear() {
+        const date = new Date();
+        const copyYear = date.getUTCFullYear();
+        
+    }
