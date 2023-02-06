@@ -540,9 +540,11 @@ function renderClassicWaxHeader(setName) {
     }
 
 
-    //************************ Helper Function To Fetch Copyright Date ********************
+    //************ Helper Function To Generate Copyright Date for any <div id="copy"> tag ********************
     function fetchCopyrightYear() {
         const date = new Date();
-        const copyYear = date.getUTCFullYear();
+        const copyYear = date.getFullYear();
+        let copyFooter = document.getElementById("copy");
+        copyFooter.innerHTML = `<p>&copy; ${copyYear} Christian Couillard </p>`;
         
     }
