@@ -48,6 +48,9 @@
         */   
         window.addEventListener('load', (event) => {
             fetchCardSetsByYear(year, pageName);
+            
+            // *** Dynamically display the copyright year
+            fetchCopyrightYear();
         });
     </script>
 </head>

@@ -22,6 +22,9 @@
     let blogType = params.get("blogType");
     window.addEventListener('load', (event) => {
       fetchBlogs(blogType);
+      
+      // *** Dynamically display the copyright year
+      fetchCopyrightYear();
       });
   </script>
 
