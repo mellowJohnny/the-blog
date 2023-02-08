@@ -26,6 +26,8 @@
         <script>
           window.addEventListener('load', (event) => {
             fetchAllStagedCardSets();
+            // *** Dynamically display the copyright year
+            fetchCopyrightYear();
            });
         </script>
 
@@ -78,5 +80,9 @@
         </div>
     </section>
     <footer class="page-footer">
-        <p>&copy; 2022 Christian Couillard</p>
-      </footer>
+      <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
+      <div id="copy"></div> 
+      
+    </footer>
+</body>
+</html>
