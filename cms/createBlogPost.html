@@ -25,6 +25,12 @@
             }
             );
         </script>
+        <script>
+        window.addEventListener('load', (event) => {
+          // *** Dynamically display the copyright year
+          fetchCopyrightYear();
+      });
+  </script>
       </head>
 
 <script src="/scripts/cms.js"></script>
@@ -91,8 +97,10 @@
         </div>
     </section>
     <footer class="page-footer">
-        <p>&copy; 2022 Christian Couillard</p>
-      </footer>
+      <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
+      <div id="copy"></div> 
+      
+    </footer>
 
       
 
