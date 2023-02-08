@@ -931,7 +931,13 @@ function displayStagedBlogs(title, blogID) {
         document.getElementById('cmsSubmitButton').innerHTML = "Update Post";
     }
 
-
+//************ Helper Function To Generate Copyright Date for any <div id="copy"> tag ********************
+function fetchCopyrightYear() {
+    const copyYear = new Date().getFullYear();
+    let copyFooter = document.getElementById("copy");
+    copyFooter.innerHTML = `<p>&copy; ${copyYear} Christian Couillard </p>`;
+    
+}
 
 
 
