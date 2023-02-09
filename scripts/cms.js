@@ -880,6 +880,20 @@ function displayStagedBlogs(title, blogID) {
   
       // Now that we have cleaned up the data we got back from DynamoDB, let's
       // populate the form on setEdit.html with the values as defaults
+
+      // Let's first check the value of the blog and make the default option in the HTML dropdown reflect the current state
+      if(cleanStatus === "staged") {
+        console.log('Set is Staged');
+        // document.getElementById("staged").defaultValue = cleanStatus;
+       // document.getElementById("blogStatus").defaultValue = cleanStatus;
+       document.getElementById("staged").setAttribute('selected','selected');
+      }
+      else{
+        console.log('Set is LIVE!');
+       // document.getElementById("live").defaultValue = cleanStatus;
+       // document.getElementById("blogStatus").defaultValue = cleanStatus;
+       document.getElementById("live").setAttribute('selected','selected');
+      }
       
       // document.getElementById("blogStatus").defaultValue = cleanStatus;
       document.getElementById("year").defaultValue = cleanYear;
@@ -892,19 +906,7 @@ function displayStagedBlogs(title, blogID) {
       document.getElementById("headerImgName").defaultValue = cleanHeaderImgName;
       document.getElementById("footerImgName").defaultValue = cleanFooterImgName;
 
-    // Let's also check the value of the blog and make the default option in the HTML dropdown reflect the current state
-      if(cleanStatus === "staged") {
-        console.log('Set is Staged');
-        document.getElementById("staged").defaultValue = cleanStatus;
-       // document.getElementById("blogStatus").defaultValue = cleanStatus;
-       // document.getElementById("staged").setAttribute('selected','selected');
-      }
-      else{
-        console.log('Set is LIVE!');
-        document.getElementById("live").defaultValue = cleanStatus;
-       // document.getElementById("blogStatus").defaultValue = cleanStatus;
-       // document.getElementById("live").setAttribute('selected','selected');
-      }
+    
   }
 
   // ************* Helper functions to change CMS Submit state *************
