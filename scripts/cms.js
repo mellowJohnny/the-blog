@@ -886,15 +886,20 @@ function displayStagedBlogs(title, blogID) {
         console.log('Set is Staged');
         // document.getElementById("staged").defaultValue = cleanStatus;
        // document.getElementById("blogStatus").defaultValue = cleanStatus;
-       document.getElementById("staged").setAttribute('selected','selected');
+       // document.getElementById("staged").setAttribute('selected','selected');
+       let statusOptions = document.getElementById("blogStatus");
+       statusOptions.innerHTML += 
+                    `<option id="staged" value="staged" selected>Staging</option> 
+                    <option id="live" value="OK">Live</option> `;
       }
       else{
         console.log('Set is LIVE!');
        // document.getElementById("live").defaultValue = cleanStatus;
        // document.getElementById("blogStatus").defaultValue = cleanStatus;
-       let myOption = document.getElementById("live");
-       myOption.setAttribute('selected');
-       console.log(myOption);
+       let statusOptions = document.getElementById("blogStatus");
+       statusOptions.innerHTML += 
+                    `<option id="staged" value="staged">Staging</option> 
+                    <option id="live" value="OK" selected>Live</option> `;
       }
       
       // document.getElementById("blogStatus").defaultValue = cleanStatus;
