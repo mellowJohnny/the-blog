@@ -893,7 +893,7 @@ function displayStagedBlogs(title, blogID) {
        // document.getElementById("live").defaultValue = cleanStatus;
        // document.getElementById("blogStatus").defaultValue = cleanStatus;
        let myOption = document.getElementById("live");
-       myOption.setAttribute('selected','selected');
+       myOption.setAttribute('selected','true');
        console.log(myOption);
       }
       
