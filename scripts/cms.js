@@ -895,12 +895,14 @@ function displayStagedBlogs(title, blogID) {
     // Let's also check the value of the blog and make the default option in the HTML dropdown reflect the current state
       if(cleanStatus === "staged") {
         console.log('Set is Staged');
-        document.getElementById("blogStatus").defaultValue = cleanStatus;
+        document.getElementById("staged").defaultValue = cleanStatus;
+       // document.getElementById("blogStatus").defaultValue = cleanStatus;
        // document.getElementById("staged").setAttribute('selected','selected');
       }
       else{
         console.log('Set is LIVE!');
-        document.getElementById("blogStatus").defaultValue = cleanStatus;
+        document.getElementById("live").defaultValue = cleanStatus;
+       // document.getElementById("blogStatus").defaultValue = cleanStatus;
        // document.getElementById("live").setAttribute('selected','selected');
       }
   }
