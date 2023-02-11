@@ -896,18 +896,15 @@ function displayStagedBlogs(title, blogID) {
                     ` <option id="live" value="OK" selected>Live</option>
                     <option id="staged" value="staged">Staging</option> `;
       }
-      
-      // document.getElementById("blogStatus").defaultValue = cleanStatus;
-      document.getElementById("year").defaultValue = cleanYear;
-      document.getElementById("mfg").defaultValue = cleanMFG;
-      document.getElementById("size").defaultValue = cleanSetSize;
-      document.getElementById("subsets").defaultValue = cleanSubsets;
-      document.getElementById("stars").defaultValue = numStars;
-      document.getElementById("formats").defaultValue = cleanFormats;
-      document.getElementById("setName").defaultValue = cleanSetName;
-      document.getElementById("headerImgName").defaultValue = cleanHeaderImgName;
-      document.getElementById("footerImgName").defaultValue = cleanFooterImgName;
-
+        document.getElementById("year").defaultValue = cleanYear;
+        document.getElementById("mfg").defaultValue = cleanMFG;
+        document.getElementById("size").defaultValue = cleanSetSize;
+        document.getElementById("subsets").defaultValue = cleanSubsets;
+        document.getElementById("stars").defaultValue = numStars;
+        document.getElementById("formats").defaultValue = cleanFormats;
+        document.getElementById("setName").defaultValue = cleanSetName;
+        document.getElementById("headerImgName").defaultValue = cleanHeaderImgName;
+        document.getElementById("footerImgName").defaultValue = cleanFooterImgName;
     
   }
 
