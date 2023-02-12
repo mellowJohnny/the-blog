@@ -5,7 +5,7 @@
  * There is no ability to delete a blog. Why would you want to? ;-)
  */
 
-// **************************************** Create New Blog Post ***************************************************
+//**************************************** Create New Blog Post ***************************************************
 
 /**
  * This is the main AWS call used to CREATE a NEW BLOG POST
@@ -58,7 +58,7 @@
     }
   
   
-  // ***************************************** Create New Card Set ******************************************
+//***************************************** Create New Card Set ******************************************
   
   /**
    * This is the main AWS call used to CREATE a NEW CARDS POST
@@ -117,8 +117,7 @@
       .catch(error => console.log('error', error));
       }
 
-
-// *********************************************** Update Card Set ***************************************
+//******************************************* Update Card Set ***************************************
 
 /** 
  * This function is used to UPDATE an existing Card Set review
@@ -136,46 +135,46 @@
  * 
  **/
 
-function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,headerImgName,footerImgName,mfg) {
+    function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,headerImgName,footerImgName,mfg) {
     
-    // Let's change the state of the button, now that we've clicked it...
-    cmsButtonSubmit();
+        // Let's change the state of the button, now that we've clicked it...
+        cmsButtonSubmit();
 
-    // And now lets change it back:
-    // This function ultimately calls a timer, which then calls a 2nd function to actually update the button state
-    // These two functions are independent so we can change the timer length or the HTML updates in just one place
-    cmsUpdateButtonReset();
+        // And now lets change it back:
+        // This function ultimately calls a timer, which then calls a 2nd function to actually update the button state
+        // These two functions are independent so we can change the timer length or the HTML updates in just one place
+        cmsUpdateButtonReset();
 
-    // Call the Tiny API to fetch the content from the editor...
-    const tinyBody = tinymce.activeEditor.getContent();
+        // Call the Tiny API to fetch the content from the editor...
+        const tinyBody = tinymce.activeEditor.getContent();
     
-    // instantiate a headers object
-    let myHeaders = new Headers();
+        // instantiate a headers object
+        let myHeaders = new Headers();
+        
+        // add content type header to object
+        myHeaders.append("Content-Type", "application/json");
     
-    // add content type header to object
-    myHeaders.append("Content-Type", "application/json");
-  
-    // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"blogStatus":blogStatus,"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":tinyBody,"headerImgName":headerImgName,"footerImgName":footerImgName,"mfg":mfg});
+        // using built in JSON utility package turn object to string and store in a variable
+        let raw = JSON.stringify({"blogStatus":blogStatus,"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":tinyBody,"headerImgName":headerImgName,"footerImgName":footerImgName,"mfg":mfg});
 
-    // create a JSON object with parameters for API call and store in a variable
-    let requestOptions = {
-      method: 'PUT',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow'
-      };
+        // create a JSON object with parameters for API call and store in a variable
+        let requestOptions = {
+        method: 'PUT',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+        };
 
-    // Make call to updateCardSet API endpoint in API Gateway with parameters and use promises to get response
-    fetch("https://bb8yehibjb.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
-    .then(response => response.text())
-    .then(result => alert(JSON.parse(result).body))
-    .catch(error => console.log('error', error));
+        // Make call to updateCardSet API endpoint in API Gateway with parameters and use promises to get response
+        fetch("https://bb8yehibjb.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
+        .then(response => response.text())
+        .then(result => alert(JSON.parse(result).body))
+        .catch(error => console.log('error', error));
     
-}
+    }
 
 
-// ********************************************* Update Blog Post *******************************************
+//********************************** Update Blog Post *******************************************
 
 /** 
  * This function is used to UPDATE an existing Blog Post
@@ -232,7 +231,8 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
 
 
 
-// *********************************** Get Blogs For Update API Call **********************************
+// ******************** Get Blogs For Update API Call **********************************
+
 /**
  * This Function is used to fetch all records from the Blog table in DynamoDB
  * The API limits the data returned to only the name of the blog and its blogID  
@@ -298,7 +298,8 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
        });
   }
 
-  // *********************************** Get STAGED Blogs For Update API Call **********************************
+//*********************************** Get STAGED Blogs For Update API Call **********************************
+
 /**
  * This Function is used to fetch all STAGED records from the Blog table in DynamoDB
  * The API limits the data returned to only the name of the blog and its blogID  
@@ -367,7 +368,7 @@ function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,header
 
 
 
-  // ******************************* displayBlogs Helper Function ************************************
+//****************************** displayBlogs Helper Function ***************************
 
 /**
 * Helper function Called by fetchAllCardSets() to apply HTML formatting a Blog record 
@@ -404,7 +405,7 @@ function displayBlogs(title, blogID) {
 
 
 
-// ******************************* displayStagedBlogs Helper Function ************************************
+//******************************* displayStagedBlogs Helper Function ************************************
 
 /**
 * Helper function Called by getStagedBlogsForUpdate() to apply HTML formatting a Blog record 
@@ -439,7 +440,9 @@ function displayStagedBlogs(title, blogID) {
                  </table>`;
   }
 
-  // ******************************** Fetch Blog by ID - Populates the CMS Form For Update **************************
+
+
+//******************************* Fetch Blog by ID - Populates the CMS Form For Update **************************
 
 /** 
  * This function fetches a single blog, given it's ID and parses out the individual fields
@@ -512,7 +515,7 @@ function displayStagedBlogs(title, blogID) {
   
 
 
-  // *********************************** populateBlog Helper Function *********************************
+//********************************** populateBlog Helper Function *********************************
   
   /**
   * Helper function Called by fetchBlogByID() 
@@ -549,7 +552,7 @@ function displayStagedBlogs(title, blogID) {
   }
   
 
-// ********************************** Fetch All Card Sets For Update **********************************
+//********************************* Fetch All Card Sets For Update **********************************
 
 /**
  * This Function is used to fetch all records from the Card table in DynamoDB with status="OK"
@@ -616,7 +619,7 @@ function displayStagedBlogs(title, blogID) {
   }
 
 
-  // ********************************** Fetch All Staged Card Sets For Update **********************************
+//********************************* Fetch All Staged Card Sets For Update **********************************
 
 /**
  * This Function is used to fetch all records from the Card table in DynamoDB with status="staged"
@@ -682,7 +685,7 @@ function displayStagedBlogs(title, blogID) {
        });
   }
   
-  // ************************************* displayCardSets Helper Function *************************************
+//************************************ displayCardSets Helper Function *************************************
   
   /**
   * Helper function Called by fetchAllCardSets() to apply HTML formatting a Card Set record 
@@ -720,7 +723,7 @@ function displayStagedBlogs(title, blogID) {
 
 
 
-  // ************************************* displayStagedCardSets Helper Function *************************************
+//************************************ displayStagedCardSets Helper Function *************************************
   
   /**
   * Helper function Called by fetchAllStagedCardSets() to apply HTML formatting a Card Set record 
@@ -758,7 +761,7 @@ function displayStagedBlogs(title, blogID) {
   
 
 
-  // ***************************** Fetch Card Set by ID - Populates the CMS Form For Update **************************
+//**************************** Fetch Card Set by ID - Populates the CMS Form For Update **************************
   
   /** 
    * This function fetches a single card set, given it's ID and parses out the individual fields
@@ -835,7 +838,7 @@ function displayStagedBlogs(title, blogID) {
 
   
   
-  // ***************************************** populateCardSet Helper Function **********************************
+//**************************************** populateCardSet Helper Function **********************************
   
   /**
   * Helper function Called by fetchCardSetByID() 
@@ -854,7 +857,7 @@ function displayStagedBlogs(title, blogID) {
   * @param {*} footerImgName
   */
   
-  /** This function calls the associated DIV on the Set Update form and populates it with the current value */
+  /** This function calls the associated DIV on the Set Update form in setEdit.html and populates it with the current value */
   function populateCardSet(blogStatus,postBody,year,mfg,size,subsets,stars,formats,setName,headerImgName,footerImgName) {
 
       // Cleanup the JSON we get back so it's back to a String 
@@ -881,7 +884,7 @@ function displayStagedBlogs(title, blogID) {
       // Now that we have cleaned up the data we got back from DynamoDB, let's
       // populate the form on setEdit.html with the values as defaults
 
-      // First we need to check the "status"" of the blog and make the default option 
+      // First we need to check the "status" of the blog and make the default option 
       // in the HTML dropdown reflect the current state. We can also re-order the option tags
       // so that the current "status" is always first in the list :-)
       if(cleanStatus === "staged") {
@@ -908,7 +911,7 @@ function displayStagedBlogs(title, blogID) {
     
   }
 
-  // ************* Helper functions to change CMS Submit state *************
+//************* Helper functions to change CMS Submit state *************
 
     // Change the submit button colour & text on Submit
     function cmsButtonSubmit() {
@@ -936,7 +939,8 @@ function displayStagedBlogs(title, blogID) {
         document.getElementById('cmsSubmitButton').innerHTML = "Update Post";
     }
 
-//************ Helper Function To Generate Copyright Date for any <div id="copy"> tag ********************
+//************ Helper Function To Generate Copyright Date for any <div id="copy"> tag 
+//Current used in all <footer> page sections
 function fetchCopyrightYear() {
     const copyYear = new Date().getFullYear();
     let copyFooter = document.getElementById("copy");
