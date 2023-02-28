@@ -312,7 +312,7 @@ var globalPageName = "";
 */
 function renderJunkWaxHeader(year) {
     let pageHeader = document.getElementById("pageHeader");
-    pageHeader.innerHTML = `...card sets from ${year}`;
+    pageHeader.innerHTML = `...Junk Wax Sets From ${year}`;
 }
 
 /* 
@@ -320,7 +320,7 @@ function renderJunkWaxHeader(year) {
 */
 function renderClassicWaxHeader(setName) {
     let pageHeader = document.getElementById("classicPageHeader");
-    pageHeader.innerHTML = `...classic 80s sets: ${setName}`;
+    pageHeader.innerHTML = `...Classic 80s Set: ${setName}`;
 }
 
 

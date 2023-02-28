@@ -36,7 +36,7 @@
     <!-- Main JavaScript import -->
     <script src="scripts/main.js"></script>
   
-   
+   <!-- Google Analytics -->
    <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -44,6 +44,7 @@
       gtag('config', 'G-JMGVGK09QX');
     </script> 
     
+    <!-- JavaScript Magic -->
     <script>
         /* Let's get the URL params from the request, and extract the year */  
         let params = new URLSearchParams(document.location.search);
@@ -79,8 +80,7 @@
         </td>
         <td width="20%" >
           <!-- Display current weather from weather.js 
-            REMOVED FOR NOW 
-          -->
+            REMOVED FOR NOW -->
           <!--  <div class="weather" id="weather">Waiting for the Weather Forecast...</div> -->
         </td>
         </tr>
@@ -111,17 +111,15 @@
 
               <div class="flex-container">
                 <div class="intro">
-                <p>Non Junk Wax...classic wax? Modern era? Whatever you call it, the O-Pee-Chee sets from Gretzky's debut in the 1979-80 set right up to 
-                  the Roy and Lemieux years defined a classic period of card collecting. The 8 sets from the pre-boom era include not only Gretzky, Roy, and Lemieux
-                  but also Messier, Bourque, Coffey, Savard, Fuhr, Hawerchuck, Carbonneau, Yzerman, Gilmour, and MacInnis. Quite a Hall of Fame class.
-                </p>
-            
-                <p class="set-o-matic-picker">the set-o-matic year picker</p>
-                <div id="classic-set-picker">
-                <!-- "Smart" Year Picker:
-                      Rendered by renderClassicPicker() function in main.js 
-                      Removes link for current year -->
-                </div>
+                  <p>Non Junk Wax...classic wax? Modern era? Whatever you call it, the O-Pee-Chee sets from Gretzky's debut in the 1979-80 set right up to 
+                    the Roy and Lemieux years defined a classic period of card collecting. The 8 sets from the pre-boom era include not only Gretzky, Roy, and Lemieux
+                    but also Messier, Bourque, Coffey, Savard, Fuhr, Hawerchuck, Carbonneau, Yzerman, Gilmour, and MacInnis. Quite a Hall of Fame class.
+                  </p>
+              
+                  <p class="set-o-matic-picker">the set-o-matic year picker</p>
+                  <div id="classic-set-picker">
+                    <!-- "Smart" Year Picker: Rendered by renderClassicPicker() function in main.js Removes link for current year -->
+                  </div>
                 </div>
               </div>
             </section>
