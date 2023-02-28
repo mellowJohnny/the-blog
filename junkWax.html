@@ -51,6 +51,9 @@
             
             // *** Dynamically display the copyright year
             fetchCopyrightYear();
+
+            // **** Call the Set-O-Matic Set Picker ***
+            renderJunkPicker(year);
         });
     </script>
 </head>
@@ -105,6 +108,11 @@
                     But there <i>are</i> some hidden gems to be found if you are willing to sift through the rubble.  So let's start diggin'!
                 </p>
                 <p class="set-o-matic-picker">the set-o-matic year picker</p>
+                <div id="junk-wax-picker">
+                  <!-- "Smart" Year Picker:
+                      Rendered by renderJunkPicker() function in main.js 
+                      Removes link for current year -->
+                  <!--
                 <table class="card-set-nav">
                     <tr>
                         <td class="junk-set-nav-td"><a href="/junkWax.html?year=1987">1987-88</a></td>
@@ -115,7 +123,8 @@
                         <td class="junk-set-nav-td"><a href="/junkWax.html?year=1992">1992-93</a></td>
                         <td class="junk-set-nav-td"><a href="/junkWax.html?year=1993">1993-94</a></td> 
                     </tr>
-                  </table>
+                  </table> -->
+                </div>
                 </div>
               </div>
             </section>

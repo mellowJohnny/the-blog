@@ -548,10 +548,10 @@ function renderClassicWaxHeader(setName) {
         
     }
 
-    //****** Helper Function For Rendering "smart" Set-O-Matic Year Picker (removes link for current year) *********
-    function renderPicker(pickerYear){
+    //****** Helper Function For Rendering "smart" Classic Set-O-Matic Year Picker (removes link for current year) *********
+    function renderClassicPicker(pickerYear){
         let year = pickerYear;
-        let setPicker = document.getElementById("set-picker");
+        let setPicker = document.getElementById("classic-set-picker");
         if (year === "1979"){
             setPicker.innerHTML = `
             <table class="card-set-nav">
@@ -672,4 +672,111 @@ function renderClassicWaxHeader(setName) {
                 </tr>
             </table>`;
         }
-    }
+    } // End Classic Wax Picker
+
+
+
+    //****** Helper Function For Rendering "smart" Junk Wax Set-O-Matic Year Picker (removes link for current year) *********
+    function renderJunkPicker(pickerYear){
+        let year = pickerYear;
+        let setPicker = document.getElementById("junk-wax-picker");
+        if (year === "1987"){
+            setPicker.innerHTML = `
+            <table class="card-set-nav">
+                    <tr>
+                        <td class="junk-set-nav-td">1987-88</td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1988">1988-89</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1989">1989-90</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1990">1990-91</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1991">1991-92</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1992">1992-93</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1993">1993-94</a></td> 
+                    </tr>
+                  </table>`;
+        }
+        else if (year === "1988") {
+            setPicker.innerHTML = `
+            <table class="card-set-nav">
+                    <tr>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1987">1987-88</a></td>
+                        <td class="junk-set-nav-td">1988-89</td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1989">1989-90</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1990">1990-91</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1991">1991-92</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1992">1992-93</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1993">1993-94</a></td> 
+                    </tr>
+                  </table>`;
+        }
+        else if (year === "1989") {
+            setPicker.innerHTML = `
+            <table class="card-set-nav">
+                    <tr>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1987">1987-88</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1988">1988-89</a></td>
+                        <td class="junk-set-nav-td">1989-90</td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1990">1990-91</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1991">1991-92</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1992">1992-93</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1993">1993-94</a></td> 
+                    </tr>
+                  </table>`;
+        }
+        else if (year === "1990") {
+            setPicker.innerHTML = `
+            <table class="card-set-nav">
+                    <tr>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1987">1987-88</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1988">1988-89</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1989">1989-90</a></td>
+                        <td class="junk-set-nav-td">1990-91</td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1991">1991-92</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1992">1992-93</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1993">1993-94</a></td> 
+                    </tr>
+                  </table>`;
+        }
+        else if (year === "1991") {
+            setPicker.innerHTML = `
+            <table class="card-set-nav">
+                    <tr>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1987">1987-88</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1988">1988-89</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1989">1989-90</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1990">1990-91</a></td>
+                        <td class="junk-set-nav-td">1991-92</td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1992">1992-93</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1993">1993-94</a></td> 
+                    </tr>
+                  </table>`;
+        }
+        else if (year === "1992") {
+            setPicker.innerHTML = `
+            <table class="card-set-nav">
+                    <tr>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1987">1987-88</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1988">1988-89</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1989">1989-90</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1990">1990-91</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1991">1991-92</a></td>
+                        <td class="junk-set-nav-td">1992-93</td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1993">1993-94</a></td> 
+                    </tr>
+                  </table>`;
+        }
+        else if (year === "1993") {
+            setPicker.innerHTML = `
+            <table class="card-set-nav">
+                    <tr>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1987">1987-88</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1988">1988-89</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1989">1989-90</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1990">1990-91</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1991">1991-92</a></td>
+                        <td class="junk-set-nav-td"><a href="/junkWax.html?year=1992">1992-93</a></td>
+                        <td class="junk-set-nav-td">1993-94</td> 
+                    </tr>
+                  </table>`;
+        }
+    } // End Junk Wax Picker
+
