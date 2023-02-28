@@ -547,3 +547,128 @@ function renderClassicWaxHeader(setName) {
         copyFooter.innerHTML = `<p>&copy; ${copyYear} Christian Couillard </p>`;
         
     }
+
+    function renderPicker(pickerYear){
+        let year = pickerYear;
+        let setPicker = document.getElementById("set-picker");
+        if (year === "1979"){
+            setPicker.innerHTML = `
+            <table class="card-set-nav">
+                <tr>
+                    <td class="classic-set-nav-td">1979-80</td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1980">1980-81</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1981">1981-82</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1982">1982-83</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1983">1983-84</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1984">1984-85</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1985">1985-86</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1986">1986-87</a></td>
+                </tr>
+            </table>`;
+        }
+        else if (year === "1980") {
+            setPicker.innerHTML = `
+            <table class="card-set-nav">
+                <tr>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1979">1979-80</a></td>
+                    <td class="classic-set-nav-td">1980-81</td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1981">1981-82</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1982">1982-83</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1983">1983-84</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1984">1984-85</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1985">1985-86</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1986">1986-87</a></td>
+                </tr>
+            </table>`;
+        }
+        else if (year === "1981") {
+            setPicker.innerHTML = `
+            <table class="card-set-nav">
+                <tr>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1979">1979-80</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1980">1980-81</a></td>
+                    <td class="classic-set-nav-td">1981-82</td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1982">1982-83</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1983">1983-84</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1984">1984-85</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1985">1985-86</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1986">1986-87</a></td>
+                </tr>
+            </table>`;
+        }
+        else if (year === "1982") {
+            setPicker.innerHTML = `
+            <table class="card-set-nav">
+                <tr>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1979">1979-80</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1980">1980-81</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1981">1981-82</a></td>
+                    <td class="classic-set-nav-td">1982-83</td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1983">1983-84</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1984">1984-85</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1985">1985-86</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1986">1986-87</a></td>
+                </tr>
+            </table>`;
+        }
+        else if (year === "1983") {
+            setPicker.innerHTML = `
+            <table class="card-set-nav">
+                <tr>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1979">1979-80</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1980">1980-81</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1981">1981-82</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1982">1982-83</a></td>
+                    <td class="classic-set-nav-td">1983-84</td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1984">1984-85</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1985">1985-86</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1986">1986-87</a></td>
+                </tr>
+            </table>`;
+        }
+        else if (year === "1984") {
+            setPicker.innerHTML = `
+            <table class="card-set-nav">
+                <tr>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1979">1979-80</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1980">1980-81</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1981">1981-82</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1982">1982-83</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1983">1983-84</a></td>
+                    <td class="classic-set-nav-td">1984-85</td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1985">1985-86</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1986">1986-87</a></td>
+                </tr>
+            </table>`;
+        }
+        else if (year === "1985") {
+            setPicker.innerHTML = `
+            <table class="card-set-nav">
+                <tr>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1979">1979-80</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1980">1980-81</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1981">1981-82</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1982">1982-83</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1983">1983-84</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1984">1984-85</a></td>
+                    <td class="classic-set-nav-td">1985-86</td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1986">1986-87</a></td>
+                </tr>
+            </table>`;
+        }
+        else if (year === "1986") {
+            setPicker.innerHTML = `
+            <table class="card-set-nav">
+                <tr>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1979">1979-80</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1980">1980-81</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1981">1981-82</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1982">1982-83</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1983">1983-84</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1984">1984-85</a></td>
+                    <td class="classic-set-nav-td"><a href="/classicWax.html?year=1985">1985-86</a></td>
+                    <td class="classic-set-nav-td">1986-87</td>
+                </tr>
+            </table>`;
+        }
+    }
