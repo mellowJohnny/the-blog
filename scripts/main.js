@@ -548,6 +548,7 @@ function renderClassicWaxHeader(setName) {
         
     }
 
+    //****** Helper Function For Rendering "smart" Set-O-Matic Year Picker (removes link for current year) *********
     function renderPicker(pickerYear){
         let year = pickerYear;
         let setPicker = document.getElementById("set-picker");
