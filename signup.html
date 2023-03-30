@@ -45,6 +45,27 @@
     <link rel="preconnect" href="https://fonts.gstatic.com"> 
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Nunito:wght@200&display=swap&family=Special+Elite&family=Work+Sans:ital,wght@0,400;1,500&display=swap" rel="stylesheet" crossorigin="anonymous">
 
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+
+     <!-- reCAPTCHA Validation -->
+    <script>
+      // Set up our global variable - if it stays empty when the form is submitted the User has not clicked the reCAPTCHA challenge. 
+      // We will check this value in the submitRegistration() function
+      recaptcha_response = "unset";
+
+      function verifyCaptcha(token) {
+      // Dee Bug
+      // console.log("In VERIFY...")
+
+      // Now that we have the token, we can pass it to our submitRegistration() form submission handler
+      // This works because variables declared in inline JS are globally scoped!
+      recaptcha_response = token;
+
+      // Dee Bug
+      // console.log(`Token is: ${recaptcha_response}`);
+                        
+        }
+    </script>
 
   </head>
 
@@ -76,8 +97,7 @@
       </table>
     </p>
     </nav>
-  </div>
-
+  
           <main>
             <section>
               <div class="header-style">
@@ -89,8 +109,6 @@
                   You'll get to do fun stuff like tag sets as Favourites, then see the list of Fav'd Sets in your Profile.
                 </p>
                 </div>
-
-                <!-- Registration Form -->
                     <!-- reCAPTCHA Form -->
                     <div class="recaptcha-desc">Before we get serious, prove you are not a bot...</div>
                     <br>
@@ -99,11 +117,27 @@
                         <br>
                       </form> 
                       <!-- End reCAPTCHA Form -->
-
-                    </div>
+                  <br><br>
+                  <!-- Form.io -->
+                <div id="formio"></div>
+              </div>
+              </section>
+            </main>
           
+          <footer class="page-footer">
+            <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
+            <div id="copy"></div> 
+          </footer>
+</body>
 
-              <!-- ******* OLD HTML FORM ****
+</html>
+
+
+
+
+
+
+<!-- ******* OLD HTML FORM ****
                 <form class="form-style">
 
                     <label>user name (required)</label><br>
@@ -178,43 +212,3 @@
                       </button>
                   </form>
                   -->
-                  <br><br>
-
-                  
-                 
-                  <!-- reCAPTCHA Validation -->
-                  <script src='https://www.google.com/recaptcha/api.js'></script>
-                  <script>
-                      // Set up our global variable - if it stays empty when the form is submitted the User has not clicked the reCAPTCHA challenge. 
-                      // We will check this value in the submitRegistration() function
-                      recaptcha_response = "unset";
-
-                      function verifyCaptcha(token) {
-                        // Dee Bug
-                        // console.log("In VERIFY...")
-
-                        // Now that we have the token, we can pass it to our submitRegistration() form submission handler
-                        // This works because variables declared in inline JS are globally scoped!
-                        recaptcha_response = token;
-
-                        // Dee Bug
-                        // console.log(`Token is: ${recaptcha_response}`);
-                        
-                      }
-                  </script>
-                </section>
-
-                <!-- Form.io -->
-                <div id="formio"></div>
-                
-            </main>
-
-          <footer class="page-footer">
-            <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
-            <div id="copy"></div> 
-          </footer>
-      </div>
-  </section>
-</body>
-
-</html>
