@@ -7,6 +7,17 @@
     <meta charset="utf-8"> 
     <meta description="Welcome to the hella files. A blog with a focus on vintage and Junk Wax hockey card set reviews, tech, and software architecture.  The site also serves as a playground for AWS services like Lambda, DynamoDB, and Amplify.">
     
+    <!-- **** Form.io stuff ***** -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> 
+    <link rel="stylesheet" href="https://cdn.form.io/formiojs/formio.full.min.css"> 
+    <script src="https://cdn.form.io/formiojs/formio.full.min.js"></script>
+    <script type="text/javascript">   
+      window.onload = function() {     
+        Formio.createForm(document.getElementById('formio'), 'https://flfalkhwwrkmpon.form.io/demographics');   
+        }; 
+    </script>
+
+
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX"></script>
     <script>
@@ -91,8 +102,16 @@
                   <form method="POST">
                     <div class="g-recaptcha" data-sitekey="6LeNIXshAAAAAJO1bv7unK4MA5B4rtPgDc3MylHM" data-callback="verifyCaptcha"></div>
                     <br>
-                  </form> <!-- End reCAPTCHA Form-->
-
+                  </form> 
+                  
+                  <div id="formio"></div>
+                  
+                  
+                  
+                  
+                  
+                  <!-- End reCAPTCHA Form-->
+<!-- ******* OLD HTML FORM ****
                 <form class="form-style">
 
                     <label>user name (required)</label><br>
@@ -165,7 +184,8 @@
                                )">
                                 sign Me UP!
                       </button>
-                  </form> <!-- End Registration Form -->
+                  </form>
+                  -->
                   <br><br>
 
                   
