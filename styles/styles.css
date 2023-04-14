@@ -18,7 +18,7 @@
     width: 1000px;
     padding: 15px; /** This sets the margins on the blog posts **/
    /** overflow: scroll; **/
-    margin: 5px; 
+   /** margin: 5px; **/
   }
 
   a:link, a:visited {
