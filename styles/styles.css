@@ -16,9 +16,9 @@
   
   .flex-container div {
     width: 1000px;
-  /**  padding: 15px;  This sets the margins on the blog posts **/
+    padding: 15px;  This sets the margins on the blog posts 
    /** overflow: scroll; **/
-   /** margin: 5px; **/
+    margin: 5px; 
   }
 
   a:link, a:visited {
@@ -204,7 +204,7 @@ textarea {
     font-size: 24px;
     margin: 5px auto;
     width: 900px;
-    overflow: scroll;
+  /**  overflow: scroll; **/
 }
 
 .intro {
