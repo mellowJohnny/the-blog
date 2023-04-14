@@ -1,11 +1,6 @@
 
 
-/* Media query to set the font size to 12px for screens between 320px - 480px... */
-@media only screen and (min-width: 320px) and (max-width: 480px) {
-  body {
-    font-size: 24px;
-  }
-}
+
 
 /* Set up the flex container */
 .flex-container {
