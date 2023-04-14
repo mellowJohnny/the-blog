@@ -212,7 +212,7 @@ textarea {
   font-size: 18px;
   margin: 5px auto;
   width: 950px;
-  overflow: scroll;
+ /** overflow: scroll; *//
 }
 
 .blog-entry {
