@@ -545,7 +545,24 @@ function displayStagedBlogs(title, blogID) {
       // Now that we have cleaned up the data we got back from DynamoDB, let's
       // populate the form on setEdit.html with the values as defaults
      // document.getElementById("postBody").defaultValue = cleanPostBody;
-      document.getElementById("blogStatus").defaultValue = cleanBlogStatus;
+
+      // First we need to check the "status" of the blog and make the default option 
+      // in the HTML dropdown reflect the current state. We can also re-order the option tags
+      // so that the current "status" is always first in the list :-)
+      if(cleanStatus === "staged") {
+        let statusOptions = document.getElementById("blogStatus");
+        statusOptions.innerHTML += 
+                     `<option id="staged" value="staged" selected>Staging</option> 
+                     <option id="live" value="OK">Live</option> `;
+       }
+       else{
+        let statusOptions = document.getElementById("blogStatus");
+        statusOptions.innerHTML += 
+                     ` <option id="live" value="OK" selected>Live</option>
+                     <option id="staged" value="staged">Staging</option> `;
+       }
+     
+     // document.getElementById("blogStatus").defaultValue = cleanBlogStatus;
       document.getElementById("blogType").defaultValue = blogType;
       document.getElementById("time").defaultValue = time;
       document.getElementById("title").defaultValue = cleanTitle;
