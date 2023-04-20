@@ -537,7 +537,7 @@ function displayStagedBlogs(title, blogID) {
       // so we need to explicitly parse all the String properties - except for blogType & time which are numbers 
       const cleanPostBody = JSON.parse(postBody);
       const cleanTitle = JSON.parse(title);
-      const cleanBlogStatus = JSON.parse(blogStatus);
+      const cleanStatus = JSON.parse(blogStatus);
 
       // Inserts postBody into 'current' TinyMCE Editor
       tinymce.activeEditor.selection.setContent(cleanPostBody);
