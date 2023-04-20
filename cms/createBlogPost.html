@@ -59,6 +59,12 @@
             <main>
                 <form class="form-style">
 
+                  <label>Status <sup>*</sup></label><br>
+                      <select id="blogStatus" name="blogStatus" title="blogStatus">
+                        <option value="staged">Staging</option>
+                        <option value="OK">Live</option>
+                    </select><br><br>
+
                     <label>Blog Post Title <sup>*</sup></label><br>
                     <input type="text" id="title" required title="blogPostTitle"><br><br>
 
@@ -85,6 +91,7 @@
                     <br><br>
                     <button class="input-button" type="button" id="cmsSubmitButton"
                         onclick="createBlogPost(
+                                document.getElementById('blogStatus').value,
                                 document.getElementById('title').value,
                                // document.getElementById('img').value,
                                 document.getElementById('author').value,
