@@ -87,6 +87,7 @@
                     <label>Post Body (required)</label><br>
                     <textarea id="postBody" required title="postBody"></textarea>
                     <br><br>
+                    <!-- NOTE: We don't need to grab the postBody becasue the updateBlogPost() in cms.js gets it from the tinyMCE function  -->
                     <button class="input-button" type="button" id="cmsSubmitButton"
                         onclick="updateBlogPost(
                                 document.getElementById('title').value,
