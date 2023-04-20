@@ -12,6 +12,7 @@
  * Called from the wlcms.html page
  * Calls the createBlogPost API exposed by AWS API Gateway
  * 
+ * @param {*} blogStatus
  * @param {*} title 
  * @param {*} author 
  * @param {*} postBody 
@@ -20,7 +21,7 @@
  */
 
 // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
- function createBlogPost (title,author,type){
+ function createBlogPost (blogStatus,title,author,type){
 
     // Let's change the state of the button, now that we've clicked it...
     cmsButtonSubmit();
@@ -40,7 +41,7 @@
     myHeaders.append("Content-Type", "application/json");
   
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"title":title,"author":author,"postBody":tinyBody,"type":type});
+    let raw = JSON.stringify({"blogStatus":blogStatus,"title":title,"author":author,"postBody":tinyBody,"type":type});
   
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
