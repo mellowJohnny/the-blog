@@ -109,10 +109,24 @@ var globalPageName = "";
 
        // Format the Date by passing it to our Magic Date fixer...
        fixDate(date);
-        
+       
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
+       // First check to see if we have an image - if we don't, exclude the <img> tag...simple, right?
+       if (cleanImg === "none") {
        let blogBody = document.getElementById("blogsDiv");
        blogBody.innerHTML += 
+                    `<h1 class="blog-title">${cleanTitle}</h1> 
+                    <strong><i>${cleanAuthor} </i></strong>
+                    <br>
+                    <strong><i>${fixDate(date)}</i></strong> 
+                    <br>
+                    ${cleanPostBody} 
+                    <hr/>
+                    <br>`;
+       }
+       else{
+        let blogBody = document.getElementById("blogsDiv");
+        blogBody.innerHTML += 
                     `<h1 class="blog-title">${cleanTitle}</h1> 
                     <strong><i>${cleanAuthor} </i></strong>
                     <br>
@@ -124,6 +138,9 @@ var globalPageName = "";
                     <br>
                     <hr/>
                     <br>`;
+       }
+
+       
    }
 
 /*********************************************** fetchCardSetsByYear *************************************/
