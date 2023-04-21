@@ -119,7 +119,7 @@ var globalPageName = "";
                     <strong><i>${cleanAuthor} </i></strong>
                     <br>
                     <strong><i>${fixDate(date)}</i></strong> 
-                    <br>
+                  
                     ${cleanPostBody} 
                     <hr/>
                     <br>`;
@@ -133,7 +133,7 @@ var globalPageName = "";
                     <strong><i>${fixDate(date)}</i></strong> 
                     <br>
                     ${cleanPostBody} 
-                    <br>
+                  
                     <img src="${cleanImg}" class="blog-img"></img>
                     <br>
                     <hr/>
