@@ -78,6 +78,8 @@
                     <label>Blog Post Title (required)</label><br>
                     <input type="text" id="title" required title="blogPostTitle">
                     <br><br>
+                    <label>Image Name</label><br>
+                      <input type="text" id="imgName" title="imgName"><br><br>
                     <label>Blog Type</label><br>
                     <input class="input-text-disabled" type="text" id="blogType" disabled title="blogType">
                     <br><br>
@@ -91,6 +93,7 @@
                     <button class="input-button" type="button" id="cmsSubmitButton"
                         onclick="updateBlogPost(
                                 document.getElementById('title').value,
+                                document.getElementById('imgName').value,
                                 document.getElementById('blogStatus').value,
                                 document.getElementById('blogType').value,
                                 document.getElementById('time').value)">

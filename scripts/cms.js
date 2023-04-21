@@ -21,7 +21,7 @@
  */
 
 // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
- function createBlogPost (blogStatus,title,author,type){
+ function createBlogPost (blogStatus,title,imgName,author,type){
 
     // Let's change the state of the button, now that we've clicked it...
     cmsButtonSubmit();
@@ -41,7 +41,7 @@
     myHeaders.append("Content-Type", "application/json");
   
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"blogStatus":blogStatus,"title":title,"author":author,"postBody":tinyBody,"type":type});
+    let raw = JSON.stringify({"blogStatus":blogStatus,"title":title,"imgName":imgName,"author":author,"postBody":tinyBody,"type":type});
   
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
@@ -51,7 +51,7 @@
       redirect: 'follow'
       };
     
-    // make API call to BlogPost endpoint with parameters and use promises to get response
+    // make API call to createBlogPost endpoint with parameters and use promises to get response
     fetch("https://s4ge5t9w06.execute-api.us-east-2.amazonaws.com/dev ", requestOptions)
     .then(response => response.text())
     .then(result => alert(JSON.parse(result).body))
@@ -183,13 +183,14 @@
  * NOTE: We don't pass in the postBody anymore as we fetch it via API call to TinyMCE
  * 
  * @param {*} title
+ * @param {*} imgName
  * @param {*} blogStatus
  * @param {*} blogType
  * @param {*} time
  * 
  **/
 
- function updateBlogPost(title,blogStatus,blogType,time) {
+ function updateBlogPost(title,imgName,blogStatus,blogType,time) {
     // Let's change the state of the button, now that we've clicked it...
     cmsButtonSubmit();
 
@@ -208,7 +209,7 @@
     myHeaders.append("Content-Type", "application/json");
   
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"title":title,"blogStatus":blogStatus,"blogType":blogType,"time":time,"postBody":tinyBody});
+    let raw = JSON.stringify({"title":title,"imgName":imgName,"blogStatus":blogStatus,"blogType":blogType,"time":time,"postBody":tinyBody});
 
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
