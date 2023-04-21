@@ -498,6 +498,7 @@ function displayStagedBlogs(title, blogID) {
                for (var i = 0; i < blogArray.Items.length; i++) {
                    populateBlog(
                     blogArray.Items[i].postBody,
+                    blogArray.Items[i].img,
                     blogArray.Items[i].blogStatus,
                     blogArray.Items[i].blogType,
                     blogArray.Items[i].time,
@@ -531,7 +532,7 @@ function displayStagedBlogs(title, blogID) {
   */
   
   /** This function calls the associated DIV on the Set Update form and populates it with the current value */
-  function populateBlog(postBody,blogStatus,blogType,time,title,) {
+  function populateBlog(postBody,img,blogStatus,blogType,time,title,) {
   
       // Cleanup the JSON we get back so it's back to a String 
       // We parsed the first object we got back, but that didn't parse the contents of the inner properties
@@ -539,6 +540,7 @@ function displayStagedBlogs(title, blogID) {
       const cleanPostBody = JSON.parse(postBody);
       const cleanTitle = JSON.parse(title);
       const cleanStatus = JSON.parse(blogStatus);
+      const cleanImg = JSON.parse(img);
 
       // Inserts postBody into 'current' TinyMCE Editor
       tinymce.activeEditor.selection.setContent(cleanPostBody);
@@ -567,6 +569,7 @@ function displayStagedBlogs(title, blogID) {
       document.getElementById("blogType").defaultValue = blogType;
       document.getElementById("time").defaultValue = time;
       document.getElementById("title").defaultValue = cleanTitle;
+      document.getElementById("imgName").defaultValue = cleanImg;
       
   }
   
