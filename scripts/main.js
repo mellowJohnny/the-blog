@@ -50,7 +50,7 @@ var globalPageName = "";
             // If the blogType passed in from the page is 3 (mach-e blogs) lets display oldest blogs first
             // For everything else, order newest first 
 // TODO ***************** add conditional depending on blog type...
-            if (blogType === 3) {
+            if (blogType === "3") {
                 console.log("Mach-E Blog!")
             }
             else {
