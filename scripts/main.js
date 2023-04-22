@@ -43,29 +43,18 @@ var globalPageName = "";
                const blogPostObject = JSON.parse(value);
 
                 // A Little debug:
-                console.log(returnedData);
-
-                // Let's sort the Object by 'time' - newest blogs first
-                // If you want to reverse the sort order, switch the return values to 1 and -1 respectively
-            
-             //  function getSortOrder(property) {    
-             //   return function(a, b) {    
-             //       if (a[property] > b[property]) {    
-             //           return -1;    
-            //        } else if (a[property] < b[property]) {    
-            //            return 1;    
-             //       }    
-            //        return 0;    
-            //    }    
-            // } 
+                //console.log(returnedData);
              
-            // Call getSortOrder, passing the attribute we want to sort on
-            // Remember, "Items" is the array of JSON-formatted blogPosts
-            // NOTE: The Array.sort() method mutates the array in place, so the array is re-ordered right away - no need to make a copy
-
+            // Next all getSortOrder, passing the attribute we want to sort on. Remember, "Items" is the array of JSON-formatted blogPosts
 
 // TODO ***************** add conditional depending on blog type...
-            
+            if (blogPostObject.Items[i].blogType === 3) {
+                console.log("Mach-E Blog!")
+            }
+            else {
+                console.log("Something else!")
+            }
+
             blogPostObject.Items.sort(getSortOrder("time","first"));     
     
             // Now that the data we got back is a JSON object, let's loop over all the Posts...
