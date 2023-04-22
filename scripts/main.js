@@ -796,8 +796,8 @@ function renderClassicWaxHeader(setName) {
     } // End Junk Wax Picker
 
 // -------------------- Helper Function for Sorting Blog Posts ----------------------
-// Newest blogs first
-// If you want to reverse the sort order, switch the return values to 1 and -1 respectively
+// When "order" is "first", newest blogs first
+// When "order" is "last", oldest blogs first
 // Default is newest blogs first
 
 function getSortOrder(property,order) {    
@@ -823,7 +823,22 @@ function getSortOrder(property,order) {
             else {
                 return 1;
             }    
-        }    
+        }   
+        else {
+            if (a[property] > b[property]) { 
+                if (order === "first") {
+                    return -1;
+                }  
+                else if (order === "last") {
+                    return 1;
+                }
+                else {
+                    return -1;
+                }
+            } 
         return 0;    
-    }    
- } 
+            }    
+    }
+} // end function
+
+
