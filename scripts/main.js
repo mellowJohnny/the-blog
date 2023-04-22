@@ -62,7 +62,7 @@ var globalPageName = "";
             // Call getSortOrder, passing the attribute we want to sort on
             // Remember, "Items" is the array of JSON-formatted blogPosts
             // NOTE: The Array.sort() method mutates the array in place, so the array is re-ordered right away - no need to make a copy
-            blogPostObject.Items.sort(getSortOrder("time"));     
+            blogPostObject.Items.sort(getSortOrder("time","first"));     
     
             // Now that the data we got back is a JSON object, let's loop over all the Posts...
             // The 'Items' property holds an array of all the blog posts. Let's loop through that array and display the fields we want!
@@ -795,13 +795,34 @@ function renderClassicWaxHeader(setName) {
         }
     } // End Junk Wax Picker
 
-// Helper Function for Sorting Blog Posts
-function getSortOrder(property) {    
+// -------------------- Helper Function for Sorting Blog Posts ----------------------
+// Newest blogs first
+// If you want to reverse the sort order, switch the return values to 1 and -1 respectively
+// Default is newest blogs first
+
+function getSortOrder(property,order) {    
     return function(a, b) {    
-        if (a[property] > b[property]) {    
-            return -1;    
-        } else if (a[property] < b[property]) {    
-            return 1;    
+        if (a[property] > b[property]) { 
+            if (order === "first") {
+                return -1;
+            }  
+            else if (order === "last") {
+                return 1;
+            }
+            else {
+                return -1;
+            }
+                
+        } else if (a[property] < b[property]) { 
+            if (order === "first") {
+                return 1;
+            }  
+            else if (order === "last") {
+                return -1;
+            }
+            else {
+                return 1;
+            }    
         }    
         return 0;    
     }    
