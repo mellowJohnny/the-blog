@@ -46,6 +46,15 @@ var globalPageName = "";
                 //console.log(returnedData);
              
             // Next all getSortOrder, passing the attribute we want to sort on. Remember, "Items" is the array of JSON-formatted blogPosts
+
+// TODO ***************** add conditional depending on blog type...
+            if (blogType === 3) {
+                console.log("Mach-E Blog!")
+            }
+            else {
+                console.log("Something else!")
+            }
+
             blogPostObject.Items.sort(getSortOrder("time","first"));     
     
             // Now that the data we got back is a JSON object, let's loop over all the Posts...
