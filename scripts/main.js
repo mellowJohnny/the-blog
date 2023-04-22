@@ -44,19 +44,16 @@ var globalPageName = "";
                 //console.log(returnedData);
              
             // Next all getSortOrder, passing the attribute we want to sort on. Remember, "Items" is the array of JSON-formatted blogPosts
-            // If the blogType passed in from the page is 3 (mach-e blogs) lets display oldest blogs first
-            // For everything else, order newest first 
+            // If the blogType passed in from the page is 3 (mach-e blogs) lets display oldest blogs first, for everything else, order newest first 
             if (blogType === "3") {
-                console.log("Mach-E Blog!")
+               // We want to sort Mach-Blogs oldest to newest
                 blogPostObject.Items.sort(getSortOrder("time","last"));
             }
             else {
-                console.log(`blogType ${blogType} - Something else!`)
+                // We want to sort all other blogs newest to oldest
                 blogPostObject.Items.sort(getSortOrder("time","first"));
             }
 
-                 
-    
             // Now that the data we got back is a JSON object, let's loop over all the Posts...
             // The 'Items' property holds an array of all the blog posts. Let's loop through that array and display the fields we want!
             // We call the displayBlog() function to control the display of the blog post
