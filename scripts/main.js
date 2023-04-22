@@ -43,7 +43,7 @@ var globalPageName = "";
                const blogPostObject = JSON.parse(value);
 
                 // A Little debug:
-                // console.log(returnedData);
+                console.log(returnedData);
 
                 // Let's sort the Object by 'time' - newest blogs first
                 // If you want to reverse the sort order, switch the return values to 1 and -1 respectively
