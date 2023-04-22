@@ -53,7 +53,7 @@ var globalPageName = "";
                 console.log("Mach-E Blog!")
             }
             else {
-                console.log(`blogType $(blogType) - Something else!`)
+                console.log(`blogType ${blogType} - Something else!`)
             }
 
             blogPostObject.Items.sort(getSortOrder("time","first"));     
