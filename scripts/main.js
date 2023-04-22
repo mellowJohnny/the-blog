@@ -19,12 +19,9 @@ var globalPageName = "";
   */
 
   function fetchBlogs(blogType) {
-    console.log(`Blog Type: ${blogType}`);
-      
     // Set up a global variable to hold the API URL
     const urlToFetch = `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`;
           
-
     fetch(urlToFetch)
        .then(function (response) {
            const jsonResponse = response.json();
@@ -49,15 +46,16 @@ var globalPageName = "";
             // Next all getSortOrder, passing the attribute we want to sort on. Remember, "Items" is the array of JSON-formatted blogPosts
             // If the blogType passed in from the page is 3 (mach-e blogs) lets display oldest blogs first
             // For everything else, order newest first 
-// TODO ***************** add conditional depending on blog type...
             if (blogType === "3") {
                 console.log("Mach-E Blog!")
+                blogPostObject.Items.sort(getSortOrder("time","last"));
             }
             else {
                 console.log(`blogType ${blogType} - Something else!`)
+                blogPostObject.Items.sort(getSortOrder("time","first"));
             }
 
-            blogPostObject.Items.sort(getSortOrder("time","first"));     
+                 
     
             // Now that the data we got back is a JSON object, let's loop over all the Posts...
             // The 'Items' property holds an array of all the blog posts. Let's loop through that array and display the fields we want!
