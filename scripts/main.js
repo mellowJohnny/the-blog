@@ -62,7 +62,11 @@ var globalPageName = "";
             // Call getSortOrder, passing the attribute we want to sort on
             // Remember, "Items" is the array of JSON-formatted blogPosts
             // NOTE: The Array.sort() method mutates the array in place, so the array is re-ordered right away - no need to make a copy
-            blogPostObject.Items.sort(getSortOrder("time","last"));     
+
+
+// TODO ***************** add conditional depending on blog type...
+            
+            blogPostObject.Items.sort(getSortOrder("time","first"));     
     
             // Now that the data we got back is a JSON object, let's loop over all the Posts...
             // The 'Items' property holds an array of all the blog posts. Let's loop through that array and display the fields we want!
@@ -839,6 +843,6 @@ function getSortOrder(property,order) {
         return 0;    
             }    
     }
-} // end function
+} // end sort function
 
 
