@@ -47,17 +47,18 @@ var globalPageName = "";
 
                 // Let's sort the Object by 'time' - newest blogs first
                 // If you want to reverse the sort order, switch the return values to 1 and -1 respectively
-               function getSortOrder(property) {    
-                return function(a, b) {    
-                    if (a[property] > b[property]) {    
-                        return -1;    
-                    } else if (a[property] < b[property]) {    
-                        return 1;    
-                    }    
-                    return 0;    
-                }    
-             } 
-
+            
+             //  function getSortOrder(property) {    
+             //   return function(a, b) {    
+             //       if (a[property] > b[property]) {    
+             //           return -1;    
+            //        } else if (a[property] < b[property]) {    
+            //            return 1;    
+             //       }    
+            //        return 0;    
+            //    }    
+            // } 
+             
             // Call getSortOrder, passing the attribute we want to sort on
             // Remember, "Items" is the array of JSON-formatted blogPosts
             // NOTE: The Array.sort() method mutates the array in place, so the array is re-ordered right away - no need to make a copy
@@ -794,3 +795,14 @@ function renderClassicWaxHeader(setName) {
         }
     } // End Junk Wax Picker
 
+// Helper Function for Sorting Blog Posts
+function getSortOrder(property) {    
+    return function(a, b) {    
+        if (a[property] > b[property]) {    
+            return -1;    
+        } else if (a[property] < b[property]) {    
+            return 1;    
+        }    
+        return 0;    
+    }    
+ } 
