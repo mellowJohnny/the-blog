@@ -60,7 +60,7 @@
 
             // Get the current URL in case the user wants to reodrer the sets in ascending order
             // This function just builds a dynamic link in javascript, the calls the dynamicLink div to populate the HTML
-            const url = getCurrentURL();
+            const url = window.location.href;
             sortByAscending(url);
         });
 
