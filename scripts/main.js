@@ -164,10 +164,10 @@ var globalPageName = "";
             if (sortOrder === ""){
                 cardSetArray.Items.sort(cardSetSorter("stars","first"));
             }
-            elseif (sortOrder === "first") {
+            else if (sortOrder === "first") {
                 cardSetArray.Items.sort(cardSetSorter("stars","first"));
             }
-            elseif (sortOrder === "last") {
+            else if (sortOrder === "last") {
                 cardSetArray.Items.sort(cardSetSorter("stars","last"));
             }
             else {
