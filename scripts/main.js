@@ -885,6 +885,7 @@ function cardSetSorter(property,order) {
 } // end sort function
 
 function sortByAscending(url) {
+    const sortOrder = "?last";
     dynamicLink.innerHTML += 
     `Note: Sets are ordered in decending order (higherst star rating first) - 
     <a href="${url}">click here</a> to the the absolute worst sets first.</p>
