@@ -7,9 +7,6 @@
 // Global Variables
 var globalPageName = "";
 
-
-
-
 /************************** fetchBlogs() Function, also orders the results via getSortOrder ****************/
 
  /** 
@@ -161,6 +158,9 @@ var globalPageName = "";
             // Now that we have the 'body' key, we need to convert the value (currently a JSON String) to a JSON Object 
             // so that we can pull out the properties of each blog post 
             const cardSetArray = JSON.parse(value);
+
+            // Sort the returned cars set review by number of stars
+            cardSetArray.Items.sort(cardSetSorter("stars","first"));
 
             // Check to see if we have any results...    
             if (cardSetArray.Items.length === 0) {
@@ -789,6 +789,48 @@ function renderClassicWaxHeader(setName) {
 // Default is newest blogs first
 
 function getSortOrder(property,order) {    
+    return function(a, b) {    
+        if (a[property] > b[property]) { 
+            if (order === "first") {
+                return -1;
+            }  
+            else if (order === "last") {
+                return 1;
+            }
+            else {
+                return -1;
+            }
+                
+        } else if (a[property] < b[property]) { 
+            if (order === "first") {
+                return 1;
+            }  
+            else if (order === "last") {
+                return -1;
+            }
+            else {
+                return 1;
+            }    
+        }   
+        else {
+            if (a[property] > b[property]) { 
+                if (order === "first") {
+                    return -1;
+                }  
+                else if (order === "last") {
+                    return 1;
+                }
+                else {
+                    return -1;
+                }
+            } 
+        return 0;    
+            }    
+    }
+} // end sort function
+
+// CardSetSorter Function - Sorts blogs by number of stars...
+function cardSetSorter(property,order) {    
     return function(a, b) {    
         if (a[property] > b[property]) { 
             if (order === "first") {
