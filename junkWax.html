@@ -40,6 +40,7 @@
         /* Let's get the URL params from the request, and extract the year */  
         let params = new URLSearchParams(document.location.search);
         let year = params.get("year");
+        // This global parameter is used by the displayCardSet() function to dynamically render the right header
         let pageName = "junkWax";
 
         /* 
