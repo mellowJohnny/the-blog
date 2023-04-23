@@ -141,7 +141,7 @@ var globalPageName = "";
 
   function fetchCardSetsByYear(year, pageName) {
     // Set the Global pageName variable
-    globalPageName = pageName;
+    // globalPageName = pageName;
 
     // Set up a global variable to hold the API URL
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}`;
