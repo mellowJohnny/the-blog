@@ -57,7 +57,14 @@
 
             // **** Call the Set-O-Matic Set Picker ***
             renderJunkPicker(year);
+
+            // Get the current URL in case the user wants to reodrer the sets in ascending order
+            // This function just builds a dynamic link in javascript, the calls the dynamicLink div to populate the HTML
+            const url = getCurrentURL();
+            sortByAscending(url);
         });
+
+        
     </script>
 </head>
 
@@ -110,6 +117,7 @@
                   <p>
                       But there <i>are</i> some hidden gems to be found if you are willing to sift through the rubble.  So let's start diggin'!
                   </p>
+                  <p>Note: Sets are ordered in decending order (higherst star rating first) - <div id="dynamicLink"></div> to the the absolute worst sets first.</p>
                   <p class="set-o-matic-picker">the set-o-matic year picker</p>
                   <div id="junk-wax-picker">
                     <!-- "Smart" Year Picker: Rendered by renderJunkPicker() function in main.js - Removes link for current year -->

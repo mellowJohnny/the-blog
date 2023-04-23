@@ -871,4 +871,10 @@ function cardSetSorter(property,order) {
     }
 } // end sort function
 
+function sortByAscending(url) {
+    dynamicLink.innerHTML = 
+    `<a href="${url}">click here</a>
+    `
+}
+
 
