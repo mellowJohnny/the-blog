@@ -139,10 +139,8 @@ var globalPageName = "";
     * Called on page load from various pages
   */
 
-  function fetchCardSetsByYear(year, pageName) {
-    // Set the Global pageName variable
-    // globalPageName = pageName;
-
+  function fetchCardSetsByYear(year) {
+    
     // Set up a global variable to hold the API URL
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}`;
           
