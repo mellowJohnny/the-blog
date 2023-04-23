@@ -843,7 +843,8 @@ function getSortOrder(property,order) {
 } // end sort function
 
 // CardSetSorter Function - Sorts blogs by number of stars...
-function cardSetSorter(property,order) {    
+function cardSetSorter(property,order) {  
+    console.log(`Sort Order is: ${order}`)  
     return function(a, b) {    
         if (a[property] > b[property]) { 
             if (order === "first") {
