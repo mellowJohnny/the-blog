@@ -136,7 +136,7 @@ var globalPageName = "";
     * Called on page load from various pages
   */
 
-  function fetchCardSetsByYear(year) {
+  function fetchCardSetsByYear(year,sortOrder) {
     
     // Set up a global variable to hold the API URL
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}`;
@@ -160,7 +160,20 @@ var globalPageName = "";
             const cardSetArray = JSON.parse(value);
 
             // Sort the returned cars set review by number of stars
-            cardSetArray.Items.sort(cardSetSorter("stars","first"));
+            // sortOrder is passed in from the html page
+            if (sortOrder === ""){
+                cardSetArray.Items.sort(cardSetSorter("stars","first"));
+            }
+            elseif (sortOrder === "first") {
+                cardSetArray.Items.sort(cardSetSorter("stars","first"));
+            }
+            elseif (sortOrder === "last") {
+                cardSetArray.Items.sort(cardSetSorter("stars","last"));
+            }
+            else {
+                cardSetArray.Items.sort(cardSetSorter("stars","first"));
+            }
+            
 
             // Check to see if we have any results...    
             if (cardSetArray.Items.length === 0) {
