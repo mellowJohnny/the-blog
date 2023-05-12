@@ -895,5 +895,20 @@ function sortByAscending(url) {
     `;
 }
 
-// --------- NEW Dynamic Menu Stuff --------------
+// --------- Dynamic Intro Function --------------
+// This function takes a single blogType parameter and generates the correct header for the page
+// since each blogType essentially needs it's own introduction section
+// blogType 1 = tech
+// blogType 2 = mach-e
+// blogType 3 = mach-e sync updates
+
+function fetchIntro(blogType){
+    let blogIntro = document.getElementById("blog-intro");
+    if (blogType === "1") {
+        blogIntro.innerHTML(`
+        <p>Tech is a bit of a catch-all for semi-sorta-kinda tech related rants, observations, and professional opinions. Oh, and that animated airplane gif? That is the 
+        world's first gif, created by <a href="https://en.wikipedia.org/wiki/Steve_Wilhite"></a>Steve Wilhite</a>. Cool huh? </p>
+        `);
+    }
+}
 
