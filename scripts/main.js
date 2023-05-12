@@ -916,7 +916,12 @@ function fetchIntro(blogType){
                 </p>`;
     }
     else if (blogType === "4") {
-        blogIntro.innerHTML = `<p> SYNC 4A is the official name Ford uses to identify the "type" of infotainment system running the Mach-E</p>`;
+        blogIntro.innerHTML = `<p> SYNC 4A is the official name Ford uses to identify the "type" of infotainment OS running the Mach-E. Before you ask, yes, there is a SYNC 4 which is older, does not
+        do as many cool things, and can't be upgraded to SYNC 4A. SYNC 4A, at least as of 2023, is used exclusively on cars with vertical infotainment screens, like 
+        the Mach-E, F-150 Lightning, E-ransit Van, Expedition and Edge.<br><br>
+        The other super-cool party trick the Mach-E has is Over-The-Air updates. And not just an update to the maps for the Nav system. We're talking
+        actual, useful changes to things that in the past would likely have only been rolled out with a new model year. Allowing the core software in key control modules 
+        to be updated with OTA updates is, as pioneered by Tesla, game chaging. And I really hate that word...but it really is.</p>`;
     }
 }
 
