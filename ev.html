@@ -25,6 +25,9 @@
       
       // *** Dynamically display the copyright year
       fetchCopyrightYear();
+
+      // *** Dynamically fetch the blog into blurb based on blogType
+      fetchIntro(blogType);
       });
   </script>
 
@@ -67,10 +70,9 @@
                 <h1>the Mustang Mach-E blog...</h1>
               </div>
               <div class="flex-container">
-                <div class="section-style-intro">
-                <p>Say hello to Lucy! Impressions on owning and driving our first EV, with other EV related thoughts, impressions, and completely biased commentary 
-                </p>
-                </div>
+                <div id="blog-intro" class="intro">
+                  <!-- Intro is dynamically rendered by the fetchIntro() function -->
+                  </div>
               </div>
             </section>
             <section>

@@ -910,5 +910,13 @@ function fetchIntro(blogType){
         world's first gif, created by <a href="https://en.wikipedia.org/wiki/Steve_Wilhite"></a>Steve Wilhite</a>. Cool huh? </p>
         `;
     }
+    else if (blogType === "2") {
+        blogIntro.innerHTML = `
+        <p>Say hello to Lucy! Impressions on owning and driving our first EV, with other EV related thoughts, impressions, and completely biased commentary 
+                </p>`;
+    }
+    else if (blogType === "3") {
+        blogIntro.innerHTML = `<p> SYNC 4A is the official name Ford uses to identify the "type" of infotainment system running the Mach-E</p>`;
+    }
 }
 
