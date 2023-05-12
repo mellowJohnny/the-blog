@@ -899,8 +899,8 @@ function sortByAscending(url) {
 // This function takes a single blogType parameter and generates the correct header for the page
 // since each blogType essentially needs it's own introduction section
 // blogType 1 = tech
-// blogType 2 = mach-e
-// blogType 3 = mach-e sync updates
+// blogType 3 = mach-e
+// blogType 4 = mach-e sync updates
 
 function fetchIntro(blogType){
     let blogIntro = document.getElementById("blog-intro");
@@ -910,12 +910,12 @@ function fetchIntro(blogType){
         world's first gif, created by <a href="https://en.wikipedia.org/wiki/Steve_Wilhite"></a>Steve Wilhite</a>. Cool huh? </p>
         `;
     }
-    else if (blogType === "2") {
+    else if (blogType === "3") {
         blogIntro.innerHTML = `
         <p>Say hello to Lucy! Impressions on owning and driving our first EV, with other EV related thoughts, impressions, and completely biased commentary 
                 </p>`;
     }
-    else if (blogType === "3") {
+    else if (blogType === "4") {
         blogIntro.innerHTML = `<p> SYNC 4A is the official name Ford uses to identify the "type" of infotainment system running the Mach-E</p>`;
     }
 }
