@@ -916,12 +916,19 @@ function fetchIntro(blogType){
                 </p>`;
     }
     else if (blogType === "4") {
-        blogIntro.innerHTML = `<p> SYNC 4A is the official name Ford uses to identify the "type" of infotainment OS running the Mach-E. Before you ask, yes, there is a SYNC 4 which is older, does not
-        do as many cool things, and can't be upgraded to SYNC 4A. SYNC 4A, at least as of 2023, is used exclusively on cars with vertical infotainment screens, like 
-        the Mach-E, F-150 Lightning, E-ransit Van, Expedition and Edge.<br><br>
-        The other super-cool party trick the Mach-E has is Over-The-Air updates, which Ford calls a "Power-Up". And not just an update to the maps for the Nav system. We're talking
-        actual, useful changes to things that in the past would likely have only been rolled out with a new model year. Allowing the core software in key control modules 
-        to be updated with OTA updates is, as pioneered by Tesla, game chaging. And I really hate that word...but it really is.</p>`;
+        blogIntro.innerHTML = `
+        <p>One of the super-cool party tricks the Mach-E has is Over-The-Air updates, which Ford calls a "Power-Up". For those of you new to the term, which has been around for quite a while, is the ability
+        for a piece of "hardware" to receive a software update "over the air" - i.e. via the internet. Could be WiFi, could be a 3 / 4 / 5G connection. The point is you don't need to 
+        visit a dealer for them to "flash" a module or system with a new update. It happens automagically. And in the case of the Mach-E, 
+        not just an update to the maps for the Nav system. </p>
+        <p>We're talking actual, useful changes to things that in the past would likely have only been rolled out with a new model year. Allowing the core software in key control modules 
+        to be updated with OTA updates is, as pioneered by Tesla, game chaging. And I really hate that word...but it really is.</p>
+        <p>Since the Mach-E began hitting dealerships in 2021 there have been some pretty significant tweaks & modifications delivered via OTA updates, including 
+        things like modifications to the charging curve, battery capacity increase, brake pedal feel changes, rolling out BlueCruise, a complete SYNC UI refresh, HVAC changes,
+        adding battery preconditioning prior to DCFC stops, and new games. 
+        <p>The process has not always been smooth for all owners, but when you consider that in the first two years of its existance the Mach-E was one of the few 
+        electric vehicles with OTA capabilities, its pretty cool stuff.</p>
+        `;
     }
 }
 
