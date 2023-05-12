@@ -905,10 +905,10 @@ function sortByAscending(url) {
 function fetchIntro(blogType){
     let blogIntro = document.getElementById("blog-intro");
     if (blogType === "1") {
-        blogIntro.innerHTML(`
+        blogIntro.innerHTML = `
         <p>Tech is a bit of a catch-all for semi-sorta-kinda tech related rants, observations, and professional opinions. Oh, and that animated airplane gif? That is the 
         world's first gif, created by <a href="https://en.wikipedia.org/wiki/Steve_Wilhite"></a>Steve Wilhite</a>. Cool huh? </p>
-        `);
+        `;
     }
 }
 
