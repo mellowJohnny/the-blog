@@ -719,6 +719,7 @@ function fetchCardIntro(year){
         </p>
         `;
     }
+} // end fetchCardIntro
 
 //****** Helper Function For Rendering "smart" Set-O-Matic Year Picker (removes link for current year) *********
 // Yes, it's a huge switch statement... :-)
@@ -945,5 +946,5 @@ function renderSetPicker(pickerYear){
                     <td class="junk-set-nav-td">1993-94</td> 
                 </tr>
               </table>`;
-    }
-} // End Junk Wax Picker
+    } 
+} // end set picker
