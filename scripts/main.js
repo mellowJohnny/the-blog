@@ -851,8 +851,8 @@ function renderSetPicker(pickerYear){
             </tr>
         </table>`;
     }
-
     else if (year === "1987"){
+        console.log("In 1987 else if...");
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
