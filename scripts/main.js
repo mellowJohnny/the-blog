@@ -703,7 +703,8 @@ function fetchCardIntro(year){
         // 1986 is the last "classic wax" year, so if the year param is less than or equal to 1986, must be classic wax...
         blogIntro.innerHTML = `
         <p>Non Junk Wax...classic wax? Modern era? Whatever you call it, the O-Pee-Chee sets from Gretzky's debut in the 1979-80 set right up to 
-        the Roy and Lemieux years defined a classic period of card collecting. The 8 sets from the pre-boom era include not only Gretzky, Roy, and Lemieux
+        the Roy and Lemieux years defined a classic period of card collecting.</p>
+        <p> The 8 sets from the pre-boom era include not only Gretzky, Roy, and Lemieux
         but also Messier, Bourque, Coffey, Savard, Fuhr, Hawerchuck, Carbonneau, Yzerman, Gilmour, and MacInnis. Quite a Hall of Fame class.
         </p>`;
     }
