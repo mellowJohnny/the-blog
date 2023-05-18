@@ -721,6 +721,7 @@ function fetchCardIntro(year){
     }
 } // end fetchCardIntro
 
+
 //****** Helper Function For Rendering "smart" Set-O-Matic Year Picker (removes link for current year) *********
 // Yes, it's a huge switch statement... :-)
 // Used to render both "Classic" and "Junk Wax" pickers
