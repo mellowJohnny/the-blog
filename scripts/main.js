@@ -727,9 +727,8 @@ function fetchCardIntro(year){
 // Yes, it's a huge switch statement... :-)
 // Used to render both "Classic" and "Junk Wax" pickers
 
-function renderSetPicker(pickerYear){
-    console.log(`In renderSetPicker(), year is ${pickerYear} `);
-    let year = pickerYear;
+function renderSetPicker(year){
+   // let year = pickerYear;
     let setPicker = document.getElementById("set-picker");
     if (year === "1979"){
         setPicker.innerHTML = `
@@ -852,7 +851,6 @@ function renderSetPicker(pickerYear){
         </table>`;
     }
     else if (year === "1987"){
-        console.log("In 1987 else if...");
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
