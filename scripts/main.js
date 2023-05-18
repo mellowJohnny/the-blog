@@ -707,7 +707,7 @@ function fetchCardIntro(year){
         but also Messier, Bourque, Coffey, Savard, Fuhr, Hawerchuck, Carbonneau, Yzerman, Gilmour, and MacInnis. Quite a Hall of Fame class.
         `;
     }
-    else () {
+    else {
         // must be Junk Wax
         blogIntro.innerHTML = `
         <p>Ah...the late '80s / early '90s...Miami Vice, acid wash jeans, those teal San Jose Sharks jerseys...and a hockey card explosion. 
