@@ -842,7 +842,11 @@ function getSortOrder(property,order) {
     }
 } // end sort function
 
-// CardSetSorter Function - Sorts blogs by number of stars...
+// -------------------- Helper Function for Sorting Card Set Posts ----------------------
+// CardSetSorter Function - Sorts Card Set Reviews by number of stars...
+// When "order" is "first", highest stars first
+// When "order" is "last", lowest stars first
+// Default is highest stars first
 function cardSetSorter(property,order) {  
     console.log(`Sort Order is: ${order}`)  
     return function(a, b) {    
@@ -884,16 +888,6 @@ function cardSetSorter(property,order) {
             }    
     }
 } // end sort function
-
-// Starting point for a fucntion capable of sorting by ascending order. The idea is for a user to click a link and re-render
-// the page with the sort order reversed...
-function sortByAscending(url) {
-    // const sortOrder = "?sortOrder=last";
-    dynamicLink.innerHTML += 
-    `Note: Sets are ordered in decending order (higherst star rating first) - 
-    <a href="${url + `?sortOrder=last`}">click here</a> to the the absolute worst sets first.</p>
-    `;
-}
 
 // --------- Dynamic Intro Function --------------
 // This function takes a single blogType parameter and generates the correct header for the page
