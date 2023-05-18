@@ -694,6 +694,31 @@ function fetchIntro(blogType){
     }
 }
 
+// --------- Dynamic Intro Function --------------
+// This function takes a single blogType parameter and generates the correct header for the page
+// since each blogType essentially needs it's own introduction section
+function fetchCardIntro(year){
+    let blogIntro = document.getElementById("card-intro");
+    if (year <= "1986") {
+        // 1986 is the last "classic wax" year, so if the year param is less than or equal to 1986, must be classic wax...
+        blogIntro.innerHTML = `
+        Non Junk Wax...classic wax? Modern era? Whatever you call it, the O-Pee-Chee sets from Gretzky's debut in the 1979-80 set right up to 
+        the Roy and Lemieux years defined a classic period of card collecting. The 8 sets from the pre-boom era include not only Gretzky, Roy, and Lemieux
+        but also Messier, Bourque, Coffey, Savard, Fuhr, Hawerchuck, Carbonneau, Yzerman, Gilmour, and MacInnis. Quite a Hall of Fame class.
+        `;
+    }
+    else () {
+        // must be Junk Wax
+        blogIntro.innerHTML = `
+        <p>Ah...the late '80s / early '90s...Miami Vice, acid wash jeans, those teal San Jose Sharks jerseys...and a hockey card explosion. 
+        Here's a stat for you: for the 1989-90 season there were just two hockey sets produced - Topps for the US and O-Pee-Chee for Canada. But just three years later there were no less than thirteen (!) sets available to US and Canadian collectors.
+        So you can see why, with the sheer volume of cards produced during these heady days, the era earned the <i><a href="cards.html">Junk Wax</a></i> moniker.  
+        </p>
+        <p>
+          But there <i>are</i> some hidden gems to be found if you are willing to sift through the rubble.  So let's start diggin'!
+        </p>
+        `;
+    }
 
 //****** Helper Function For Rendering "smart" Set-O-Matic Year Picker (removes link for current year) *********
 // Yes, it's a huge switch statement... :-)

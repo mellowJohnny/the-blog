@@ -66,6 +66,9 @@
 
             // **** Call the Set-O-Matic Set Picker ***
             renderSetPicker(year);
+            
+            // Dynamically render the page intro section 
+            fetchCardIntro(year);
        
         });
     </script>
@@ -119,11 +122,8 @@
               </div>
 
               <div class="flex-container">
-                <div class="intro">
-                  <p>Non Junk Wax...classic wax? Modern era? Whatever you call it, the O-Pee-Chee sets from Gretzky's debut in the 1979-80 set right up to 
-                    the Roy and Lemieux years defined a classic period of card collecting. The 8 sets from the pre-boom era include not only Gretzky, Roy, and Lemieux
-                    but also Messier, Bourque, Coffey, Savard, Fuhr, Hawerchuck, Carbonneau, Yzerman, Gilmour, and MacInnis. Quite a Hall of Fame class.
-                  </p>
+                <div class="intro" id="card-intro">
+                  <!-- dynamically fetched via fetchCardIntro() -->
               
                   <p class="set-o-matic-picker">the set-o-matic year picker</p>
                   <div id="set-picker">
