@@ -728,7 +728,7 @@ function fetchCardIntro(year){
 // Used to render both "Classic" and "Junk Wax" pickers
 
 function renderSetPicker(pickerYear){
-    console.log("In renderSetPicker()");
+    console.log(`In renderSetPicker(), year is ${pickerYear} `);
     let year = pickerYear;
     let setPicker = document.getElementById("set-picker");
     if (year === "1979"){
