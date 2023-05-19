@@ -59,12 +59,12 @@ messing up the layout with white borders and scoll bars
   color:rgb(11, 62, 100);
 }
 
+/** Set-O-Matic styling **/
 .junk-set-nav-td {
   margin: 1px;
-  padding-left: 65px;
+  padding-left: 45px;
 }
 
-/** Set-O-Matic styling **/
 .classic-set-nav-td {
   margin: 1px;
   padding-left: 25px;
