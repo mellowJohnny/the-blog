@@ -936,7 +936,7 @@ function renderSetPicker(year){
 function fetchNav(pageName){
     let nav = document.getElementById("global-nav");
 
-    if (pageName === "index.html") {
+    if (pageName === "index") {
         nav.innerHTML = `
         <table class="top-nav">
         <tr>
