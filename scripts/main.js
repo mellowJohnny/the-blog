@@ -336,7 +336,7 @@ function renderJunkWaxHeader(year) {
 */
 function renderClassicWaxHeader(setName) {
     let pageHeader = document.getElementById("classicPageHeader");
-    pageHeader.innerHTML = `...Classic 80s Set: ${setName}`;
+    pageHeader.innerHTML = `...set review: ${setName}`;
 }
 
 
