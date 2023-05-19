@@ -932,3 +932,31 @@ function renderSetPicker(year){
               </table>`;
     } 
 } // end set picker
+
+function fetchNav(pageName){
+    let nav = document.getElementById("global-nav");
+
+    if (pageName === "index.html") {
+        nav.innerHTML = `
+        <table class="top-nav">
+        <tr>
+          <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
+          <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
+          <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
+         <!-- Dynamic menu stuff...-->
+          <td class="nav-td">
+            <div class="dropdown">
+              <span>Mustang Mach-E</span>
+                <div class="dropdown-content">
+                  <a href="/ev.html?blogType=3">Mach-E Blog</a> <br><br>
+                  <a href="/ev.html?blogType=4">Power-Up Software Updates</a> 
+                </div>
+            </div>
+          </td>
+           </td>
+        </tr> 
+      </table>
+        `;
+    }
+    
+}
