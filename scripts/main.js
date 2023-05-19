@@ -328,7 +328,7 @@ var globalPageName = "";
 */
 function renderJunkWaxHeader(year) {
     let pageHeader = document.getElementById("pageHeader");
-    pageHeader.innerHTML = `...Junk Wax Sets From ${year}`;
+    pageHeader.innerHTML = `...Junk Wax Sets: ${year}`;
 }
 
 /* 
