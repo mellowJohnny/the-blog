@@ -714,8 +714,7 @@ function fetchCardIntro(year){
         <p>Ah...the late '80s / early '90s...Miami Vice, acid wash jeans, those teal San Jose Sharks jerseys...and a hockey card explosion. 
         Here's a stat for you: for the 1989-90 season there were just two hockey sets produced - Topps for the US and O-Pee-Chee for Canada. But just three years later there were no less than thirteen (!) sets available to US and Canadian collectors.
         So you can see why, with the sheer volume of cards produced during these heady days, the era earned the <i><a href="cards.html">Junk Wax</a></i> moniker.  
-        </p>
-        <p>
+        <br><br>
           But there <i>are</i> some hidden gems to be found if you are willing to sift through the rubble.  So let's start diggin'!
         </p>
         `;
