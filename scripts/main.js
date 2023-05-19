@@ -336,7 +336,7 @@ function renderJunkWaxHeader(year) {
 */
 function renderClassicWaxHeader(setName) {
     let pageHeader = document.getElementById("classicPageHeader");
-    pageHeader.innerHTML = `...set review: ${setName}`;
+    pageHeader.innerHTML = `...classic set review: ${setName}`;
 }
 
 
