@@ -256,10 +256,12 @@ var globalPageName = "";
 
        // Now that we have the name of the set, render one of two versions of the Header in the HTML page...
         if (pageName === "junkWax") {
-            renderJunkWaxHeader(cleanYear);
+            let pageHeader = document.getElementById("pageHeader");
+            pageHeader.innerHTML = `...Junk Wax Sets: ${cleanYear}`;
         }
         else {
-            renderClassicWaxHeader(cleanSetName);
+           let pageHeader = document.getElementById("pageHeader");
+            pageHeader.innerHTML = `...classic set review: ${cleanSetName}`;
         }
        
 
@@ -321,24 +323,6 @@ var globalPageName = "";
                    <br>
                    <br>`;
    }
-
-
-/* 
-    Function called to dynamically render the junk wax style H1 pager header.
-*/
-function renderJunkWaxHeader(year) {
-    let pageHeader = document.getElementById("pageHeader");
-    pageHeader.innerHTML = `...Junk Wax Sets: ${year}`;
-}
-
-/* 
-    Function called to dynamically render the classic set H1 pager header.
-*/
-function renderClassicWaxHeader(setName) {
-    let pageHeader = document.getElementById("classicPageHeader");
-    pageHeader.innerHTML = `...classic set review: ${setName}`;
-}
-
 
 
    // ----------------------------- Date Helper Functions ----------------------------
