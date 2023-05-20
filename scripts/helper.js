@@ -316,13 +316,13 @@ function renderSetPicker(year){
         <table class="card-set-nav">
             <tr>
                 <td class="classic-set-nav-td">1979-80</td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980">1980-81</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981">1981-82</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982">1982-83</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983">1983-84</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984">1984-85</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985">1985-86</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986">1986-87</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980&pageName=classicWax">1980-81</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981&pageName=classicWax">1981-82</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982&pageName=classicWax">1982-83</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983&pageName=classicWax">1983-84</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984&pageName=classicWax">1984-85</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985&pageName=classicWax">1985-86</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986&pageName=classicWax">1986-87</a></td>
             </tr>
         </table>`;
     }
@@ -330,14 +330,14 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
             <tr>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979">1979-80</a></td>
-                <td class="classic-set-nav-td">1980-81</td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981">1981-82</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982">1982-83</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983">1983-84</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984">1984-85</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985">1985-86</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986">1986-87</a></td>
+            <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">1979-80</td>
+            <td class="classic-set-nav-td">1980-81</td>
+            <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981&pageName=classicWax">1981-82</a></td>
+            <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982&pageName=classicWax">1982-83</a></td>
+            <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983&pageName=classicWax">1983-84</a></td>
+            <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984&pageName=classicWax">1984-85</a></td>
+            <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985&pageName=classicWax">1985-86</a></td>
+            <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986&pageName=classicWax">1986-87</a></td>
             </tr>
         </table>`;
     }
@@ -345,14 +345,14 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
             <tr>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979">1979-80</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980">1980-81</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">1979-80</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980&pageName=classicWax">1980-81</a></td>
                 <td class="classic-set-nav-td">1981-82</td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982">1982-83</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983">1983-84</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984">1984-85</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985">1985-86</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986">1986-87</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982&pageName=classicWax">1982-83</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983&pageName=classicWax">1983-84</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984&pageName=classicWax">1984-85</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985&pageName=classicWax">1985-86</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986&pageName=classicWax">1986-87</a></td>
             </tr>
         </table>`;
     }
@@ -360,14 +360,14 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
             <tr>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979">1979-80</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980">1980-81</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981">1981-82</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">1979-80</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980&pageName=classicWax">1980-81</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981&pageName=classicWax">1981-82</a></td>
                 <td class="classic-set-nav-td">1982-83</td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983">1983-84</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984">1984-85</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985">1985-86</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986">1986-87</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983&pageName=classicWax">1983-84</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984&pageName=classicWax">1984-85</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985&pageName=classicWax">1985-86</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986&pageName=classicWax">1986-87</a></td>
             </tr>
         </table>`;
     }
@@ -375,14 +375,14 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
             <tr>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979">1979-80</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980">1980-81</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981">1981-82</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982">1982-83</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">1979-80</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980&pageName=classicWax">1980-81</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981&pageName=classicWax">1981-82</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982&pageName=classicWax">1982-83</a></td>
                 <td class="classic-set-nav-td">1983-84</td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984">1984-85</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985">1985-86</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986">1986-87</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984&pageName=classicWax">1984-85</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985&pageName=classicWax">1985-86</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986&pageName=classicWax">1986-87</a></td>
             </tr>
         </table>`;
     }
@@ -390,14 +390,14 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
             <tr>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979">1979-80</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980">1980-81</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981">1981-82</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982">1982-83</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983">1983-84</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">1979-80</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980&pageName=classicWax">1980-81</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981&pageName=classicWax">1981-82</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982&pageName=classicWax">1982-83</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983&pageName=classicWax">1983-84</a></td>
                 <td class="classic-set-nav-td">1984-85</td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985">1985-86</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986">1986-87</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985&pageName=classicWax">1985-86</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986&pageName=classicWax">1986-87</a></td>
             </tr>
         </table>`;
     }
@@ -405,14 +405,14 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
             <tr>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979">1979-80</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980">1980-81</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981">1981-82</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982">1982-83</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983">1983-84</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984">1984-85</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">1979-80</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980&pageName=classicWax">1980-81</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981&pageName=classicWax">1981-82</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982&pageName=classicWax">1982-83</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983&pageName=classicWax">1983-84</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984&pageName=classicWax">1984-85</a></td>
                 <td class="classic-set-nav-td">1985-86</td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986">1986-87</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986&pageName=classicWax">1986-87</a></td>
             </tr>
         </table>`;
     }
@@ -420,13 +420,13 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
             <tr>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979">1979-80</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980">1980-81</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981">1981-82</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982">1982-83</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983">1983-84</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984">1984-85</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985">1985-86</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">1979-80</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980&pageName=classicWax">1980-81</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981&pageName=classicWax">1981-82</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982&pageName=classicWax">1982-83</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983&pageName=classicWax">1983-84</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984&pageName=classicWax">1984-85</a></td>
+                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985&pageName=classicWax">1985-86</a></td>
                 <td class="classic-set-nav-td">1986-87</td>
             </tr>
         </table>`;
@@ -436,12 +436,12 @@ function renderSetPicker(year){
         <table class="card-set-nav">
                 <tr>
                     <td class="junk-set-nav-td">1987-88</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988">1988-89</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989">1989-90</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990">1990-91</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991">1991-92</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992">1992-93</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993">1993-94</a></td> 
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988&pageName=junkWax">1988-89</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989&pageName=junkWax">1989-90</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990&pageName=junkWax">1990-91</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991&pageName=junkWax">1991-92</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992&pageName=junkWax">1992-93</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993&pageName=junkWax">1993-94</a></td> 
                 </tr>
               </table>`;
     }
@@ -449,13 +449,13 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987">1987-88</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">1987-88</a></td>
                     <td class="junk-set-nav-td">1988-89</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989">1989-90</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990">1990-91</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991">1991-92</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992">1992-93</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993">1993-94</a></td> 
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989&pageName=junkWax">1989-90</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990&pageName=junkWax">1990-91</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991&pageName=junkWax">1991-92</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992&pageName=junkWax">1992-93</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993&pageName=junkWax">1993-94</a></td> 
                 </tr>
               </table>`;
     }
@@ -463,13 +463,13 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987">1987-88</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988">1988-89</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">1987-88</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988&pageName=junkWax">1988-89</a></td>
                     <td class="junk-set-nav-td">1989-90</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990">1990-91</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991">1991-92</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992">1992-93</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993">1993-94</a></td> 
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990&pageName=junkWax">1990-91</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991&pageName=junkWax">1991-92</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992&pageName=junkWax">1992-93</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993&pageName=junkWax">1993-94</a></td> 
                 </tr>
               </table>`;
     }
@@ -477,13 +477,13 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987">1987-88</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988">1988-89</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989">1989-90</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">1987-88</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988&pageName=junkWax">1988-89</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989&pageName=junkWax">1989-90</a></td>
                     <td class="junk-set-nav-td">1990-91</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991">1991-92</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992">1992-93</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993">1993-94</a></td> 
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991&pageName=junkWax">1991-92</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992&pageName=junkWax">1992-93</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993&pageName=junkWax">1993-94</a></td> 
                 </tr>
               </table>`;
     }
@@ -491,13 +491,13 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987">1987-88</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988">1988-89</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989">1989-90</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990">1990-91</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">1987-88</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988&pageName=junkWax">1988-89</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989&pageName=junkWax">1989-90</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990&pageName=junkWax">1990-91</a></td>
                     <td class="junk-set-nav-td">1991-92</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992">1992-93</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993">1993-94</a></td> 
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992&pageName=junkWax">1992-93</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993&pageName=junkWax">1993-94</a></td> 
                 </tr>
               </table>`;
     }
@@ -505,13 +505,13 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987">1987-88</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988">1988-89</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989">1989-90</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990">1990-91</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991">1991-92</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">1987-88</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988&pageName=junkWax">1988-89</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989&pageName=junkWax">1989-90</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990&pageName=junkWax">1990-91</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991&pageName=junkWax">1991-92</a></td>
                     <td class="junk-set-nav-td">1992-93</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993">1993-94</a></td> 
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993&pageName=junkWax">1993-94</a></td> 
                 </tr>
               </table>`;
     }
@@ -519,12 +519,12 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987">1987-88</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988">1988-89</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989">1989-90</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990">1990-91</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991">1991-92</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992">1992-93</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">1987-88</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988&pageName=junkWax">1988-89</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989&pageName=junkWax">1989-90</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990&pageName=junkWax">1990-91</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991&pageName=junkWax">1991-92</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992&pageName=junkWax">1992-93</a></td>
                     <td class="junk-set-nav-td">1993-94</td> 
                 </tr>
               </table>`;
