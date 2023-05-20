@@ -2,46 +2,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <html lang="en-ca">
-  <title>the hella files...</title>
+  <title>the hella files...a tech blog, Mustang Mach-E blog, vintage and junk wax hockey card set reviews, and an AWS playground</title>
   <head>
     <meta charset="utf-8"> 
     <link rel="stylesheet" type="text/css" href="styles/styles.css">
     <link rel="preconnect" href="https://fonts.gstatic.com"> 
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Nunito:wght@200&display=swap&family=Special+Elite&family=Work+Sans:ital,wght@0,400;1,500&display=swap" rel="stylesheet" crossorigin="anonymous">
-  
-  </head>
+    
+    <!-- Load the Hella Files scripts-->
+    <script src="scripts/main.js"></script> 
+    <script src="/scripts/helper.js"></script>
 
-  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-  <script src="scripts/main.js"></script> 
-  <script src="/scripts/helper.js"></script>
+    <script>
+      let params = new URLSearchParams(document.location.search);
+      let blogType = params.get("blogType"); 
+      window.addEventListener('load', (event) => {
+        // *** On page load pass the blogType param to the fetchAllBlogs() function
+        fetchBlogs(blogType);
+        // *** Dynamically display the copyright year
+        fetchCopyrightYear();
+        // *** Dynamically fetch the blog into blurb based on blogType
+        fetchIntro(blogType);
+        // *** Dynamically fetch Nav ***
+        fetchNav("tech");
+        });
+    </script>
+ </head>
 
-  <script>
-    // First get the page param passed from wherever we just came from...
-    // On page load pass the blogType param to the fetchAllBlogs() function
-    // which calls the getBlogs API returning blog posts based on the value for blogType
-    let params = new URLSearchParams(document.location.search);
-    let blogType = params.get("blogType");
-    window.addEventListener('load', (event) => {
-      fetchBlogs(blogType);
-      
-      // *** Dynamically display the copyright year
-      fetchCopyrightYear();
-
-      // *** Dynamically fetch the blog into blurb based on blogType
-      fetchIntro(blogType);
-
-      // *** Dynamically fetch Nav ***
-      fetchNav("tech");
-
-      });
-  </script>
-
-<body>
+ <body>
   <section>
     <table class="mast-table">
       <tr>
         <td width="80%">
-          <div>
            <header class="masthead"><a href="index.html">the hella files</a></header>
         </td>
         <td id="cms-gif" width="20%">
@@ -55,31 +47,22 @@
       <div id="global-nav"></div> <!-- Dynamically fetch the Nav using fetchNav() -->
     </nav>
   </div>
+    <main>
+      <section>
+        <div class="header-style"><h1>the Tech Blog...</h1></div>
+        <div class="flex-container">
+          <div id="blog-intro" class="intro"></div> <!-- Intro is dynamically rendered by the fetchIntro() function -->
+        </div>
+      </section>
+      <section>
+        <div class="flex-container">
+          <div class="blog-entry" id="blogsDiv"></div>
+        </div>
+      </section> 
+    </main>
 
-          <main>
-            <section>
-              <div class="header-style">
-                <h1>the Tech Blog...</h1>
-              </div>
-              <div class="flex-container">
-                <div id="blog-intro" class="intro">
-                <!-- Intro is dynamically rendered by the fetchIntro() function -->
-                </div>
-              </div>
-            </section>
-            <section>
-              <div class="flex-container">
-                <div class="blog-entry" id="blogsDiv"></div>
-              </div>
-            </section> 
-          </main>
-
-          
-      </div>
-  </section>
   <footer class="page-footer">
-    <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
-    <div id="copy"></div> 
+    <div id="copy"></div> <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
    </footer>
 </body>
 
