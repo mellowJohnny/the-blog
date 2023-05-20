@@ -6,127 +6,95 @@
   <head>
     <meta charset="utf-8"> 
     <meta name="description" content="Junk Wax! Hockey Card collecting exploded in the early to mid-1990s, and the Junk Wax Era saw a massive increase in sets available to collect and production numbers. Are any of them still worth collecting? Let's find out! We've got (just about) every set reviewed right here"/> 
-    
+    <!-- Load the Hella Files Styles-->
     <link rel="stylesheet" type="text/css" href="styles/styles.css">
+    <!-- Load the Google Fontz -->
     <link rel="preconnect" href="https://fonts.googleapis.com"> 
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"> 
-
-    <!-- FONTS: 
-      Spicy Rice: Used by Masthead & year picker, Audiowide: Used by Footer, Nunito: Used by Top Nav, Special Elite: Used by Caption, Work Sans: Used by Intro
-    -->
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Nunito:wght@200&display=swap&family=Special+Elite&family=Work+Sans:ital,wght@0,400;1,500&display=swap" rel="stylesheet" crossorigin="anonymous">
     
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX" crossorigin="anonymous"></script>
 
-    <!-- Main JavaScript import -->
+    <!-- Load the Hella Scripts -->
     <script src="scripts/main.js"></script>
     <script src="/scripts/helper.js"></script>
   
-   <!-- Google Analytics -->
-   <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-JMGVGK09QX');
-    </script> 
-    
     <!-- Dynamic JavaScript Magic -->
-    
     <script>
-        /* Let's get the URL params from the request, and extract the year */  
+        /* Let's get the URL params from the request, and extract the year, sortOrder, and pageName */  
         let params = new URLSearchParams(document.location.search);
         let year = params.get("year");
         let sortOrder = params.get("sortOrder");
         let pageName = params.get("pageName");
-        // This global parameter is used by the displayCardSet() function to dynamically render the right header
-        // let pageName = "junkWax";
-        
 
-        /* 
-        *   Call to fetchCardSetsByYear() on page load, dynamically passing the set year we want to fetch
-        *   fetchCardSetsByYear() is responsible for calling the underlying AWS web service
-        *   Also uses the year to dynamically populate our page header by calling renderYearHeader();
-        *   renderYearHeader(); switches on pageName to display the header differently per page
-        */   
+        // Let's do a bunch of stuff on page load...
         window.addEventListener('load', (event) => {
+            //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
             fetchCardSetsByYear(year,sortOrder);
-            
             // *** Dynamically display the copyright year *******
             fetchCopyrightYear();
-
             // **** Call the Set-O-Matic Set Picker ***
             renderSetPicker(year);
-
             // Dynamically render the page intro section 
             fetchCardIntro(year);
-
             // *** Dynamically fetch Nav ***
             fetchNav(pageName);
-
         });
 
+        // Google Analytics 
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-JMGVGK09QX');
         
-    </script>
-</head>
+      </script>
+  </head>
 
-<body>
-  <section>
-    <table class="mast-table">
-      <tr>
-        <td width="80%">
-          <div>
-            <header class="masthead"><a href="index.html">the hella files</a></header>
-        </td>
-        <td width="20%" >
-          <!-- Display current weather from weather.js 
-            REMOVED FOR NOW 
-          -->
-          <!--  <div class="weather" id="weather">Waiting for the Weather Forecast...</div> -->
-        </td>
+  <body>
+    <section>
+      <table class="mast-table">
+        <tr>
+          <td width="80%">
+              <header class="masthead"><a href="index.html">the hella files</a></header>
+          </td>
+          <td width="20%"></td> <!-- Leave a space for the weather widget in case we want to add it later... -->
         </tr>
       </table>
-  </section>
-  <div>
-    <nav>
-      <div id="global-nav"></div> <!-- Dynamically fetch the Nav using fetchNav() -->
-    </nav>
-  </div>
+    </section>
+    <div>
+      <nav>
+        <div id="global-nav"></div> <!-- Dynamically fetch the Nav using fetchNav() -->
+      </nav>
+    </div>
+    <main>
+      <section>
+        <!-- The year value dynamically displayed here is set up in the top script where we extract the year param from the URL --> 
+        <div class="header-style"> 
+          <h1 id="pageHeader"></h1> <!-- populated from inside displayCardSet() -->
+        </div>
 
-          <main>
-            <section>
-              <!-- The year value dynamically displayed here is set up in the top script where we extract the year param from the URL --> 
-              <div class="header-style"> 
-                <h1 id="pageHeader"></h1> <!-- called from inside displayCardSet() -->
-              </div>
+        <div class="flex-container">
+          <div class="intro" id="card-intro"> <!-- dynamically fetched via fetchCardIntro() --> </div> 
+        </div>
 
-              <div class="flex-container">
-                <div class="intro" id="card-intro"> <!-- dynamically fetched via fetchCardIntro() --> </div> 
-              </div>
+        <div class="set-o-matic-picker">the set-o-matic year picker</div>
+                  
+        <div class="flex-container" id="set-picker"> <!-- "Smart" Year Picker: Rendered by renderSetPicker() function in main.js - Removes link for current year --> </div>
+        <br><br>
+      </section>
 
-                <div class="set-o-matic-picker">the set-o-matic year picker</div>
-
-                <div class="flex-container" id="set-picker"> 
-                  <!-- "Smart" Year Picker: Rendered by renderSetPicker() function in main.js - Removes link for current year --> 
-                </div>
-              <br><br>
-            </section>
-
-            <section>
-              <div class="flex-container">
-                <div class="blog-entry" id="cardSetDiv"></div>
-              </div>
-            </section> 
-           
-          </main>
-
-          <footer class="page-footer">
-            <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
-            <div id="copy"></div> 
+      <section>
+        <div class="flex-container">
+          <div class="blog-entry" id="cardSetDiv"></div>
+        </div>
+      </section> 
             
-          </footer>
-      </div>
-  </section>
-</body>
+    </main>
 
+    <footer class="page-footer">
+      <div id="copy"></div> <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
+    </footer>
+    
+  </body>
 </html>
