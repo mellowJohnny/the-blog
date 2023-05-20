@@ -2,53 +2,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <html lang="en-ca">
-  <title>the hella files...a tech blog, vintage hockey card set reviews, and an AWS playground</title>
+  <title>the hella files...a tech blog, vintage and junk wax hockey card set reviews, and an AWS playground</title>
   <head>
     <meta charset="utf-8"> 
     <meta description="Welcome to the hella files. A blog with a focus on vintage and Junk Wax hockey card set reviews, tech, and software architecture.  The site also serves as a playground for AWS services like Lambda, DynamoDB, and Amplify.">
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-JMGVGK09QX');
-    </script> 
-
-    <!-- Load the stylesheet -->
-    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
-
-    <!-- Load the Google Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com"> 
-    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Nunito:wght@200&display=swap&family=Special+Elite&family=Work+Sans:ital,wght@0,400;1,500&display=swap" rel="stylesheet" crossorigin="anonymous">
-
+    
     <!-- Load the Hella File JavaScript -->
     <script src="/scripts/main.js"></script>
     <script src="/scripts/helper.js"></script>
     <script src="/scripts/weather.js"></script>
 
-    <!-- This calls the fetchAllBlogs() function on page load.  It is responsible for calling the underlying AWS web service -->
-  <script>
-    window.addEventListener('load', (event) => {
-      fetchBlogs('99');
-      
-      // *** Dynamically display the copyright year
-      fetchCopyrightYear();
+     <!-- In-line stuff that should probably be moved to a library :-) -->
+    <script>
+      window.addEventListener('load', (event) => {
+        // Calls the fetchAllBlogs() function on page load, calls underlying AWS web service
+        fetchBlogs('99');
+        // *** Dynamically display the copyright year
+        fetchCopyrightYear();
+        // *** Dynamically fetch Nav ***
+        fetchNav("index");
+        });
 
-      // *** Dynamically fetch Nav ***
-      fetchNav("index");
+        // Google Analytics Stuff -->
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-JMGVGK09QX');
+    </script>
 
-      });
-  </script>
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX" crossorigin="anonymous"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-JMGVGK09QX');
-  </script> 
+    <!-- Load the stylesheet -->
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+    <!-- Load the Google Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com"> 
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Nunito:wght@200&display=swap&family=Special+Elite&family=Work+Sans:ital,wght@0,400;1,500&display=swap" rel="stylesheet" crossorigin="anonymous">
 
   </head>
 
@@ -95,9 +83,7 @@
           </main>
 
           <footer class="page-footer">
-            <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
-            <div id="copy"></div> 
-            
+            <div id="copy"></div> <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
             <a rel=”nofollow” href="https://mellowjohnny.auth.us-east-2.amazoncognito.com/login?response_type=code&client_id=1m22cfonep7l85th9ut1obk0pe&redirect_uri=https://www.mellowjohnny.cc/cms/wlcms.html">
                 WLCMS</a> | <a href="/signup.html">reg</a>
           </footer>
