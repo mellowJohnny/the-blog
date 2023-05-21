@@ -42,7 +42,7 @@ messing up the layout with white borders and scoll bars
 
 /** Navigation link formatting **/
 .nav-td {
-  font-family: 'Work Sans', sans-serif;;
+  font-family: 'Work Sans', sans-serif;
   font-size: 18px;
   margin: 15px;
   padding: 20px;
@@ -381,7 +381,7 @@ textarea {
 
 .page-footer {
     font-size: 10px;
-    font-family: 'Spicy Rice';
+    font-family: 'Work Sans', sans-serif;
     padding: 20px;
     display: inline;
 }
