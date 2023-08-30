@@ -544,6 +544,7 @@ function fetchNav(pageName){
           <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
           <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
           <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
+          <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
          <!-- Dynamic menu stuff...-->
           <td class="nav-td">
             <div class="dropdown">
