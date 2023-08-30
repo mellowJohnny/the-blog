@@ -561,7 +561,7 @@ function fetchNav(pageName){
         `;
     }
 
-    else if (pageName === "tech") {
+    else if (pageName === "tech" & blogType === "1") {
         nav.innerHTML = `
         <table class="top-nav">
         <tr>
@@ -569,6 +569,27 @@ function fetchNav(pageName){
           <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
           <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
           <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
+          <td class="nav-td">
+            <div class="dropdown">
+              <span>Mustang Mach-E</span>
+                <div class="dropdown-content">
+                  <a href="/ev.html?blogType=3">Mach-E Blog</a> <br><br>
+                  <a href="/ev.html?blogType=4">Power-Up Software Updates</a> 
+                </div>
+            </div>
+          </td>
+        </tr>
+      </table>`;
+    }
+
+    else if (pageName === "tech" & blogType === "5") {
+        nav.innerHTML = `
+        <table class="top-nav">
+        <tr>
+          <td class="nav-td"><a href="/index.html">Home</a> </td>
+          <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
+          <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
+          <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
           <td class="nav-td">
             <div class="dropdown">
               <span>Mustang Mach-E</span>
