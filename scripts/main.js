@@ -42,8 +42,8 @@ var globalPageName = "";
              
             // Next all getSortOrder, passing the attribute we want to sort on. Remember, "Items" is the array of JSON-formatted blogPosts
             // If the blogType passed in from the page is 3 (mach-e blogs) lets display oldest blogs first, for everything else, order newest first 
-            if (blogType === "3") {
-               // We want to sort Mach-Blogs oldest to newest
+            if (blogType === "3" || blogType === "5") {
+               // We want to sort Mach-E and Raspberry Pi Blogs oldest to newest
                 blogPostObject.Items.sort(getSortOrder("time","last"));
             }
             else {
