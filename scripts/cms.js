@@ -21,7 +21,7 @@
  * @param {*} imgCap
  */
 
-// NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
+// NOTE: We don't pass in the postBody textarea content from the form anymore, we call the TinyMCE API to get it
  function createBlogPost (blogStatus,title,imgName,imgCap,author,type){
 
     // Let's change the state of the button, now that we've clicked it...
