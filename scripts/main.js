@@ -61,8 +61,8 @@ var globalPageName = "";
                     blogPostObject.Items[i].author,
                     blogPostObject.Items[i].time,
                     blogPostObject.Items[i].title,
-                    blogPostObject.Items[i].imgCap, // NEW! Aug. 31, 2023
-                    blogPostObject.Items[i].img);
+                    blogPostObject.Items[i].img,
+                    blogPostObject.Items[i].imgCap); // NEW! Aug. 31, 2023
                 }
            }
        } 
