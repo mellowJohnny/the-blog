@@ -61,6 +61,7 @@ var globalPageName = "";
                     blogPostObject.Items[i].author,
                     blogPostObject.Items[i].time,
                     blogPostObject.Items[i].title,
+                    blogPostObject.Items[i].imgCap, // NEW! Aug. 31, 2023
                     blogPostObject.Items[i].img);
                 }
            }
@@ -81,9 +82,10 @@ var globalPageName = "";
  * @param {*} date 
  * @param {*} title 
  * @param {*} img
+ * @param {*} imgCap
  */
 
-   function displayBlog(postBody, author, date, title, img) {
+   function displayBlog(postBody, author, date, title, img, imgCap) {
        // Populate the blogsDiv...
  
        // Cleanup the JSON we get back so it's back to a String 
@@ -94,6 +96,7 @@ var globalPageName = "";
        const cleanAuthor = JSON.parse(author);
        const cleanPostBody = JSON.parse(postBody);
        const cleanImg = JSON.parse(img);
+       const cleanImgCap = JSON.parse(imgCap);
 
        // Format the Date by passing it to our Magic Date fixer...
        fixDate(date);
@@ -121,6 +124,7 @@ var globalPageName = "";
                         ${cleanPostBody} 
                         <img src="${cleanImg}" class="blog-img"></img>
                         <br>
+                        <i>${cleanImgCap}</i> 
                         <hr/>
                         <br>`;
        }
