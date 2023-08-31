@@ -32,7 +32,7 @@
     // this makes it look like the button is waiting for the modal to close first :-)
     cmsCreateButtonReset();
 
-    // Call the Tiny API to fetch the content from the editor...
+    // Call the Tiny API to fetch the content from the WYSIWYG editor...
     const tinyBody = tinymce.activeEditor.getContent();
     
     // instantiate a headers object
