@@ -40,7 +40,18 @@
   
     // add content type header to object
     myHeaders.append("Content-Type", "application/json");
-  
+
+    // Let check to see if there is an image & image caption - if not, put a default
+    if (imgName === "" || imgName === null) {
+        console.log("No image...setting a default")
+        imgName = "No Image";
+    }
+/** 
+    if (imgCap === "" || imgCap === null) {
+        console.log("No image...setting a default")
+        imgCap = "No Image Caption";
+    }
+*/  
     // using built in JSON utility package turn object to string and store in a variable
     let raw = JSON.stringify({"blogStatus":blogStatus,"title":title,"imgName":imgName,"imgCap":imgCap,"author":author,"postBody":tinyBody,"type":type});
   
