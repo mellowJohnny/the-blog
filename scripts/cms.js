@@ -185,13 +185,14 @@
  * 
  * @param {*} title
  * @param {*} imgName
+ * @param {*} imgCap
  * @param {*} blogStatus
  * @param {*} blogType
  * @param {*} time
  * 
  **/
 
- function updateBlogPost(title,imgName,blogStatus,blogType,time) {
+ function updateBlogPost(title,imgName,imgCap,blogStatus,blogType,time) {
     // Let's change the state of the button, now that we've clicked it...
     cmsButtonSubmit();
 
@@ -210,7 +211,7 @@
     myHeaders.append("Content-Type", "application/json");
   
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"title":title,"imgName":imgName,"blogStatus":blogStatus,"blogType":blogType,"time":time,"postBody":tinyBody});
+    let raw = JSON.stringify({"title":title,"imgName":imgName,"imgCap":imgCap,"blogStatus":blogStatus,"blogType":blogType,"time":time,"postBody":tinyBody});
 
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
@@ -500,6 +501,7 @@ function displayStagedBlogs(title, blogID) {
                    populateBlog(
                     blogArray.Items[i].postBody,
                     blogArray.Items[i].img,
+                    blogArray.Items[i].imgCap,
                     blogArray.Items[i].blogStatus,
                     blogArray.Items[i].blogType,
                     blogArray.Items[i].time,
@@ -533,7 +535,7 @@ function displayStagedBlogs(title, blogID) {
   */
   
   /** This function calls the associated DIV on the Set Update form and populates it with the current value */
-  function populateBlog(postBody,img,blogStatus,blogType,time,title,) {
+  function populateBlog(postBody,img,imgCap,blogStatus,blogType,time,title,) {
   
       // Cleanup the JSON we get back so it's back to a String 
       // We parsed the first object we got back, but that didn't parse the contents of the inner properties
@@ -542,6 +544,7 @@ function displayStagedBlogs(title, blogID) {
       const cleanTitle = JSON.parse(title);
       const cleanStatus = JSON.parse(blogStatus);
       const cleanImg = JSON.parse(img);
+      const cleanImgCap = JSON.parse(imgCap);
 
       // Inserts postBody into 'current' TinyMCE Editor
       tinymce.activeEditor.selection.setContent(cleanPostBody);
@@ -571,6 +574,7 @@ function displayStagedBlogs(title, blogID) {
       document.getElementById("time").defaultValue = time;
       document.getElementById("title").defaultValue = cleanTitle;
       document.getElementById("imgName").defaultValue = cleanImg;
+      document.getElementById("imgCap").defaultValue = cleanImgCap;
       
   }
   
