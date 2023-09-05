@@ -534,7 +534,7 @@ function renderSetPicker(year){
 
 /** Helper Function to dynamically fetch Navigation */
 
-function fetchNav(pageName){
+function fetchNav(pageName,blogType){
     let nav = document.getElementById("global-nav");
 
     if (pageName === "index") {
