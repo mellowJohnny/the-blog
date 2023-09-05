@@ -561,8 +561,8 @@ function fetchNav(pageName,blogType){
             <div class="dropdown">
               <span>Mustang Mach-E</span>
                 <div class="dropdown-content">
-                  <a href="/ev.html?blogType=3">Mach-E Blog</a> <br><br>
-                  <a href="/ev.html?blogType=4">Power-Up Software Updates</a> 
+                  <a href="/tech.html?blogType=3">Mach-E Blog</a> <br><br>
+                  <a href="/tech.html?blogType=4">Power-Up Software Updates</a> 
                 </div>
             </div>
           </td>
