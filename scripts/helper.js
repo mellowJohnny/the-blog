@@ -279,6 +279,9 @@ function fetchIntro(blogType){
         `;
     }
     else if (blogType === "5") {
+        blogIntro.innerHTML = `
+        <p>Let's see what kinda trouble we can get into with a Raspberry Pi 4 :-)</p>
+        `;
         blogHeader.innerHTML = `
         <H1>...the raspberry pi blog</H1>`;
     }
