@@ -248,16 +248,20 @@ function cardSetSorter(property,order) {
 
 function fetchIntro(blogType){
     let blogIntro = document.getElementById("blog-intro");
+    let blogHeader = document.getElementById("section-header");
     if (blogType === "1") {
         blogIntro.innerHTML = `
         <p>Tech is a bit of a catch-all for semi-sorta-kinda tech related rants, observations, and professional opinions. Oh, and that animated airplane gif? That is the 
         world's first gif, created by <a href="https://en.wikipedia.org/wiki/Steve_Wilhite"></a>Steve Wilhite</a>. Cool huh? </p>
         `;
+        blogHeader.innerHTML = `
+        <H1>...the tech blog</H1>`;
     }
     else if (blogType === "3") {
         blogIntro.innerHTML = `
         <p>Say hello to Lucy! Impressions on owning and driving our first EV, with other EV related thoughts, impressions, and completely biased commentary 
                 </p>`;
+        blogHeader.innerHTML = ` <H1>...the mach-e blog</H1>`;
     }
     else if (blogType === "4") {
         blogIntro.innerHTML = `
@@ -273,6 +277,10 @@ function fetchIntro(blogType){
         <p>The process has not always been smooth for all owners, but when you consider that in the first two years of its existance the Mach-E was one of the few 
         electric vehicles with OTA capabilities, its pretty cool stuff.</p>
         `;
+    }
+    else if (blogType === "5") {
+        blogHeader.innerHTML = `
+        <H1>...the raspberry pi blog</H1>`;
     }
 }
 
