@@ -39,7 +39,7 @@ var globalPageName = "";
 
                // DEBUG
                console.log(`There are ${blogPostObject.Count} blogs returned...`);
-               console.log(`The 2nd post is ${blogPostObject.Items[1]}`);
+               console.log(`The 2nd post is ${blogPostObject.Items[1].postBody}`);
              
             // Next all getSortOrder, passing the attribute we want to sort on. Remember, "Items" is the array of JSON-formatted blogPosts
             // If the blogType passed in from the page is 3 (mach-e blogs) lets display oldest blogs first, for everything else, order newest first 
