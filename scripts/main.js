@@ -25,12 +25,12 @@ var globalPageName = "";
            return jsonResponse; // Our Promise object
        })
        .then(function (data) {
-       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
+       // 'data' is an Object at this point...this is basically the record set returned by dynamoDB
        // First let's return an array of the object's properties
            const returnedData = Object.entries(data); 
 
            // DEBUG
-           console.log(returnedData);
+           console.log(returnedData[3]);
          
        // Next let's just get the 'body' property returned by the Lambda call
           for (const [key, value] of returnedData) {
