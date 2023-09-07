@@ -30,7 +30,7 @@ var globalPageName = "";
            const returnedData = Object.entries(data); 
 
            // DEBUG
-           console.log(returnedData);
+           console.log(returnedData.count);
          
        // Next let's just get the 'body' property returned by the Lambda call
           for (const [key, value] of returnedData) {
