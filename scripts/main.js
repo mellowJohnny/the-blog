@@ -29,9 +29,6 @@ var globalPageName = "";
        // First let's return an array of the object's properties
            const returnedData = Object.entries(data); 
 
-           // DEBUG
-           console.log(returnedData[3]);
-         
        // Next let's just get the 'body' property returned by the Lambda call
           for (const [key, value] of returnedData) {
               if (key === "body"){
@@ -40,8 +37,8 @@ var globalPageName = "";
                 // so that we can pull out the properties of each blog post 
                const blogPostObject = JSON.parse(value);
 
-                // A Little debug:
-                //console.log(returnedData);
+               // DEBUG
+               console.log(blogPostObject.Count);
              
             // Next all getSortOrder, passing the attribute we want to sort on. Remember, "Items" is the array of JSON-formatted blogPosts
             // If the blogType passed in from the page is 3 (mach-e blogs) lets display oldest blogs first, for everything else, order newest first 
