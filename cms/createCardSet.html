@@ -113,20 +113,21 @@
                         Submit Post
                     </button>
                     <br>
-                    <button class="input-button" type="button" id="cmsSubmitButton"
-                        onclick="previewCardSet(
-                                document.getElementById('blogStatus').value,
-                                document.getElementById('setName').value,
-                                document.getElementById('size').value,
-                                document.getElementById('subsets').value,
-                                document.getElementById('stars').value,
-                                document.getElementById('formats').value,
-                                document.getElementById('year').value,
-                                document.getElementById('mfg').value,
-                                document.getElementById('headerImgName').value,
-                                document.getElementById('footerImgName').value)">
-                        Preview Post
-                    </button>
+                    
+                    <!-- Trigger/Open the Modal -->
+                    <button onclick="document.getElementById('previewModal').style.display='block'" class="w3-button">Preview!</button>
+
+                    <!-- The Modal -->
+                    <div id="previewModal" class="w3-modal">
+                      <div class="w3-modal-content">
+                        <div class="w3-container">
+                          <span onclick="document.getElementById('id01').style.display='none'" 
+                          class="w3-button w3-display-topright">&times;</span>
+                          <p>Some text in the Modal..</p>
+                          <p>Some text in the Modal..</p>
+                        </div>
+                      </div>
+                    </div>
                 </form>
             </main>
         </div>
