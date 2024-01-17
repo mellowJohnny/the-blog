@@ -59,6 +59,12 @@
             <main>
                 <form class="form-style">
 
+                  <label>Status <sup>*</sup></label><br>
+                      <select id="blogStatus" name="blogStatus" title="blogStatus">
+                        <option value="staged">Staging</option>
+                        <option value="OK">Live</option>
+                    </select><br><br>
+
                     <label>Blog Post Title <sup>*</sup></label><br>
                     <input type="text" id="title" required title="blogPostTitle"><br><br>
 
@@ -66,8 +72,10 @@
                     <div>
                         <select id="blogType" name="blogType" class="form-style" title="blogType">
                          <option value="1">Technology</option>
+                         <option value="5">Raspberry Pi</option>
                          <option value="2">Hockey Cards</option>
-                         <option value="3">General Observations</option>
+                         <option value="3">Mach-E</option>
+                         <option value="4">SYNC Update</option>
                          <option value="99">Home Page</option>
                         </select>
                     </div><br><br>
@@ -78,17 +86,22 @@
                             <option value="Christian Couillard">Christian Couillard</option>
                         </select>
                     </div><br><br>
+                    <label>Image</label><br>
+                    <input type="text" id="imgName" title="imgName" value="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/blog/"><br><br>
+
+                    <label>Image Caption</label><br>
+                    <input type="text" id="imgCap" title="imgCap"><br><br>
 
                     <label>Post Body <sup>*</sup></label><br>
-
                     <textarea id="postBody" required title="blogBody"></textarea>
                     <br><br>
                     <button class="input-button" type="button" id="cmsSubmitButton"
                         onclick="createBlogPost(
+                                document.getElementById('blogStatus').value,
                                 document.getElementById('title').value,
-                               // document.getElementById('img').value,
+                                document.getElementById('imgName').value,
+                                document.getElementById('imgCap').value,
                                 document.getElementById('author').value,
-                                // document.getElementById('postBody').value,
                                 document.getElementById('blogType').value)">
                         Submit Post
                     </button>

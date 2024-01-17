@@ -1,4 +1,7 @@
-
+/**
+NOTE: Removed all overflow: scroll settings as in April 2023 it started 
+messing up the layout with white borders and scoll bars
+**/
 
 /* Media query to set the font size to 12px for screens between 320px - 480px... */
 @media only screen and (min-width: 320px) and (max-width: 480px) {
@@ -16,8 +19,8 @@
   
   .flex-container div {
     width: 1000px;
-    padding: 15px; /** This sets the margins on the blog posts **/
-    overflow: scroll;
+    padding: 15px;  This sets the margins on the blog posts 
+   /** overflow: scroll; **/
     margin: 5px; 
   }
 
@@ -39,7 +42,7 @@
 
 /** Navigation link formatting **/
 .nav-td {
-  font-family: 'Work Sans', sans-serif;;
+  font-family: 'Work Sans', sans-serif;
   font-size: 18px;
   margin: 15px;
   padding: 20px;
@@ -52,24 +55,25 @@
 
 .card-set-nav {
   font-family: 'Spicy Rice';
-  font-size: 16px;
+  font-size: 20px;
   color:rgb(11, 62, 100);
+}
+
+/** Set-O-Matic styling **/
+.junk-set-nav-td {
+  margin: 1px;
+  padding-left: 25px;
+}
+
+.classic-set-nav-td {
+  margin: 1px;
+  padding-left: 25px;
 }
 
 .set-o-matic-picker {
   font-family: 'Spicy Rice';
   font-size: 30px;
   text-align: center;
-}
-
-.junk-set-nav-td {
-  margin: 1px;
-  padding-left: 65px;
-}
-
-.classic-set-nav-td {
-  margin: 1px;
-  padding-left: 55px;
 }
 
 body {
@@ -204,7 +208,7 @@ textarea {
     font-size: 24px;
     margin: 5px auto;
     width: 900px;
-    overflow: scroll;
+  /**  overflow: scroll; **/
 }
 
 .intro {
@@ -212,7 +216,7 @@ textarea {
   font-size: 18px;
   margin: 5px auto;
   width: 950px;
-  overflow: scroll;
+ /** overflow: scroll; *//
 }
 
 .blog-entry {
@@ -351,6 +355,19 @@ textarea {
   box-shadow: 5px 10px 18px #888888;
 }
 
+.mache-sync-img {
+  /* First four values center the image, no table needed */
+  width: 50%;
+  height: 50%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border: 2px solid;
+  border-color: rgb(22, 86, 138);
+  border-radius: 2px;
+  box-shadow: 5px 10px 18px #888888;
+}
+
 .table-footer-img {
   width: 90%;
   display: block;
@@ -364,7 +381,7 @@ textarea {
 
 .page-footer {
     font-size: 10px;
-    font-family: 'Audiowide', cursive;
+    font-family: 'Work Sans', sans-serif;
     padding: 20px;
     display: inline;
 }
@@ -385,4 +402,24 @@ textarea {
   vertical-align: middle;
   padding: 8px;
   padding-bottom: 3px;
+}
+
+/** NEW dynamic menu stuff... **/
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  padding: 12px 16px;
+  z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
 }

@@ -12,16 +12,18 @@
  * Called from the wlcms.html page
  * Calls the createBlogPost API exposed by AWS API Gateway
  * 
+ * @param {*} blogStatus
  * @param {*} title 
  * @param {*} author 
  * @param {*} postBody 
  * @param {*} type
- * 
+ * @param {*} imgName
+ * @param {*} imgCap
  */
 
-// NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
- function createBlogPost (title,author,type){
-
+// NOTE: We don't pass in the postBody textarea content from the form anymore, we call the TinyMCE API to get it
+ function createBlogPost (blogStatus,title,imgName,imgCap,author,type){
+    console.log(`Image Name: ${imgName}`);
     // Let's change the state of the button, now that we've clicked it...
     cmsButtonSubmit();
     
@@ -30,7 +32,7 @@
     // this makes it look like the button is waiting for the modal to close first :-)
     cmsCreateButtonReset();
 
-    // Call the Tiny API to fetch the content from the editor...
+    // Call the Tiny API to fetch the content from the WYSIWYG editor...
     const tinyBody = tinymce.activeEditor.getContent();
     
     // instantiate a headers object
@@ -38,9 +40,9 @@
   
     // add content type header to object
     myHeaders.append("Content-Type", "application/json");
-  
+
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"title":title,"author":author,"postBody":tinyBody,"type":type});
+    let raw = JSON.stringify({"blogStatus":blogStatus,"title":title,"imgName":imgName,"imgCap":imgCap,"author":author,"postBody":tinyBody,"type":type});
   
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
@@ -50,7 +52,7 @@
       redirect: 'follow'
       };
     
-    // make API call to BlogPost endpoint with parameters and use promises to get response
+    // make API call to createBlogPost endpoint with parameters and use promises to get response
     fetch("https://s4ge5t9w06.execute-api.us-east-2.amazonaws.com/dev ", requestOptions)
     .then(response => response.text())
     .then(result => alert(JSON.parse(result).body))
@@ -182,13 +184,15 @@
  * NOTE: We don't pass in the postBody anymore as we fetch it via API call to TinyMCE
  * 
  * @param {*} title
+ * @param {*} imgName
+ * @param {*} imgCap
  * @param {*} blogStatus
  * @param {*} blogType
  * @param {*} time
  * 
  **/
 
- function updateBlogPost(title,blogStatus,blogType,time) {
+ function updateBlogPost(title,imgName,imgCap,blogStatus,blogType,time) {
     // Let's change the state of the button, now that we've clicked it...
     cmsButtonSubmit();
 
@@ -207,7 +211,7 @@
     myHeaders.append("Content-Type", "application/json");
   
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"title":title,"blogStatus":blogStatus,"blogType":blogType,"time":time,"postBody":tinyBody});
+    let raw = JSON.stringify({"title":title,"imgName":imgName,"imgCap":imgCap,"blogStatus":blogStatus,"blogType":blogType,"time":time,"postBody":tinyBody});
 
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
@@ -496,6 +500,8 @@ function displayStagedBlogs(title, blogID) {
                for (var i = 0; i < blogArray.Items.length; i++) {
                    populateBlog(
                     blogArray.Items[i].postBody,
+                    blogArray.Items[i].img,
+                    blogArray.Items[i].imgCap,
                     blogArray.Items[i].blogStatus,
                     blogArray.Items[i].blogType,
                     blogArray.Items[i].time,
@@ -529,14 +535,16 @@ function displayStagedBlogs(title, blogID) {
   */
   
   /** This function calls the associated DIV on the Set Update form and populates it with the current value */
-  function populateBlog(postBody,blogStatus,blogType,time,title,) {
+  function populateBlog(postBody,img,imgCap,blogStatus,blogType,time,title,) {
   
       // Cleanup the JSON we get back so it's back to a String 
       // We parsed the first object we got back, but that didn't parse the contents of the inner properties
       // so we need to explicitly parse all the String properties - except for blogType & time which are numbers 
       const cleanPostBody = JSON.parse(postBody);
       const cleanTitle = JSON.parse(title);
-      const cleanBlogStatus = JSON.parse(blogStatus);
+      const cleanStatus = JSON.parse(blogStatus);
+      const cleanImg = JSON.parse(img);
+      const cleanImgCap = JSON.parse(imgCap);
 
       // Inserts postBody into 'current' TinyMCE Editor
       tinymce.activeEditor.selection.setContent(cleanPostBody);
@@ -544,10 +552,29 @@ function displayStagedBlogs(title, blogID) {
       // Now that we have cleaned up the data we got back from DynamoDB, let's
       // populate the form on setEdit.html with the values as defaults
      // document.getElementById("postBody").defaultValue = cleanPostBody;
-      document.getElementById("blogStatus").defaultValue = cleanBlogStatus;
+
+      // First we need to check the "status" of the blog and make the default option 
+      // in the HTML dropdown reflect the current state. We can also re-order the option tags
+      // so that the current "status" is always first in the list :-)
+      if(cleanStatus === "staged") {
+        let statusOptions = document.getElementById("blogStatus");
+        statusOptions.innerHTML += 
+                     `<option id="staged" value="staged" selected>Staging</option> 
+                     <option id="live" value="OK">Live</option> `;
+       }
+       else{
+        let statusOptions = document.getElementById("blogStatus");
+        statusOptions.innerHTML += 
+                     ` <option id="live" value="OK" selected>Live</option>
+                     <option id="staged" value="staged">Staging</option> `;
+       }
+     
+     // document.getElementById("blogStatus").defaultValue = cleanBlogStatus;
       document.getElementById("blogType").defaultValue = blogType;
       document.getElementById("time").defaultValue = time;
       document.getElementById("title").defaultValue = cleanTitle;
+      document.getElementById("imgName").defaultValue = cleanImg;
+      document.getElementById("imgCap").defaultValue = cleanImgCap;
       
   }
   

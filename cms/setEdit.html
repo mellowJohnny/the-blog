@@ -72,11 +72,7 @@
                               <form class="form-style">
                                   <label>Publication Status</label><br>
 
-                                  <!--  Next let's find out if the set's Publication Status -->
-                                  <script>
-                                    
-                                  </script>
-            
+                                  <!--  Next let's find out if the set's Publication Status -->  
                                   <select id="blogStatus" name="blogStatus" title="blogStatus">
                                     <!-- The option tags are dynamically added by the CMS.js populateCardSet() function -->
                                 </select><br><br>
@@ -110,7 +106,7 @@
                                 
                                   <label>Set Review Text</label><br>
                                     <textarea id="postBody" title="postBody"></textarea><br><br>
-                                  
+                                   <!-- NOTE: We don't need to grab the postBody becasue the updateBlog() gets it from the tinyMCE function  -->
                                   <button class="input-button" type="button" id="cmsSubmitButton"
                                       onclick="updateCardSet(
                                               document.getElementById('blogStatus').value,
