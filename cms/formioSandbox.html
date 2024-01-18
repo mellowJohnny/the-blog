@@ -20,26 +20,25 @@
         </script>
 
         <!-- **** Form.io stuff ***** -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> 
-        <link rel="stylesheet" href="https://cdn.form.io/formiojs/formio.full.min.css"> 
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.form.io/formiojs/formio.full.min.css">
         <script src="https://cdn.form.io/formiojs/formio.full.min.js"></script>
 
         <!-- Form.io call to our form -->
-        <script type="text/javascript">   
-        window.onload = function() {     
-            Formio.createForm(document.getElementById('formio'), 'https://ejzdmxxpqqymzib.form.io/productupload');   
-            }; 
-        </script>
+        <script type="text/javascript">
+            window.onload = function() {
+              Formio.createForm(document.getElementById('formio'), 'https://ejzdmxxpqqymzib.form.io/productupload');
+            };
+          </script>
     </head>
 
-<body></body>
+    <body>
+        <!-- Insert the Form.io form here! -->
+        <div id="formio"></div>
 
-<main></main>
-
-<footer class="page-footer">
-    <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
-    <div id="copy"></div> 
-    
-  </footer>
-</body>
+        <footer class="page-footer">
+            <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
+            <div id="copy"></div> 
+        </footer>
+    </body>
 </html>
