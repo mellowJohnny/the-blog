@@ -301,6 +301,17 @@ function fetchCardIntro(year){
         but also Messier, Bourque, Coffey, Savard, Fuhr, Hawerchuck, Carbonneau, Yzerman, Gilmour, and MacInnis. Quite a Hall of Fame class.
         </p>`;
     }
+    if (year >= "2014") {
+        // 2014 is the first year of timmies hockey, so if the year param is greater than or equal to 2014, must be timmies wax...
+        blogIntro.innerHTML = `
+        <p>Starting with the 1991-92 season McDonald's Canada produced anannual NHL Hockey card set distributed (with purchase of course) through "participating"
+        McDonald's restaurants in Canada. While not worth much today, the sets were pretty popular back in the day, and was one of the longest-running food premium card series. 
+        That is until the 2010-2011 season when it was announced they had severed their partnership with the NHL. Boo. Fast-forward 
+        to the 2014-15 season when Tim Hortons, the bastion of blue-collar coffee shops, picked up the torch and carried on the tradition with their very first NHL Hockey set. 
+        There was much rejoicing. Not only was hockey card collecting back in fast food restaurants, but with a modern, mid-sized set complete with custom binder and loads of chase cards. Over 
+        the last few seasons Timmies has expanded their card set offering to include two sets per year - an NHL set and a "themed" set, such as "Team Canada" or "Legends".
+        </p>`;
+    }
     else {
         // must be Junk Wax
         blogIntro.innerHTML = `
