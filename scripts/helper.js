@@ -540,6 +540,15 @@ function renderSetPicker(year){
                 </tr>
               </table>`;
     } 
+    else if (year === "2014") {
+        setPicker.innerHTML = `
+        <table class="card-set-nav">
+                <tr>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">1987-88</a></td>
+                    
+                </tr>
+              </table>`;
+    } 
 } // end set-o-matic year picker
 
 
@@ -554,6 +563,7 @@ function fetchNav(pageName,blogType){
         <tr>
           <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
           <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
+          <td class="nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">Tim Hortons Upper Deck Hockey Sets</a> </td>
           <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
           <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
          <!-- Dynamic menu stuff...-->
@@ -579,6 +589,7 @@ function fetchNav(pageName,blogType){
           <td class="nav-td"><a href="/index.html">Home</a> </td>
           <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
           <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
+          <td class="nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">Tim Hortons Upper Deck Hockey Sets</a> </td>
           <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
           <td class="nav-td">
             <div class="dropdown">
@@ -600,6 +611,7 @@ function fetchNav(pageName,blogType){
           <td class="nav-td"><a href="/index.html">Home</a> </td>
           <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
           <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
+          <td class="nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">Tim Hortons Upper Deck Hockey Sets</a> </td>
           <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
           <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
         </tr>
@@ -613,6 +625,7 @@ function fetchNav(pageName,blogType){
           <td class="nav-td"><a href="/index.html">Home</a> </td>
           <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
           <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
+          <td class="nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">Tim Hortons Upper Deck Hockey Sets</a> </td>
           <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
           <td class="nav-td">
             <div class="dropdown">
@@ -636,6 +649,7 @@ function fetchNav(pageName,blogType){
           <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
           <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
           <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
+          <td class="nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">Tim Hortons Upper Deck Hockey Sets</a> </td>
           <td class="nav-td">
             <div class="dropdown">
               <span>Mustang Mach-E</span>
@@ -657,6 +671,7 @@ function fetchNav(pageName,blogType){
           <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
           <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
           <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
+          <td class="nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">Tim Hortons Upper Deck Hockey Sets</a> </td>
           <td class="nav-td">
             <div class="dropdown">
               <span>Mustang Mach-E</span>
@@ -677,6 +692,29 @@ function fetchNav(pageName,blogType){
           <td class="nav-td"><a href="/index.html">Home</a> </td>
           <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
           <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
+          <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
+          <td class="nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">Tim Hortons Upper Deck Hockey Sets</a> </td>
+          <td class="nav-td">
+            <div class="dropdown">
+              <span>Mustang Mach-E</span>
+                <div class="dropdown-content">
+                  <a href="/tech.html?blogType=3">Mach-E Blog</a> <br><br>
+                  <a href="/tech.html?blogType=4">Power-Up Software Updates</a> 
+                </div>
+            </div>
+          </td>
+        </tr>
+      </table>`;
+    } 
+
+    else if (pageName === "timmies") {
+        nav.innerHTML = `
+        <table class="top-nav">
+        <tr>
+          <td class="nav-td"><a href="/index.html">Home</a> </td>
+          <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
+          <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
+           <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
           <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
           <td class="nav-td">
             <div class="dropdown">
