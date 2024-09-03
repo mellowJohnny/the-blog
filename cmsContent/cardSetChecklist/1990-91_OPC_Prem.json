@@ -1,0 +1,287 @@
+{
+    "set": {
+        "publisher": "O-Pee-Chee",
+        "brand": "Premier",
+        "releaseYear": "1991",
+        "setSize": "132",
+    },
+		"card": {
+            "number": "1",
+            "playerName": "Scott Arniel",
+            "team": "Winnipeg Jets",
+            "isRookie": "no",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+        "card": {
+            "number": "2",
+            "playerName": "Jergus Baca",
+            "team": "Hartford Whalers",
+            "isRookie": "yes",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+        "card": {
+            "number": "3",
+            "playerName": "Brian Bellows",
+            "team": "Minnesota North Stars",
+            "isRookie": "no",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+        "card": {
+            "number": "4",
+            "playerName": "Jean-Claude Bergeron",
+            "team": "Montreal Canadiens",
+            "isRookie": "yes",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+         "card": {
+            "number": "5",
+            "playerName": "Daniel Berthiaume",
+            "team": "Los Angeles Kings",
+            "isRookie": "no",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+        "card": {
+            "number": "6",
+            "playerName": "Rob Blake",
+            "team": "Los Angeles Kings",
+            "isRookie": "yes",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+         "card": {
+            "number": "7",
+            "playerName": "Peter Bondra",
+            "team": "Washington Capitals",
+            "isRookie": "yes",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+        "card": {
+            "number": "8",
+            "playerName": "Laurie Boschman",
+            "team": "New Jersey Devils",
+            "isRookie": "no",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+        "card": {
+            "number": "9",
+            "playerName": "Ray Bourque",
+            "team": "Boston Bruins",
+            "isRookie": "no",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+         "card": {
+            "number": "10",
+            "playerName": "Aaron Broten",
+            "team": "Quebec Nordiques",
+            "isRookie": "no",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+        "card": {
+            "number": "11",
+            "playerName": "Greg Brown",
+            "team": "Buffalo Sabres",
+            "isRookie": "yes",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+        "card": {
+            "number": "12",
+            "playerName": "Jimmy Carson",
+            "team": "Detroit Red Wings",
+            "isRookie": "no",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+         "card": {
+            "number": "13",
+            "playerName": "Chris Chelios",
+            "team": "Chicago Blackhawks",
+            "isRookie": "no",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+        "card": {
+            "number": "14",
+            "playerName": "Dino Ciccarelli",
+            "team": "Washington Capitals",
+            "isRookie": "no",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+        "card": {
+            "number": "15",
+            "playerName": "Zdeno Ciger",
+            "team": "New Jersey Devils",
+            "isRookie": "yes",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+        "card": {
+            "number": "16",
+            "playerName": "Paul Coffey",
+            "team": "Pittsburgh Penguins",
+            "isRookie": "no",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+        "card": {
+            "number": "17",
+            "playerName": "Danton Cole",
+            "team": "Winnipeg Jets",
+            "isRookie": "yes",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+        "card": {
+            "number": "18",
+            "playerName": "Geoff Courtnall",
+            "team": "St. Louis Blues",
+            "isRookie": "no",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+        "card": {
+            "number": "19",
+            "playerName": "Mike Craig",
+            "team": "Minnesota North Stars",
+            "isRookie": "yes",
+            "isShortPrint": "no",
+            "subset": ""
+                    },
+            }
+        
+
+8  - 
+9  - 
+10  - 
+11  -  
+12  - 
+13  - 
+14  - 
+15  -  RC
+16  - 
+17  -  RC
+18  - 
+19  -  RC
+20 John Cullen - Pittsburgh Penguins
+21 Vincent Damphousse - Toronto Maple Leafs
+22 Gerald Diduck - Montreal Canadiens
+23 Kevin Dineen - Hartford Whalers
+24 Per Djoos - Detroit Red Wings RC
+25 Tie Domi - New York Rangers RC
+26 Peter Douris - Boston Bruins RC
+27 Rob DiMaio - New York Islanders RC
+28 Pat Elynuik - Winnipeg Jets
+29 Bob Essensa - Winnipeg Jets RC
+30 Sergei Fedorov - Detroit Red Wings RC
+31 Brent Fedyk - Detroit Red Wings RC
+32 Ron Francis - Hartford Whalers
+33 Link Gaetz - Minnesota North Stars RC
+34 Troy Gamble - Vancouver Canucks RC
+35 Johan Garpenlov - Detroit Red Wings RC
+36 Mike Gartner - New York Rangers
+37 Rick Green - Detroit Red Wings
+38 Wayne Gretzky - Los Angeles Kings
+39 Jeff Hackett - New York Islanders RC
+40 Dale Hawerchuk - Buffalo Sabres
+41 Ron Hextall - Philadelphia Flyers
+42 Bruce Hoffort - Philadelphia Flyers RC
+43 Bobby Holik - Hartford Whalers RC
+44 Martin Hostak - Philadelphia Flyers RC
+45 Phil Housley - Winnipeg Jets
+46 Jody Hull - New York Rangers RC
+47 Brett Hull - St. Louis Blues
+48 Al Iafrate - Toronto Maple Leafs
+49 Peter Ing - Toronto Maple Leafs RC
+50 Jaromir Jagr - Pittsburgh Penguins RC
+51 Curtis Joseph - St. Louis Blues RC
+52 Robert Kron - Vancouver Canucks RC
+53 Frantisek Kucera - Chicago Blackhawks RC
+54 Dale Kushner - Philadelphia Flyers RC
+55 Guy Lafleur - Quebec Nordiques
+56 Pat LaFontaine - New York Islanders
+57 Mike Lalor - Washington Capitals RC
+58 Steve Larmer - Chicago Blackhawks
+59 Jiri Latal - Philadelphia Flyers RC
+60 Jamie Leach - Pittsburgh Penguins RC
+61 Brian Leetch - New York Rangers
+62 Claude Lemieux - New Jersey Devils
+63 Mario Lemieux - Pittsburgh Penguins
+64 Craig Ludwig - New York Islanders
+65 Al MacInnis - Calgary Flames
+66 Mikko Makela - Buffalo Sabres
+67 Dave Marcinyshyn - New Jersey Devils RC
+68 Stephane Matteau - Calgary Flames RC
+69 Brad McCrimmon - Detroit Red Wings
+70 Kirk McLean - Vancouver Canucks
+71 Mark Messier - Edmonton Oilers
+72 Kelly Miller - Washington Capitals
+73 Kevin Miller - New York Rangers RC
+74 Mike Modano - Minnesota North Stars RC
+75 Alexander Mogilny - Buffalo Sabres RC
+76 Andy Moog - Boston Bruins
+77 Joe Mullen - Pittsburgh Penguins
+78 Kirk Muller - New Jersey Devils
+79 Pat Murray - Philadelphia Flyers RC
+80 Jarmo Myllys - Minnesota North Stars RC
+81 Petr Nedved - Vancouver Canucks RC
+82 Cam Neely - Boston Bruins
+83 Bernie Nicholls - New York Rangers
+84 Joe Nieuwendyk - Calgary Flames
+85 Chris Nilan - Boston Bruins
+86 Owen Nolan - Quebec Nordiques RC
+87 Brian Noonan - Chicago Blackhawks
+88 Adam Oates - St. Louis Blues
+89 Greg Parks - New York Islanders RC
+90 Adrien Plavsic - Vancouver Canucks RC
+91 Keith Primeau - Detroit Red Wings RC
+92 Brian Propp - Minnesota North Stars
+93 Dan Quinn - Vancouver Canucks
+94 Bill Ranford - Edmonton Oilers
+95 Robert Reichel - Calgary Flames RC
+96 Mike Ricci - Philadelphia Flyers RC
+97 Steven Rice - New York Rangers RC
+98 Stephane Richer - Montreal Canadiens
+99 Luc Robitaille - Los Angeles Kings
+100 Jeremy Roenick - Chicago Blackhawks RC
+101 Patrick Roy - Montreal Canadiens
+102 Joe Sakic - Quebec Nordiques
+103 Denis Savard - Montreal Canadiens
+104 Anatoli Semenov - Edmonton Oilers RC
+105 Brendan Shanahan - New Jersey Devils
+106 Ray Sheppard - New York Rangers
+107 Mike Sillinger - Detroit Red Wings RC
+108 Ilkka Sinisalo - Minnesota North Stars
+109 Bobby Smith - Minnesota North Stars
+110 Paul Stanton - Pittsburgh Penguins RC
+111 Kevin Stevens - Pittsburgh Penguins RC
+112 Scott Stevens - St. Louis Blues
+113 Alan Stewart - New Jersey Devils RC
+114 Mats Sundin - Quebec Nordiques RC
+115 Brent Sutter - New York Islanders
+116 Tim Sweeney - Calgary Flames RC
+117 Peter Taglianetti - Minnesota North Stars
+118 John Tanner - Quebec Nordiques RC
+119 Dave Tippett - Washington Capitals
+120 Rick Tocchet - Philadelphia Flyers
+121 Bryan Trottier - Pittsburgh Penguins
+122 John Tucker - Buffalo Sabres
+123 Darren Turcotte - New York Rangers RC
+124 Pierre Turgeon - Buffalo Sabres
+125 Randy Velischek - Quebec Nordiques
+126 Mike Vernon - Calgary Flames
+127 Wes Walz - Boston Bruins RC
+128 Carey Wilson - Hartford Whalers
+129 Doug Wilson - Chicago Blackhawks
+130 Steve Yzerman - Detroit Red Wings
+131 Peter Zezel - Washington Capitals
+132 Checklist

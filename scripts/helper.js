@@ -729,3 +729,12 @@ function fetchNav(pageName,blogType){
       </table>`;
     } 
 } // end dynamic Nav
+
+// --------------- Cookie! --------------------------
+
+function setCookie(cookieName, cookieValue, exp) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exp*24*60*60*1000));
+    let expires = "expires="+ d.toUTCString();
+    document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
+  }

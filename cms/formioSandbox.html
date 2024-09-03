@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<html lang="en">
+    <title>form playground...</title>
+    <head>
+        <meta charset="utf-8"> 
+        <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+        <link rel="preconnect" href="https://fonts.gstatic.com"> 
+        <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Fira+Code:wght@300&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200&display=swap" rel="stylesheet">
+
+        <script src="/scripts/helper.js"></script>
+        <script>
+        window.addEventListener('load', (event) => {
+            // *** Dynamically display the copyright year
+            fetchCopyrightYear();
+        });
+        </script>
+
+        <!-- **** Form.io stuff ***** -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.form.io/formiojs/formio.full.min.css">
+        <script src="https://cdn.form.io/formiojs/formio.full.min.js"></script>
+
+        <!-- Form.io call to our form -->
+        <script type="text/javascript">
+            window.onload = function() {
+              Formio.createForm(document.getElementById('formio'), 'https://ejzdmxxpqqymzib.form.io/productupload');
+            };
+          </script>
+    </head>
+
+    <body>
+        <div class="header-style">
+            <h1>...form submission sandbox</h1>
+        </div>
+        <!-- Insert the Form.io form here! -->
+        <section>
+            <div class="flex-container">
+                <div id="formio" class="form-style"></div>
+            </div>
+        </section> 
+        
+
+        <footer class="page-footer">
+            <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
+            <div id="copy"></div> 
+        </footer>
+    </body>
+</html>
