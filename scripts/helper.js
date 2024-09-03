@@ -544,7 +544,7 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">1987-88</a></td>
+                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">2014</a></td>
                     
                 </tr>
               </table>`;
