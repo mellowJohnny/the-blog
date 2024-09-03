@@ -560,7 +560,7 @@ function renderSetPicker(year){
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-2017</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-2018</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2018&pageName=timmies">2018-2019</a></td>
-                    <br><br>
+                    <td><tr></tr></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2019&pageName=timmies">2019-2020</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2020&pageName=timmies">2020-2021</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2021&pageName=timmies">2021-2022</a></td>
