@@ -304,11 +304,10 @@ function fetchCardIntro(year){
     if (year >= "2014") {
         // 2014 is the first year of timmies hockey, so if the year param is greater than or equal to 2014, must be timmies wax...
         blogIntro.innerHTML = `
-        <p>Beginning with the 1991-92 season and ending with the 2009-10 NHL season, McDonald's Canada produced annual NHL Hockey card sets distributed (with purchase of course) through "participating"
-        McDonald's restaurants in Canada. Then nothing, until the 2015-16 season when Tim Hortons, the bastion of blue-collar coffee shops, picked up the torch and carried on the tradition 
-        with their very first NHL Hockey set. <br>
-        Fast food ockey card collecting back! But this time with a modern, mid-sized Upper Deck set (around 125 cards) complete with custom binder and loads of chase cards. <br>
-        And over the last few seasons Timmies has expanded their card set offering to two sets per year - an NHL set and a themed set, such as a "Team Canada" set or a "Legends" set later in the season.
+        <p>After a five year absence, fast food hockey card collecting was back! Picking up when McDonald's Canada left off after the cancellation of their 
+        annual NHL Hockey Card sets in 2010, Tim Hortons, the bastion of blue-collar coffee shops, released their very first NHL Hockey set for the 2015-16 season. <br> <br>
+        But this time with a modern, mid-sized Upper Deck set (100 to 125 cards) complete with custom binder and loads of chase cards. <br><br>
+        
         </p>`;
     }
     else {
@@ -550,30 +549,10 @@ function renderSetPicker(year){
                 </tr>
               </table>`;
     } 
-    else if (year === "2014") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td">2014-15</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2018&pageName=timmies">2018-19</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2019&pageName=timmies">2019-20</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2020&pageName=timmies">2020-21</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2021&pageName=timmies">2021-22</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2022&pageName=timmies">2022-23</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2023&pageName=timmies">2023-24</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2024&pageName=timmies">2024-25</a></td>
-                    
-                </tr>
-              </table>`;
-    } 
     else if (year === "2015") {
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">2014-15</a></td>
                     <td class="junk-set-nav-td">2015-16</td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
@@ -592,8 +571,7 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">2014-15</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
+                   <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
                     <td class="junk-set-nav-td">2016-17</td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2018&pageName=timmies">2018-19</a></td>
@@ -611,7 +589,6 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">2014-15</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
                     <td class="junk-set-nav-td">2017-18</td>
@@ -630,7 +607,6 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">2014-15</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
@@ -649,7 +625,6 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">2014-15</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
@@ -668,7 +643,6 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">2014-15</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
@@ -687,7 +661,6 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">2014-15</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
@@ -706,7 +679,6 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">2014-15</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
@@ -721,12 +693,10 @@ function renderSetPicker(year){
                 </tr>
               </table>`;
     } 
-
     else if (year === "2023") {
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">2014-15</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
@@ -746,7 +716,6 @@ function renderSetPicker(year){
         setPicker.innerHTML = `
         <table class="card-set-nav">
                 <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2014&pageName=timmies">2014-15</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
                     <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
@@ -761,6 +730,7 @@ function renderSetPicker(year){
                 </tr>
               </table>`;
     } 
+
 } // end set-o-matic year picker
 
 
