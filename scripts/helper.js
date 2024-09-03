@@ -305,7 +305,7 @@ function fetchCardIntro(year){
         // 2014 is the first year of timmies hockey, so if the year param is greater than or equal to 2014, must be timmies wax...
         blogIntro.innerHTML = `
         <p>Beginning with the 1991-92 season and ending with the 2009-10 NHL season, McDonald's Canada produced annual NHL Hockey card sets distributed (with purchase of course) through "participating"
-        McDonald's restaurants in Canada. Then nothing, until the 2014-15 season when Tim Hortons, the bastion of blue-collar coffee shops, picked up the torch and carried on the tradition 
+        McDonald's restaurants in Canada. Then nothing, until the 2015-16 season when Tim Hortons, the bastion of blue-collar coffee shops, picked up the torch and carried on the tradition 
         with their very first NHL Hockey set. <br>
         Fast food ockey card collecting back! But this time with a modern, mid-sized Upper Deck set (around 125 cards) complete with custom binder and loads of chase cards. <br>
         And over the last few seasons Timmies has expanded their card set offering to two sets per year - an NHL set and a themed set, such as a "Team Canada" set or a "Legends" set later in the season.
