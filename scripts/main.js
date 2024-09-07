@@ -260,18 +260,10 @@ var globalPageName = "";
        const cleanSetName = JSON.parse(setName);
 
        // Now that we have the name of the set, let's render one of three versions of the Header in the HTML page...
-        if (pageName === "junkWax") {
-            let pageHeader = document.getElementById("pageHeader");
-            pageHeader.innerHTML = `...junk wax sets from ${cleanYear}`;
-        }
-        if (pageName === "timmies") { 
-            let pageHeader = document.getElementById("pageHeader");
-            pageHeader.innerHTML = `...timmies sets: ${cleanYear}`;
-        }
-        if (pageName === "classicWax")  {
-           let pageHeader = document.getElementById("pageHeader");
-            pageHeader.innerHTML = `...classic wax: ${cleanSetName}`;
-        }
+
+       displayCardHeader(pageName,cleanYear);
+
+        
        
 
        // Generate n number of "Star" emojis, one per rating number
@@ -333,7 +325,27 @@ var globalPageName = "";
                    <br>`;
    }
 
+/**
+    * Card Header function
+    * called by the waxReviews page to display a category-specific page header
+    * Possible values for pageName are 'junkWax', 'classicWax' or 'timmies'
+*/
 
+function displayCardHeader(pageName,year) {
+    if (pageName === "junkWax") {
+        let pageHeader = document.getElementById("pageHeader");
+        pageHeader.innerHTML = `...junk wax sets from ${year}`;
+    }
+    if (pageName === "timmies") { 
+        let pageHeader = document.getElementById("pageHeader");
+        pageHeader.innerHTML = `...timmies sets: ${year}`;
+    }
+    if (pageName === "classicWax")  {
+       let pageHeader = document.getElementById("pageHeader");
+        pageHeader.innerHTML = `...classic wax: ${year}`;
+    }
+
+}
 
 
  /**
