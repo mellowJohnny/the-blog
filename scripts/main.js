@@ -270,7 +270,7 @@ var globalPageName = "";
         }
         else {
            let pageHeader = document.getElementById("pageHeader");
-            pageHeader.innerHTML = `...classic wax sets: ${cleanSetName}`;
+            pageHeader.innerHTML = `...classic wax: ${cleanSetName}`;
         }
        
 
