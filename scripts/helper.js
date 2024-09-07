@@ -788,7 +788,7 @@ function fetchNav(pageName,blogType){
       </table>`;
     }
 
-    else if (pageName === "tech" & blogType === "3") {
+    else if (pageName === "tech" & blogType === "3" || blogType === "4") {
         nav.innerHTML = `
         <table class="top-nav">
         <tr>
