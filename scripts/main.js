@@ -344,24 +344,6 @@ function displayCardHeader(pageName,year) {
 
 }
 
-// NEW
-
-function fetchCardSetsByYear() {
-    
-    // Set up a global variable to hold the API URL
-    const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}`;
-          
-    fetch(urlToFetch)
-       .then(function (response) {
-           const jsonResponse = response.json();
-           return jsonResponse; // Our Promise object
-       })
-       .then(function (data) {
-       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
-       // First let's return an array of the object's properties
-           const returnedData = Object.entries(data); 
-       }
-    }
 
 
  /**
