@@ -277,6 +277,7 @@ function fetchIntro(blogType){
         <p>The process has not always been smooth for all owners, but when you consider that in the first two years of its existance the Mach-E was one of the few 
         electric vehicles with OTA capabilities, its pretty cool stuff.</p>
         `;
+        blogHeader.innerHTML = ` <H1>...the mach-e OTAs</H1>`;
     }
     else if (blogType === "5") {
         blogIntro.innerHTML = `
