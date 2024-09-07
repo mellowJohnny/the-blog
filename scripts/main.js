@@ -259,12 +259,8 @@ var globalPageName = "";
        const cleanFooterImgName = JSON.parse(footerImgName);
        const cleanSetName = JSON.parse(setName);
 
-       // Now that we have the name of the set, let's render one of three versions of the Header in the HTML page...
-
-       displayCardHeader(pageName,cleanYear);
-
-        
        
+      // displayCardHeader(pageName,cleanYear);
 
        // Generate n number of "Star" emojis, one per rating number
        let cleanStars = "";
@@ -329,6 +325,7 @@ var globalPageName = "";
     * Card Header function
     * called by the waxReviews page to display a category-specific page header
     * Possible values for pageName are 'junkWax', 'classicWax' or 'timmies'
+    * Called from waxReviews.html using the pageName and year URL parameters
 */
 
 function displayCardHeader(pageName,year) {
