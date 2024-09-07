@@ -798,6 +798,15 @@ function fetchNav(pageName,blogType){
           <td class="nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">Tim Hortons Hockey</a> </td>
           <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
           <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
+          <td class="nav-td">
+            <div class="dropdown">
+              <span>Mustang Mach-E</span>
+                <div class="dropdown-content">
+                  <a href="/tech.html?blogType=3">Mach-E Blog</a> <br><br>
+                  <a href="/tech.html?blogType=4">Power-Up Software Updates</a> 
+                </div>
+            </div>
+          </td>
         </tr>
       </table>`;
     }
