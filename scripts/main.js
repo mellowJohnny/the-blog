@@ -264,7 +264,7 @@ var globalPageName = "";
             let pageHeader = document.getElementById("pageHeader");
             pageHeader.innerHTML = `...junk wax sets from ${cleanYear}`;
         }
-        if (pageName === "timmies") {
+        if (pageName === "timmies") { 
             let pageHeader = document.getElementById("pageHeader");
             pageHeader.innerHTML = `...timmies sets: ${cleanYear}`;
         }
