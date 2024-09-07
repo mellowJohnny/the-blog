@@ -262,13 +262,13 @@ var globalPageName = "";
        // Now that we have the name of the set, render one of three versions of the Header in the HTML page...
         if (pageName === "junkWax") {
             let pageHeader = document.getElementById("pageHeader");
-            pageHeader.innerHTML = `...junk wax sets: ${cleanYear}`;
+            pageHeader.innerHTML = `...junk wax sets from ${cleanYear}`;
         }
         if (pageName === "timmies") {
             let pageHeader = document.getElementById("pageHeader");
             pageHeader.innerHTML = `...timmies sets: ${cleanYear}`;
         }
-        else {
+        if (pageName === "classicWax")  {
            let pageHeader = document.getElementById("pageHeader");
             pageHeader.innerHTML = `...classic wax: ${cleanSetName}`;
         }
