@@ -259,7 +259,7 @@ var globalPageName = "";
        const cleanFooterImgName = JSON.parse(footerImgName);
        const cleanSetName = JSON.parse(setName);
 
-       // Now that we have the name of the set, render one of three versions of the Header in the HTML page...
+       // Now that we have the name of the set, let's render one of three versions of the Header in the HTML page...
         if (pageName === "junkWax") {
             let pageHeader = document.getElementById("pageHeader");
             pageHeader.innerHTML = `...junk wax sets from ${cleanYear}`;
