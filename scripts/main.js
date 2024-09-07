@@ -259,14 +259,18 @@ var globalPageName = "";
        const cleanFooterImgName = JSON.parse(footerImgName);
        const cleanSetName = JSON.parse(setName);
 
-       // Now that we have the name of the set, render one of two versions of the Header in the HTML page...
+       // Now that we have the name of the set, render one of three versions of the Header in the HTML page...
         if (pageName === "junkWax") {
             let pageHeader = document.getElementById("pageHeader");
-            pageHeader.innerHTML = `...Junk Wax Sets: ${cleanYear}`;
+            pageHeader.innerHTML = `...junk wax sets: ${cleanYear}`;
+        }
+        if (pageName === "timmies") {
+            let pageHeader = document.getElementById("pageHeader");
+            pageHeader.innerHTML = `...timmies sets: ${cleanYear}`;
         }
         else {
            let pageHeader = document.getElementById("pageHeader");
-            pageHeader.innerHTML = `...classic set review: ${cleanSetName}`;
+            pageHeader.innerHTML = `...classic wax sets: ${cleanSetName}`;
         }
        
 
