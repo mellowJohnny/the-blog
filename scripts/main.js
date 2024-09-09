@@ -144,6 +144,10 @@ var globalPageName = "";
 
  function fetchBlogIntroByType(blogType) {
     
+    // Debug
+    console.log("In fetchBlog...");
+    console.log('blogType is: ${blogType}')
+
     // Set up a global variable to hold the API URL
     const urlToFetch = `https://0t14dphgwb.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`;
           
