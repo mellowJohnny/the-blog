@@ -19,10 +19,16 @@
       window.addEventListener('load', (event) => {
         // *** On page load pass the blogType param to the fetchAllBlogs() function
         fetchBlogs(blogType);
+
         // *** Dynamically display the copyright year
         fetchCopyrightYear();
+
         // *** Dynamically fetch the blog into blurb based on blogType
-        fetchIntro(blogType);
+       // ** OLD *** fetchIntro(blogType);
+
+       // *** Dynamically fetch the blog into blurb based on blogType using a new API! *** NEW ***
+       fetchBlogIntroByType(blogType);
+
         // *** Dynamically fetch Nav ***
         fetchNav("tech",blogType);
         });

@@ -133,6 +133,70 @@ var globalPageName = "";
        
    }
 
+/***************************************************** */
+/*********************************************** fetchCardSetsByYear *************************************/
+
+ /** 
+    * This function calls an underlying AWS call used to FETCH ALL card sets given a specific year
+    * AWS API Gateway API call - getCardSets end-point
+    * Called on page load from various pages
+  */
+
+ function fetchBlogIntroByType(blogType) {
+    
+    // Set up a global variable to hold the API URL
+    const urlToFetch = `https://0t14dphgwb.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`;
+          
+    fetch(urlToFetch)
+       .then(function (response) {
+           const jsonResponse = response.json();
+           return jsonResponse; // Our Promise object
+       })
+       .then(function (data) {
+       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
+       // First let's return an array of the object's properties
+           const returnedData = Object.entries(data); 
+
+       // Next let's just get the 'introText' property returned by the Lambda call
+          for (const [key, value] of returnedData) {
+              if (key === "introText"){
+
+            // Now that we have the 'introText' key, we need to convert the value (currently a JSON String) to a JSON Object 
+            // so that we can pull out the content
+            const blogIntro = JSON.parse(value);
+
+            // DEBUGGIN'
+            console.log(blogIntro);
+
+            // Check to see if we have any results...    
+            if (blogIntro.Items.length === 0) {
+
+                // No results...return a friendly message
+                let blogIntro = document.getElementById("blog-intro");
+                blogIntro.innerHTML = `...this blog needs to introduction!!`;
+
+                // If we have no results, stop processing
+                return;
+            }
+            else {
+                let dynamicBlogIntro = document.getElementById("blog-intro");
+                dynamicBlogIntro.innerHTML = `${blogIntro}`;
+            }
+
+           
+            }
+        }
+
+       })
+       .catch(function (err) {
+           // Error...return a friendly message
+           let blogBody = document.getElementById("blog-intro");
+           blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
+           console.log('Something went wrong...: ' + err);
+       });
+}
+
+
 /*********************************************** fetchCardSetsByYear *************************************/
 
  /** 
