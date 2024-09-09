@@ -146,7 +146,7 @@ var globalPageName = "";
     
     // Debug
     console.log("In fetchBlog...");
-    console.log('blogType is: ${blogType}')
+    console.log(`blogType is: ${blogType}`)
 
     // Set up a global variable to hold the API URL
     const urlToFetch = `https://0t14dphgwb.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`;
@@ -160,6 +160,9 @@ var globalPageName = "";
        // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
        // First let's return an array of the object's properties
            const returnedData = Object.entries(data); 
+
+           // DEBUG *****
+           console.log(`finished calling the new API, here's what I got ${returnedData}`);
 
        // Next let's just get the 'introText' property returned by the Lambda call
           for (const [key, value] of returnedData) {
