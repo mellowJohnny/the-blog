@@ -295,7 +295,7 @@ var globalPageName = "";
 }
 
 /**
- * Function to FORMAT & DISPLAY card sets 
+ * Function to FORMAT & DISPLAY card sets, including Flip Card CSS
  * @param {*} postBody 
  * @param {*} year 
  * @param {*} mfg
