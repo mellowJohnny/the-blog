@@ -133,6 +133,77 @@ var globalPageName = "";
        
    }
 
+/***************************************************** */
+/*********************************************** fetchCardSetsByYear *************************************/
+
+ /** 
+    * This function calls an underlying AWS call used to FETCH ALL card sets given a specific year
+    * AWS API Gateway API call - getCardSets end-point
+    * Called on page load from various pages
+  */
+
+ function fetchBlogIntroByType(blogType) {
+    
+    // Debug
+    console.log("In fetchBlog...");
+    console.log(`blogType is: ${blogType}`)
+
+    // Set up a global variable to hold the API URL
+    const urlToFetch = `https://0t14dphgwb.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`;
+          
+    fetch(urlToFetch)
+       .then(function (response) {
+           const jsonResponse = response.json();
+           return jsonResponse; // Our Promise object
+       })
+       .then(function (data) {
+       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
+       // First let's return an array of the object's properties
+           const returnedData = Object.entries(data); 
+
+           // DEBUG *****
+           console.log(`finished calling the new API, here's what I got ${returnedData}`);
+
+       // Next let's just get the 'introText' property returned by the Lambda call
+          for (const [key, value] of returnedData) {
+              if (key === "introText"){
+
+            // Now that we have the 'introText' key, we need to convert the value (currently a JSON String) to a JSON Object 
+            // so that we can pull out the content
+            const blogIntro = JSON.parse(value);
+
+            // DEBUGGIN'
+            console.log(blogIntro);
+
+            // Check to see if we have any results...    
+            if (blogIntro.Items.length === 0) {
+
+                // No results...return a friendly message
+                let blogIntro = document.getElementById("blog-intro");
+                blogIntro.innerHTML = `...this blog needs to introduction!!`;
+
+                // If we have no results, stop processing
+                return;
+            }
+            else {
+                let dynamicBlogIntro = document.getElementById("blog-intro");
+                dynamicBlogIntro.innerHTML = `${blogIntro}`;
+            }
+
+           
+            }
+        }
+
+       })
+       .catch(function (err) {
+           // Error...return a friendly message
+           let blogBody = document.getElementById("blog-intro");
+           blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
+           console.log('Something went wrong...: ' + err);
+       });
+}
+
+
 /*********************************************** fetchCardSetsByYear *************************************/
 
  /** 
@@ -259,16 +330,8 @@ var globalPageName = "";
        const cleanFooterImgName = JSON.parse(footerImgName);
        const cleanSetName = JSON.parse(setName);
 
-       // Now that we have the name of the set, render one of two versions of the Header in the HTML page...
-        if (pageName === "junkWax") {
-            let pageHeader = document.getElementById("pageHeader");
-            pageHeader.innerHTML = `...Junk Wax Sets: ${cleanYear}`;
-        }
-        else {
-           let pageHeader = document.getElementById("pageHeader");
-            pageHeader.innerHTML = `...classic set review: ${cleanSetName}`;
-        }
        
+      // displayCardHeader(pageName,cleanYear);
 
        // Generate n number of "Star" emojis, one per rating number
        let cleanStars = "";
@@ -337,6 +400,28 @@ var globalPageName = "";
                    <br>`;
    }
 
+/**
+    * Card Header function
+    * called by the waxReviews page to display a category-specific page header
+    * Possible values for pageName are 'junkWax', 'classicWax' or 'timmies'
+    * Called from waxReviews.html using the pageName and year URL parameters
+*/
+
+function displayCardHeader(pageName,year) {
+    if (pageName === "junkWax") {
+        let pageHeader = document.getElementById("pageHeader");
+        pageHeader.innerHTML = `...junk wax sets from ${year}`;
+    }
+    if (pageName === "timmies") { 
+        let pageHeader = document.getElementById("pageHeader");
+        pageHeader.innerHTML = `...timmies sets: ${year}`;
+    }
+    if (pageName === "classicWax")  {
+       let pageHeader = document.getElementById("pageHeader");
+        pageHeader.innerHTML = `...classic wax: ${year}`;
+    }
+
+}
 
 
 

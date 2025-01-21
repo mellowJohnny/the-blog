@@ -40,6 +40,8 @@
               fetchCardIntro(year);
               // *** Dynamically fetch Nav ***
               fetchNav(pageName);
+              // *** Dynamically display the page header
+              displayCardHeader(pageName,year);
           });
 
           // Google Analytics 
@@ -71,7 +73,7 @@
         <section>
           <!-- The year value dynamically displayed here is set up in the top script where we extract the year param from the URL --> 
           <div class="header-style"> 
-            <h1 id="pageHeader"></h1> <!-- populated from inside displayCardSet() -->
+            <h1 id="pageHeader"></h1> <!-- populated from inside displayCardSet() in main.js-->
           </div>
 
           <div class="flex-container">

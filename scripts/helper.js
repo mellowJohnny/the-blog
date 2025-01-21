@@ -277,6 +277,7 @@ function fetchIntro(blogType){
         <p>The process has not always been smooth for all owners, but when you consider that in the first two years of its existance the Mach-E was one of the few 
         electric vehicles with OTA capabilities, its pretty cool stuff.</p>
         `;
+        blogHeader.innerHTML = ` <H1>...the mach-e OTAs</H1>`;
     }
     else if (blogType === "5") {
         blogIntro.innerHTML = `
@@ -788,7 +789,7 @@ function fetchNav(pageName,blogType){
       </table>`;
     }
 
-    else if (pageName === "tech" & blogType === "3") {
+    else if (pageName === "tech" & blogType === "3" || blogType === "4") {
         nav.innerHTML = `
         <table class="top-nav">
         <tr>
@@ -798,6 +799,15 @@ function fetchNav(pageName,blogType){
           <td class="nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">Tim Hortons Hockey</a> </td>
           <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
           <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
+          <td class="nav-td">
+            <div class="dropdown">
+              <span>Mustang Mach-E</span>
+                <div class="dropdown-content">
+                  <a href="/tech.html?blogType=3">Mach-E Blog</a> <br><br>
+                  <a href="/tech.html?blogType=4">Power-Up Software Updates</a> 
+                </div>
+            </div>
+          </td>
         </tr>
       </table>`;
     }
