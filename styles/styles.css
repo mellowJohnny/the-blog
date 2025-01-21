@@ -471,10 +471,18 @@ textarea {
 /* The flip card container - set the width and height to whatever you want. We have added the border property to demonstrate that the flip itself goes out of the box on hover (remove perspective if you don't want the 3D effect */
 .flip-card {
   background-color: transparent;
-  width: 300px;
+  /* width: 300px;
   height: 200px;
   border: 1px solid #f1f1f1;
   perspective: 1000px; /* Remove this if you don't want the 3D effect */
+  width: 90%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid;
+  border-color: rgb(22, 86, 138);
+  border-radius: 2px;
+  box-shadow: 5px 10px 18px #888888;
 }
 
 /* This container is needed to position the front and back side */
