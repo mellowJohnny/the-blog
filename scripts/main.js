@@ -282,8 +282,7 @@ var globalPageName = "";
        // Setup a variable to hold the reference to our Div, 'cause we got work to do!
        let blogBody = document.getElementById("cardSetDiv");
        blogBody.innerHTML += 
-                    `
-                    <table class="set-details-table-style">
+                    `<table class="set-details-table-style">
                         <tr>
                             <td style="width:400px;font-size:20px"><strong>${cleanSetName}</strong></td>
                             <td rowspan="7" style="text-align:center"><img src="${cleanHeaderImg}${cleanHeaderImgName}" class="table-header-img"></img></td>
@@ -319,7 +318,16 @@ var globalPageName = "";
                         </tr>
                         <tr>
                             <td style="text-align:center">
-                            <img src="${cleanFooterImg}${cleanFooterImgName}" class="table-footer-img"></img>
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">
+                                            <b> Click To Flip! </b>
+                                        </div>
+                                        <div class="flip-card-back">
+                                            <img src="${cleanFooterImg}${cleanFooterImgName}" class="table-footer-img"></img>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     </table>
