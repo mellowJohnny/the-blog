@@ -516,9 +516,10 @@ We have added the border property to demonstrate that the flip itself goes out o
 .flip-card-back {
   width: 90%;
   display: block;
+  
+  margin-left: 5px;
+  margin-right: 5px;
   /*
-  margin-left: auto;
-  margin-right: auto;
   border: 1px solid;
   border-color: rgb(22, 86, 138);
   border-radius: 2px; */
