@@ -387,7 +387,7 @@ var globalPageName = "";
                                             <b> Click To Flip! </b>
                                         </div>
                                         <div class="flip-card-back">
-                                            <img src="${cleanFooterImg}${cleanFooterImgName}" class="table-footer-img"></img>
+                                            <img src="${cleanFooterImg}${cleanFooterImgName}"></img>
                                         </div>
                                     </div>
                                 </div>
