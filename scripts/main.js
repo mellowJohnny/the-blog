@@ -381,16 +381,7 @@ var globalPageName = "";
                         </tr>
                         <tr>
                             <td style="text-align:center">
-                                <div class="flip-card">
-                                    <div class="flip-card-inner">
-                                        <div class="flip-card-front">
-                                            <b> Click To Flip! </b>
-                                        </div>
-                                        <div class="flip-card-back">
-                                            <img src="${cleanFooterImg}${cleanFooterImgName}" class="table-footer-img"></img>
-                                        </div>
-                                    </div>
-                                </div>
+                                <img src="${cleanFooterImg}${cleanFooterImgName}" class="table-footer-img"></img>  
                             </td>
                         </tr>
                     </table>
