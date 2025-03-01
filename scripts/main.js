@@ -380,8 +380,8 @@ var globalPageName = "";
                             <td style="text-align:left" class="caption"><strong>...and the winners are...</strong></td>
                         </tr>
                         <tr>
-                            <td style="text-align:center">
-                                <img src="${cleanFooterImg}${cleanFooterImgName}" class="table-footer-img"></img>  
+                            <td style="text-align:center" class="table-footer-img>
+                                <img src="${cleanFooterImg}${cleanFooterImgName}"></img>  
                             </td>
                         </tr>
                     </table>
