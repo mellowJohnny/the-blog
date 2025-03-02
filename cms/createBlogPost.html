@@ -60,11 +60,12 @@
                 <form class="form-style">
 
                   <label>Published <sup>*</sup></label><br>
-                      <input type="radio" id="published" name="true" title="published" value="true">
+                      <input type="radio" id="published" name="true" title="published" value="true" />
                       <label for="published">True</label><br>
-                      <input type="radio" id="published" name="false" title="published" value="false">
+                      <input type="radio" id="published" name="false" title="published" value="false" checked />
                       <label for="published">False</label><br>
-                </input><br><br>
+                    
+                    <br><br>
 
                     <label>Blog Post Title <sup>*</sup></label><br>
                     <input type="text" id="title" required title="blogPostTitle"><br><br>
@@ -98,7 +99,7 @@
                     <br><br>
                     <button class="input-button" type="button" id="cmsSubmitButton"
                         onclick="createBlogPost(
-                                document.getElementById('blogStatus').value,
+                                document.getElementById('published').value,
                                 document.getElementById('title').value,
                                 document.getElementById('imgName').value,
                                 document.getElementById('imgCap').value,
