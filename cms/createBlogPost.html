@@ -59,11 +59,12 @@
             <main>
                 <form class="form-style">
 
-                  <label>Status <sup>*</sup></label><br>
-                      <select id="blogStatus" name="blogStatus" title="blogStatus">
-                        <option value="staged">Staging</option>
-                        <option value="OK">Live</option>
-                    </select><br><br>
+                  <label>Published <sup>*</sup></label><br>
+                      <input type="radio" id="published" name="true" title="published" value="true">
+                      <label for="published">True</label><br>
+                      <input type="radio" id="published" name="false" title="published" value="false">
+                      <label for="published">False</label><br>
+                </input><br><br>
 
                     <label>Blog Post Title <sup>*</sup></label><br>
                     <input type="text" id="title" required title="blogPostTitle"><br><br>
