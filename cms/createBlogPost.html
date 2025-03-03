@@ -59,11 +59,13 @@
             <main>
                 <form class="form-style">
 
-                  <label>Published <sup>*</sup></label><br>
-                      <input type="radio" id="published" name="true" title="published" value="true" />
-                      <label for="published">True</label><br>
-                      <input type="radio" id="published" name="false" title="published" value="false" checked />
-                      <label for="published">False</label><br>
+                  <label>Published<sup>*</sup></label><br>
+                  <select id="published" name="published" class="form-style" title="published">
+                    <option value="true">Published</option>
+                    <option value="false" checked>Staged</option>
+                   </select>
+
+                      
                     
                     <br><br>
 
