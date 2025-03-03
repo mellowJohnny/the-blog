@@ -59,12 +59,11 @@
             <main>
                 <form class="form-style">
 
-                  <label>Published<sup>*</sup></label><br>
-                  <input type="radio" id="published" name="true" title="published" value="true" />
-                      <label for="published">True</label><br>
-                      <input type="radio" id="published" name="false" title="published" value="false" checked />
-                      <label for="published">False</label><br>
-                    <br><br>
+                  <label>Status <sup>*</sup></label><br>
+                      <select id="published" name="blogStatus" title="blogStatus">
+                        <option value="false">Staging</option>
+                        <option value="true">Live</option>
+                    </select><br><br>
 
                     <label>Blog Post Title <sup>*</sup></label><br>
                     <input type="text" id="title" required title="blogPostTitle"><br><br>
@@ -98,7 +97,7 @@
                     <br><br>
                     <button class="input-button" type="button" id="cmsSubmitButton"
                         onclick="createBlogPost(
-                                document.getElementById('published').value,
+                                document.getElementById('blogStatus').value,
                                 document.getElementById('title').value,
                                 document.getElementById('imgName').value,
                                 document.getElementById('imgCap').value,
