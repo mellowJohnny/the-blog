@@ -133,13 +133,12 @@ var globalPageName = "";
        
    }
 
-/***************************************************** */
-/*********************************************** fetchCardSetsByYear *************************************/
+/********************************************************************************************************* */
+/*********************************************** fetchBlogIntroByType *************************************/
 
  /** 
-    * This function calls an underlying AWS call used to FETCH ALL card sets given a specific year
-    * AWS API Gateway API call - getCardSets end-point
-    * Called on page load from various pages
+    * This function calls an underlying AWS call used to FETCH blogs given a specific blogType
+    * AWS API Gateway API call - getBlogIntro end-point (& getBlogIntro Lambda)
   */
 
  function fetchBlogIntroByType(blogType) {
@@ -154,6 +153,8 @@ var globalPageName = "";
     fetch(urlToFetch)
        .then(function (response) {
            const jsonResponse = response.json();
+           // DEBUG *****
+           console.log(`Here's the JSON I got back from the API call: ${jsonResponse}`);
            return jsonResponse; // Our Promise object
        })
        .then(function (data) {
