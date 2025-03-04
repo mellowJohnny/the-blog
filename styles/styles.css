@@ -140,7 +140,10 @@ input[type=password] {
   box-sizing: border-box;
 }
 
-
+select {
+  width: 10%;
+  font-size: 25px;
+}
 
 .input-button {
   background-color: #256386;
