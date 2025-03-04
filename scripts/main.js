@@ -157,10 +157,10 @@ var globalPageName = "";
            return jsonResponse; // Our Promise object
        })
        .then(function (data) {
-       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
+       // 'data' is an Object at this point...this is basically the record set returned by dynamoDB
        // First let's return an array of the object's properties
        // DEBUG *****
-       console.log(`Here's the JSON I got back from the API call: ${returnedData}`);
+       console.log(`Here's the JSON object I got back from the API call: ${data}`);
            const returnedData = Object.entries(data); 
 
            // DEBUG *****
