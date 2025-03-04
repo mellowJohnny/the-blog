@@ -153,13 +153,14 @@ var globalPageName = "";
     fetch(urlToFetch)
        .then(function (response) {
            const jsonResponse = response.json();
-           // DEBUG *****
-           console.log(`Here's the JSON I got back from the API call: ${jsonResponse}`);
+           
            return jsonResponse; // Our Promise object
        })
        .then(function (data) {
        // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
        // First let's return an array of the object's properties
+       // DEBUG *****
+       console.log(`Here's the JSON I got back from the API call: ${returnedData}`);
            const returnedData = Object.entries(data); 
 
            // DEBUG *****
