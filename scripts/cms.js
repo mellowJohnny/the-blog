@@ -496,7 +496,7 @@ function displayStagedBlogs(title, blogID) {
             // Now that the data we got back is a JSON object, let's loop over all the Posts...
             // The 'Items' property holds an array of all the set reviews 
             // Let's loop through that array and display the fields we want!
-            // We call the displayBlog() function to control the display, calling it once
+            // We call the populateBlog() function to control the display, calling it once
             // for each set review, essentially populating each review one at a time
   
                for (var i = 0; i < blogArray.Items.length; i++) {
@@ -530,21 +530,21 @@ function displayStagedBlogs(title, blogID) {
   * Used by CMS to pre-populate each form field for a given Card Set 
   * 
   * @param {*} postBody
-  * @param {*} blogStatus
+  * @param {*} published
   * @param {*} blogType
   * @param {*} time
   * @param {*} title
   */
   
   /** This function calls the associated DIV on the Set Update form and populates it with the current value */
-  function populateBlog(postBody,img,imgCap,blogStatus,blogType,time,title,) {
+  function populateBlog(postBody,img,imgCap,published,blogType,time,title,) {
   
       // Cleanup the JSON we get back so it's back to a String 
       // We parsed the first object we got back, but that didn't parse the contents of the inner properties
       // so we need to explicitly parse all the String properties - except for blogType & time which are numbers 
       const cleanPostBody = JSON.parse(postBody);
       const cleanTitle = JSON.parse(title);
-      const cleanStatus = JSON.parse(blogStatus);
+      const cleanPublished = JSON.parse(published);
       const cleanImg = JSON.parse(img);
       const cleanImgCap = JSON.parse(imgCap);
 
@@ -552,26 +552,23 @@ function displayStagedBlogs(title, blogID) {
       tinymce.activeEditor.selection.setContent(cleanPostBody);
   
       // Now that we have cleaned up the data we got back from DynamoDB, let's
-      // populate the form on setEdit.html with the values as defaults
-     // document.getElementById("postBody").defaultValue = cleanPostBody;
+      // populate the form on blogEdit.html with the values as defaults
 
       // First we need to check the "status" of the blog and make the default option 
       // in the HTML dropdown reflect the current state. We can also re-order the option tags
       // so that the current "status" is always first in the list :-)
-      if(cleanStatus === "staged") {
-        let statusOptions = document.getElementById("blogStatus");
+      if(cleanStatus === "false") {
+        let statusOptions = document.getElementById("published");
         statusOptions.innerHTML += 
-                     `<option id="staged" value="staged" selected>Staging</option> 
+                     `<option id="staged" value="false" selected>Staging</option> 
                      <option id="live" value="OK">Live</option> `;
        }
        else{
-        let statusOptions = document.getElementById("blogStatus");
+        let statusOptions = document.getElementById("published");
         statusOptions.innerHTML += 
-                     ` <option id="live" value="OK" selected>Live</option>
+                     ` <option id="live" value="true" selected>Live</option>
                      <option id="staged" value="staged">Staging</option> `;
        }
-     
-     // document.getElementById("blogStatus").defaultValue = cleanBlogStatus;
       document.getElementById("blogType").defaultValue = blogType;
       document.getElementById("time").defaultValue = time;
       document.getElementById("title").defaultValue = cleanTitle;
