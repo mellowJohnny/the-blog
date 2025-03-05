@@ -557,7 +557,7 @@ function displayStagedBlogs(title, blogID) {
       // First we need to check the "status" of the blog and make the default option 
       // in the HTML dropdown reflect the current state. We can also re-order the option tags
       // so that the current "status" is always first in the list :-)
-      if(cleanStatus === "false") {
+      if(cleanPublished === "false") {
         let statusOptions = document.getElementById("published");
         statusOptions.innerHTML += 
                      `<option id="staged" value="false" selected>Staging</option> 
