@@ -472,7 +472,7 @@ function displayStagedBlogs(title, blogID) {
        // First let's return an array of the object's properties
            const returnedData = Object.entries(data); 
 
-           console.log("in fetchBlogBuID:" `${returnedData}`);
+           console.log('in fetchBlogByID:' + returnedData);
   
        // Next let's just get the 'body' property returned by the Lambda call
           for (const [key, value] of returnedData) {
