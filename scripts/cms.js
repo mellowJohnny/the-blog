@@ -459,7 +459,7 @@ function displayStagedBlogs(title, blogID) {
 
 
   function fetchBlogByID(id) {
-    // Set up a global variable to hold the API URL
+    // Set up a global variable to hold the API URL - this is the getBlogByID API
     const urlToFetch = `https://gcd40hir88.execute-api.us-east-2.amazonaws.com/dev?blogID=${id}`;
           
     fetch(urlToFetch)
@@ -471,6 +471,8 @@ function displayStagedBlogs(title, blogID) {
        // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
        // First let's return an array of the object's properties
            const returnedData = Object.entries(data); 
+
+           console.log('in fetchBlogBuID:' ${returnedData});
   
        // Next let's just get the 'body' property returned by the Lambda call
           for (const [key, value] of returnedData) {
