@@ -504,7 +504,7 @@ function displayStagedBlogs(title, blogID) {
                     blogArray.Items[i].postBody,
                     blogArray.Items[i].img,
                     blogArray.Items[i].imgCap,
-                    blogArray.Items[i].blogStatus,
+                    blogArray.Items[i].published,
                     blogArray.Items[i].blogType,
                     blogArray.Items[i].time,
                     blogArray.Items[i].title);
