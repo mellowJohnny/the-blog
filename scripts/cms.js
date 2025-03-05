@@ -561,13 +561,13 @@ function displayStagedBlogs(title, blogID) {
         let statusOptions = document.getElementById("published");
         statusOptions.innerHTML += 
                      `<option id="staged" value="false" selected>Staging</option> 
-                     <option id="live" value="OK">Live</option> `;
+                     <option id="live" value="true">Live</option> `;
        }
        else{
         let statusOptions = document.getElementById("published");
         statusOptions.innerHTML += 
                      ` <option id="live" value="true" selected>Live</option>
-                     <option id="staged" value="staged">Staging</option> `;
+                     <option id="staged" value="false">Staging</option> `;
        }
       document.getElementById("blogType").defaultValue = blogType;
       document.getElementById("time").defaultValue = time;
