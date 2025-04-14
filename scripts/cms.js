@@ -221,6 +221,9 @@
       redirect: 'follow'
       };
 
+      /** De to the Bug */
+      console.log(raw);
+
     // Make call to updateBlogPost API endpoint in API Gateway with parameters and use promises to get response
     fetch("https://836pk40tsl.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
     .then(response => response.text())
