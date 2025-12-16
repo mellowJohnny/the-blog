@@ -245,7 +245,7 @@ function cardSetSorter(property,order) {
 // blogType 1 = tech
 // blogType 3 = mach-e
 // blogType 4 = mach-e sync updates
-
+/*
 function fetchIntro(blogType){
     let blogIntro = document.getElementById("blog-intro");
     let blogHeader = document.getElementById("section-header");
@@ -287,6 +287,65 @@ function fetchIntro(blogType){
         <H1>...the raspberry pi blog</H1>`;
     }
 }
+*/
+function fetchIntro(blogType) {
+  const blogIntro = document.getElementById("blog-intro");
+  const blogHeader = document.getElementById("section-header");
+
+  // Lookup table for all blog types
+  const blogContent = {
+    "1": {
+      intro: `
+        <p>Tech is a bit of a catch-all for semi-sorta-kinda tech related rants, observations, and professional opinions. 
+        Oh, and that animated airplane gif? That is the world's first gif, created by 
+        <a href="https://en.wikipedia.org/wiki/Steve_Wilhite">Steve Wilhite</a>. Cool huh?</p>
+      `,
+      header: `<h1>...the tech blog</h1>`
+    },
+
+    "3": {
+      intro: `
+        <p>Say hello to Lucy! Impressions on owning and driving our first EV, with other EV related thoughts, impressions, 
+        and completely biased commentary.</p>
+      `,
+      header: `<h1>...the mach-e blog</h1>`
+    },
+
+    "4": {
+      intro: `
+        <p>One of the super-cool party tricks the Mach-E has is Over-The-Air updates, which Ford calls a "Power-Up". 
+        For those of you new to the term, which has been around for quite a while, it's the ability for a piece of hardware 
+        to receive a software update over the air—no dealer visit required.</p>
+
+        <p>We're talking actual, useful changes that in the past would have only arrived with a new model year. Allowing 
+        core software in key control modules to be updated OTA is, as pioneered by Tesla, game changing.</p>
+
+        <p>Since the Mach-E began hitting dealerships in 2021, there have been significant tweaks delivered via OTA updates: 
+        charging curve changes, battery capacity increases, brake pedal feel tweaks, BlueCruise rollout, a full SYNC UI refresh, 
+        HVAC improvements, battery preconditioning before DCFC stops, and even new games.</p>
+
+        <p>The process hasn’t always been smooth, but considering the Mach-E was one of the few EVs with OTA capabilities early on, 
+        it's pretty cool stuff.</p>
+      `,
+      header: `<h1>...the mach-e OTAs</h1>`
+    },
+
+    "5": {
+      intro: `
+        <p>Let's see what kinda trouble we can get into with a Raspberry Pi 4 :-)</p>
+      `,
+      header: `<h1>...the raspberry pi blog</h1>`
+    }
+  };
+
+  // Apply content if it exists
+  const content = blogContent[blogType];
+  if (content) {
+    blogIntro.innerHTML = content.intro;
+    blogHeader.innerHTML = content.header;
+  }
+}
+
 
 // NEW Modular Object based approach to replace fetchCardIntro()
 // First, define the Object and the HTML we want to put in it
@@ -328,420 +387,8 @@ function fetchCardIntro(pageName) {
 }
 
 
-
-
 //****** Helper Function For Rendering "smart" Set-O-Matic Year Picker (removes link for current year) *********
-// Yes, it's a huge switch statement... :-)
 // Used to render both "Classic" and "Junk Wax" pickers
-
-/** 
-function renderSetPicker(year){
-   // let year = pickerYear;
-    let setPicker = document.getElementById("set-picker");
-    if (year === "1979"){
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-            <tr>
-                <td class="classic-set-nav-td">1979-80</td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980&pageName=classicWax">1980-81</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981&pageName=classicWax">1981-82</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982&pageName=classicWax">1982-83</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983&pageName=classicWax">1983-84</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984&pageName=classicWax">1984-85</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985&pageName=classicWax">1985-86</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986&pageName=classicWax">1986-87</a></td>
-            </tr>
-        </table>`;
-    }
-    else if (year === "1980") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-            <tr>
-            <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">1979-80</td>
-            <td class="classic-set-nav-td">1980-81</td>
-            <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981&pageName=classicWax">1981-82</a></td>
-            <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982&pageName=classicWax">1982-83</a></td>
-            <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983&pageName=classicWax">1983-84</a></td>
-            <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984&pageName=classicWax">1984-85</a></td>
-            <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985&pageName=classicWax">1985-86</a></td>
-            <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986&pageName=classicWax">1986-87</a></td>
-            </tr>
-        </table>`;
-    }
-    else if (year === "1981") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-            <tr>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">1979-80</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980&pageName=classicWax">1980-81</a></td>
-                <td class="classic-set-nav-td">1981-82</td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982&pageName=classicWax">1982-83</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983&pageName=classicWax">1983-84</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984&pageName=classicWax">1984-85</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985&pageName=classicWax">1985-86</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986&pageName=classicWax">1986-87</a></td>
-            </tr>
-        </table>`;
-    }
-    else if (year === "1982") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-            <tr>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">1979-80</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980&pageName=classicWax">1980-81</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981&pageName=classicWax">1981-82</a></td>
-                <td class="classic-set-nav-td">1982-83</td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983&pageName=classicWax">1983-84</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984&pageName=classicWax">1984-85</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985&pageName=classicWax">1985-86</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986&pageName=classicWax">1986-87</a></td>
-            </tr>
-        </table>`;
-    }
-    else if (year === "1983") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-            <tr>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">1979-80</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980&pageName=classicWax">1980-81</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981&pageName=classicWax">1981-82</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982&pageName=classicWax">1982-83</a></td>
-                <td class="classic-set-nav-td">1983-84</td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984&pageName=classicWax">1984-85</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985&pageName=classicWax">1985-86</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986&pageName=classicWax">1986-87</a></td>
-            </tr>
-        </table>`;
-    }
-    else if (year === "1984") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-            <tr>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">1979-80</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980&pageName=classicWax">1980-81</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981&pageName=classicWax">1981-82</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982&pageName=classicWax">1982-83</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983&pageName=classicWax">1983-84</a></td>
-                <td class="classic-set-nav-td">1984-85</td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985&pageName=classicWax">1985-86</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986&pageName=classicWax">1986-87</a></td>
-            </tr>
-        </table>`;
-    }
-    else if (year === "1985") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-            <tr>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">1979-80</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980&pageName=classicWax">1980-81</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981&pageName=classicWax">1981-82</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982&pageName=classicWax">1982-83</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983&pageName=classicWax">1983-84</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984&pageName=classicWax">1984-85</a></td>
-                <td class="classic-set-nav-td">1985-86</td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1986&pageName=classicWax">1986-87</a></td>
-            </tr>
-        </table>`;
-    }
-    else if (year === "1986") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-            <tr>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">1979-80</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1980&pageName=classicWax">1980-81</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1981&pageName=classicWax">1981-82</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1982&pageName=classicWax">1982-83</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1983&pageName=classicWax">1983-84</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1984&pageName=classicWax">1984-85</a></td>
-                <td class="classic-set-nav-td"><a href="/waxReviews.html?year=1985&pageName=classicWax">1985-86</a></td>
-                <td class="classic-set-nav-td">1986-87</td>
-            </tr>
-        </table>`;
-    }
-    else if (year === "1987"){
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td">1987-88</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988&pageName=junkWax">1988-89</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989&pageName=junkWax">1989-90</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990&pageName=junkWax">1990-91</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991&pageName=junkWax">1991-92</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992&pageName=junkWax">1992-93</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993&pageName=junkWax">1993-94</a></td> 
-                </tr>
-              </table>`;
-    }
-    else if (year === "1988") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">1987-88</a></td>
-                    <td class="junk-set-nav-td">1988-89</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989&pageName=junkWax">1989-90</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990&pageName=junkWax">1990-91</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991&pageName=junkWax">1991-92</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992&pageName=junkWax">1992-93</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993&pageName=junkWax">1993-94</a></td> 
-                </tr>
-              </table>`;
-    }
-    else if (year === "1989") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">1987-88</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988&pageName=junkWax">1988-89</a></td>
-                    <td class="junk-set-nav-td">1989-90</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990&pageName=junkWax">1990-91</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991&pageName=junkWax">1991-92</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992&pageName=junkWax">1992-93</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993&pageName=junkWax">1993-94</a></td> 
-                </tr>
-              </table>`;
-    }
-    else if (year === "1990") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">1987-88</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988&pageName=junkWax">1988-89</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989&pageName=junkWax">1989-90</a></td>
-                    <td class="junk-set-nav-td">1990-91</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991&pageName=junkWax">1991-92</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992&pageName=junkWax">1992-93</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993&pageName=junkWax">1993-94</a></td> 
-                </tr>
-              </table>`;
-    }
-    else if (year === "1991") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">1987-88</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988&pageName=junkWax">1988-89</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989&pageName=junkWax">1989-90</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990&pageName=junkWax">1990-91</a></td>
-                    <td class="junk-set-nav-td">1991-92</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992&pageName=junkWax">1992-93</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993&pageName=junkWax">1993-94</a></td> 
-                </tr>
-              </table>`;
-    }
-    else if (year === "1992") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">1987-88</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988&pageName=junkWax">1988-89</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989&pageName=junkWax">1989-90</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990&pageName=junkWax">1990-91</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991&pageName=junkWax">1991-92</a></td>
-                    <td class="junk-set-nav-td">1992-93</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1993&pageName=junkWax">1993-94</a></td> 
-                </tr>
-              </table>`;
-    }
-    else if (year === "1993") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">1987-88</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1988&pageName=junkWax">1988-89</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1989&pageName=junkWax">1989-90</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1990&pageName=junkWax">1990-91</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1991&pageName=junkWax">1991-92</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=1992&pageName=junkWax">1992-93</a></td>
-                    <td class="junk-set-nav-td">1993-94</td> 
-                </tr>
-              </table>`;
-    } 
-    else if (year === "2015") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td">2015-16</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2018&pageName=timmies">2018-19</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2019&pageName=timmies">2019-20</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2020&pageName=timmies">2020-21</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2021&pageName=timmies">2021-22</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2022&pageName=timmies">2022-23</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2023&pageName=timmies">2023-24</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2024&pageName=timmies">2024-25</a></td>
-                    
-                </tr>
-              </table>`;
-    } 
-    else if (year === "2016") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                   <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
-                    <td class="junk-set-nav-td">2016-17</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2018&pageName=timmies">2018-19</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2019&pageName=timmies">2019-20</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2020&pageName=timmies">2020-21</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2021&pageName=timmies">2021-22</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2022&pageName=timmies">2022-23</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2023&pageName=timmies">2023-24</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2024&pageName=timmies">2024-25</a></td>
-                    
-                </tr>
-              </table>`;
-    } 
-    else if (year === "2017") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
-                    <td class="junk-set-nav-td">2017-18</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2018&pageName=timmies">2018-19</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2019&pageName=timmies">2019-20</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2020&pageName=timmies">2020-21</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2021&pageName=timmies">2021-22</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2022&pageName=timmies">2022-23</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2023&pageName=timmies">2023-24</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2024&pageName=timmies">2024-25</a></td>
-                    
-                </tr>
-              </table>`;
-    } 
-    else if (year === "2018") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
-                    <td class="junk-set-nav-td">2018-19</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2019&pageName=timmies">2019-20</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2020&pageName=timmies">2020-21</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2021&pageName=timmies">2021-22</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2022&pageName=timmies">2022-23</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2023&pageName=timmies">2023-24</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2024&pageName=timmies">2024-25</a></td>
-                    
-                </tr>
-              </table>`;
-    } 
-    else if (year === "2019") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2018&pageName=timmies">2018-19</a></td>
-                    <td class="junk-set-nav-td">2019-20</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2020&pageName=timmies">2020-21</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2021&pageName=timmies">2021-22</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2022&pageName=timmies">2022-23</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2023&pageName=timmies">2023-24</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2024&pageName=timmies">2024-25</a></td>
-                    
-                </tr>
-              </table>`;
-    } 
-    else if (year === "2020") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2018&pageName=timmies">2018-19</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2019&pageName=timmies">2019-20</a></td>
-                    <td class="junk-set-nav-td">2020-21</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2021&pageName=timmies">2021-22</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2022&pageName=timmies">2022-23</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2023&pageName=timmies">2023-24</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2024&pageName=timmies">2024-25</a></td>
-                    
-                </tr>
-              </table>`;
-    } 
-    else if (year === "2021") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2018&pageName=timmies">2018-19</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2019&pageName=timmies">2019-20</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2020&pageName=timmies">2020-21</a></td>
-                    <td class="junk-set-nav-td">2021-22</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2022&pageName=timmies">2022-23</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2023&pageName=timmies">2023-24</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2024&pageName=timmies">2024-25</a></td>
-                    
-                </tr>
-              </table>`;
-    } 
-    else if (year === "2022") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2018&pageName=timmies">2018-19</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2019&pageName=timmies">2019-20</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2020&pageName=timmies">2020-21</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2021&pageName=timmies">2021-22</a></td>
-                    <td class="junk-set-nav-td">2022-23</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2023&pageName=timmies">2023-24</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2024&pageName=timmies">2024-25</a></td>
-                    
-                </tr>
-              </table>`;
-    } 
-    else if (year === "2023") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2018&pageName=timmies">2018-19</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2019&pageName=timmies">2019-20</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2020&pageName=timmies">2020-21</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2021&pageName=timmies">2021-22</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2022&pageName=timmies">2022-23</a></td>
-                    <td class="junk-set-nav-td">2023-24</td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2024&pageName=timmies">2024-25</a></td>
-                    
-                </tr>
-              </table>`;
-    } 
-
-    else if (year === "2024") {
-        setPicker.innerHTML = `
-        <table class="card-set-nav">
-                <tr>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">2015-16</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2016&pageName=timmies">2016-17</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2017&pageName=timmies">2017-18</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2018&pageName=timmies">2018-19</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2019&pageName=timmies">2019-20</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2020&pageName=timmies">2020-21</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2021&pageName=timmies">2021-22</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2022&pageName=timmies">2022-23</a></td>
-                    <td class="junk-set-nav-td"><a href="/waxReviews.html?year=2023&pageName=timmies">2023-24</a></td>
-                    <td class="junk-set-nav-td">2024-25</td>
-                    
-                </tr>
-              </table>`;
-    } 
-
-} // end set-o-matic year picker
-
-*/
-
 // NEW DYNAMIC version - no more enormous list of if statements
 // How this works
 // Ranges: You only define the start/end years once per category. No duplication.
