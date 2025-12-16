@@ -321,7 +321,7 @@ function fetchCardIntro(pageName){
         Here's a stat for you: for the 1989-90 season there were just two hockey sets produced - Topps for the US and O-Pee-Chee for Canada. But just three years later there were no less than thirteen (!) sets available to US and Canadian collectors.
         So you can see why, with the sheer volume of cards produced during these heady days, the era earned the <i><a href="cards.html">Junk Wax</a></i> moniker.  
         <br><br>
-          But there <i>are</i> some hidden gems to be found if you are willing to sift through the rubble.  So let's start diggin'!
+          But there are some hidden gems to be found if you are willing to sift through the rubble.  It's certainly not all junk...
         </p>
         `;
     }
