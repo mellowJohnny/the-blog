@@ -27,7 +27,7 @@
           let year = params.get("year");
           let sortOrder = params.get("sortOrder");
           let pageName = params.get("pageName");
-          console.log(`in waxReviews: pageName param value is ${pageName}`);
+          
 
           // Let's do a bunch of stuff on page load...
           window.addEventListener('load', (event) => {
@@ -38,7 +38,7 @@
               // **** Call the Set-O-Matic Set Picker ***
               renderSetPicker(year);
               // Dynamically render the page intro section 
-              fetchCardIntro(year);
+              fetchCardIntro(pageName);
               // *** Dynamically fetch Nav ***
               fetchNav(pageName);
               // *** Dynamically display the page header
