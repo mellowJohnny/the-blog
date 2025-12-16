@@ -85,38 +85,23 @@
 /**
  * Helper function to get the day name, given an Integer value
  * @param {*} day 
+ * Refactored to use an Object Map
  */
-     function getDayOfTheWeek(dayNum){
 
-        if (dayNum === 1){
-            dayName = "Monday";
-            return dayName;
-        }
-        if (dayNum === 2){
-            dayName = "Tuesday";
-            return dayName;
-        }
-        if (dayNum === 3){
-            dayName = "Wednesday";
-            return dayName;
-        }
-        if (dayNum === 4){
-            dayName = "Thursday";
-            return dayName;
-        }
-        if (dayNum === 5){
-            dayName = "Friday";
-            return dayName;
-        }
-        if (dayNum === 6){
-            dayName = "Saturday";
-            return dayName;
-        }
-        if (dayNum === 0){
-            dayName = "Sunday";
-            return dayName;
-        }
-    }
+function getDayOfTheWeek(dayNum) {
+  const days = {
+    0: "Sunday",
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday"
+  };
+
+  return days[dayNum] || null; // or "Invalid day"
+}
+
 
 
     // ************* Helper functions to change CMS Submit state *************
