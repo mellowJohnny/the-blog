@@ -289,11 +289,11 @@ function fetchIntro(blogType){
 }
 
 // --------- Dynamic Intro Function --------------
-// This function takes a single blogType parameter and generates the correct header for the page
-// since each blogType essentially needs it's own introduction section
-function fetchCardIntro(year){
+// This function takes a pageName parameter and generates the correct introduction for the page
+// since each page type needs it's own introduction section
+function fetchCardIntro(pageName){
     let blogIntro = document.getElementById("card-intro");
-    if (year <= "1986") {
+    if (pageName === "classicWax") {
         // 1986 is the last "classic wax" year, so if the year param is less than or equal to 1986, must be classic wax...
         blogIntro.innerHTML = `
         <p>Non Junk Wax...classic wax? Modern era? Whatever you call it, the O-Pee-Chee sets from Gretzky's debut in the 1979-80 set right up to 
@@ -302,7 +302,7 @@ function fetchCardIntro(year){
         but also Messier, Bourque, Coffey, Savard, Fuhr, Hawerchuck, Carbonneau, Yzerman, Gilmour, and MacInnis. Quite a Hall of Fame class.
         </p>`;
     }
-    if (year >= "2014") {
+    if (pageName === "timmies") {
         // 2014 is the first year of timmies hockey, so if the year param is greater than or equal to 2014, must be timmies wax...
         blogIntro.innerHTML = `
         <p>When McDonald's Canada shut down their association with the NHL in 2010, nearly 20 years of fast food hockey card collecting went with it. 

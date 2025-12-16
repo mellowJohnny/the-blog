@@ -142,8 +142,8 @@ var globalPageName = "";
   */
 
  function fetchBlogIntroByType(blogType) {
-    
-    // Debug
+
+// DEBUG *********
     console.log("In fetchBlog...");
     console.log(`blogType is: ${blogType}`)
 
@@ -163,8 +163,8 @@ var globalPageName = "";
        console.log(`Here's the JSON object I got back from the API call: ${data}`);
            const returnedData = Object.entries(data); 
 
-           // DEBUG *****
-           console.log(`finished calling the new API, here's what I got ${returnedData}`);
+// DEBUG *****
+           console.log(`finished calling the new API, here's what I got: ${returnedData}`);
 
        // Next let's just get the 'introText' property returned by the Lambda call
           for (const [key, value] of returnedData) {
@@ -174,7 +174,7 @@ var globalPageName = "";
             // so that we can pull out the content
             const blogIntro = JSON.parse(value);
 
-            // DEBUGGIN'
+// DEBUGGIN' *******
             console.log(blogIntro);
 
             // Check to see if we have any results...    
