@@ -287,47 +287,6 @@ function fetchIntro(blogType){
         <H1>...the raspberry pi blog</H1>`;
     }
 }
-/** OLD OLD OLD OLD OLD OLD 
-// --------- Dynamic Intro Function --------------
-// This function takes a pageName parameter and generates the correct introduction for the page
-// since each page type needs it's own introduction section
-function fetchCardIntro(pageName){
-    let blogIntro = document.getElementById("card-intro");
-    console.log(`in fetchCardIntro: param is ${pageName}`);
-    if (pageName === "classicWax") {
-        // 1986 is the last "classic wax" year, so if the year param is less than or equal to 1986, must be classic wax...
-        blogIntro.innerHTML = `
-        <p>Non Junk Wax...classic wax? Modern era? Whatever you call it, the O-Pee-Chee sets from Gretzky's debut in the 1979-80 set right up to 
-        the Roy and Lemieux years defined a classic period of card collecting.</p>
-        <p> The 8 sets from the pre-boom era include not only Gretzky, Roy, and Lemieux
-        but also Messier, Bourque, Coffey, Savard, Fuhr, Hawerchuck, Carbonneau, Yzerman, Gilmour, and MacInnis. Quite a Hall of Fame class.
-        </p>`;
-    }
-    else if (pageName === "timmies") {
-        // 2014 is the first year of timmies hockey, so if the year param is greater than or equal to 2014, must be timmies wax...
-        blogIntro.innerHTML = `
-        <p>When McDonald's Canada shut down their association with the NHL in 2010, nearly 20 years of fast food hockey card collecting went with it. 
-        But in 2015, after a five year absence, fast food hockey card collecting was back! Tim Hortons, the bastion of blue-collar coffee shops, 
-        released their very first NHL Hockey set for the 2015-16 season. <br> <br>
-        But they didn't just mail it in - it was a modern, 100 card Upper Deck base set, complete with custom binder and loads of chase cards. <br><br>
-        It also started their tradition of kicking off the set with a Tim Horton card, putting Sydney Crosby on the pack and the binder, and releasing the set 
-        in early October each year. 
-        </p>`;
-    }
-    else {
-        // must be Junk Wax
-        blogIntro.innerHTML = `
-        <p>Ah...the late '80s / early '90s...Miami Vice, acid wash jeans, those teal San Jose Sharks jerseys...and a hockey card explosion. 
-        Here's a stat for you: for the 1989-90 season there were just two hockey sets produced - Topps for the US and O-Pee-Chee for Canada. But just three years later there were no less than thirteen (!) sets available to US and Canadian collectors.
-        So you can see why, with the sheer volume of cards produced during these heady days, the era earned the <i><a href="cards.html">Junk Wax</a></i> moniker.  
-        <br><br>
-          But there are some hidden gems to be found if you are willing to sift through the rubble.  It's certainly not all junk...
-        </p>
-        `;
-    }
-} // end fetchCardIntro
-*/
-
 
 // NEW Modular Object based approach to replace fetchCardIntro()
 // First, define the Object and the HTML we want to put in it
@@ -375,6 +334,7 @@ function fetchCardIntro(pageName) {
 // Yes, it's a huge switch statement... :-)
 // Used to render both "Classic" and "Junk Wax" pickers
 
+/** 
 function renderSetPicker(year){
    // let year = pickerYear;
     let setPicker = document.getElementById("set-picker");
@@ -779,6 +739,55 @@ function renderSetPicker(year){
     } 
 
 } // end set-o-matic year picker
+
+*/
+
+// NEW DYNAMIC version - no more enormous list of if statements
+// How this works
+// Ranges: You only define the start/end years once per category. No duplication.
+// Dynamic labels: The label 1979-80 is generated automatically by combining the year and the next year.
+// Highlighting: The selected year is shown as plain text, others as links.
+// Scalability: Adding new years is as simple as extending the range.
+// This way, instead of maintaining hundreds of lines of repetitive HTML, you only maintain the ranges. Much easier to extend and debug.
+
+function renderSetPicker(year) {
+  const setPicker = document.getElementById("set-picker");
+
+  // Define ranges and categories
+  const ranges = [
+    { start: 1979, end: 1986, className: "classic-set-nav-td", pageName: "classicWax" },
+    { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" },
+    { start: 2015, end: 2024, className: "junk-set-nav-td", pageName: "timmies" }
+  ];
+
+  // Find which range the year belongs to
+  const range = ranges.find(r => year >= r.start && year <= r.end);
+  if (!range) {
+    setPicker.innerHTML = `<p>No template found for ${year}</p>`;
+    return;
+  }
+
+  // Build table cells
+  let cells = "";
+  for (let y = range.start; y <= range.end; y++) {
+    const label = `${y}-${(y + 1).toString().slice(-2)}`; // e.g. 1979-80, 1980-81
+    if (y === parseInt(year)) {
+      // Current year: plain text
+      cells += `<td class="${range.className}">${label}</td>`;
+    } else {
+      // Other years: link
+      cells += `<td class="${range.className}"><a href="/waxReviews.html?year=${y}&pageName=${range.pageName}">${label}</a></td>`;
+    }
+  }
+
+  // Wrap in table
+  setPicker.innerHTML = `
+    <table class="card-set-nav">
+      <tr>${cells}</tr>
+    </table>
+  `;
+}
+
 
 
 /** Helper Function to dynamically fetch Navigation */
