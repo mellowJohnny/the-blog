@@ -377,18 +377,18 @@ const MACH_E_DROPDOWN = {
 // Step 2: Define which pages show which items
 // The key is the page name, the values are the links to display
 const NAV_MAP = {
-  index: ["home", "junk", "classic", "timmies", "tech", "pi", "machE"],
+  index: ["home", "classic", "junk",  "timmies", "tech", "pi", "machE"],
 
-  tech_1: ["home", "junk", "classic", "timmies", "pi", "machE"],
-  tech_3: ["home", "junk", "classic", "timmies", "pi", "tech", "machE"],
-  tech_4: ["home", "junk", "classic", "timmies", "pi", "tech", "machE"],
-  tech_5: ["home", "junk", "classic", "timmies", "tech", "machE"],
+  tech_1: ["home", "classic", "junk",  "timmies", "pi", "machE"],
+  tech_3: ["home", "classic", "junk",  "timmies", "tech", "pi",  "machE"],
+  tech_4: ["home", "classic", "junk",  "timmies", "tech", "pi",  "machE"],
+  tech_5: ["home", "classic", "junk",  "timmies", "tech", "machE"],
 
-  ev: ["home", "tech", "pi", "junk", "classic", "timmies", "machE"],
+  ev: ["home", "classic", "junk",  "timmies", "tech", "pi", "machE"],
 
-  junkWax: ["home", "tech", "pi", "classic", "timmies", "machE", "tech"],
-  classicWax: ["home", "tech", "pi", "junk", "timmies", "machE", "tech"],
-  timmies: ["home", "tech", "pi", "classic", "junk", "machE", "tech"]
+  junkWax: ["home", "classic", "timmies", "tech", "pi",  "machE"],
+  classicWax: ["home", "junk", "timmies", "tech", "pi",  "machE"],
+  timmies: ["home", "classic", "junk", "tech", "pi",  "machE"]
 };
 
 // Step 3: Build a dynamic table generator
@@ -437,195 +437,6 @@ function fetchNav(pageName, blogType) {
     </table>
   `;
 }
-
-
-/*
-function fetchNav(pageName,blogType){
-    let nav = document.getElementById("global-nav");
-
-    if (pageName === "index") {
-        nav.innerHTML = `
-        <table class="top-nav">
-        <tr>
-          <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">Tim Hortons Hockey</a> </td>
-          <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
-          <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
-         <!-- Dynamic menu stuff...-->
-          <td class="nav-td">
-            <div class="dropdown">
-              <span>Mustang Mach-E</span>
-                <div class="dropdown-content">
-                  <a href="/tech.html?blogType=3">Mach-E Blog</a> <br><br>
-                  <a href="/tech.html?blogType=4">Power-Up Software Updates</a> 
-                </div>
-            </div>
-          </td>
-           </td>
-        </tr> 
-      </table>
-        `;
-    }
-
-    else if (pageName === "tech" && blogType === "1") {
-        nav.innerHTML = `
-        <table class="top-nav">
-        <tr>
-          <td class="nav-td"><a href="/index.html">Home</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">Tim Hortons Hockey</a> </td>
-          <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
-          <td class="nav-td">
-            <div class="dropdown">
-              <span>Mustang Mach-E</span>
-                <div class="dropdown-content">
-                  <a href="/tech.html?blogType=3">Mach-E Blog</a> <br><br>
-                  <a href="/tech.html?blogType=4">Power-Up Software Updates</a> 
-                </div>
-            </div>
-          </td>
-        </tr>
-      </table>`;
-    }
-
-    else if (pageName === "tech" & blogType === "3" || blogType === "4") {
-        nav.innerHTML = `
-        <table class="top-nav">
-        <tr>
-          <td class="nav-td"><a href="/index.html">Home</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">Tim Hortons Hockey</a> </td>
-          <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
-          <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
-          <td class="nav-td">
-            <div class="dropdown">
-              <span>Mustang Mach-E</span>
-                <div class="dropdown-content">
-                  <a href="/tech.html?blogType=3">Mach-E Blog</a> <br><br>
-                  <a href="/tech.html?blogType=4">Power-Up Software Updates</a> 
-                </div>
-            </div>
-          </td>
-        </tr>
-      </table>`;
-    }
-
-    else if (pageName === "tech" & blogType === "5") {
-        nav.innerHTML = `
-        <table class="top-nav">
-        <tr>
-          <td class="nav-td"><a href="/index.html">Home</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">Tim Hortons Hockey</a> </td>
-          <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
-          <td class="nav-td">
-            <div class="dropdown">
-              <span>Mustang Mach-E</span>
-                <div class="dropdown-content">
-                  <a href="/tech.html?blogType=3">Mach-E Blog</a> <br><br>
-                  <a href="/tech.html?blogType=4">Power-Up Software Updates</a> 
-                </div>
-            </div>
-          </td>
-        </tr>
-      </table>`;
-    }
-
-    else if (pageName === "ev") {
-        nav.innerHTML = `
-        <table class="top-nav">
-        <tr>
-          <td class="nav-td"><a href="/index.html">Home</a> </td>
-          <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
-          <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">Tim Hortons Hockey</a> </td>
-          <td class="nav-td">
-            <div class="dropdown">
-              <span>Mustang Mach-E</span>
-                <div class="dropdown-content">
-                  <a href="/tech.html?blogType=3">Mach-E Blog</a> <br><br>
-                  <a href="/tech.html?blogType=4">Power-Up Software Updates</a> 
-                </div>
-            </div>
-          </td>
-        </tr>
-      </table>`;
-    }
-    
-    else if (pageName === "junkWax") {
-        nav.innerHTML = `
-        <table class="top-nav">
-        <tr>
-          <td class="nav-td"><a href="/index.html">Home</a> </td>
-          <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
-          <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">Tim Hortons Hockey</a> </td>
-          <td class="nav-td">
-            <div class="dropdown">
-              <span>Mustang Mach-E</span>
-                <div class="dropdown-content">
-                  <a href="/tech.html?blogType=3">Mach-E Blog</a> <br><br>
-                  <a href="/tech.html?blogType=4">Power-Up Software Updates</a> 
-                </div>
-            </div>
-          </td>
-        </tr>
-      </table>`;
-    }
-
-    else if (pageName === "classicWax") {
-        nav.innerHTML = `
-        <table class="top-nav">
-        <tr>
-          <td class="nav-td"><a href="/index.html">Home</a> </td>
-          <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
-          <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=2015&pageName=timmies">Tim Hortons Hockey</a> </td>
-          <td class="nav-td">
-            <div class="dropdown">
-              <span>Mustang Mach-E</span>
-                <div class="dropdown-content">
-                  <a href="/tech.html?blogType=3">Mach-E Blog</a> <br><br>
-                  <a href="/tech.html?blogType=4">Power-Up Software Updates</a> 
-                </div>
-            </div>
-          </td>
-        </tr>
-      </table>`;
-    } 
-
-    else if (pageName === "timmies") {
-        nav.innerHTML = `
-        <table class="top-nav">
-        <tr>
-          <td class="nav-td"><a href="/index.html">Home</a> </td>
-          <td class="nav-td"><a href="/tech.html?blogType=1">Tech Stuff</a> </td>
-          <td class="nav-td"><a href="/tech.html?blogType=5">Raspberry Pi</a> </td>
-           <td class="nav-td"><a href="/waxReviews.html?year=1979&pageName=classicWax">Classic 80s Hockey Sets</a> </td>
-          <td class="nav-td"><a href="/waxReviews.html?year=1987&pageName=junkWax">90s Hockey Junk Wax</a> </td>
-          <td class="nav-td">
-            <div class="dropdown">
-              <span>Mustang Mach-E</span>
-                <div class="dropdown-content">
-                  <a href="/tech.html?blogType=3">Mach-E Blog</a> <br><br>
-                  <a href="/tech.html?blogType=4">Power-Up Software Updates</a> 
-                </div>
-            </div>
-          </td>
-        </tr>
-      </table>`;
-    } 
-} // end dynamic Nav
-
-*/
 
 // --------------- Cookie! --------------------------
 
