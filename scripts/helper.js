@@ -30,57 +30,26 @@
    /**
  * Helper function to get the month name, given an Integer value
  * @param {*} month 
+ * Refactored to us Object Map
  */
-    function getMonthName(monthNum){
-        if (monthNum === 0){
-            month = "January";
-            return month;
-        }
-        if (monthNum === 1){
-            month = "February";
-            return month;
-        }
-        if (monthNum === 2){
-            month = "March";
-            return month;
-        }
-        if (monthNum === 3){
-            month = "April";
-            return month;
-        }
-        if (monthNum === 4){
-            month = "May";
-            return month;
-        }
-        if (monthNum === 5){
-            month = "June";
-            return month;
-        }
-        if (monthNum === 6){
-            month = "July";
-            return month;
-        }
-        if (monthNum === 7){
-            month = "August";
-            return month;
-        }
-        if (monthNum === 8){
-            month = "September";
-            return month;
-        }
-        if (monthNum === 9){
-            month = "October";
-            return month;
-        }
-        if (monthNum === 10){
-            month = "November";
-            return month;
-        }
-        if (monthNum === 11){
-            month = "December";
-            return month;
-        }
-    }
+function getMonthName(monthNum) {
+  const months = {
+    0: "January",
+    1: "February",
+    2: "March",
+    3: "April",
+    4: "May",
+    5: "June",
+    6: "July",
+    7: "August",
+    8: "September",
+    9: "October",
+    10: "November",
+    11: "December"
+  };
+
+  return months[monthNum] || null; // or "Invalid month"
+}
 
 /**
  * Helper function to get the day name, given an Integer value
