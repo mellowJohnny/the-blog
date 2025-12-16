@@ -386,9 +386,9 @@ const NAV_MAP = {
 
   ev: ["home", "tech", "pi", "junk", "classic", "timmies", "machE"],
 
-  junkWax: ["home", "tech", "pi", "classic", "timmies", "machE"],
-  classicWax: ["home", "tech", "pi", "junk", "timmies", "machE"],
-  timmies: ["home", "tech", "pi", "classic", "junk", "machE"]
+  junkWax: ["home", "tech", "pi", "classic", "timmies", "machE", "tech"],
+  classicWax: ["home", "tech", "pi", "junk", "timmies", "machE", "tech"],
+  timmies: ["home", "tech", "pi", "classic", "junk", "machE", "tech"]
 };
 
 // Step 3: Build a dynamic table generator
