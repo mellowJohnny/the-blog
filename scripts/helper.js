@@ -242,10 +242,12 @@ function cardSetSorter(property,order) {
 // --------- Dynamic Intro Function --------------
 // This function takes a single blogType parameter and generates the correct header for the page
 // since each blogType essentially needs it's own introduction section
+// Refactored to use an Object Map:
 // blogType 1 = tech
 // blogType 3 = mach-e
 // blogType 4 = mach-e ota sync updates
 // blogType 5 = raspberry pi
+// H1s are now dynamically generated from the title field in the object map
 
   function fetchIntro(blogType) {
   const blogIntro = document.getElementById("blog-intro");
