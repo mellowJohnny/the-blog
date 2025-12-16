@@ -288,63 +288,60 @@ function fetchIntro(blogType){
     }
 }
 */
-function fetchIntro(blogType) {
+  function fetchIntro(blogType) {
   const blogIntro = document.getElementById("blog-intro");
   const blogHeader = document.getElementById("section-header");
 
-  // Lookup table for all blog types
   const blogContent = {
     "1": {
+      title: "the tech blog",
       intro: `
         <p>Tech is a bit of a catch-all for semi-sorta-kinda tech related rants, observations, and professional opinions. 
         Oh, and that animated airplane gif? That is the world's first gif, created by 
         <a href="https://en.wikipedia.org/wiki/Steve_Wilhite">Steve Wilhite</a>. Cool huh?</p>
-      `,
-      header: `<h1>...the tech blog</h1>`
+      `
     },
 
     "3": {
+      title: "the mach-e blog",
       intro: `
         <p>Say hello to Lucy! Impressions on owning and driving our first EV, with other EV related thoughts, impressions, 
         and completely biased commentary.</p>
-      `,
-      header: `<h1>...the mach-e blog</h1>`
+      `
     },
 
     "4": {
+      title: "the mach-e OTAs",
       intro: `
         <p>One of the super-cool party tricks the Mach-E has is Over-The-Air updates, which Ford calls a "Power-Up". 
-        For those of you new to the term, which has been around for quite a while, it's the ability for a piece of hardware 
-        to receive a software update over the air—no dealer visit required.</p>
+        It's the ability for hardware to receive software updates over the air—no dealer visit required.</p>
 
-        <p>We're talking actual, useful changes that in the past would have only arrived with a new model year. Allowing 
-        core software in key control modules to be updated OTA is, as pioneered by Tesla, game changing.</p>
+        <p>Since 2021, the Mach‑E has received major OTA improvements: charging curve tweaks, battery capacity increases, 
+        brake pedal feel changes, BlueCruise rollout, a full SYNC UI refresh, HVAC improvements, battery preconditioning 
+        before DCFC stops, and even new games.</p>
 
-        <p>Since the Mach-E began hitting dealerships in 2021, there have been significant tweaks delivered via OTA updates: 
-        charging curve changes, battery capacity increases, brake pedal feel tweaks, BlueCruise rollout, a full SYNC UI refresh, 
-        HVAC improvements, battery preconditioning before DCFC stops, and even new games.</p>
-
-        <p>The process hasn’t always been smooth, but considering the Mach-E was one of the few EVs with OTA capabilities early on, 
-        it's pretty cool stuff.</p>
-      `,
-      header: `<h1>...the mach-e OTAs</h1>`
+        <p>The process hasn’t always been smooth, but considering how early the Mach‑E was to OTA tech, it's impressive stuff.</p>
+      `
     },
 
     "5": {
+      title: "the raspberry pi blog",
       intro: `
         <p>Let's see what kinda trouble we can get into with a Raspberry Pi 4 :-)</p>
-      `,
-      header: `<h1>...the raspberry pi blog</h1>`
+      `
     }
   };
 
-  // Apply content if it exists
   const content = blogContent[blogType];
-  if (content) {
-    blogIntro.innerHTML = content.intro;
-    blogHeader.innerHTML = content.header;
-  }
+  if (!content) return;
+
+  // Insert intro
+  blogIntro.innerHTML = content.intro;
+
+  // Generate dynamic H1
+  blogHeader.innerHTML = `<h1>...${content.title}</h1>`;
 }
+
 
 
 // NEW Modular Object based approach to replace fetchCardIntro()
