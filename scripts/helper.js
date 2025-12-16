@@ -293,7 +293,7 @@ function fetchIntro(blogType){
 // since each page type needs it's own introduction section
 function fetchCardIntro(pageName){
     let blogIntro = document.getElementById("card-intro");
-    console.log("param is " pageName);
+    console.log(`param is ${pageName}`);
     if (pageName === "classicWax") {
         // 1986 is the last "classic wax" year, so if the year param is less than or equal to 1986, must be classic wax...
         blogIntro.innerHTML = `
