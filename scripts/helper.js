@@ -317,7 +317,7 @@ function renderSetPicker(year) {
   const ranges = [
     { start: 1979, end: 1986, className: "classic-set-nav-td", pageName: "classicWax" },
     { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" },
-    { start: 2015, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
+    { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
   ];
 
   // Find which range the year belongs to
