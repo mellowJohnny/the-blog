@@ -303,7 +303,7 @@ function fetchCardIntro(pageName){
         but also Messier, Bourque, Coffey, Savard, Fuhr, Hawerchuck, Carbonneau, Yzerman, Gilmour, and MacInnis. Quite a Hall of Fame class.
         </p>`;
     }
-    if (pageName === "timmies") {
+    else if (pageName === "timmies") {
         // 2014 is the first year of timmies hockey, so if the year param is greater than or equal to 2014, must be timmies wax...
         blogIntro.innerHTML = `
         <p>When McDonald's Canada shut down their association with the NHL in 2010, nearly 20 years of fast food hockey card collecting went with it. 
