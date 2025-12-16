@@ -349,7 +349,11 @@ function renderSetPicker(year) {
 
 
 
-/** Helper Function to dynamically fetch Navigation */
+/** Helper Function to dynamically fetch Navigation 
+ * Refactored to use Object Maps and dynamic tables
+ * Adding a new page = add one line to const NAV_MAP
+ * Adding a new menu item = add one entry to const NAV_ITEMS
+*/
 
 // Step 1: Define the navigation items as data
 const NAV_ITEMS = {
@@ -373,7 +377,7 @@ const MACH_E_DROPDOWN = {
 // Step 2: Define which pages show which items
 // The key is the page name, the values are the links to display
 const NAV_MAP = {
-  index: ["junk", "classic", "timmies", "tech", "pi", "machE"],
+  index: ["home", "junk", "classic", "timmies", "tech", "pi", "machE"],
 
   tech_1: ["home", "junk", "classic", "timmies", "pi", "machE"],
   tech_3: ["home", "junk", "classic", "timmies", "pi", "tech", "machE"],
