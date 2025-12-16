@@ -351,6 +351,91 @@ function renderSetPicker(year) {
 
 /** Helper Function to dynamically fetch Navigation */
 
+// Step 1: Define the navigation items as data
+const NAV_ITEMS = {
+  home: { label: "Home", href: "/index.html" },
+  junk: { label: "90s Hockey Junk Wax", href: "/waxReviews.html?year=1987&pageName=junkWax" },
+  classic: { label: "Classic 80s Hockey Sets", href: "/waxReviews.html?year=1979&pageName=classicWax" },
+  timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2015&pageName=timmies" },
+  tech: { label: "Tech Stuff", href: "/tech.html?blogType=1" },
+  pi: { label: "Raspberry Pi", href: "/tech.html?blogType=5" }
+};
+
+// ...and the dropdown
+const MACH_E_DROPDOWN = {
+  label: "Mustang Mach-E",
+  items: [
+    { label: "Mach-E Blog", href: "/tech.html?blogType=3" },
+    { label: "Power-Up Software Updates", href: "/tech.html?blogType=4" }
+  ]
+};
+
+// Step 2: Define which pages show which items
+// The key is the page name, the values are the links to display
+const NAV_MAP = {
+  index: ["junk", "classic", "timmies", "tech", "pi", "machE"],
+
+  tech_1: ["home", "junk", "classic", "timmies", "pi", "machE"],
+  tech_3: ["home", "junk", "classic", "timmies", "pi", "tech", "machE"],
+  tech_4: ["home", "junk", "classic", "timmies", "pi", "tech", "machE"],
+  tech_5: ["home", "junk", "classic", "timmies", "tech", "machE"],
+
+  ev: ["home", "tech", "pi", "junk", "classic", "timmies", "machE"],
+
+  junkWax: ["home", "tech", "pi", "classic", "timmies", "machE"],
+  classicWax: ["home", "tech", "pi", "junk", "timmies", "machE"],
+  timmies: ["home", "tech", "pi", "classic", "junk", "machE"]
+};
+
+// Step 3: Build a dynamic table generator
+function buildNavCell(item) {
+  return `<td class="nav-td"><a href="${item.href}">${item.label}</a></td>`;
+}
+
+function buildDropdown(drop) {
+  const links = drop.items
+    .map(i => `<a href="${i.href}">${i.label}</a><br><br>`)
+    .join("");
+
+  return `
+    <td class="nav-td">
+      <div class="dropdown">
+        <span>${drop.label}</span>
+        <div class="dropdown-content">${links}</div>
+      </div>
+    </td>
+  `;
+}
+
+// The new, dynamic fetchNav()
+function fetchNav(pageName, blogType) {
+  const nav = document.getElementById("global-nav");
+
+  // Determine key (e.g. "tech_1", "tech_3")
+  const key = blogType ? `${pageName}_${blogType}` : pageName;
+
+  const items = NAV_MAP[key];
+  if (!items) return;
+
+  let cells = "";
+
+  items.forEach(id => {
+    if (id === "machE") {
+      cells += buildDropdown(MACH_E_DROPDOWN);
+    } else {
+      cells += buildNavCell(NAV_ITEMS[id]);
+    }
+  });
+
+  nav.innerHTML = `
+    <table class="top-nav">
+      <tr>${cells}</tr>
+    </table>
+  `;
+}
+
+
+/*
 function fetchNav(pageName,blogType){
     let nav = document.getElementById("global-nav");
 
@@ -535,6 +620,8 @@ function fetchNav(pageName,blogType){
       </table>`;
     } 
 } // end dynamic Nav
+
+*/
 
 // --------------- Cookie! --------------------------
 
