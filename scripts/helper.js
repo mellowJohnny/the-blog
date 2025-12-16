@@ -287,7 +287,7 @@ function fetchIntro(blogType){
         <H1>...the raspberry pi blog</H1>`;
     }
 }
-
+/** OLD OLD OLD OLD OLD OLD 
 // --------- Dynamic Intro Function --------------
 // This function takes a pageName parameter and generates the correct introduction for the page
 // since each page type needs it's own introduction section
@@ -326,6 +326,49 @@ function fetchCardIntro(pageName){
         `;
     }
 } // end fetchCardIntro
+*/
+
+
+// NEW Modular Object based approach to replace fetchCardIntro()
+// First, define the Object and the HTML we want to put in it
+// The when the function is called, the key is passed in and is matched to a value holding the appropriate HTML
+// This approach removes the need for if / else if / else statements
+const cardIntros = {
+    classicWax: `
+        <p>Non Junk Wax...classic wax? Modern era? Whatever you call it, the O-Pee-Chee sets from Gretzky's debut in the 1979-80 set right up to 
+        the Roy and Lemieux years defined a classic period of card collecting.</p>
+        <p>The 8 sets from the pre-boom era include not only Gretzky, Roy, and Lemieux
+        but also Messier, Bourque, Coffey, Savard, Fuhr, Hawerchuck, Carbonneau, Yzerman, Gilmour, and MacInnis. Quite a Hall of Fame class.</p>
+    `,
+
+    timmies: `
+        <p>When McDonald's Canada shut down their association with the NHL in 2010, nearly 20 years of fast food hockey card collecting went with it. 
+        But in 2015, after a five year absence, fast food hockey card collecting was back! Tim Hortons, the bastion of blue-collar coffee shops, 
+        released their very first NHL Hockey set for the 2015-16 season. <br><br>
+        But they didn't just mail it in - it was a modern, 100 card Upper Deck base set, complete with custom binder and loads of chase cards. <br><br>
+        It also started their tradition of kicking off the set with a Tim Horton card, putting Sydney Crosby on the pack and the binder, and releasing the set 
+        in early October each year.</p>
+    `,
+
+    junkWax: `
+        <p>Ah...the late '80s / early '90s...Miami Vice, acid wash jeans, those teal San Jose Sharks jerseys...and a hockey card explosion. 
+        Here's a stat for you: for the 1989-90 season there were just two hockey sets produced - Topps for the US and O-Pee-Chee for Canada. But just three years later there were no less than thirteen (!) sets available to US and Canadian collectors.
+        So you can see why, with the sheer volume of cards produced during these heady days, the era earned the <i><a href="cards.html">Junk Wax</a></i> moniker.  
+        <br><br>
+        But there <i>are</i> some hidden gems to be found if you are willing to sift through the rubble. So let's start diggin'!</p>
+    `
+};
+
+function fetchCardIntro(pageName) {
+    const blogIntro = document.getElementById("card-intro");
+
+    // fallback to junkWax if the key doesn't exist
+    const html = cardIntros[pageName] || cardIntros.junkWax;
+
+    blogIntro.innerHTML = html;
+}
+
+
 
 
 //****** Helper Function For Rendering "smart" Set-O-Matic Year Picker (removes link for current year) *********
