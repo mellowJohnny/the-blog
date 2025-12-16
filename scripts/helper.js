@@ -375,7 +375,7 @@ const MACH_E_DROPDOWN = {
 };
 
 // Step 2: Define which pages show which items
-// The key is the page name, the values are the links to display
+// The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
   index: ["home", "classic", "junk",  "timmies", "tech", "pi", "machE"],
 
