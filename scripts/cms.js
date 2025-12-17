@@ -510,6 +510,7 @@ function displayStagedBlogs(title, blogID) {
                     blogArray.Items[i].published,
                     blogArray.Items[i].blogType,
                     blogArray.Items[i].time,
+                    blogArray.Items[i].blogID,
                     blogArray.Items[i].title);
                 }
             }
