@@ -16,13 +16,13 @@
  * @param {*} title 
  * @param {*} author 
  * @param {*} postBody 
- * @param {*} type
+ * @param {*} blogType
  * @param {*} imgName
  * @param {*} imgCap
  */
 
 // NOTE: We don't pass in the postBody textarea content from the form anymore, we call the TinyMCE API to get it
- function createBlogPost (published,title,imgName,imgCap,author,type){
+ function createBlogPost (published,title,imgName,imgCap,author,blogType){
 
     // Let's change the state of the button, now that we've clicked it...
     cmsButtonSubmit();
@@ -42,7 +42,7 @@
     myHeaders.append("Content-Type", "application/json");
 
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"published":published,"title":title,"imgName":imgName,"imgCap":imgCap,"author":author,"postBody":tinyBody,"type":type});
+    let raw = JSON.stringify({"published":published,"title":title,"imgName":imgName,"imgCap":imgCap,"author":author,"postBody":tinyBody,"blogType":blogType});
   
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
