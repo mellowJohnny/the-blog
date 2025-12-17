@@ -43,6 +43,8 @@
 
     // using built in JSON utility package turn object to string and store in a variable
     let raw = JSON.stringify({"published":published,"title":title,"imgName":imgName,"imgCap":imgCap,"author":author,"postBody":tinyBody,"blogType":blogType});
+  // *********** DEBUG
+  console.log(raw);
   
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
@@ -57,6 +59,7 @@
     .then(response => response.text())
     .then(result => alert(JSON.parse(result).body))
     .catch(error => console.log('error', error));
+    
     }
   
   
