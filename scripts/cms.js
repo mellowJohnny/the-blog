@@ -551,7 +551,7 @@ function displayStagedBlogs(title, blogID) {
       const cleanPublished = JSON.parse(published);
       const cleanImg = JSON.parse(img);
       const cleanImgCap = JSON.parse(imgCap);
-      const cleanBlogID = JSON.parse(blogID);
+      const blogID = blogID;
 
       // Inserts postBody into 'current' TinyMCE Editor
       tinymce.activeEditor.selection.setContent(cleanPostBody);
@@ -579,7 +579,7 @@ function displayStagedBlogs(title, blogID) {
       document.getElementById("title").defaultValue = cleanTitle;
       document.getElementById("imgName").defaultValue = cleanImg;
       document.getElementById("imgCap").defaultValue = cleanImgCap;
-      document.getElementById("blogID").defaultValue = cleanBlogID;
+      document.getElementById("blogID").defaultValue = blogID;
       
   }
   
