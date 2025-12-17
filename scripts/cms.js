@@ -249,65 +249,34 @@
  */
 
  function getBlogsForUpdate() {
+  const urlToFetch = `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev/`;
 
-    // Set up a global variable to hold the API URL
-    const urlToFetch = `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev/`;
-          
-    fetch(urlToFetch)
-       .then(function (response) {
-           const jsonResponse = response.json();
-           return jsonResponse; // Our Promise object
-       })
-       .then(function (data) {
-        
-       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
-       // First let's return an array of the object's properties
-           const returnedData = Object.entries(data); 
-           // DEBUG
-        console.log(returnedData);
-  
-       // Next let's just get the 'body' property returned by the Lambda call
-          for (const [key, value] of returnedData) {
-              if (key === "body"){
-  
-            // Now that we have the 'body' key, we need to convert the value (currently a JSON String) to a JSON Object 
-            // so that we can pull out the properties of each blog post 
-            const blogArray = JSON.parse(value);
-  
-            // Check to see if we have any results...    
-            if (blogArray.Items.length === 0) {
-  
-                // No results...return a friendly message
-                let blogBody = document.getElementById("noBlogsDiv");
-                blogBody.innerHTML = `...no blogs are currently live`;
-  
-                // If we have no results, stop processing
-                return;
-            }
-  
-            // Now that the data we got back is a JSON object, let's loop over all the Posts...
-            // The 'Items' property holds an array of all the set reviews 
-            // Let's loop through that array and display the fields we want!
-            // We call the displayBlog() function to control the display, calling it once
-            // for each set review, essentially populating each review one at a time
-  
-            // NO ERROR - Ultimately calls the listBlogsDiv 
-               for (var i = 0; i < blogArray.Items.length; i++) {
-                   displayBlogs(
-                    blogArray.Items[i].title,
-                    blogArray.Items[i].blogID);
-                }
-            }
-        }
-  
-       })
-       .catch(function (err) {
-           // Error...return a friendly message
-           let blogBody = document.getElementById("noBlogsDiv");
-           blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
-           console.log('Something went wrong...: ' + err);
-       });
-  }
+  fetch(urlToFetch)
+    .then(response => response.json())
+    .then(data => {
+      // 'data' is already the parsed Lambda response object
+      // In our case, it's { statusCode, headers, body }
+
+      // Extract the body (stringified JSON array)
+      const blogArray = JSON.parse(data.body);
+
+      // If no results
+      if (blogArray.length === 0) {
+        document.getElementById("noBlogsDiv").innerHTML = `...no blogs are currently live`;
+        return;
+      }
+
+      // Loop through the array of blog objects
+      for (let i = 0; i < blogArray.length; i++) {
+        displayBlogs(blogArray[i].title, blogArray[i].blogID);
+      }
+    })
+    .catch(err => {
+      document.getElementById("noBlogsDiv").innerHTML = `...Ah, Houston, we've had a problem...`;
+      console.log("Something went wrong...: " + err);
+    });
+}
+
 
 //*********************************** Get STAGED Blogs For Update API Call **********************************
 
