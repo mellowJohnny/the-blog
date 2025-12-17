@@ -189,10 +189,10 @@
  * @param {*} blogStatus
  * @param {*} blogType
  * @param {*} time
- * 
+ * @param {*} blogID
  **/
 
- function updateBlogPost(title,imgName,imgCap,blogStatus,blogType,time) {
+ function updateBlogPost(title,imgName,imgCap,blogStatus,blogType,time,blogID) {
     // Let's change the state of the button, now that we've clicked it...
     cmsButtonSubmit();
 
@@ -211,7 +211,7 @@
     myHeaders.append("Content-Type", "application/json");
   
     // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"title":title,"imgName":imgName,"imgCap":imgCap,"blogStatus":blogStatus,"blogType":blogType,"time":time,"postBody":tinyBody});
+    let raw = JSON.stringify({"title":title,"imgName":imgName,"imgCap":imgCap,"blogStatus":blogStatus,"blogType":blogType,"blogType":blogID,"time":time,"postBody":tinyBody});
 
     // create a JSON object with parameters for API call and store in a variable
     let requestOptions = {
