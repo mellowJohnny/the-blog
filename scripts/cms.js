@@ -521,6 +521,7 @@ function displayStagedBlogs(title, blogID) {
            let blogBody = document.getElementById("errorDiv");
            blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
            console.log('Something went wrong...: ' + err);
+           console.log(blogArray);
        });
   }
   
