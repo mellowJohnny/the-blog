@@ -510,7 +510,7 @@ function displayStagedBlogs(title, blogID) {
                     blogArray.Items[i].published,
                     blogArray.Items[i].blogType,
                     blogArray.Items[i].time,
-                    //blogArray.Items[i].blogID,
+                    blogArray.Items[i].blogID,
                     blogArray.Items[i].title);
                 }
             }
@@ -541,7 +541,7 @@ function displayStagedBlogs(title, blogID) {
   */
   
   /** This function calls the associated DIV on the Set Update form and populates it with the current value */
-  function populateBlog(postBody,img,imgCap,published,blogType,blogID,time,title,) {
+  function populateBlog(postBody,img,imgCap,published,blogType,time,blogID,title) {
   
       // Cleanup the JSON we get back so it's back to a String 
       // We parsed the first object we got back, but that didn't parse the contents of the inner properties
