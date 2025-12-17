@@ -244,7 +244,8 @@
  * This Function is used to fetch all records from the Blog table in DynamoDB
  * The API limits the data returned to only the name of the blog and its blogID  
  * It is used by the CMS users to allow Users to select a single blog to be updated
- * Calls the getBlogsForUpdate API exposed by AWS API Gateway
+ * Calls the getBlogsForUpdate API exposed by AWS API Gateway, which uses the listBlogsForUpdate Lambda
+ * Called on page load from pickBlog.html
  */
 
  function getBlogsForUpdate() {
@@ -258,6 +259,8 @@
            return jsonResponse; // Our Promise object
        })
        .then(function (data) {
+        // DEBUG
+        console.log(data);
        // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
        // First let's return an array of the object's properties
            const returnedData = Object.entries(data); 
