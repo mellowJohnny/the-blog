@@ -255,6 +255,19 @@
   const urlToFetch = `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev/`;
 
   fetch(urlToFetch)
+  .then(response => {
+    console.log("Response object:", response);
+    return response.text();
+  })
+  .then(rawText => {
+    console.log("Raw response text:", rawText);
+  })
+  .catch(err => {
+    console.error("Fetch failed:", err);
+  });
+
+/*
+  fetch(urlToFetch)
   .then(data => {
   console.log("Raw API response:", data);
 
@@ -278,7 +291,7 @@
       console.error("Something went wrong:", err);
     });
 }
-
+*/
 
 
 //*********************************** Get STAGED Blogs For Update API Call **********************************
