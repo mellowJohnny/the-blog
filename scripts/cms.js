@@ -256,11 +256,11 @@
 
   fetch(urlToFetch)
   .then(response => {
-    console.log("HTTP status:", response.status);
+    console.log("In getBlogsForUpdate: HTTP status:", response.status);
     return response.json();
   })
   .then(blogArray => {
-    console.log("Parsed JSON body:", blogArray);
+    console.log("In getBlogsForUpdate: Parsed JSON body:", blogArray);
       // blogArray is ALREADY the array returned by Lambda
       
       if (!Array.isArray(blogArray) || blogArray.length === 0) {
