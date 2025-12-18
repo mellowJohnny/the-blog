@@ -256,29 +256,26 @@
 
   fetch(urlToFetch)
     .then(response => response.json())
-    .then(data => {
-      // 'data' is already the parsed Lambda response object
-      // In our case, it's { statusCode, headers, body }
+    .then(blogArray => {
+      // blogArray is ALREADY the array returned by Lambda
 
-      // Extract the body (stringified JSON array)
-      const blogArray = JSON.parse(data.body);
-
-      // If no results
-      if (blogArray.length === 0) {
-        document.getElementById("noBlogsDiv").innerHTML = `...no blogs are currently live`;
+      if (!Array.isArray(blogArray) || blogArray.length === 0) {
+        document.getElementById("noBlogsDiv").innerHTML =
+          `...no blogs are currently live`;
         return;
       }
 
-      // Loop through the array of blog objects
       for (let i = 0; i < blogArray.length; i++) {
         displayBlogs(blogArray[i].title, blogArray[i].blogID);
       }
     })
     .catch(err => {
-      document.getElementById("noBlogsDiv").innerHTML = `...Ah, Houston, we've had a problem...`;
-      console.log("Something went wrong...: " + err);
+      document.getElementById("noBlogsDiv").innerHTML =
+        `...Ah, Houston, we've had a problem...`;
+      console.error("Something went wrong:", err);
     });
 }
+
 
 
 //*********************************** Get STAGED Blogs For Update API Call **********************************
