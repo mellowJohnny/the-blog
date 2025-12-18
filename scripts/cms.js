@@ -251,12 +251,12 @@
  */
 
 function getBlogsForUpdate() {
-  const urlToFetch = `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev/`;
+  const urlToFetch = `https://YOUR_API_GATEWAY_URL/dev/`;
 
   fetch(urlToFetch)
-    .then(res => res.json())
+    .then(res => res.json()) // parses the array automatically
     .then(blogArray => {
-      console.log("Blog array:", blogArray);
+      console.log("Fetched blog array:", blogArray);
 
       if (!Array.isArray(blogArray) || blogArray.length === 0) {
         document.getElementById("noBlogsDiv").innerHTML =
@@ -271,9 +271,10 @@ function getBlogsForUpdate() {
     .catch(err => {
       document.getElementById("noBlogsDiv").innerHTML =
         `...Ah, Houston, we've had a problem...`;
-      console.error("Something went wrong:", err);
+      console.error("Fetch error:", err);
     });
 }
+
 
 
 
