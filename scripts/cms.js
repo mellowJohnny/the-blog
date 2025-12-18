@@ -251,7 +251,7 @@
  */
 
 function getBlogsForUpdate() {
-  const urlToFetch = `https://YOUR_API_GATEWAY_URL/dev/`;
+  const urlToFetch = `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev`;
 
   fetch(urlToFetch)
     .then(res => res.json()) // parses the array automatically
