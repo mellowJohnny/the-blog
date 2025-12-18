@@ -255,11 +255,14 @@
   const urlToFetch = `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev/`;
 
   fetch(urlToFetch)
-    .then(response => response.json())
-    .then(blogArray => {
+  .then(response => {
+    console.log("HTTP status:", response.status);
+    return response.json();
+  })
+  .then(blogArray => {
+    console.log("Parsed JSON body:", blogArray);
       // blogArray is ALREADY the array returned by Lambda
-      // DEBUG
-        console.log(response);
+      
       if (!Array.isArray(blogArray) || blogArray.length === 0) {
         document.getElementById("noBlogsDiv").innerHTML =
           `...no blogs are currently live`;
