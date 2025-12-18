@@ -252,7 +252,33 @@
 
 function getBlogsForUpdate() {
   const urlToFetch = `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev`;
+          
+    fetch(urlToFetch)
+    .then(response => response.json())
+    .then(data => {
+      // 'data' is already the parsed Lambda response object
+      // In our case, it's { statusCode, headers, body }
 
+      // Extract the body (stringified JSON array)
+      const blogArray = JSON.parse(data.body);
+
+      // If no results
+      if (blogArray.length === 0) {
+        document.getElementById("noBlogsDiv").innerHTML = `...no blogs are currently live`;
+        return;
+      }
+
+      // Loop through the array of blog objects
+      for (let i = 0; i < blogArray.length; i++) {
+        displayBlogs(blogArray[i].title, blogArray[i].blogID);
+      }
+    })
+    .catch(err => {
+      document.getElementById("noBlogsDiv").innerHTML = `...Ah, Houston, we've had a problem...`;
+      console.log("Something went wrong...: " + err);
+    });
+
+  /*
   fetch(urlToFetch)
     .then(res => res.json()) // parses the array automatically
     .then(blogArray => {
@@ -274,7 +300,7 @@ function getBlogsForUpdate() {
       console.error("Fetch error:", err);
     });
 }
-
+*/
 
 
 
