@@ -254,20 +254,9 @@ function getBlogsForUpdate() {
   const urlToFetch = `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev/`;
 
   fetch(urlToFetch)
-    .then(response => response.json()) // parse Lambda envelope
-    .then(data => {
-      console.log("Lambda envelope:", data);
-
-      // Step 1: parse the `body` string from Lambda
-      let blogArray;
-      try {
-        blogArray = JSON.parse(data.body); // ONLY parse the array string
-      } catch (e) {
-        console.error("Failed to parse Lambda body:", e, "Raw body:", data.body);
-        blogArray = [];
-      }
-
-      console.log("Parsed blog array:", blogArray);
+    .then(res => res.json())
+    .then(blogArray => {
+      console.log("Blog array:", blogArray);
 
       if (!Array.isArray(blogArray) || blogArray.length === 0) {
         document.getElementById("noBlogsDiv").innerHTML =
@@ -275,7 +264,6 @@ function getBlogsForUpdate() {
         return;
       }
 
-      // Step 2: use the array, do NOT parse postBody or other fields
       blogArray.forEach(blog => {
         displayBlogs(blog.title, blog.blogID);
       });
@@ -286,6 +274,7 @@ function getBlogsForUpdate() {
       console.error("Something went wrong:", err);
     });
 }
+
 
 
 
