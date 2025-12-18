@@ -255,24 +255,23 @@
   const urlToFetch = `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev/`;
 
   fetch(urlToFetch)
-  .then(response => {
-    console.log("In getBlogsForUpdate: HTTP status:", response.status);
-    return response.json();
-  })
-  .then(blogArray => {
-    console.log("In getBlogsForUpdate: Parsed JSON body:", blogArray);
-      // blogArray is ALREADY the array returned by Lambda
-      
-      if (!Array.isArray(blogArray) || blogArray.length === 0) {
-        document.getElementById("noBlogsDiv").innerHTML =
-          `...no blogs are currently live`;
-        return;
-      }
+  .then(data => {
+  console.log("Raw API response:", data);
 
-      for (let i = 0; i < blogArray.length; i++) {
-        displayBlogs(blogArray[i].title, blogArray[i].blogID);
-      }
-    })
+  const blogArray = JSON.parse(data.body);
+
+  console.log("Parsed blog array:", blogArray);
+
+  if (!Array.isArray(blogArray) || blogArray.length === 0) {
+    document.getElementById("noBlogsDiv").innerHTML =
+      `...no blogs are currently live`;
+    return;
+  }
+
+  for (let i = 0; i < blogArray.length; i++) {
+    displayBlogs(blogArray[i].title, blogArray[i].blogID);
+  }
+})
     .catch(err => {
       document.getElementById("noBlogsDiv").innerHTML =
         `...Ah, Houston, we've had a problem...`;
