@@ -258,7 +258,8 @@
     .then(response => response.json())
     .then(blogArray => {
       // blogArray is ALREADY the array returned by Lambda
-
+      // DEBUG
+        console.log(response);
       if (!Array.isArray(blogArray) || blogArray.length === 0) {
         document.getElementById("noBlogsDiv").innerHTML =
           `...no blogs are currently live`;
