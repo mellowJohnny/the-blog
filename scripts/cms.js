@@ -245,9 +245,8 @@
 
 /**
  * This Function is used to fetch all records from the Blog table in DynamoDB
- * The API limits the data returned to only the name of the blog and its blogID  
  * It is used by the CMS users to allow Users to select a single blog to be updated
- * Calls the getBlogsForUpdate API exposed by AWS API Gateway, which uses the listBlogsForUpdate Lambda
+ * Calls the getBlogsForUpdate API exposed by AWS API Gateway, which uses the listBlogsForUpdate() Lambda
  * Called on page load from pickBlog.html
  */
 
