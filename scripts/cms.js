@@ -251,22 +251,68 @@
  * Called on page load from pickBlog.html
  */
 
- function getBlogsForUpdate() {
+function getBlogsForUpdate() {
   const urlToFetch = `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev/`;
 
   fetch(urlToFetch)
-  .then(response => {
-    console.log("Response object:", response);
-    return response.text();
-  })
-  .then(rawText => {
-    console.log("Raw response text:", rawText);
-  })
-  .catch(err => {
-    console.error("Fetch failed:", err);
-  });
+    .then(response => {
+      console.log("HTTP status:", response.status);
+      return response.text(); // 🔴 always read raw text first
+    })
+    .then(rawText => {
+      console.log("Raw response text:", rawText);
+
+      let data;
+
+      try {
+        data = JSON.parse(rawText);
+      } catch (e) {
+        console.error("Response is not valid JSON:", rawText);
+        throw e;
+      }
+
+      // Normalize all known response shapes
+      let blogArray;
+
+      if (Array.isArray(data)) {
+        // Case: proxy integration returning array
+        blogArray = data;
+      } else if (typeof data.body === "string") {
+        // Case: non-proxy integration
+        blogArray = JSON.parse(data.body);
+      } else if (Array.isArray(data.Items)) {
+        // Case: raw DynamoDB-like response
+        blogArray = data.Items;
+      } else {
+        console.error("Unexpected response shape:", data);
+        blogArray = [];
+      }
+
+      console.log("Final normalized blog array:", blogArray);
+
+      if (!Array.isArray(blogArray) || blogArray.length === 0) {
+        document.getElementById("noBlogsDiv").innerHTML =
+          `...no blogs are currently live`;
+        return;
+      }
+
+      for (let i = 0; i < blogArray.length; i++) {
+        displayBlogs(blogArray[i].title, blogArray[i].blogID);
+      }
+    })
+    .catch(err => {
+      document.getElementById("noBlogsDiv").innerHTML =
+        `...Ah, Houston, we've had a problem...`;
+      console.error("Something went wrong:", err);
+    });
+}
+
+
 
 /*
+ function getBlogsForUpdate() {
+  const urlToFetch = `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev/`;
+
   fetch(urlToFetch)
   .then(data => {
   console.log("Raw API response:", data);
