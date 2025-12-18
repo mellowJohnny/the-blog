@@ -277,7 +277,7 @@ function getBlogsForUpdate() {
       document.getElementById("noBlogsDiv").innerHTML = `...Ah, Houston, we've had a problem...`;
       console.log("Something went wrong...: " + err);
     });
-
+}
   /*
   fetch(urlToFetch)
     .then(res => res.json()) // parses the array automatically
