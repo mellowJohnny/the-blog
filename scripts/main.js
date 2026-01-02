@@ -17,9 +17,14 @@ var globalPageName = "";
 
   function fetchBlogs(blogType) {
   fetch(`https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`)
-    .then(res => res.json())
+    .then(res => {
+      console.log("HTTP STATUS:", res.status);
+      console.log("HEADERS:", [...res.headers.entries()]);
+      return res.json(); // move on with parsed JSON
+    })
     .then(blogArray => {
-        console.log("RAW API RESPONSE:", res);
+      console.log("PARSED JSON:", blogArray);
+
       if (!Array.isArray(blogArray)) {
         throw new Error("API did not return an array");
       }
@@ -41,8 +46,9 @@ var globalPageName = "";
         );
       });
     })
-    .catch(err => console.error(err));
+    .catch(err => console.error("FETCH ERROR:", err));
 }
+
 
 
 // ****************************************** displayBlog Helper Function *****************************
