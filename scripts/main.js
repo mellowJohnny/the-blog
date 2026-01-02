@@ -19,7 +19,7 @@ var globalPageName = "";
   fetch(`https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`)
     .then(res => res.json())
     .then(blogArray => {
-
+        console.log("RAW API RESPONSE:", res);
       if (!Array.isArray(blogArray)) {
         throw new Error("API did not return an array");
       }
