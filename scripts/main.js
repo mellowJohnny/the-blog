@@ -16,63 +16,34 @@ var globalPageName = "";
   */
 
   function fetchBlogs(blogType) {
-    // Set up a global variable to hold the API URL
-    const urlToFetch = `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`;
-          
-    fetch(urlToFetch)
-       .then(function (response) {
-           const jsonResponse = response.json();
-           return jsonResponse; // Our Promise object
-       })
-       .then(function (data) {
-       // 'data' is an Object at this point...this is basically the record set returned by dynamoDB
-       // First let's return an array of the object's properties
-           const returnedData = Object.entries(data); 
+  fetch(`https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`)
+    .then(res => res.json())
+    .then(blogArray => {
 
-       // Next let's just get the 'body' property returned by the Lambda call
-          for (const [key, value] of returnedData) {
-              if (key === "body"){
-                // Now that we have the 'body' key, we need to convert the value 
-                // (currently a JSON String) to a JSON Object 
-                // so that we can pull out the properties of each blog post 
-               const blogPostObject = JSON.parse(value);
-
-               // DEBUG
-              // console.log(`There are ${blogPostObject.Count} blogs returned...`);
-              // console.log(`The 2nd post is ${blogPostObject.Items[1].postBody}`);
-             
-            // Next all getSortOrder, passing the attribute we want to sort on. Remember, "Items" is the array of JSON-formatted blogPosts
-            // If the blogType passed in from the page is 3 (mach-e blogs) lets display oldest blogs first, for everything else, order newest first 
-            if (blogType === "3" || blogType === "5") {
-               // We want to sort Mach-E and Raspberry Pi Blogs oldest to newest
-                blogPostObject.Items.sort(getSortOrder("time","last"));
-            }
-            else {
-                // We want to sort all other blogs newest to oldest
-                blogPostObject.Items.sort(getSortOrder("time","first"));
-            }
-
-            // Now that the data we got back is a JSON object, let's loop over all the Posts...
-            // The 'Items' property holds an array of all the blog posts. Let's loop through that array and display the fields we want!
-            // We call the displayBlog() function to control the display of the blog post
-            // It gets called it once for each blog post, formatting each blog post one at a time
-         
-            for (var i = 0; i < blogPostObject.Items.length; i++) {
-                displayBlog(blogPostObject.Items[i].postBody,
-                    blogPostObject.Items[i].author,
-                    blogPostObject.Items[i].time,
-                    blogPostObject.Items[i].title,
-                    blogPostObject.Items[i].img,
-                    blogPostObject.Items[i].imgCap); // NEW! Aug. 31, 2023
-                }
-           }
-       } 
-           
-       })
-       .catch(function (err) {
-           console.log('Something went wrong...: ' + err);
-       });
+      if (!Array.isArray(blogArray)) {
+        throw new Error("API did not return an array");
       }
+
+      if (blogType === "3" || blogType === "5") {
+        blogArray.sort(getSortOrder("time", "last"));
+      } else {
+        blogArray.sort(getSortOrder("time", "first"));
+      }
+
+      blogArray.forEach(blog => {
+        displayBlog(
+          blog.postBody,
+          blog.author,
+          blog.time,
+          blog.title,
+          blog.img,
+          blog.imgCap
+        );
+      });
+    })
+    .catch(err => console.error(err));
+}
+
 
 // ****************************************** displayBlog Helper Function *****************************
 
