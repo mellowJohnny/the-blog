@@ -107,67 +107,36 @@ var globalPageName = "";
 
  function fetchBlogIntroByType(blogType) {
 
-// DEBUG *********
     console.log("In fetchBlog...");
-    console.log(`blogType is: ${blogType}`)
+    console.log(`blogType is: ${blogType}`);
 
-    // Set up a global variable to hold the API URL
     const urlToFetch = `https://0t14dphgwb.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`;
-          
+
     fetch(urlToFetch)
-       .then(function (response) {
-           const jsonResponse = response.json();
-           
-           return jsonResponse; // Our Promise object
-       })
-       .then(function (data) {
-       // 'data' is an Object at this point...this is basically the record set returned by dynamoDB
-       // First let's return an array of the object's properties
-       // DEBUG *****
-       console.log(`Here's the JSON object I got back from the API call: ${data}`);
-           const returnedData = Object.entries(data); 
+        .then(response => response.json())
+        .then(data => {
+            console.log("API returned:", data);
 
-// DEBUG *****
-           console.log(`finished calling the new API, here's what I got: ${returnedData}`);
-
-       // Next let's just get the 'introText' property returned by the Lambda call
-          for (const [key, value] of returnedData) {
-              if (key === "introText"){
-
-            // Now that we have the 'introText' key, we need to convert the value (currently a JSON String) to a JSON Object 
-            // so that we can pull out the content
-            const blogIntro = JSON.parse(value);
-
-// DEBUGGIN' *******
-            console.log(blogIntro);
-
-            // Check to see if we have any results...    
-            if (blogIntro.Items.length === 0) {
-
-                // No results...return a friendly message
-                let blogIntro = document.getElementById("blog-intro");
-                blogIntro.innerHTML = `...this blog needs to introduction!!`;
-
-                // If we have no results, stop processing
+            // DynamoDB returns an object with an Items array
+            if (!data.Items || data.Items.length === 0) {
+                document.getElementById("blog-intro").innerHTML =
+                    "...this blog needs no introduction!!";
                 return;
             }
-            else {
-                let dynamicBlogIntro = document.getElementById("blog-intro");
-                dynamicBlogIntro.innerHTML = `${blogIntro}`;
-            }
 
-           
-            }
-        }
+            // Extract the intro text from the first item
+            const intro = data.Items[0].introText;
 
-       })
-       .catch(function (err) {
-           // Error...return a friendly message
-           let blogBody = document.getElementById("blog-intro");
-           blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
-           console.log('Something went wrong...: ' + err);
-       });
+            // Display it
+            document.getElementById("blog-intro").innerHTML = intro;
+        })
+        .catch(err => {
+            console.log("Something went wrong:", err);
+            document.getElementById("blog-intro").innerHTML =
+                "...Ah, Houston, we've had a problem...";
+        });
 }
+
 
 
 /*********************************************** fetchCardSetsByYear *************************************/
