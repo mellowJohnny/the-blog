@@ -64,51 +64,38 @@ var globalPageName = "";
  */
 
    function displayBlog(postBody, author, date, title, img, imgCap) {
-       // Populate the blogsDiv...
- 
-       // Cleanup the JSON we get back so it's back to a String 
-       // We parsed the first object we got back (the outer DynamoDB record), but that didn't parse the contents 
-       // of the inner properties. 
-       // We need to explicitly parse title, author, and the blog
-       const cleanTitle = JSON.parse(title);
-       const cleanAuthor = JSON.parse(author);
-       const cleanPostBody = JSON.parse(postBody);
-       const cleanImg = JSON.parse(img);
-       const cleanImgCap = JSON.parse(imgCap);
+    // These values are already plain strings — no need to JSON.parse them
+    const cleanTitle = title;
+    const cleanAuthor = author;
+    const cleanPostBody = postBody;
+    const cleanImg = img;
+    const cleanImgCap = imgCap;
 
-       // Format the Date by passing it to our Magic Date fixer...
-       fixDate(date);
-       
-       // Setup a variable to hold the reference to our Div, 'cause we got work to do!
-       // First check to see if we have an image - if we don't, exclude the <img> tag...simple, right?
-       if (cleanImg === "none") {
-       let blogBody = document.getElementById("blogsDiv");
-       blogBody.innerHTML += 
-                    `<h1 class="blog-title">${cleanTitle}</h1> 
-                        <strong><i>${cleanAuthor} </i></strong>
-                        <br>
-                        <strong><i>${fixDate(date)}</i></strong> 
-                        ${cleanPostBody} 
-                    <hr/><br>`;
-       }
-       else{
-        let blogBody = document.getElementById("blogsDiv");
+    const blogBody = document.getElementById("blogsDiv");
+
+    if (cleanImg === "none") {
         blogBody.innerHTML += 
-                    `<h1 class="blog-title">${cleanTitle}</h1> 
-                        <strong><i>${cleanAuthor} </i></strong>
-                        <br>
-                        <strong><i>${fixDate(date)}</i></strong> 
-                        <br>
-                        ${cleanPostBody} 
-                        <img src="${cleanImg}" class="blog-img"></img>
-                        <br>
-                        <i>${cleanImgCap}</i> 
-                        <hr/>
-                        <br>`;
-       }
+            `<h1 class="blog-title">${cleanTitle}</h1> 
+             <strong><i>${cleanAuthor}</i></strong>
+             <br>
+             <strong><i>${fixDate(date)}</i></strong> 
+             ${cleanPostBody}
+             <hr/><br>`;
+    } else {
+        blogBody.innerHTML += 
+            `<h1 class="blog-title">${cleanTitle}</h1> 
+             <strong><i>${cleanAuthor}</i></strong>
+             <br>
+             <strong><i>${fixDate(date)}</i></strong> 
+             <br>
+             ${cleanPostBody}
+             <img src="${cleanImg}" class="blog-img"></img>
+             <br>
+             <i>${cleanImgCap}</i>
+             <hr/><br>`;
+    }
+}
 
-       
-   }
 
 /********************************************************************************************************* */
 /*********************************************** fetchBlogIntroByType *************************************/
