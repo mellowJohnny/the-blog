@@ -212,86 +212,72 @@ var globalPageName = "";
  * @param {*} setName 
  */
 
-   function displayCardSet(postBody, year, mfg, size, subsets, stars, formats, headerImg, headerImgName, footerImg, footerImgName, setName) {
-       // Populate the cardSetDiv...
- 
-       // Cleanup the JSON we get back so it's back to a String 
-       // We parsed the first object we got back, but that didn't parse the contents of the inner properties
-       // so we need to explicitly parse title, author, and the blog
-       const cleanPostBody = JSON.parse(postBody);
-       const cleanYear = JSON.parse(year);
-       const cleanMFG = JSON.parse(mfg);
-       const cleanSetSize = JSON.parse(size);
-       const cleanSubsets = JSON.parse(subsets);
-       const starsString = JSON.parse(stars);
-       const cleanFormats = JSON.parse(formats);
-       const numStars = parseInt(starsString);
-       const cleanHeaderImg = JSON.parse(headerImg);
-       const cleanHeaderImgName = JSON.parse(headerImgName);
-       const cleanFooterImg = JSON.parse(footerImg);
-       const cleanFooterImgName = JSON.parse(footerImgName);
-       const cleanSetName = JSON.parse(setName);
+   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName) 
+   {
+    // Convert stars to a number
+    const numStars = parseInt(stars);
 
-       
-      // displayCardHeader(pageName,cleanYear);
+    // Generate star emojis
+    let cleanStars = "";
+    for (let i = 0; i < numStars; i++) {
+        cleanStars += "&#127775; ";
+    }
 
-       // Generate n number of "Star" emojis, one per rating number
-       let cleanStars = "";
-       for (let i=0; i < numStars; i++){
-        cleanStars += "&#127775 "; 
-       }
+    // Reference to the div where everything goes
+    let blogBody = document.getElementById("cardSetDiv");
 
-       // Call the renderClassicHeader function to stuff the set name into the page H1
-       // renderClassicHeader(cleanSetName);
-       
-       // Setup a variable to hold the reference to our Div, 'cause we got work to do!
-       let blogBody = document.getElementById("cardSetDiv");
-       blogBody.innerHTML += 
-                    `<table class="set-details-table-style">
-                        <tr>
-                            <td style="width:400px;font-size:20px"><strong>${cleanSetName}</strong></td>
-                            <td rowspan="7" style="text-align:center"><img src="${cleanHeaderImg}${cleanHeaderImgName}" class="table-header-img"></img></td>
-                        </tr>
-                        
-                        <tr>
-                            <td><strong><i>Set Size:</i></strong> ${cleanSetSize} cards</td>
-                            
-                        </tr>
-                        <tr>
-                            <td><strong><i>Inserts:</i></strong> ${cleanSubsets} </td>
-                        </tr>
-                        <tr>
-                            <td><strong><i>Release Year:</i></strong> ${cleanYear} </td>
-                        </tr>
-                        <tr>
-                            <td><strong><i>Formats:</i></strong> ${cleanFormats} </td>
-                        </tr>
-                        <tr>
-                            <td><strong><i>Manufacturer:</i></strong> ${cleanMFG}</td>
-                        </tr>
-                        <tr>
-                            <td><strong><i>Hella Rating:</i></strong> ${cleanStars}</td>
-                        </tr>
-                        
-                    </table>
-                    
-                    ${cleanPostBody} 
-                    </p> 
-                    <table class="set-footer-table-style">
-                        <tr>
-                            <td style="text-align:left" class="caption"><strong>...and the winners are...</strong></td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:center">
-                                <img src="${cleanFooterImg}${cleanFooterImgName}" class="table-footer-img"></img>  
-                            </td>
-                        </tr>
-                    </table>
-                   <br> 
-                   <hr/> 
-                   <br>
-                   <br>`;
-   }
+    blogBody.innerHTML += `
+        <table class="set-details-table-style">
+            <tr>
+                <td style="width:400px;font-size:20px">
+                    <strong>${setName}</strong>
+                </td>
+                <td rowspan="7" style="text-align:center">
+                    <img src="${headerImg}${headerImgName}" class="table-header-img">
+                </td>
+            </tr>
+
+            <tr>
+                <td><strong><i>Set Size:</i></strong> ${size} cards</td>
+            </tr>
+            <tr>
+                <td><strong><i>Inserts:</i></strong> ${subsets}</td>
+            </tr>
+            <tr>
+                <td><strong><i>Release Year:</i></strong> ${year}</td>
+            </tr>
+            <tr>
+                <td><strong><i>Formats:</i></strong> ${formats}</td>
+            </tr>
+            <tr>
+                <td><strong><i>Manufacturer:</i></strong> ${mfg}</td>
+            </tr>
+            <tr>
+                <td><strong><i>Hella Rating:</i></strong> ${cleanStars}</td>
+            </tr>
+        </table>
+
+        ${postBody}
+
+        <table class="set-footer-table-style">
+            <tr>
+                <td style="text-align:left" class="caption">
+                    <strong>...and the winners are...</strong>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center">
+                    <img src="${footerImg}${footerImgName}" class="table-footer-img">
+                </td>
+            </tr>
+        </table>
+
+        <br>
+        <hr/>
+        <br><br>
+    `;
+}
+
 
 /**
     * Card Header function
