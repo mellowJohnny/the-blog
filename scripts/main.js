@@ -147,87 +147,54 @@ var globalPageName = "";
     * Called on page load from various pages
   */
 
-  function fetchCardSetsByYear(year,sortOrder) {
-    
-    // Set up a global variable to hold the API URL
+  function fetchCardSetsByYear(year, sortOrder) {
+
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}`;
-          
+
     fetch(urlToFetch)
-       .then(function (response) {
-           const jsonResponse = response.json();
-           return jsonResponse; // Our Promise object
-       })
-       .then(function (data) {
-       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
-       // First let's return an array of the object's properties
-           const returnedData = Object.entries(data); 
+        .then(response => response.json())
+        .then(data => {
+            console.log("API returned:", data);
 
-       // Next let's just get the 'body' property returned by the Lambda call
-          for (const [key, value] of returnedData) {
-              if (key === "body"){
-
-            // Now that we have the 'body' key, we need to convert the value (currently a JSON String) to a JSON Object 
-            // so that we can pull out the properties of each blog post 
-            const cardSetArray = JSON.parse(value);
-
-            // Sort the returned cars set review by number of stars
-            // sortOrder is passed in from the html page
-            if (sortOrder === ""){
-                cardSetArray.Items.sort(cardSetSorter("stars","first"));
-            }
-            else if (sortOrder === "first") {
-                cardSetArray.Items.sort(cardSetSorter("stars","first"));
-            }
-            else if (sortOrder === "last") {
-                cardSetArray.Items.sort(cardSetSorter("stars","last"));
-            }
-            else {
-                cardSetArray.Items.sort(cardSetSorter("stars","first"));
-            }
-            
-
-            // Check to see if we have any results...    
-            if (cardSetArray.Items.length === 0) {
-
-                // No results...return a friendly message
-                let blogBody = document.getElementById("cardSetDiv");
-                blogBody.innerHTML = `...this set has yet to be reviewed`;
-
-                // If we have no results, stop processing
+            // No results?
+            if (!data.Items || data.Items.length === 0) {
+                document.getElementById("cardSetDiv").innerHTML =
+                    "...this set has yet to be reviewed";
                 return;
             }
 
-            // Now that the data we got back is a JSON object, let's loop over all the Posts...
-            // The 'Items' property holds an array of all the set reviews 
-            // Let's loop through that array and display the fields we want!
-            // We call the displayBlog() function to control the display, calling it once
-            // for each set review, essentially populating each review one at a time
-
-               for (var i = 0; i < cardSetArray.Items.length; i++) {
-                   displayCardSet(cardSetArray.Items[i].postBody,
-                    cardSetArray.Items[i].year,
-                    cardSetArray.Items[i].mfg,
-                    cardSetArray.Items[i].size,
-                    cardSetArray.Items[i].subsets,
-                    cardSetArray.Items[i].stars,
-                    cardSetArray.Items[i].formats,
-                    cardSetArray.Items[i].headerImg,
-                    cardSetArray.Items[i].headerImgName,
-                    cardSetArray.Items[i].footerImg,
-                    cardSetArray.Items[i].footerImgName,
-                    cardSetArray.Items[i].setName);
-                }
+            // Sorting
+            if (sortOrder === "last") {
+                data.Items.sort(cardSetSorter("stars", "last"));
+            } else {
+                data.Items.sort(cardSetSorter("stars", "first"));
             }
-        }
 
-       })
-       .catch(function (err) {
-           // Error...return a friendly message
-           let blogBody = document.getElementById("cardSetDiv");
-           blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
-           console.log('Something went wrong...: ' + err);
-       });
+            // Display each card set
+            for (const item of data.Items) {
+                displayCardSet(
+                    item.postBody,
+                    item.year,
+                    item.mfg,
+                    item.size,
+                    item.subsets,
+                    item.stars,
+                    item.formats,
+                    item.headerImg,
+                    item.headerImgName,
+                    item.footerImg,
+                    item.footerImgName,
+                    item.setName
+                );
+            }
+        })
+        .catch(err => {
+            document.getElementById("cardSetDiv").innerHTML =
+                "...Ah, Houston, we've had a problem...";
+            console.log("Something went wrong:", err);
+        });
 }
+
 
 /**
  * Function to FORMAT & DISPLAY card sets, including Flip Card CSS
