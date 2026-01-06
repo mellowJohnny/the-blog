@@ -288,28 +288,22 @@ function getBlogsForUpdate() {
 
   function getStagedBlogsForUpdate() {
 
-    // Set up a global variable to hold the API URL
-    const urlToFetch = `https://sh8girwnxg.execute-api.us-east-2.amazonaws.com/dev`;
-          
-    fetch(urlToFetch)
+  const urlToFetch = `https://sh8girwnxg.execute-api.us-east-2.amazonaws.com/dev`;
+
+  fetch(urlToFetch)
     .then(response => response.json())
     .then(data => {
-      // DEBUGGGG
+
       console.log("CHRISTIAN's RAW STAGED BLOG RESPONSE:", data);
 
-      // 'data' is already the parsed Lambda response object
-      // In our case, it's { statusCode, headers, body }
+      // NEW: read the array directly from the Lambda response
+      const blogArray = data.items || [];
 
-      // Extract the body (stringified JSON array)
-      const blogArray = JSON.parse(data.body);
-
-      // If no results
       if (blogArray.length === 0) {
         document.getElementById("noBlogsDiv").innerHTML = `...no blogs are currently live`;
         return;
       }
 
-      // Loop through the array of blog objects
       for (let i = 0; i < blogArray.length; i++) {
         displayBlogs(blogArray[i].title, blogArray[i].blogID);
       }
@@ -319,6 +313,7 @@ function getBlogsForUpdate() {
       console.log("Something went wrong...: " + err);
     });
 }
+
 
 
 
