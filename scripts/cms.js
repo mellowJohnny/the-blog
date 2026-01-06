@@ -252,6 +252,8 @@ function getBlogsForUpdate() {
   fetch(urlToFetch)
     .then(response => response.json())
     .then(data => {
+      // DEBUG>>>>
+    console.log("RAW GET RESPONSE:", data); 
 
       // NEW: If your Lambda returns { blogs: [...] }
       const blogArray = data.blogs || data.items || [];
