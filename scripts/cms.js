@@ -254,7 +254,7 @@ function getBlogsForUpdate() {
     .then(data => {
       // DEBUG>>>>
     console.log("RAW GET RESPONSE:", data); 
-
+    
       // NEW: If your Lambda returns { blogs: [...] }
       const blogArray = data.blogs || data.items || [];
 
@@ -294,6 +294,9 @@ function getBlogsForUpdate() {
     fetch(urlToFetch)
     .then(response => response.json())
     .then(data => {
+      // DEBUGGGG
+      console.log("CHRISTIAN's RAW STAGED BLOG RESPONSE:", data);
+
       // 'data' is already the parsed Lambda response object
       // In our case, it's { statusCode, headers, body }
 
