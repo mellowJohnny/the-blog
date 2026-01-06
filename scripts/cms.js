@@ -336,27 +336,22 @@ function getBlogsForUpdate() {
 
 function displayBlogs(title, blogID) {
 
-    // Cleanup the JSON we get back so it's back to a String 
-    // We parsed the first object we got back, but that didn't parse the contents of the inner properties
-    // so we need to explicitly parse setName as it will come back with double-quotes around it.
+  // Title is already a clean string now — no need to parse
+  const cleanTitle = title;
 
-    // setID comes back as a string with no extra quotes so no need to JSON.parse() it (blogID does not!)
-    const cleanTitle = JSON.parse(title);
-    //const cleanBlogID = JSON.parse(blogID);
-    
-    // Setup a variable to hold the reference to our Div - this is how we connect to the HTML page from the JS function
-    let blogBody = document.getElementById("listBlogsDiv");
-    blogBody.innerHTML += 
-                 `<table class="set-details-table-style">
-                     <tr>
-                         <td style="width:400px;font-size:20px">
-                            <a href="blogEdit.html?blogID=${blogID}">
-                            <strong>${cleanTitle}</strong>
-                            </a>
-                         </td>
-                     </tr>
-                 </table>`;
-  }
+  let blogBody = document.getElementById("listBlogsDiv");
+  blogBody.innerHTML += 
+    `<table class="set-details-table-style">
+       <tr>
+         <td style="width:400px;font-size:20px">
+            <a href="blogEdit.html?blogID=${blogID}">
+              <strong>${cleanTitle}</strong>
+            </a>
+         </td>
+       </tr>
+     </table>`;
+}
+
 
 
 
