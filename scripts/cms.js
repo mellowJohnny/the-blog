@@ -22,45 +22,41 @@
  */
 
 // NOTE: We don't pass in the postBody textarea content from the form anymore, we call the TinyMCE API to get it
- function createBlogPost (published,title,imgName,imgCap,author,blogType){
+ function createBlogPost(published, title, imgName, imgCap, author, blogType) {
 
-    // Let's change the state of the button, now that we've clicked it...
-    cmsButtonSubmit();
-    
-    // Now start a timer and change the button state to reflect the submit event, waiting X milliseconds
-    // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
-    // this makes it look like the button is waiting for the modal to close first :-)
-    cmsCreateButtonReset();
+  cmsButtonSubmit();
+  cmsCreateButtonReset();
 
-    // Call the Tiny API to fetch the content from the WYSIWYG editor...
-    const tinyBody = tinymce.activeEditor.getContent();
-    
-    // instantiate a headers object
-    let myHeaders = new Headers();
-  
-    // add content type header to object
-    myHeaders.append("Content-Type", "application/json");
+  const tinyBody = tinymce.activeEditor.getContent();
 
-    // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"published":published,"title":title,"imgName":imgName,"imgCap":imgCap,"author":author,"postBody":tinyBody,"blogType":blogType});
-  // *********** DEBUG
+  let myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+  let raw = JSON.stringify({
+    published,
+    title,
+    imgName,
+    imgCap,
+    author,
+    postBody: tinyBody,
+    blogType
+  });
+
   console.log(`In createBlogPost(): ${raw}`);
-  
-    // create a JSON object with parameters for API call and store in a variable
-    let requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow'
-      };
-    
-    // make API call to createBlogPost endpoint with parameters and use promises to get response
-    fetch("https://s4ge5t9w06.execute-api.us-east-2.amazonaws.com/dev ", requestOptions)
-    .then(response => response.text())
-    .then(result => alert(JSON.parse(result).body))
+
+  let requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow'
+  };
+
+  fetch("https://s4ge5t9w06.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
+    .then(response => response.json())
+    .then(result => alert(result.message))
     .catch(error => console.log('error', error));
-    
-    }
+}
+
   
   
 //***************************************** Create New Card Set ******************************************
