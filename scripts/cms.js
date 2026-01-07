@@ -265,7 +265,7 @@ function getBlogsForUpdate() {
       }
 
       for (let i = 0; i < blogArray.length; i++) {
-        displayBlogs(blogArray[i].title, blogArray[i].blogID);
+        displayBlogs(blogArray[i].title, blogArray[i].blogID, blogArray[i].blogType);
       }
     })
     .catch(err => {
@@ -307,7 +307,7 @@ function getBlogsForUpdate() {
       }
 
       for (let i = 0; i < blogArray.length; i++) {
-        displayStagedBlogs(blogArray[i].title, blogArray[i].blogID);
+        displayStagedBlogs(blogArray[i].title, blogArray[i].blogID, blogArray[i].blogType);
       }
     })
     .catch(err => {
@@ -332,7 +332,7 @@ function getBlogsForUpdate() {
 *
 */
 
-function displayBlogs(title, blogID) {
+function displayBlogs(title, blogID, blogType) {
 
   // Title is already a clean string now — no need to parse
   const cleanTitle = title;
@@ -342,7 +342,7 @@ function displayBlogs(title, blogID) {
     `<table class="set-details-table-style">
        <tr>
          <td style="width:400px;font-size:20px">
-            <a href="blogEdit.html?blogID=${blogID}">
+            <a href="blogEdit.html?blogID=${blogID}&${blogType}">
               <strong>${cleanTitle}</strong>
             </a>
          </td>
@@ -364,7 +364,7 @@ function displayBlogs(title, blogID) {
 *
 */
 
-function displayStagedBlogs(title, blogID) {
+function displayStagedBlogs(title, blogID, blogType) {
 
     // Title is already a plain string now
     const cleanTitle = title;
@@ -375,7 +375,7 @@ function displayStagedBlogs(title, blogID) {
         `<table class="set-details-table-style">
             <tr>
                 <td style="width:400px;font-size:20px">
-                    <a href="blogEdit.html?blogID=${blogID}">
+                    <a href="blogEdit.html?blogID=${blogID}&${blogType}">
                         <strong>${cleanTitle}</strong>
                     </a>
                 </td>
