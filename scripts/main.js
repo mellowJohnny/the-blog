@@ -234,7 +234,7 @@ var globalPageName = "";
                     <strong>${setName}</strong>
                 </td>
                 <td rowspan="7" style="text-align:center">
-                    <img src="${headerImg}${headerImgName}" class="table-header-img">
+                    <img src="${headerImg}${headerImgName}" class="table-header-img" loading="lazy">
                 </td>
             </tr>
 
@@ -268,7 +268,7 @@ var globalPageName = "";
             </tr>
             <tr>
                 <td style="text-align:center">
-                    <img src="${footerImg}${footerImgName}" class="table-footer-img">
+                    <img src="${footerImg}${footerImgName}" class="table-footer-img" loading="lazy">
                 </td>
             </tr>
         </table>
