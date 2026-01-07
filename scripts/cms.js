@@ -444,7 +444,10 @@ function fetchBlogByID(id,type) {
   * @param {*} title
   */
   
-  /** This function calls the associated DIV on the Set Update form and populates it with the current value */
+  /** This function calls the associated DIV on the Set Update form and populates it with the current value 
+   * The Lambda now returns a marshalled Javascript Object, not a JSON object, so we can immediately access 
+   * the properties using dot notation. No more looping over the array, looking for "body", and the accessing the JSON 
+  */
   function populateBlog(blog) {
 
   // Populate TinyMCE
