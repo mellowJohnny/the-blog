@@ -51,7 +51,7 @@
     redirect: 'follow'
   };
 
-  fetch("https://s4ge5t9w06.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
+  fetch("https://s4ge5t9w06.execute-api.us-east-2.amazonaws.com/dev", requestOptions) // createBlogPost API
     .then(response => response.json())
     .then(result => alert(result.message))
     .catch(error => console.log('error', error));
@@ -247,7 +247,7 @@
  */
 
 function getBlogsForUpdate() {
-  const urlToFetch = `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev`;
+  const urlToFetch = `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev`; // getBlogsForUpdate API
 
   fetch(urlToFetch)
     .then(response => response.json())
@@ -288,7 +288,7 @@ function getBlogsForUpdate() {
 
   function getStagedBlogsForUpdate() {
 
-  const urlToFetch = `https://sh8girwnxg.execute-api.us-east-2.amazonaws.com/dev`;
+  const urlToFetch = `https://sh8girwnxg.execute-api.us-east-2.amazonaws.com/dev`; // getStagedBlogsForUpdate API
 
   fetch(urlToFetch)
     .then(response => response.json())
@@ -363,27 +363,23 @@ function displayBlogs(title, blogID) {
 
 function displayStagedBlogs(title, blogID) {
 
-    // Cleanup the JSON we get back so it's back to a String 
-    // We parsed the first object we got back, but that didn't parse the contents of the inner properties
-    // so we need to explicitly parse setName as it will come back with double-quotes around it.
+    // Title is already a plain string now
+    const cleanTitle = title;
 
-    // setID comes back as a string with no extra quotes so no need to JSON.parse() it (blogID does not!)
-    const cleanTitle = JSON.parse(title);
-    //const cleanBlogID = JSON.parse(blogID);
-    
-    // Setup a variable to hold the reference to our Div - this is how we connect to the HTML page from the JS function
     let blogBody = document.getElementById("listStagedBlogsDiv");
+
     blogBody.innerHTML += 
-                 `<table class="set-details-table-style">
-                     <tr>
-                         <td style="width:400px;font-size:20px">
-                            <a href="blogEdit.html?blogID=${blogID}">
-                            <strong>${cleanTitle}</strong>
-                            </a>
-                         </td>
-                     </tr>
-                 </table>`;
-  }
+        `<table class="set-details-table-style">
+            <tr>
+                <td style="width:400px;font-size:20px">
+                    <a href="blogEdit.html?blogID=${blogID}">
+                        <strong>${cleanTitle}</strong>
+                    </a>
+                </td>
+            </tr>
+        </table>`;
+}
+
 
 
 
