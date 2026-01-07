@@ -240,10 +240,11 @@
 // ******************** Get Blogs For Update API Call **********************************
 
 /**
- * This Function is used to fetch all records from the Blog table in DynamoDB
+ * This Function is used to fetch all LIVE records from the Blog table in DynamoDB
  * It is used by the CMS users to allow Users to select a single blog to be updated
  * Calls the getBlogsForUpdate API exposed by AWS API Gateway, which uses the listBlogsForUpdate() Lambda
  * Called on page load from pickBlog.html
+ * FOR EVERY BLOG RETURNED it calls the displayBlogs() helper to actually write to the <div>
  */
 
 function getBlogsForUpdate() {
@@ -284,6 +285,8 @@ function getBlogsForUpdate() {
  * The API limits the data returned to only the name of the blog and its blogID  
  * It is used by the CMS users to allow Users to select a single blog to be updated
  * Calls the getStagedBlogsForUpdate API exposed by AWS API Gateway
+ * Called on page load from pickBlog.html
+ * FOR EVERY BLOG RETURNED it calls the displayStagedBlogs() helper to actually write to the <div>
  */
 
   function getStagedBlogsForUpdate() {
@@ -393,71 +396,38 @@ function displayStagedBlogs(title, blogID) {
  * @param {*} id
  * 
  **/
+function fetchBlogByID(id) {
 
-
-  function fetchBlogByID(id) {
-    // Set up a global variable to hold the API URL - this is the getBlogByID API
-    const urlToFetch = `https://gcd40hir88.execute-api.us-east-2.amazonaws.com/dev?blogID=${id}`;
-          
-    fetch(urlToFetch)
-       .then(function (response) {
-           const jsonResponse = response.json();
-           return jsonResponse; // Our Promise object
-       })
-       .then(function (data) {
-       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
-       // First let's return an array of the object's properties
-           const returnedData = Object.entries(data); 
-// Debug
-console.log('in fetchBlogByID:' + returnedData);
-  
-       // Next let's just get the 'body' property returned by the Lambda call
-          for (const [key, value] of returnedData) {
-              if (key === "body"){
-  
-            // Now that we have the 'body' key, we need to convert the value (currently a JSON String) to a JSON Object 
-            // so that we can pull out the properties of each blog post 
-            const blogArray = JSON.parse(value);
-  
-            // Check to see if we have any results...    
-            if (blogArray.Items.length === 0) {
-  
-                // No results...return a friendly message
-                let blogBody = document.getElementById("errorDiv");
-                blogBody.innerHTML = `these aren't the Droids you're looking for...`;
-  
-                // If we have no results, stop processing
-                return;
-            }
-  
-            // Now that the data we got back is a JSON object, let's loop over all the Posts...
-            // The 'Items' property holds an array of all the set reviews 
-            // Let's loop through that array and display the fields we want!
-            // We call the populateBlog() function to control the display, calling it once
-            // for each set review, essentially populating each review one at a time
-  
-               for (var i = 0; i < blogArray.Items.length; i++) {
-                   populateBlog(
-                    blogArray.Items[i].postBody,
-                    blogArray.Items[i].img,
-                    blogArray.Items[i].imgCap,
-                    blogArray.Items[i].published,
-                    blogArray.Items[i].blogType,
-                    blogArray.Items[i].time,
-                    blogArray.Items[i].title);
-                }
-            }
-        }
-  
-       })
-       .catch(function (err) {
-           // Error...return a friendly message
-           let blogBody = document.getElementById("errorDiv");
-           blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
-           console.log('Something went wrong...: ' + err);
-           console.log(returnedData);
-       });
+  if (!id) {
+    document.getElementById("errorDiv").innerHTML = "No blog ID provided.";
+    return;
   }
+
+  const urlToFetch = `https://gcd40hir88.execute-api.us-east-2.amazonaws.com/dev?blogID=${id}`;
+
+  fetch(urlToFetch)
+    .then(response => response.json())
+    .then(data => {
+
+      console.log("CHRISTIAN'S RAW BLOG-BY-ID RESPONSE:", data);
+
+      // New Lambda returns: { item: { ...fields... } }
+      const blog = data.item;
+
+      if (!blog) {
+        document.getElementById("errorDiv").innerHTML = "Blog not found.";
+        return;
+      }
+
+      // Pass the entire blog object to populateBlog()
+      populateBlog(blog);
+    })
+    .catch(err => {
+      console.log("Error fetching blog:", err);
+      document.getElementById("errorDiv").innerHTML = "Error loading blog.";
+    });
+}
+
   
 
 
