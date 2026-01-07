@@ -55,6 +55,7 @@ var globalPageName = "";
 
 /**
  * Function to FORMAT & DISPLAY Blogs posts
+ * NOTE! We now use onerror image handling so any blog with broken images fail gracefully
  * @param {*} postBody 
  * @param {*} author 
  * @param {*} date 
@@ -64,36 +65,36 @@ var globalPageName = "";
  */
 
    function displayBlog(postBody, author, date, title, img, imgCap) {
-    // These values are already plain strings — no need to JSON.parse them
-    const cleanTitle = title;
-    const cleanAuthor = author;
-    const cleanPostBody = postBody;
-    const cleanImg = img;
-    const cleanImgCap = imgCap;
+  const cleanTitle = title;
+  const cleanAuthor = author;
+  const cleanPostBody = postBody;
+  const cleanImg = img;
+  const cleanImgCap = imgCap;
 
-    const blogBody = document.getElementById("blogsDiv");
+  const blogBody = document.getElementById("blogsDiv");
 
-    if (cleanImg === "none") {
-        blogBody.innerHTML += 
-            `<h1 class="blog-title">${cleanTitle}</h1> 
-             <strong><i>${cleanAuthor}</i></strong>
-             <br>
-             <strong><i>${fixDate(date)}</i></strong> 
-             ${cleanPostBody}
-             <hr/><br>`;
-    } else {
-        blogBody.innerHTML += 
-            `<h1 class="blog-title">${cleanTitle}</h1> 
-             <strong><i>${cleanAuthor}</i></strong>
-             <br>
-             <strong><i>${fixDate(date)}</i></strong> 
-             <br>
-             ${cleanPostBody}
-             <img src="${cleanImg}" class="blog-img"></img>
-             <br>
-             <i>${cleanImgCap}</i>
-             <hr/><br>`;
-    }
+  // If no image was provided at all
+  if (cleanImg === "none") {
+    blogBody.innerHTML += 
+      `<h1 class="blog-title">${cleanTitle}</h1> 
+       <strong><i>${cleanAuthor}</i></strong><br>
+       <strong><i>${fixDate(date)}</i></strong>
+       ${cleanPostBody}
+       <hr/><br>`;
+    return;
+  }
+
+  // Otherwise include the image with an onerror handler
+  blogBody.innerHTML += 
+    `<h1 class="blog-title">${cleanTitle}</h1> 
+     <strong><i>${cleanAuthor}</i></strong><br>
+     <strong><i>${fixDate(date)}</i></strong><br>
+     ${cleanPostBody}
+     <img src="${cleanImg}" class="blog-img"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='none';">
+     <br>
+     <i>${cleanImgCap}</i>
+     <hr/><br>`;
 }
 
 
