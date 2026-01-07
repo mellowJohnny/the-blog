@@ -288,7 +288,7 @@ function getBlogsForUpdate() {
 
   function getStagedBlogsForUpdate() {
 
-  const urlToFetch = `https://sh8girwnxg.execute-api.us-east-2.amazonaws.com/dev`; // getStagedBlogsForUpdate API
+  const urlToFetch = `https://sh8girwnxg.execute-api.us-east-2.amazonaws.com/dev`;
 
   fetch(urlToFetch)
     .then(response => response.json())
@@ -296,16 +296,15 @@ function getBlogsForUpdate() {
 
       console.log("CHRISTIAN's RAW STAGED BLOG RESPONSE:", data);
 
-      // NEW: read the array directly from the Lambda response
       const blogArray = data.items || [];
 
       if (blogArray.length === 0) {
-        document.getElementById("noBlogsDiv").innerHTML = `...no blogs are currently live`;
+        document.getElementById("noBlogsDiv").innerHTML = `...no staged blogs found`;
         return;
       }
 
       for (let i = 0; i < blogArray.length; i++) {
-        displayBlogs(blogArray[i].title, blogArray[i].blogID);
+        displayStagedBlogs(blogArray[i].title, blogArray[i].blogID);
       }
     })
     .catch(err => {
@@ -313,6 +312,7 @@ function getBlogsForUpdate() {
       console.log("Something went wrong...: " + err);
     });
 }
+
 
 
 
