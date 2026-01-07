@@ -396,14 +396,14 @@ function displayStagedBlogs(title, blogID, blogType) {
  * @param {*} id
  * 
  **/
-function fetchBlogByID(id) {
+function fetchBlogByID(id,type) {
 
   if (!id) {
     document.getElementById("errorDiv").innerHTML = "No blog ID provided.";
     return;
   }
 
-  const urlToFetch = `https://gcd40hir88.execute-api.us-east-2.amazonaws.com/dev?blogID=${id}`;
+  const urlToFetch = `https://gcd40hir88.execute-api.us-east-2.amazonaws.com/dev?blogID=${id}&blogType=${type}`;
 
   fetch(urlToFetch)
     .then(response => response.json())

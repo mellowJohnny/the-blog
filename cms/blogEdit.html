@@ -32,6 +32,7 @@
   /* Let's get the URL params from the request, and extract the year */  
   let params = new URLSearchParams(document.location.search);
   let blogID = params.get("blogID");
+  let blogType = params.get("blogType");
 
   /* 
   *   Call to fetchCardSetsByID() on page load, dynamically passing the blogID we want to fetch
@@ -39,7 +40,7 @@
   *   Can also use the year to dynamically populate our page header...removed for now   */ 
    
   window.addEventListener('load', (event) => {
-      fetchBlogByID(blogID);
+      fetchBlogByID(blogID,blogType);
 
       // *** Dynamically display the copyright year
       fetchCopyrightYear();
