@@ -342,7 +342,7 @@ function displayBlogs(title, blogID, blogType) {
     `<table class="set-details-table-style">
        <tr>
          <td style="width:400px;font-size:20px">
-            <a href="blogEdit.html?blogID=${blogID}&${blogType}">
+            <a href="blogEdit.html?blogID=${blogID}&blogType=${blogType}">
               <strong>${cleanTitle}</strong>
             </a>
          </td>
@@ -375,7 +375,7 @@ function displayStagedBlogs(title, blogID, blogType) {
         `<table class="set-details-table-style">
             <tr>
                 <td style="width:400px;font-size:20px">
-                    <a href="blogEdit.html?blogID=${blogID}&${blogType}">
+                    <a href="blogEdit.html?blogID=${blogID}&blogType=${blogType}">
                         <strong>${cleanTitle}</strong>
                     </a>
                 </td>
