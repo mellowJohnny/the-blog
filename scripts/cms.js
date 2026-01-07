@@ -445,45 +445,26 @@ function fetchBlogByID(id,type) {
   */
   
   /** This function calls the associated DIV on the Set Update form and populates it with the current value */
-  function populateBlog(postBody,img,imgCap,published,blogType,time,title,) {
-  
-      // Cleanup the JSON we get back so it's back to a String 
-      // We parsed the first object we got back, but that didn't parse the contents of the inner properties
-      // so we need to explicitly parse all the String properties - except for blogType & time which are numbers 
-      const cleanPostBody = JSON.parse(postBody);
-      const cleanTitle = JSON.parse(title);
-      const cleanPublished = JSON.parse(published);
-      const cleanImg = JSON.parse(img);
-      const cleanImgCap = JSON.parse(imgCap);
+  function populateBlog(blog) {
 
-      // Inserts postBody into 'current' TinyMCE Editor
-      tinymce.activeEditor.selection.setContent(cleanPostBody);
-  
-      // Now that we have cleaned up the data we got back from DynamoDB, let's
-      // populate the form on blogEdit.html with the values as defaults
+  // Populate TinyMCE
+  tinymce.get("postBody").setContent(blog.postBody);
 
-      // First we need to check the "status" of the blog and make the default option 
-      // in the HTML dropdown reflect the current state. We can also re-order the option tags
-      // so that the current "status" is always first in the list :-)
-      if(cleanPublished === "false") {
-        let statusOptions = document.getElementById("published");
-        statusOptions.innerHTML += 
-                     `<option id="staged" value="false" selected>Staging</option> 
-                     <option id="live" value="true">Live</option> `;
-       }
-       else{
-        let statusOptions = document.getElementById("published");
-        statusOptions.innerHTML += 
-                     ` <option id="live" value="true" selected>Live</option>
-                     <option id="staged" value="false">Staging</option> `;
-       }
-      document.getElementById("blogType").defaultValue = blogType;
-      document.getElementById("time").defaultValue = time;
-      document.getElementById("title").defaultValue = cleanTitle;
-      document.getElementById("imgName").defaultValue = cleanImg;
-      document.getElementById("imgCap").defaultValue = cleanImgCap;
-      
-  }
+  // Published dropdown
+  const statusOptions = document.getElementById("published");
+  statusOptions.innerHTML = `
+    <option value="true" ${blog.published ? "selected" : ""}>Live</option>
+    <option value="false" ${!blog.published ? "selected" : ""}>Staging</option>
+  `;
+
+  // Populate form fields
+  document.getElementById("title").value = blog.title;
+  document.getElementById("imgName").value = blog.img;
+  document.getElementById("imgCap").value = blog.imgCap;
+  document.getElementById("blogType").value = blog.blogType;
+  document.getElementById("time").value = blog.time;
+}
+
   
 
 //********************************* Fetch All Card Sets For Update **********************************
