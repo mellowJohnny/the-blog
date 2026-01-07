@@ -191,45 +191,53 @@
  * @param {*} blogID
  **/
 
- function updateBlogPost(title,imgName,imgCap,published,blogType,time) {
-    // Let's change the state of the button, now that we've clicked it...
-    cmsButtonSubmit();
+ function updateBlogPost(title, imgName, imgCap, published, blogType, time, blogID) {
+  // Update button state
+  cmsButtonSubmit();
+  cmsUpdateButtonReset();
 
-    // And now lets change it back:
-    // This function ultimately calls a timer, which then calls a 2nd function to actually update the button state
-    // These two functions are independent so we can change the timer length or the HTML updates in just one place
-    cmsUpdateButtonReset();
-    
-    // Call the Tiny API to fetch the blogBody content from the editor...
-    const tinyBody = tinymce.activeEditor.getContent();
+  // Get TinyMCE content
+  const tinyBody = tinymce.get("postBody").getContent();
 
-    // instantiate a headers object
-    let myHeaders = new Headers();
-    
-    // add content type header to object
-    myHeaders.append("Content-Type", "application/json");
-  
-    // using built in JSON utility package turn object to string and store in a variable
-    let raw = JSON.stringify({"published":published, "title":title, "imgName":imgName, "imgCap":imgCap, "blogType":blogType, "time":time, "postBody":tinyBody});
+  // Normalize types
+  const normalizedPublished = (published === "true" || published === true);
+  const normalizedBlogType = Number(blogType);
 
-    // create a JSON object with parameters for API call and store in a variable
-    let requestOptions = {
-      method: 'PUT',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow'
-      };
+  // Build request body to match backend / DynamoDB
+  const payload = {
+    blogID: blogID,
+    title: title,
+    img: imgName,       // use "img" to match table and getBlogByID
+    imgCap: imgCap,
+    published: normalizedPublished,
+    blogType: normalizedBlogType,
+    time: time,
+    postBody: tinyBody
+  };
 
-      /** De to the Bug */
-      console.log(raw);
+  console.log("UPDATE PAYLOAD:", payload);
 
-    // Make call to updateBlogPost API endpoint in API Gateway with parameters and use promises to get response
-    fetch("https://836pk40tsl.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
-    .then(response => response.text())
-    .then(result => alert(JSON.parse(result).body))
-    .catch(error => console.log('error', error));
-    
+  const requestOptions = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload),
+    redirect: "follow"
+  };
+
+  fetch("https://836pk40tsl.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
+    .then(response => response.json())
+    .then(result => {
+      // Expecting something like: { message: "Blog updated successfully" }
+      alert(result.message || "Blog updated.");
+    })
+    .catch(error => {
+      console.log("Error updating blog:", error);
+      alert("Error updating blog.");
+    });
 }
+
 
 /*********************************************************************************************
  ****************************************** Helper Functions *********************************
