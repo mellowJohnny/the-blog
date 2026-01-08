@@ -203,6 +203,7 @@ function cardSetSorter(property,order) {
 // blogType 5 = raspberry pi
 // H1s are now dynamically generated from the title field in the object map
 
+/** 
   function fetchIntro(blogType) {
   const blogIntro = document.getElementById("blog-intro");
   const blogHeader = document.getElementById("section-header");
@@ -256,7 +257,7 @@ function cardSetSorter(property,order) {
   // Generate dynamic H1
   blogHeader.innerHTML = `<h1>...${content.title}</h1>`;
 }
-
+*/
 
 
 // NEW Modular Object based approach to replace fetchCardIntro()
@@ -281,11 +282,11 @@ const cardIntros = {
     `,
 
     junkWax: `
-        <p>Ah...the late '80s / early '90s...Miami Vice, acid wash jeans, those teal San Jose Sharks jerseys...and a hockey card explosion. 
+        <p>The late '80s and early '90s...Miami Vice, acid wash jeans, those teal San Jose Sharks jerseys...and a hockey card explosion. 
         Here's a stat for you: for the 1989-90 season there were just two hockey sets produced - Topps for the US and O-Pee-Chee for Canada. But just three years later there were no less than thirteen (!) sets available to US and Canadian collectors.
         So you can see why, with the sheer volume of cards produced during these heady days, the era earned the <i><a href="cards.html">Junk Wax</a></i> moniker.  
         <br><br>
-        But there <i>are</i> some hidden gems to be found if you are willing to sift through the rubble. So let's start diggin'!</p>
+        But there are some hidden gems to be found if you are willing to sift through the rubble. So let's start diggin'!</p>
     `
 };
 

@@ -33,14 +33,19 @@
           window.addEventListener('load', (event) => {
               //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
               fetchCardSetsByYear(year,sortOrder);
+
               // *** Dynamically display the copyright year *******
               fetchCopyrightYear();
+
               // **** Call the Set-O-Matic Set Picker ***
               renderSetPicker(year);
-              // Dynamically render the page intro section 
+
+              // Dynamically render the page intro section - in helper.js
               fetchCardIntro(pageName);
+
               // *** Dynamically fetch Nav ***
               fetchNav(pageName);
+
               // *** Dynamically display the page header
               displayCardHeader(pageName,year);
           });
