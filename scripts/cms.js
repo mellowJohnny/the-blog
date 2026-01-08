@@ -5,6 +5,20 @@
  * There is no ability to delete a blog. Why would you want to? ;-)
  */
 
+/**
+ * TinyMCE GLOBAL config!
+ * This function is called from every CMS page, allowing for a single place to contol the WYSIWYG editor
+ */
+
+function initTinyEditor(selector = '#postBody') 
+{ tinymce.init({ 
+  selector: selector, 
+  plugins: ['lists', 'link', 'image', 'code'], // only actual plugins 
+  toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | advlist autolink link image lists charmap preview code | wordcount', 
+  width: 950 
+  }); 
+}
+
 //**************************************** Create New Blog Post ***************************************************
 
 /**

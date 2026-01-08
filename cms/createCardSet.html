@@ -13,19 +13,13 @@
       
         <!-- TinyMCE Text Editor Scripts -->
         <script src="https://cdn.tiny.cloud/1/eg9hcu6cr4t0wvi6e6uqtb78mj1rycqrixpajuuenn3oaojw/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-        <script>
-          tinymce.init({
-            selector: '#postBody',
-              plugins: ['lists', 'link', 'image', 'code'], // only actual plugins
-              toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | advlist autolink link image lists charmap preview code | wordcount',
-              width: 950
-          });
-        </script>
 
         <script>
           window.addEventListener('load', (event) => {
             // *** Dynamically display the copyright year
             fetchCopyrightYear();
+            // Load the TinyMCE WYSIWYG Editor from the global config in cms.js
+            initTinyEditor('#postBody');
         });
     </script>
 
