@@ -231,7 +231,7 @@ function renderCardSetPage() {
  * Also dynamically displays the actual set name as the next and previous buttons
  */
 
-function renderPaginationControls() {
+ffunction renderPaginationControls() {
   const totalPages = Math.ceil(allCardSets.length / pageSize);
   const controls = document.getElementById("paginationControls");
 
@@ -246,17 +246,26 @@ function renderPaginationControls() {
   const nextLabel = nextSet ? `${nextSet.setName} →` : "Next →";
 
   controls.innerHTML = `
-    <button onclick="prevPage()" ${currentPage === 1 ? "disabled" : ""}>
+    <a 
+      href="javascript:void(0)" 
+      onclick="prevPage()" 
+      class="pagination-link ${currentPage === 1 ? "disabled" : ""}"
+    >
       ${prevLabel}
-    </button>
+    </a>
 
-    <span>Page ${currentPage} of ${totalPages}</span>
+    <span class="pagination-page">Page ${currentPage} of ${totalPages}</span>
 
-    <button onclick="nextPage()" ${currentPage === totalPages ? "disabled" : ""}>
+    <a 
+      href="javascript:void(0)" 
+      onclick="nextPage()" 
+      class="pagination-link ${currentPage === totalPages ? "disabled" : ""}"
+    >
       ${nextLabel}
-    </button>
+    </a>
   `;
 }
+
 
 
 /**
