@@ -476,9 +476,38 @@ function fetchBlogByID(id,type) {
   document.getElementById("time").value = blog.time;
 }
 
+
   
 
 //********************************* Fetch All Card Sets For Update **********************************
+/*
+  NOTE ABOUT RESPONSE SHAPE:
+  --------------------------
+  Both the "live" and "staged" Lambdas return a raw array from AWS Lambda,
+  but API Gateway does NOT always forward the response in a consistent shape.
+
+  Depending on API Gateway behavior, the browser may receive:
+    1. A raw array (ideal case)
+         [ { setID, setName }, ... ]
+
+    2. A proxy response with body as a JSON string
+         { statusCode: 200, body: "[...]" }
+
+    3. A proxy response with body already parsed
+         { statusCode: 200, body: [ ... ] }
+
+    4. A DynamoDB-style response (if the Lambda ever returns data.Items)
+         { Items: [ ... ] }
+
+  Because of these variations, we normalize the response by checking:
+    - If the response *is already an array*
+    - If body is a JSON string
+    - If body is an array
+    - If Items[] exists
+
+  This ensures the UI works even if API Gateway or Lambda returns
+  slightly different shapes.
+*/
 
 /**
  * This Function is used to fetch all records from the Card table in DynamoDB with status="OK"
@@ -536,6 +565,7 @@ function fetchBlogByID(id,type) {
  * It is used by the CMS users to allow Users to select a single set to be updated
  * Calls the getCardSets API exposed by AWS API Gateway
  */
+
 
  async function fetchAllStagedCardSets() {
   const urlToFetch = `https://ecy21wzgkl.execute-api.us-east-2.amazonaws.com/dev`;
