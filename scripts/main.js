@@ -235,9 +235,9 @@ function renderPaginationControls() {
   const controls = document.getElementById("paginationControls");
 
   controls.innerHTML = `
-    <button onclick="prevPage()" ${currentPage === 1 ? "disabled" : ""}>Previous</button>
+    <button onclick="prevPage()" ${currentPage === 1 ? "disabled" : ""}>Back</button>
     <span>Page ${currentPage} of ${totalPages}</span>
-    <button onclick="nextPage()" ${currentPage === totalPages ? "disabled" : ""}>Next</button>
+    <button onclick="nextPage()" ${currentPage === totalPages ? "disabled" : ""}>Next Set</button>
   `;
 }
 
@@ -251,7 +251,7 @@ function nextPage() {
   if (currentPage < totalPages) {
     currentPage++;
     renderCardSetPage();
-    document.getElementById("set-picker").scrollIntoView({ behavior: "smooth" });
+    document.getElementById("card-intro").scrollIntoView({ behavior: "smooth" });
   }
 }
 
@@ -259,7 +259,7 @@ function prevPage() {
   if (currentPage > 1) {
     currentPage--;
     renderCardSetPage();
-    document.getElementById("set-picker").scrollIntoView({ behavior: "smooth" });
+    document.getElementById("card-intro").scrollIntoView({ behavior: "smooth" });
   }
 }
 
