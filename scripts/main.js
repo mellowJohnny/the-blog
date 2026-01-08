@@ -231,7 +231,7 @@ function renderCardSetPage() {
  * Also dynamically displays the actual set name as the next and previous buttons
  */
 
-ffunction renderPaginationControls() {
+function renderPaginationControls() {
   const totalPages = Math.ceil(allCardSets.length / pageSize);
   const controls = document.getElementById("paginationControls");
 
