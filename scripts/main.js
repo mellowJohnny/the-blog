@@ -8,7 +8,7 @@
 var globalPageName = "";
 let allCardSets = []; // Used in pagination - holds all the data so we can paginate through it
 let currentPage = 1; // Used in pagination
-const pageSize = 3; // Used in pagination - configues the number of sets to display pefore paginating
+const pageSize = 1; // Used in pagination - configues the number of sets to display pefore paginating
 
 
 /************************** fetchBlogs() Function, also orders the results via getSortOrder ****************/
