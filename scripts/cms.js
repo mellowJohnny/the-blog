@@ -124,7 +124,7 @@
   };
 
   // make API call to cardPost endpoint with parameters and use promises to get response
-  fetch("https://YOUR_CREATE_ENDPOINT_HERE", requestOptions)
+  fetch("https://05uss9ffij.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
     .then(response => response.json())
     .then(data => {
 
