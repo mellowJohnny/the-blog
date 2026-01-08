@@ -174,7 +174,7 @@ function updateCardSet(
   })
     .then(response => response.json())
     .then(data => {
-      console.log("UPDATE RESPONSE:", data);
+     // console.log("UPDATE RESPONSE:", data);
 
       let message = "Update complete.";
 
@@ -200,46 +200,6 @@ function updateCardSet(
     });
 }
 
-
-/** OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD 
-    function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,headerImgName,footerImgName,mfg) {
-    
-        // Let's change the state of the button, now that we've clicked it...
-        cmsButtonSubmit();
-
-        // And now lets change it back:
-        // This function ultimately calls a timer, which then calls a 2nd function to actually update the button state
-        // These two functions are independent so we can change the timer length or the HTML updates in just one place
-        cmsUpdateButtonReset();
-
-        // Call the Tiny API to fetch the content from the editor...
-        const tinyBody = tinymce.activeEditor.getContent();
-    
-        // instantiate a headers object
-        let myHeaders = new Headers();
-        
-        // add content type header to object
-        myHeaders.append("Content-Type", "application/json");
-    
-        // using built in JSON utility package turn object to string and store in a variable
-        let raw = JSON.stringify({"blogStatus":blogStatus,"setName":setName,"size":size,"subsets":subsets,"stars":stars,"formats":formats,"year":year,"postBody":tinyBody,"headerImgName":headerImgName,"footerImgName":footerImgName,"mfg":mfg});
-
-        // create a JSON object with parameters for API call and store in a variable
-        let requestOptions = {
-        method: 'PUT',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-        };
-
-        // Make call to updateCardSet API endpoint in API Gateway with parameters and use promises to get response
-        fetch("https://bb8yehibjb.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
-        .then(response => response.text())
-        .then(result => alert(JSON.parse(result).body))
-        .catch(error => console.log('error', error));
-    
-    }
-*/
 
 //********************************** Update Blog Post *******************************************
 
@@ -281,7 +241,7 @@ function updateCardSet(
     postBody: tinyBody
   };
 
-  console.log("UPDATE PAYLOAD:", payload);
+  // console.log("UPDATE PAYLOAD:", payload);
 
   const requestOptions = {
     method: "PUT",
@@ -328,7 +288,7 @@ function getBlogsForUpdate() {
     .then(response => response.json())
     .then(data => {
       // DEBUG>>>>
-    console.log("RAW GET RESPONSE:", data); 
+   // console.log("RAW GET RESPONSE:", data); 
     
       // NEW: If your Lambda returns { blogs: [...] }
       const blogArray = data.blogs || data.items || [];
@@ -389,10 +349,6 @@ function getBlogsForUpdate() {
       console.log("Something went wrong...: " + err);
     });
 }
-
-
-
-
 
 
 //****************************** displayBlogs Helper Function ***************************
@@ -483,7 +439,7 @@ function fetchBlogByID(id,type) {
     .then(response => response.json())
     .then(data => {
 
-      console.log("CHRISTIAN'S RAW BLOG-BY-ID RESPONSE:", data);
+     // console.log("CHRISTIAN'S RAW BLOG-BY-ID RESPONSE:", data);
 
       // New Lambda returns: { item: { ...fields... } }
       const blog = data.item;
@@ -751,7 +707,7 @@ function fetchBlogByID(id,type) {
     .then(response => response.json())
     .then(data => {
 
-      console.log("RAW CARD SET BY ID:", data);
+     // console.log("RAW CARD SET BY ID:", data);
 
       // Normalize the Lambda response
       let items = [];
