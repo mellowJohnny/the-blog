@@ -243,6 +243,7 @@ function renderPaginationControls() {
 
 /**
  * Next and Previous functions
+ * Functions ensure that when we navigate forward or back, we are always back at the top
  */
 
 function nextPage() {
@@ -250,6 +251,7 @@ function nextPage() {
   if (currentPage < totalPages) {
     currentPage++;
     renderCardSetPage();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 }
 
@@ -257,8 +259,10 @@ function prevPage() {
   if (currentPage > 1) {
     currentPage--;
     renderCardSetPage();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 }
+
 
 
  /** OLD ************* 
