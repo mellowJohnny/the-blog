@@ -22,12 +22,12 @@ const pageSize = 1; // Used in pagination - configues the number of sets to disp
   function fetchBlogs(blogType) {
   fetch(`https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`)
     .then(res => {
-      console.log("HTTP STATUS:", res.status);
-      console.log("HEADERS:", [...res.headers.entries()]);
+      // console.log("HTTP STATUS:", res.status);
+     // console.log("HEADERS:", [...res.headers.entries()]);
       return res.json(); // move on with parsed JSON
     })
     .then(blogArray => {
-      console.log("PARSED JSON:", blogArray);
+      // console.log("PARSED JSON:", blogArray);
 
       if (!Array.isArray(blogArray)) {
         throw new Error("API did not return an array");
@@ -112,15 +112,15 @@ const pageSize = 1; // Used in pagination - configues the number of sets to disp
 
  function fetchBlogIntroByType(blogType) {
 
-    console.log("In fetchBlog...");
-    console.log(`blogType is: ${blogType}`);
+   // console.log("In fetchBlog...");
+   // console.log(`blogType is: ${blogType}`);
 
     const urlToFetch = `https://0t14dphgwb.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`;
 
     fetch(urlToFetch)
         .then(response => response.json())
         .then(data => {
-            console.log("API returned:", data);
+          //  console.log("API returned:", data);
 
             // DynamoDB returns an object with an Items array
             if (!data.Items || data.Items.length === 0) {
@@ -160,7 +160,7 @@ const pageSize = 1; // Used in pagination - configues the number of sets to disp
     fetch(urlToFetch)
         .then(response => response.json())
         .then(data => {
-            console.log("API returned:", data);
+          //  console.log("API returned:", data);
 
             // No results?
             if (!data.Items || data.Items.length === 0) {
@@ -290,59 +290,6 @@ function prevPage() {
   }
 }
 
-
-
-
- /** OLD ************* 
-
-  function fetchCardSetsByYear(year, sortOrder) {
-
-    const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}`;
-
-    fetch(urlToFetch)
-        .then(response => response.json())
-        .then(data => {
-            console.log("API returned:", data);
-
-            // No results?
-            if (!data.Items || data.Items.length === 0) {
-                document.getElementById("cardSetDiv").innerHTML =
-                    "...this set has yet to be reviewed";
-                return;
-            }
-
-            // Sorting
-            if (sortOrder === "last") {
-                data.Items.sort(cardSetSorter("stars", "last"));
-            } else {
-                data.Items.sort(cardSetSorter("stars", "first"));
-            }
-
-            // Display each card set
-            for (const item of data.Items) {
-                displayCardSet(
-                    item.postBody,
-                    item.year,
-                    item.mfg,
-                    item.size,
-                    item.subsets,
-                    item.stars,
-                    item.formats,
-                    item.headerImg,
-                    item.headerImgName,
-                    item.footerImg,
-                    item.footerImgName,
-                    item.setName
-                );
-            }
-        })
-        .catch(err => {
-            document.getElementById("cardSetDiv").innerHTML =
-                "...Ah, Houston, we've had a problem...";
-            console.log("Something went wrong:", err);
-        });
-}
-*/
 
 /**
  * Function to FORMAT & DISPLAY card sets, including Flip Card CSS
@@ -500,7 +447,7 @@ function displayCardHeader(pageName,year) {
         
         // Next, call the Lambda function to populate the database
         // Dee Bug
-        console.log(`Form Data: ${userName}, ${password}, ${firstName}, ${lastName}, ${email}, ${favTeam}`)
+       // console.log(`Form Data: ${userName}, ${password}, ${firstName}, ${lastName}, ${email}, ${favTeam}`)
        
         // ********************* createUser API CALL ********************
         // instantiate a headers object
@@ -512,7 +459,7 @@ function displayCardHeader(pageName,year) {
         // using built in JSON utility package turn object to string and store in a variable
         let raw = JSON.stringify({"userName":userName,"password":password,"firstName":firstName,"lastName":lastName,"email":email,"favTeam":favTeam});
         // Dee Bug
-        console.log(`JSON Data: ${raw}`);
+       // console.log(`JSON Data: ${raw}`);
 
         // create a JSON object with parameters for API call and store in a variable
         let requestOptions = {

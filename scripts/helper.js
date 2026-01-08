@@ -152,7 +152,7 @@ function getSortOrder(property,order) {
 // When "order" is "last", lowest stars first
 // Default is highest stars first
 function cardSetSorter(property,order) {  
-    console.log(`Sort Order is: ${order}`)  
+   // console.log(`Sort Order is: ${order}`)  
     return function(a, b) {    
         if (a[property] > b[property]) { 
             if (order === "first") {
