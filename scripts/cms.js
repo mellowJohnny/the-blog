@@ -679,68 +679,59 @@ function fetchBlogByID(id,type) {
    **/
   
   function fetchCardSetByID(id) {
-    // Set up a global variable to hold the API URL
-    const urlToFetch = ` https://733bwunxq6.execute-api.us-east-2.amazonaws.com/dev?setID=${id}`;
-          
-    fetch(urlToFetch)
-       .then(function (response) {
-           const jsonResponse = response.json();
-           return jsonResponse; // Our Promise object
-       })
-       .then(function (data) {
-       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
-       // First let's return an array of the object's properties
-           const returnedData = Object.entries(data); 
-  
-       // Next let's just get the 'body' property returned by the Lambda call
-          for (const [key, value] of returnedData) {
-              if (key === "body"){
-  
-            // Now that we have the 'body' key, we need to convert the value (currently a JSON String) to a JSON Object 
-            // so that we can pull out the properties of each blog post 
-            const cardSetArray = JSON.parse(value);
-  
-            // Check to see if we have any results...    
-            if (cardSetArray.Items.length === 0) {
-  
-                // No results...return a friendly message
-                let blogBody = document.getElementById("errorDiv");
-                blogBody.innerHTML = `these aren't the Droids you're looking for...`;
-  
-                // If we have no results, stop processing
-                return;
-            }
-  
-            // Now that the data we got back is a JSON object, let's loop over all the Posts...
-            // The 'Items' property holds an array of all the set reviews 
-            // Let's loop through that array and display the fields we want!
-            // We call the populateCardSet() function to populate each field on the setUpdate.html CMS form
-  
-               for (var i = 0; i < cardSetArray.Items.length; i++) {
-                   populateCardSet(
-                        cardSetArray.Items[i].blogStatus,
-                        cardSetArray.Items[i].postBody,
-                        cardSetArray.Items[i].year,
-                        cardSetArray.Items[i].mfg,
-                        cardSetArray.Items[i].size,
-                        cardSetArray.Items[i].subsets,
-                        cardSetArray.Items[i].stars,
-                        cardSetArray.Items[i].formats,
-                        cardSetArray.Items[i].setName,
-                        cardSetArray.Items[i].headerImgName,
-                        cardSetArray.Items[i].footerImgName);
-                }
-            }
-        }
-  
-       })
-       .catch(function (err) {
-           // Error...return a friendly message
-           let blogBody = document.getElementById("errorDiv");
-           blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
-           console.log('Something went wrong...: ' + err);
-       });
-  }
+  const urlToFetch = `https://733bwunxq6.execute-api.us-east-2.amazonaws.com/dev?setID=${id}`;
+
+  fetch(urlToFetch)
+    .then(response => response.json())
+    .then(data => {
+
+      console.log("RAW CARD SET BY ID:", data);
+
+      // Normalize the Lambda response
+      let items = [];
+
+      if (Array.isArray(data.items)) {
+        items = data.items;
+      } else if (Array.isArray(data)) {
+        items = data;
+      } else if (typeof data.body === "string") {
+        items = JSON.parse(data.body);
+      } else if (Array.isArray(data.body)) {
+        items = data.body;
+      } else if (Array.isArray(data.Items)) {
+        items = data.Items;
+      }
+
+      if (!items || items.length === 0) {
+        document.getElementById("errorDiv").innerHTML =
+          `these aren't the Droids you're looking for...`;
+        return;
+      }
+
+      // Populate the form with the first (and only) card set
+      const set = items[0];
+
+      populateCardSet(
+        set.blogStatus,
+        set.postBody,
+        set.year,
+        set.mfg,
+        set.size,
+        set.subsets,
+        set.stars,
+        set.formats,
+        set.setName,
+        set.headerImgName,
+        set.footerImgName
+      );
+    })
+    .catch(err => {
+      document.getElementById("errorDiv").innerHTML =
+        `...Ah, Houston, we've had a problem...`;
+      console.log("Something went wrong:", err);
+    });
+}
+
 
   
   
@@ -764,58 +755,49 @@ function fetchBlogByID(id,type) {
   */
   
   /** This function calls the associated DIV on the Set Update form in setEdit.html and populates it with the current value */
-  function populateCardSet(blogStatus,postBody,year,mfg,size,subsets,stars,formats,setName,headerImgName,footerImgName) {
+  function populateCardSet(
+  blogStatus,
+  postBody,
+  year,
+  mfg,
+  size,
+  subsets,
+  stars,
+  formats,
+  setName,
+  headerImgName,
+  footerImgName
+) {
+  // Insert postBody into TinyMCE
+  tinymce.activeEditor.selection.setContent(postBody);
 
-      // Cleanup the JSON we get back so it's back to a String 
-      // We parsed the first object we got back, but that didn't parse the contents of the inner properties
-      // so we need to explicitly parse all the properties we need to send back
-     
-      const cleanStatus = JSON.parse(blogStatus);
-      const cleanPostBody = JSON.parse(postBody);
-      const cleanYear = JSON.parse(year);
-      const cleanMFG = JSON.parse(mfg);
-      const cleanSetSize = JSON.parse(size);
-      const cleanSubsets = JSON.parse(subsets);
-      const starsString = JSON.parse(stars);
-      const cleanFormats = JSON.parse(formats);
-      const numStars = parseInt(starsString);
-      const cleanSetName = JSON.parse(setName);
-      const cleanHeaderImgName = JSON.parse(headerImgName);
-      const cleanFooterImgName = JSON.parse(footerImgName);
+  // Populate the blogStatus dropdown
+  const statusOptions = document.getElementById("blogStatus");
 
-      // Inserts postBody into 'current' TinyMCE Editor
-      tinymce.activeEditor.selection.setContent(cleanPostBody);
-  
-  
-      // Now that we have cleaned up the data we got back from DynamoDB, let's
-      // populate the form on setEdit.html with the values as defaults
-
-      // First we need to check the "status" of the blog and make the default option 
-      // in the HTML dropdown reflect the current state. We can also re-order the option tags
-      // so that the current "status" is always first in the list :-)
-      if(cleanStatus === "staged") {
-       let statusOptions = document.getElementById("blogStatus");
-       statusOptions.innerHTML += 
-                    `<option id="staged" value="staged" selected>Staging</option> 
-                    <option id="live" value="OK">Live</option> `;
-      }
-      else{
-       let statusOptions = document.getElementById("blogStatus");
-       statusOptions.innerHTML += 
-                    ` <option id="live" value="OK" selected>Live</option>
-                    <option id="staged" value="staged">Staging</option> `;
-      }
-        document.getElementById("year").defaultValue = cleanYear;
-        document.getElementById("mfg").defaultValue = cleanMFG;
-        document.getElementById("size").defaultValue = cleanSetSize;
-        document.getElementById("subsets").defaultValue = cleanSubsets;
-        document.getElementById("stars").defaultValue = numStars;
-        document.getElementById("formats").defaultValue = cleanFormats;
-        document.getElementById("setName").defaultValue = cleanSetName;
-        document.getElementById("headerImgName").defaultValue = cleanHeaderImgName;
-        document.getElementById("footerImgName").defaultValue = cleanFooterImgName;
-    
+  if (blogStatus === "staged") {
+    statusOptions.innerHTML = `
+      <option id="staged" value="staged" selected>Staging</option>
+      <option id="live" value="OK">Live</option>
+    `;
+  } else {
+    statusOptions.innerHTML = `
+      <option id="live" value="OK" selected>Live</option>
+      <option id="staged" value="staged">Staging</option>
+    `;
   }
+
+  // Populate the rest of the fields
+  document.getElementById("year").value = year;
+  document.getElementById("mfg").value = mfg;
+  document.getElementById("size").value = size;
+  document.getElementById("subsets").value = subsets;
+  document.getElementById("stars").value = stars;
+  document.getElementById("formats").value = formats;
+  document.getElementById("setName").value = setName;
+  document.getElementById("headerImgName").value = headerImgName;
+  document.getElementById("footerImgName").value = footerImgName;
+}
+
 
 //************* Helper functions to change CMS Submit state *************
 
