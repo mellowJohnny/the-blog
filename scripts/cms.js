@@ -523,7 +523,7 @@ function fetchBlogByID(id,type) {
     const response = await fetch(urlToFetch);
     const data = await response.json();
 
-    console.log("RAW DATA FROM LAMBDA:", data);
+   // console.log("RAW DATA FROM LAMBDA:", data);
 
     let cardSets = [];
 
@@ -574,7 +574,7 @@ function fetchBlogByID(id,type) {
     const response = await fetch(urlToFetch);
     const data = await response.json();
 
-    console.log("STAGED RAW DATA:", data);
+   // console.log("STAGED RAW DATA:", data);
 
     let stagedSets = [];
 
