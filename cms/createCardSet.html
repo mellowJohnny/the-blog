@@ -126,19 +126,19 @@
                      <textarea id="postBody" title="postBody"></textarea><br><br>
 
                     <!-- NOTE: Because we are using the TinyMCE Editor we don't call getElementById on the textarea, we use an API call in cms.js -->
-                    <button class="input-button" type="button" id="cmsSubmitButton"
-                        onclick="createCardSet(
-                                document.getElementById('blogStatus').value,
-                                document.getElementById('setName').value,
-                                document.getElementById('size').value,
-                                document.getElementById('subsets').value,
-                                document.getElementById('stars').value,
-                                document.getElementById('formats').value,
-                                document.getElementById('year').value,
-                                document.getElementById('mfg').value,
-                                document.getElementById('headerImgName').value,
-                                document.getElementById('footerImgName').value)">
-                        Submit Post
+                    <button class="input-button" type="button" id="cmsSubmitButton" 
+                      onclick="createCardSet( 
+                        document.getElementById('blogStatus').value, 
+                        document.getElementById('setName').value, 
+                        document.getElementById('size').value, 
+                        document.getElementById('subsets').value, 
+                        document.getElementById('stars').value, 
+                        document.getElementById('formats').value, 
+                        document.getElementById('year').value, 
+                        document.getElementById('headerImgName').value, 
+                        document.getElementById('footerImgName').value, 
+                        document.getElementById('mfg').value )"> 
+                        Submit Post 
                     </button>
                    
                     <br><br>
