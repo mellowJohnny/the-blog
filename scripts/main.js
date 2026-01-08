@@ -251,7 +251,7 @@ function nextPage() {
   if (currentPage < totalPages) {
     currentPage++;
     renderCardSetPage();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    document.getElementById("set-picker").scrollIntoView({ behavior: "smooth" });
   }
 }
 
@@ -259,9 +259,10 @@ function prevPage() {
   if (currentPage > 1) {
     currentPage--;
     renderCardSetPage();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    document.getElementById("set-picker").scrollIntoView({ behavior: "smooth" });
   }
 }
+
 
 
 
