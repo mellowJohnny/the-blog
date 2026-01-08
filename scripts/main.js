@@ -6,6 +6,10 @@
 
 // Global Variables
 var globalPageName = "";
+let allCardSets = []; // Used in pagination - holds all the data so we can paginate through it
+let currentPage = 1; // Used in pagination
+const pageSize = 3; // Used in pagination - configues the number of sets to display pefore paginating
+
 
 /************************** fetchBlogs() Function, also orders the results via getSortOrder ****************/
 
@@ -146,7 +150,99 @@ var globalPageName = "";
     * This function calls an underlying AWS call used to FETCH ALL card sets given a specific year
     * AWS API Gateway API call - getCardSets end-point
     * Called on page load from various pages
+    * NEW - Uses pagination
   */
+
+ function fetchCardSetsByYear(year, sortOrder) {
+
+    const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}`;
+
+    fetch(urlToFetch)
+        .then(response => response.json())
+        .then(data => {
+            console.log("API returned:", data);
+
+            // No results?
+            if (!data.Items || data.Items.length === 0) {
+                document.getElementById("cardSetDiv").innerHTML =
+                    "...this set has yet to be reviewed";
+                return;
+            }
+
+            // Sorting
+            if (sortOrder === "last") {
+                data.Items.sort(cardSetSorter("stars", "last"));
+            } else {
+                data.Items.sort(cardSetSorter("stars", "first"));
+            }
+
+            // ⭐ Instead of calling displayCardSet() here,
+            // ⭐ we store the results and let pagination render them.
+            allCardSets = data.Items;
+            currentPage = 1;
+            renderCardSetPage();
+        })
+        .catch(err => {
+            document.getElementById("cardSetDiv").innerHTML =
+                "...Ah, Houston, we've had a problem...";
+            console.log("Something went wrong:", err);
+        });
+}
+
+/**
+ * Used by the pagination method - acts as a middleman to paginate, then for each set to be rendered on the page
+ * it calls the original displayCardSet() function to render the set
+ */
+
+function renderCardSetPage() {
+  const container = document.getElementById("cardSetDiv");
+  container.innerHTML = "";
+
+  const start = (currentPage - 1) * pageSize;
+  const end = start + pageSize;
+
+  const pageItems = allCardSets.slice(start, end);
+
+  // ⭐ THIS is where your original function is called
+  pageItems.forEach(item => {
+    displayCardSet(
+      item.postBody,
+      item.year,
+      item.mfg,
+      item.size,
+      item.subsets,
+      item.stars,
+      item.formats,
+      item.headerImg,
+      item.headerImgName,
+      item.footerImg,
+      item.footerImgName,
+      item.setName
+    );
+  });
+
+  renderPaginationControls();
+}
+
+/**
+ * New pagination controls
+ * This function is used to control how we paginate using the Global variables for "where to start" (currentPage)
+ * and "how many to display" (pageSize) 
+ */
+
+function renderPaginationControls() {
+  const totalPages = Math.ceil(allCardSets.length / pageSize);
+  const controls = document.getElementById("paginationControls");
+
+  controls.innerHTML = `
+    <button onclick="prevPage()" ${currentPage === 1 ? "disabled" : ""}>Previous</button>
+    <span>Page ${currentPage} of ${totalPages}</span>
+    <button onclick="nextPage()" ${currentPage === totalPages ? "disabled" : ""}>Next</button>
+  `;
+}
+
+
+ /** OLD ************* 
 
   function fetchCardSetsByYear(year, sortOrder) {
 
@@ -195,7 +291,7 @@ var globalPageName = "";
             console.log("Something went wrong:", err);
         });
 }
-
+*/
 
 /**
  * Function to FORMAT & DISPLAY card sets, including Flip Card CSS
