@@ -136,6 +136,72 @@
  * 
  **/
 
+function updateCardSet(
+  blogStatus,
+  setName,
+  size,
+  subsets,
+  stars,
+  formats,
+  year,
+  headerImgName,
+  footerImgName,
+  mfg
+) {
+  cmsButtonSubmit();
+  cmsUpdateButtonReset();
+
+  const tinyBody = tinymce.activeEditor.getContent();
+
+  const payload = {
+    blogStatus,
+    setName,
+    size,
+    subsets,
+    stars,
+    formats,
+    year,
+    postBody: tinyBody,
+    headerImgName,
+    footerImgName,
+    mfg
+  };
+
+  fetch("https://bb8yehibjb.execute-api.us-east-2.amazonaws.com/dev", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log("UPDATE RESPONSE:", data);
+
+      let message = "Update complete.";
+
+      // Normalize all possible shapes
+      if (typeof data === "string") {
+        message = data;
+      } else if (data.message) {
+        message = data.message;
+      } else if (data.body) {
+        try {
+          const parsed = JSON.parse(data.body);
+          message = parsed.message || data.body;
+        } catch {
+          message = data.body;
+        }
+      }
+
+      alert(message);
+    })
+    .catch(error => {
+      console.log("Update error:", error);
+      alert("Something went wrong updating the card set.");
+    });
+}
+
+
+/** OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD 
     function updateCardSet(blogStatus,setName,size,subsets,stars,formats,year,headerImgName,footerImgName,mfg) {
     
         // Let's change the state of the button, now that we've clicked it...
@@ -173,7 +239,7 @@
         .catch(error => console.log('error', error));
     
     }
-
+*/
 
 //********************************** Update Blog Post *******************************************
 
