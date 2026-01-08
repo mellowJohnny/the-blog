@@ -228,18 +228,36 @@ function renderCardSetPage() {
  * New pagination controls
  * This function is used to control how we paginate using the Global variables for "where to start" (currentPage)
  * and "how many to display" (pageSize) 
+ * Also dynamically displays the actual set name as the next and previous buttons
  */
 
 function renderPaginationControls() {
   const totalPages = Math.ceil(allCardSets.length / pageSize);
   const controls = document.getElementById("paginationControls");
 
+  const start = (currentPage - 1) * pageSize;
+  const end = start + pageSize - 1;
+
+  // Determine previous and next set names
+  const prevSet = allCardSets[start - 1];
+  const nextSet = allCardSets[end + 1];
+
+  const prevLabel = prevSet ? `← ${prevSet.setName}` : "← Previous";
+  const nextLabel = nextSet ? `${nextSet.setName} →` : "Next →";
+
   controls.innerHTML = `
-    <button onclick="prevPage()" ${currentPage === 1 ? "disabled" : ""}>Back</button>
+    <button onclick="prevPage()" ${currentPage === 1 ? "disabled" : ""}>
+      ${prevLabel}
+    </button>
+
     <span>Page ${currentPage} of ${totalPages}</span>
-    <button onclick="nextPage()" ${currentPage === totalPages ? "disabled" : ""}>Next Set</button>
+
+    <button onclick="nextPage()" ${currentPage === totalPages ? "disabled" : ""}>
+      ${nextLabel}
+    </button>
   `;
 }
+
 
 /**
  * Next and Previous functions
