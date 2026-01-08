@@ -242,8 +242,8 @@ function renderPaginationControls() {
   const prevSet = allCardSets[start - 1];
   const nextSet = allCardSets[end + 1];
 
-  const prevLabel = prevSet ? `← ${prevSet.setName}` : "← Previous";
-  const nextLabel = nextSet ? `${nextSet.setName} →` : "Next →";
+  const prevLabel = prevSet ? `← Back To:: ${prevSet.setName}` : "← Previous";
+  const nextLabel = nextSet ? `Next Up: ${nextSet.setName} →` : "Next →";
 
   controls.innerHTML = `
     <a 
