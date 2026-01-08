@@ -81,7 +81,7 @@
    */
   
   // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
-   function createCardSet(blogStatus, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg) {
+  function createCardSet(blogStatus, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg) {
 
   // Let's change the state of the button, now that we've clicked it...
   cmsButtonSubmit();
@@ -125,32 +125,38 @@
 
   // make API call to cardPost endpoint with parameters and use promises to get response
   fetch("https://05uss9ffij.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
-    .then(response => response.json())
-    .then(data => {
-
-      // Normalize all possible Lambda Proxy Integration shapes
-      let message = "Create complete.";
-
-      if (typeof data === "string") {
-        message = data;
-      } else if (data.message) {
-        message = data.message;
-      } else if (data.body) {
-        try {
-          const parsed = JSON.parse(data.body);
-          message = parsed.message || data.body;
-        } catch {
-          message = data.body;
-        }
+    .then(async response => {
+      // Parse JSON safely
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        alert("Unexpected server response.");
+        return;
       }
 
-      alert(message);
+      // If Lambda returned an error status, show the error
+      if (!response.ok) {
+        // Lambda error format: { error: "...", details: "..." }
+        const errMsg = data.error || data.message || "An unknown error occurred.";
+        alert(errMsg);
+        return;
+      }
+
+      // SUCCESS: Lambda decides the message
+      // Lambda always returns: { message: "..." }
+      if (data.message) {
+        alert(data.message);
+      } else {
+        alert("Success, but no message returned from server.");
+      }
     })
     .catch(error => {
       console.log('Create error:', error);
-      alert("Something went wrong creating the card set.");
+      alert("Network error creating the card set.");
     });
 }
+ 
 
 
 //******************************************* Update Card Set ***************************************
