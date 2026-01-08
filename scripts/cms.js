@@ -487,62 +487,37 @@ function fetchBlogByID(id,type) {
  * Calls the getCardSets API exposed by AWS API Gateway
  */
 
- function fetchAllCardSets() {
+ async function fetchAllCardSets() {
+  const urlToFetch = `https://tx7romovbd.execute-api.us-east-2.amazonaws.com/dev`;
 
-    // Set up a global variable to hold the API URL
-    const urlToFetch = `https://tx7romovbd.execute-api.us-east-2.amazonaws.com/dev`;
-          
-    fetch(urlToFetch)
-       .then(function (response) {
-           const jsonResponse = response.json();
-           return jsonResponse; // Our Promise object
-       })
-       .then(function (data) {
-       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
-       // First let's return an array of the object's properties
-           const returnedData = Object.entries(data); 
-  
-       // Next let's just get the 'body' property returned by the Lambda call
-          for (const [key, value] of returnedData) {
-              if (key === "body"){
-  
-            // Now that we have the 'body' key, we need to convert the value (currently a JSON String) to a JSON Object 
-            // so that we can pull out the properties of each blog post 
-            const cardSetArray = JSON.parse(value);
-  
-            // Check to see if we have any results...    
-            if (cardSetArray.Items.length === 0) {
-  
-                // No results...return a friendly message
-                let blogBody = document.getElementById("noBlogsDiv");
-                blogBody.innerHTML = `...no card sets are currently live`;
-  
-                // If we have no results, stop processing
-                return;
-            }
-  
-            // Now that the data we got back is a JSON object, let's loop over all the Posts...
-            // The 'Items' property holds an array of all the set reviews 
-            // Let's loop through that array and display the fields we want!
-            // We call the displayBlog() function to control the display, calling it once
-            // for each set review, essentially populating each review one at a time
-  
-               for (var i = 0; i < cardSetArray.Items.length; i++) {
-                   displayCardSets(
-                    cardSetArray.Items[i].setID,
-                    cardSetArray.Items[i].setName);
-                }
-            }
-        }
-  
-       })
-       .catch(function (err) {
-           // Error...return a friendly message
-           let blogBody = document.getElementById("editBlogsDiv");
-           blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
-           console.log('Something went wrong...: ' + err);
-       });
+  try {
+    const response = await fetch(urlToFetch);
+    const data = await response.json();   // full Lambda proxy response
+
+    console.log("RAW DATA FROM LAMBDA:", data);  // <--- ADD THIS
+
+    let cardSets = data.body;
+    if (typeof cardSets === "string") {
+      cardSets = JSON.parse(cardSets);
+    }
+
+    if (!cardSets || cardSets.length === 0) {
+      document.getElementById("noBlogsDiv").innerHTML =
+        `...no card sets are currently live`;
+      return;
+    }
+
+    cardSets.forEach(set => {
+      displayCardSets(set.setID, set.setName);
+    });
+
+  } catch (err) {
+    console.log("Something went wrong:", err);
+    document.getElementById("editBlogsDiv").innerHTML =
+      `...Ah, Houston, we've had a problem...`;
   }
+}
+
 
 
 //********************************* Fetch All Staged Card Sets For Update **********************************
@@ -554,62 +529,35 @@ function fetchBlogByID(id,type) {
  * Calls the getCardSets API exposed by AWS API Gateway
  */
 
- function fetchAllStagedCardSets() {
+ async function fetchAllStagedCardSets() {
+  const urlToFetch = `https://ecy21wzgkl.execute-api.us-east-2.amazonaws.com/dev`;
 
-    // Set up a global variable to hold the API URL
-    const urlToFetch = `https://ecy21wzgkl.execute-api.us-east-2.amazonaws.com/dev`;
-          
-    fetch(urlToFetch)
-       .then(function (response) {
-           const jsonResponse = response.json();
-           return jsonResponse; // Our Promise object
-       })
-       .then(function (data) {
-       // 'data' is an Object at this point...this is basically the record set returned bt dynamoDB
-       // First let's return an array of the object's properties
-           const returnedData = Object.entries(data); 
-  
-       // Next let's just get the 'body' property returned by the Lambda call
-          for (const [key, value] of returnedData) {
-              if (key === "body"){
-  
-            // Now that we have the 'body' key, we need to convert the value (currently a JSON String) to a JSON Object 
-            // so that we can pull out the properties of each blog post 
-            const cardSetArray = JSON.parse(value);
-  
-            // Check to see if we have any results...    
-            if (cardSetArray.Items.length === 0) {
-  
-                // No results...return a friendly message
-                let blogBody = document.getElementById("noStagedBlogsDiv");
-                blogBody.innerHTML = `...no card sets are currently staged`;
-  
-                // If we have no results, stop processing
-                return;
-            }
-  
-            // Now that the data we got back is a JSON object, let's loop over all the Posts...
-            // The 'Items' property holds an array of all the set reviews 
-            // Let's loop through that array and display the fields we want!
-            // We call the displayBlog() function to control the display, calling it once
-            // for each set review, essentially populating each review one at a time
-  
-               for (var i = 0; i < cardSetArray.Items.length; i++) {
-                   displayStagedCardSets(
-                    cardSetArray.Items[i].setID,
-                    cardSetArray.Items[i].setName);
-                }
-            }
-        }
-  
-       })
-       .catch(function (err) {
-           // Error...return a friendly message
-           let blogBody = document.getElementById("editBlogsDiv");
-           blogBody.innerHTML = `...Ah, Houston, we've had a problem...`;
-           console.log('Something went wrong...: ' + err);
-       });
+  try {
+    const response = await fetch(urlToFetch);
+    const data = await response.json();   // full Lambda proxy response
+
+    // Parse the body (string → JSON array)
+    const stagedSets = JSON.parse(data.body);
+
+    // No results?
+    if (!stagedSets || stagedSets.length === 0) {
+      document.getElementById("noStagedBlogsDiv").innerHTML =
+        `...no card sets are currently staged`;
+      return;
+    }
+
+    // Loop through each staged set and display it
+    stagedSets.forEach(set => {
+      displayStagedCardSets(set.setID, set.setName);
+    });
+
+  } catch (err) {
+    console.log("Something went wrong:", err);
+    document.getElementById("editBlogsDiv").innerHTML =
+      `...Ah, Houston, we've had a problem...`;
   }
+}
+
   
 //************************************ displayCardSets Helper Function *************************************
   
@@ -623,29 +571,21 @@ function fetchBlogByID(id,type) {
   */
   
   function displayCardSets(setID, setName) {
-  
-    // Cleanup the JSON we get back so it's back to a String 
-    // We parsed the first object we got back, but that didn't parse the contents of the inner properties
-    // so we need to explicitly parse setName as it will come back with double-quotes around it.
-    // setID comes back as a string with no extra quotes so no need to JSON.parse() it
-    const cleanSetID = setID;
-    const cleanSetName = JSON.parse(setName);
-    
-    // Setup a variable to hold the reference to our Div, 'cause we got work to do!
-    let blogBody = document.getElementById("editBlogsDiv");
-    blogBody.innerHTML += 
-                 `
-                 <table class="set-details-table-style">
-                     <tr>
-                         <td style="width:400px;font-size:20px">
-                            <a href="setEdit.html?setID=${cleanSetID}">
-                            <strong>${cleanSetName}</strong>
-                            </a>
-                         </td>
-                     </tr>
-                 </table>
-                 `;
-  }
+  const blogBody = document.getElementById("editBlogsDiv");
+
+  blogBody.innerHTML += `
+    <table class="set-details-table-style">
+      <tr>
+        <td style="width:400px;font-size:20px">
+          <a href="setEdit.html?setID=${setID}">
+            <strong>${setName}</strong>
+          </a>
+        </td>
+      </tr>
+    </table>
+  `;
+}
+
 
 
 
@@ -661,29 +601,21 @@ function fetchBlogByID(id,type) {
   */
 
   function displayStagedCardSets(setID, setName) {
-  
-    // Cleanup the JSON we get back so it's back to a String 
-    // We parsed the first object we got back, but that didn't parse the contents of the inner properties
-    // so we need to explicitly parse setName as it will come back with double-quotes around it.
-    // setID comes back as a string with no extra quotes so no need to JSON.parse() it
-    const cleanSetID = setID;
-    const cleanSetName = JSON.parse(setName);
-    
-    // Setup a variable to hold the reference to our Div, 'cause we got work to do!
-    let blogBody = document.getElementById("stagedBlogsDiv");
-    blogBody.innerHTML += 
-                 `
-                 <table class="set-details-table-style">
-                     <tr>
-                         <td style="width:400px;font-size:20px">
-                            <a href="setEdit.html?setID=${cleanSetID}">
-                            <strong>${cleanSetName}</strong>
-                            </a>
-                         </td>
-                     </tr>
-                 </table>
-                 `;
-  }
+  const blogBody = document.getElementById("stagedBlogsDiv");
+
+  blogBody.innerHTML += `
+    <table class="set-details-table-style">
+      <tr>
+        <td style="width:400px;font-size:20px">
+          <a href="setEdit.html?setID=${setID}">
+            <strong>${setName}</strong>
+          </a>
+        </td>
+      </tr>
+    </table>
+  `;
+}
+
   
 
 
