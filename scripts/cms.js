@@ -492,13 +492,20 @@ function fetchBlogByID(id,type) {
 
   try {
     const response = await fetch(urlToFetch);
-    const data = await response.json();   // full Lambda proxy response
+    const data = await response.json();
 
-    console.log("RAW DATA FROM LAMBDA:", data);  // <--- ADD THIS
+    console.log("RAW DATA FROM LAMBDA:", data);
 
-    let cardSets = data.body;
-    if (typeof cardSets === "string") {
-      cardSets = JSON.parse(cardSets);
+    let cardSets = [];
+
+    if (Array.isArray(data)) {
+      cardSets = data;
+    } else if (typeof data.body === "string") {
+      cardSets = JSON.parse(data.body);
+    } else if (Array.isArray(data.body)) {
+      cardSets = data.body;
+    } else if (Array.isArray(data.Items)) {
+      cardSets = data.Items;
     }
 
     if (!cardSets || cardSets.length === 0) {
@@ -517,6 +524,7 @@ function fetchBlogByID(id,type) {
       `...Ah, Houston, we've had a problem...`;
   }
 }
+
 
 
 
