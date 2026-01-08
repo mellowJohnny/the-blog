@@ -542,19 +542,28 @@ function fetchBlogByID(id,type) {
 
   try {
     const response = await fetch(urlToFetch);
-    const data = await response.json();   // full Lambda proxy response
+    const data = await response.json();
 
-    // Parse the body (string → JSON array)
-    const stagedSets = JSON.parse(data.body);
+    console.log("STAGED RAW DATA:", data);
 
-    // No results?
+    let stagedSets = [];
+
+    if (Array.isArray(data)) {
+      stagedSets = data;
+    } else if (typeof data.body === "string") {
+      stagedSets = JSON.parse(data.body);
+    } else if (Array.isArray(data.body)) {
+      stagedSets = data.body;
+    } else if (Array.isArray(data.Items)) {
+      stagedSets = data.Items;
+    }
+
     if (!stagedSets || stagedSets.length === 0) {
       document.getElementById("noStagedBlogsDiv").innerHTML =
         `...no card sets are currently staged`;
       return;
     }
 
-    // Loop through each staged set and display it
     stagedSets.forEach(set => {
       displayStagedCardSets(set.setID, set.setName);
     });
@@ -565,6 +574,7 @@ function fetchBlogByID(id,type) {
       `...Ah, Houston, we've had a problem...`;
   }
 }
+
 
   
 //************************************ displayCardSets Helper Function *************************************
