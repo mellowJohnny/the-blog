@@ -241,6 +241,25 @@ function renderPaginationControls() {
   `;
 }
 
+/**
+ * Next and Previous functions
+ */
+
+function nextPage() {
+  const totalPages = Math.ceil(allCardSets.length / pageSize);
+  if (currentPage < totalPages) {
+    currentPage++;
+    renderCardSetPage();
+  }
+}
+
+function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    renderCardSetPage();
+  }
+}
+
 
  /** OLD ************* 
 
