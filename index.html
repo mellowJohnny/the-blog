@@ -19,14 +19,19 @@
       window.addEventListener('load', (event) => {
         // Calls the fetchAllBlogs() function on page load, calls underlying AWS web service
         fetchBlogs('99');
+
         // *** Dynamically display the copyright year
         fetchCopyrightYear();
+
         // *** Dynamically fetch Nav ***
         fetchNav("index");
+
         // Set Cookie
         setCookie(location,)
+
         // *** Dynamically fetch the blog into blurb based on blogType using a new API! *** NEW ***
        fetchBlogIntroByType('99');
+
         });
 
          
@@ -73,7 +78,7 @@
                 <h1>welcome to the hella files...</h1>
               </div>
               <div class="flex-container">
-                <div class="blog-intro"></div> <!-- This div get populated from the fetchBlogIntroByType function-->
+                <div class="intro" id="blog-intro"></div> <!-- This div get populated from the fetchBlogIntroByType function-->
               </div>
             </section>
             <section>
