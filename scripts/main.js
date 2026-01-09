@@ -112,8 +112,8 @@ const pageSize = 1; // Used in pagination - configues the number of sets to disp
 
  function fetchBlogIntroByType(blogType) {
 
-   console.log("In fetchBlog...");
-   console.log(`blogType is: ${blogType}`);
+   // console.log("In fetchBlog...");
+   // console.log(`blogType is: ${blogType}`);
 
     const urlToFetch = `https://0t14dphgwb.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`;
 
