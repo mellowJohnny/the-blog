@@ -25,7 +25,11 @@
         fetchNav("index");
         // Set Cookie
         setCookie(location,)
+        // *** Dynamically fetch the blog into blurb based on blogType using a new API! *** NEW ***
+       fetchBlogIntroByType('99');
         });
+
+         
 
         // Google Analytics Stuff -->
         window.dataLayer = window.dataLayer || [];
@@ -69,12 +73,7 @@
                 <h1>welcome to the hella files...</h1>
               </div>
               <div class="flex-container">
-                <div class="intro">
-                <p>A blog with a purpose...<br>
-                  Two purposes really - it's a place for me to test out web technologies - AWS stuff, Javascript, React, etc. And...actually write about things which interest me. Tech, old hockey card sets, maybe even Software Architecture once in a while. <br><br>
-                  So stick around, I'll try to be entertaining - at the very least you can expect sarcasm, spelling mistakes, and self-deprecation.
-                </p>
-                </div>
+                <div class="blog-intro"></div> <!-- This div get populated from the fetchBlogIntroByType function-->
               </div>
             </section>
             <section>

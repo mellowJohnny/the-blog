@@ -106,7 +106,7 @@ const pageSize = 1; // Used in pagination - configues the number of sets to disp
 /*********************************************** fetchBlogIntroByType *************************************/
 
  /** 
-    * This function calls an underlying AWS call used to FETCH blogs given a specific blogType
+    * This function calls an underlying AWS call used to FETCH blogs intros given a specific blogType
     * AWS API Gateway API call - getBlogIntro end-point (& getBlogIntro Lambda)
   */
 
