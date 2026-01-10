@@ -22,7 +22,7 @@ function initTinyEditor(selector = '#postBody')
 /*************** IMAGE PICKER ********************
 
 /**
- * Image Picker Function
+ * Image Picker Function 
  * Calls cmsImagePicker Lambda & API
  */
 
@@ -40,6 +40,7 @@ function fetchImageList() {
 
 /**
  * Helper to render the image list (with optional filter)
+ * ONLY WORKS WITH CARD SETS !!
  */
 function renderImageList(files, targetFieldId, filterText = "") {
   const container = document.getElementById("imageList");
@@ -53,7 +54,7 @@ function renderImageList(files, targetFieldId, filterText = "") {
       return file.toLowerCase().includes(normalizedFilter);
     })
     .forEach(file => {
-      const fileName = file.replace("img/cards/", "");
+      const fileName = file.replace("img/cards/", ""); // Path is specific to card sets
       const imageUrl = "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/" + file;
 
       // Wrapper for thumbnail + label
@@ -133,6 +134,79 @@ function filterImageList() {
   renderImageList(_imageBrowserFiles, _imageBrowserTargetFieldId, filterText);
 }
 
+//************** BLOG-SPECIFIC IMAGE PICKER FUNCTIONS **************** */
+let _blogImageFiles = [];
+let _blogImageTargetFieldId = null;
+
+function openBlogImageBrowser(targetFieldId) {
+  const modal = document.getElementById("imageBrowserModal");
+  _blogImageTargetFieldId = targetFieldId;
+
+  fetchBlogImageList().then(files => {
+    _blogImageFiles = files;
+
+    const searchInput = document.getElementById("imageSearch");
+    if (searchInput) searchInput.value = "";
+
+    renderBlogImageList(_blogImageFiles, _blogImageTargetFieldId);
+    modal.style.display = "block";
+  });
+}
+
+function renderBlogImageList(files, targetFieldId, filterText = "") {
+  const container = document.getElementById("imageList");
+  container.innerHTML = "";
+
+  const normalizedFilter = filterText.toLowerCase();
+
+  files
+    .filter(file => file.toLowerCase().includes(normalizedFilter))
+    .forEach(file => {
+      const fileName = file.replace("img/blog/", "");
+      const imageUrl = "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/" + file;
+
+      const wrapper = document.createElement("button");
+      wrapper.type = "button";
+      wrapper.style.display = "flex";
+      wrapper.style.flexDirection = "column";
+      wrapper.style.alignItems = "center";
+      wrapper.style.padding = "8px";
+      wrapper.style.borderRadius = "6px";
+      wrapper.style.border = "1px solid #ccc";
+      wrapper.style.backgroundColor = "#eee";
+      wrapper.style.cursor = "pointer";
+
+      const img = document.createElement("img");
+      img.src = imageUrl;
+      img.alt = fileName;
+      img.style.maxWidth = "150px";
+      img.style.maxHeight = "80px";
+      img.style.objectFit = "contain";
+      img.style.marginBottom = "6px";
+
+      const label = document.createElement("span");
+      label.textContent = fileName;
+      label.style.fontSize = "12px";
+
+      wrapper.appendChild(img);
+      wrapper.appendChild(label);
+
+      wrapper.onclick = () => {
+        // Blog posts expect the FULL URL in imgName
+        document.getElementById(targetFieldId).value = imageUrl;
+        closeImageBrowser();
+      };
+
+      container.appendChild(wrapper);
+    });
+}
+
+function filterBlogImageList() {
+  const searchInput = document.getElementById("imageSearch");
+  if (!searchInput) return;
+  const filterText = searchInput.value || "";
+  renderBlogImageList(_blogImageFiles, _blogImageTargetFieldId, filterText);
+}
 
 
 
