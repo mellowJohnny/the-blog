@@ -26,6 +26,9 @@ function initTinyEditor(selector = '#postBody')
  * Calls cmsImagePicker Lambda & API
  */
 
+/**
+ * Fetch list of images from S3 via your cmsImagePicker Lambda
+ */
 function fetchImageList() {
   return fetch("https://y3d5n8hq61.execute-api.us-east-2.amazonaws.com/dev") // cmsImagePicker API
     .then(res => res.json())
@@ -33,10 +36,11 @@ function fetchImageList() {
 }
 
 /**
- * Image Browser function - called from both createBlogPost.html and createCardSet.html 
+ * Open the S3 Image Browser modal
  */
-
 function openImageBrowser(targetFieldId) {
+  const modal = document.getElementById("imageBrowserModal");
+
   fetchImageList().then(files => {
     const container = document.getElementById("imageList");
     container.innerHTML = "";
@@ -54,6 +58,15 @@ function openImageBrowser(targetFieldId) {
     modal.style.display = "block";
   });
 }
+
+/**
+ * Close the modal (called by the X button)
+ */
+function closeImageBrowser() {
+  const modal = document.getElementById("imageBrowserModal");
+  modal.style.display = "none";
+}
+
 
 
 
