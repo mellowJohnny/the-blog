@@ -153,6 +153,16 @@ function openBlogImageBrowser(targetFieldId) {
   });
 }
 
+function fetchBlogImageList() {
+  return fetch("https://y3d5n8hq61.execute-api.us-east-2.amazonaws.com/dev") // same Lambda
+    .then(res => res.json())
+    .then(data => {
+      // Filter only blog images
+      return (data.files || []).filter(f => f.startsWith("img/blog/"));
+    });
+}
+
+
 function renderBlogImageList(files, targetFieldId, filterText = "") {
   const container = document.getElementById("imageList");
   container.innerHTML = "";
