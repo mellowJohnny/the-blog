@@ -539,85 +539,29 @@ textarea {
 }
 
 /* Image buttons */
-#imageList button {
-  background-color: #eee;
-  border: 1px solid #ccc;
-  padding: 10px;
-  font-size: 14px;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
+/* Scope to the modal so we don't mess with other forms */
+#imageBrowserModal #uploadSection {
+  margin-bottom: 12px;
 }
 
-#imageList button:hover {
-  background-color: #d0eaff;
-}
-
-#imageList button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
-  margin: 6px;
+/* Style the Upload button */
+#imageBrowserModal #uploadButton {
+  background-color: #256386;
   border: none;
-  border-radius: 8px;
-  background-color: #f5f5f5;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  color: white;
+  padding: 8px 16px;
+  margin-left: 6px;
   cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-#imageList button:hover {
-  background-color: #e0e0e0;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-#imageList button img {
-  max-width: 160px;
-  max-height: 100px;
-  object-fit: contain;
-  margin-bottom: 8px;
+  font-size: 14px;
   border-radius: 4px;
 }
 
-#imageList button span {
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-  text-align: center;
+/* Optional hover for Upload */
+#imageBrowserModal #uploadButton:hover {
+  background-color: #1f526f;
 }
 
-#uploadSection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-#uploadControlsRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-
-#uploadSection .input-button {
-  margin: 0; /* override big global margins just for this area */
-  padding: 8px 18px; /* slightly smaller for the modal */
+/* Slightly clean up the file input font size */
+#imageBrowserModal #uploadFileInput {
   font-size: 14px;
 }
-
-#selectedFileName {
-  font-size: 15px;
-  color: #333;
-}
-#uploadStatus {
-  margin-top: 8px;
-  font-size: 13px;
-  color: #555;
-  text-align: center;
-}
-
-
-

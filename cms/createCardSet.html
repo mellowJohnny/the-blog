@@ -136,89 +136,19 @@
 </footer>
 
 <!-- ⭐ ADDED: S3 Image Browser Modal -->
-<div id="imageBrowserModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeImageBrowser()">&times;</span>
-    <h3>Select an Image</h3>
+<h3>Select an Image</h3>
 
-    <!-- ⭐ ADDED: Search box -->
-     <!-- Upload new image -->
-    <!-- Upload section -->
-   <div id="uploadSection" style="
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-">
-
-  <!-- Row: Choose File + Filename -->
-  <div style="
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    height: 36px;
-  ">
-    <label for="uploadFileInput" style="
-      background-color: #256386;
-      color: white;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      line-height: 1;
-      display: inline-flex;
-      align-items: center;
-      height: 100%;
-    ">
-      Choose File
-    </label>
-
-    <input
-      type="file"
-      id="uploadFileInput"
-      accept="image/*"
-      style="display: none;"
-    />
-
-    <span id="selectedFileName" style="
-      font-size: 14px;
-      color: #333;
-      line-height: 1;
-      display: inline-flex;
-      align-items: center;
-      height: 100%;
-      max-width: 220px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    ">
-      No file chosen
-    </span>
-  </div>
-
-  <!-- Upload button -->
-  <button type="button" onclick="uploadNewImage()" style="
-    background-color: #256386;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-  ">
-    Upload
-  </button>
-
-  <!-- Status text -->
-  <div id="uploadStatus" style="
-    margin-top: 6px;
-    font-size: 13px;
-    color: #555;
-    text-align: center;
-  "></div>
+<div id="uploadSection">
+  <input type="file" id="uploadFileInput" accept="image/*">
+  <button type="button" id="uploadButton" onclick="uploadNewImage()">Upload</button>
+  <div id="uploadStatus"></div>
 </div>
+
+<input
+  type="text"
+  id="imageSearch"
+  placeholder="Search images...">
+
 
 
     <input type="text" id="imageSearch" placeholder="Search images..." oninput="filterImageList()"
