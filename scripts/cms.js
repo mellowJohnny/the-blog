@@ -301,6 +301,17 @@ function filterBlogImageList() {
   const filterText = searchInput.value || "";
   renderBlogImageList(_blogImageFiles, _blogImageTargetFieldId, filterText);
 }
+/** Let's make sure the image name is always beside the "Pick a File" button*/
+document.addEventListener("DOMContentLoaded", function () {
+  const input = document.getElementById("uploadFileInput");
+  if (input) {
+    input.addEventListener("change", function () {
+      const file = this.files[0];
+      document.getElementById("selectedFileName").textContent = file ? file.name : "No file chosen";
+    });
+  }
+});
+
 
 
 
