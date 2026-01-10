@@ -19,6 +19,44 @@ function initTinyEditor(selector = '#postBody')
   }); 
 }
 
+/*************** IMAGE PICKER ********************
+
+/**
+ * Image Picker Function
+ * Calls cmsImagePicker Lambda & API
+ */
+
+function fetchImageList() {
+  return fetch("https://y3d5n8hq61.execute-api.us-east-2.amazonaws.com/dev") // cmsImagePicker API
+    .then(res => res.json())
+    .then(data => data.files || []);
+}
+
+/**
+ * Image Browser function - called from both createBlogPost.html and createCardSet.html 
+ */
+
+function openImageBrowser(targetFieldId) {
+  fetchImageList().then(files => {
+    const container = document.getElementById("imageList");
+    container.innerHTML = "";
+
+    files.forEach(file => {
+      const btn = document.createElement("button");
+      btn.textContent = file.replace("img/cards/", "");
+      btn.onclick = () => {
+        document.getElementById(targetFieldId).value = file.replace("img/cards/", "");
+        modal.style.display = "none";
+      };
+      container.appendChild(btn);
+    });
+
+    modal.style.display = "block";
+  });
+}
+
+
+
 //**************************************** Create New Blog Post ***************************************************
 
 /**

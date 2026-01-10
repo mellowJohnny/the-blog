@@ -1,133 +1,148 @@
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
 <html lang="en">
-    <title>new card set...</title>
-    <head>
-        <meta charset="utf-8"> 
-        <link rel="stylesheet" type="text/css" href="/styles/styles.css">
-        <link rel="preconnect" href="https://fonts.gstatic.com"> 
-        <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Fira+Code:wght@300&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200&display=swap" rel="stylesheet">
-      
-        <!-- TinyMCE Text Editor Scripts -->
-        <script src="https://cdn.tiny.cloud/1/eg9hcu6cr4t0wvi6e6uqtb78mj1rycqrixpajuuenn3oaojw/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<title>new card set...</title>
+<head>
+    <meta charset="utf-8"> 
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com"> 
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Fira+Code:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200&display=swap" rel="stylesheet">
 
-        <script>
-          window.addEventListener('load', (event) => {
-            // *** Dynamically display the copyright year
-            fetchCopyrightYear();
-            
-            // Load the TinyMCE WYSIWYG Editor from the global config in cms.js
-            initTinyEditor('#postBody');
-        });
+    <!-- TinyMCE -->
+    <script src="https://cdn.tiny.cloud/1/eg9hcu6cr4t0wvi6e6uqtb78mj1rycqrixpajuuenn3oaojw/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script>
+      window.addEventListener('load', () => {
+        fetchCopyrightYear();
+        initTinyEditor('#postBody');
+      });
     </script>
-
-      </head>
+</head>
 
 <script src="/scripts/cms.js"></script>
 
 <body>
-    <section>
-        <header class="masthead">the hella files cms</header>
-    </section>
-    <section>
-    <div>
-        <nav>
-          <table class="top-nav">
-            <tr>
-              <td class="nav-td"><a href="index.html">Home</a> </td>
-              <td class="nav-td"><a href="/cms/wlcms.html">Back To CMS</a></td>
-            </tr>
-          </table>
-        </nav>
-      </div>
-    </section>
-            <div class="header-style">
-                <h1>...add a card set</h1>
-                <br><br>
-            </div>
-    </section>
-    <section>
-      <div>
-            <main>
-                <form class="form-style">
-                    <label>Status <sup>*</sup></label><br>
-                      <select id="blogStatus" name="blogStatus" title="blogStatus">
-                        <option value="staged">Staging</option>
-                        <option value="OK">Live</option>
-                    </select><br><br>
-                    <label>Set Name <sup>*</sup></label><br>
-                      <input type="text" id="setName" title="setName" required><br><br>
-                    <label>Release Year <sup>*</sup></label><br>
-                      <input type="text" id="year" title="year" required><br><br>
-                    <label>Set Size</label><br>
-                      <input type="text" id="size" title="size"><br><br>
-                    <label>Inserts</label><br>
-                     <input type="text" id="subsets" title="subsets"><br><br>
-                    <label>Star Rating</label><br>
-                     <select id="stars" name="stars" title="stars">
-                       <option value="1">One Star</option>
-                       <option value="2">Two Stars</option>
-                       <option value="3">Three Stars</option>
-                       <option value="4">Four Stars</option>
-                       <option value="5">Five Stars</option>
-                     </select><br><br>
-                    <label>Formats</label><br>
-                      <input type="text" id="formats" title="formats"><br><br>
-                    <label>Manufacturer</label><br><br>
-                      <select id="mfg" name="mfg" title="mfg">
-                        <option value="O-Pee-Chee">O-Pee-Chee</option>
-                        <option value="Topps">Topps</option>
-                        <option value="Upper Deck">Upper Deck</option>
-                        <option value="Score">Score</option>
-                        <option value="Pro Set">Pro Set</option>
-                        <option value="Fleer">Fleer</option>
-                      </select><br><br>
-                    <label>Header Image Name</label><br>
-                      <input type="text" id="headerImgName" title="headerImgName"><br><br>
-                    <label>Footer Image Name</label><br>
-                      <input type="text" id="footerImgName" title="footerImgName"><br><br>
-                    <label>Set Review Text</label><br>
+<section>
+    <header class="masthead">the hella files cms</header>
+</section>
 
-                     <textarea id="postBody" title="postBody"></textarea><br><br>
+<section>
+<div>
+    <nav>
+      <table class="top-nav">
+        <tr>
+          <td class="nav-td"><a href="index.html">Home</a></td>
+          <td class="nav-td"><a href="/cms/wlcms.html">Back To CMS</a></td>
+        </tr>
+      </table>
+    </nav>
+</div>
+</section>
 
-                    <!-- NOTE: Because we are using the TinyMCE Editor we don't call getElementById on the textarea, we use an API call in cms.js -->
-                    <button class="input-button" type="button" id="cmsSubmitButton" 
-                      onclick="createCardSet( 
-                        document.getElementById('blogStatus').value, 
-                        document.getElementById('setName').value, 
-                        document.getElementById('size').value, 
-                        document.getElementById('subsets').value, 
-                        document.getElementById('stars').value, 
-                        document.getElementById('formats').value, 
-                        document.getElementById('year').value, 
-                        document.getElementById('headerImgName').value, 
-                        document.getElementById('footerImgName').value, 
-                        document.getElementById('mfg').value )"> 
-                        Submit Post 
-                    </button>
-                   
-                    <br><br>
+<div class="header-style">
+    <h1>...add a card set</h1>
+    <br><br>
+</div>
 
-                  </form>
-           
-              </main>
-        </div>
-    </section>
-    <br>
-    <footer class="page-footer">
-      <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
-      <div id="copy"></div> 
-      
-    </footer>
+<section>
+<div>
+<main>
+<form class="form-style">
 
-      
+    <label>Status <sup>*</sup></label><br>
+    <select id="blogStatus" name="blogStatus" title="blogStatus">
+      <option value="staged">Staging</option>
+      <option value="OK">Live</option>
+    </select><br><br>
+
+    <label>Set Name <sup>*</sup></label><br>
+    <input type="text" id="setName" required><br><br>
+
+    <label>Release Year <sup>*</sup></label><br>
+    <input type="text" id="year" required><br><br>
+
+    <label>Set Size</label><br>
+    <input type="text" id="size"><br><br>
+
+    <label>Inserts</label><br>
+    <input type="text" id="subsets"><br><br>
+
+    <label>Star Rating</label><br>
+    <select id="stars">
+      <option value="1">One Star</option>
+      <option value="2">Two Stars</option>
+      <option value="3">Three Stars</option>
+      <option value="4">Four Stars</option>
+      <option value="5">Five Stars</option>
+    </select><br><br>
+
+    <label>Formats</label><br>
+    <input type="text" id="formats"><br><br>
+
+    <label>Manufacturer</label><br><br>
+    <select id="mfg">
+      <option value="O-Pee-Chee">O-Pee-Chee</option>
+      <option value="Topps">Topps</option>
+      <option value="Upper Deck">Upper Deck</option>
+      <option value="Score">Score</option>
+      <option value="Pro Set">Pro Set</option>
+      <option value="Fleer">Fleer</option>
+    </select><br><br>
+
+    <!-- ⭐ ADDED: Header image + Browse button -->
+    <label>Header Image Name</label><br>
+    <input type="text" id="headerImgName">
+    <button type="button" onclick="openImageBrowser('headerImgName')">Browse</button>
+    <br><br>
+
+    <!-- ⭐ ADDED: Footer image + Browse button -->
+    <label>Footer Image Name</label><br>
+    <input type="text" id="footerImgName">
+    <button type="button" onclick="openImageBrowser('footerImgName')">Browse</button>
+    <br><br>
+
+    <label>Set Review Text</label><br>
+    <textarea id="postBody"></textarea><br><br>
+
+    <button class="input-button" type="button" id="cmsSubmitButton"
+      onclick="createCardSet(
+        document.getElementById('blogStatus').value,
+        document.getElementById('setName').value,
+        document.getElementById('size').value,
+        document.getElementById('subsets').value,
+        document.getElementById('stars').value,
+        document.getElementById('formats').value,
+        document.getElementById('year').value,
+        document.getElementById('headerImgName').value,
+        document.getElementById('footerImgName').value,
+        document.getElementById('mfg').value
+      )">
+      Submit Post
+    </button>
+
+    <br><br>
+
+</form>
+</main>
+</div>
+</section>
+
+<br>
+
+<footer class="page-footer">
+  <div id="copy"></div>
+</footer>
+
+<!-- ⭐ ADDED: S3 Image Browser Modal -->
+<div id="imageBrowserModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeImageBrowser()">&times;</span>
+    <h3>Select an Image</h3>
+    <div id="imageList"></div>
+  </div>
+</div>
 
 </body>
-
 </html>
-
-
-
