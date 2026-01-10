@@ -53,7 +53,7 @@ async function uploadNewImage() {
   status.textContent = "Requesting upload URL...";
 
   // Call your Lambda
-  const response = await fetch("https://y3d5n8hq61.execute-api.us-east-2.amazonaws.com/dev/cmsImageUpload", {
+  const response = await fetch("https://k95rdenpn5.execute-api.us-east-2.amazonaws.com/dev", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
