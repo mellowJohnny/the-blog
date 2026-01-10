@@ -118,6 +118,8 @@
     <span class="close" onclick="closeImageBrowser()">&times;</span>
 
     <h3>Select an Image</h3>
+    <br>
+    <h2>Or Upload A New One</h2>
 
   <div id="uploadSection" style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;">
     <!-- Styled Choose File button -->
@@ -130,6 +132,7 @@
       cursor: pointer;
       font-size: 14px;
       display: inline-block;
+      font-family: 'Nunito';
     ">
       Choose File
     </label>
@@ -149,6 +152,7 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 14px;
+      font-family: 'Nunito';
     ">
       Upload
     </button>
@@ -157,8 +161,10 @@
   <div id="uploadStatus" style="font-size: 13px; color: #555;"></div>
   <!-- SEARCH BOX!! -->
   <input type="text" id="imageSearch" placeholder="Search images..." oninput="filterImageList()"
-  style="width: 100%; padding: 6px; margin-top: 10px; margin-bottom: 10px; font-size: 14px; box-sizing: border-box;">
+  style="width: 100%; padding: 6px; margin-top: 10px; margin-bottom: 10px; font-size: 14px; box-sizing: border-box; font-family: 'Nunito'">
   <div id="imageList"></div>
 </div>
 </body>
 </html>
+
+
