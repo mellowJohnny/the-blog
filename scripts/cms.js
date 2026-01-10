@@ -49,10 +49,15 @@ function renderImageList(files, targetFieldId, filterText = "") {
   const normalizedFilter = filterText.toLowerCase();
 
   files
+    // ⭐ NEW: The Lambda returns ALL images, so filter only show card images
+    .filter(file => file.startsWith("img/cards/"))
+
+    // Existing search filter
     .filter(file => {
       if (!normalizedFilter) return true;
       return file.toLowerCase().includes(normalizedFilter);
     })
+
     .forEach(file => {
       const fileName = file.replace("img/cards/", ""); // Path is specific to card sets
       const imageUrl = "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/" + file;
@@ -94,6 +99,7 @@ function renderImageList(files, targetFieldId, filterText = "") {
       container.appendChild(wrapper);
     });
 }
+
 
 /**
  * Open the S3 Image Browser modal
