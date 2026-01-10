@@ -280,7 +280,7 @@ function renderBlogImageList(files, targetFieldId, filterText = "") {
 
       const label = document.createElement("span");
       label.textContent = fileName;
-      label.style.fontSize = "12px";
+      label.style.fontSize = "14px";
 
       wrapper.appendChild(img);
       wrapper.appendChild(label);
