@@ -140,9 +140,20 @@
   <div class="modal-content">
     <span class="close" onclick="closeImageBrowser()">&times;</span>
     <h3>Select an Image</h3>
+
+    <!-- ⭐ ADDED: Search box -->
+    <input
+      type="text"
+      id="imageSearch"
+      placeholder="Search images..."
+      oninput="filterImageList()"
+      style="width: 100%; padding: 6px; margin-top: 10px;"
+    />
+
     <div id="imageList"></div>
   </div>
 </div>
+
 
 </body>
 </html>

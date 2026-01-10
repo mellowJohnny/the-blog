@@ -29,6 +29,9 @@ function initTinyEditor(selector = '#postBody')
 /**
  * Fetch list of images from S3 via your cmsImagePicker Lambda
  */
+/**
+ * Fetch list of images from S3 via your cmsImagePicker Lambda
+ */
 function fetchImageList() {
   return fetch("https://y3d5n8hq61.execute-api.us-east-2.amazonaws.com/dev") // cmsImagePicker API
     .then(res => res.json())
@@ -36,36 +39,100 @@ function fetchImageList() {
 }
 
 /**
+ * Helper to render the image list (with optional filter)
+ */
+function renderImageList(files, targetFieldId, filterText = "") {
+  const container = document.getElementById("imageList");
+  container.innerHTML = "";
+
+  const normalizedFilter = filterText.toLowerCase();
+
+  files
+    .filter(file => {
+      if (!normalizedFilter) return true;
+      return file.toLowerCase().includes(normalizedFilter);
+    })
+    .forEach(file => {
+      const fileName = file.replace("img/cards/", "");
+      const imageUrl = "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/" + file;
+
+      // Wrapper for thumbnail + label
+      const wrapper = document.createElement("button");
+      wrapper.type = "button";
+      wrapper.style.display = "flex";
+      wrapper.style.flexDirection = "column";
+      wrapper.style.alignItems = "center";
+      wrapper.style.padding = "8px";
+      wrapper.style.borderRadius = "6px";
+      wrapper.style.border = "1px solid #ccc";
+      wrapper.style.backgroundColor = "#eee";
+      wrapper.style.cursor = "pointer";
+
+      // Thumbnail
+      const img = document.createElement("img");
+      img.src = imageUrl;
+      img.alt = fileName;
+      img.style.maxWidth = "150px";
+      img.style.maxHeight = "80px";
+      img.style.objectFit = "contain";
+      img.style.marginBottom = "6px";
+
+      // Label
+      const label = document.createElement("span");
+      label.textContent = fileName;
+      label.style.fontSize = "12px";
+
+      wrapper.appendChild(img);
+      wrapper.appendChild(label);
+
+      wrapper.onclick = () => {
+        document.getElementById(targetFieldId).value = fileName;
+        closeImageBrowser();
+      };
+
+      container.appendChild(wrapper);
+    });
+}
+
+/**
  * Open the S3 Image Browser modal
  */
+let _imageBrowserFiles = [];
+let _imageBrowserTargetFieldId = null;
+
 function openImageBrowser(targetFieldId) {
   const modal = document.getElementById("imageBrowserModal");
+  _imageBrowserTargetFieldId = targetFieldId;
 
   fetchImageList().then(files => {
-    const container = document.getElementById("imageList");
-    container.innerHTML = "";
-
-    files.forEach(file => {
-      const btn = document.createElement("button");
-      btn.textContent = file.replace("img/cards/", "");
-      btn.onclick = () => {
-        document.getElementById(targetFieldId).value = file.replace("img/cards/", "");
-        modal.style.display = "none";
-      };
-      container.appendChild(btn);
-    });
-
+    _imageBrowserFiles = files;
+    const searchInput = document.getElementById("imageSearch");
+    if (searchInput) {
+      searchInput.value = "";
+    }
+    renderImageList(_imageBrowserFiles, _imageBrowserTargetFieldId);
     modal.style.display = "block";
   });
 }
 
 /**
- * Close the modal (called by the X button)
+ * Close the modal
  */
 function closeImageBrowser() {
   const modal = document.getElementById("imageBrowserModal");
   modal.style.display = "none";
 }
+
+/**
+ * Filter image list based on search box input
+ */
+function filterImageList() {
+  const searchInput = document.getElementById("imageSearch");
+  if (!searchInput) return;
+  const filterText = searchInput.value || "";
+  renderImageList(_imageBrowserFiles, _imageBrowserTargetFieldId, filterText);
+}
+
 
 
 
