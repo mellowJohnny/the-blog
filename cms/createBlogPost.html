@@ -113,6 +113,13 @@
 </footer>
 
 <!-- ⭐ ADDED: S3 Image Browser Modal (same structure as card set page) -->
+<div id="imageBrowserModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeImageBrowser()">&times;</span>
+    <h3>Select an Image</h3>
+
+    <!-- search box (wired to filterImageList, reused across pages) -->
+     <!-- Upload new image -->
 <h3>Select an Image</h3>
 
 <div id="uploadSection">
@@ -124,7 +131,8 @@
 <input
   type="text"
   id="imageSearch"
-  placeholder="Search images...">
+  placeholder="Search images..."
+>
 
 
 

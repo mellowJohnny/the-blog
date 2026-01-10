@@ -136,7 +136,15 @@
 </footer>
 
 <!-- ⭐ ADDED: S3 Image Browser Modal -->
-<h3>Select an Image</h3>
+<div id="imageBrowserModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeImageBrowser()">&times;</span>
+    <h3>Select an Image</h3>
+
+    <!-- ⭐ ADDED: Search box -->
+     <!-- Upload new image -->
+    <!-- Upload section -->
+   <h3>Select an Image</h3>
 
 <div id="uploadSection">
   <input type="file" id="uploadFileInput" accept="image/*">
@@ -147,8 +155,8 @@
 <input
   type="text"
   id="imageSearch"
-  placeholder="Search images...">
-
+  placeholder="Search images..."
+>
 
 
     <input type="text" id="imageSearch" placeholder="Search images..." oninput="filterImageList()"
