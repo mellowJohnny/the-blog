@@ -117,23 +117,45 @@
   <div class="modal-content">
     <span class="close" onclick="closeImageBrowser()">&times;</span>
 
-    <!-- search box (wired to filterImageList, reused across pages) -->
-     <!-- Upload new image -->
-<h3>Select an Image</h3>
-<label for="uploadFileInput" style=" background-color: #256386; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; display: inline-block; "></label>
+    <h3>Select an Image</h3>
 
-<div id="uploadSection">
-  <input type="file" id="uploadFileInput" accept="image/*">
-  <button type="button" id="uploadButton" onclick="uploadNewImage()">Upload</button>
-  <div id="uploadStatus"></div>
+<div id="uploadSection" style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;">
+  <!-- Styled Choose File button -->
+  <label for="uploadFileInput" style="
+    background-color: #256386;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-block;
+  ">
+    Choose File
+  </label>
+
+  <!-- Hidden native input -->
+  <input type="file" id="uploadFileInput" accept="image/*" style="display: none;">
+
+  <!-- Filename display -->
+  <span id="selectedFileName" style="font-size: 14px; color: #333;">No file chosen</span>
+
+  <!-- Upload button -->
+  <button type="button" id="uploadButton" onclick="uploadNewImage()" style="
+    background-color: #256386;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  ">
+    Upload
+  </button>
 </div>
 
-    <input type="text" id="imageSearch" placeholder="Search images..." oninput="filterBlogImageList()"
-      style="width: 100%; padding: 6px; margin-top: 10px;"/>
+<div id="uploadStatus" style="font-size: 13px; color: #555;"></div>
 
-    <div id="imageList"></div>
-  </div>
-</div>
 
 </body>
 </html>
