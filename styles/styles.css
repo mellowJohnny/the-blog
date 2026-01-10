@@ -588,4 +588,36 @@ textarea {
   text-align: center;
 }
 
+#uploadSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#uploadControlsRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+#uploadSection .input-button {
+  margin: 0; /* override big global margins just for this area */
+  padding: 8px 18px; /* slightly smaller for the modal */
+  font-size: 14px;
+}
+
+#selectedFileName {
+  font-size: 15px;
+  color: #333;
+}
+#uploadStatus {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #555;
+  text-align: center;
+}
+
+
 

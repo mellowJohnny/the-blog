@@ -80,12 +80,7 @@
 
         <label>Image</label><br>
         <!-- ⭐ existing behavior preserved: full URL lives in imgName -->
-        <input
-          type="text"
-          id="imgName"
-          title="imgName"
-          value="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/blog/"
-        >
+        <input type="text" id="imgName" title="imgName" value="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/blog/"><br>
         <!-- ⭐ ADDED: Browse button for blog images -->
         <button class="input-button" type="button" onclick="openBlogImageBrowser('imgName')">Browse</button>
         <br><br>
@@ -125,26 +120,18 @@
 
     <!-- search box (wired to filterImageList, reused across pages) -->
      <!-- Upload new image -->
-    <div id="uploadSection" style="margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <label for="uploadFileInput" class="input-button" style="padding: 10px 20px; font-size: 14px;">Choose File</label>
-        <input type="file" id="uploadFileInput" accept="image/*" style="display: none;">
-        <span id="selectedFileName" style="font-size: 16px; color: #333;">No file chosen</span>
-      </div>
-      <button type="button" class="input-button" onclick="uploadNewImage()" style="font-size: 14px;">Upload</button>
+    <div id="uploadSection">
+    <div id="uploadControlsRow">
+      <label for="uploadFileInput" class="input-button">Choose File</label>
+      <input type="file" id="uploadFileInput" accept="image/*" style="display: none;">
+      <span id="selectedFileName">No file chosen</span>
     </div>
-    <div id="uploadStatus" style="margin-top: 8px; font-size: 13px; color: #555; text-align: center;"></div>
+    <button type="button" class="input-button" onclick="uploadNewImage()">Upload</button>
+  </div>
+<div id="uploadStatus"></div>
 
-
-
-    <input
-      type="text"
-      id="imageSearch"
-      placeholder="Search images..."
-      oninput="filterBlogImageList()"
-      style="width: 100%; padding: 6px; margin-top: 10px;"
-    />
-
+    <input type="text" id="imageSearch" placeholder="Search images..." oninput="filterBlogImageList()"
+      style="width: 100%; padding: 6px; margin-top: 10px;"/>
 
     <div id="imageList"></div>
   </div>
