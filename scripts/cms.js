@@ -19,16 +19,34 @@ function initTinyEditor(selector = '#postBody')
   }); 
 }
 
-/*************** IMAGE PICKER ********************
+/*************** IMAGE PICKER ********************/
+
+/**
+ *  Image Upload Function
+ */
+function uploadNewImage() {
+  const fileInput = document.getElementById("uploadFileInput");
+  const status = document.getElementById("uploadStatus");
+
+  if (!fileInput.files.length) {
+    status.textContent = "Please choose a file first";
+    return;
+  }
+
+  const file = fileInput.files[0];
+  status.textContent = "Preparing upload...";
+
+  // ⭐ Next step: request a presigned URL from your Lambda
+  // Then upload directly to S3
+  // Then refresh the image list
+}
+
 
 /**
  * Image Picker Function 
  * Calls cmsImagePicker Lambda & API
  */
 
-/**
- * Fetch list of images from S3 via your cmsImagePicker Lambda
- */
 /**
  * Fetch list of images from S3 via your cmsImagePicker Lambda
  */
