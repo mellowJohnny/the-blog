@@ -119,43 +119,43 @@
 
     <h3>Select an Image</h3>
 
-<div id="uploadSection" style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;">
-  <!-- Styled Choose File button -->
-  <label for="uploadFileInput" style="
-    background-color: #256386;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    display: inline-block;
-  ">
-    Choose File
-  </label>
+  <div id="uploadSection" style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;">
+    <!-- Styled Choose File button -->
+    <label for="uploadFileInput" style="
+      background-color: #256386;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      display: inline-block;
+    ">
+      Choose File
+    </label>
 
-  <!-- Hidden native input -->
-  <input type="file" id="uploadFileInput" accept="image/*" style="display: none;">
+    <!-- Hidden native input -->
+    <input type="file" id="uploadFileInput" accept="image/*" style="display: none;">
 
-  <!-- Filename display -->
-  <span id="selectedFileName" style="font-size: 14px; color: #333;">No file chosen</span>
+    <!-- Filename display -->
+    <span id="selectedFileName" style="font-size: 14px; color: #333;">No file chosen</span>
 
-  <!-- Upload button -->
-  <button type="button" id="uploadButton" onclick="uploadNewImage()" style="
-    background-color: #256386;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-  ">
-    Upload
-  </button>
+    <!-- Upload button -->
+    <button type="button" id="uploadButton" onclick="uploadNewImage()" style="
+      background-color: #256386;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    ">
+      Upload
+    </button>
+  </div>
+
+  <div id="uploadStatus" style="font-size: 13px; color: #555;"></div>
+  <div id="imageList"></div>
 </div>
-
-<div id="uploadStatus" style="font-size: 13px; color: #555;"></div>
-<div id="imageList"></div>
-
 </body>
 </html>
