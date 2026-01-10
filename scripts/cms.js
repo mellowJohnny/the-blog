@@ -24,31 +24,91 @@ function initTinyEditor(selector = '#postBody')
 /**
  *  Image Upload Function
  */
-function uploadNewImage() {
+async function uploadNewImage() {
   const fileInput = document.getElementById("uploadFileInput");
   const status = document.getElementById("uploadStatus");
 
   if (!fileInput.files.length) {
-    status.textContent = "Please choose a file first";
+    status.textContent = "Please choose a file first.";
     return;
   }
 
   const file = fileInput.files[0];
-  status.textContent = "Preparing upload...";
+  const fileName = file.name;
 
-  // ⭐ Next step: request a presigned URL from your Lambda
-  // Then upload directly to S3
-  // Then refresh the image list
+  // Determine which picker is active
+  // Card picker sets: _imageBrowserTargetFieldId
+  // Blog picker sets: _blogImageTargetFieldId
+  let directory = null;
+
+  if (_imageBrowserTargetFieldId) {
+    directory = "img/cards/";
+  } else if (_blogImageTargetFieldId) {
+    directory = "img/blog/";
+  } else {
+    status.textContent = "Error: No active image picker.";
+    return;
+  }
+
+  status.textContent = "Requesting upload URL...";
+
+  // Call your Lambda
+  const response = await fetch("https://y3d5n8hq61.execute-api.us-east-2.amazonaws.com/dev/cmsImageUpload", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      fileName: fileName,
+      directory: directory,
+      contentType: file.type
+    })
+  });
+
+  const data = await response.json();
+
+  if (!data.uploadUrl) {
+    status.textContent = "Failed to get upload URL.";
+    return;
+  }
+
+  status.textContent = "Uploading to S3...";
+
+  // Upload directly to S3
+  const uploadRes = await fetch(data.uploadUrl, {
+    method: "PUT",
+    headers: { "Content-Type": file.type },
+    body: file
+  });
+
+  if (!uploadRes.ok) {
+    status.textContent = "Upload failed.";
+    return;
+  }
+
+  status.textContent = "Upload complete! Refreshing...";
+
+  // Refresh the image list and auto-select the new image
+  if (directory === "img/cards/") {
+    fetchImageList().then(files => {
+      _imageBrowserFiles = files;
+      renderImageList(files, _imageBrowserTargetFieldId);
+      document.getElementById(_imageBrowserTargetFieldId).value = fileName;
+      closeImageBrowser();
+    });
+  } else {
+    fetchBlogImageList().then(files => {
+      _blogImageFiles = files;
+      renderBlogImageList(files, _blogImageTargetFieldId);
+      document.getElementById(_blogImageTargetFieldId).value = data.finalUrl;
+      closeImageBrowser();
+    });
+  }
 }
 
 
-/**
- * Image Picker Function 
- * Calls cmsImagePicker Lambda & API
- */
 
 /**
- * Fetch list of images from S3 via your cmsImagePicker Lambda
+ * Image Picker Functionakity 
+ * Fetchs a list of images from S3 via the cmsImagePicker Lambda
  */
 function fetchImageList() {
   return fetch("https://y3d5n8hq61.execute-api.us-east-2.amazonaws.com/dev") // cmsImagePicker API
