@@ -1210,8 +1210,58 @@ function fetchCopyrightYear() {
     
 }
 
+/**
+ * Cache Flushing function
+ * This function is called by the CMS to flush the cache of the API Gateway
+ * It is used by the CMS users to allow Users to select a single set to be updated
+ * Calls the flushCache API exposed by AWS API Gateway
+ * setEdit.html will pass in 'year'
+ * blogEdit.html will pass in 'blogType'
+ */
 
+async function flushCache({ year = null, blogType = null }) {
+  const endpoint = "https://pj7y1xqi96.execute-api.us-east-2.amazonaws.com/dev/flushCache";
 
+  const payload = {};
+  let pageName = "";
+
+  // Dynamically set the pageName based on the year passed in:
+  if year.parseInt() > "1986"{
+    pageName = "junkWax"
+    console.log("pageName: ", pageName);
+  }
+  else{
+    pageName = "classicWax"
+    console.log("pageName: ", pageName);
+  }
+
+  // Only include the fields that matter
+  if (year) payload.year = year;
+  if (blogType) payload.blogType = blogType;
+
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+        // Add IAM SigV4 headers here later if needed
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Cache flush failed");
+    }
+
+    return data;
+
+  } catch (err) {
+    console.error("Cache flush error:", err);
+    throw err;
+  }
+}
 
 
 
