@@ -1220,7 +1220,7 @@ function fetchCopyrightYear() {
  */
 
 async function flushCache({ year = null, blogType = null }) {
-  const endpoint = "https://pj7y1xqi96.execute-api.us-east-2.amazonaws.com/dev";
+  const endpoint = "https://pj7y1xqi96.execute-api.us-east-2.amazonaws.com/dev/flushCache";
 
   const payload = {};
 
