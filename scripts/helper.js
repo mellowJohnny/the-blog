@@ -363,6 +363,7 @@ function fetchNav(pageName, blogType) {
   const items = NAV_MAP[key];
   if (!items) return;
 
+  /** 
   let cells = "";
 
   items.forEach(id => {
@@ -377,7 +378,7 @@ function fetchNav(pageName, blogType) {
     <table class="top-nav">
       <tr>${cells}</tr>
     </table>
-  `;
+  `;*/
 }
 
 // --------------- Cookie! --------------------------
