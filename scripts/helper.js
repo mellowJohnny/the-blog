@@ -294,10 +294,10 @@ function renderSetPicker(year) {
 // Step 1: Define the navigation items as data
 const NAV_ITEMS = {
   home: { label: "Home", href: "/index.html" },
-  junk: { label: "90s Hockey Junk Wax", href: "/waxReviews.html?year=1987&pageName=junkWax" },
-  classic: { label: "Classic 80s Hockey Sets", href: "/waxReviews.html?year=1979&pageName=classicWax" },
+  junk: { label: "90s Hockey Sets", href: "/waxReviews.html?year=1987&pageName=junkWax" },
+  classic: { label: "80s Hockey Sets", href: "/waxReviews.html?year=1979&pageName=classicWax" },
   timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2020&pageName=timmies" },
-  tech: { label: "Tech Stuff", href: "/tech.html?blogType=1" },
+  tech: { label: "Tech", href: "/tech.html?blogType=1" },
   pi: { label: "Raspberry Pi", href: "/tech.html?blogType=5" }
 };
 
