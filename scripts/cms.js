@@ -24,7 +24,8 @@ const BLOG_TYPE_LABELS = {
   1: "Tech Blogs",
   3: "Mach‑E",
   4: "SYNC Updates",
-  5: "Raspberry Pi"
+  5: "Raspberry Pi",
+  99: "Home Page"
 };
 
 /*************** IMAGE PICKER ********************/
