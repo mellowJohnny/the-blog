@@ -19,6 +19,14 @@ function initTinyEditor(selector = '#postBody')
   }); 
 }
 
+// GLOBAL MAPPING used for organising blogs by type on the blog list page
+const BLOG_TYPE_LABELS = {
+  1: "Tech Blogs",
+  3: "Mach‑E",
+  4: "SYNC Updates",
+  5: "Raspberry Pi"
+};
+
 /*************** IMAGE PICKER ********************/
 
 /**
@@ -311,9 +319,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
-
-
-
 
 
 //**************************************** Create New Blog Post ***************************************************
@@ -631,6 +636,7 @@ function updateCardSet(
  * Calls the getBlogsForUpdate API exposed by AWS API Gateway, which uses the listBlogsForUpdate() Lambda
  * Called on page load from pickBlog.html
  * FOR EVERY BLOG RETURNED it calls the displayBlogs() helper to actually write to the <div>
+ * Uses the global blogType to name mapping constants
  */
 
 function getBlogsForUpdate() {
@@ -639,10 +645,7 @@ function getBlogsForUpdate() {
   fetch(urlToFetch)
     .then(response => response.json())
     .then(data => {
-      // DEBUG>>>>
-   // console.log("RAW GET RESPONSE:", data); 
-    
-      // NEW: If your Lambda returns { blogs: [...] }
+
       const blogArray = data.blogs || data.items || [];
 
       if (blogArray.length === 0) {
@@ -650,8 +653,30 @@ function getBlogsForUpdate() {
         return;
       }
 
+      // Clear the container before adding new content
+      const container = document.getElementById("listBlogsDiv");
+      container.innerHTML = "";
+
+      let lastType = null;
+
       for (let i = 0; i < blogArray.length; i++) {
-        displayBlogs(blogArray[i].title, blogArray[i].blogID, blogArray[i].blogType);
+        const { title, blogID, blogType } = blogArray[i];
+
+        // Convert numeric blogType → friendly label
+        const typeLabel = BLOG_TYPE_LABELS[blogType] || "Other";
+
+        // Insert divider when the type changes
+        if (blogType !== lastType) {
+          const header = document.createElement("h2");
+          header.textContent = typeLabel;
+          header.className = "blog-type-divider";
+          container.appendChild(header);
+
+          lastType = blogType;
+        }
+
+        // Render the blog entry using your existing function
+        displayBlogs(title, blogID, blogType);
       }
     })
     .catch(err => {
@@ -659,6 +684,7 @@ function getBlogsForUpdate() {
       console.log("Something went wrong...: " + err);
     });
 }
+
 
   
 
@@ -673,18 +699,10 @@ function getBlogsForUpdate() {
  * Calls the getStagedBlogsForUpdate API exposed by AWS API Gateway
  * Called on page load from pickBlog.html
  * FOR EVERY BLOG RETURNED it calls the displayStagedBlogs() helper to actually write to the <div>
+ * Uses the global blogType to name mapping constants
  */
 
   function getStagedBlogsForUpdate() {
-
-    // Mapping blogType to Names
-    const BLOG_TYPE_LABELS = 
-    { 
-      1: "Tech Blogs", 
-      3: "Mach‑E", 
-      4: "SYNC Updates", 
-      5: "Raspberry Pi" 
-    };
 
   const urlToFetch = `https://sh8girwnxg.execute-api.us-east-2.amazonaws.com/dev`;
 
