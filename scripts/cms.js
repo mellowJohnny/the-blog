@@ -692,8 +692,27 @@ function getBlogsForUpdate() {
         return;
       }
 
+      // Clear the container before adding new content
+      const container = document.getElementById("listStagedBlogsDiv");
+      container.innerHTML = "";
+
+      let lastType = null;
+
       for (let i = 0; i < blogArray.length; i++) {
-        displayStagedBlogs(blogArray[i].title, blogArray[i].blogID, blogArray[i].blogType);
+        const { title, blogID, blogType } = blogArray[i];
+
+        // Insert a divider when the blogType changes
+        if (blogType !== lastType) {
+          const header = document.createElement("h2");
+          header.textContent = blogType;
+          header.className = "blog-type-divider"; // optional styling hook
+          container.appendChild(header);
+
+          lastType = blogType;
+        }
+
+        // Render the blog entry using your existing function
+        displayStagedBlogs(title, blogID, blogType);
       }
     })
     .catch(err => {
@@ -701,6 +720,7 @@ function getBlogsForUpdate() {
       console.log("Something went wrong...: " + err);
     });
 }
+
 
 
 //****************************** displayBlogs Helper Function ***************************
