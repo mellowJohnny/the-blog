@@ -339,9 +339,8 @@ function fetchNav(pageName, blogType) {
 
   items.forEach(id => {
       cells += buildNavCell(NAV_ITEMS[id]);
-       highlightActiveNavLink();
   });
-  
+
   nav.innerHTML = `
     <table class="top-nav">
       <tr>${cells}</tr>
@@ -349,20 +348,6 @@ function fetchNav(pageName, blogType) {
   `;
 }
 
-/**
-
- * Clicked link detector
- */
-
-function highlightActiveNavLink() {
-  const current = window.location.pathname + window.location.search;
-
-  document.querySelectorAll(".nav-td a").forEach(link => {
-    if (link.getAttribute("href") === current) {
-      link.classList.add("active-link");
-    }
-  });
-}
 
 
 
