@@ -52,6 +52,11 @@ messing up the layout with white borders and scoll bars
   font-size: 16px;
   color:rgb(11, 62, 100);
 }
+.cms-nav-td {
+  font-family: 'Nunito';
+  font-size: 16px;
+  color:rgb(11, 62, 100);
+}
 
 .cms-top-nav {
   font-family: 'Nunito';
