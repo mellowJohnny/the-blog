@@ -302,48 +302,21 @@ const NAV_ITEMS = {
   mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3" }
 };
 
-/** 
-// ...and the dropdown
-const MACH_E_DROPDOWN = {
-  label: "Mustang Mach-E",
-  items: [
-    { label: "Mach-E Blog", href: "/tech.html?blogType=3" },
-    { label: "Power-Up Software Updates", href: "/tech.html?blogType=4" }
-  ]
-}; 
-
-function buildDropdown(drop) {
-  const links = drop.items
-    .map(i => `<a href="${i.href}">${i.label}</a><br><br>`)
-    .join("");
-
-  return `
-    <td class="nav-td">
-      <div class="dropdown">
-        <span>${drop.label}</span>
-        <div class="dropdown-content">${links}</div>
-      </div>
-    </td>
-  `;
-}
-
-*/
-
 // Step 2: Define which pages show which items
 // The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
-  index: ["home", "classic", "junk",  "timmies", "tech", "pi", "machE"],
+  index: ["home", "classic", "junk",  "timmies", "tech", "pi", "mache"],
 
-  tech_1: ["home", "classic", "junk",  "timmies", "pi", "machE"],
-  tech_3: ["home", "classic", "junk",  "timmies", "tech", "pi",  "machE"],
-  tech_4: ["home", "classic", "junk",  "timmies", "tech", "pi",  "machE"],
-  tech_5: ["home", "classic", "junk",  "timmies", "tech", "machE"],
+  tech_1: ["home", "classic", "junk",  "timmies", "pi", "mache"],
+  tech_3: ["home", "classic", "junk",  "timmies", "tech", "pi",  "mache"],
+  tech_4: ["home", "classic", "junk",  "timmies", "tech", "pi",  "mache"],
+  tech_5: ["home", "classic", "junk",  "timmies", "tech", "mache"],
 
-  ev: ["home", "classic", "junk",  "timmies", "tech", "pi", "machE"],
+  ev: ["home", "classic", "junk",  "timmies", "tech", "pi", "mache"],
 
-  junkWax: ["home", "classic", "timmies", "tech", "pi",  "machE"],
-  classicWax: ["home", "junk", "timmies", "tech", "pi",  "machE"],
-  timmies: ["home", "classic", "junk", "tech", "pi",  "machE"]
+  junkWax: ["home", "classic", "timmies", "tech", "pi",  "mache"],
+  classicWax: ["home", "junk", "timmies", "tech", "pi",  "mache"],
+  timmies: ["home", "classic", "junk", "tech", "pi",  "mache"]
 };
 
 // Step 3: Build a dynamic table generator
