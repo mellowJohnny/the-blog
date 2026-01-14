@@ -192,6 +192,17 @@ textarea {
   background-color: rgb(124, 151, 201);
 }
 
+.blog-type-divider {
+  margin-top: 24px;
+  margin-bottom: 8px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #333;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 4px;
+}
+
+
 .masthead {
     font-family: 'Spicy Rice';
     font-size: 7vw;  /* makes font-size responsive... */

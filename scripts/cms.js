@@ -677,6 +677,15 @@ function getBlogsForUpdate() {
 
   function getStagedBlogsForUpdate() {
 
+    // Mapping blogType to Names
+    const BLOG_TYPE_LABELS = 
+    { 
+      1: "Tech Blogs", 
+      3: "Mach‑E", 
+      4: "SYNC Updates", 
+      5: "Raspberry Pi" 
+    };
+
   const urlToFetch = `https://sh8girwnxg.execute-api.us-east-2.amazonaws.com/dev`;
 
   fetch(urlToFetch)
@@ -692,7 +701,6 @@ function getBlogsForUpdate() {
         return;
       }
 
-      // Clear the container before adding new content
       const container = document.getElementById("listStagedBlogsDiv");
       container.innerHTML = "";
 
@@ -701,11 +709,14 @@ function getBlogsForUpdate() {
       for (let i = 0; i < blogArray.length; i++) {
         const { title, blogID, blogType } = blogArray[i];
 
-        // Insert a divider when the blogType changes
+        // Convert numeric blogType → friendly label
+        const typeLabel = BLOG_TYPE_LABELS[blogType] || "Other";
+
+        // Insert divider when the type changes
         if (blogType !== lastType) {
-          const header = document.createElement("h2");
-          header.textContent = blogType;
-          header.className = "blog-type-divider"; // optional styling hook
+          const header = document.createElement("h3");
+          header.textContent = typeLabel;
+          header.className = "blog-type-divider";
           container.appendChild(header);
 
           lastType = blogType;
@@ -720,6 +731,7 @@ function getBlogsForUpdate() {
       console.log("Something went wrong...: " + err);
     });
 }
+
 
 
 
