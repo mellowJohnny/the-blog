@@ -56,12 +56,16 @@ messing up the layout with white borders and scoll bars
   font-family: 'Nunito';
   font-size: 24px;
   color:rgb(11, 62, 100);
+  margin: 15px;
+  padding: 20px;
 }
 
 .cms-top-nav {
   font-family: 'Nunito';
   font-size: 24px;
   color:rgb(11, 62, 100);
+  margin: 15px;
+  padding: 20px;
 }
 
 .card-set-nav {
