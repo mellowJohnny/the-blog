@@ -363,22 +363,18 @@ function fetchNav(pageName, blogType) {
   const items = NAV_MAP[key];
   if (!items) return;
 
-  /** 
+  
   let cells = "";
 
   items.forEach(id => {
-    if (id === "machE") {
-      cells += buildDropdown(MACH_E_DROPDOWN);
-    } else {
       cells += buildNavCell(NAV_ITEMS[id]);
-    }
   });
 
   nav.innerHTML = `
     <table class="top-nav">
       <tr>${cells}</tr>
     </table>
-  `;*/
+  `;
 }
 
 // --------------- Cookie! --------------------------
