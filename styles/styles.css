@@ -47,6 +47,14 @@ messing up the layout with white borders and scoll bars
   margin: 15px;
   padding: 20px;
 }
+
+/** Active link highlighting */
+.nav-td a.active-link {
+  color: rgb(13, 99, 156);     
+  font-weight: bold;
+}
+
+
 .top-nav {
   font-family: 'Nunito';
   font-size: 36px;

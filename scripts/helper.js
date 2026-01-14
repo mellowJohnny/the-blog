@@ -324,8 +324,6 @@ function buildNavCell(item) {
   return `<td class="nav-td"><a href="${item.href}">${item.label}</a></td>`;
 }
 
-
-
 // The new, dynamic fetchNav()
 function fetchNav(pageName, blogType) {
   const nav = document.getElementById("global-nav");
@@ -343,12 +341,32 @@ function fetchNav(pageName, blogType) {
       cells += buildNavCell(NAV_ITEMS[id]);
   });
 
+  highlightActiveNavLink();
+
+
   nav.innerHTML = `
     <table class="top-nav">
       <tr>${cells}</tr>
     </table>
   `;
 }
+
+/**
+ * 
+ * Clicked link detector
+ */
+
+function highlightActiveNavLink() {
+  const current = window.location.pathname + window.location.search;
+
+  document.querySelectorAll(".nav-td a").forEach(link => {
+    if (link.getAttribute("href") === current) {
+      link.classList.add("active-link");
+    }
+  });
+}
+
+
 
 // --------------- Cookie! --------------------------
 
