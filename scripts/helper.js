@@ -298,9 +298,11 @@ const NAV_ITEMS = {
   classic: { label: "80s Hockey Sets", href: "/waxReviews.html?year=1979&pageName=classicWax" },
   timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2020&pageName=timmies" },
   tech: { label: "Tech", href: "/tech.html?blogType=1" },
-  pi: { label: "Raspberry Pi", href: "/tech.html?blogType=5" }
+  pi: { label: "Raspberry Pi", href: "/tech.html?blogType=5" },
+  mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3" }
 };
 
+/** 
 // ...and the dropdown
 const MACH_E_DROPDOWN = {
   label: "Mustang Mach-E",
@@ -308,7 +310,24 @@ const MACH_E_DROPDOWN = {
     { label: "Mach-E Blog", href: "/tech.html?blogType=3" },
     { label: "Power-Up Software Updates", href: "/tech.html?blogType=4" }
   ]
-};
+}; 
+
+function buildDropdown(drop) {
+  const links = drop.items
+    .map(i => `<a href="${i.href}">${i.label}</a><br><br>`)
+    .join("");
+
+  return `
+    <td class="nav-td">
+      <div class="dropdown">
+        <span>${drop.label}</span>
+        <div class="dropdown-content">${links}</div>
+      </div>
+    </td>
+  `;
+}
+
+*/
 
 // Step 2: Define which pages show which items
 // The key is the page name, the values are the links to display, in the order they appear
@@ -332,20 +351,7 @@ function buildNavCell(item) {
   return `<td class="nav-td"><a href="${item.href}">${item.label}</a></td>`;
 }
 
-function buildDropdown(drop) {
-  const links = drop.items
-    .map(i => `<a href="${i.href}">${i.label}</a><br><br>`)
-    .join("");
 
-  return `
-    <td class="nav-td">
-      <div class="dropdown">
-        <span>${drop.label}</span>
-        <div class="dropdown-content">${links}</div>
-      </div>
-    </td>
-  `;
-}
 
 // The new, dynamic fetchNav()
 function fetchNav(pageName, blogType) {
