@@ -339,11 +339,9 @@ function fetchNav(pageName, blogType) {
 
   items.forEach(id => {
       cells += buildNavCell(NAV_ITEMS[id]);
+       highlightActiveNavLink();
   });
-
-  highlightActiveNavLink();
-
-
+  
   nav.innerHTML = `
     <table class="top-nav">
       <tr>${cells}</tr>
@@ -352,7 +350,7 @@ function fetchNav(pageName, blogType) {
 }
 
 /**
- * 
+
  * Clicked link detector
  */
 
