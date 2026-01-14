@@ -723,7 +723,6 @@ function getBlogsForUpdate() {
         </a>
       `;
       contentDiv.appendChild(blogItem);
-    }
 
         // Render the blog entry using your existing function
         displayBlogs(title, blogID, blogType);
