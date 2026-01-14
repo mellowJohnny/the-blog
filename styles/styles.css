@@ -566,24 +566,6 @@ textarea {
   margin-top: 20px;
 }
 
-/* CMS Blog Listing Page Collapsible Heading Styles */
-.collapsible-header {
-  cursor: pointer;
-  user-select: none;
-  transition: color 0.2s ease;
-}
 
-.collapsible-header:hover {
-  color: #0077cc;
-}
-
-.collapsible-content {
-  margin-left: 12px;
-  transition: max-height 0.25s ease-out;
-}
-
-.collapsible-content.collapsed {
-  display: none;
-}
 
 

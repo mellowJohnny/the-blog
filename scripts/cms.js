@@ -657,7 +657,7 @@ function getBlogsForUpdate() {
       // Clear the container before adding new content
       const container = document.getElementById("listBlogsDiv");
       container.innerHTML = "";
-/**  OLD VERSION
+
       let lastType = null;
 
       for (let i = 0; i < blogArray.length; i++) {
@@ -674,55 +674,7 @@ function getBlogsForUpdate() {
           container.appendChild(header);
 
           lastType = blogType;
-        } */
-    let lastType = null;
-    let currentGroup = null;
-
-    for (let i = 0; i < blogArray.length; i++) {
-      const { title, blogID, blogType } = blogArray[i];
-      const typeLabel = BLOG_TYPE_LABELS[blogType] || "Other";
-
-      // When the type changes, start a new collapsible section
-      if (blogType !== lastType) {
-
-        // Create wrapper
-        currentGroup = document.createElement("div");
-        currentGroup.className = "blog-group";
-
-        // Create header
-        const header = document.createElement("h2");
-        header.textContent = typeLabel;
-        header.className = "blog-type-divider collapsible-header";
-
-        // Create collapsible content container
-        const content = document.createElement("div");
-        content.className = "collapsible-content";
-
-        // Toggle on click
-        header.addEventListener("click", () => {
-          content.classList.toggle("collapsed");
-        });
-
-        // Append header + content to wrapper
-        currentGroup.appendChild(header);
-        currentGroup.appendChild(content);
-
-        // Add wrapper to main container
-        container.appendChild(currentGroup);
-
-        lastType = blogType;
-      }
-
-      // Add blog entry to the current group's content area
-      const contentDiv = currentGroup.querySelector(".collapsible-content");
-      const blogItem = document.createElement("div");
-      blogItem.className = "blog-item";
-      blogItem.innerHTML = `
-        <a href="/cms/blogEdit.html?blogID=${blogID}">
-          ${title}
-        </a>
-      `;
-      contentDiv.appendChild(blogItem);
+        }
 
         // Render the blog entry using your existing function
         displayBlogs(title, blogID, blogType);
