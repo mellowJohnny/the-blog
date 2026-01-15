@@ -198,6 +198,9 @@ function cardSetSorter(property,order) {
 // First, define the Object and the HTML we want to put in it
 // The when the function is called, the key is passed in and is matched to a value holding the appropriate HTML
 // This approach removes the need for if / else if / else statements
+
+// ADD and use "category" instead of page name as a new field in dynamoDB?
+
 const cardIntros = {
     classicWax: `
         <p>Non Junk Wax...classic wax? Modern era? Whatever you call it, the O-Pee-Chee sets from Gretzky's debut in the 1979-80 set right up to 
