@@ -32,11 +32,12 @@ const pageSize = 1; // Used in pagination - configues the number of sets to disp
       if (!Array.isArray(blogArray)) {
         throw new Error("API did not return an array");
       }
-
-      if (blogType === "3" || blogType === "5") {
-        blogArray.sort(getSortOrder("time", "last"));
+      
+      // Let's order the blogs!!
+      if (blogType === "5") {
+        blogArray.sort(getSortOrder("time", "last")); // Most Recent last
       } else {
-        blogArray.sort(getSortOrder("time", "first"));
+        blogArray.sort(getSortOrder("time", "first")); // Most Recent first
       }
 
       blogArray.forEach(blog => {
