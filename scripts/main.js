@@ -144,15 +144,15 @@ const pageSize = 1; // Used in pagination - configues the number of sets to disp
 
 function fetchCardIntro(pageName) {
 
-   // console.log("In fetchBlog...");
-   // console.log(`blogType is: ${blogType}`);
+   console.log("In fetchCardIntro...");
+   console.log(`pageName is: ${pageName}`);
 
     const urlToFetch = `https://5asiy29hih.execute-api.us-east-2.amazonaws.com/dev?pageName=${pageName}`;
 
     fetch(urlToFetch)
         .then(response => response.json())
         .then(data => {
-          //  console.log("API returned:", data);
+          console.log("API returned:", data);
 
             // DynamoDB returns an object with an Items array
             if (!data.Items || data.Items.length === 0) {
