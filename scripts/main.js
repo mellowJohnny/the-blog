@@ -4,12 +4,15 @@
  * 2. fetchCardSetsByYear() is responsible for fetching all Card Sets given a year parameter
  */
 
-// Global Variables
+// Pagination Global Variables
 var globalPageName = "";
 let allBlogs = []; // Used in pagination - holds all the Blogs so we can paginate through it
+let currentBlogPage = 1; // Which Blog to start with
+const blogPageSize = 1; // how many blogs to display at a time
+
 let allCardSets = []; // Used in pagination - holds all the Card Sets so we can paginate through it
-let currentPage = 1; // Used in pagination
-const pageSize = 1; // Used in pagination - configues the number of sets to display pefore paginating
+let currentPage = 1; // Which Card Set to start with
+const pageSize = 1; // how many blogs to display at a time
 
 
 /************************** fetchBlogs() Function, also orders the results via getSortOrder ****************/
@@ -38,24 +41,25 @@ const pageSize = 1; // Used in pagination - configues the number of sets to disp
 
       // Store full dataset for pagination
       allBlogs = blogArray;
-      currentPage = 1;
+      currentBlogPage = 1;
 
       renderBlogPage();
     })
     .catch(err => console.error("FETCH ERROR:", err));
 }
 
+
 /** 
  * Pagination Renderer
  * This is where we call displayBlog
  */
 
-function renderBlogPage() {
+ffunction renderBlogPage() {
   const blogDiv = document.getElementById("blogsDiv");
   blogDiv.innerHTML = "";
 
-  const start = (currentPage - 1) * pageSize;
-  const end = start + pageSize;
+  const start = (currentBlogPage - 1) * blogPageSize;
+  const end = start + blogPageSize;
   const pageItems = allBlogs.slice(start, end);
 
   pageItems.forEach(blog => {
@@ -69,9 +73,58 @@ function renderBlogPage() {
     );
   });
 
-  renderPaginationControls(start, end); // Re-use the pagination controls we built for Card Sets
+  renderBlogPaginationControls(start, end);
 }
 
+/**
+ * Blog-specific pagination controls
+ */
+
+function renderBlogPaginationControls(start, end) {
+  const controls = document.getElementById("paginationControls");
+  controls.innerHTML = "";
+
+  const prevBlog = allBlogs[start - 1];
+  const nextBlog = allBlogs[end];
+
+  const prevLabel = prevBlog ? `← ${prevBlog.title}` : "← Previous";
+  const nextLabel = nextBlog ? `${nextBlog.title} →` : "Next →";
+
+  const totalPages = Math.ceil(allBlogs.length / blogPageSize);
+
+  controls.innerHTML = `
+    <a onclick="prevBlogPage()" class="pagination-link ${currentBlogPage === 1 ? "disabled" : ""}">
+      ${prevLabel}
+    </a>
+
+    <span class="pagination-page">Page ${currentBlogPage} of ${totalPages}</span>
+
+    <a onclick="nextBlogPage()" class="pagination-link ${currentBlogPage === totalPages ? "disabled" : ""}">
+      ${nextLabel}
+    </a>
+  `;
+}
+
+/**
+ * Blog-specifc Next & Previous controls
+ */
+
+function nextBlogPage() {
+  const totalPages = Math.ceil(allBlogs.length / blogPageSize);
+  if (currentBlogPage < totalPages) {
+    currentBlogPage++;
+    renderBlogPage();
+    document.getElementById("blogTop").scrollIntoView({ behavior: "smooth" });
+  }
+}
+
+function prevBlogPage() {
+  if (currentBlogPage > 1) {
+    currentBlogPage--;
+    renderBlogPage();
+    document.getElementById("blogTop").scrollIntoView({ behavior: "smooth" });
+  }
+}
 
 
 
