@@ -1,5 +1,28 @@
 /** HELPER FUNCTIONS *** HELPER FUNCTIONS *** HELPER FUNCTIONS *** HELPER FUNCTIONS */
 
+/** 
+ * Helper function to estimate reading time for blogs OR cardsets
+ */
+
+function estimateReadingTime(htmlString) {
+  // Strip HTML tags so we only count real words
+  const text = htmlString.replace(/<[^>]*>/g, " ");
+
+  // Split on whitespace and filter out empty entries
+  const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+
+  const wordCount = words.length;
+
+  // Average reading speed: 225 words per minute
+  const minutes = Math.ceil(wordCount / 225);
+
+  return {
+    wordCount,
+    minutes
+  };
+}
+
+
    // ----------------------------- Date Helper Functions ----------------------------
 
    /**

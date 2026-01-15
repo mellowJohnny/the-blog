@@ -149,6 +149,11 @@ function prevBlogPage() {
   const cleanImgCap = imgCap;
 
   const blogBody = document.getElementById("blogsDiv");
+    
+  // Let's estimate how long it will take to read this Blog based on its length. 
+  // This function lives in hepler.js
+  const readingStats = estimateReadingTime(cleanPostBody);
+
 
   // If no image was provided at all
   if (cleanImg === "none") {
@@ -156,6 +161,7 @@ function prevBlogPage() {
       `<h1 class="blog-title">${cleanTitle}</h1> 
        <strong><i>${cleanAuthor}</i></strong><br>
        <strong><i>${fixDate(date)}</i></strong>
+       <strong><i>${readingStats.minutes} min read</i></strong><br>
        ${cleanPostBody}
        <hr/><br>`;
     return;
@@ -166,6 +172,7 @@ function prevBlogPage() {
     `<h1 class="blog-title">${cleanTitle}</h1> 
      <strong><i>${cleanAuthor}</i></strong><br>
      <strong><i>${fixDate(date)}</i></strong><br>
+     <strong><i>${readingStats.minutes} min read</i></strong><br>
      ${cleanPostBody}
      <img src="${cleanImg}" class="blog-img"
           onerror="this.style.display='none'; this.nextElementSibling.style.display='none';">
