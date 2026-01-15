@@ -143,36 +143,26 @@ const pageSize = 1; // Used in pagination - configues the number of sets to disp
 }
 
 function fetchCardIntro(pageName) {
+  const urlToFetch = `https://5asiy29hih.execute-api.us-east-2.amazonaws.com/dev?pageName=${pageName}`;
 
-   console.log("In fetchCardIntro...");
-   console.log(`pageName is: ${pageName}`);
+  fetch(urlToFetch)
+    .then(response => response.json())
+    .then(data => {
+      if (!data.introText) {
+        document.getElementById("card-intro").innerHTML =
+          "...this blog needs no introduction!!";
+        return;
+      }
 
-    const urlToFetch = `https://5asiy29hih.execute-api.us-east-2.amazonaws.com/dev?pageName=${pageName}`;
-
-    fetch(urlToFetch)
-        .then(response => response.json())
-        .then(data => {
-          console.log("API returned:", data);
-
-            // DynamoDB returns an object with an Items array
-            if (!data.Items || data.Items.length === 0) {
-                document.getElementById("card-intro").innerHTML =
-                    "...this blog needs no introduction!!";
-                return;
-            }
-
-            // Extract the intro text from the first item
-            const intro = data.Items[0].introText;
-
-            // Display it
-            document.getElementById("card-intro").innerHTML = intro;
-        })
-        .catch(err => {
-            console.log("Something went wrong:", err);
-            document.getElementById("card-intro").innerHTML =
-                "...Ah, Houston, we've had a problem...";
-        });
+      document.getElementById("card-intro").innerHTML = data.introText;
+    })
+    .catch(err => {
+      console.log("Something went wrong:", err);
+      document.getElementById("card-intro").innerHTML =
+        "...Ah, Houston, we've had a problem...";
+    });
 }
+
 
 
 
