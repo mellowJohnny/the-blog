@@ -54,7 +54,7 @@ const pageSize = 1; // how many blogs to display at a time
  * This is where we call displayBlog
  */
 
-ffunction renderBlogPage() {
+function renderBlogPage() {
   const blogDiv = document.getElementById("blogsDiv");
   blogDiv.innerHTML = "";
 
