@@ -161,7 +161,7 @@ function prevBlogPage() {
       `<h1 class="blog-title">${cleanTitle}</h1> 
        <strong><i>${cleanAuthor}</i></strong><br>
        <strong><i>${fixDate(date)}</i></strong>
-       <strong><i>${readingStats.minutes} min read</i></strong><br>
+       <strong><i>${readingStats.minutes} minute read</i></strong><br>
        ${cleanPostBody}
        <hr/><br>`;
     return;
@@ -172,7 +172,7 @@ function prevBlogPage() {
     `<h1 class="blog-title">${cleanTitle}</h1> 
      <strong><i>${cleanAuthor}</i></strong><br>
      <strong><i>${fixDate(date)}</i></strong><br>
-     <strong><i>${readingStats.minutes} min read</i></strong><br>
+     <strong><i>${readingStats.minutes} minnute read</i></strong><br>
      ${cleanPostBody}
      <img src="${cleanImg}" class="blog-img"
           onerror="this.style.display='none'; this.nextElementSibling.style.display='none';">
