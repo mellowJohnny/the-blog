@@ -6,7 +6,8 @@
 
 // Global Variables
 var globalPageName = "";
-let allCardSets = []; // Used in pagination - holds all the data so we can paginate through it
+let allBlogs = []; // Used in pagination - holds all the Blogs so we can paginate through it
+let allCardSets = []; // Used in pagination - holds all the Card Sets so we can paginate through it
 let currentPage = 1; // Used in pagination
 const pageSize = 1; // Used in pagination - configues the number of sets to display pefore paginating
 
@@ -21,38 +22,56 @@ const pageSize = 1; // Used in pagination - configues the number of sets to disp
 
   function fetchBlogs(blogType) {
   fetch(`https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`)
-    .then(res => {
-      // console.log("HTTP STATUS:", res.status);
-     // console.log("HEADERS:", [...res.headers.entries()]);
-      return res.json(); // move on with parsed JSON
-    })
+    .then(res => res.json())
     .then(blogArray => {
-      // console.log("PARSED JSON:", blogArray);
 
       if (!Array.isArray(blogArray)) {
         throw new Error("API did not return an array");
       }
-      
-      // Let's order the blogs!!
+
+      // Sort blogs
       if (blogType === "5") {
-        blogArray.sort(getSortOrder("time", "last")); // Most Recent last
+        blogArray.sort(getSortOrder("time", "last"));   // Most recent last
       } else {
-        blogArray.sort(getSortOrder("time", "first")); // Most Recent first
+        blogArray.sort(getSortOrder("time", "first"));  // Most recent first
       }
 
-      blogArray.forEach(blog => {
-        displayBlog(
-          blog.postBody,
-          blog.author,
-          blog.time,
-          blog.title,
-          blog.img,
-          blog.imgCap
-        );
-      });
+      // Store full dataset for pagination
+      allBlogs = blogArray;
+      currentPage = 1;
+
+      renderBlogPage();
     })
     .catch(err => console.error("FETCH ERROR:", err));
 }
+
+/** 
+ * Pagination Renderer
+ * This is where we call displayBlog
+ */
+
+function renderBlogPage() {
+  const blogDiv = document.getElementById("blogsDiv");
+  blogDiv.innerHTML = "";
+
+  const start = (currentPage - 1) * pageSize;
+  const end = start + pageSize;
+  const pageItems = allBlogs.slice(start, end);
+
+  pageItems.forEach(blog => {
+    displayBlog(
+      blog.postBody,
+      blog.author,
+      blog.time,
+      blog.title,
+      blog.img,
+      blog.imgCap
+    );
+  });
+
+  renderPaginationControls(start, end); // Re-use the pagination controls we built for Card Sets
+}
+
 
 
 
