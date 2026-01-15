@@ -481,8 +481,10 @@ function prevPage() {
     * called by the waxReviews page to display a category-specific page header
     * Possible values for pageName are 'junkWax', 'classicWax' or 'timmies'
     * Called from waxReviews.html using the pageName and year URL parameters
+    * ******* NOTE NOTE NOTE ******** NOT called anymore
 */
 
+/** 
 function displayCardHeader(pageName,year) {
     if (pageName === "junkWax") {
         let pageHeader = document.getElementById("pageHeader");
@@ -499,7 +501,7 @@ function displayCardHeader(pageName,year) {
 
 }
 
-
+*/
 
  /**
     * Registration function
