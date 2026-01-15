@@ -114,7 +114,7 @@ function nextBlogPage() {
   if (currentBlogPage < totalPages) {
     currentBlogPage++;
     renderBlogPage();
-    document.getElementById("blogTop").scrollIntoView({ behavior: "smooth" });
+    document.getElementById("blog-intro").scrollIntoView({ behavior: "smooth" }); // was getElementbyId(blogTop)
   }
 }
 
@@ -122,7 +122,7 @@ function prevBlogPage() {
   if (currentBlogPage > 1) {
     currentBlogPage--;
     renderBlogPage();
-    document.getElementById("blogTop").scrollIntoView({ behavior: "smooth" });
+    document.getElementById("blog-intro").scrollIntoView({ behavior: "smooth" });
   }
 }
 
