@@ -780,5 +780,11 @@ textarea {
   }
 }
 
+/* HIDE The Weather Widget on really small screens */
+@media (max-width: 600px) {
+  .weather {
+    display: none;
+  }
+}
 
 
