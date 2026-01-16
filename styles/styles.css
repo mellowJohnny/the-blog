@@ -738,10 +738,10 @@ textarea {
 /* Masthead & Weather Mobile Styles */
 .masthead-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: nowrap; /* prevents stacking */
-  padding: 10px 15px;
+  align-items: flex-start;
+  gap: 30px;
+  flex-wrap: wrap;
+  padding: 15px 20px;
   background-color: rgb(44, 82, 137);
 }
 
@@ -750,16 +750,18 @@ textarea {
   font-size: 7vw;
   color: #3FA7D6;
   margin: 0;
-  white-space: nowrap;
+  flex: 1;
+  min-width: 250px;
 }
 
 .weather-box {
-  max-width: 300px;
-  text-align: right;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: rgb(169, 220, 243);
-  padding-left: 15px;
+  max-width: 300px;
+  flex-shrink: 0;
+  text-align: left;
 }
+
 
 /* Weather visibility control */
 .weather-full { display: block; }
@@ -768,8 +770,8 @@ textarea {
 /* Mobile tweaks */
 @media (max-width: 600px) {
   .masthead-container {
-    flex-wrap: nowrap;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 10px;
   }
 
   .masthead {
@@ -777,14 +779,15 @@ textarea {
   }
 
   .weather-box {
-    font-size: 0.8rem;
-    max-width: 50%;
-    text-align: right;
+    font-size: 0.85rem;
+    width: 100%;
+    text-align: left;
   }
 
   .weather-full { display: none; }
   .weather-condensed { display: block; }
 }
+
 
 
 
