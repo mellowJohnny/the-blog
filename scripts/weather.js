@@ -97,15 +97,24 @@ if('geolocation' in navigator) {
         }
 
         // Step 2: Now that we have all the fields we want, let's populate the HTML DIV
+        // TWO VERSIONS - one for desktop and one for mobile, determined by the CSS
         const weatherForcast = document.getElementById("weather");
-        weatherForcast.innerHTML = `<p>
-                          <strong> Today's ${city} Weather:</strong> <br>
-                          Temp: ${temp}&#8451;, Feels Like: ${feelsLike}&#8451;<br>
-                          Low: ${minTemp}&#8451;, High: ${maxTemp}&#8451;<br>
-                          Wind: ${degreesToRose(windDirection)}, ${wind} km/h <br>
-                          Humidity: ${humidity}% <br>
-                          &#9788; ${getTime(sunrise)} am, &#9789; ${getTime(sunset)} pm 
-                          </p>`;
+        weatherForcast.innerHTML = `
+          <p class="weather-full">
+            <strong>Today's ${city} Weather:</strong><br>
+            Temp: ${temp}°C, Feels Like: ${feelsLike}°C<br>
+            Low: ${minTemp}°C, High: ${maxTemp}°C<br>
+            Wind: ${degreesToRose(windDirection)}, ${wind} km/h<br>
+            Humidity: ${humidity}%<br>
+            ☀ ${getTime(sunrise)} am, 🌙 ${getTime(sunset)} pm
+          </p>
+
+          <p class="weather-condensed">
+            <strong>${city}:</strong> ${temp}°C (feels ${feelsLike}°C)<br>
+            Wind: ${degreesToRose(windDirection)} ${wind} km/h<br>
+            ☀ ${getTime(sunrise)} / 🌙 ${getTime(sunset)}
+          </p>`;
+
       }
     }
     catch(error){

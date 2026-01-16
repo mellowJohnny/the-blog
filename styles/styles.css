@@ -780,11 +780,16 @@ textarea {
   }
 }
 
-/* HIDE The Weather Widget on really small screens */
+/*  Condensed Weather Widget for small screens */
+/* Desktop: show full, hide condensed */
+.weather-condensed { display: none; }
+.weather-full { display: block; }
+
+/* Mobile: hide full, show condensed */
 @media (max-width: 600px) {
-  .weather {
-    display: none;
-  }
+  .weather-full { display: none; }
+  .weather-condensed { display: block; }
 }
+
 
 
