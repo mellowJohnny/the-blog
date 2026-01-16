@@ -4,6 +4,9 @@
  * NEW: Tries to read the location cookie first, and sets one if it does not exist
  */
 
+console.log("Weather script loaded");
+
+
 // Global Variables
 const openWeatherUrl = 'https://api.openweathermap.org/data/2.5/weather';
 const openWeatherKey = '49f84d9cdb7907dfd2b02085e270372e';
@@ -12,15 +15,22 @@ let long = "";
 
 // Get geolocation from the Browser, if available..
 if('geolocation' in navigator) {
+  console.log("Geolocation available");
+
     /* geolocation is available */
     navigator.geolocation.getCurrentPosition((position) => {
        lat = position.coords.latitude;
        long = position.coords.longitude;
         // We got some coordinates, let's make a callback to getWeather()!
+        console.log("Got position:", position.coords.latitude, position.coords.longitude);
+
         getWeather(lat,long);
       });
   } else {
     /* geolocation IS NOT available */
+    navigator.geolocation.getCurrentPosition(pos => console.log("Position OK", pos), err => console.error("Geolocation error:", err)
+);
+
     document.getElementById("weather").innerHTML = "<p>Current location unavilable...</p>";
   }
 
