@@ -739,11 +739,12 @@ textarea {
 .masthead-container {
   display: flex;
   align-items: flex-start;
-  gap: 30px;
+  gap: 0;                   /* remove excessive spacing */
   flex-wrap: wrap;
   padding: 15px 20px;
   background-color: rgb(44, 82, 137);
 }
+
 
 .masthead {
   font-family: 'Spicy Rice';
@@ -757,14 +758,15 @@ textarea {
 .weather-box {
   font-size: 1rem;
   color: rgb(169, 220, 243);
-  max-width: 500px;         /* Increased from 300px */
-  flex-grow: 1;             /* Allows it to expand */
-  flex-shrink: 1;
-  text-align: left;
+  max-width: 500px;
+  padding-left: 30px;       /* consistent left anchor */
+  margin-left: auto;        /* pushes it to the right of masthead */
+  margin-right: 0;          /* prevents drifting */
   word-break: break-word;
   overflow-wrap: anywhere;
-  padding-left: 20px;
+  text-align: left;
 }
+
 
 
 
