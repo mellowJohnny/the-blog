@@ -575,9 +575,9 @@ textarea {
   margin-top: 20px;
 }
 
-/* ============================
-   MOBILE RESPONSIVE FIXES
-   ============================ */
+                                            /* ============================
+                                              MOBILE RESPONSIVE FIXES
+                                              ============================ */
 @media (max-width: 600px) {
 
   /* Global font scaling */
@@ -732,6 +732,51 @@ textarea {
 
   .nav-links {
     display: block;
+  }
+}
+
+/* Masthead Mobile Styles */
+.masthead-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px 15px;
+  background-color: rgb(44, 82, 137);
+}
+
+.masthead {
+  font-family: 'Spicy Rice';
+  font-size: 7vw;
+  color: #3FA7D6;
+  margin: 0;
+}
+
+.weather {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 1rem;
+  color: rgb(169, 220, 243);
+  text-align: right;
+  max-width: 300px;
+  padding: 5px;
+}
+
+/* Mobile tweaks */
+@media (max-width: 600px) {
+  .masthead-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .masthead {
+    font-size: 9vw;
+    text-align: left;
+  }
+
+  .weather {
+    font-size: 0.9rem;
+    text-align: left;
+    width: 100%;
   }
 }
 
