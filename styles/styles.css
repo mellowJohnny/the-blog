@@ -681,7 +681,7 @@ textarea {
     margin-left: 0;
   }
 
-  /* ###################### Mobile Responsivle card set stuff ###############*/
+  /* card set stuff */
 
   .set-html {
     font-size: 0.8rem;
@@ -757,46 +757,7 @@ textarea {
     color: #fff;
   }
 
-  .masthead-container {
-    flex-direction: row;         /* keep horizontal layout */
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: nowrap;
-  }
-
-  .masthead {
-    font-size: 9vw;
-    white-space: nowrap;
-  }
-
-  .weather-box {
-    font-size: 0.75rem;
-    max-width: 50%;
-    text-align: right;
-    margin-left: auto;
-    padding-left: 10px;
-  }
-
-  .weather-full { display: none; }
-  .weather-condensed { display: block; }
-}
-
-
-
-
-
-/* Desktop: hide hamburger, show normal nav */
-@media (min-width: 601px) {
-  .hamburger {
-    display: none;
-  }
-
-  .nav-links {
-    display: block;
-  }
-}
-
-/* Masthead & Weather Mobile Styles */
+  /* Masthead & Weather Mobile Styles */
 .masthead-container {
   display: flex;
   justify-content: space-between;
@@ -833,6 +794,21 @@ textarea {
 /* Weather visibility control */
 .weather-full { display: block; }
 .weather-condensed { display: none; }
+
+}
+
+
+/* Desktop: hide hamburger, show normal nav */
+@media (min-width: 601px) {
+  .hamburger {
+    display: none;
+  }
+
+  .nav-links {
+    display: block;
+  }
+}
+
 
 
 
