@@ -344,7 +344,40 @@ textarea {
   font-size: 18px;
   text-align: left;
   padding: 9px;
+  width: 100%;
+  table-layout: fixed;
 }
+
+.set-html {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  padding: 10px;
+}
+/* Mobile responsive for set display */
+@media (max-width: 600px) {
+  .set-html {
+    font-size: 0.8rem;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .set-details-table-style td {
+    font-size: 0.8rem;
+    padding: 4px;
+  }
+
+  .table-header-img {
+    width: 100px;
+  }
+
+  .table-footer-img {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+
 
 .card-table-style td{
   margin-left: 5px;
@@ -370,10 +403,11 @@ textarea {
 }
 
 .table-header-img {
-  width: 100%; 
+  max-width: 100%;
+  width: 120px;
+  height: auto;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
   border: 1px solid;
   border-color: rgb(22, 86, 138);
   border-radius: 2px;

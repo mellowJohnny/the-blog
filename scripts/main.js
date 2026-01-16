@@ -421,9 +421,9 @@ function prevPage() {
     }
 
     // Reference to the div where everything goes
-    let blogBody = document.getElementById("cardSetDiv");
+    let cardBody = document.getElementById("cardSetDiv");
 
-    blogBody.innerHTML += `
+    cardBody.innerHTML += `
         <table class="set-details-table-style">
             <tr>
                 <td style="width:400px;font-size:20px">
@@ -454,7 +454,9 @@ function prevPage() {
             </tr>
         </table>
 
-        ${postBody}
+        <div class="set-html">
+          ${postBody}
+        </div>
 
         <table class="set-footer-table-style">
             <tr>
