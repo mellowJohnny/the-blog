@@ -353,29 +353,6 @@ textarea {
   line-height: 1.4;
   padding: 10px;
 }
-/* Mobile responsive for set display */
-@media (max-width: 600px) {
-  .set-html {
-    font-size: 0.8rem;
-    padding: 8px;
-  }
-}
-
-@media (max-width: 600px) {
-  .set-details-table-style td {
-    font-size: 0.8rem;
-    padding: 4px;
-  }
-
-  .table-header-img {
-    width: 100px;
-  }
-
-  .table-footer-img {
-    width: 100%;
-    max-width: 300px;
-  }
-}
 
 
 
@@ -610,7 +587,7 @@ textarea {
 }
 
                                             /* ============================
-                                              MOBILE RESPONSIVE FIXES
+                                               MOBILE RESPONSIVE FIXES
                                               ============================ */
 @media (max-width: 600px) {
 
@@ -703,12 +680,35 @@ textarea {
     width: 100%;
     margin-left: 0;
   }
-}
+
+  /* ###################### Mobile Responsivle card set stuff ###############*/
+
+  .set-html {
+    font-size: 0.8rem;
+    padding: 8px;
+  }
+
+  .set-details-table-style td {
+    font-size: 0.8rem;
+    padding: 4px;
+  }
+
+  .table-header-img {
+    width: 100px;
+  }
+
+  .table-footer-img {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .card-table-style td {
+    font-size: 12px;
+    padding: 2px 1px;}
 
 /* ============================
    MOBILE HAMBURGER NAVIGATION
    ============================ */
-@media (max-width: 600px) {
 
   /* Hide the table nav by default */
   .nav-links {
@@ -756,7 +756,34 @@ textarea {
   .nav-td a {
     color: #fff;
   }
+
+  .masthead-container {
+    flex-direction: row;         /* keep horizontal layout */
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+  }
+
+  .masthead {
+    font-size: 9vw;
+    white-space: nowrap;
+  }
+
+  .weather-box {
+    font-size: 0.75rem;
+    max-width: 50%;
+    text-align: right;
+    margin-left: auto;
+    padding-left: 10px;
+  }
+
+  .weather-full { display: none; }
+  .weather-condensed { display: block; }
 }
+
+
+
+
 
 /* Desktop: hide hamburger, show normal nav */
 @media (min-width: 601px) {
@@ -807,31 +834,7 @@ textarea {
 .weather-full { display: block; }
 .weather-condensed { display: none; }
 
-/* ############# MOBILE Tweaks ####################### */
-@media (max-width: 600px) {
-  .masthead-container {
-    flex-direction: row;         /* keep horizontal layout */
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: nowrap;
-  }
 
-  .masthead {
-    font-size: 9vw;
-    white-space: nowrap;
-  }
-
-  .weather-box {
-    font-size: 0.75rem;
-    max-width: 50%;
-    text-align: right;
-    margin-left: auto;
-    padding-left: 10px;
-  }
-
-  .weather-full { display: none; }
-  .weather-condensed { display: block; }
-}
 
 
 

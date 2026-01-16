@@ -430,7 +430,7 @@ function prevPage() {
                     <strong>${setName}</strong>
                 </td>
                 <td rowspan="7" style="text-align:center">
-                    <img src="${headerImg}${headerImgName}" class="table-header-img" loading="lazy">
+                    <img class="table-header-img" loading="lazy" src="${headerImg}${headerImgName}">
                 </td>
             </tr>
 
