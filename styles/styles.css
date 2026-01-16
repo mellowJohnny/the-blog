@@ -575,6 +575,101 @@ textarea {
   margin-top: 20px;
 }
 
+/* ============================
+   MOBILE RESPONSIVE FIXES
+   ============================ */
+@media (max-width: 600px) {
+
+  /* Global font scaling */
+  body {
+    font-size: 16px;
+  }
+
+  /* Flex container should not force 1000px width */
+  .flex-container div {
+    width: 100%;
+    padding: 10px;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  /* Blog intro + section intro */
+  .intro,
+  .section-style-intro p {
+    width: 100%;
+    font-size: 18px;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+
+  /* Masthead scales nicely already with 7vw, but reduce padding */
+  .masthead {
+    padding-left: 5px;
+    font-size: 10vw;
+  }
+
+  /* Navigation links */
+  .nav-td {
+    font-size: 16px;
+    padding: 10px;
+    margin: 5px;
+    display: inline-block;
+  }
+
+  .top-nav {
+    font-size: 24px;
+  }
+
+  /* Weather widget */
+  .weather {
+    width: 100%;
+    height: auto;
+    font-size: 14px;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+
+  #weather {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Blog images */
+  .blog-img {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+  }
+
+  /* Blog entry container */
+  .blog-entry {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  /* Pagination */
+  .pagination-link {
+    font-size: 1rem;
+    margin: 0 8px;
+  }
+
+  .pagination-page {
+    font-size: 0.9rem;
+  }
+
+  /* Tables should scroll instead of overflow */
+  table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+  }
+
+  /* Set picker */
+  .cms-set-picker {
+    width: 100%;
+    margin-left: 0;
+  }
+}
 
 
 
