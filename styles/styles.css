@@ -735,7 +735,7 @@ textarea {
   }
 }
 
-/* Masthead Mobile Styles */
+/* Masthead & Weather Mobile Styles */
 .masthead-container {
   display: flex;
   justify-content: space-between;
@@ -782,18 +782,6 @@ textarea {
     text-align: right;
   }
 
-  .weather-full { display: none; }
-  .weather-condensed { display: block; }
-}
-
-
-/*  Condensed Weather Widget for small screens */
-/* Desktop: show full, hide condensed */
-.weather-condensed { display: none; }
-.weather-full { display: block; }
-
-/* Mobile: hide full, show condensed */
-@media (max-width: 600px) {
   .weather-full { display: none; }
   .weather-condensed { display: block; }
 }
