@@ -4,9 +4,6 @@
  * NEW: Tries to read the location cookie first, and sets one if it does not exist
  */
 
-console.log("Weather script loaded");
-
-
 // Global Variables
 const openWeatherUrl = 'https://api.openweathermap.org/data/2.5/weather';
 const openWeatherKey = '49f84d9cdb7907dfd2b02085e270372e';
@@ -15,14 +12,13 @@ let long = "";
 
 // Get geolocation from the Browser, if available..
 if('geolocation' in navigator) {
-  console.log("Geolocation available");
+
 
     /* geolocation is available */
     navigator.geolocation.getCurrentPosition((position) => {
        lat = position.coords.latitude;
        long = position.coords.longitude;
         // We got some coordinates, let's make a callback to getWeather()!
-        console.log("Got position:", position.coords.latitude, position.coords.longitude);
 
         getWeather(lat,long);
       });
@@ -68,7 +64,6 @@ if('geolocation' in navigator) {
         const minTemp = mnT.toFixed();
         const mxT = jsonResponse.main.temp_max;
         const maxTemp = mxT.toFixed();
-
         const humidity = jsonResponse.main.humidity;
         
 
@@ -76,6 +71,7 @@ if('geolocation' in navigator) {
         const windMpS  = jsonResponse.wind.speed; 
         const wind = (windMpS * 3.6).toFixed();
         const windDirection = jsonResponse.wind.deg;
+        console.log('Wind:' ${windDirection});
 
         // Sunrise & Sunset comes as a Unix timestamp...convert it
         // Once converted we can then run it through our magic getTime() formatter :-)
