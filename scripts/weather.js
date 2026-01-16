@@ -71,7 +71,7 @@ if('geolocation' in navigator) {
         const windMpS  = jsonResponse.wind.speed; 
         const wind = (windMpS * 3.6).toFixed();
         const windDirection = jsonResponse.wind.deg;
-        console.log(`Wind: ${windDirection``});
+        
 
         // Sunrise & Sunset comes as a Unix timestamp...convert it
         // Once converted we can then run it through our magic getTime() formatter :-)
