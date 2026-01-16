@@ -605,6 +605,13 @@ textarea {
   margin-left: auto;
 }
 
+/* Let's make sure the fonts are always applied */
+.weather-box,
+.weather-full,
+.weather-condensed {
+  font-family: 'Work Sans', sans-serif;
+}
+
 
 /* ============================
 MOBILE RESPONSIVE FIXES STYLES
@@ -795,14 +802,6 @@ MOBILE RESPONSIVE FIXES STYLES
 
   .weather-full { display: none; }
   .weather-condensed { display: block; }
-
-
- /* Let's make sure the fonts are always applied */
-.weather-box,
-.weather-full,
-.weather-condensed {
-  font-family: 'Work Sans', sans-serif;
-}
 
 }
 /* Don't show condensed weather on desktop */
