@@ -110,7 +110,7 @@ if('geolocation' in navigator) {
             <strong>Today's ${city} Weather:</strong><br>
             Temp: ${temp}°C, Feels Like: ${feelsLike}°C<br>
             Low: ${minTemp}°C, High: ${maxTemp}°C<br>
-            Wind: ${degreesToRose(windDirection)}, ${wind} km/h<br>
+            Wind: ${wind} km/h ${degreesToRose(windDirection)}<br>
             Humidity: ${humidity}%<br>
             ☀ ${getTime(sunrise)} am, 🌙 ${getTime(sunset)} pm
           </p>
@@ -118,7 +118,7 @@ if('geolocation' in navigator) {
           <p class="weather-condensed">
             <strong>${city}</strong><br>
             ${temp}°C (feels ${feelsLike}°C)<br>
-            Wind: ${degreesToRose(windDirection)} ${wind} km/h<br>
+            Wind: ${wind} km/h ${degreesToRose(windDirection)}<br>
             ☀ ${getTime(sunrise)} / 🌙 ${getTime(sunset)}
           </p>`;
 
@@ -141,31 +141,31 @@ if('geolocation' in navigator) {
     const direction = parseInt(degNumber);
 
     if (direction >= 0 && direction <= 29){
-        return 'North';
+        return 'N';
     }
     else if (direction >= 30 && direction <= 59){
-        return 'North East';
+        return 'NE';
     }
     else if (direction >= 60 && direction <= 119){
-        return 'East';
+        return 'E';
     }
     else if (direction >= 120 && direction <= 149){
-        return 'South East';
+        return 'SE';
     }
     else if (direction >= 150 && direction <= 209){
-        return 'South';
+        return 'S';
     }
     else if (direction >= 210 && direction <= 239){
-        return 'South West';
+        return 'SW';
     }
     else if (direction >= 240 && direction <= 299){
-        return 'West';
+        return 'W';
     }
     else if (direction >= 300 && direction <= 329){
-        return 'North West';
+        return 'NW';
     }
     else if (direction >= 330 && direction <= 360){
-        return 'North';
+        return 'N';
     }      
   }
 
