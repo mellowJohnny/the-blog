@@ -739,11 +739,12 @@ textarea {
 .masthead-container {
   display: flex;
   align-items: flex-start;
-  gap: 0;                   /* remove excessive spacing */
   flex-wrap: wrap;
   padding: 15px 20px;
   background-color: rgb(44, 82, 137);
+  gap: 20px;
 }
+
 
 
 .masthead {
@@ -758,14 +759,15 @@ textarea {
 .weather-box {
   font-size: 1rem;
   color: rgb(169, 220, 243);
-  max-width: 500px;
-  padding-left: 30px;       /* consistent left anchor */
-  margin-left: auto;        /* pushes it to the right of masthead */
-  margin-right: 0;          /* prevents drifting */
+  flex-basis: 500px;         /* guarantees enough space */
+  flex-grow: 0;
+  flex-shrink: 1;
+  padding-left: 30px;
   word-break: break-word;
   overflow-wrap: anywhere;
   text-align: left;
 }
+
 
 
 
