@@ -325,12 +325,17 @@ function fetchNav(pageName, blogType) {
   });
 
   nav.innerHTML = `
-    <table class="top-nav">
+    <table class="top-nav nav-table">
       <tr>${cells}</tr>
     </table>
   `;
 }
 
+// Hamberger Menu Toggle
+function toggleMenu() {
+  const nav = document.getElementById("global-nav");
+  nav.classList.toggle("open");
+}
 
 
 
