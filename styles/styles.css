@@ -755,12 +755,17 @@ textarea {
 }
 
 .weather-box {
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: rgb(169, 220, 243);
-  max-width: 300px;
-  flex-shrink: 0;
+  max-width: 500px;         /* Increased from 300px */
+  flex-grow: 1;             /* Allows it to expand */
+  flex-shrink: 1;
   text-align: left;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  padding-left: 20px;
 }
+
 
 
 /* Weather visibility control */
