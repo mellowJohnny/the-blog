@@ -348,12 +348,13 @@ textarea {
   table-layout: fixed;
   margin-left: 5px;
   margin-right: 5px;
-  font-family: 'Arial';
+  font-family: 'Work Sans', sans-serif;
   font-size: 18px;
   text-align: left;
   padding: 9px;
   width: auto;
 }
+
 
 
 .set-html {
@@ -819,9 +820,10 @@ textarea {
     display: block;
     width: 100% !important;
     text-align: left;
-    padding: 6px 0;
-    margin: 0; /* override desktop margins */
-    font-size: 0.9rem; /* override desktop font size */
+    padding: 8px 0;
+    margin: 0;
+    font-size: 1.1rem;
+    font-family: 'Work Sans', sans-serif;
   }
 
   .table-header-img {
