@@ -717,6 +717,7 @@ MOBILE RESPONSIVE FIXES STYLES
 
   .table-header-img {
     width: 100px;
+    min-width: 80px;
   }
 
   .table-footer-img {
@@ -800,10 +801,23 @@ MOBILE RESPONSIVE FIXES STYLES
     padding-left: 10px;
   }
 
+  .set-details-table-style {
+  width: 100%;
+  table-layout: auto;
+  }
+
+.set-details-table-style td {
+  width: auto !important;
+  display: table-cell;
+  }
+
+
   .weather-full { display: none; }
   .weather-condensed { display: block; }
 
-}
+} /* END MOBILE RESPONSIVE */
+
+
 /* Don't show condensed weather on desktop */
 .weather-condensed {
   display: none;
