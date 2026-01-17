@@ -424,12 +424,12 @@ function prevPage() {
     let cardBody = document.getElementById("cardSetDiv");
 
     cardBody.innerHTML += `
-        <table class="set-details-table-style" border="1">
+        <table class="set-details-table-style">
             <tr border="1">
-                <td style="width: 38%; font-size: 20px;" border="1">
+                <td style="width: 38%; font-size: 18px;">
                     <strong>${setName}</strong>
                 </td>
-                <td rowspan="7" style="width: 62%; text-align: center;" border="1">
+                <td rowspan="7" style="width: 62%; text-align: center;">
                     <img src="${headerImg}${headerImgName}" class="table-header-img" loading="lazy">
                 </td>
             </tr>
