@@ -389,10 +389,11 @@ textarea {
 }
 
 .table-header-img {
-  max-width: 100%;
+  max-width: 320px; /* or whatever size feels right */
+  width: 100%;
   height: auto;
   display: block;
-  margin: 0 auto;
+  margin: 8px auto 0 auto; /* top margin + horizontal centering */
   border: 1px solid;
   border-color: rgb(22, 86, 138);
   border-radius: 2px;
