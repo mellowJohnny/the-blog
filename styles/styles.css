@@ -361,7 +361,7 @@ textarea {
   font-family: 'Work Sans', sans-serif;
   font-size: 18px;
   text-align: left;
-  padding: 9px;
+  padding: 2px 4px;
   width: auto;
 }
 
@@ -390,7 +390,7 @@ textarea {
 
 .table-header-img {
   max-width: 100%;
-  width: 120px;
+  width: 200px;
   height: auto;
   display: block;
   margin: 0 auto;
@@ -824,7 +824,7 @@ textarea {
   font-size: 18px;
   line-height: 1.4;
   text-align: left;
-  padding: 6px 8px; /* Reduce vertical and horizontal padding */
+  padding: 2px 4px; /* Reduce vertical and horizontal padding */
   width: auto;
 }
 
