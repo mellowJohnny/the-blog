@@ -424,9 +424,9 @@ function prevPage() {
     let cardBody = document.getElementById("cardSetDiv");
 
     cardBody.innerHTML += `
-        <table class="set-details-table-style">
+        <table class="set-details-table-style" border="1">
             <tr border="1">
-                <td style="font-size:20px">
+                <td style="font-size:20px" border="1">
                     <strong>${setName}</strong>
                 </td>
                 <td rowspan="7" style="text-align:center" border="1">
