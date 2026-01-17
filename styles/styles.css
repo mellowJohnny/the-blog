@@ -342,7 +342,9 @@ textarea {
 
 
 /* Used to style the first table displaying the main set details */
-.set-details-table-style td{
+
+.set-details-table-style td {
+  display: table-cell;
   table-layout: fixed;
   margin-left: 5px;
   margin-right: 5px;
@@ -350,9 +352,9 @@ textarea {
   font-size: 18px;
   text-align: left;
   padding: 9px;
-  width: 100%;
-  table-layout: fixed;
+  width: auto;
 }
+
 
 .set-html {
   font-size: 0.9rem;
@@ -619,9 +621,9 @@ textarea {
 }
 
 
-/* ============================
-MOBILE RESPONSIVE FIXES STYLES
-============================ */
+/* ========================================================================================================================
+///////////////// MOBILE RESPONSIVE STYLES ////////////////////////////////////////////////////////////////////////
+======================================================================================================================== */
 @media (max-width: 600px) {
 
   /* Global font scaling */
@@ -716,12 +718,6 @@ MOBILE RESPONSIVE FIXES STYLES
     padding: 8px;
   }
 
-  .set-details-table-style td {
-    font-size: 0.8rem;
-    padding: 4px;
-    width: auto !important;
-  }
-
   .table-header-img {
     width: 100px;
     min-width: 80px;
@@ -813,9 +809,34 @@ MOBILE RESPONSIVE FIXES STYLES
   table-layout: auto;
   }
 
-.set-details-table-style td {
-  width: auto !important;
-  display: table-cell;
+  /**/
+  .set-details-table-style tr {
+    display: block;
+    width: 100%;
+  }
+
+  .set-details-table-style td {
+    display: block;
+    width: 100% !important;
+    text-align: left;
+    padding: 6px 0;
+    margin: 0; /* override desktop margins */
+    font-size: 0.9rem; /* override desktop font size */
+  }
+
+  .table-header-img {
+    display: block;
+    margin: 10px auto;
+    width: 120px;
+    min-width: 80px;
+    height: auto;
+  }
+
+  .table-footer-img {
+    display: block;
+    margin: 10px auto;
+    width: 100%;
+    max-width: 300px;
   }
 
 
