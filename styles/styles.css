@@ -335,6 +335,12 @@ textarea {
   text-align: left;
 }
 
+.set-details-table-style {
+  width: 100%;
+  table-layout: fixed;
+}
+
+
 /* Used to style the first table displaying the main set details */
 .set-details-table-style td{
   table-layout: fixed;
@@ -713,6 +719,7 @@ MOBILE RESPONSIVE FIXES STYLES
   .set-details-table-style td {
     font-size: 0.8rem;
     padding: 4px;
+    width: auto !important;
   }
 
   .table-header-img {
