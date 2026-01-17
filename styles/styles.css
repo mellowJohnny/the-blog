@@ -817,14 +817,17 @@ textarea {
   }
 
   .set-details-table-style td {
-    display: block;
-    width: 100% !important;
-    text-align: left;
-    padding: 8px 0;
-    margin: 0;
-    font-size: 1.1rem;
-    font-family: 'Nunito', sans-serif;
-  }
+  display: table-cell;
+  table-layout: fixed;
+  margin: 0; /* Remove side margins */
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 18px;
+  line-height: 1.4;
+  text-align: left;
+  padding: 6px 8px; /* Reduce vertical and horizontal padding */
+  width: auto;
+}
+
 
   .table-header-img {
     display: block;
