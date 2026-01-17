@@ -368,6 +368,11 @@ textarea {
 .set-details-table-style td[rowspan] {
   padding: 4px 6px;
 }
+/* Move the set image closer to the card set details */
+.set-details-table-style td:first-child {
+  max-width: 60%;
+}
+
 
 
 .card-table-style td{
