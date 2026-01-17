@@ -441,8 +441,19 @@ textarea {
   display: block;
   max-width: 100%;
   height: auto;
-  margin: 0 auto;
+  margin: 0;
+  padding: 0;
 }
+
+.tech-masthead td {
+  vertical-align: top;
+  padding: 0;
+  margin: 0;
+  line-height: 0;
+  font-size: 0;
+}
+
+
 
 
 .table-footer-img {
