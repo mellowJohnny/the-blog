@@ -425,11 +425,11 @@ function prevPage() {
 
     cardBody.innerHTML += `
         <table class="set-details-table-style">
-            <tr>
-                <td style="width: 60%; font-size: 20px;">
+            <tr border="1">
+                <td style="width: 60%; font-size: 20px;" border="1">
                     <strong>${setName}</strong>
                 </td>
-                <td rowspan="7" style="width: 40%; text-align: center;">
+                <td rowspan="7" style="width: 40%; text-align: center;" border="1">
                     <img src="${headerImg}${headerImgName}" class="table-header-img" loading="lazy">
                 </td>
             </tr>
