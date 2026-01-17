@@ -338,6 +338,9 @@ textarea {
 .set-details-table-style {
   width: 100%;
   table-layout: fixed;
+  font-size: 18px;
+  line-height: 1.4;
+  font-family: 'Work Sans', sans-serif;
 }
 
 
