@@ -335,6 +335,13 @@ textarea {
   text-align: left;
 }
 
+.set-html {
+  font-size: 18px;
+  line-height: 1.4;
+  padding: 10px;
+  font-family: 'Work Sans', sans-serif;
+}
+
 .set-details-table-style {
   width: 100%;
   table-layout: fixed;
@@ -357,16 +364,6 @@ textarea {
   padding: 9px;
   width: auto;
 }
-
-
-
-.set-html {
-  font-size: 0.9rem;
-  line-height: 1.4;
-  padding: 10px;
-}
-
-
 
 .card-table-style td{
   margin-left: 5px;
