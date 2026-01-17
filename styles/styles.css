@@ -365,6 +365,11 @@ textarea {
   width: auto;
 }
 
+.set-details-table-style td[rowspan] {
+  padding: 4px 6px;
+}
+
+
 .card-table-style td{
   margin-left: 5px;
   margin-right: 5px;
@@ -387,6 +392,8 @@ textarea {
 .set-footer-table-style td {
   padding: 8px;
 }
+
+
 
 .table-header-img {
   max-width: 620px; /* or whatever size feels right */
@@ -828,14 +835,18 @@ textarea {
   width: auto;
 }
 
+.set-details-table-style td[rowspan] {
+  width: 1%; /* forces the column to shrink to fit the image */
+  white-space: nowrap;
+}
 
   .table-header-img {
-    display: block;
-    margin: 10px auto;
-    width: 120px;
-    min-width: 80px;
-    height: auto;
-  }
+  display: block;
+  margin: 0 auto;
+  max-width: 260px; /* adjust as needed */
+  width: 100%;
+}
+
 
   .table-footer-img {
     display: block;
