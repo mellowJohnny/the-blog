@@ -199,34 +199,37 @@ textarea {
 
  .mast-table {
   border-collapse: collapse;
-  border: none;
-  background-color:rgb(44, 82, 137);
-  text-align: left;
-  vertical-align: middle;
   width: 100%;
- }
+  background-color: rgb(44, 82, 137);
+}
 
- .mast-table td {
+.mast-table td {
   vertical-align: top;
   padding: 0;
   margin: 0;
-  height: 100%;
 }
-
 
 .mast-table tr {
   height: 7vw; /* matches masthead font size */
 }
 
-.mast-table img {
+.masthead {
+  font-family: 'Spicy Rice';
+  font-size: 7vw;
+  color: #3FA7D6;
+  background-color: rgb(44, 82, 137);
+  padding: 1px 10px 0 10px;
+}
+
+.masthead-img {
   display: block;
   height: 100%;
   width: auto;
+  max-width: 100%;
+  object-fit: cover;
   margin: 0;
   padding: 0;
 }
-
-
 
 .body-cms {
   height:100%;
@@ -243,19 +246,6 @@ textarea {
   border-bottom: 1px solid #ccc;
   padding-bottom: 4px;
 }
-
-
-.masthead {
-    font-family: 'Spicy Rice';
-    font-size: 7vw;  /* makes font-size responsive... */
-    color: #3FA7D6;
-    background-color:rgb(44, 82, 137);
-    padding-top: 1px;
-    padding-left: 10px;
-}
-
-
-
 
 .header-style h1{
     font-family: 'Work Sans', sans-serif;
