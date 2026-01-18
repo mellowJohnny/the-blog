@@ -209,8 +209,23 @@ textarea {
  .mast-table td {
   vertical-align: top;
   padding: 0;
+  margin: 0;
   height: 100%;
 }
+
+
+.mast-table tr {
+  height: 120px;
+}
+
+.mast-table img {
+  display: block;
+  height: 100%;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+
 
 
 .body-cms {
@@ -239,10 +254,7 @@ textarea {
     padding-left: 10px;
 }
 
-.mast-table td {
-  vertical-align: top;
-  padding: 0;
-}
+
 
 
 .header-style h1{
