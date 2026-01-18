@@ -213,6 +213,15 @@ textarea {
   height: 7vw; /* matches masthead font size */
 }
 
+.mast-table img {
+  display: block;
+  height: 100%;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+
+
 .masthead {
   font-family: 'Spicy Rice';
   font-size: 7vw;
