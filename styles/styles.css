@@ -221,16 +221,6 @@ textarea {
   padding: 1px 10px 0 10px;
 }
 
-.masthead-img {
-  display: block;
-  height: 100%;
-  width: auto;
-  max-width: 100%;
-  object-fit: cover;
-  margin: 0;
-  padding: 0;
-}
-
 .body-cms {
   height:100%;
   background-color: rgb(124, 151, 201);
@@ -467,8 +457,6 @@ textarea {
   line-height: 0;
   font-size: 0;
 }
-
-
 
 
 .table-footer-img {
