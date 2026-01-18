@@ -215,7 +215,7 @@ textarea {
 
 
 .mast-table tr {
-  height: 120px;
+  height: 7vw; /* matches masthead font size */
 }
 
 .mast-table img {
