@@ -206,6 +206,13 @@ textarea {
   width: 100%;
  }
 
+ .mast-table td {
+  vertical-align: top;
+  padding: 0;
+  height: 100%;
+}
+
+
 .body-cms {
   height:100%;
   background-color: rgb(124, 151, 201);
