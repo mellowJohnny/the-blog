@@ -435,7 +435,7 @@ function prevPage() {
             </tr>
 
             <tr>
-                <td><strong><i>Set Size:</i></strong> ${size} cards</td>
+                <td><strong><i>Set Size:</i></strong> ${size}</td>
             </tr>
             <tr>
                 <td><strong><i>Inserts:</i></strong> ${subsets}</td>
@@ -459,7 +459,7 @@ function prevPage() {
             <td>${postBody}</td>
           </tr>
         </table>
-        
+
         <table class="set-footer-table-style">
             <tr>
                 <td style="text-align:left" class="caption">
