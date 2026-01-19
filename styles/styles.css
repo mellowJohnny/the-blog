@@ -19,7 +19,7 @@ messing up the layout with white borders and scoll bars
   
   .flex-container div {
     width: 1000px;
-    padding: 15px;  
+    /* padding: 15px; */   
    /** overflow: scroll; **/
     margin: 5px; 
   }
@@ -271,7 +271,7 @@ textarea {
 }
 
 
-/* OLD
+
 .blog-entry {
     font-family: 'Nunito';
     background: rgb(212, 233, 241);
@@ -280,21 +280,7 @@ textarea {
     font-size: 18px;
     text-align: left;
     padding: 5px;
-} */
-
-.blog-entry {
-  font-family: 'Nunito', sans-serif;
-  background: rgb(212, 233, 241);
-  border-radius: 3px;
-  color: rgb(34, 38, 41);
-  font-size: 18px;
-  line-height: 1.6;
-  text-align: left;
-  padding: 10px 30px; /* top/bottom 10px, left/right 30px */
-  max-width: 800px;
-  margin: 0 auto;
-}
-
+} 
 
 .blog-title {
   font-family: 'Work Sans', sans-serif;
