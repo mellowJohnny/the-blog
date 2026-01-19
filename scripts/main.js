@@ -457,9 +457,9 @@ function prevPage() {
         <tabel>
           <tr>
             <td>
-              <div class="set-html">
+              
                 ${postBody}
-              </div>
+             
             </td>
           </tr>
         </table>
