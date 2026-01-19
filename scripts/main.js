@@ -454,7 +454,7 @@ function prevPage() {
             </tr>
         </table>
 
-        <tabel>
+        <table>
           <tr>
             <td>
               
