@@ -19,7 +19,7 @@ messing up the layout with white borders and scoll bars
   
   .flex-container div {
     width: 1000px;
-    /* padding: 15px; */   
+    padding: 15px;  
    /** overflow: scroll; **/
     margin: 5px; 
   }
@@ -279,7 +279,7 @@ textarea {
     color:rgb(34, 38, 41);
     font-size: 18px;
     text-align: left;
-    padding: 5px;
+    padding: 10px; /* changing to 10px */
 } 
 
 .blog-title {
