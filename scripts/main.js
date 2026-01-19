@@ -454,10 +454,15 @@ function prevPage() {
             </tr>
         </table>
 
-        <div class="set-html">
-          ${postBody}
-        </div>
-
+        <tabel>
+          <tr>
+            <td>
+              <div class="set-html">
+                ${postBody}
+              </div>
+            </td>
+          </tr>
+        </table>
         <table class="set-footer-table-style">
             <tr>
                 <td style="text-align:left" class="caption">
