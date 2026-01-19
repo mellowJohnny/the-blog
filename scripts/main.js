@@ -456,13 +456,10 @@ function prevPage() {
 
         <table>
           <tr>
-            <td>
-              
-                ${postBody}
-             
-            </td>
+            <td>${postBody}</td>
           </tr>
         </table>
+        
         <table class="set-footer-table-style">
             <tr>
                 <td style="text-align:left" class="caption">
