@@ -14,7 +14,7 @@ function initTinyEditor(selector = '#postBody')
 { tinymce.init({ 
   selector: selector, 
   plugins: ['lists', 'link', 'image', 'code'], // only actual plugins 
-  toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | advlist autolink link image lists charmap preview code | wordcount', 
+  toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | advlist autolink link image lists charmap preview code | wordcount', 
   width: 1000 
   }); 
 }
