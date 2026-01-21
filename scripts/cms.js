@@ -1138,6 +1138,11 @@ function fetchBlogByID(id,type) {
 
       populateCardSet(
         set.blogStatus,
+        set.seoPageTitle, 
+        set.seoMetaDesc, 
+        set.seoURLSlug, 
+        set.seoTags, 
+        set.author,
         set.postBody,
         set.year,
         set.mfg,
@@ -1182,6 +1187,11 @@ function fetchBlogByID(id,type) {
   /** This function calls the associated DIV on the Set Update form in setEdit.html and populates it with the current value */
   function populateCardSet(
   blogStatus,
+  seoPageTitle, 
+  seoMetaDesc, 
+  seoURLSlug, 
+  seoTags, 
+  author,
   postBody,
   year,
   mfg,
@@ -1213,6 +1223,11 @@ function fetchBlogByID(id,type) {
 
   // Populate the rest of the fields
   document.getElementById("year").value = year;
+  document.getElementById("seoPageTitle").value = seoPageTitle;
+  document.getElementById("seoMetaDesc").value = seoMetaDesc;
+  document.getElementById("seoURLSlug").value = seoURLSlug;
+  document.getElementById("seoTags").value = seoTags;
+  document.getElementById("author").value = author;
   document.getElementById("mfg").value = mfg;
   document.getElementById("size").value = size;
   document.getElementById("subsets").value = subsets;
