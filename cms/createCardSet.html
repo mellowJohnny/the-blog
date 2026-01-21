@@ -57,6 +57,18 @@
       <option value="OK">Live</option>
     </select><br><br>
 
+    <label>SEO Title <sup>*</sup></label><br>
+    <input type="text" id="seoPageTitle"><br><br>
+
+    <label>SEO Meta Description <sup>*</sup></label><br>
+    <input type="text" id="seoMetaDesc"><br><br>
+
+    <label>SEO Friendly URL <sup>*</sup></label><br>
+    <input type="text" id="seoURLSlug"><br><br>
+
+    <label>SEO Tags <sup>*</sup></label><br>
+    <input type="text" id="seoTags"><br><br>
+
     <label>Set Name <sup>*</sup></label><br>
     <input type="text" id="setName" required><br><br>
 
@@ -111,6 +123,10 @@
       onclick="createCardSet(
         document.getElementById('blogStatus').value,
         document.getElementById('setName').value,
+        document.getElementById('seoPageTitle').value,
+        document.getElementById('seoMetaDesc').value,
+        document.getElementById('seoURLSlug').value,
+        document.getElementById('seoTags').value,
         document.getElementById('size').value,
         document.getElementById('subsets').value,
         document.getElementById('stars').value,

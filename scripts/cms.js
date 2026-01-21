@@ -398,7 +398,7 @@ document.addEventListener("DOMContentLoaded", function () {
    */
   
   // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
-  function createCardSet(blogStatus, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg) {
+  function createCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg) {
 
   // Let's change the state of the button, now that we've clicked it...
   cmsButtonSubmit();
@@ -420,6 +420,10 @@ document.addEventListener("DOMContentLoaded", function () {
   // using built in JSON utility package turn object to string and store in a variable
   let raw = JSON.stringify({
     "blogStatus": blogStatus,
+    "seoPageTitle": seoPageTitle,
+    "seoMetaDesc": seoMetaDesc,
+    "seoURLSlug": seoURLSlug,
+    "seoTags": seoTags,
     "setName": setName,
     "size": size,
     "subsets": subsets,
