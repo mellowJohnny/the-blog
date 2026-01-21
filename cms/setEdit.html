@@ -66,12 +66,29 @@
                           <main>
                               
                               <form class="form-style">
-                                  <label>Publication Status</label><br>
-
-                                  <!--  Next let's find out if the set's Publication Status -->  
+                                  <label>Status</label><br> 
                                   <select id="blogStatus" name="blogStatus" title="blogStatus">
                                     <!-- The option tags are dynamically added by the CMS.js populateCardSet() function -->
                                 </select><br><br>
+
+                                <label>SEO Title</label><br>
+                                  <input type="text" id="seoPageTitle"><br><br>
+
+                                  <label>SEO Meta Description</label><br>
+                                  <input type="text" id="seoMetaDesc"><br><br>
+
+                                  <label>SEO Friendly URL</label><br>
+                                  <input type="text" id="seoURLSlug"><br><br>
+
+                                  <label>SEO Tags</label><br>
+                                  <input type="text" id="seoTags"><br><br>
+
+                                  <label>Author <sup>*</sup></label><br>
+                                      <div>
+                                        <select id="author" name="author" class="form-style" title="author">
+                                          <option value="Christian Couillard">Christian Couillard</option>
+                                        </select>
+                                      </div><br><br>
                                  
                                   <label>Set Name</label><br>
                                     <input class="input-text-disabled" type="text" id="setName" title="setName" readonly disabled><br><br>
@@ -106,6 +123,11 @@
                                   <button class="input-button" type="button" id="cmsSubmitButton"
                                       onclick="updateCardSet(
                                               document.getElementById('blogStatus').value,
+                                              document.getElementById('seoPageTitle').value,
+                                              document.getElementById('seoMetaDesc').value,
+                                              document.getElementById('seoURLSlug').value,
+                                              document.getElementById('seoTags').value,
+                                              document.getElementById('author').value,
                                               document.getElementById('setName').value,
                                               document.getElementById('size').value,
                                               document.getElementById('subsets').value,

@@ -499,18 +499,8 @@ document.addEventListener("DOMContentLoaded", function () {
  * 
  **/
 
-function updateCardSet(
-  blogStatus,
-  setName,
-  size,
-  subsets,
-  stars,
-  formats,
-  year,
-  headerImgName,
-  footerImgName,
-  mfg
-) {
+function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg) 
+{
   cmsButtonSubmit();
   cmsUpdateButtonReset();
 
@@ -518,6 +508,11 @@ function updateCardSet(
 
   const payload = {
     blogStatus,
+    seoPageTitle, 
+    seoMetaDesc, 
+    seoURLSlug, 
+    seoTags, 
+    author,
     setName,
     size,
     subsets,
