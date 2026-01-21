@@ -436,7 +436,7 @@ function prevPage() {
                     <strong><i>Hella Rating:</i></strong> ${cleanStars}
 
                 </td>
-                <td rowspan="7" style="width: 62%; text-align: center;">
+                <td style="width: 62%; text-align: center;">
                     <img src="${headerImg}${headerImgName}" class="table-header-img" loading="lazy">
                 </td>
             </tr>
