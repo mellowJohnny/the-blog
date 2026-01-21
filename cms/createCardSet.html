@@ -69,6 +69,13 @@
     <label>SEO Tags</label><br>
     <input type="text" id="seoTags"><br><br>
 
+    <label>Author <sup>*</sup></label><br>
+        <div>
+          <select id="author" name="author" class="form-style" title="author">
+            <option value="Christian Couillard">Christian Couillard</option>
+          </select>
+        </div><br><br>
+
     <label>Set Name <sup>*</sup></label><br>
     <input type="text" id="setName" required><br><br>
 
@@ -127,6 +134,7 @@
         document.getElementById('seoMetaDesc').value,
         document.getElementById('seoURLSlug').value,
         document.getElementById('seoTags').value,
+        document.getElementById('author').value,
         document.getElementById('size').value,
         document.getElementById('subsets').value,
         document.getElementById('stars').value,

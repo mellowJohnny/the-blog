@@ -398,7 +398,7 @@ document.addEventListener("DOMContentLoaded", function () {
    */
   
   // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
-  function createCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg) {
+  function createCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg) {
 
   // Let's change the state of the button, now that we've clicked it...
   cmsButtonSubmit();
@@ -424,6 +424,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "seoMetaDesc": seoMetaDesc,
     "seoURLSlug": seoURLSlug,
     "seoTags": seoTags,
+    "author": author,
     "setName": setName,
     "size": size,
     "subsets": subsets,
