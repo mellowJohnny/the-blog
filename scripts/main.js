@@ -320,8 +320,8 @@ function renderCardSetPage() {
       item.footerImg,
       item.footerImgName,
       item.setName,
-      blog.author,
-      blog.time
+      item.author,
+      item.time
     );
   });
 
