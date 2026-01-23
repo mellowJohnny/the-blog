@@ -319,7 +319,9 @@ function renderCardSetPage() {
       item.headerImgName,
       item.footerImg,
       item.footerImgName,
-      item.setName
+      item.setName,
+      blog.author,
+      blog.time
     );
   });
 
@@ -409,7 +411,7 @@ function prevPage() {
  * @param {*} setName 
  */
 
-   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName) 
+   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,time) 
    {
     // Convert stars to a number
     const numStars = parseInt(stars);
@@ -419,6 +421,9 @@ function prevPage() {
     for (let i = 0; i < numStars; i++) {
         cleanStars += "&#127775; ";
     }
+
+    // Calculate Reading Time
+    const readingStats = estimateReadingTime(postBody);
 
     // Reference to the div where everything goes
     let cardBody = document.getElementById("cardSetDiv");
@@ -456,9 +461,11 @@ function prevPage() {
 
 
         <table>
-          <tr>
-            <td>${postBody}</td>
-          </tr>
+       <strong><i>${author}</i></strong><br>
+       <strong><i>${fixDate(time)}</i></strong>
+       <strong><i>${readingStats.minutes} minute read</i></strong><br>
+       ${postBody}
+       <hr/><br>
         </table>
 
         <table class="set-footer-table-style">
@@ -481,107 +488,3 @@ function prevPage() {
 }
 
 
-/**
-    * Card Header function
-    * called by the waxReviews page to display a category-specific page header
-    * Possible values for pageName are 'junkWax', 'classicWax' or 'timmies'
-    * Called from waxReviews.html using the pageName and year URL parameters
-    * ******* NOTE NOTE NOTE ******** NOT called anymore
-*/
-
-/** 
-function displayCardHeader(pageName,year) {
-    if (pageName === "junkWax") {
-        let pageHeader = document.getElementById("pageHeader");
-        pageHeader.innerHTML = `...junk wax sets from ${year}`;
-    }
-    if (pageName === "timmies") { 
-        let pageHeader = document.getElementById("pageHeader");
-        pageHeader.innerHTML = `...timmies sets: ${year}`;
-    }
-    if (pageName === "classicWax")  {
-       let pageHeader = document.getElementById("pageHeader");
-        pageHeader.innerHTML = `...classic wax: ${year}`;
-    }
-
-}
-
-*/
-
- /**
-    * Registration function
-    * Checks first of reCAPTCHA was submitted successfully
-    * Check to see if user has already registered by looking for an existing email address
-    */
-
- function submitRegistration(token,userName,password,firstName,lastName,email,favTeam) {
-    // Dee Bug
-    // console.log(`In submitRegistration! Token is ${token}`);
-
-     // Let's change the state of the button, now that we've clicked it...
-   //  submitButtonClicked();
-
-    // Now start a timer and change the button state to reflect the submit event, waiting X milliseconds
-    // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
-    // this makes it look like the button is waiting for the modal to close first :-)
-   // submitButtonReset();
-
-    // First, check the value of token - if it's an empty string the User has not attempted the reCAPTCHA challenge
-
-    if (token === "unset") {
-        // reCAPTCHA has not been attempted
-        alert("Click the reCAPTCHA first!");
-        // ERROR - let's get outta here...
-        return;
-    }
-    else {
-        console.log(`Token is not null: reCAPTCHA token is: ${token}`);
-
-        // reCAPTCHA is good, let's be sure our required fields are filled out
-        if (userName === "" || password === "") {
-            alert("please fill out the required fields!");
-            // ERROR - bail out
-            return;
-            }
-        } 
-
-
-// *********** NOT USED *************************
-
-        // ************ TO DO - create Lambda to run verification **********************
-        // We need to go one step further here and validate the token by calling:
-        // https://www.google.com/recaptcha/api/siteverify METHOD: POST
-        // passing in the site's Secret key & the response token
-        // Otherwise a user could submit using the same token
-        
-        // Next, call the Lambda function to populate the database
-        // Dee Bug
-       // console.log(`Form Data: ${userName}, ${password}, ${firstName}, ${lastName}, ${email}, ${favTeam}`)
-       
-        // ********************* createUser API CALL ********************
-        // instantiate a headers object
-        let myHeaders = new Headers();
-        
-        // add content type header to object plus access control
-        myHeaders.append("Content-Type", "application/json");
-
-        // using built in JSON utility package turn object to string and store in a variable
-        let raw = JSON.stringify({"userName":userName,"password":password,"firstName":firstName,"lastName":lastName,"email":email,"favTeam":favTeam});
-        // Dee Bug
-       // console.log(`JSON Data: ${raw}`);
-
-        // create a JSON object with parameters for API call and store in a variable
-        let requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-        };
-
-        // make API call to createUser endpoint with parameters and use promises to get response
-        fetch("https://ztohvgibd7.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
-        .then(response => response.text())
-        .then(result => alert(JSON.parse(result).body))
-        .catch(error => console.log('error', error));
-
-    }
