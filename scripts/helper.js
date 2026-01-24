@@ -35,7 +35,7 @@ function estimateReadingTime(htmlString) {
     const d = new Date(date);
     // Get the day of the week as an Integer, then convert it to the name of the day
     const dayNum = d.getDay();
-    const weekDay = getDayOfTheWeek(dayNum);
+    // const weekDay = getDayOfTheWeek(dayNum); Removing for now
 
     // Get the month as an Integer, convert it to the name
     const monthNum = d.getMonth(); 
@@ -47,7 +47,9 @@ function estimateReadingTime(htmlString) {
     const dateNum = d.getDate(); 
 
     // Smoosh it all together and send it back...
-    return weekDay + ", " + month + " " + dateNum + ", " + year;
+    // return weekDay + ", " + month + " " + dateNum + ", " + year; OLD, long version
+
+    return month + " " + dateNum + ", " + year;
 }
 
    /**
