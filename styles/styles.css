@@ -861,6 +861,13 @@ textarea {
     width: 100%;
   }
 
+  .set-details-author {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  font-style: italic;
+}
+
   .set-details-table-style td {
   display: table-cell;
   table-layout: fixed;
@@ -871,13 +878,6 @@ textarea {
   text-align: left;
   padding: 2px 4px; /* Reduce vertical and horizontal padding */
   width: auto;
-}
-
-.set-details-author {
-  font-family: 'Nunito Sans', sans-serif;
-  font-size: 18px;
-  font-weight: bold;
-  font-style: italic;
 }
 
 .set-details-table-style td[rowspan] {
