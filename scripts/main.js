@@ -461,13 +461,13 @@ function prevPage() {
         <br>
         <table class="set-details-author">
           <tr>
-            <td>${author}</td>
+            <td><strong><i>${author}</i></strong></td>
           </tr>
           <tr>
-            <td>${fixDate(date)}</td>
+            <td><strong><i>${fixDate(date)}</i></strong></td>
           </tr>
           <tr>
-            <td>${readingStats.minutes} minute read</td>
+            <td><strong><i>${readingStats.minutes} minute read</i></strong></td>
           </tr>
           <tr>
             <td>${postBody}</td>
