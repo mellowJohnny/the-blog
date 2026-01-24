@@ -12,7 +12,7 @@ const blogPageSize = 1; // how many blogs to display at a time
 
 let allCardSets = []; // Used in pagination - holds all the Card Sets so we can paginate through it
 let currentPage = 1; // Which Card Set to start with
-const pageSize = 3; // how many blogs to display at a time
+const pageSize = 1; // how many blogs to display at a time
 
 
 /************************** fetchBlogs() Function, also orders the results via getSortOrder ****************/
