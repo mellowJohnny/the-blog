@@ -411,7 +411,7 @@ function prevPage() {
  * @param {*} setName 
  */
 
-   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,time) 
+   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date) 
    {
     // Convert stars to a number
     const numStars = parseInt(stars);
