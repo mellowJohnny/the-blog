@@ -458,7 +458,7 @@ function prevPage() {
                 <td><strong><i>Hella Rating:</i></strong> ${cleanStars}</td>
             </tr>
         </table>
-        <p><br><br></p>
+        <p><br></p>
 
         <table>
        <strong><i>${author}</i></strong><br>
