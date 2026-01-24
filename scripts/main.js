@@ -321,7 +321,7 @@ function renderCardSetPage() {
       item.footerImgName,
       item.setName,
       item.author,
-      item.time
+      item.now
     );
   });
 
