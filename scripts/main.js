@@ -432,7 +432,7 @@ function prevPage() {
         <table class="set-details-table-style">
             <tr>
                 <td style="width: 38%; font-size: 18px;">
-                    <h3>${setName}</h3>
+                    <strong>${setName}</strong>
                 </td>
                 <td rowspan="7" style="width: 62%; text-align: center;">
                     <img src="${headerImg}${headerImgName}" class="table-header-img" loading="lazy">
@@ -440,25 +440,25 @@ function prevPage() {
             </tr>
 
             <tr>
-                <td><h3><i>Set Size:</i></h3> ${size}</td>
+                <td><strong><i>Set Size:</i></strong> ${size}</td>
             </tr>
             <tr>
-                <td><h3><i>Inserts:</i></h3> ${subsets}</td>
+                <td><strong><i>Inserts:</i></strong> ${subsets}</td>
             </tr>
             <tr>
-                <td><h3><i>Release Year:</i></h3> ${year}</td>
+                <td><strong><i>Release Year:</i></strong> ${year}</td>
             </tr>
             <tr>
-                <td><h3><i>Formats:</i></h3> ${formats}</td>
+                <td><strong><i>Formats:</i></strong> ${formats}</td>
             </tr>
             <tr>
-                <td><h3><i>Manufacturer:</i></h3> ${mfg}</td>
+                <td><strong><i>Manufacturer:</i></strong> ${mfg}</td>
             </tr>
             <tr>
-                <td><h3><i>Hella Rating:</i></h3> ${cleanStars}</td>
+                <td><strong><i>Hella Rating:</i></strong> ${cleanStars}</td>
             </tr>
         </table>
-        <p>
+        <p><br><br></p>
 
         <table>
        <strong><i>${author}</i></strong><br>
