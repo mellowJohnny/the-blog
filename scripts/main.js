@@ -462,7 +462,7 @@ function prevPage() {
 
         <table>
        <strong><i>${author}</i></strong><br>
-       <strong><i>${time}</i></strong><br>
+       <strong><i>${fixDate(date)}</i></strong><br>
        <strong><i>${readingStats.minutes} minute read</i></strong><br>
        ${postBody}
        <hr/><br>
