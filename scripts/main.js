@@ -459,13 +459,19 @@ function prevPage() {
             </tr>
         </table>
         <br>
-
-        <table>
-       <strong><i>${author}</i></strong><br>
-       <strong><i>${fixDate(date)}</i></strong><br>
-       <strong><i>${readingStats.minutes} minute read</i></strong><br>
-       ${postBody}
-       <hr/><br>
+        <table class="set-details-author">
+          <tr>
+            <td>${author}</td>
+          </tr>
+          <tr>
+            <td>${fixDate(date)}</td>
+          </tr>
+          <tr>
+            <td>${readingStats.minutes} minute read</td>
+          </tr>
+          <tr>
+            <td>${postBody}</td>
+          </tr>
         </table>
 
         <table class="set-footer-table-style">

@@ -873,6 +873,13 @@ textarea {
   width: auto;
 }
 
+.set-details-author {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  font-style: italic;
+}
+
 .set-details-table-style td[rowspan] {
   width: 1%; /* forces the column to shrink to fit the image */
   white-space: nowrap;
