@@ -91,6 +91,9 @@ messing up the layout with white borders and scoll bars
   border: orchid;
 }
 
+.cms-std-input { /* Sets the standard length of the input fields */
+  width: 300px;
+}
 
 .cms-form-table td,
 .cms-form-table th {
