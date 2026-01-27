@@ -78,6 +78,25 @@ messing up the layout with white borders and scoll bars
   padding: 20px;
 }
 
+.cms-form-table {
+  /* 1. Limit the width of the table */
+  width: 80%; /* Sets a base width, e.g., 80% of its container */
+  max-width: 600px; /* Ensures it doesn't get too wide on large screens */
+
+  /* 2. Center the table horizontally */
+  margin-left: auto;
+  margin-right: auto;
+
+  /* Optional: Add some spacing above and below */
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+  /* Optional: Add a border for visibility */
+  border: 1px solid black;
+  border-collapse: collapse; /* Makes borders connect nicely */
+}
+
+
 .card-set-nav {
   font-family: 'Spicy Rice';
   font-size: 20px;
