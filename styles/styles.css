@@ -82,7 +82,7 @@ messing up the layout with white borders and scoll bars
   font-family: 'Work Sans', sans-serif;
   font-size: 18px;
 
-  width: 50%; /* full width of container */
+  width: 100%; /* full width of container */
   margin: 20px 0; /* vertical spacing */
   border-collapse: separate;
   border-spacing: 0 8px; /* vertical spacing between rows */
