@@ -88,7 +88,7 @@ messing up the layout with white borders and scoll bars
   border-spacing: 0 8px; /* vertical spacing between rows */
   table-layout: fixed; /* forces equal column widths */
   text-align: left;
-  border: orchid;
+  border: rgb(92, 135, 227);
 }
 
 .cms-std-input { /* Sets the standard length of the input fields */
