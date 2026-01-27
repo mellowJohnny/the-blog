@@ -81,20 +81,25 @@ messing up the layout with white borders and scoll bars
 .cms-form-table {
   font-family: 'Work Sans', sans-serif;
   font-size: 18px;
-  width: 80%;
-  max-width: 600px;
-  margin: 20px auto;
-  border-collapse: separate; /* switch to separate to allow row spacing */
-  border-spacing: 0 10px; /* adds vertical spacing between rows */
+
+  width: 100%; /* full width of container */
+  margin: 20px 0; /* vertical spacing */
+  border-collapse: separate;
+  border-spacing: 0 12px; /* vertical spacing between rows */
   table-layout: fixed; /* forces equal column widths */
+  text-align: left;
 }
+
 
 .cms-form-table td,
 .cms-form-table th {
-  width: 50%; /* or adjust based on number of columns */
-  padding: 10px;
-  text-align: left;
+  width: 33.33%; /* adjust based on column count */
+  padding: 10px 12px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  vertical-align: top;
 }
+
 
 
 
