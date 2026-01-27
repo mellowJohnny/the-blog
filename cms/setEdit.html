@@ -64,62 +64,108 @@
                   <section>
                     <div>
                           <main>
-                              
-                              <form class="form-style">
-                                  <label>Status</label><br> 
+                            <form class="form-style"></form>
+                             <table>
+                              <tr> <!-- First Row - only one form field -->
+                                <td><label>Status</label><br> 
                                   <select id="blogStatus" name="blogStatus" title="blogStatus">
                                     <!-- The option tags are dynamically added by the CMS.js populateCardSet() function -->
-                                </select><br><br>
-
-                                <label>SEO Title</label><br>
-                                  <input type="text" id="seoPageTitle"><br><br>
-
+                                  </select>
+                                </td>
+                              </tr>
+                              <tr> <!-- 2nd Row - two SEO fields -->
+                                <td>
+                                  <label>SEO Title</label><br>
+                                  <input type="text" id="seoPageTitle">
+                                </td>
+                                <td>
                                   <label>SEO Meta Description</label><br>
-                                  <input type="text" id="seoMetaDesc"><br><br>
-
+                                  <input type="text" id="seoMetaDesc">
+                                </td>
+                              </tr>
+                              <tr> <!-- 3rd Row - two SEO fields -->
+                                <td>
                                   <label>SEO Friendly URL</label><br>
-                                  <input type="text" id="seoURLSlug"><br><br>
-
+                                  <input type="text" id="seoURLSlug">
+                                </td>
+                                <td>
                                   <label>SEO Tags</label><br>
-                                  <input type="text" id="seoTags"><br><br>
-
+                                  <input type="text" id="seoTags">
+                                </td>
+                              </tr>
+                              <tr> <!-- 4th Row -->
+                                <td>
+                                  <label>Set Name</label><br>
+                                  <input class="input-text-disabled" type="text" id="setName" title="setName" readonly disabled>
+                                </td>
+                              </tr>
+                              <tr> <!-- 5th Row -->
+                                <td>
+                                  <label>Release Year</label><br>
+                                   <input class="input-text-disabled" type="text" id="year" title="year" readonly disabled>
+                                </td>
+                              </tr>
+                              <tr> <!-- 6th Row -->
+                                <td>
+                                  <label>Set Size</label><br>
+                                  <input type="text" id="size" title="size">
+                                </td>
+                              </tr>
+                              <tr> <!-- 7th Row -->
+                                <td>
+                                  <label>Inserts</label><br>
+                                   <input type="text" id="subsets" title="subsets">
+                                </td>
+                              </tr>
+                              <tr> <!-- 8th Row -->
+                                <td>
+                                  <label>Star Rating</label><br>
+                                   <input type="text" id="stars" title="stars">
+                                </td>
+                              </tr>
+                              <tr> <!-- 9th Row -->
+                                <td>
+                                  <label>Formats</label><br>
+                                   <input type="text" id="formats" title="formats">
+                                </td>
+                              </tr>
+                              <tr> <!-- 10th Row -->
+                                <td>
+                                  <label>Manufacturer</label><br><br>
+                                  <input type="text" id="mfg" title="mfg">
+                                </td>
+                              </tr>
+                              <tr> <!-- 11th Row -->
+                                <td>
+                                  <label>Header Image Slug</label><br>
+                                  <input type="text" id="headerImgName" title="headerImgName">
+                                </td>
+                              </tr>
+                              <tr> <!-- 12th Row -->
+                                <td>
+                                  <label>Footer Image Slug</label><br>
+                                  <input type="text" id="footerImgName" title="footerImgName">
+                                </td>
+                              </tr>
+                              <tr> <!-- 13th Row -->
+                                <td>
                                   <label>Author <sup>*</sup></label><br>
                                       <div>
                                         <select id="author" name="author" class="form-style" title="author">
                                           <option value="Christian Couillard">Christian Couillard</option>
                                         </select>
-                                      </div><br><br>
-                                 
-                                  <label>Set Name</label><br>
-                                    <input class="input-text-disabled" type="text" id="setName" title="setName" readonly disabled><br><br>
-                                  
-                                  <label>Release Year</label><br>
-                                    <input class="input-text-disabled" type="text" id="year" title="year" readonly disabled><br><br>
-                                  
-                                  <label>Set Size</label><br>
-                                    <input type="text" id="size" title="size"><br><br>
-                                
-                                  <label>Inserts</label><br>
-                                    <input type="text" id="subsets" title="subsets"><br><br>
-                                
-                                  <label>Star Rating</label><br>
-                                    <input type="text" id="stars" title="stars"><br><br>
-                                    
-                                  <label>Formats</label><br>
-                                    <input type="text" id="formats" title="formats"><br><br>
-                                  
-                                  <label>Manufacturer</label><br><br>
-                                    <input type="text" id="mfg" title="mfg"><br><br>
-                                  
-                                  <label>Header Image Slug</label><br>
-                                    <input type="text" id="headerImgName" title="headerImgName"><br><br>
-                                
-                                  <label>Footer Image Slug</label><br>
-                                    <input type="text" id="footerImgName" title="footerImgName"><br><br>
-                                
+                                      </div>
+                                </td>
+                              </tr>
+                              <tr> <!-- 14th Row -->
+                                <td>
                                   <label>Set Review Text</label><br>
-                                    <textarea id="postBody" title="postBody"></textarea><br><br>
-                                   <!-- NOTE: We don't need to grab the postBody becasue the updateBlog() gets it from the tinyMCE function  -->
+                                    <textarea id="postBody" title="postBody"></textarea>
+                                </td>
+                              </tr>
+                              <tr> <!-- 15th Row - SUBMIT BUTTON -->
+                                <td>
+                                  <!-- NOTE: We don't need to grab the postBody becasue the updateBlog() gets it from the tinyMCE function  -->
                                   <button class="input-button" type="button" id="cmsSubmitButton"
                                       onclick="updateCardSet(
                                               document.getElementById('blogStatus').value,
@@ -140,8 +186,10 @@
                                               document.getElementById('mfg').value)" >
                                       Update Post
                                   </button>
-                                
-                              </form>
+                                </td>
+                              </tr>
+                             </table> 
+                            </form>
                               </div>
                               <!-- This div is rendered if an error occurs... -->
                               <div id="errorDiv"></div>
