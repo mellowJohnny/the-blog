@@ -97,7 +97,9 @@ messing up the layout with white borders and scoll bars
   word-wrap: break-word;
   overflow-wrap: break-word;
   vertical-align: top;
-  /* remove width: 300px */
+  /* Adding to try and force cells to behave */
+  display: table-cell !important;
+  vertical-align: top !important;
 }
 
 /** OLD
