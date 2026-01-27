@@ -180,6 +180,13 @@ form {
 }
 
 .cms-textarea {
+  font-size: 16px;
+  padding: 6px 10px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid rgb(85, 174, 233);
+  border-radius: 2px;
+  box-sizing: border-box;
   width: 200px; /* Fixed width */
   height: 100px; /* Fixed height */
   resize: none; /* Prevents the user from resizing it manually */
