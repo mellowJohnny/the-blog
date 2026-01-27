@@ -81,7 +81,7 @@ messing up the layout with white borders and scoll bars
 .cms-form-table {
   font-family: 'Work Sans', sans-serif;
   font-size: 18px;
-  width: 100%;
+  width: 90%;
   margin: 20px 0;
   border-collapse: separate;
   border-spacing: 0 8px;
@@ -93,24 +93,6 @@ messing up the layout with white borders and scoll bars
   vertical-align: top;
   white-space: normal;
 }
-
-.cms-textarea {
-  display: block;
-  width: 100%;
-  height: 100px;
-  padding: 6px 10px;
-  font-size: 16px;
-  box-sizing: border-box;
-  resize: none;
-  overflow: auto;
-
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  line-height: 1.4;
-}
-
-
 
 /** OLD
 .cms-form-table td,
