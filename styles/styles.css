@@ -164,8 +164,8 @@ form {
     font-size: 18px;
  }
 
- input[type=text], textarea 
-  { /* -------------------- CMS TEXTBOX FORM Styling ---------------------- */
+ input[type=text], 
+ textarea { /* -------------------- CMS TEXTBOX FORM Styling ---------------------- */
   font-size: 16px;
   width: 450px; /* Hard code text box width */
   padding: 6px 10px;
@@ -176,7 +176,7 @@ form {
   box-sizing: border-box;
 }
 
-.cms-std-input { /* Sets the standard length of the input fields */
+.cms-std-input { /* Sets the standard length of all other input fields */
   width: 300px;
 }
 
