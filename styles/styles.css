@@ -79,6 +79,9 @@ messing up the layout with white borders and scoll bars
 }
 
 .cms-form-table {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 18px;
+
   /* 1. Limit the width of the table */
   width: 80%; /* Sets a base width, e.g., 80% of its container */
   max-width: 600px; /* Ensures it doesn't get too wide on large screens */
@@ -91,9 +94,11 @@ messing up the layout with white borders and scoll bars
   margin-top: 20px;
   margin-bottom: 20px;
 
-  /* Optional: Add a border for visibility */
-  border: 1px solid black;
   border-collapse: collapse; /* Makes borders connect nicely */
+}
+
+.cms-form-table tr {
+  padding: 3px;
 }
 
 
