@@ -187,10 +187,11 @@ form {
   border: 1px solid rgb(85, 174, 233);
   border-radius: 2px;
   box-sizing: border-box;
-  width: 200px; /* Fixed width */
+  width: 450px; /* Fixed width */
   height: 100px; /* Fixed height */
   resize: none; /* Prevents the user from resizing it manually */
   overflow: auto; /* Adds scrollbars if content exceeds fixed size */
+  vertical-align: top;
 }
 
 input[type=password] {
