@@ -164,8 +164,7 @@ form {
     font-size: 18px;
  }
 
- input[type=text], 
- textarea { /* -------------------- CMS TEXTBOX FORM Styling ---------------------- */
+ input[type=text] { /* -------------------- CMS TEXTBOX FORM Styling ---------------------- */
   font-size: 16px;
   width: 450px; /* Hard code text box width */
   padding: 6px 10px;
@@ -178,6 +177,13 @@ form {
 
 .cms-std-input { /* Sets the standard length of all other input fields */
   width: 300px;
+}
+
+.cms-textarea {
+  width: 200px; /* Fixed width */
+  height: 100px; /* Fixed height */
+  resize: none; /* Prevents the user from resizing it manually */
+  overflow: auto; /* Adds scrollbars if content exceeds fixed size */
 }
 
 input[type=password] {
