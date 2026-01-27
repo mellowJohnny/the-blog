@@ -121,7 +121,7 @@ messing up the layout with white borders and scoll bars
   font-size: 30px;
   text-align: center;
 }
-/* ----------------------------- MAIN Styling Rules ------------------------- */
+/* ---------------------------------------------- MAIN Styling Rules ------------------------- */
 body {
     height:100%;
     /* background-color: rgb(160, 188, 240); */
@@ -164,9 +164,10 @@ form {
     font-size: 18px;
  }
 
- input[type=text] { /* -------------------- CMS FORM Styling ---------------------- */
+ input[type=text], textarea 
+  { /* -------------------- CMS TEXTBOX FORM Styling ---------------------- */
   font-size: 16px;
-  width: 450px;
+  width: 450px; /* Hard code text box width */
   padding: 6px 10px;
   margin: 8px 0;
   display: inline-block;
