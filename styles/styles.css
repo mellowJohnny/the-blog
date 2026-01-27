@@ -94,7 +94,7 @@ messing up the layout with white borders and scoll bars
 
 .cms-form-table td,
 .cms-form-table th {
-  width: 100%; /* adjust based on column count */
+  width: 300px; /* adjust based on column count */
   padding: 10px 12px;
   word-wrap: break-word;
   overflow-wrap: break-word;
