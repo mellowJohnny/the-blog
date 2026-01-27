@@ -86,7 +86,7 @@ messing up the layout with white borders and scoll bars
   margin: 20px 0; /* vertical spacing */
   border-collapse: separate;
   border-spacing: 0 8px; /* vertical spacing between rows */
-  table-layout: fixed; /* forces equal column widths */
+  /* table-layout: fixed; REMOVING FOR NOW forces equal column widths */
   text-align: left;
 }
 
