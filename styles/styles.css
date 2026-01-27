@@ -100,6 +100,7 @@ messing up the layout with white borders and scoll bars
   /* Adding to try and force cells to behave */
   display: table-cell !important;
   vertical-align: top !important;
+  white-space: normal !important;
 }
 
 /** OLD
