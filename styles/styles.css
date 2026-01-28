@@ -863,6 +863,7 @@ textarea {
   .set-details-table-style {
   width: 100%;
   table-layout: auto;
+  background-color: #65879b;
   }
 
   /**/
