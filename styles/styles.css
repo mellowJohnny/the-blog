@@ -81,7 +81,7 @@ messing up the layout with white borders and scoll bars
 .cms-form-table {
   font-family: 'Work Sans', sans-serif;
   font-size: 18px;
-  width: 100%;
+  width: 50%;
   margin: 20px 0;
   border-collapse: separate;
   border-spacing: 0 8px;
