@@ -229,7 +229,7 @@ function cardSetSorter(property,order) {
 // Scalability: Adding new years is as simple as extending the range.
 // This way, instead of maintaining hundreds of lines of repetitive HTML, you only maintain the ranges. Much easier to extend and debug.
 
-function renderSetPicker(year) {
+function renderSetPicker(year, blogCat) {
   const setPicker = document.getElementById("set-picker");
 
   // Define ranges and categories
@@ -256,7 +256,7 @@ function renderSetPicker(year) {
       cells += `<td class="${range.className}">${label}</td>`;
     } else {
       // Other years: link
-      cells += `<td class="${range.className}"><a href="/waxReviews.html?year=${y}&pageName=${range.pageName}">${label}</a></td>`;
+      cells += `<td class="${range.className}"><a href="/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}">${label}</a></td>`;
     }
   }
 
