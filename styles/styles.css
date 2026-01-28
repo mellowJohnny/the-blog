@@ -181,6 +181,19 @@ select {
   border-radius: 2px;
 }
 
+textarea {
+  font-size: 16px;
+  font-family: 'Courier New', Courier, monospace;
+  width: 75%;
+  height: 350px;
+  box-sizing: border-box;
+  border: 1px solid rgb(107, 224, 127);
+  border: 1px solid rgb(85, 174, 233);
+  border-radius: 2px;
+  resize: none;
+  overflow: scroll;
+} 
+
 .input-button {
   background-color: #256386;
   border: none;
@@ -194,19 +207,6 @@ select {
 .input-text-disabled {
   background-color: #c5cdd3;
 }
-
-textarea {
-  font-size: 16px;
-  font-family: 'Courier New', Courier, monospace;
-  width: 75%;
-  height: 350px;
-  box-sizing: border-box;
-  border: 1px solid rgb(107, 224, 127);
-  border: 1px solid rgb(85, 174, 233);
-  border-radius: 2px;
-  resize: none;
-  overflow: scroll;
-} 
 
  .mast-table {
   border-collapse: collapse;
