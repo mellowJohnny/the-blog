@@ -255,9 +255,9 @@ function fetchCardIntro(pageName) {
     * NEW - Uses pagination
   */
 
- function fetchCardSetsByYear(year, sortOrder) {
+ function fetchCardSetsByYear(year,sortOrder,blogCat) {
 
-    const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}`;
+    const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}?blogCat=${blogCat}`;
 
     fetch(urlToFetch)
         .then(response => response.json())

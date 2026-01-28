@@ -27,12 +27,13 @@
           let year = params.get("year");
           let sortOrder = params.get("sortOrder");
           let pageName = params.get("pageName");
+          let blogCat = params.get("blogCat");
           
 
           // Let's do a bunch of stuff on page load...
           window.addEventListener('load', (event) => {
               //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
-              fetchCardSetsByYear(year,sortOrder);
+              fetchCardSetsByYear(year,sortOrder,blogCat);
 
               // *** Dynamically display the copyright year *******
               fetchCopyrightYear();
