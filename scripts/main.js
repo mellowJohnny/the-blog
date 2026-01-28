@@ -431,10 +431,10 @@ function prevPage() {
     cardBody.innerHTML += `
         <table class="set-details-table-style">
             <tr>
-                <td style="width: 38%; font-size: 18px;">
+                <td style="width: 30%; font-size: 18px;">
                     <strong>${setName}</strong>
                 </td>
-                <td rowspan="7" style="width: 62%; text-align: center;">
+                <td rowspan="7" style="width: 70%; text-align: center;">
                     <img src="${headerImg}${headerImgName}" class="table-header-img" loading="lazy">
                 </td>
             </tr>
@@ -458,7 +458,7 @@ function prevPage() {
                 <td><strong><i>Hella Rating:</i></strong> ${cleanStars}</td>
             </tr>
         </table>
-        <br>
+        
         <table class="set-details-author">
           <tr>
             <td><strong><i>${author}</i></strong></td>
