@@ -287,7 +287,7 @@ textarea {
     border-radius: 3px;
     color:rgb(34, 38, 41);
     font-size: 18px;
-    font-weight: 200; /* Extra Light */
+    font-weight: 300; /* Light */
     text-align: left;
     padding: 10px; /* changing to 10px */
 } 
