@@ -398,7 +398,7 @@ document.addEventListener("DOMContentLoaded", function () {
    */
   
   // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
-  function createCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg) {
+  function createCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, blogCat) {
 
   // Let's change the state of the button, now that we've clicked it...
   cmsButtonSubmit();
@@ -434,7 +434,8 @@ document.addEventListener("DOMContentLoaded", function () {
     "postBody": tinyBody,
     "mfg": mfg,
     "headerImgName": headerImgName,
-    "footerImgName": footerImgName
+    "footerImgName": footerImgName,
+    "blogCat": blogCat
   });
 
   // create a JSON object with parameters for API call and store in a variable

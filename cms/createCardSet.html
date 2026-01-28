@@ -57,6 +57,13 @@
       <option value="OK">Live</option>
     </select><br><br>
 
+    <label>Set Category <sup>*</sup></label><br>
+    <select id="blogCat" name="blogCat" title="blogCat">
+      <option value="reg">Staging</option>
+      <option value="tim">Live</option>
+      <option value="mcd">Live</option>
+    </select><br><br>
+
     <label>SEO Title</label><br>
     <input type="text" id="seoPageTitle"><br><br>
 
@@ -71,7 +78,7 @@
 
     <label>Author <sup>*</sup></label><br>
         <div>
-          <select id="author" name="author" class="form-style" title="author">
+          <select id="author" name="author" class="form-style" title="author" style="width: 200px;">
             <option value="Christian Couillard">Christian Couillard</option>
           </select>
         </div><br><br>
@@ -142,7 +149,8 @@
         document.getElementById('year').value,
         document.getElementById('headerImgName').value,
         document.getElementById('footerImgName').value,
-        document.getElementById('mfg').value
+        document.getElementById('mfg').value,
+        document.getElementById('blogCat').value
       )">
       Submit Post
     </button>
