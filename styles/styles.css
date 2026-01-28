@@ -171,7 +171,7 @@ form {
 }
 
 select {
-  width: 150px;
+  width: 250px;
   font-size: 16px;
   width: 100px; /* Hard code text box width */
   padding: 6px 10px;
