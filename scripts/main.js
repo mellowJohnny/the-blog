@@ -458,16 +458,14 @@ function prevPage() {
                 <td><strong><i>Hella Rating:</i></strong> ${cleanStars}</td>
             </tr>
         </table>
-        
+        <br>
         <table class="set-details-author">
           <tr>
-            <td><strong><i>${author}</i></strong></td>
-          </tr>
-          <tr>
-            <td><strong><i>${fixDate(date)}</i></strong></td>
-          </tr>
-          <tr>
-            <td><strong><i>${readingStats.minutes} minute read</i></strong></td>
+            <td>
+                <strong><i>${author}</i></strong><br>
+                <strong><i>${fixDate(date)}</i></strong><br>
+                <strong><i>${readingStats.minutes} minute read</i></strong>
+            </td>
           </tr>
           <tr>
             <td>${postBody}</td>
