@@ -94,16 +94,6 @@ messing up the layout with white borders and scoll bars
   white-space: normal;
 }
 
-/** OLD
-.cms-form-table td,
-.cms-form-table th {
-  width: 300px; /* adjust based on column count 
-  padding: 10px 12px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  vertical-align: top;
-} */
-
 .card-set-nav {
   font-family: 'Spicy Rice';
   font-size: 20px;
@@ -220,6 +210,12 @@ input[type=password] {
 select {
   width: 10%;
   font-size: 18px;
+  width: 100px; /* Hard code text box width */
+  padding: 6px 10px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid rgb(85, 174, 233);
+  border-radius: 2px;
 }
 
 .input-button {
