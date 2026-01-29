@@ -219,8 +219,8 @@ function cardSetSorter(property,order) {
 } // end sort function
 
 
-//****** Helper Function For Rendering "smart" Set-O-Matic Year Picker (removes link for current year) *********
-// Used to render both "Classic" and "Junk Wax" pickers
+// -------------------------------- Set-O-Matic Year Picker --------------------------------------
+// Used to render all pickers: "Classic", "Junk Wax", "Timmies" and "McDonalds" 
 // NEW DYNAMIC version - no more enormous list of if statements
 // How this works
 // Ranges: You only define the start/end years once per category. No duplication.
@@ -231,6 +231,8 @@ function cardSetSorter(property,order) {
 
 function renderSetPicker(year, blogCat) {
   const setPicker = document.getElementById("set-picker");
+
+  console.log(`In renderSetPicker: blogCat, year is: ${year}, ${blogCat}`);
 
   // Define ranges and categories
   // End year gets 1 added, so end: 2025 generates "2025-26"
