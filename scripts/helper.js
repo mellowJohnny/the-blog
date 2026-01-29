@@ -268,10 +268,10 @@ function renderSetPicker(year, blogCat) {
     }
   }
 
-  // Render table with one or two rows
+  // Render table with one or two rows, centering the results within the cell
   const rows = blogCat === "mcd"
-    ? `<tr>${row1}</tr><br><br><tr>${row2}</tr>`
-    : `<tr>${row1}</tr>`;
+    ? `<tr style="text-align: center;">${row1}</tr><br><br><tr>${row2}</tr>`
+    : `<tr style="text-align: center;">${row1}</tr>`;
 
   setPicker.innerHTML = `
     <table class="card-set-nav">
