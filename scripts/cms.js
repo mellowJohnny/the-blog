@@ -944,50 +944,10 @@ function fetchBlogByID(id,type) {
 
 /**
  * This Function is used to fetch all records from the Card table in DynamoDB with status="OK"
- * The API limits the data returned to only the name of the card set and it's ID  
  * It is used by the CMS users to allow Users to select a single set to be updated
  * Calls the getCardSets API exposed by AWS API Gateway
- 
+ */
 
- async function fetchAllCardSets() {
-  const urlToFetch = `https://tx7romovbd.execute-api.us-east-2.amazonaws.com/dev`;
-
-  try {
-    const response = await fetch(urlToFetch);
-    const data = await response.json();
-
-   // console.log("RAW DATA FROM LAMBDA:", data);
-
-    let cardSets = [];
-
-    if (Array.isArray(data)) {
-      cardSets = data;
-    } else if (typeof data.body === "string") {
-      cardSets = JSON.parse(data.body);
-    } else if (Array.isArray(data.body)) {
-      cardSets = data.body;
-    } else if (Array.isArray(data.Items)) {
-      cardSets = data.Items;
-    }
-
-    if (!cardSets || cardSets.length === 0) {
-      document.getElementById("noBlogsDiv").innerHTML =
-        `...no card sets are currently live`;
-      return;
-    }
-
-    cardSets.forEach(set => {
-      displayCardSets(set.setID, set.setName, set.blogCat);
-    });
-
-  } catch (err) {
-    console.log("Something went wrong:", err);
-    document.getElementById("editBlogsDiv").innerHTML =
-      `...Ah, Houston, we've had a problem...`;
-  }
-} */
-
-  // --------------------------------------------------- NEW 
   async function fetchAllCardSets() {
   const urlToFetch = `https://tx7romovbd.execute-api.us-east-2.amazonaws.com/dev`;
 
@@ -999,16 +959,11 @@ function fetchBlogByID(id,type) {
 
     if (Array.isArray(data)) {
       cardSets = data;
-      // We have data...log it
-      console.log("Card sets from Lambda:", cardSets);
     } else if (typeof data.body === "string") {
-      console.log("Else If #1:", cardSets);
       cardSets = JSON.parse(data.body);
     } else if (Array.isArray(data.body)) {
-      console.log("Else If #2:", cardSets);
       cardSets = data.body;
     } else if (Array.isArray(data.Items)) {
-      console.log("Else If #3:", cardSets);
       cardSets = data.Items;
     }
 
