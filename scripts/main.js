@@ -259,10 +259,12 @@ function fetchCardIntro(pageName) {
 
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}?blogCat=${blogCat}`;
 
+    console.log(`In fetchCardSetsByYear, blogCat is: ${blogCat}`);
+
     fetch(urlToFetch)
         .then(response => response.json())
         .then(data => {
-          //  console.log("API returned:", data);
+          console.log("API returned:", data);
 
             // No results?
             if (!data.Items || data.Items.length === 0) {
