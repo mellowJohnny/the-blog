@@ -1031,11 +1031,12 @@ function fetchBlogByID(id,type) {
     cardSets.forEach(set => {
       const { setID, setName, blogCat } = set;
 
-      console.log(`In Sorting thing with: ${blogCat}`);
+      
 
       // Insert header when category changes
       if (blogCat !== lastCat) {
         const header = document.createElement("h2");
+        console.log(`In Sorting thing with: ${blogCat}`);
         header.textContent = CARDSET_CATEGORY_LABELS[blogCat] || "Other";
         header.className = "blog-type-divider";
         container.appendChild(header);
