@@ -234,42 +234,47 @@ function renderSetPicker(year, blogCat) {
 
   console.log(`In renderSetPicker: blogCat, year is: ${year}, ${blogCat}`);
 
-  // Define ranges and categories
-  // End year gets 1 added, so end: 2025 generates "2025-26"
-  const ranges = [
-    { start: 1979, end: 1986, className: "classic-set-nav-td", pageName: "classicWax" },
-    { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" },
-    { start: 1991, end: 2011, className: "junk-set-nav-td", pageName: "mcd" },
-    { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" } // Do we still need this? 
-  ];
+  // ⭐ Category-specific ranges (ONLY reg, mcd, tims)
+  const categoryRanges = {
+    reg:  { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" },
+    mcd:  { start: 1991, end: 2008, className: "junk-set-nav-td", pageName: "mcd" },
+    tims: { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
+  };
 
-  // Find which range the year belongs to
-  const range = ranges.find(r => year >= r.start && year <= r.end);
+  // ⭐ Pick the correct range based on blogCat
+  const range = categoryRanges[blogCat];
+
   if (!range) {
-    setPicker.innerHTML = `<p>No template found for ${year}</p>`;
+    setPicker.innerHTML = `<p>No template found for category "${blogCat}"</p>`;
     return;
   }
 
-  // Build table cells
+  // ⭐ Build the year cells
   let cells = "";
   for (let y = range.start; y <= range.end; y++) {
-    const label = `${y}-${(y + 1).toString().slice(-2)}`; // e.g. 1979-80, 1980-81
+    const label = `${y}-${(y + 1).toString().slice(-2)}`; // e.g. 1987-88
+
     if (y === parseInt(year)) {
       // Current year: plain text
       cells += `<td class="${range.className}">${label}</td>`;
     } else {
       // Other years: link
-      cells += `<td class="${range.className}"><a href="/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}">${label}</a></td>`;
+      cells += `<td class="${range.className}">
+                  <a href="/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}">
+                    ${label}
+                  </a>
+                </td>`;
     }
   }
 
-  // Wrap in table
+  // ⭐ Render the table
   setPicker.innerHTML = `
     <table class="card-set-nav">
       <tr>${cells}</tr>
     </table>
   `;
 }
+
 
 
 
