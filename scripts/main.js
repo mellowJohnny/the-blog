@@ -257,7 +257,7 @@ function fetchCardIntro(pageName) {
 
  function fetchCardSetsByYear(year,sortOrder,blogCat) {
 
-    const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}?blogCat=${blogCat}`;
+    const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
 
     console.log(`In fetchCardSetsByYear, blogCat is: ${blogCat}`);
 
