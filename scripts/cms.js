@@ -999,11 +999,16 @@ function fetchBlogByID(id,type) {
 
     if (Array.isArray(data)) {
       cardSets = data;
+      // We have data...log it
+      console.log("Card sets from Lambda:", cardSets);
     } else if (typeof data.body === "string") {
+      console.log("Else If #1:", cardSets);
       cardSets = JSON.parse(data.body);
     } else if (Array.isArray(data.body)) {
+      console.log("Else If #2:", cardSets);
       cardSets = data.body;
     } else if (Array.isArray(data.Items)) {
+      console.log("Else If #3:", cardSets);
       cardSets = data.Items;
     }
 
