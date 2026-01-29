@@ -255,7 +255,7 @@ function fetchCardIntro(pageName) {
     * NEW - Uses pagination
   */
 
- function fetchCardSetsByYear(year,sortOrder,blogCat) {
+ function fetchCardSetsByYear(year, sortOrder, blogCat) {
 
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
 
@@ -264,10 +264,10 @@ function fetchCardIntro(pageName) {
     fetch(urlToFetch)
         .then(response => response.json())
         .then(data => {
-          console.log("API returned:", data);
+            console.log("API returned:", data);
 
-            // No results?
-            if (!data.Items || data.Items.length === 0) {
+            // ⭐ NEW: Lambda now returns an array, not { Items: [...] }
+            if (!Array.isArray(data) || data.length === 0) {
                 document.getElementById("cardSetDiv").innerHTML =
                     "...this set has yet to be reviewed";
                 return;
@@ -275,14 +275,13 @@ function fetchCardIntro(pageName) {
 
             // Sorting
             if (sortOrder === "last") {
-                data.Items.sort(cardSetSorter("stars", "last"));
+                data.sort(cardSetSorter("stars", "last"));
             } else {
-                data.Items.sort(cardSetSorter("stars", "first"));
+                data.sort(cardSetSorter("stars", "first"));
             }
 
-            // ⭐ Instead of calling displayCardSet() here,
-            // ⭐ we store the results and let pagination render them.
-            allCardSets = data.Items;
+            // ⭐ Store results for pagination
+            allCardSets = data;
             currentPage = 1;
             renderCardSetPage();
         })
