@@ -6,7 +6,8 @@
  */
 
 /**
- * TinyMCE GLOBAL config!
+ * -------------------------------------------- TinyMCE GLOBAL config!
+ * 
  * This function is called from every CMS page, allowing for a single place to contol the WYSIWYG editor
  */
 
@@ -19,7 +20,11 @@ function initTinyEditor(selector = '#postBody')
   }); 
 }
 
-// GLOBAL MAPPING used for organising blogs & card sets by type on the blog list page
+/**
+ * ---------------------------------------------- GLOBAL MAPPING 
+ * Used for organising blogs & card sets by type on the blog list page
+ */
+
 const BLOG_TYPE_LABELS = {
   1: "Tech Blogs",
   3: "Mach‑E",
@@ -35,7 +40,7 @@ const CARDSET_CATEGORY_LABELS = {
 };
 
 
-/*************** IMAGE PICKER ********************/
+/* ------------------------------------------------ IMAGE PICKER -------------------------------------*/
 
 /**
  *  Image Upload Function
@@ -234,7 +239,7 @@ function filterImageList() {
   renderImageList(_imageBrowserFiles, _imageBrowserTargetFieldId, filterText);
 }
 
-//************** BLOG-SPECIFIC IMAGE PICKER FUNCTIONS **************** */
+//* BLOG-SPECIFIC IMAGE PICKER FUNCTIONS */
 let _blogImageFiles = [];
 let _blogImageTargetFieldId = null;
 
@@ -329,7 +334,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-//**************************************** Create New Blog Post ***************************************************
+//*------------------------------------------ Create New Blog Post --------------------------------*
 
 /**
  * This is the main AWS call used to CREATE a NEW BLOG POST
@@ -383,7 +388,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   
   
-//***************************************** Create New Card Set ******************************************
+//*------------------------------------------ Create New Card Set --------------------------------------*
   
   /**
    * This is the main AWS call used to CREATE a NEW CARDS POST
@@ -489,7 +494,7 @@ document.addEventListener("DOMContentLoaded", function () {
  
 
 
-//******************************************* Update Card Set ***************************************
+//*------------------------------------------------- Update Card Set ----------------------------------------------- *
 
 /** 
  * This function is used to UPDATE an existing Card Set review
@@ -567,7 +572,7 @@ function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTag
 }
 
 
-//********************************** Update Blog Post *******************************************
+//* ---------------------------------------------------- Update Blog Post ----------------------------------------- *
 
 /** 
  * This function is used to UPDATE an existing Blog Post
@@ -695,10 +700,6 @@ function getBlogsForUpdate() {
 }
 
 
-  
-
-
-
 //*********************************** Get STAGED Blogs For Update API Call **********************************
 
 /**
@@ -760,8 +761,6 @@ function getBlogsForUpdate() {
 }
 
 
-
-
 //****************************** displayBlogs Helper Function ***************************
 
 /**
@@ -790,8 +789,6 @@ function displayBlogs(title, blogID, blogType) {
        </tr>
      </table>`;
 }
-
-
 
 
 //******************************* displayStagedBlogs Helper Function ************************************
@@ -823,8 +820,6 @@ function displayStagedBlogs(title, blogID, blogType) {
             </tr>
         </table>`;
 }
-
-
 
 
 //******************************* Fetch Blog by ID - Populates the CMS Form For Update **************************
@@ -869,9 +864,6 @@ function fetchBlogByID(id,type) {
     });
 }
 
-  
-
-
 //********************************** populateBlog Helper Function *********************************
   
   /**
@@ -909,38 +901,7 @@ function fetchBlogByID(id,type) {
   document.getElementById("time").value = blog.time;
 }
 
-
-  
-
 //********************************* Fetch All Card Sets For Update **********************************
-/*
-  NOTE ABOUT RESPONSE SHAPE:
-  --------------------------
-  Both the "live" and "staged" Lambdas return a raw array from AWS Lambda,
-  but API Gateway does NOT always forward the response in a consistent shape.
-
-  Depending on API Gateway behavior, the browser may receive:
-    1. A raw array (ideal case)
-         [ { setID, setName }, ... ]
-
-    2. A proxy response with body as a JSON string
-         { statusCode: 200, body: "[...]" }
-
-    3. A proxy response with body already parsed
-         { statusCode: 200, body: [ ... ] }
-
-    4. A DynamoDB-style response (if the Lambda ever returns data.Items)
-         { Items: [ ... ] }
-
-  Because of these variations, we normalize the response by checking:
-    - If the response *is already an array*
-    - If body is a JSON string
-    - If body is an array
-    - If Items[] exists
-
-  This ensures the UI works even if API Gateway or Lambda returns
-  slightly different shapes.
-*/
 
 /**
  * This Function is used to fetch all records from the Card table in DynamoDB with status="OK"
@@ -973,7 +934,7 @@ function fetchBlogByID(id,type) {
       return;
     }
 
-    // ⭐ Sort by blogCat first, then by year (optional but recommended)
+    // Sort by blogCat first, then by year (optional but recommended)
     cardSets.sort((a, b) => {
       if (a.blogCat < b.blogCat) return -1;
       if (a.blogCat > b.blogCat) return 1;
@@ -987,11 +948,9 @@ function fetchBlogByID(id,type) {
 
     let lastCat = null;
 
-    // ⭐ Render grouped sections
+    // Render grouped sections
     cardSets.forEach(set => {
       const { setID, setName, blogCat } = set;
-
-      
 
       // Insert header when category changes
       if (blogCat !== lastCat) {
@@ -1014,10 +973,6 @@ function fetchBlogByID(id,type) {
       `...Ah, Houston, we've had a problem...`;
   }
 }
-
-
-
-
 
 //********************************* Fetch All Staged Card Sets For Update **********************************
 
@@ -1067,7 +1022,6 @@ function fetchBlogByID(id,type) {
   }
 }
 
-
   
 //************************************ displayCardSets Helper Function *************************************
   
@@ -1080,23 +1034,6 @@ function fetchBlogByID(id,type) {
   *
   */
   
-  /** -------------------------------------------------- OLD
-  function displayCardSets(setID, setName, blogCat) {
-  const blogBody = document.getElementById("editBlogsDiv");
-
-  blogBody.innerHTML += `
-    <table class="set-details-table-style">
-      <tr>
-        <td style="width:400px;font-size:20px">
-          <a href="setEdit.html?setID=${setID}">
-            <strong>${setName}</strong>
-          </a>
-        </td>
-      </tr>
-    </table>
-  `;
-} */
-
   function displayCardSets(container, setID, setName) {
   container.innerHTML += `
     <table class="set-details-table-style">
@@ -1110,10 +1047,6 @@ function fetchBlogByID(id,type) {
     </table>
   `;
 }
-
-
-
-
 
 //************************************ displayStagedCardSets Helper Function *************************************
   
@@ -1141,9 +1074,6 @@ function fetchBlogByID(id,type) {
     </table>
   `;
 }
-
-  
-
 
 //**************************** Fetch Card Set by ID - Populates the CMS Form For Update **************************
   
@@ -1214,9 +1144,6 @@ function fetchBlogByID(id,type) {
       console.log("Something went wrong:", err);
     });
 }
-
-
-  
   
 //**************************************** populateCardSet Helper Function **********************************
   
@@ -1321,7 +1248,8 @@ function fetchBlogByID(id,type) {
     }
 
 //************ Helper Function To Generate Copyright Date for any <div id="copy"> tag 
-//Current used in all <footer> page sections
+// Used in all <footer> page sections
+
 function fetchCopyrightYear() {
     const copyYear = new Date().getFullYear();
     let copyFooter = document.getElementById("copy");
