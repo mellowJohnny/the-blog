@@ -19,7 +19,7 @@ function initTinyEditor(selector = '#postBody')
   }); 
 }
 
-// GLOBAL MAPPING used for organising blogs by type on the blog list page
+// GLOBAL MAPPING used for organising blogs & card sets by type on the blog list page
 const BLOG_TYPE_LABELS = {
   1: "Tech Blogs",
   3: "Mach‑E",
@@ -27,6 +27,13 @@ const BLOG_TYPE_LABELS = {
   5: "Raspberry Pi",
   99: "Home Page"
 };
+
+const CARDSET_CATEGORY_LABELS = {
+  reg:  "Regular Releases",
+  tims: "Tim Hortons Releases",
+  mcd:  "McDonald's Releases"
+};
+
 
 /*************** IMAGE PICKER ********************/
 
@@ -940,7 +947,7 @@ function fetchBlogByID(id,type) {
  * The API limits the data returned to only the name of the card set and it's ID  
  * It is used by the CMS users to allow Users to select a single set to be updated
  * Calls the getCardSets API exposed by AWS API Gateway
- */
+ 
 
  async function fetchAllCardSets() {
   const urlToFetch = `https://tx7romovbd.execute-api.us-east-2.amazonaws.com/dev`;
@@ -970,7 +977,77 @@ function fetchBlogByID(id,type) {
     }
 
     cardSets.forEach(set => {
-      displayCardSets(set.setID, set.setName);
+      displayCardSets(set.setID, set.setName, set.blogCat);
+    });
+
+  } catch (err) {
+    console.log("Something went wrong:", err);
+    document.getElementById("editBlogsDiv").innerHTML =
+      `...Ah, Houston, we've had a problem...`;
+  }
+} */
+
+  // --------------------------------------------------- NEW 
+  async function fetchAllCardSets() {
+  const urlToFetch = `https://tx7romovbd.execute-api.us-east-2.amazonaws.com/dev`;
+
+  try {
+    const response = await fetch(urlToFetch);
+    const data = await response.json();
+
+    let cardSets = [];
+
+    if (Array.isArray(data)) {
+      cardSets = data;
+    } else if (typeof data.body === "string") {
+      cardSets = JSON.parse(data.body);
+    } else if (Array.isArray(data.body)) {
+      cardSets = data.body;
+    } else if (Array.isArray(data.Items)) {
+      cardSets = data.Items;
+    }
+
+    if (!cardSets || cardSets.length === 0) {
+      document.getElementById("noBlogsDiv").innerHTML =
+        `...no card sets are currently live`;
+      return;
+    }
+
+    // ⭐ Sort by blogCat first, then by year (optional but recommended)
+    cardSets.sort((a, b) => {
+      if (a.blogCat < b.blogCat) return -1;
+      if (a.blogCat > b.blogCat) return 1;
+      return a.year - b.year;
+    });
+
+    // ⭐ Friendly labels for each category
+    const CARDSET_CATEGORY_LABELS = {
+      reg:  "Regular Releases",
+      tims: "Tim Hortons Releases",
+      mcd:  "McDonald's Releases"
+    };
+
+    const container = document.getElementById("editBlogsDiv");
+    container.innerHTML = "";
+
+    let lastCat = null;
+
+    // ⭐ Render grouped sections
+    cardSets.forEach(set => {
+      const { setID, setName, blogCat } = set;
+
+      // Insert header when category changes
+      if (blogCat !== lastCat) {
+        const header = document.createElement("h2");
+        header.textContent = CARDSET_CATEGORY_LABELS[blogCat] || "Other";
+        header.className = "blog-type-divider";
+        container.appendChild(header);
+
+        lastCat = blogCat;
+      }
+
+      // Render the card set entry
+      displayCardSets(container, setID, setName);
     });
 
   } catch (err) {
@@ -979,6 +1056,7 @@ function fetchBlogByID(id,type) {
       `...Ah, Houston, we've had a problem...`;
   }
 }
+
 
 
 
@@ -1044,7 +1122,8 @@ function fetchBlogByID(id,type) {
   *
   */
   
-  function displayCardSets(setID, setName) {
+  /** -------------------------------------------------- OLD
+  function displayCardSets(setID, setName, blogCat) {
   const blogBody = document.getElementById("editBlogsDiv");
 
   blogBody.innerHTML += `
@@ -1058,7 +1137,22 @@ function fetchBlogByID(id,type) {
       </tr>
     </table>
   `;
+} */
+
+  function displayCardSets(container, setID, setName) {
+  container.innerHTML += `
+    <table class="set-details-table-style">
+      <tr>
+        <td style="width:400px;font-size:20px">
+          <a href="setEdit.html?setID=${setID}">
+            <strong>${setName}</strong>
+          </a>
+        </td>
+      </tr>
+    </table>
+  `;
 }
+
 
 
 
