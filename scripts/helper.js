@@ -237,6 +237,7 @@ function renderSetPicker(year, blogCat) {
   const ranges = [
     { start: 1979, end: 1986, className: "classic-set-nav-td", pageName: "classicWax" },
     { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" },
+    { start: 1991, end: 2011, className: "junk-set-nav-td", pageName: "mcd" },
     { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" } // Do we still need this? 
   ];
 
