@@ -1020,12 +1020,7 @@ function fetchBlogByID(id,type) {
       return a.year - b.year;
     });
 
-    // ⭐ Friendly labels for each category
-    const CARDSET_CATEGORY_LABELS = {
-      reg:  "Regular Releases",
-      tims: "Tim Hortons Releases",
-      mcd:  "McDonald's Releases"
-    };
+    
 
     const container = document.getElementById("editBlogsDiv");
     container.innerHTML = "";
@@ -1035,6 +1030,8 @@ function fetchBlogByID(id,type) {
     // ⭐ Render grouped sections
     cardSets.forEach(set => {
       const { setID, setName, blogCat } = set;
+
+      console.log(`In Sorting thing with: ${blogCat}`);
 
       // Insert header when category changes
       if (blogCat !== lastCat) {
