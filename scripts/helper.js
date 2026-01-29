@@ -282,6 +282,7 @@ const NAV_ITEMS = {
   junk: { label: "90s Hockey Sets", href: "/waxReviews.html?year=1987&pageName=junkWax&blogCat=reg" },
   classic: { label: "80s Hockey Sets", href: "/waxReviews.html?year=1979&pageName=classicWax&blogCat=reg" },
   timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2020&pageName=timmies&blogCat=tims" },
+  mcd: { label: "McHockey", href: "/waxReviews.html?year=1991&pageName=mcd&blogCat=mcd" },
   tech: { label: "Tech", href: "/tech.html?blogType=1" },
   pi: { label: "Raspberry Pi", href: "/tech.html?blogType=5" },
   mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3" }
@@ -290,15 +291,16 @@ const NAV_ITEMS = {
 // Step 2: Define which pages show which items
 // The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
-  index: ["home", "classic", "junk", "timmies", "tech", "pi", "mache"],
-  tech_1: ["home", "classic", "junk", "timmies", "pi", "mache"],
-  tech_3: ["home", "classic", "junk", "timmies", "tech", "pi",  "mache"],
-  tech_4: ["home", "classic", "junk", "timmies", "tech", "pi",  "mache"],
-  tech_5: ["home", "classic", "junk", "timmies", "tech", "mache"],
-  ev: ["home", "classic", "junk", "timmies", "tech", "pi", "mache"],
-  junkWax: ["home", "classic", "timmies", "tech", "pi",  "mache"],
-  classicWax: ["home", "junk", "timmies", "tech", "pi",  "mache"],
-  timmies: ["home", "classic", "junk", "tech", "pi",  "mache"]
+  index: ["home", "classic", "junk", "timmies", "mcd", "tech", "pi", "mache"],
+  tech_1: ["home", "classic", "junk", "timmies", "mcd", "pi", "mache"],
+  tech_3: ["home", "classic", "junk", "timmies", "mcd", "tech", "pi",  "mache"],
+  tech_4: ["home", "classic", "junk", "timmies", "mcd", "tech", "pi",  "mache"],
+  tech_5: ["home", "classic", "junk", "timmies", "mcd", "tech", "mache"],
+  ev: ["home", "classic", "junk", "timmies", "mcd", "tech", "pi", "mache"],
+  junkWax: ["home", "classic", "timmies", "mcd", "tech", "pi",  "mache"],
+  classicWax: ["home", "junk", "timmies", "mcd", "tech", "pi",  "mache"],
+  timmies: ["home", "classic", "junk", "mcd", "tech", "pi",  "mache"],
+  mcd: ["home", "classic", "junk", "timmies", "tech", "pi",  "mache"]
 };
 
 // Step 3: Build a dynamic table generator
