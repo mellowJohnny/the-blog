@@ -237,7 +237,7 @@ function renderSetPicker(year, blogCat) {
   // Category-specific ranges
   const categoryRanges = {
     reg:  { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" },
-    mcd:  { start: 1991, end: 2008, className: "junk-set-nav-td", pageName: "mcd" },
+    mcd:  { start: 1991, end: 2001, className: "junk-set-nav-td", pageName: "mcd" }, // Limit to just the sets I have, stop at 2001
     tims: { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
   };
 
@@ -270,7 +270,7 @@ function renderSetPicker(year, blogCat) {
 
   // Render table with one or two rows
   const rows = blogCat === "mcd"
-    ? `<tr>${row1}</tr><tr>${row2}</tr>`
+    ? `<tr>${row1}</tr><br><tr>${row2}</tr>`
     : `<tr>${row1}</tr>`;
 
   setPicker.innerHTML = `
