@@ -305,14 +305,14 @@ const NAV_ITEMS = {
 // Step 2: Define which pages show which items
 // The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
-  index: ["home", "classic", "junk", "timmies", "mcd", "tech", "pi", "mache"],
-  tech_1: ["home", "classic", "junk", "timmies", "mcd", "pi", "mache"],
-  tech_3: ["home", "classic", "junk", "timmies", "mcd", "tech", "pi",  "mache"],
-  tech_4: ["home", "classic", "junk", "timmies", "mcd", "tech", "pi",  "mache"],
-  tech_5: ["home", "classic", "junk", "timmies", "mcd", "tech", "mache"],
-  ev: ["home", "classic", "junk", "timmies", "mcd", "tech", "pi", "mache"],
-  junkWax: ["home", "classic", "timmies", "mcd", "tech", "pi",  "mache"],
-  classicWax: ["home", "junk", "timmies", "mcd", "tech", "pi",  "mache"],
+  index: ["home", "classic", "junk", "mcd", "timmies", "tech", "pi", "mache"],
+  tech_1: ["home", "classic", "junk", "mcd", "timmies", "pi", "mache"],
+  tech_3: ["home", "classic", "junk", "mcd", "timmies", "tech", "pi",  "mache"],
+  tech_4: ["home", "classic", "junk", "mcd", "timmies", "tech", "pi",  "mache"],
+  tech_5: ["home", "classic", "junk", "mcd", "timmies", "tech", "mache"],
+  ev: ["home", "classic", "junk", "mcd", "timmies","tech", "pi", "mache"],
+  junkWax: ["home", "classic", "mcd", "timmies", "tech", "pi",  "mache"],
+  classicWax: ["home", "junk", "mcd", "timmies", "tech", "pi",  "mache"],
   timmies: ["home", "classic", "junk", "mcd", "tech", "pi",  "mache"],
   mcd: ["home", "classic", "junk", "timmies", "tech", "pi",  "mache"]
 };
