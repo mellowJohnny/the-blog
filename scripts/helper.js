@@ -270,7 +270,7 @@ function renderSetPicker(year, blogCat) {
 
   // Render table with one or two rows
   const rows = blogCat === "mcd"
-    ? `<tr>${row1}</tr><br><tr>${row2}</tr>`
+    ? `<tr>${row1}</tr><br><br><tr>${row2}</tr>`
     : `<tr>${row1}</tr>`;
 
   setPicker.innerHTML = `
