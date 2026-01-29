@@ -234,46 +234,52 @@ function renderSetPicker(year, blogCat) {
 
   console.log(`In renderSetPicker: blogCat, year is: ${year}, ${blogCat}`);
 
-  // ⭐ Category-specific ranges (ONLY reg, mcd, tims)
+  // Category-specific ranges
   const categoryRanges = {
     reg:  { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" },
     mcd:  { start: 1991, end: 2008, className: "junk-set-nav-td", pageName: "mcd" },
     tims: { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
   };
 
-  // ⭐ Pick the correct range based on blogCat
   const range = categoryRanges[blogCat];
-
   if (!range) {
     setPicker.innerHTML = `<p>No template found for category "${blogCat}"</p>`;
     return;
   }
 
-  // ⭐ Build the year cells
-  let cells = "";
-  for (let y = range.start; y <= range.end; y++) {
-    const label = `${y}-${(y + 1).toString().slice(-2)}`; // e.g. 1987-88
+  // Build year cells
+  let row1 = "", row2 = "";
+  const totalYears = range.end - range.start + 1;
+  const splitIndex = blogCat === "mcd" ? Math.ceil(totalYears / 2) : totalYears;
 
-    if (y === parseInt(year)) {
-      // Current year: plain text
-      cells += `<td class="${range.className}">${label}</td>`;
+  for (let i = 0; i < totalYears; i++) {
+    const y = range.start + i;
+    const label = `${y}-${(y + 1).toString().slice(-2)}`;
+    const cell = (y === parseInt(year))
+      ? `<td class="${range.className}">${label}</td>`
+      : `<td class="${range.className}">
+           <a href="/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}">${label}</a>
+         </td>`;
+
+    if (i < splitIndex) {
+      row1 += cell;
     } else {
-      // Other years: link
-      cells += `<td class="${range.className}">
-                  <a href="/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}">
-                    ${label}
-                  </a>
-                </td>`;
+      row2 += cell;
     }
   }
 
-  // ⭐ Render the table
+  // Render table with one or two rows
+  const rows = blogCat === "mcd"
+    ? `<tr>${row1}</tr><tr>${row2}</tr>`
+    : `<tr>${row1}</tr>`;
+
   setPicker.innerHTML = `
     <table class="card-set-nav">
-      <tr>${cells}</tr>
+      ${rows}
     </table>
   `;
 }
+
 
 
 
