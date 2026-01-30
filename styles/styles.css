@@ -424,7 +424,7 @@ textarea {
   padding: 8px;
 }
 
-
+/* ----------------------------------- Image Styles -----------------------------------------*/
 
 .table-header-img {
   max-width: 620px; /* or whatever size feels right */
@@ -470,6 +470,17 @@ textarea {
   margin: 0;
   padding: 0;
 }
+
+.img-wrap-left {
+  float: left;
+  margin: 0 15px 15px 0;
+}
+
+.img-wrap-right {
+  float: right;
+  margin: 0 0 15px 15px;
+}
+
 
 .tech-masthead td {
   vertical-align: top;
