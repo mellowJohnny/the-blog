@@ -955,7 +955,6 @@ function fetchBlogByID(id,type) {
       // Insert header when category changes
       if (blogCat !== lastCat) {
         const header = document.createElement("h2");
-        console.log(`In Sorting thing with: ${blogCat}`);
         header.textContent = CARDSET_CATEGORY_LABELS[blogCat] || "Other";
         header.className = "blog-type-divider";
         container.appendChild(header);

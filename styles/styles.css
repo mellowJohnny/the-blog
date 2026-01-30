@@ -255,6 +255,8 @@ textarea {
   color: #333;
   border-bottom: 1px solid #ccc;
   padding-bottom: 4px;
+  display: inline-block; /* Makes the dividing line only as long as the text */
+  
 }
 
 .header-style h1{
