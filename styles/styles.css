@@ -253,9 +253,9 @@ textarea {
   font-size: 1.3rem;
   font-weight: bold;
   color: #333;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #0475c1;
   padding-bottom: 4px;
-  display: inline-block; /* Makes the dividing line only as long as the text */
+  width: 200px; /* Makes the dividing line fixed length */
   
 }
 
