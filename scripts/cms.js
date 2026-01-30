@@ -34,9 +34,9 @@ const BLOG_TYPE_LABELS = {
 };
 
 const CARDSET_CATEGORY_LABELS = {
-  reg:  "Regular Releases",
-  tims: "Tim Hortons Releases",
-  mcd:  "McDonald's Releases"
+  reg:  "Regular Sets",
+  tims: "Tim Hortons Sets",
+  mcd:  "McDonald's Sets"
 };
 
 
