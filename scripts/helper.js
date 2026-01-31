@@ -236,6 +236,7 @@ function renderSetPicker(year, blogCat) {
 
   // Category-specific ranges
   const categoryRanges = {
+    reg:  { start: 1979, end: 1986, className: "junk-set-nav-td", pageName: "classicWax" },
     reg:  { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" },
     mcd:  { start: 1991, end: 2001, className: "junk-set-nav-td", pageName: "mcd" }, // Limit to just the sets I have, stop at 2001
     tims: { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
