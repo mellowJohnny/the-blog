@@ -229,71 +229,66 @@ function cardSetSorter(property,order) {
 // Scalability: Adding new years is as simple as extending the range.
 // This way, instead of maintaining hundreds of lines of repetitive HTML, you only maintain the ranges. Much easier to extend and debug.
 
-function renderSetPicker(year, blogCat) {
+function renderSetPicker(year, blogCat, pageName) {
   const setPicker = document.getElementById("set-picker");
 
-  console.log(`In renderSetPicker: year=${year}, blogCat=${blogCat}`);
+  console.log(`In renderSetPicker: year=${year}, blogCat=${blogCat}, pageName=${pageName}`);
 
-  // Category-specific ranges using an Array - multiple date ranges allowed per category
+  // Category + pageName specific ranges
   const categoryRanges = {
-    reg: [
-      { start: 1979, end: 1986, className: "junk-set-nav-td", pageName: "classicWax" }, // Support two date ranges for 'reg'
-      { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" }
-    ],
-    mcd: [
-      { start: 1991, end: 2001, className: "junk-set-nav-td", pageName: "mcd" }
-    ],
-    tims: [
-      { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
-    ]
+    reg: {
+      classicWax: { start: 1979, end: 1986, className: "junk-set-nav-td", pageName: "classicWax" },
+      junkWax:    { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" }
+    },
+    mcd: {
+      mcd: { start: 1991, end: 2001, className: "junk-set-nav-td", pageName: "mcd" }
+    },
+    tims: {
+      timmies: { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
+    }
   };
 
-  const ranges = categoryRanges[blogCat];
-  if (!ranges) {
+  const catConfig = categoryRanges[blogCat];
+  if (!catConfig) {
     setPicker.innerHTML = `<p>No template found for category "${blogCat}"</p>`;
     return;
   }
 
-  let html = "";
+  const range = catConfig[pageName];
+  if (!range) {
+    setPicker.innerHTML = `<p>No range found for category "${blogCat}" and page "${pageName}"</p>`;
+    return;
+  }
 
-  ranges.forEach(range => {
-    let row1 = "", row2 = "";
-    const totalYears = range.end - range.start + 1;
+  let row1 = "", row2 = "";
+  const totalYears = range.end - range.start + 1;
+  const splitIndex = blogCat === "mcd" ? Math.ceil(totalYears / 2) : totalYears;
 
-    // Only McDonald's gets a 2-row layout
-    const splitIndex = blogCat === "mcd"
-      ? Math.ceil(totalYears / 2)
-      : totalYears;
+  for (let i = 0; i < totalYears; i++) {
+    const y = range.start + i;
+    const label = `${y}-${(y + 1).toString().slice(-2)}`;
 
-    for (let i = 0; i < totalYears; i++) {
-      const y = range.start + i;
-      const label = `${y}-${(y + 1).toString().slice(-2)}`;
+    const cell = (y === parseInt(year))
+      ? `<td class="${range.className}">${label}</td>`
+      : `<td class="${range.className}">
+           <a href="/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}">
+             ${label}
+           </a>
+         </td>`;
 
-      const cell = (y === parseInt(year))
-        ? `<td class="${range.className}">${label}</td>`
-        : `<td class="${range.className}">
-             <a href="/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}">
-               ${label}
-             </a>
-           </td>`;
+    if (i < splitIndex) row1 += cell;
+    else row2 += cell;
+  }
 
-      if (i < splitIndex) row1 += cell;
-      else row2 += cell;
-    }
+  const rows = blogCat === "mcd"
+    ? `<tr style="text-align: center;">${row1}</tr><br><br><tr>${row2}</tr>`
+    : `<tr style="text-align: center;">${row1}</tr>`;
 
-    const rows = blogCat === "mcd"
-      ? `<tr style="text-align: center;">${row1}</tr><br><br><tr>${row2}</tr>`
-      : `<tr style="text-align: center;">${row1}</tr>`;
-
-    html += `
-      <table class="card-set-nav">
-        ${rows}
-      </table>
-      <br>
-    `;
-  });
-
-  setPicker.innerHTML = html;
+  setPicker.innerHTML = `
+    <table class="card-set-nav">
+      ${rows}
+    </table>
+  `;
 }
 
 
