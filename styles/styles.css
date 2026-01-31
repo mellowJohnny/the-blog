@@ -89,7 +89,8 @@ messing up the layout with white borders and scoll bars
 }
 
 .cms-form-table td {
-  padding: 10px 12px;
+  /* padding: 10px 12px; */
+  padding: 8px 10px;
   vertical-align: top;
   white-space: normal;
 }
@@ -198,7 +199,6 @@ textarea {
   background-color: #256386;
   border: none;
   color: white;
-  /* padding: 16px 32px; */
   padding: 12px 24px;
   text-decoration: none;
   margin: 4px 2px;
