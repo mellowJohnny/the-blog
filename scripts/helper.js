@@ -234,10 +234,10 @@ function renderSetPicker(year, blogCat) {
 
   console.log(`In renderSetPicker: year=${year}, blogCat=${blogCat}`);
 
-  // Category-specific ranges (multiple allowed per category)
+  // Category-specific ranges using an Array - multiple date ranges allowed per category
   const categoryRanges = {
     reg: [
-      { start: 1979, end: 1986, className: "junk-set-nav-td", pageName: "classicWax" },
+      { start: 1979, end: 1986, className: "junk-set-nav-td", pageName: "classicWax" }, // Support two date ranges for 'reg'
       { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" }
     ],
     mcd: [
