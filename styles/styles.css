@@ -504,6 +504,7 @@ textarea {
   border-color: rgb(22, 86, 138);
   border-radius: 2px;
   box-shadow: 5px 10px 18px #888888;
+  text-align: right;
 }
 
 .page-footer {
