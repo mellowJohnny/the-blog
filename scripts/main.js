@@ -463,8 +463,7 @@ function prevPage() {
         <table class="set-details-author">
           <tr>
             <td>
-                <strong><i>${author}</i></strong><br>
-                <strong><i>${fixDate(date)}</i></strong><br>
+                <strong><i>${author}, ${fixDate(date)}</i></strong><br>
                 <strong><i>${readingStats.minutes} minute read</i></strong>
             </td>
           </tr>
