@@ -232,53 +232,68 @@ function cardSetSorter(property,order) {
 function renderSetPicker(year, blogCat) {
   const setPicker = document.getElementById("set-picker");
 
-  console.log(`In renderSetPicker: blogCat, year is: ${year}, ${blogCat}`);
+  console.log(`In renderSetPicker: year=${year}, blogCat=${blogCat}`);
 
-  // Category-specific ranges
+  // Category-specific ranges (multiple allowed per category)
   const categoryRanges = {
-    reg:  { start: 1979, end: 1986, className: "junk-set-nav-td", pageName: "classicWax" },
-    reg:  { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" },
-    mcd:  { start: 1991, end: 2001, className: "junk-set-nav-td", pageName: "mcd" }, // Limit to just the sets I have, stop at 2001
-    tims: { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
+    reg: [
+      { start: 1979, end: 1986, className: "junk-set-nav-td", pageName: "classicWax" },
+      { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" }
+    ],
+    mcd: [
+      { start: 1991, end: 2001, className: "junk-set-nav-td", pageName: "mcd" }
+    ],
+    tims: [
+      { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
+    ]
   };
 
-  const range = categoryRanges[blogCat];
-  if (!range) {
+  const ranges = categoryRanges[blogCat];
+  if (!ranges) {
     setPicker.innerHTML = `<p>No template found for category "${blogCat}"</p>`;
     return;
   }
 
-  // Build year cells
-  let row1 = "", row2 = "";
-  const totalYears = range.end - range.start + 1;
-  const splitIndex = blogCat === "mcd" ? Math.ceil(totalYears / 2) : totalYears;
+  let html = "";
 
-  for (let i = 0; i < totalYears; i++) {
-    const y = range.start + i;
-    const label = `${y}-${(y + 1).toString().slice(-2)}`;
-    const cell = (y === parseInt(year))
-      ? `<td class="${range.className}">${label}</td>`
-      : `<td class="${range.className}">
-           <a href="/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}">${label}</a>
-         </td>`;
+  ranges.forEach(range => {
+    let row1 = "", row2 = "";
+    const totalYears = range.end - range.start + 1;
 
-    if (i < splitIndex) {
-      row1 += cell;
-    } else {
-      row2 += cell;
+    // Only McDonald's gets a 2-row layout
+    const splitIndex = blogCat === "mcd"
+      ? Math.ceil(totalYears / 2)
+      : totalYears;
+
+    for (let i = 0; i < totalYears; i++) {
+      const y = range.start + i;
+      const label = `${y}-${(y + 1).toString().slice(-2)}`;
+
+      const cell = (y === parseInt(year))
+        ? `<td class="${range.className}">${label}</td>`
+        : `<td class="${range.className}">
+             <a href="/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}">
+               ${label}
+             </a>
+           </td>`;
+
+      if (i < splitIndex) row1 += cell;
+      else row2 += cell;
     }
-  }
 
-  // Render table with one or two rows, centering the results within the cell
-  const rows = blogCat === "mcd"
-    ? `<tr style="text-align: center;">${row1}</tr><br><br><tr>${row2}</tr>`
-    : `<tr style="text-align: center;">${row1}</tr>`;
+    const rows = blogCat === "mcd"
+      ? `<tr style="text-align: center;">${row1}</tr><br><br><tr>${row2}</tr>`
+      : `<tr style="text-align: center;">${row1}</tr>`;
 
-  setPicker.innerHTML = `
-    <table class="card-set-nav">
-      ${rows}
-    </table>
-  `;
+    html += `
+      <table class="card-set-nav">
+        ${rows}
+      </table>
+      <br>
+    `;
+  });
+
+  setPicker.innerHTML = html;
 }
 
 
