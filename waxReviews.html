@@ -2,12 +2,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <html lang="en-ca">
-    <title>the hella files...Hockey Junk Wax: (Just About) Every Junk Wax Era Set Reviewed</title> <!--  This needs to change to dynamoc -->
+    <title>the hella files...Hockey Junk Wax: (Just About) Every Junk Wax Era Set Reviewed</title> 
     <head>
       <meta charset="utf-8"> 
       <meta name="description" content="Junk Wax! Hockey Card collecting exploded in the early to mid-1990s, and the Junk Wax Era saw a massive increase in sets available to collect and production numbers. Are any of them still worth collecting? Let's find out! We've got (just about) every set reviewed right here"/> 
-      <!-- Load the Hella Files Styles-->
+      
+      <!-- Load the Hella Styles-->
       <link rel="stylesheet" type="text/css" href="styles/styles.css">
+      
       <!-- Load the Google Fontz -->
       <link rel="preconnect" href="https://fonts.googleapis.com"> 
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"> 
@@ -17,12 +19,11 @@
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX" crossorigin="anonymous"></script>
 
       <!-- Load the Hella Scripts -->
-      <script src="scripts/main.js"></script>
+      <script src="scripts/wax.js"></script>
       <script src="/scripts/helper.js"></script>
     
-      <!-- Dynamic JavaScript Magic -->
       <script>
-          /* Let's get the URL params from the request, and extract the year, sortOrder, and pageName */  
+          /* Grab URL params */  
           let params = new URLSearchParams(document.location.search);
           let year = params.get("year");
           let sortOrder = params.get("sortOrder");
@@ -32,24 +33,16 @@
 
           // Let's do a bunch of stuff on page load...
           window.addEventListener('load', (event) => {
-              //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
-              fetchCardSetsByYear(year,sortOrder,blogCat);
-
-              // *** Dynamically display the copyright year *******
-              fetchCopyrightYear();
-
-              // **** Call the Set-O-Matic Set Picker ***
-              renderSetPicker(year,blogCat,pageName);
-
-              // Dynamically render the page intro section - in helper.js
-              fetchCardIntro(pageName);
-
-              // *** Dynamically fetch Nav ***
-              fetchNav(pageName);
-
-              // *** Dynamically display the page header *** REMOVED because of styling changes. 
-              // Basically added into the cardIntro table instead. Cleaner look. (Jan. 15, 2026) 
-              // displayCardHeader(pageName,year);
+            // First: fetch Global Nav from helper.js
+            fetchNav(pageName);
+            // Next render the page intro section - in helper.js
+            fetchCardIntro(pageName);
+            // Call the Set-O-Matic Set Picker
+            renderSetPicker(year,blogCat,pageName);
+            //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
+            fetchCardSetsByYear(year,sortOrder,blogCat);
+            // Dynamically display the copyright year 
+            fetchCopyrightYear();
           });
 
           // Google Analytics 
@@ -57,7 +50,6 @@
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
           gtag('config', 'G-JMGVGK09QX');
-          
         </script>
     </head>
 
@@ -68,13 +60,13 @@
             <td width="80%">
                 <header class="masthead"><a href="index.html">the hella files</a></header>
             </td>
-            <td width="20%"></td> <!-- Leave a space for the weather widget in case we want to add it later... -->
+            <td width="20%"></td> <!-- space for weather widget in case we want to add it later -->
           </tr>
         </table>
       </section>
       <div>
         <nav>
-          <!-- Dynamically fetch the Nav using fetchNav() in helper.js -->
+          <!-- Hamberger menu for mobile in helper.js -->
           <div class="nav-container">
             <div class="hamburger" onclick="toggleMenu()">☰</div>
             <div id="global-nav" class="nav-links"></div>
@@ -83,19 +75,18 @@
       </div>
       <main>
         <section>
-          <!-- The year value dynamically displayed here is set up in the top script where we extract the year param from the URL --> 
           <div class="header-style"> 
-            <h1 id="pageHeader"></h1> <!-- populated from inside displayCardSet() in main.js-->
+            <h1 id="pageHeader"></h1> <!-- called by displayCardSet() in main.js-->
           </div>
 
           <div class="flex-container">
-            <div class="intro" id="card-intro"> <!-- dynamically fetched via fetchCardIntro() from main.js -->
+            <div class="intro" id="card-intro"> <!-- fetchCardIntro() from main.js -->
                </div> 
           </div>
 
           <div class="set-o-matic-picker">the set-o-matic year picker</div>
                     
-          <div class="flex-container" id="set-picker"> <!-- "Smart" Year Picker: Rendered by renderSetPicker() function in helper.js, keying off the year param as a starting point - Removes link for current year --> </div>
+          <div class="flex-container" id="set-picker"> <!-- renderSetPicker() function in helper.js --> </div>
           <br><br>
         </section>
         
@@ -110,7 +101,7 @@
       </main>
 
       <footer class="page-footer">
-        <div id="copy"></div> <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
+        <div id="copy"></div> <!-- fetchCopyrightYear() on page load -->
       </footer>
 
     </body>
