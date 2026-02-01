@@ -135,7 +135,7 @@ function renderCardSetPage() {
                     <strong>${setName}</strong>
                 </td>
                 <td rowspan="7" style="width: 75%; text-align: center;">
-                    <img src="${headerImg}${headerImgName}" class="table-header-img" loading="lazy">
+                    <img src="${headerImg}${headerImgName}" class="table-header-img">
                 </td>
             </tr>
 
@@ -179,7 +179,7 @@ function renderCardSetPage() {
             </tr>
             <tr>
                 <td style="text-align:center">
-                    <img src="${footerImg}${footerImgName}" class="table-footer-img" loading="lazy">
+                    <img src="${footerImg}${footerImgName}" class="table-footer-img">
                 </td>
             </tr>
         </table>
