@@ -10,26 +10,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&display=swap&family=Special+Elite&family=Work+Sans:ital,wght@0,400;1,500&display=swap&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" crossorigin="anonymous">
     
     <!-- Load the Hella Files scripts-->
-    <script src="scripts/main.js"></script> 
+    <script src="scripts/blogs.js"></script> 
     <script src="/scripts/helper.js"></script>
 
     <script>
       let params = new URLSearchParams(document.location.search);
       let blogType = params.get("blogType"); 
+      
       window.addEventListener('load', (event) => {
-        // *** On page load pass the blogType param to the fetchAllBlogs() function
+        // *** On page load pass blogType
         fetchBlogs(blogType);
 
-        // *** Dynamically display the copyright year
+        // *** Fetch copyright year from helper.js
         fetchCopyrightYear();
 
-        // *** Dynamically fetch the blog into blurb based on blogType
-       // ** OLD *** fetchIntro(blogType);
-
-       // *** Dynamically fetch the blog into blurb based on blogType using a new API! *** NEW ***
+       // * Fetch the blog into blurb based on blogType
        fetchBlogIntroByType(blogType);
 
-        // *** Dynamically fetch Nav ***
+        // *** Fetch the Top Nav from helper.js
         fetchNav("tech",blogType);
         });
     </script>
