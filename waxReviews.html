@@ -7,8 +7,9 @@
       <meta charset="utf-8"> 
       <meta name="description" content="Junk Wax! Hockey Card collecting exploded in the early to mid-1990s, and the Junk Wax Era saw a massive increase in sets available to collect and production numbers. Are any of them still worth collecting? Let's find out! We've got (just about) every set reviewed right here"/> 
       
-      <!-- Load the Hella Styles-->
-      <link rel="stylesheet" type="text/css" href="styles/styles.css">
+      <!-- Load the Hella Styles <link rel="stylesheet" type="text/css" href="styles/styles.css"> -->
+      <link rel="preload" href="/styles/styles.css" as="style" onload="this.rel='stylesheet'">
+      <noscript><link rel="stylesheet" href="/styles/styles.css"></noscript>
       
       <!-- Load the Google Fontz -->
       <link rel="preconnect" href="https://fonts.googleapis.com"> 
@@ -19,8 +20,8 @@
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX" crossorigin="anonymous"></script>
 
       <!-- Load the Hella Scripts -->
-      <script src="scripts/wax.js"></script>
-      <script src="/scripts/helper.js"></script>
+      <script src="scripts/wax.js" defer></script>
+      <script src="/scripts/helper.js" defer></script>
     
       <script>
           /* Grab URL params */  
