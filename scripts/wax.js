@@ -138,7 +138,9 @@ function renderCardSetPage() {
                     <img src="${headerImg}${headerImgName}" 
                     class="table-header-img" 
                     fetchpriority="high"
-                    alt="Vintage hockey cards from the ${year} ${mfg} set">
+                    alt="Vintage hockey cards from the ${year} ${mfg} set"
+                    width="620"
+                    height="285">
                 </td>
             </tr>
 
@@ -185,7 +187,9 @@ function renderCardSetPage() {
                     <img src="${footerImg}${footerImgName}" 
                     class="table-footer-img" 
                     loading="lazy" 
-                    alt="Vintage hockey cards from the ${year} ${mfg} set">>
+                    alt="Vintage hockey cards from the ${year} ${mfg} set"
+                    width="890"
+                    height="325">
                 </td>
             </tr>
         </table>
