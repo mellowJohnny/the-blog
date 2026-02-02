@@ -135,7 +135,10 @@ function renderCardSetPage() {
                     <strong>${setName}</strong>
                 </td>
                 <td rowspan="7" style="width: 75%; text-align: center;">
-                    <img src="${headerImg}${headerImgName}" class="table-header-img" fetchpriority="high">
+                    <img src="${headerImg}${headerImgName}" 
+                    class="table-header-img" 
+                    fetchpriority="high"
+                    alt="Vintage hockey cards from the ${year} ${manufacturer} set">
                 </td>
             </tr>
 
@@ -179,7 +182,10 @@ function renderCardSetPage() {
             </tr>
             <tr>
                 <td style="text-align:center">
-                    <img src="${footerImg}${footerImgName}" class="table-footer-img" loading="lazy">
+                    <img src="${footerImg}${footerImgName}" 
+                    class="table-footer-img" 
+                    loading="lazy" 
+                    alt="Vintage hockey cards from the ${year} ${manufacturer} set">>
                 </td>
             </tr>
         </table>
