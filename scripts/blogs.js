@@ -113,7 +113,8 @@ function renderBlogPage() {
      <strong><i>${readingStats.minutes} minute read</i></strong><br>
      ${cleanPostBody}
      <img src="${cleanImg}" class="blog-img"
-          onerror="this.style.display='none'; this.nextElementSibling.style.display='none';">
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='none';"
+          alt="${cleanImgCap}">
      <br>
      <i>${cleanImgCap}</i>
      <hr/><br>`;
