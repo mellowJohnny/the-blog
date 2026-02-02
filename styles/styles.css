@@ -62,8 +62,8 @@ messing up the layout with white borders and scoll bars
   color:rgb(11, 62, 100);
 }
 
-#nav-container {
-  height: 70px;
+#global-nav-placeholder {
+  height: 70px; /* Helps CLS - sets aside height for global nav */
 }
 
 .cms-nav-td {

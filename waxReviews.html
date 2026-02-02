@@ -17,7 +17,7 @@
         const blogCat = params.get("blogCat");
       </script>
 
-      <!-- Google Core Web Vitals Preload: make the "hero" image visible for each year -->
+      <!-- Google Core Web Vitals Preload: make the "hero" image visible for each year. Makes GCWV happy -->
        <script>
         // Build the hero image URL using your new naming convention
         if (year) {
@@ -88,7 +88,7 @@
       </section>
         <nav>
           <!-- Hamberger menu for mobile in helper.js -->
-          <div id="nav-container">
+          <div class="nav-container" id="global-nav-placeholder">
             <div class="hamburger" onclick="toggleMenu()">☰</div>
             <div id="global-nav" class="nav-links"></div>
           </div>
