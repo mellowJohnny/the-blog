@@ -50,39 +50,39 @@
 
         <!-- Simple JS Object used to fetch the card intro based on pagename -->
         <script>
-  console.log(`In new script: ${pageName}`);
+          console.log(`In new script: ${pageName}`);
 
-  const introByPage = {
-    junkWax: `
-      <div class="intro-text">
-        <h2>Junk Wax Sets</h2>
-        <p>The late '80s and early '90s...Miami Vice, acid wash jeans, and teal San Jose Sharks jerseys...and a hockey card explosion. Consider this: the 1989-90 season had just two licensed hockey sets - Topps in the US and O-Pee-Chee in Canada. But just a few years later there were thirteen licensed sets, ushering in the <i><a href="cards.html">Junk Wax</a></i> era.<br><br>But there are some hidden gems to be found if you are willing to dig around a bit...</p>
-      </div>
-    `,
-    classicWax: `
-      <div class="intro-text">
-        <h2>Classic '80s Sets</h2>
-        <p>The O-Pee-Chee sets from Gretzky's debut in the 1979-80 set right up to the Roy and Lemieux years defined a classic period of card collecting. The 8 sets from the pre-boom era include not only Gretzky, Roy, and Lemieux but also Messier, Bourque, Coffey, Savard, Fuhr, Hawerchuck, Carbonneau, Yzerman, Gilmour, and MacInnis. Quite a Hall of Fame class.</p>
-      </div>
-    `,
-    timmies: `
-      <div class="intro-text">
-        <h2>Tim Hortons Upper Deck Sets</h2>
-        <p>When McDonald's Canada shut down their association with the NHL in 2010, nearly 20 years of fast food hockey card collecting went with it. But in 2015, after a five year absence, fast food hockey card collecting was back! Tim Hortons, the bastion of blue-collar coffee shops, released their very first NHL Hockey set for the 2015-16 season.<br><br>But they didn't just mail it in - it was a modern, 100 card Upper Deck base set, complete with custom binder and loads of chase cards. Released just after the season starts in October, it has become an annual tradition in Canada.</p>
-      </div>
-    `,
-    mcd: `
-      <div class="intro-text">
-        <h2>McDonald's Canada Hockey</h2>
-        <p>McDonald's Canada launched the very first "All Star" set during the 1991-92 NHL season, and continued the tradition for the next 18 seasons, finally ending in 2009. And while there was no 2010-11 set, there was one final McKick at the can - a one-off Montreal Canadiens Upper Deck set in 2011-12.</p>
-        <p>Early McHockey sets were relatively small All-Star game retrospectives, but over time sets grew in size and dropped the All-Star focus, becoming "regular" hockey sets.</p>
-      </div>
-    `
-  };
+          const introByPage = {
+            junkWax: `
+              <div class="intro-text">
+                <h2>Junk Wax Sets</h2>
+                <p>The late '80s and early '90s...Miami Vice, acid wash jeans, and teal San Jose Sharks jerseys...and a hockey card explosion. Consider this: the 1989-90 season had just two licensed hockey sets - Topps in the US and O-Pee-Chee in Canada. But just a few years later there were thirteen licensed sets, ushering in the <i><a href="cards.html">Junk Wax</a></i> era.<br><br>But there are some hidden gems to be found if you are willing to dig around a bit...</p>
+              </div>
+            `,
+            classicWax: `
+              <div class="intro-text">
+                <h2>Classic '80s Sets</h2>
+                <p>The O-Pee-Chee sets from Gretzky's debut in the 1979-80 set right up to the Roy and Lemieux years defined a classic period of card collecting. The 8 sets from the pre-boom era include not only Gretzky, Roy, and Lemieux but also Messier, Bourque, Coffey, Savard, Fuhr, Hawerchuck, Carbonneau, Yzerman, Gilmour, and MacInnis. Quite a Hall of Fame class.</p>
+              </div>
+            `,
+            timmies: `
+              <div class="intro-text">
+                <h2>Tim Hortons Upper Deck Sets</h2>
+                <p>When McDonald's Canada shut down their association with the NHL in 2010, nearly 20 years of fast food hockey card collecting went with it. But in 2015, after a five year absence, fast food hockey card collecting was back! Tim Hortons, the bastion of blue-collar coffee shops, released their very first NHL Hockey set for the 2015-16 season.<br><br>But they didn't just mail it in - it was a modern, 100 card Upper Deck base set, complete with custom binder and loads of chase cards. Released just after the season starts in October, it has become an annual tradition in Canada.</p>
+              </div>
+            `,
+            mcd: `
+              <div class="intro-text">
+                <h2>McDonald's Canada Hockey</h2>
+                <p>McDonald's Canada launched the very first "All Star" set during the 1991-92 NHL season, and continued the tradition for the next 18 seasons, finally ending in 2009. And while there was no 2010-11 set, there was one final McKick at the can - a one-off Montreal Canadiens Upper Deck set in 2011-12.</p>
+                <p>Early McHockey sets were relatively small All-Star game retrospectives, but over time sets grew in size and dropped the All-Star focus, becoming "regular" hockey sets.</p>
+              </div>
+            `
+          };
 
-  document.getElementById("card-intro").innerHTML =
-    introByPage[pageName] || "";
-</script>
+          document.getElementById("card-intro").innerHTML =
+          introByPage[pageName] || "";
+        </script>
 
 
         <!-- Load the Hella Scripts -->
@@ -137,8 +137,45 @@
           </div>
 
           <div class="flex-container">
-            <div class="intro" id="card-intro"> </div> <!-- fetchCardIntro() from main.js -->
+            <div class="intro" id="card-intro"> </div> 
           </div>
+          
+          <!-- Now that the card-intro is in the DOM, let's dynamically populate it: -->
+          <script>
+          console.log(`In new script: ${pageName}`);
+
+          const introByPage = {
+            junkWax: `
+              <div class="intro-text">
+                <h2>Junk Wax Sets</h2>
+                <p>The late '80s and early '90s...Miami Vice, acid wash jeans, and teal San Jose Sharks jerseys...and a hockey card explosion. Consider this: the 1989-90 season had just two licensed hockey sets - Topps in the US and O-Pee-Chee in Canada. But just a few years later there were thirteen licensed sets, ushering in the <i><a href="cards.html">Junk Wax</a></i> era.<br><br>But there are some hidden gems to be found if you are willing to dig around a bit...</p>
+              </div>
+            `,
+            classicWax: `
+              <div class="intro-text">
+                <h2>Classic '80s Sets</h2>
+                <p>The O-Pee-Chee sets from Gretzky's debut in the 1979-80 set right up to the Roy and Lemieux years defined a classic period of card collecting. The 8 sets from the pre-boom era include not only Gretzky, Roy, and Lemieux but also Messier, Bourque, Coffey, Savard, Fuhr, Hawerchuck, Carbonneau, Yzerman, Gilmour, and MacInnis. Quite a Hall of Fame class.</p>
+              </div>
+            `,
+            timmies: `
+              <div class="intro-text">
+                <h2>Tim Hortons Upper Deck Sets</h2>
+                <p>When McDonald's Canada shut down their association with the NHL in 2010, nearly 20 years of fast food hockey card collecting went with it. But in 2015, after a five year absence, fast food hockey card collecting was back! Tim Hortons, the bastion of blue-collar coffee shops, released their very first NHL Hockey set for the 2015-16 season.<br><br>But they didn't just mail it in - it was a modern, 100 card Upper Deck base set, complete with custom binder and loads of chase cards. Released just after the season starts in October, it has become an annual tradition in Canada.</p>
+              </div>
+            `,
+            mcd: `
+              <div class="intro-text">
+                <h2>McDonald's Canada Hockey</h2>
+                <p>McDonald's Canada launched the very first "All Star" set during the 1991-92 NHL season, and continued the tradition for the next 18 seasons, finally ending in 2009. And while there was no 2010-11 set, there was one final McKick at the can - a one-off Montreal Canadiens Upper Deck set in 2011-12.</p>
+                <p>Early McHockey sets were relatively small All-Star game retrospectives, but over time sets grew in size and dropped the All-Star focus, becoming "regular" hockey sets.</p>
+              </div>
+            `
+          };
+
+          document.getElementById("card-intro").innerHTML =
+          introByPage[pageName] || "";
+        </script>
+
 
           <div class="set-o-matic-picker">the set-o-matic year picker</div>
                     
