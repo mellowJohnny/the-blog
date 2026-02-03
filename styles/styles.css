@@ -107,6 +107,11 @@ messing up the layout with white borders and scoll bars
   height: 30;
 }
 
+#cardSetDiv {
+  min-height: 500px; /* or whatever space you want to reserve */
+}
+
+
 /** ---------------               Set-O-Matic styling ------------------- **/
 .junk-set-nav-td {
   margin: 1px;
