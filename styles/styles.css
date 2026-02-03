@@ -108,7 +108,7 @@ messing up the layout with white borders and scoll bars
 }
 
 #cardSetDiv {
-  min-height: 500px; /* or whatever space you want to reserve */
+  min-height: 2500px; /* Needs to be big enough to hold the largest set review */
 }
 
 
