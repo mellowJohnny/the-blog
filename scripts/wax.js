@@ -41,7 +41,6 @@ function fetchCardIntro(pageName) {
     fetch(urlToFetch)
         .then(response => response.json())
         .then(data => {
-            console.log("API returned:", data);
 
             // Lambda returns an array, not { Items: [...] }
             if (!Array.isArray(data) || data.length === 0) {
