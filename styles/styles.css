@@ -107,9 +107,9 @@ messing up the layout with white borders and scoll bars
   height: 30;
 }
 
-.header-img-wrapper {
-  aspect-ratio: 620 / 285; /* CLS Fix wrapper: reserve the actual header image ratio */
-  width: 100%;
+.header-img-cell {
+  height: 285px;      /* matches the image height */
+  vertical-align: middle;
 }
 
 
