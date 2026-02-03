@@ -232,8 +232,6 @@ function cardSetSorter(property,order) {
 function renderSetPicker(year, blogCat, pageName) {
   const setPicker = document.getElementById("set-picker");
 
-  console.log(`In renderSetPicker: year=${year}, blogCat=${blogCat}, pageName=${pageName}`);
-
   // Category + pageName specific ranges
   const categoryRanges = {
     reg: {
