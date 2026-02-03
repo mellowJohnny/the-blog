@@ -135,12 +135,14 @@ function renderCardSetPage() {
                     <strong>${setName}</strong>
                 </td>
                 <td rowspan="7" style="width: 75%; text-align: center;">
+                  <div class="header-img-wrapper">
                     <img src="${headerImg}${headerImgName}" 
                     class="table-header-img" 
                     fetchpriority="high"
                     alt="Vintage hockey cards from the ${year} ${mfg} set"
                     width="620"
                     height="285">
+                  </div>
                 </td>
             </tr>
 
