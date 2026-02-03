@@ -139,8 +139,24 @@
           <div class="flex-container">
             <div class="intro" id="card-intro"> </div> 
           </div>
-          
-          <!-- Now that the card-intro is in the DOM, let's dynamically populate it: -->
+
+          <div class="set-o-matic-picker">the set-o-matic year picker</div>
+                    
+          <div class="flex-container" id="set-picker"> <!-- renderSetPicker() function in helper.js --> </div>
+          <br><br>
+        </section>
+        
+        <!-- NEW pagination controls  -->
+        <section>
+          <div class="flex-container">
+            <div class="blog-entry" id="cardSetDiv"></div>
+          </div>
+          <div id="paginationControls" style="text-align:center; margin:20px 0;"></div>  
+        </section> 
+              
+      </main>
+
+      <!-- Now that the card-intro is in the DOM, let's dynamically populate it: -->
           <script>
           console.log(`In new script: ${pageName}`);
 
@@ -175,23 +191,6 @@
           document.getElementById("card-intro").innerHTML =
           introByPage[pageName] || "";
         </script>
-
-
-          <div class="set-o-matic-picker">the set-o-matic year picker</div>
-                    
-          <div class="flex-container" id="set-picker"> <!-- renderSetPicker() function in helper.js --> </div>
-          <br><br>
-        </section>
-        
-        <!-- NEW pagination controls  -->
-        <section>
-          <div class="flex-container">
-            <div class="blog-entry" id="cardSetDiv"></div>
-          </div>
-          <div id="paginationControls" style="text-align:center; margin:20px 0;"></div>  
-        </section> 
-              
-      </main>
 
       <footer class="page-footer">
         <div id="copy"></div> <!-- fetchCopyrightYear() on page load -->
