@@ -107,10 +107,6 @@ messing up the layout with white borders and scoll bars
   height: 30;
 }
 
-#cardSetDiv {
-  min-height: 2400px; /* Needs to be big enough to hold the largest set review */
-}
-
 
 /** ---------------               Set-O-Matic styling ------------------- **/
 .junk-set-nav-td {
