@@ -3,7 +3,42 @@ let allCardSets = []; // Used in pagination - holds all the Card Sets so we can 
 let currentPage = 1; // Which Card Set to start with
 const pageSize = 1; // how many blogs to display at a time
 
-/** Fetch the Intro text based on pageName param: classicWax, junkWax, timmies, mcdonalds */
+/** **
+ * Card Intro Text Render-O-Matic
+ */
+
+function renderCardIntro(pageName) {
+
+  let introHTML = "";
+
+  if (pageName === "classicWax") {
+    introHTML = `
+       <h2>Classic '80s Sets</h2>
+      <p>The O-Pee-Chee sets from Gretzky's debut in the 1979-80 set right up to the Roy and Lemieux years defined a classic period of card collecting. The 8 sets from the pre-boom era include not only Gretzky, Roy, and Lemieux but also Messier, Bourque, Coffey, Savard, Fuhr, Hawerchuck, Carbonneau, Yzerman, Gilmour, and MacInnis. Quite a Hall of Fame class.</p>
+    `;
+  } else if (pageName === "junkWax") {
+    introHTML = `
+      <h2>Junk Wax Sets</h2>
+      <p>The late '80s and early '90s...Miami Vice, acid wash jeans, and teal San Jose Sharks jerseys...and a hockey card explosion. Consider this: the 1989-90 season had just two licensed hockey sets - Topps in the US and O-Pee-Chee in Canada. But just a few years later there were thirteen licensed sets, ushering in the <i><a href="cards.html">Junk Wax</a></i> era.<br><br> But there are some hidden gems to be found if you are willing to dig around a bit...</p>
+    `;
+  } else if (pageName === "timmies") {
+    introHTML = `
+      <h2>Tim Hortons Upper Deck Sets</h2>
+      <p>When McDonald's Canada shut down their association with the NHL in 2010, nearly 20 years of fast food hockey card collecting went with it. But in 2015, after a five year absence, fast food hockey card collecting was back! Tim Hortons, the bastion of blue-collar coffee shops, released their very first NHL Hockey set for the 2015-16 season. <br><br>But they didn't just mail it in - it was a modern, 100 card Upper Deck base set, complete with custom binder and loads of chase cards.  Released just after the season starts in October, it has become an annual tradition in Canada</p>
+    `;
+  } else if (pageName === "mcd") {
+    introHTML = `
+      <h2>McDonald's Canada Hockey</h2><p>McDonald's Canada launched the very first "All Star" set during the 1991-92 NHL season, and continued the tradition for the next 18 seasons, finally ending in 2009. And while there was no 2010-11 set, there was one final McKick at the can - a one-off Montreal Canadiens Upper Deck set in 2011-12.</p><p>Early McHockey sets were relatively small All-Star game retrospectives, but over time sets grew in size and dropped the All-Star focus, becoming "regular" hockey sets. </p>
+    `;
+
+            const introEl = document.getElementById("card-intro");
+            if (introEl) {
+            introEl.innerHTML = introHTML;
+             }
+}
+
+/** DEPRICATED */
+/** Fetch the Intro text based on pageName param: classicWax, junkWax, timmies, mcdonalds
 function fetchCardIntro(pageName) {
   const urlToFetch = `https://5asiy29hih.execute-api.us-east-2.amazonaws.com/dev?pageName=${pageName}`;
 
@@ -23,7 +58,7 @@ function fetchCardIntro(pageName) {
       document.getElementById("card-intro").innerHTML =
         "...Ah, Houston, we've had a problem...";
     });
-}
+}  */
 
 /*********************************************** fetchCardSetsByYear *************************************/
 
