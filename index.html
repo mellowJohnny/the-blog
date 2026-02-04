@@ -33,7 +33,7 @@
 
   <script>
     window.addEventListener('load', () => {
-      fetchBlogIntroByType('99');
+      fetchBlogs('99');
       fetchCopyrightYear();
       fetchNav("index");
     });
@@ -47,7 +47,7 @@
   <!-- Wait for the DOM to load, then call the intro function -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-    renderBlogIntro('99');   // works because it's global
+    renderBlogIntro('99'); 
   });
 </script>
 
