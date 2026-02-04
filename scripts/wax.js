@@ -8,7 +8,6 @@ const pageSize = 1; // how many blogs to display at a time
  */
 
 function renderCardIntro(pageName) {
-  console.log(`In fetchCardIntro with: ${pageName}`)
 
   let introHTML = "";
 
