@@ -35,7 +35,9 @@ function renderCardIntro(pageName) {
             if (introEl) {
             introEl.innerHTML = introHTML;
              }
-}
+  }
+} // end renderCardIntro()
+
 
 /** DEPRICATED */
 /** Fetch the Intro text based on pageName param: classicWax, junkWax, timmies, mcdonalds
