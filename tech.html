@@ -21,6 +21,13 @@
     <script src="scripts/blogs.js" defer></script> 
     <script src="/scripts/helper.js" defer></script>
 
+    <!-- Wait for the DOM to load, then call the intro function -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+      renderBlogIntro(blogType); 
+      });
+    </script>
+
     <script>
       let params = new URLSearchParams(document.location.search);
       let blogType = params.get("blogType"); 
@@ -33,7 +40,7 @@
         fetchCopyrightYear();
 
        // * Fetch the blog into blurb based on blogType
-       fetchBlogIntroByType(blogType);
+       // fetchBlogIntroByType(blogType);
 
         // *** Fetch the Top Nav from helper.js
         fetchNav("tech",blogType);

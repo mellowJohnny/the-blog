@@ -5,6 +5,7 @@
  */
 
 function renderBlogIntro(blogType) {
+  console.log(`Rendering the: ${blogType} blog intro`)
 
   let introHTML = "";
 
