@@ -1,5 +1,52 @@
 /** HELPER FUNCTIONS *** HELPER FUNCTIONS *** HELPER FUNCTIONS *** HELPER FUNCTIONS */
 
+/** **
+ * Blog Intro Text Render-O-Matic
+ */
+
+function renderBlogIntro(blogType) {
+
+  let introHTML = "";
+
+  if (blogType === "1") {
+    introHTML = `
+      <h2>The Tech Blog</h2>
+      <p>Just a couple of random throughts on Technology - from AI to using an iPad for development tasks, and whatever else strikes my fancy. Oh, and that .gif of a 727 in the top corner is the Internet's <i>very first</i>, created by Steve Wilhite in 1987 while working at CompuServe. He said it's pronounced "jif" by the way...</p>
+    `;
+  } else if (blogType === "3") {
+    introHTML = `
+      <h2>The Mach-E Blog</h2>
+      <p>Thoughts and experiences with our first EV - the absolutely fabulous Ford Mustang Mach-E</p>
+    `;
+  } else if (blogType === "4") {
+    introHTML = `
+      <h2>Mustang Mach-E Musings</h2>
+      <p>One of the super-cool party tricks the Mach-E has is Over-The-Air updates, which Ford calls a "Power-Up". For those of you new to the term, which has been around for quite a while, is the ability for a piece of "hardware" to receive a software update "over the air" - i.e. via the internet. Could be WiFi, could be a 3 / 4 / 5G connection. The point is you don't need to visit a dealer for them to "flash" a module or system with a new update. It happens automagically. And in the case of the Mach-E, not just an update to the maps for the Nav system.</p>
+      <p>We're talking actual, useful changes to things that in the past would likely have only been rolled out with a new model year. Allowing the core software in key control modules to be updated with OTA updates is, as pioneered by Tesla, game chaging. And I really hate that word...but it really is.</p>
+      <p>Since the Mach-E began hitting dealerships in 2021 there have been some pretty significant tweaks & modifications delivered via OTA updates, including things like modifications to the charging curve, battery capacity increase, brake pedal feel changes, rolling out BlueCruise, a complete SYNC UI refresh, HVAC changes, adding battery preconditioning prior to DCFC stops, and new games.</p>
+      <p>The process has not always been smooth for all owners, but when you consider that in the first two years of its existance the Mach-E was one of the few electric vehicles with OTA capabilities, its pretty cool stuff.</p>
+    `;
+  } else if (blogType === "5") {
+    introHTML = `
+      <h2>The Rasperry Pi Blog</h2>
+      <p>Thoughts and experiments with my Rasperry Pi rig. Nothing hard core, nothing ground-breaking, just a few thoughts while I play around with this remarkable little computer...</p>
+    `;
+  } else {
+    // blogType 99 or missing → fallback
+    introHTML = `
+      <h2>A blog with a purpose...</h2>
+      <p>A place for me to test out web technologies - AWS stuff, Javascript, React, etc - and at the same time write about things which interest me: old hockey card sets, technology, and maybe even Software Architecture once in a while.</p>
+      <p>So have a look around! I'll try to be entertaining - at the very least you can expect sarcasm, spelling mistakes, and self-deprecation.</p>
+    `;
+  }
+
+  const introEl = document.getElementById("blog-intro");
+  if (introEl) {
+    introEl.innerHTML = introHTML;
+  }
+}
+
+
 /** 
  * Helper function to estimate reading time for blogs OR cardsets
  */
