@@ -8,6 +8,7 @@ const pageSize = 1; // how many blogs to display at a time
  */
 
 function renderCardIntro(pageName) {
+  console.log(`In fetchCardIntro with: ${pageName}`)
 
   let introHTML = "";
 
@@ -31,10 +32,10 @@ function renderCardIntro(pageName) {
       <h2>McDonald's Canada Hockey</h2><p>McDonald's Canada launched the very first "All Star" set during the 1991-92 NHL season, and continued the tradition for the next 18 seasons, finally ending in 2009. And while there was no 2010-11 set, there was one final McKick at the can - a one-off Montreal Canadiens Upper Deck set in 2011-12.</p><p>Early McHockey sets were relatively small All-Star game retrospectives, but over time sets grew in size and dropped the All-Star focus, becoming "regular" hockey sets. </p>
     `;
 
-            const introEl = document.getElementById("card-intro");
-            if (introEl) {
-            introEl.innerHTML = introHTML;
-             }
+    const introEl = document.getElementById("card-intro");
+      if (introEl) {
+        introEl.innerHTML = introHTML;
+      }
   }
 } // end renderCardIntro()
 
