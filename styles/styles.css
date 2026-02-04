@@ -393,6 +393,11 @@ textarea {
   font-family: 'Nunito Sans', sans-serif;
 }
 
+#cardSetDiv {
+  min-height: 750px;   /* small amount of pre-setting for set review height - soften the impact for CLS */
+}
+
+
 
 /* Used to style the first table displaying the main set details */
 
@@ -415,8 +420,6 @@ textarea {
 .set-details-table-style td:first-child {
   max-width: 60%;
 }
-
-
 
 .card-table-style td{
   margin-left: 5px;
