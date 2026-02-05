@@ -275,7 +275,7 @@ textarea {
   background-image: url('images/wax-reviews-masthead-bg.png');
   background-size: cover;
   background-position: center;
-  filter: blur(3px); /* adjust strength */
+  filter: blur(5px); /* adjust strength */
   transform: scale(1.05); /* prevents blur from clipping at edges */
   z-index: 0;
 }
