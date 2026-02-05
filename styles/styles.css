@@ -271,15 +271,15 @@ textarea {
   font-size: 128px;
   text-transform: uppercase;
   text-decoration: none;
-  color: rgb(222, 227, 240);
+  color: rgb(255, 248, 220);
   display: inline-block;
   padding-left: 20px;
   line-height: 150px;
   text-shadow:
-    -2px -2px 0 #142240,
-     2px -2px 0 #142240,
-    -2px  2px 0 #142240,
-     2px  2px 0 #142240;
+    -2px -2px 0 rgb(0, 38, 84),
+     2px -2px 0 rgb(0, 38, 84),
+    -2px  2px 0 rgb(0, 38, 84),
+     2px  2px 0 rgb(0, 38, 84);
 }
 
 
