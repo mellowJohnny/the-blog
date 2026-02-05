@@ -272,7 +272,8 @@ textarea {
   text-transform: uppercase;
   text-decoration: none;
   color: rgb(252, 252, 245);
-  display: inline-block;
+  display: flex;
+  align-items: center;
   padding-left: 20px;
   line-height: 150px;
   text-shadow:
