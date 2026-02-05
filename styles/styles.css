@@ -280,6 +280,15 @@ textarea {
   z-index: 0;
 }
 
+.wax-reviews-mast-table::after { /* Adds a tint */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 240, 0.25); /* soft cream tint */
+  z-index: 0;
+}
+
+
 .wax-reviews-masthead a {
   font-family: Bebas Neue;
   font-weight: 500;
