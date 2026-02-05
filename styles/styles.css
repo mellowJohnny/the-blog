@@ -305,7 +305,7 @@ textarea {
   z-index: 1; /* keeps text above the blur */
   text-transform: uppercase;
   text-decoration: none;
-  color: rgb(252, 252, 245);
+  color: rgb(249, 249, 245);
   display: flex;
   align-items: center;
   padding-left: 20px;
