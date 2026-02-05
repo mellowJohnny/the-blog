@@ -267,11 +267,11 @@ textarea {
 }
 
 .wax-reviews-masthead a {
-  font-size: 96px;
+  font-size: 136px;
   font-weight: bold;
   text-transform: uppercase;
   text-decoration: none;
-  color: white;
+  color: rgb(4, 22, 67);
   display: inline-block;
   padding-left: 20px;
   line-height: 150px;
