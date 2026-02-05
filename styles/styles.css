@@ -28,6 +28,12 @@ messing up the layout with white borders and scoll bars
     color: #3FA7D6;
 }
 
+h1 {
+  font-size: 2.5rem;
+  line-height: 1.1;
+}
+
+
   .blog-img {
     border: 3px solid rgb(5, 60, 82);
     border-radius: 4px;
