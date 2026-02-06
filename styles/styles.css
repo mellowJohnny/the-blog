@@ -156,7 +156,8 @@ hr {
 
 a {
   text-decoration: none;
-  color: rgb(12, 101, 136);
+  /* color: rgb(12, 101, 136); */
+  color: rgb(2, 70, 153)
 }
 
 .header-link {
