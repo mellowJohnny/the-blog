@@ -796,6 +796,23 @@ textarea {
     font-size: 16px;
   }
 
+  .wax-reviews-masthead a {
+    font-size: 48px;          /* Scales down from 128px */
+    height: 90px;             /* Matches reduced text size */
+    padding-left: 12px;       /* Keeps left alignment tight */
+    padding-top: 10px;        /* Centers vertically */
+    text-shadow:
+      -1px -1px 0 rgb(2, 70, 153),
+       1px -1px 0 rgb(2, 70, 153),
+      -1px  1px 0 rgb(2, 70, 153),
+       1px  1px 0 rgb(2, 70, 153);
+  }
+
+  .wax-reviews-mast-table {
+    height: 90px;             /* Match the reduced masthead height */
+  }
+
+
   /* Flex container should not force 1000px width */
   .flex-container div {
     width: 100%;
