@@ -318,10 +318,10 @@ textarea {
   padding-top: 14px;
   height: 150px;
   text-shadow:
-    -2px -2px 0 rgb(0, 38, 84),
-     2px -2px 0 rgb(0, 38, 84),
-    -2px  2px 0 rgb(0, 38, 84),
-     2px  2px 0 rgb(0, 38, 84);
+    -2px -2px 0 rgb(1, 50, 110),
+     2px -2px 0 rgb(1, 50, 110),
+    -2px  2px 0 rgb(1, 50, 110),
+     2px  2px 0 rgb(1, 50, 110);
 }
 
 
