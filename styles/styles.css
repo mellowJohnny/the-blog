@@ -483,8 +483,8 @@ textarea {
   table-layout: fixed;
   margin-left: 5px;
   margin-right: 5px;
-  /* font-family: 'Special Elite', sans-serif; */
-  font-family: 'Bebas Neue';
+   font-family: 'Special Elite', sans-serif; 
+  /* font-family: 'Bebas Neue';  */
   font-size: 18px;
   text-align: left;
   padding: 2px 4px;
