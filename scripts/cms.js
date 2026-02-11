@@ -1217,6 +1217,37 @@ function fetchBlogByID(id,type) {
   document.getElementById("footerImgName").value = footerImgName;
 }
 
+//* Preview Modal Functions - Open / close the modal, and render the preview
+function openPreview() {
+  const year = document.getElementById("year").value;
+  const blogCat = document.getElementById("blogCat").value;
+
+  const url = `https://su4mf7qz7h.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      renderPreview(data.Items);
+      document.getElementById("previewModal").style.display = "block";
+    });
+}
+
+function renderPreview(items) {
+  const container = document.getElementById("previewContainer");
+  container.innerHTML = "";
+
+  items.forEach(item => {
+    const html = displayCardSet(item); // your existing renderer
+    container.appendChild(html);
+  });
+}
+
+function closePreview() {
+  document.getElementById("previewModal").style.display = "none";
+}
+
+
+
 
 //************* Helper functions to change CMS Submit state *************
 
