@@ -1231,7 +1231,7 @@ function openPreview() {
     .then(res => res.json())
     .then(data => {
       // debug
-      console.log("Preview API response:", data);
+      console.log(`Preview API response: ${data}`);
       console.log(`Just about to call renderPreview, items is: ${data.Items}`)
       renderPreview(data.Items);
       
