@@ -1217,7 +1217,36 @@ function fetchBlogByID(id,type) {
   document.getElementById("footerImgName").value = footerImgName;
 }
 
-function displayCardSetPreview(item) {
+
+//********************************************* Preview Modal Functions ********************************************* 
+// - Open / close the modal, and render the preview
+
+function openPreview() {
+
+  // Let's set up the some constants to hold the current values in the form
+  const year = document.getElementById("year").value;
+  const author = document.getElementById("author").value;
+  const mfg = document.getElementById("mfg").value;
+  const size = document.getElementById("size").value;
+  const subsets = document.getElementById("subsets").value;
+  const stars = document.getElementById("stars").value;
+  const formats = document.getElementById("formats").value;
+  const setName = document.getElementById("setName").value;
+  const headerImg = document.getElementById("headerImgName").value;
+  const footerImg = document.getElementById("footerImgName").value;
+  // Get TinyMCE content
+  const postBody = tinymce.get("postBody").getContent();
+
+  // Call the render function
+  renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,postBody);
+      
+  document.getElementById("previewModal").style.display = "block";
+
+}
+
+
+function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,postBody) {
+  
   const {
     postBody,
     year,
@@ -1227,9 +1256,7 @@ function displayCardSetPreview(item) {
     stars,
     formats,
     headerImg,
-    headerImgName,
     footerImg,
-    footerImgName,
     setName,
     author,
     now
@@ -1257,7 +1284,7 @@ function displayCardSetPreview(item) {
                 <strong>${setName}</strong>
             </td>
             <td rowspan="7" class="header-img-cell" style="width: 75%; text-align: center;">
-                <img src="${headerImg}${headerImgName}" 
+                <img src="${headerImg} 
                 class="table-header-img" 
                 fetchpriority="high"
                 alt="Vintage hockey cards from the ${year} ${mfg} set"
@@ -1306,7 +1333,7 @@ function displayCardSetPreview(item) {
         </tr>
         <tr>
             <td style="text-align:center">
-                <img src="${footerImg}${footerImgName}" 
+                <img src="${footerImg}" 
                 class="table-footer-img" 
                 loading="lazy" 
                 alt="Vintage hockey cards from the ${year} ${mfg} set"
@@ -1321,45 +1348,6 @@ function displayCardSetPreview(item) {
     <br><br>
   `;
 }
-
-
-//* Preview Modal Functions - Open / close the modal, and render the preview
-function openPreview() {
-  const year = document.getElementById("year").value;
-  const blogCat = document.getElementById("blogCat").value;
-
-  //debug
-  console.log(`In openPreview with: ${year}, ${blogCat}`)
-
- const url = `https://su4mf7qz7h.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
-
-  fetch(url)
-    .then(res => res.json())
-    .then(data => {
-      // debug
-      console.log(`Preview API response - this is the raw data: ${data}`);
-      renderPreview(data);
-      
-      document.getElementById("previewModal").style.display = "block";
-    });
-}
-
-
-function renderPreview(items) {
-  const container = document.getElementById("previewContainer");
-  container.innerHTML = "";
-
-  if (!Array.isArray(items)) {
-    console.warn("Preview returned non-array:", items);
-    return;
-  }
-
-  items.forEach(item => {
-    displayCardSetPreview(item);
-  });
-}
-
-
 
 function closePreview() {
   document.getElementById("previewModal").style.display = "none";
