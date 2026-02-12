@@ -1230,9 +1230,10 @@ function openPreview() {
   fetch(url)
     .then(res => res.json())
     .then(data => {
-      renderPreview(data.Items);
       // debug
-      console.log(`Calling renderPreview, items is: ${data.Items}`)
+      console.log(`Just about to call renderPreview, items is: ${data.Items}`)
+      renderPreview(data.Items);
+      
       document.getElementById("previewModal").style.display = "block";
     });
 }
