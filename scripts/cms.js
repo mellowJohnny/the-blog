@@ -1222,6 +1222,9 @@ function openPreview() {
   const year = document.getElementById("year").value;
   const blogCat = document.getElementById("blogCat").value;
 
+  //debug
+  console.log(`In openPreview with: ${year}, ${blogCat}`)
+
   const url = `https://su4mf7qz7h.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
 
   fetch(url)
