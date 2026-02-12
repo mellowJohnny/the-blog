@@ -1217,6 +1217,112 @@ function fetchBlogByID(id,type) {
   document.getElementById("footerImgName").value = footerImgName;
 }
 
+function displayCardSetPreview(item) {
+  const {
+    postBody,
+    year,
+    mfg,
+    size,
+    subsets,
+    stars,
+    formats,
+    headerImg,
+    headerImgName,
+    footerImg,
+    footerImgName,
+    setName,
+    author,
+    now
+  } = item;
+
+  // Convert stars to a number
+  const numStars = parseInt(stars);
+
+  // Generate star emojis
+  let cleanStars = "";
+  for (let i = 0; i < numStars; i++) {
+    cleanStars += "&#127775; ";
+  }
+
+  // Reading time (same helper as live site)
+  const readingStats = estimateReadingTime(postBody);
+
+  // Write into previewContainer instead of cardSetDiv
+  const container = document.getElementById("previewContainer");
+
+  container.innerHTML += `
+    <table class="set-details-table-style">
+        <tr>
+            <td style="width: 25%; font-size: 20px;">
+                <strong>${setName}</strong>
+            </td>
+            <td rowspan="7" class="header-img-cell" style="width: 75%; text-align: center;">
+                <img src="${headerImg}${headerImgName}" 
+                class="table-header-img" 
+                fetchpriority="high"
+                alt="Vintage hockey cards from the ${year} ${mfg} set"
+                width="620"
+                height="285">
+            </td>
+        </tr>
+
+        <tr>
+            <td><strong><i>Set Size:</i></strong> ${size}</td>
+        </tr>
+        <tr>
+            <td><strong><i>Inserts:</i></strong> ${subsets}</td>
+        </tr>
+        <tr>
+            <td><strong><i>Release Year:</i></strong> ${year}</td>
+        </tr>
+        <tr>
+            <td><strong><i>Formats:</i></strong> ${formats}</td>
+        </tr>
+        <tr>
+            <td><strong><i>Manufacturer:</i></strong> ${mfg}</td>
+        </tr>
+        <tr>
+            <td><strong><i>Hella Rating:</i></strong> ${cleanStars}</td>
+        </tr>
+    </table>
+    <br>
+    <table class="set-details-author">
+      <tr>
+        <td>
+            <strong><i>${author}, ${fixDate(now)}</i></strong><br>
+            <strong><i>${readingStats.minutes} minute read</i></strong>
+        </td>
+      </tr>
+      <tr>
+        <td>${postBody}</td>
+      </tr>
+    </table>
+
+    <table class="set-footer-table-style">
+        <tr>
+            <td style="text-align:left" class="caption">
+                <strong>...and the winners are...</strong>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align:center">
+                <img src="${footerImg}${footerImgName}" 
+                class="table-footer-img" 
+                loading="lazy" 
+                alt="Vintage hockey cards from the ${year} ${mfg} set"
+                width="890"
+                height="325">
+            </td>
+        </tr>
+    </table>
+
+    <br>
+    <hr/>
+    <br><br>
+  `;
+}
+
+
 //* Preview Modal Functions - Open / close the modal, and render the preview
 function openPreview() {
   const year = document.getElementById("year").value;
@@ -1244,14 +1350,17 @@ function renderPreview(items) {
   const container = document.getElementById("previewContainer");
   container.innerHTML = "";
 
-  // debug
-  console.log(`In renderPreview, items is: ${items}`)
+  if (!Array.isArray(items)) {
+    console.warn("Preview returned non-array:", items);
+    return;
+  }
 
   items.forEach(item => {
-    const html = displayCardSet(item); // your existing renderer
-    container.appendChild(html);
+    displayCardSetPreview(item);
   });
 }
+
+
 
 function closePreview() {
   document.getElementById("previewModal").style.display = "none";
