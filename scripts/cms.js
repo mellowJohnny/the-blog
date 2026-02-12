@@ -1231,6 +1231,8 @@ function openPreview() {
     .then(res => res.json())
     .then(data => {
       renderPreview(data.Items);
+      // debug
+      console.log(`Calling renderPreview, items is: ${data.Items}`)
       document.getElementById("previewModal").style.display = "block";
     });
 }
