@@ -1235,20 +1235,20 @@ function openPreview() {
   const headerImg = document.getElementById("headerImgName").value;
   const footerImg = document.getElementById("footerImgName").value;
   // Get TinyMCE content
-  const tinyBody = tinymce.get("postBody").getContent();
+  const cardBody = tinymce.get("postBody").getContent();
 
   // Call the render function
-  renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,tinyBody);
+  renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,cardBody);
       
   document.getElementById("previewModal").style.display = "block";
 
 }
 
 
-function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,tinyBody) {
+function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,cardBody) {
   
   const {
-    tinyBody,
+    cardBody,
     year,
     mfg,
     size,
@@ -1272,7 +1272,7 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
   }
 
   // Reading time (same helper as live site)
-  const readingStats = estimateReadingTime(postBody);
+  const readingStats = estimateReadingTime(cardBody);
 
   // Write into previewContainer instead of cardSetDiv
   const container = document.getElementById("previewContainer");
@@ -1321,7 +1321,7 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
         </td>
       </tr>
       <tr>
-        <td>${tinyBody}</td>
+        <td>${cardBody}</td>
       </tr>
     </table>
 
