@@ -1331,8 +1331,8 @@ function openPreview() {
   //debug
   console.log(`In openPreview with: ${year}, ${blogCat}`)
 
-  const url = `https://su4mf7qz7h.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
-
+ // const url = `https://su4mf7qz7h.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
+const url = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
   fetch(url)
     .then(res => res.json())
     .then(data => {
