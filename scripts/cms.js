@@ -1239,6 +1239,9 @@ function renderPreview(items) {
   const container = document.getElementById("previewContainer");
   container.innerHTML = "";
 
+  // debug
+  console.log(`In renderPreview, items is: ${items}`)
+
   items.forEach(item => {
     const html = displayCardSet(item); // your existing renderer
     container.appendChild(html);
