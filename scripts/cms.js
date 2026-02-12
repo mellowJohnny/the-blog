@@ -1247,21 +1247,6 @@ function openPreview() {
 
 function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,cardBody) {
   
-  const {
-    cardBody,
-    year,
-    mfg,
-    size,
-    subsets,
-    stars,
-    formats,
-    headerImg,
-    footerImg,
-    setName,
-    author,
-    now
-  } = item;
-
   // Convert stars to a number
   const numStars = parseInt(stars);
 
