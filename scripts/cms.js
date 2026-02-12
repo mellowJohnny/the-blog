@@ -1237,6 +1237,7 @@ function openPreview() {
       document.getElementById("previewModal").style.display = "block";
     });
 }
+console.log("Preview response:", data);
 
 function renderPreview(items) {
   const container = document.getElementById("previewContainer");
