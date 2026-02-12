@@ -1231,13 +1231,14 @@ function openPreview() {
     .then(res => res.json())
     .then(data => {
       // debug
+      console.log("Preview API response:", data);
       console.log(`Just about to call renderPreview, items is: ${data.Items}`)
       renderPreview(data.Items);
       
       document.getElementById("previewModal").style.display = "block";
     });
 }
-console.log("Preview response:", data);
+
 
 function renderPreview(items) {
   const container = document.getElementById("previewContainer");
