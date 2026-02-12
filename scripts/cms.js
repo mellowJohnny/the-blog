@@ -1235,20 +1235,20 @@ function openPreview() {
   const headerImg = document.getElementById("headerImgName").value;
   const footerImg = document.getElementById("footerImgName").value;
   // Get TinyMCE content
-  const postBody = tinymce.get("postBody").getContent();
+  const tinyBody = tinymce.get("postBody").getContent();
 
   // Call the render function
-  renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,postBody);
+  renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,tinyBody);
       
   document.getElementById("previewModal").style.display = "block";
 
 }
 
 
-function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,postBody) {
+function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,tinyBody) {
   
   const {
-    postBody,
+    tinyBody,
     year,
     mfg,
     size,
@@ -1321,7 +1321,7 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
         </td>
       </tr>
       <tr>
-        <td>${postBody}</td>
+        <td>${tinyBody}</td>
       </tr>
     </table>
 
