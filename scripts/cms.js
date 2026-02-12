@@ -1337,8 +1337,7 @@ function openPreview() {
     .then(res => res.json())
     .then(data => {
       // debug
-      console.log(`Preview API response: ${data}`);
-      console.log(`Just about to call renderPreview, items is: ${data.Items}`)
+      console.log(`Preview API response - this is the raw data: ${data}`);
       renderPreview(data);
       
       document.getElementById("previewModal").style.display = "block";
