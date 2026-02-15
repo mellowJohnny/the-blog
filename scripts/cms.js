@@ -1245,7 +1245,7 @@ function openPreview() {
 }
 
 
-function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,cardBody) {
+function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,body) {
   
   // Convert stars to a number
   const numStars = parseInt(stars);
@@ -1257,7 +1257,7 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
   }
 
   // Reading time (same helper as live site)
-  const readingStats = estimateReadingTime(cardBody);
+  const readingStats = estimateReadingTime(body);
 
   // Write into previewContainer instead of cardSetDiv
   const container = document.getElementById("previewContainer");
@@ -1306,7 +1306,7 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
         </td>
       </tr>
       <tr>
-        <td>${cardBody}</td>
+        <td>${body}</td>
       </tr>
     </table>
 
