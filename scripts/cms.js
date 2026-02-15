@@ -1269,7 +1269,7 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
                 <strong>${setName}</strong>
             </td>
             <td rowspan="7" class="header-img-cell" style="width: 75%; text-align: center;">
-                <img src="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cards/${headerImg} 
+                <img src="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cards/${headerImg}"
                 class="table-header-img" 
                 fetchpriority="high"
                 alt="Vintage hockey cards from the ${year} ${mfg} set"
