@@ -1301,7 +1301,7 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
     <table class="set-details-author">
       <tr>
         <td>
-            <strong><i>${author}, ${fixDate(now)}</i></strong><br>
+            <strong><i>${author}</i></strong><br>
             <strong><i>${readingStats.minutes} minute read</i></strong>
         </td>
       </tr>
