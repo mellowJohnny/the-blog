@@ -775,14 +775,14 @@ textarea {
   width: 1100px;
   max-width: 95vw;
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: 'Source Sans 3', sans-serif;
 }
 
 /* Adding this here to try and break Preview Modal from inheriting from other rule */
 /* Break all inherited typography inside the preview modal */
 .preview-modal,
 .preview-modal * {
-  font-family: 'Bebas Neue', sans-serif !important;
+  font-family: 'Source Sans 3', sans-serif !important;
   font-size: inherit;
   text-align: left;
 }
@@ -813,7 +813,7 @@ textarea {
   margin-bottom: 20px;
   font-size: 18px;
   line-height: 1.4;
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Source Sans 3', sans-serif
 }
 
 /* Apply Special Elite to ALL descendants of the set-details tables */
