@@ -473,10 +473,6 @@ textarea {
   min-height: 750px;   /* small amount of pre-setting for set review height - soften the impact for CLS */
 }
 
-
-
-
-
 /* Used to style the first table displaying the main set details */
 
 .set-details-table-style td {
@@ -786,6 +782,33 @@ textarea {
 .weather-condensed {
   font-family: 'Work Sans', sans-serif;
 }
+
+/* ----------------------------------------- CMS Modal Styles -------------------------------------- */
+/* Apply live-site card set styles inside the preview modal */
+#previewContainer table.set-details-table-style,
+#previewContainer table.set-details-author,
+#previewContainer table.set-footer-table-style {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+#previewContainer img.table-header-img,
+#previewContainer img.table-footer-img {
+  max-width: 100%;
+  height: auto;
+}
+
+#previewContainer .header-img-cell {
+  text-align: center;
+  vertical-align: top;
+}
+
+#previewContainer .caption {
+  font-size: 18px;
+  font-weight: bold;
+}
+
 
 
 /* ========================================================================================================================
