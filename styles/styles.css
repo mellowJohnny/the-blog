@@ -813,7 +813,7 @@ textarea {
   margin-bottom: 20px;
   font-size: 18px;
   line-height: 1.4;
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: 'Bebas Neue', sans-serif;
 }
 
 /* Special Elite for the left column of the header table */
@@ -825,7 +825,7 @@ textarea {
 #previewContainer .card-table-style td {
   text-align: left !important;
   font-style: normal !important;
-  font-family: 'Nunito Sans', sans-serif !important;
+  font-family: 'Bebas Neue', sans-serif !important;
 }
 
 /* General table cell styling */
