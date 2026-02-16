@@ -817,22 +817,18 @@ textarea {
 }
 
 /* Apply Special Elite to ALL descendants of the set-details tables */
-.preview-modal #previewContainer table.set-details-table-style td,
-.preview-modal #previewContainer table.set-details-table-style td * {
+/* Ensure hard-coded field labels use Special Elite */
+.preview-modal #previewContainer table.set-details-table-style td strong,
+.preview-modal #previewContainer table.set-details-table-style td i {
   font-family: 'Special Elite', sans-serif !important;
 }
 
-.preview-modal #previewContainer table.set-details-author td,
-.preview-modal #previewContainer table.set-details-author td * {
+.preview-modal #previewContainer table.set-details-author td strong,
+.preview-modal #previewContainer table.set-details-author td i,
+.preview-modal #previewContainer table.set-footer-table-style td strong,
+.preview-modal #previewContainer table.set-footer-table-style td i {
   font-family: 'Special Elite', sans-serif !important;
 }
-
-.preview-modal #previewContainer table.set-footer-table-style td,
-.preview-modal #previewContainer table.set-footer-table-style td * {
-  font-family: 'Special Elite', sans-serif !important;
-}
-
-
 
 /* Override card-table-style inside preview */
 #previewContainer .card-table-style td {
