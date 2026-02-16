@@ -783,44 +783,48 @@ textarea {
   font-family: 'Work Sans', sans-serif;
 }
 
-/* ----------------------------------------- CMS Modal Styles -------------------------------------- */
-/* Apply live-site card set styles inside the preview modal */
-/* Make preview modal wider */
-.modal-content.preview-content {
-  width: 900px;
-  max-width: 95vw;
-  margin: 40px auto;
-}
 
-/* Apply card-set styles inside the preview modal */
-#previewContainer table.set-details-table-style,
-#previewContainer table.set-details-author,
-#previewContainer table.set-footer-table-style {
+/* ================================
+   PREVIEW MODAL (overlay + box)
+   ================================ */
+
+/* Modal overlay */
+#previewModal.modal {
+  display: none;               /* Hidden by default */
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
   width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
+  height: 100%;
+  overflow-y: auto;
+  background-color: rgba(0,0,0,0.6);
+  padding-top: 40px;
 }
 
-#previewContainer td {
-  padding: 6px 4px;
-  font-size: 16px;
+/* Modal inner box */
+.modal-content.preview-content {
+  background-color: #fff;
+  margin: 40px auto;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  width: 900px;                /* Main width */
+  max-width: 95vw;             /* Responsive fallback */
 }
 
-#previewContainer img.table-header-img,
-#previewContainer img.table-footer-img {
-  max-width: 100%;
-  height: auto;
-}
-
-#previewContainer .header-img-cell {
-  text-align: center;
-  vertical-align: top;
-}
-
-#previewContainer .caption {
-  font-size: 18px;
+/* Close button */
+#previewModal .close {
+  color: #888;
+  float: right;
+  font-size: 32px;
   font-weight: bold;
+  cursor: pointer;
 }
+
+#previewModal .close:hover {
+  color: #000
+
 
 
 
