@@ -785,12 +785,25 @@ textarea {
 
 /* ----------------------------------------- CMS Modal Styles -------------------------------------- */
 /* Apply live-site card set styles inside the preview modal */
+/* Make preview modal wider */
+.modal-content.preview-content {
+  width: 900px;
+  max-width: 95vw;
+  margin: 40px auto;
+}
+
+/* Apply card-set styles inside the preview modal */
 #previewContainer table.set-details-table-style,
 #previewContainer table.set-details-author,
 #previewContainer table.set-footer-table-style {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
+}
+
+#previewContainer td {
+  padding: 6px 4px;
+  font-size: 16px;
 }
 
 #previewContainer img.table-header-img,
@@ -808,6 +821,7 @@ textarea {
   font-size: 18px;
   font-weight: bold;
 }
+
 
 
 
