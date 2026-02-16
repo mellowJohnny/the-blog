@@ -830,12 +830,15 @@ textarea {
   vertical-align: top;
 }
 
-#previewModal #previewContainer .caption {
+#previewModal #previewContainer p.caption {
   font-family: "Special Elite" !important;
   font-size: 16px !important;
   font-weight: bold !important;
   text-align: left !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
+
 
 
 #previewContainer .card-table-style td {
