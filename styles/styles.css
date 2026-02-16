@@ -815,6 +815,10 @@ textarea {
   height: auto;
 }
 
+#previewContainer td {
+  text-align: left;
+}
+
 #previewContainer .header-img-cell {
   text-align: center;
   vertical-align: top;
