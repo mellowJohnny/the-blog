@@ -643,7 +643,9 @@ textarea {
   display: block;
 }
 
-/*********************** MODAL *******************/
+/**********************************************************
+*********************** S3 BUCKET MODAL *******************
+***********************************************************/
 
 /* The Modal (background) */
 .modal {
@@ -783,17 +785,52 @@ textarea {
   font-family: 'Work Sans', sans-serif;
 }
 
-/* ----------------------------------------- CMS Modal Styles -------------------------------------- */
-/* Apply live-site card set styles inside the preview modal */
-/* Make preview modal wider */
-.modal-content.preview-content {
-  width: 1100px;
-  max-width: 95vw;
-  margin: 40px auto;
-  background-color: #cde5f1;
+/* ============================================
+   PREVIEW MODAL — OVERLAY + CONTENT BOX
+   Completely isolated from the CMS image-picker modal
+   ============================================ */
+
+/* Modal overlay */
+.preview-modal {
+  display: none;               /* Hidden by default */
+  position: fixed;
+  z-index: 9999;
+  inset: 0;                    /* shorthand for top/left/right/bottom: 0 */
+  background-color: rgba(0,0,0,0.6);
+  overflow-y: auto;
+  padding-top: 40px;
 }
 
-/* Apply card-set styles inside the preview modal */
+/* Modal content box */
+.preview-modal-content {
+  background-color: #cde5f1;
+  margin: 40px auto;
+  padding: 20px 30px;
+  border-radius: 8px;
+  width: 1100px;
+  max-width: 95vw;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+/* Close button */
+.preview-modal .close {
+  float: right;
+  font-size: 32px;
+  font-weight: bold;
+  color: #444;
+  cursor: pointer;
+}
+.preview-modal .close:hover {
+  color: #000;
+}
+
+
+/* ============================================
+   PREVIEW CONTENT — CARD-SET STYLING
+   Matches the live site, scoped only to preview
+   ============================================ */
+
 #previewContainer table.set-details-table-style,
 #previewContainer table.set-details-author,
 #previewContainer table.set-footer-table-style {
@@ -805,32 +842,33 @@ textarea {
   font-family: 'Nunito Sans', sans-serif;
 }
 
-#previewContainer table.set-details-table-style td { 
+/* Special Elite for the left column of the header table */
+#previewContainer table.set-details-table-style td {
   font-family: 'Special Elite', sans-serif;
 }
 
-
+/* General table cell styling */
 #previewContainer td {
   padding: 6px 4px;
   font-size: 16px;
+  text-align: left;
 }
 
+/* Header + footer images */
 #previewContainer img.table-header-img,
 #previewContainer img.table-footer-img {
   max-width: 100%;
   height: auto;
 }
 
-#previewContainer td {
-  text-align: left;
-}
-
+/* Center only the header image cell */
 #previewContainer .header-img-cell {
   text-align: center;
   vertical-align: top;
 }
 
-#previewModal #previewContainer p.caption {
+/* Caption styling */
+.preview-modal #previewContainer p.caption {
   font-family: "Special Elite" !important;
   font-size: 16px !important;
   font-weight: bold !important;
@@ -839,13 +877,14 @@ textarea {
   padding: 0 !important;
 }
 
-
-
+/* Override card-table-style inside preview */
 #previewContainer .card-table-style td {
   text-align: left !important;
   font-style: normal !important;
   font-family: 'Nunito Sans', sans-serif !important;
 }
+
+
 
 
 
