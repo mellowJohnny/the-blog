@@ -782,7 +782,7 @@ textarea {
 /* Break all inherited typography inside the preview modal */
 .preview-modal,
 .preview-modal * {
-  font-family: 'Nunito Sans', sans-serif !important;
+  font-family: 'Bebas Neue', sans-serif !important;
   font-size: inherit;
   text-align: left;
 }
@@ -829,13 +829,6 @@ textarea {
 .preview-modal #previewContainer table.set-footer-table-style td i {
   font-family: 'Special Elite', sans-serif !important;
 }
-
-/* Override card-table-style inside preview 
-#previewContainer .card-table-style td {
-  text-align: left !important;
-  font-style: normal !important;
-  font-family: 'Bebas Neue', sans-serif !important;
-} */
 
 /* General table cell styling */
 #previewContainer td {
