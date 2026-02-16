@@ -787,7 +787,7 @@ textarea {
 /* Apply live-site card set styles inside the preview modal */
 /* Make preview modal wider */
 .modal-content.preview-content {
-  width: 1000px;
+  width: 1100px;
   max-width: 95vw;
   margin: 40px auto;
   background-color: #cde5f1;
