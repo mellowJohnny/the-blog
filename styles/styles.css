@@ -799,6 +799,9 @@ textarea {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
+  font-size: 18px;
+  line-height: 1.4;
+  font-family: 'Nunito Sans', sans-serif;
 }
 
 #previewContainer td {
