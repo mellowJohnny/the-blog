@@ -790,7 +790,7 @@ textarea {
   width: 900px;
   max-width: 95vw;
   margin: 40px auto;
-  background-color: #a0dffe;
+  background-color: #bde4f8;
 }
 
 /* Apply card-set styles inside the preview modal */
@@ -825,11 +825,13 @@ textarea {
   vertical-align: top;
 }
 
-#previewContainer .caption {
-  font-family: "Special Elite";
-  font-size: 16px;
-  font-weight: bold;
+#previewModal #previewContainer .caption {
+  font-family: "Special Elite" !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  text-align: left !important;
 }
+
 
 #previewContainer .card-table-style td {
   text-align: left !important;
