@@ -1336,6 +1336,8 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
 
 function closePreview() {
   document.getElementById("previewModal").style.display = "none";
+  document.getElementById("previewContainer").innerHTML = ""; // Clear the modal
+
 }
 
 
