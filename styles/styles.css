@@ -800,10 +800,10 @@ textarea {
 }
 
 
-/* ============================================
-   PREVIEW CONTENT — CARD-SET STYLING
-   Matches the live site, scoped only to preview
-   ============================================ */
+/* ****************************************************************************************************
+   ********************************     PREVIEW CONTENT — CARD-SET STYLING ****************************
+                                  Matches the live site, scoped only to preview
+   ****************************************************************************************************/
 
 #previewContainer table.set-details-table-style,
 #previewContainer table.set-details-author,
