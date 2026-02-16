@@ -778,6 +778,15 @@ textarea {
   font-family: 'Nunito Sans', sans-serif;
 }
 
+/* Adding this here to try and break Preview Modal from inheriting from other rule */
+/* Break all inherited typography inside the preview modal */
+.preview-modal,
+.preview-modal * {
+  font-family: 'Nunito Sans', sans-serif !important;
+  font-size: inherit;
+  text-align: left;
+}
+
 /* Close button */
 .preview-modal .close {
   float: right;
@@ -812,6 +821,13 @@ textarea {
   font-family: 'Special Elite', sans-serif;
 }
 
+/* Override card-table-style inside preview */
+#previewContainer .card-table-style td {
+  text-align: left !important;
+  font-style: normal !important;
+  font-family: 'Nunito Sans', sans-serif !important;
+}
+
 /* General table cell styling */
 #previewContainer td {
   padding: 6px 4px;
@@ -842,12 +858,7 @@ textarea {
   padding: 0 !important;
 }
 
-/* Override card-table-style inside preview */
-#previewContainer .card-table-style td {
-  text-align: left !important;
-  font-style: normal !important;
-  font-family: 'Nunito Sans', sans-serif !important;
-}
+
 
 
 
@@ -1128,23 +1139,8 @@ textarea {
   }
 }
 
-/* Adding this here to try and break Preview Modal from inheriting from other rule */
-/* Break all inherited typography inside the preview modal */
-.preview-modal,
-.preview-modal * {
-  font-family: 'Nunito Sans', sans-serif !important;
-  font-size: inherit;
-  text-align: left;
-}
 
-.preview-modal #previewContainer p.caption {
-  font-family: "Special Elite" !important;
-  font-size: 16px !important;
-  font-weight: bold !important;
-  text-align: left !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
+
 
 
 
