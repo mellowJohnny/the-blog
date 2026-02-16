@@ -830,12 +830,12 @@ textarea {
   font-family: 'Special Elite', sans-serif !important;
 }
 
-/* Override card-table-style inside preview */
+/* Override card-table-style inside preview 
 #previewContainer .card-table-style td {
   text-align: left !important;
   font-style: normal !important;
   font-family: 'Bebas Neue', sans-serif !important;
-}
+} */
 
 /* General table cell styling */
 #previewContainer td {
