@@ -790,6 +790,7 @@ textarea {
   width: 900px;
   max-width: 95vw;
   margin: 40px auto;
+  background-color: #a0dffe;
 }
 
 /* Apply card-set styles inside the preview modal */
