@@ -480,7 +480,7 @@ textarea {
   table-layout: fixed;
   margin-left: 5px;
   margin-right: 5px;
-   font-family: 'Special Elite', sans-serif; 
+  font-family: 'Special Elite', sans-serif; 
   /* font-family: 'Bebas Neue';  */
   font-size: 18px;
   text-align: left;
@@ -804,6 +804,11 @@ textarea {
   line-height: 1.4;
   font-family: 'Nunito Sans', sans-serif;
 }
+
+#previewContainer table.set-details-table-style td { 
+  font-family: 'Special Elite', sans-serif;
+}
+
 
 #previewContainer td {
   padding: 6px 4px;
