@@ -1271,13 +1271,9 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
             <td rowspan="7" class="header-img-cell" style="width: 75%; text-align: center;">
                 <img src="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cards/${headerImg}"
                 class="table-header-img" 
-                fetchpriority="high"
-                alt="Vintage hockey cards from the ${year} ${mfg} set"
-                width="620"
-                height="285">
+                alt="Vintage hockey cards from the ${year} ${mfg} set">
             </td>
         </tr>
-
         <tr>
             <td><strong><i>Set Size:</i></strong> ${size}</td>
         </tr>
@@ -1312,7 +1308,7 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
 
     <table class="set-footer-table-style">
         <tr>
-            <td style="text-align:left" class="caption">
+            <td style="text-align:left" font-family="Special Elite" font-size="18px">
                 <strong>...and the winners are...</strong>
             </td>
         </tr>
@@ -1320,10 +1316,7 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
             <td style="text-align:center">
                 <img src="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cards/${footerImg}" 
                 class="table-footer-img" 
-                loading="lazy" 
-                alt="Vintage hockey cards from the ${year} ${mfg} set"
-                width="890"
-                height="325">
+                alt="Vintage hockey cards from the ${year} ${mfg} set">
             </td>
         </tr>
     </table>
