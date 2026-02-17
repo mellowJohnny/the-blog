@@ -262,6 +262,14 @@ textarea {
   padding: 1px 10px 0 10px;
 }
 
+.cms-logo {
+  font-family: 'Source Sans 3';
+  font-size: 7vw;
+  color: #3FA7D6;
+  background-color: rgb(44, 82, 137);
+  padding: 1px 10px 0 10px;
+}
+
 .wax-reviews-mast-table {
   width: 100%;
   height: 150px;
