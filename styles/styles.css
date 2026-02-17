@@ -264,7 +264,8 @@ textarea {
 
 .cms-logo {
   font-family: 'Source Sans 3';
-  font-size: 72px;
+  font-size: 36px;
+  text-align: right;
   color: #3FA7D6;
   background-color: rgb(44, 82, 137);
   padding: 1px 10px 0 10px;
