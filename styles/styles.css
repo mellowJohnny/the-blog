@@ -73,7 +73,7 @@ h1 {
 }
 
 .cms-nav-td {
-  font-family: 'Nunito';
+  font-family: 'Source Sans 3', sans-serif;
   font-size: 24px;
   color:rgb(11, 62, 100);
   margin: 15px;
@@ -81,7 +81,7 @@ h1 {
 }
 
 .cms-top-nav {
-  font-family: 'Nunito';
+  font-family: 'Source Sans 3', sans-serif;
   font-size: 36px;
   font-weight: bold;
   color:rgb(11, 62, 100);
@@ -90,7 +90,7 @@ h1 {
 }
 
 .cms-form-table {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', sans-serif;
   font-size: 18px;
   width: 50%;
   margin: 20px 0;
@@ -403,8 +403,8 @@ textarea {
   font-size: 22px;
   color:rgb(11, 109, 167);
 }
-
-.card-entry { /* NOT USED? waxReviews.html uses blog-entry class*/
+/*
+.card-entry { /* NOT USED? waxReviews.html uses blog-entry class
     font-family: 'Nunito';
     background: rgb(224, 236, 241);
     border-radius: 3px;
@@ -413,17 +413,17 @@ textarea {
     font-weight: 400;
     text-align: left;
     padding: 5px;
-}
+} */
 
 .blurb p {
-  font-family: 'Nunito';
+  font-family: 'Source Sans 3', sans-serif;
   color:rgb(34, 38, 41);
   font-size: 16px;
   text-align: left;
 }
 
 .weather-style p {
-  font-family: 'Nunito', cursive;
+  font-family: 'Source Sans 3', sans-serif;
   font-size: 14px;
   margin: 5px;
   position: relative;
@@ -432,7 +432,7 @@ textarea {
 
  /* The weather box */
 .weather {
-    font-family: 'Work Sans', sans-serif;
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 15px;
     color:rgb(169, 220, 243);
     width: 80%;
@@ -465,7 +465,7 @@ textarea {
   font-size: 18px;
   line-height: 1.4;
   padding: 10px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Source Sans 3', sans-serif;
 }
 
 .set-details-table-style {
@@ -473,7 +473,7 @@ textarea {
   table-layout: fixed;
   font-size: 18px;
   line-height: 1.4;
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: 'Source Sans 3', sans-serif;
 }
 
 #cardSetDiv {
@@ -682,7 +682,7 @@ textarea {
   max-width: 90%;
   border-radius: 8px;
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Source Sans 3', sans-serif;
 }
 
 /* The Close Button */
@@ -1112,7 +1112,7 @@ textarea {
   display: table-cell;
   table-layout: fixed;
   margin: 0; /* Remove side margins */
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: 'Source Sans 3', sans-serif;
   font-size: 18px;
   line-height: 1.4;
   text-align: left;
