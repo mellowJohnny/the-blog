@@ -673,6 +673,14 @@ textarea {
   font-family: 'Source Sans 3', sans-serif;
 }
 
+/* Image list grid */
+#imageList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
 /* The Close Button */
 .close {
   color: #aaa;
@@ -688,9 +696,7 @@ textarea {
   cursor: pointer;
 }
 
-
-
-/* Pagination Styles... */
+/*************************************** Pagination Styles... ********************************/
 .pagination-link {
   font-family: 'Work Sans', sans-serif;
   font-size: 1.4rem;
@@ -718,17 +724,7 @@ textarea {
   margin: 0 10px;
   color: #444;
 }
-/* CMS Image Picker Modal Styling */
 
-/* REMOVED DUPLICATES */
-
-/* Image list grid */
-#imageList {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 12px;
-  margin-top: 20px;
-}
 
 .masthead-container {
   display: flex;

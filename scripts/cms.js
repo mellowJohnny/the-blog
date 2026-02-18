@@ -149,7 +149,12 @@ function renderImageList(files, targetFieldId, filterText = "") {
 
   files
     // ⭐ NEW: The Lambda returns ALL images, so filter only show card images
-    .filter(file => file.startsWith("img/cards/"))
+   // .filter(file => file.startsWith("img/cards/"))
+
+    // Filter out the root directory...
+    .filter(file => file.startsWith("img/cards/") && file.length > "img/cards/".length)
+
+
 
     // Existing search filter
     .filter(file => {
