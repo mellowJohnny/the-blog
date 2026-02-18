@@ -110,10 +110,7 @@
             renderSetPicker(year,blogCat,pageName);
             //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
             fetchCardSetsByYear(year,sortOrder,blogCat);
-            // Dynamically display the copyright year 
-            fetchCopyrightYear();
-            // Dynamically populate the page title
-            //fetchPageTitle();
+            
           });
 
           // Google Analytics 
@@ -170,7 +167,7 @@
       </main>
 
       <footer class="page-footer">
-        <div id="copy"></div> <!-- fetchCopyrightYear() on page load -->
+        <div id="copy"></div> <!-- fetchCopyrightYear() called from fetchCardSetsByYear() on page load -->
       </footer>
 
     </body>

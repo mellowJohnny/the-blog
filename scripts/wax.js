@@ -69,6 +69,9 @@ function renderCardIntro(pageName) {
                 "...Ah, Houston, we've had a problem...";
             console.log("Something went wrong:", err);
         });
+
+        // Dynamically display the copyright year 
+        fetchCopyrightYear();
 }
 
 /**
