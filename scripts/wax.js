@@ -105,7 +105,7 @@ function renderCardSetPage() {
     );
     // Populate the page title
     fetchPageTitle(item.setName);
-    
+    console.log(`In fetchPageTitle: ${item.setName}`);
   });
 
   renderPaginationControls();
