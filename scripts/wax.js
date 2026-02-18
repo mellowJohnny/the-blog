@@ -111,7 +111,8 @@ function renderCardSetPage() {
   renderPaginationControls();
 }
 
-fetchPageTitle(setName) {
+fetchPageTitle(setName) 
+{
   let pageTitle = document.getElementById("pageTitle");
 
     pageTitle.innerHTML += `
