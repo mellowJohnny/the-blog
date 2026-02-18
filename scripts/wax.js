@@ -115,7 +115,6 @@ function renderCardSetPage() {
 function fetchPageTitle(setName) 
 {
   let pageTitle = document.getElementById("pageTitle");
-  console.log(`In fetchPageTitle: ${setName}`);
     pageTitle.innerHTML += `
     <title>${setName}</title>
     `;
