@@ -37,39 +37,6 @@ function renderCardIntro(pageName) {
       }
   }// end renderCardIntro()
 
-
-/** DEPRICATED */
-/** Fetch the Intro text based on pageName param: classicWax, junkWax, timmies, mcdonalds
-function fetchCardIntro(pageName) {
-  const urlToFetch = `https://5asiy29hih.execute-api.us-east-2.amazonaws.com/dev?pageName=${pageName}`;
-
-  fetch(urlToFetch)
-    .then(response => response.json())
-    .then(data => {
-      if (!data.introText) {
-        document.getElementById("card-intro").innerHTML =
-          "...this blog needs no introduction!!";
-        return;
-      }
-
-      document.getElementById("card-intro").innerHTML = data.introText;
-    })
-    .catch(err => {
-      console.log("Something went wrong:", err);
-      document.getElementById("card-intro").innerHTML =
-        "...Ah, Houston, we've had a problem...";
-    });
-}  */
-
-/*********************************************** fetchCardSetsByYear *************************************/
-
- /** 
-    * This function calls an underlying AWS call used to FETCH ALL card sets given a specific year
-    * AWS API Gateway API call - getCardSets end-point
-    * Called on page load from various pages
-    * NEW - Uses pagination
-  */
-
  function fetchCardSetsByYear(year, sortOrder, blogCat) {
 
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
@@ -136,9 +103,20 @@ function renderCardSetPage() {
       item.author,
       item.now
     );
+    // Populate the page title
+    fetchPageTitle(item.setName);
+    
   });
 
   renderPaginationControls();
+}
+
+fetchPageTitle(setName) {
+  let pageTitle = document.getElementById("pageTitle");
+
+    pageTitle.innerHTML += `
+    <title>${setName}</title>
+    `;
 }
 
 
