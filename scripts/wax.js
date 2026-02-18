@@ -105,7 +105,7 @@ function renderCardSetPage() {
     );
     // Populate the page title
     fetchPageTitle(item.setName);
-    console.log(`In fetchPageTitle: ${item.setName}`);
+    
   });
 
   renderPaginationControls();
@@ -115,7 +115,7 @@ function renderCardSetPage() {
 function fetchPageTitle(setName) 
 {
   let pageTitle = document.getElementById("pageTitle");
-
+  console.log(`In fetchPageTitle: ${setName}`);
     pageTitle.innerHTML += `
     <title>${setName}</title>
     `;
