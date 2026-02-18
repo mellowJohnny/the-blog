@@ -274,6 +274,10 @@ textarea {
   display: block;             /* ensures alignment behaves predictably */
 }
 
+.cms-logo::first-letter {
+  color: #F9D342; /* highlight color of each letter */
+}
+
 
 .wax-reviews-mast-table {
   width: 100%;
