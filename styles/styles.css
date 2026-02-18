@@ -274,10 +274,6 @@ textarea {
   display: block;             /* ensures alignment behaves predictably */
 }
 
-.cms-logo .word {
-  display: block;
-}
-
 .cms-logo .word::first-letter {
   color: #F9D342;
 }
