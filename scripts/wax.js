@@ -111,7 +111,8 @@ function renderCardSetPage() {
   renderPaginationControls();
 }
 
-fetchPageTitle(setName) 
+/*************** Dynamically create & render the page title for waxReviews.html ***************** */
+function fetchPageTitle(setName) 
 {
   let pageTitle = document.getElementById("pageTitle");
 
@@ -119,7 +120,6 @@ fetchPageTitle(setName)
     <title>${setName}</title>
     `;
 }
-
 
 /**
  * Function to FORMAT & DISPLAY card sets
