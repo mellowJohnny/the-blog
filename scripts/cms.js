@@ -1014,7 +1014,7 @@ function fetchBlogByID(id,type) {
 
     if (!stagedSets || stagedSets.length === 0) {
       document.getElementById("noStagedBlogsDiv").innerHTML =
-        `...no card sets are currently staged`;
+        `(no staged carde sets right now)`;
       return;
     }
 
