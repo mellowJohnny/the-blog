@@ -119,7 +119,7 @@ function fetchPageTitle(setName)
 {
   let pageTitle = document.getElementById("pageTitle");
     pageTitle.innerHTML += `
-    <title>${setName}</title>
+    <title>Review: ${setName}</title>
     `;
 }
 
