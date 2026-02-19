@@ -244,7 +244,8 @@ function filterImageList() {
   renderImageList(_imageBrowserFiles, _imageBrowserTargetFieldId, filterText);
 }
 
-//* BLOG-SPECIFIC IMAGE PICKER FUNCTIONS */
+//********************************* */ BLOG-SPECIFIC IMAGE PICKER FUNCTIONS *******************************/
+
 let _blogImageFiles = [];
 let _blogImageTargetFieldId = null;
 
@@ -262,7 +263,7 @@ function openBlogImageBrowser(targetFieldId) {
     modal.style.display = "block";
   });
 }
-
+/*
 function fetchBlogImageList() {
   return fetch("https://y3d5n8hq61.execute-api.us-east-2.amazonaws.com/dev") // same Lambda
     .then(res => res.json())
@@ -270,7 +271,18 @@ function fetchBlogImageList() {
       // Filter only blog images
       return (data.files || []).filter(f => f.startsWith("img/blog/"));
     });
+} */
+
+function fetchBlogImageList() {
+  return fetch("https://y3d5n8hq61.execute-api.us-east-2.amazonaws.com/dev")
+    .then(res => res.json())
+    .then(data => {
+      return (data.files || [])
+        .filter(f => f.startsWith("img/blog/"))
+        .filter(f => !f.endsWith("/"));   // ⭐ exclude the root directory
+    });
 }
+
 
 
 function renderBlogImageList(files, targetFieldId, filterText = "") {
