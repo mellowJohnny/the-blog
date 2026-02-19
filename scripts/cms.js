@@ -263,15 +263,6 @@ function openBlogImageBrowser(targetFieldId) {
     modal.style.display = "block";
   });
 }
-/*
-function fetchBlogImageList() {
-  return fetch("https://y3d5n8hq61.execute-api.us-east-2.amazonaws.com/dev") // same Lambda
-    .then(res => res.json())
-    .then(data => {
-      // Filter only blog images
-      return (data.files || []).filter(f => f.startsWith("img/blog/"));
-    });
-} */
 
 function fetchBlogImageList() {
   return fetch("https://y3d5n8hq61.execute-api.us-east-2.amazonaws.com/dev")

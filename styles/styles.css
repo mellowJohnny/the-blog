@@ -607,9 +607,9 @@ textarea {
 }
 
 .error-msg {
-  font-family: 'Arial';
-  font-size: 20px;
-  color:rgb(70, 8, 145);
+  font-family: 'Source 3 Sans';
+  font-size: 24px;
+  color:rgb(7, 62, 126);
   width:400px;
 }
 
