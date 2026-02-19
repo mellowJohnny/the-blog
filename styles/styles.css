@@ -607,7 +607,7 @@ textarea {
 }
 
 .error-msg {
-  font-family: 'Source 3 Sans';
+  font-family: 'Fira Code';
   font-size: 24px;
   color:rgb(7, 62, 126);
   width:400px;
