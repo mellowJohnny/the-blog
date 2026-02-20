@@ -15,7 +15,7 @@ function renderBlogIntro(blogType) {
   if (blogType === "1") {
     introHTML = `
       <h2>The Tech Blog</h2>
-      <p>Just a couple of random throughts on Technology - from AI to using an iPad for development tasks, and whatever else strikes my fancy. Oh, and that .gif of a 727 in the top corner is the Internet's <i>very first</i>, created by Steve Wilhite in 1987 while working at CompuServe. He said it's pronounced "jif" by the way...</p>
+      <p>Just a couple of random throughts on Technology - from AI to using an iPad for development tasks, and whatever else strikes my fancy. Oh, and that .gif of a 727 in the top corner is the Internet's <i>very first</i>, created by Steve Wilhite in 1987 while working at CompuServe. And according to Steve, it's pronounced "jif"...</p>
     `;
   } else if (blogType === "3") {
     introHTML = `
