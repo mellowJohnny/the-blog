@@ -733,8 +733,7 @@ function getBlogsForUpdate() {
       const blogArray = data.items || [];
 
       if (blogArray.length === 0) {
-        document.getElementById("noBlogsDiv").innerHTML = 
-        `(no staged blogs sets right now)`;
+        document.getElementById("noBlogsDiv").innerHTML = `...no staged blogs found`;
         return;
       }
 
