@@ -733,7 +733,8 @@ function getBlogsForUpdate() {
       const blogArray = data.items || [];
 
       if (blogArray.length === 0) {
-        document.getElementById("noBlogsDiv").innerHTML = `...no staged blogs found`;
+        document.getElementById("noBlogsDiv").innerHTML = 
+        `(no staged blogs sets right now)`;
         return;
       }
 
@@ -1014,7 +1015,7 @@ function fetchBlogByID(id,type) {
 
     if (!stagedSets || stagedSets.length === 0) {
       document.getElementById("noStagedBlogsDiv").innerHTML =
-        `(no staged carde sets right now)`;
+        `(no staged card sets right now)`;
       return;
     }
 
