@@ -728,8 +728,6 @@ function getBlogsForUpdate() {
     .then(response => response.json())
     .then(data => {
 
-    //  console.log("CHRISTIAN's RAW STAGED BLOG RESPONSE:", data);
-
       const blogArray = data.items || [];
 
       if (blogArray.length === 0) {
