@@ -204,8 +204,7 @@ function fetchPageTitle(setName)
                     class="table-footer-img" 
                     loading="lazy" 
                     alt="Vintage hockey cards from the ${year} ${mfg} set"
-                    width="890"
-                    height="325">
+                    width="890">
                 </td>
             </tr>
         </table>
