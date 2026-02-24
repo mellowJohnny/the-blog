@@ -155,8 +155,7 @@ function fetchPageTitle(setName)
                     class="table-header-img" 
                     fetchpriority="high"
                     alt="Vintage hockey cards from the ${year} ${mfg} set"
-                    width="620"
-                    height="285">
+                    width="620">
                 </td>
             </tr>
 
