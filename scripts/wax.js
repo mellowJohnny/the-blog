@@ -5,6 +5,7 @@ const pageSize = 1; // how many blogs to display at a time
 
 /** **
  * Card Intro Text Render-O-Matic
+ * Moved to a static design because it's fatser than calling an API for such a small piece on content which never changes...
  */
 
 function renderCardIntro(pageName) {
@@ -129,6 +130,11 @@ function fetchPageTitle(setName)
 
    function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date) 
    {
+    
+    if (year === "2005"){
+      
+    }
+    
     // Convert stars to a number
     const numStars = parseInt(stars);
 
