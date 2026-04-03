@@ -315,7 +315,7 @@ const NAV_ITEMS = {
 const NAV_MAP = {
   index: ["home", "classic", "junk", "mcd", "timmies", "tech", "mache"],
   tech_1: ["home", "classic", "junk", "mcd", "timmies", "mache"],
-  ev: ["home", "classic", "junk", "mcd", "timmies","tech", "mache"],
+  ev: ["home", "classic", "junk", "mcd", "timmies","tech"],
   junkWax: ["home", "classic", "mcd", "timmies", "tech", "mache"],
   classicWax: ["home", "junk", "mcd", "timmies", "tech", "mache"],
   timmies: ["home", "classic", "junk", "mcd", "tech", "mache"],
