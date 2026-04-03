@@ -33,8 +33,8 @@
     </script>
 
     <script>
-      let params = new URLSearchParams(document.location.search);
-      let blogType = params.get("blogType"); 
+      const params = new URLSearchParams(document.location.search);
+      const pageName = params.get("pageName");
       
       window.addEventListener('load', (event) => {
         // *** On page load pass blogType
@@ -47,7 +47,7 @@
        // fetchBlogIntroByType(blogType);
 
         // *** Fetch the Top Nav from helper.js
-        fetchNav("tech",blogType);
+        fetchNav(pageName);
         });
     </script>
  </head>
