@@ -306,8 +306,8 @@ const NAV_ITEMS = {
   classic: { label: "80s Hockey Sets", href: "/waxReviews.html?year=1979&pageName=classicWax&blogCat=reg" },
   timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2020&pageName=timmies&blogCat=tims" },
   mcd: { label: "McHockey", href: "/waxReviews.html?year=1991&pageName=mcd&blogCat=mcd" },
-  tech: { label: "Tech", href: "/tech.html?blogType=1" },
-  mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3" }
+  tech: { label: "Tech", href: "/tech.html?blogType=1&pageName=tech" },
+  mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3&pageName=ev" }
 };
 
 // Step 2: Define which pages show which items
