@@ -34,6 +34,7 @@
 
     <script>
       const params = new URLSearchParams(document.location.search);
+      const blogType = params.get("blogType"); 
       const pageName = params.get("pageName");
       
       window.addEventListener('load', (event) => {
