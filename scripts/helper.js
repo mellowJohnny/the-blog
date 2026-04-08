@@ -314,7 +314,7 @@ const NAV_ITEMS = {
 // The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
   index: ["home", "classic", "junk", "mcd", "timmies", "tech", "mache"],
-  tech_1: ["home", "classic", "junk", "mcd", "timmies", "mache"],
+  tech: ["home", "classic", "junk", "mcd", "timmies", "mache"],
   ev: ["home", "classic", "junk", "mcd", "timmies","tech"],
   junkWax: ["home", "classic", "mcd", "timmies", "tech", "mache"],
   classicWax: ["home", "junk", "mcd", "timmies", "tech", "mache"],
