@@ -16,7 +16,8 @@ function initTinyEditor(selector = '#postBody')
   selector: selector, 
   plugins: ['lists', 'link', 'image', 'code'], // only actual plugins 
   toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | advlist autolink link image lists charmap preview code | wordcount', 
-  width: 1000 
+  width: 1000, 
+  browser_spellcheck: true
   }); 
 }
 
