@@ -49,7 +49,7 @@ function renderCardIntro(pageName) {
             // Lambda returns an array, not { Items: [...] }
             if (!Array.isArray(data) || data.length === 0) {
                 document.getElementById("cardSetDiv").innerHTML =
-                    "...coming soon - I don't own this set yet";
+                    "...coming soon - this set is not in my collection yet";
                 return;
             }
 
