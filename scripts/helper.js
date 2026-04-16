@@ -235,7 +235,7 @@ function renderSetPicker(year, blogCat, pageName) {
   // Category + pageName specific ranges
   const categoryRanges = {
     reg: {
-      classicWax: { start: 1979, end: 1986, className: "junk-set-nav-td", pageName: "classicWax" },
+      classicWax: { start: 1980, end: 1986, className: "junk-set-nav-td", pageName: "classicWax" },
       junkWax:    { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" }
     },
     mcd: {
