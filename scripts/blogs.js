@@ -14,23 +14,23 @@ function renderBlogIntro(blogType) {
 
   if (blogType === "1") {
     introHTML = `
-      <h2>The Tech Blog</h2>
+      <h2>the tech blog...</h2>
       <p>Just a couple of random throughts on Technology - from AI to using an iPad for development tasks, and whatever else strikes my fancy. Oh, and that .gif of a 727 in the top corner is the Internet's <i>very first</i>, created by Steve Wilhite in 1987 while working at CompuServe. And according to Steve, it's pronounced "jif"...</p>
     `;
   } else if (blogType === "3") {
     introHTML = `
-      <h2>The Mach-E Blog</h2>
+      <h2>the mach-e blog...</h2>
       <p>Thoughts and experiences with our first EV - the absolutely fabulous Ford Mustang Mach-E</p>
     `;
   } else if (blogType === "5") {
     introHTML = `
-      <h2>The Rasperry Pi Blog</h2>
+      <h2>the Rasperry Pi Blog</h2>
       <p>Thoughts and experiments with my Rasperry Pi rig. Nothing hard core, nothing ground-breaking, just a few thoughts while I play around with this remarkable little computer...</p>
     `;
   } else {
     // blogType 99 or missing → fallback
     introHTML = `
-      <h2>A blog with a purpose...</h2>
+      <h2>the blog with a purpose...</h2>
       <p>A place for me to test out web technologies - AWS stuff, Javascript, React, etc - and at the same time write about things which interest me: old hockey card sets, technology, and maybe even Software Architecture once in a while.</p>
       <p>So have a look around! I'll try to be entertaining - at the very least you can expect sarcasm, spelling mistakes, and self-deprecation.</p>
     `;
