@@ -31,7 +31,7 @@ function renderBlogIntro(blogType) {
     // blogType 99 or missing → fallback
     introHTML = `
       <h2>the blog with a purpose...</h2>
-      <p>A place for me to write about things which interest me - late '80s and 90s hockey card sets, technology, and maybe even software architecture once in a while, all while 
+      <p>A place to write about things which interest me - late '80s and 90s hockey cards, technology, and maybe even software architecture once in a while, all while 
       testing out web technologies - AWS stuff, Javascript, React, and agentic coding tools.</p>
       <p>I'll try to be entertaining - at the very least you can expect sarcasm, spelling mistakes, and self-deprecation. So as my Dad used to say, "Take your coat off and stay a while..." </p>
     `;
