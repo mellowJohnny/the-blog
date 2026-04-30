@@ -771,7 +771,7 @@ textarea {
   margin: 40px auto;
   padding: 20px 30px;
   border-radius: 8px;
-  width: 1100px;
+  width: 1000px; /* Match the width of the live site's flex container */
   max-width: 95vw;
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
   font-family: 'Source Sans 3', sans-serif;
