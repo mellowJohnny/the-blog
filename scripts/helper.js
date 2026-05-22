@@ -239,7 +239,7 @@ function renderSetPicker(year, blogCat, pageName) {
       junkWax:    { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" }
     },
     mcd: {
-      mcd: { start: 1991, end: 2002, className: "junk-set-nav-td", pageName: "mcd" }
+      mcd: { start: 1991, end: 2003, className: "junk-set-nav-td", pageName: "mcd" }
     },
     tims: {
       timmies: { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
