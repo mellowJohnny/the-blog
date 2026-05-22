@@ -28,6 +28,21 @@
           document.head.appendChild(g);
         });
       </script>
+<!-- Magic JS to redirect if year is 2004 -->
+      <script>
+        const params = new URLSearchParams(window.location.search);
+        const year = params.get("year");
+        const pageName = params.get("pageName");
+        const blogCat = params.get("blogCat");
+        const isMatch =
+          year === "2004" &&
+          pageName === "mcd" &&
+          blogCat === "mcd";
+
+        if (isMatch) {
+          window.location.href = "/lockout.html?year=1991&pageName=mcd&blogCat=mcd";
+        }
+      </script>
 
       <style>
         /* latin-ext */
