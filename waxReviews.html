@@ -30,10 +30,10 @@
       </script>
 <!-- Magic JS to redirect if year is 2004 -->
       <script>
-        const params = new URLSearchParams(window.location.search);
-        const year = params.get("year");
-        const pageName = params.get("pageName");
-        const blogCat = params.get("blogCat");
+        const paramz = new URLSearchParams(window.location.search);
+        const year = paramz.get("year");
+        const pageName = paramz.get("pageName");
+        const blogCat = paramz.get("blogCat");
         const isMatch =
           year === "2004" &&
           pageName === "mcd" &&
