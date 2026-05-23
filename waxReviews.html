@@ -31,13 +31,13 @@
 <!-- Magic JS to redirect if year is 2004 -->
       <script>
         const paramz = new URLSearchParams(window.location.search);
-        const year = paramz.get("year");
-        const pageName = paramz.get("pageName");
-        const blogCat = paramz.get("blogCat");
+        const y = paramz.get("year");
+        const pn = paramz.get("pageName");
+        const bc = paramz.get("blogCat");
         const isMatch =
-          year === "2004" &&
-          pageName === "mcd" &&
-          blogCat === "mcd";
+          y === "2004" &&
+          pn === "mcd" &&
+          bc === "mcd";
 
         if (isMatch) {
           window.location.href = "/lockout.html?year=1991&pageName=mcd&blogCat=mcd";
