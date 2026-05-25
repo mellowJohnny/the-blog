@@ -10,7 +10,6 @@ async function sendBroadcast() {
 
   try {
     const res = await fetch("https://yzivv3xuw2.execute-api.us-east-2.amazonaws.com/prod/admin/send", {
-        console.log("Calling API endpoint");
       method: "POST",
       headers: {
         "Content-Type": "application/json"
