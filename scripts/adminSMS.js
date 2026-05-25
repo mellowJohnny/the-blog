@@ -1,4 +1,5 @@
 // admin-sms.js
+console.log("Amplify global:", window.aws_amplify);
 
 // Configure Amplify (reuse your existing config)
 aws_amplify.Amplify.configure({
