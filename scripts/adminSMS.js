@@ -1,7 +1,7 @@
 document.getElementById("sendBtn").addEventListener("click", sendBroadcast);
 
 async function sendBroadcast() {
-    console.log("Send button has been clicked");
+    console.log("Send button has been clicked!");
   const message = document.getElementById("message").value.trim();
   if (!message) {
     alert("Please enter a message");
