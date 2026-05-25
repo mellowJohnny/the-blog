@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>SMS Broadcast Admin</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    textarea { width: 100%; max-width: 600px; }
+    button { padding: 10px 20px; margin-top: 10px; }
+    table { border-collapse: collapse; margin-top: 30px; width: 100%; max-width: 700px; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    th { background: #f0f0f0; }
+  </style>
+</head>
+<body>
+
+  <h1>SMS Broadcast</h1>
+
+  <label for="message">Message to send:</label><br>
+  <textarea id="message" rows="4"></textarea><br>
+
+  <button id="sendBtn">Send Broadcast</button>
+
+  <h2>Results</h2>
+  <table id="resultsTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>Phone Number</th>
+        <th>Status</th>
+        <th>Error</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="https://cdn.jsdelivr.net/npm/aws-amplify@5.0.0/dist/aws-amplify.min.js"></script>
+  <script src="adminSMS.js"></script>
+
+</body>
+</html>
