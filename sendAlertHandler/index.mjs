@@ -1,4 +1,7 @@
 // index.mjs
+// *** NEVER Change this code in the AWS Console
+// ONLY change in VS Code, then redeploy by uploading the new .zip file 
+// in the Console -> Code tab -> Update dropdown -> Update from a .zip file
 
 import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
 import twilio from "twilio";
@@ -14,13 +17,8 @@ const {
 const db = new DynamoDBClient({ region: "us-east-2" });
 const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
-/**
- * Lambda handler for POST /send-alert
- * Expects JSON body: { "message": "Ride tomorrow at 7am..." }
- */
 export const handler = async (event) => {
   try {
-    // Parse body
     const body = JSON.parse(event.body || "{}");
     const message = body.message?.trim();
 
@@ -44,29 +42,65 @@ export const handler = async (event) => {
     if (items.length === 0) {
       return {
         statusCode: 200,
-        body: JSON.stringify({ ok: true, sentTo: 0 })
+        headers: {
+          "Access-Control-Allow-Origin": "https://www.mellowjohnny.cc",
+          "Access-Control-Allow-Headers": "Content-Type,x-api-key",
+          "Access-Control-Allow-Methods": "POST,OPTIONS"
+        },
+        body: JSON.stringify({ results: [] })
       };
     }
 
-    // Send SMS to each subscribed number
-    const sendPromises = items.map((item) =>
-      client.messages.create({
-        body: message,
-        from: TWILIO_FROM_NUMBER,
-        to: item.phoneNumber.S
-      })
-    );
+    const results = [];
 
-    await Promise.all(sendPromises);
+    // Send SMS to each subscribed number
+    for (const item of items) {
+      const phone = item.phoneNumber?.S;
+      const firstName = item.firstName?.S || "";
+
+      try {
+        await client.messages.create({
+          body: message,
+          from: TWILIO_FROM_NUMBER,
+          to: phone
+        });
+
+        results.push({
+          phone,
+          firstName,
+          status: "SUCCESS",
+          error: ""
+        });
+
+      } catch (err) {
+        results.push({
+          phone,
+          firstName,
+          status: "FAILED",
+          error: err.message || "Unknown error"
+        });
+      }
+    }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ ok: true, sentTo: items.length })
+      headers: {
+        "Access-Control-Allow-Origin": "https://www.mellowjohnny.cc",
+        "Access-Control-Allow-Headers": "Content-Type,x-api-key",
+        "Access-Control-Allow-Methods": "POST,OPTIONS"
+      },
+      body: JSON.stringify({ results })
     };
+
   } catch (err) {
     console.error("Error in sendAlertHandler:", err);
     return {
       statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "https://www.mellowjohnny.cc",
+        "Access-Control-Allow-Headers": "Content-Type,x-api-key",
+        "Access-Control-Allow-Methods": "POST,OPTIONS"
+      },
       body: "Internal error"
     };
   }
