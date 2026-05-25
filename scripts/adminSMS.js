@@ -1,13 +1,19 @@
 // admin-sms.js
 
 // Configure Amplify (reuse your existing config)
-Amplify.configure({
+aws_amplify.Amplify.configure({
   Auth: {
     region: "us-east-2",
     userPoolId: "us-east-2_wEdajhS7F",
     userPoolWebClientId: "1m22cfonep7l85th9ut1obk0pe",
   }
 });
+
+async function getToken() {
+  const session = await aws_amplify.Auth.currentSession();
+  return session.getIdToken().getJwtToken();
+}
+
 
 
 const API_BASE = "https://yzivv3xuw2.execute-api.us-east-2.amazonaws.com/prod/admin/send";
