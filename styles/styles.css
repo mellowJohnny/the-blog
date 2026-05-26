@@ -33,6 +33,16 @@ h1 {
   line-height: 1.1;
 }
 
+/********************** Autobus SMS Syles *************************/
+
+/* Centers the results table to match the form layout */
+.autobus-results-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
 /* Autobus Results Table */
 .autobus-results-table {
     width: 100%;
@@ -71,6 +81,32 @@ h1 {
     font-weight: bold;
     text-align: center;
     border-top: 2px solid #ccc;
+}
+
+/* Autobus Send Button */
+.autobus-send-btn {
+    display: block;              /* makes centering possible */
+    margin: 20px auto 0 auto;    /* centers horizontally */
+    padding: 12px 28px;          /* bigger, more tappable */
+    font-size: 16px;
+    font-family: "Work Sans", sans-serif;
+    font-weight: 600;
+    background-color: #222;      /* Autobus dark theme */
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+/* Hover effect */
+.autobus-send-btn:hover {
+    background-color: #444;
+}
+
+/* Pressed effect */
+.autobus-send-btn:active {
+    transform: scale(0.97);
 }
 
 
