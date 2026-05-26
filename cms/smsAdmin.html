@@ -3,38 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <title>SMS Message Admin</title>
-  <head>
-      <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
-      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-      <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-        <meta charset="utf-8"> 
-        <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+  
+    <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+    <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <meta charset="utf-8"> 
+
+    <!-- Styles -->
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
         
-        <!-- Google Fonts -->
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&display=swap" as="style" onload="this.rel='stylesheet'">
-        <noscript>
-          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&display=swap">
-        </noscript>
-<body>
-    <main>
-  <section>
-    <table class="autobus-mast-table">
-      <tr>
-        <td width="100%">
-          <div>
-           <header class="autobus-masthead"><img scr="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cms/black_logo_white_circle_400x400.png"/>
-            <img src="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cms/clear_white_nameplate_1200x400.png"></header>
-        </td>
-        <td class="autobus-cms-logo">
-          <i>Autobus</i><br>
-          <strong>Messaging</strong><br>
-          <i>Platform</i><br>
-        </td>
-      </tr>
-    </table>
-  </section>
-            
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&display=swap" as="style" onload="this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&display=swap">
+    </noscript>
+    <!-- Javascript -->
+    <script src="/scripts/adminSMS.js"></script>
+</head>
+    <body>
+        <main>
+            <!-- Masthead -->
+            <section>
+                <table class="autobus-mast-table">
+                <tr>
+                    <td width="100%">
+                    <div>
+                    <header class="autobus-masthead"><img scr="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cms/black_logo_white_circle_400x400.png"/>
+                        <img src="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cms/clear_white_nameplate_1200x400.png"></header>
+                    </td>
+                    <td class="autobus-cms-logo">
+                    <i>Autobus</i><br>
+                    <strong>Messaging</strong><br>
+                    <i>Platform</i><br>
+                    </td>
+                </tr>
+                </table>
+            </section>
+            <!-- Navigation -->
               <div>
                 <nav>
                   <table class="cms-top-nav">
@@ -44,31 +50,29 @@
                   </table>
                 </nav>
               </div>
-        </div>
-    </section>
-<section>
-<form class="cms-form-table">
-  <label for="message">Message to send:</label><br>
-  <textarea class="textarea" id="message" rows="4"></textarea>
-  <br>
-  <button id="sendBtn">Send Broadcast</button>
-</form>
-<br><br>
-  <h2>Results</h2>
-  <table id="resultsTable" style="display:none;">
-    <thead>
-      <tr>
-        <th>First Name</th>
-        <th>Phone Number</th>
-        <th>Status</th>
-        <th>Error</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  </section>
-</main>
-  <script src="/scripts/adminSMS.js"></script>
-
-</body>
+            </section>
+            <!-- Form -->
+            <section>
+                <form class="cms-form-table">
+                    <label for="message">Message to send:</label><br>
+                    <textarea class="textarea" id="message" rows="4"></textarea>
+                    <br>
+                    <button id="sendBtn">Send Broadcast</button>
+                </form>
+                <br><br>
+                <h2>Results</h2>
+                <table id="resultsTable" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Phone Number</th>
+                            <th>Status</th>
+                            <th>Error</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+        </main>
+    </body>
 </html>
