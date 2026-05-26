@@ -235,6 +235,12 @@ textarea {
   background-color: rgb(44, 82, 137);
 }
 
+.autobus-mast-table {
+  border-collapse: collapse;
+  width: 100%;
+  background-color: rgb(250, 51, 234);
+}
+
 .mast-table td {
   vertical-align: top;
   padding: 0;
@@ -258,6 +264,14 @@ textarea {
   font-family: 'Spicy Rice';
   font-size: 7vw;
   color: #3FA7D6;
+  background-color: rgb(44, 82, 137);
+  padding: 1px 10px 0 10px;
+}
+
+.autobus-masthead {
+  font-family: 'Arial';
+  font-size: 7vw;
+  color: #000000;
   background-color: rgb(44, 82, 137);
   padding: 1px 10px 0 10px;
 }
