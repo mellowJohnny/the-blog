@@ -16,23 +16,7 @@
         <noscript>
           <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&display=swap">
         </noscript>
-<script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.39/dist/aws-amplify.min.js"></script>
-<script>
-aws_amplify.Amplify.configure({
-  Auth: {
-    region: "us-east-2",
-    userPoolId: "us-east-2_wEdajhS7F",
-    userPoolWebClientId: "1m22cfonep7l85th9ut1obk0pe",
-  }
-});
 
-// This forces Cognito to parse the redirect URL and store tokens
-aws_amplify.Auth.currentAuthenticatedUser()
-  .then(u => console.log("User logged in:", u.username))
-  .catch(e => console.log("Auth error:", e));
-</script>
-
-<script src="/scripts/cms.js"></script>
 
 <script>
   window.addEventListener('load', (event) => {
