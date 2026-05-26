@@ -33,9 +33,30 @@ h1 {
   line-height: 1.1;
 }
 
-/********************** Autobus SMS Syles *************************/
+/********************** Autobus SMS Styles *************************/
 
-/* Centers the results table to match the form layout */
+/* ============================
+   BASE SHARED STYLES
+   ============================ */
+
+.autobus-results-table,
+.autobus-textarea,
+.autobus-send-btn {
+    font-family: "Work Sans", sans-serif;
+}
+
+/* Shared table layout width */
+.autobus-form,
+.autobus-results {
+    width: 100%;
+    max-width: 700px;
+    margin-left: 20px;
+}
+
+/* ============================
+   RESULTS WRAPPER (CENTERING)
+   ============================ */
+
 .autobus-results-wrapper {
     width: 100%;
     display: flex;
@@ -43,19 +64,19 @@ h1 {
     margin-top: 20px;
 }
 
-/* Autobus Results Table */
+/* ============================
+   RESULTS TABLE
+   ============================ */
+
 .autobus-results-table {
     width: 100%;
-    max-width: 800px;
     border-collapse: collapse;
-    margin-top: 20px;
-    font-family: "Work Sans", sans-serif;
-    font-size: 15px;
     background: #ffffff;
     border: 1px solid #ddd;
+    font-size: 15px;
+    margin-top: 20px;
 }
 
-/* Header styling */
 .autobus-results-table thead th {
     background: #f4f4f4;
     padding: 10px;
@@ -64,18 +85,15 @@ h1 {
     font-weight: 700;
 }
 
-/* Body rows */
 .autobus-results-table tbody td {
     padding: 8px 10px;
     border-bottom: 1px solid #eee;
 }
 
-/* Zebra striping */
 .autobus-results-table tbody tr:nth-child(even) {
     background: #fafafa;
 }
 
-/* Summary row */
 .autobus-summary-row {
     background: #f0f8ff;
     font-weight: bold;
@@ -83,47 +101,16 @@ h1 {
     border-top: 2px solid #ccc;
 }
 
-/* Autobus Send Button */
-.autobus-send-btn {
-    display: block;              /* makes centering possible */
-    margin: 20px auto 0 auto;    /* centers horizontally */
-    padding: 12px 28px;          /* bigger, more tappable */
-    font-size: 16px;
-    font-family: "Work Sans", sans-serif;
-    font-weight: 600;
-    background-color: #222;      /* Autobus dark theme */
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.1s ease;
-}
-
-/* Hover effect */
-.autobus-send-btn:hover {
-    background-color: #444;
-}
-
-/* Pressed effect */
-.autobus-send-btn:active {
-    transform: scale(0.97);
-}
-
 /* ============================
-   AUTOBUS FORM (LEFT ALIGNED)
+   FORM (LEFT ALIGNED)
    ============================ */
 
 .autobus-form {
-    width: 100%;
-    max-width: 700px;     /* matches your results table */
-    margin-left: 20px;    /* slight left margin for breathing room */
     display: flex;
     flex-direction: column;
     gap: 16px;
-    font-family: "Work Sans", sans-serif;
 }
 
-/* Textarea styling */
 .autobus-textarea {
     width: 100%;
     padding: 14px;
@@ -131,17 +118,21 @@ h1 {
     border: 1px solid #ccc;
     border-radius: 6px;
     resize: vertical;
-    font-family: "Work Sans", sans-serif;
 }
 
-/* Center the button under the textarea */
+/* ============================
+   SEND BUTTON
+   ============================ */
+
 .autobus-send-btn {
-    align-self: center;     /* centers the button horizontally */
+    display: block;
+    margin: 20px auto 0 auto;
     padding: 12px 32px;
     font-size: 16px;
     font-weight: 600;
     background-color: #222;
     color: #fff;
+
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -155,6 +146,15 @@ h1 {
 .autobus-send-btn:active {
     transform: scale(0.97);
 }
+
+/* ============================
+   RESULTS SECTION ALIGNMENT
+   ============================ */
+
+.autobus-results {
+    margin-top: 30px;
+}
+
 
 
   .blog-img {
