@@ -50,6 +50,12 @@ h1 {
     padding: 0;
 }
 
+.autobus-sent-message {
+    margin: 0 0 15px 0;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
 
 /* Shared table layout width */
 .autobus-form,

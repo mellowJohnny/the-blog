@@ -16,6 +16,10 @@ async function sendBroadcast(event) {
   tbody.innerHTML = "";
   table.style.display = "none";
 
+  // Clear previous results 
+    tbody.innerHTML = "";
+    document.getElementById("autobus-sent-message").style.display = "none";
+
   try {
     const res = await fetch("https://yzivv3xuw2.execute-api.us-east-2.amazonaws.com/prod/admin/send", {
       method: "POST",
@@ -29,6 +33,14 @@ async function sendBroadcast(event) {
     if (data.results && Array.isArray(data.results)) {
       let successCount = 0;
       let failureCount = 0;
+// New functionality to displ;ay the actual message we sent...
+      const sentMessageEl = document.getElementById("autobus-sent-message");
+            sentMessageEl.innerHTML = `
+            <strong>The following recipients received this message:</strong><br>
+        ${message}
+        `;
+        sentMessageEl.style.display = "block";
+
 
       data.results.forEach(item => {
         const row = document.createElement("tr");
