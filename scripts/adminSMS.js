@@ -47,8 +47,7 @@ async function sendBroadcast(event) {
       });
 
       const summaryRow = document.createElement("tr");
-      summaryRow.style.fontWeight = "bold";
-      summaryRow.style.background = "#f9f9f9";
+      summaryRow.classList.add("autobus-summary-row");
 
       summaryRow.innerHTML = `
         <td colspan="4">

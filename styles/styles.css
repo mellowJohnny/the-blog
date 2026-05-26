@@ -33,9 +33,46 @@ h1 {
   line-height: 1.1;
 }
 
-.autobus-h2 {
-  font-family: 'Source Sans 3', sans-serif;
+/* Autobus Results Table */
+.autobus-results-table {
+    width: 100%;
+    max-width: 800px;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-family: "Work Sans", sans-serif;
+    font-size: 15px;
+    background: #ffffff;
+    border: 1px solid #ddd;
 }
+
+/* Header styling */
+.autobus-results-table thead th {
+    background: #f4f4f4;
+    padding: 10px;
+    border-bottom: 2px solid #ccc;
+    text-align: left;
+    font-weight: 700;
+}
+
+/* Body rows */
+.autobus-results-table tbody td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Zebra striping */
+.autobus-results-table tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
+/* Summary row */
+.autobus-summary-row {
+    background: #f0f8ff;
+    font-weight: bold;
+    text-align: center;
+    border-top: 2px solid #ccc;
+}
+
 
   .blog-img {
     border: 3px solid rgb(5, 60, 82);
