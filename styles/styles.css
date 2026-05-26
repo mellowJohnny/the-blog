@@ -110,16 +110,16 @@ h1 {
 }
 
 /* ============================
-   AUTOBUS FORM LAYOUT
+   AUTOBUS FORM (LEFT ALIGNED)
    ============================ */
 
 .autobus-form {
     width: 100%;
-    max-width: 700px;        /* matches your results table */
-    margin: 0 auto;          /* centers the entire form */
+    max-width: 700px;     /* matches your results table */
+    margin-left: 20px;    /* slight left margin for breathing room */
     display: flex;
     flex-direction: column;
-    gap: 18px;               /* clean spacing between elements */
+    gap: 16px;
     font-family: "Work Sans", sans-serif;
 }
 
@@ -134,9 +134,9 @@ h1 {
     font-family: "Work Sans", sans-serif;
 }
 
-/* Send button */
+/* Center the button under the textarea */
 .autobus-send-btn {
-    align-self: center;       /* centers the button */
+    align-self: center;     /* centers the button horizontally */
     padding: 12px 32px;
     font-size: 16px;
     font-weight: 600;
