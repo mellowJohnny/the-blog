@@ -4,7 +4,7 @@ async function sendBroadcast() {
   const message = document.getElementById("message").value.trim();
   const table = document.getElementById("resultsTable");
   const tbody = table.querySelector("tbody");
-
+console.log("Sending...")
   if (!message) {
     alert("Please enter a message");
     return;
