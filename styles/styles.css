@@ -238,7 +238,7 @@ textarea {
 .autobus-mast-table {
   border-collapse: collapse;
   width: 100%;
-  background-color: rgb(250, 51, 234);
+  background-color: rgb(249, 37, 231);
 }
 
 .mast-table td {
@@ -272,7 +272,7 @@ textarea {
   font-family: 'Arial';
   font-size: 7vw;
   color: #000000;
-  background-color: rgb(44, 82, 137);
+  background-color: rgb(249, 37, 231);
   padding: 1px 10px 0 10px;
 }
 
