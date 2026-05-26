@@ -45,6 +45,12 @@ h1 {
     font-family: "Work Sans", sans-serif;
 }
 
+.autobus-h2 {
+    margin: 0 0 10px 0;   /* removes browser default left indent */
+    padding: 0;
+}
+
+
 /* Shared table layout width */
 .autobus-form,
 .autobus-results {
