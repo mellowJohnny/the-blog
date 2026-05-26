@@ -39,6 +39,15 @@ h1 {
    BASE SHARED STYLES
    ============================ */
 
+.autobus-form label,
+.autobus-form textarea,
+.autobus-results h2,
+.autobus-results-table {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+
 .autobus-results-table,
 .autobus-textarea,
 .autobus-send-btn {
