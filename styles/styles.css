@@ -69,6 +69,7 @@ h1 {
    ============================ */
 
 .autobus-results-table {
+    margin-left: 0;   /* ensures perfect alignment with form */
     width: 100%;
     border-collapse: collapse;
     background: #ffffff;
