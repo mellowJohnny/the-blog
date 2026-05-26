@@ -17,12 +17,14 @@
           <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&display=swap">
         </noscript>
 <body>
+    <main>
   <section>
     <table class="autobus-mast-table">
       <tr>
         <td width="100%">
           <div>
-           <header class="autobus-masthead">AMP</header>
+           <header class="autobus-masthead"><img scr="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cms/black_logo_white_circle_400x400.png"/>
+            <img src="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cms/clear_white_nameplate_1200x400.png"></header>
         </td>
         <td class="autobus-cms-logo">
           <i>Autobus</i><br>
@@ -32,14 +34,7 @@
       </tr>
     </table>
   </section>
-        <section></section>
-        <br>
-            <div class="header-style">
-                <h1>SMS Broadcast</h1>
-              </div>
-              <br>
-              
-            <main>
+            
               <div>
                 <nav>
                   <table class="cms-top-nav">
@@ -49,17 +44,16 @@
                   </table>
                 </nav>
               </div>
-              
-            </main>
         </div>
     </section>
-
+<section>
 <form class="cms-form-table">
   <label for="message">Message to send:</label><br>
   <textarea class="textarea" id="message" rows="4"></textarea>
   <br>
   <button id="sendBtn">Send Broadcast</button>
 </form>
+<br><br>
   <h2>Results</h2>
   <table id="resultsTable" style="display:none;">
     <thead>
@@ -72,7 +66,8 @@
     </thead>
     <tbody></tbody>
   </table>
-
+  </section>
+</main>
   <script src="/scripts/adminSMS.js"></script>
 
 </body>
