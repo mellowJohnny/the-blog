@@ -32,6 +32,7 @@ async function sendBroadcast() {
         const row = document.createElement("tr");
 
         row.innerHTML = `
+          <td>${item.firstName || ""}</td>
           <td>${item.phone || ""}</td>
           <td>${item.status || ""}</td>
           <td>${item.error || ""}</td>
