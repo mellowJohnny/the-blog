@@ -109,6 +109,53 @@ h1 {
     transform: scale(0.97);
 }
 
+/* ============================
+   AUTOBUS FORM LAYOUT
+   ============================ */
+
+.autobus-form {
+    width: 100%;
+    max-width: 700px;        /* matches your results table */
+    margin: 0 auto;          /* centers the entire form */
+    display: flex;
+    flex-direction: column;
+    gap: 18px;               /* clean spacing between elements */
+    font-family: "Work Sans", sans-serif;
+}
+
+/* Textarea styling */
+.autobus-textarea {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    resize: vertical;
+    font-family: "Work Sans", sans-serif;
+}
+
+/* Send button */
+.autobus-send-btn {
+    align-self: center;       /* centers the button */
+    padding: 12px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #222;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.autobus-send-btn:hover {
+    background-color: #444;
+}
+
+.autobus-send-btn:active {
+    transform: scale(0.97);
+}
+
 
   .blog-img {
     border: 3px solid rgb(5, 60, 82);
