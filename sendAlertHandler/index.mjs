@@ -2,6 +2,7 @@
 // *** NEVER Change this code in the AWS Console
 // ONLY change in VS Code, then redeploy by uploading the new .zip file 
 // in the Console -> Code tab -> Update dropdown -> Update from a .zip file
+// NOTE: Default Mode is "test"
 
 import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
 import twilio from "twilio";
@@ -21,6 +22,7 @@ export const handler = async (event) => {
   try {
     const body = JSON.parse(event.body || "{}");
     const message = body.message?.trim();
+    const mode = body.mode === "live" ? "live" : "test";   // default to test mode
 
     if (!message) {
       return {
@@ -29,9 +31,15 @@ export const handler = async (event) => {
       };
     }
 
+    // Pick the correct table
+    const tableName = mode === "live" ? "Subscribers" : "SubscribersTest";
+
+    console.log("Broadcast mode:", mode);
+    console.log("Using table:", tableName);
+
     // Fetch all subscribed users
     const subscribers = await db.send(new ScanCommand({
-      TableName: "Subscribers",
+      TableName: tableName,
       FilterExpression: "#s = :sub",
       ExpressionAttributeNames: { "#s": "status" },
       ExpressionAttributeValues: { ":sub": { S: "subscribed" } }
@@ -47,7 +55,7 @@ export const handler = async (event) => {
           "Access-Control-Allow-Headers": "Content-Type,x-api-key",
           "Access-Control-Allow-Methods": "POST,OPTIONS"
         },
-        body: JSON.stringify({ results: [] })
+        body: JSON.stringify({ results: [], mode })
       };
     }
 
@@ -89,7 +97,7 @@ export const handler = async (event) => {
         "Access-Control-Allow-Headers": "Content-Type,x-api-key",
         "Access-Control-Allow-Methods": "POST,OPTIONS"
       },
-      body: JSON.stringify({ results })
+      body: JSON.stringify({ results, mode })
     };
 
   } catch (err) {
@@ -105,4 +113,3 @@ export const handler = async (event) => {
     };
   }
 };
-
