@@ -97,7 +97,8 @@ async function sendBroadcast(event) {
     if (data.results && Array.isArray(data.results)) {
       let successCount = 0;
       let failureCount = 0;
-// New functionality to displ;ay the actual message we sent...
+      
+// New functionality to display the actual message we sent...
         const titleEl = document.getElementById("autobus-sent-message-title");
         const bubbleEl = document.getElementById("autobus-sent-message");
 
