@@ -199,6 +199,19 @@ h1 {
     color: #000;
 }
 
+/* Remove default browser margins */
+.autobus-left label,
+.autobus-results-label {
+    margin-top: 0;
+}
+
+/* Add consistent padding to both columns */
+.autobus-left,
+.autobus-right {
+    padding-top: 4px;
+}
+
+
 
 
 
