@@ -1,67 +1,3 @@
-document.addEventListener("DOMContentLoaded", () => {
-
-    const textarea = document.getElementById("message");
-    const stats = document.getElementById("sms-stats");
-
-    function isGsm7(str) {
-        const gsm7Regex = /^[\x00-\x7F€£¥èéùìòÇØøÅåΔΦΓΛΩΠΨΣΘΞÆæßÉ!"#$%&'()*+,\-./0-9:;<=>?@A-ZÄÖÑÜ§¿a-zäöñüà^{}\[~\]|€£¥]*$/;
-        return gsm7Regex.test(str);
-    }
-
-    function smsSegments(str) {
-        const length = str.length;
-        const gsm7 = isGsm7(str);
-
-        if (gsm7) {
-            if (length <= 160) return 1;
-            return Math.ceil(length / 153);
-        } else {
-            if (length <= 70) return 1;
-            return Math.ceil(length / 67);
-        }
-    }
-
-    textarea.addEventListener("input", () => {
-    let text = textarea.value;
-
-    // If GSM-Safe Mode is enabled, sanitize the text
-    if (document.getElementById("gsmSafeMode").checked) {
-        const cleaned = gsmSafe(text);
-        if (cleaned !== text) {
-            text = cleaned;
-            textarea.value = cleaned; // update the textarea live
-        }
-    }
-
-    const length = text.length;
-    const gsm7 = isGsm7(text);
-    const segments = smsSegments(text);
-
-    let warning = "";
-    if (gsm7 && length > 160) {
-        warning = `<span style="color:#c00; font-weight:bold;">Warning: exceeds 160 characters</span><br>`;
-    }
-
-    stats.innerHTML = `
-        Characters: ${length} &nbsp; Encoding: ${gsm7 ? "GSM‑7" : "Unicode"} &nbsp; Segments: ${segments}<br>
-        ${warning}
-    `;
-});
-
-
-});
-
-function gsmSafe(str) {
-    return str
-        .replace(/[‘’]/g, "'")
-        .replace(/[“”]/g, '"')
-        .replace(/–/g, "-")
-        .replace(/—/g, "-")
-        .replace(/…/g, "...")
-        .replace(/•/g, "*")
-        .replace(/\u00A0/g, " "); // non-breaking space
-}
-
 document.getElementById("sendBtn").addEventListener("click", sendBroadcast);
 
 async function sendBroadcast(event) {
@@ -73,15 +9,16 @@ async function sendBroadcast(event) {
   const tbody = table.querySelector("tbody");
   const overlay = document.getElementById("autobus-spinner-overlay");
 
+  // NEW: determine mode
+  const mode = document.getElementById("testMode").checked ? "test" : "live";
+
   if (!message) {
     alert("Please enter a message");
     return;
   }
 
   // Show spinner
-  if (overlay) {
-    overlay.style.display = "flex";
-  }
+  if (overlay) overlay.style.display = "flex";
 
   // Clear previous results
   tbody.innerHTML = "";
@@ -92,7 +29,7 @@ async function sendBroadcast(event) {
     const res = await fetch("https://yzivv3xuw2.execute-api.us-east-2.amazonaws.com/prod/admin/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message })
+      body: JSON.stringify({ message, mode })   // <-- UPDATED
     });
 
     const data = await res.json();
@@ -102,11 +39,11 @@ async function sendBroadcast(event) {
       let successCount = 0;
       let failureCount = 0;
 
-      // New functionality to display the actual message we sent...
+      // Show the message we sent
       const titleEl = document.getElementById("autobus-sent-message-title");
       const bubbleEl = document.getElementById("autobus-sent-message");
 
-      titleEl.innerHTML = `The following message was sent to:`;
+      titleEl.innerHTML = `The following recipients received this message (${mode.toUpperCase()} MODE):`;
       bubbleEl.textContent = message;
 
       titleEl.style.display = "block";
@@ -141,7 +78,7 @@ async function sendBroadcast(event) {
 
       table.style.display = "table";
 
-      // ✅ Clear textarea on success and reset counter
+      // Clear textarea + reset counter
       textarea.value = "";
       textarea.dispatchEvent(new Event("input"));
     }
@@ -155,33 +92,7 @@ async function sendBroadcast(event) {
     table.style.display = "table";
 
   } finally {
-    // Hide spinner no matter what
-    if (overlay) {
-      overlay.style.display = "none";
-    }
+    // Hide spinner
+    if (overlay) overlay.style.display = "none";
   }
-}
-
-
-// Character count helper functions
-function countCharacters(str) {
-    return str.length;
-}
-
-function isGsm7(str) {
-    const gsm7Regex = /^[\x00-\x7F€£¥èéùìòÇØøÅåΔΦΓΛΩΠΨΣΘΞÆæßÉ!"#$%&'()*+,\-./0-9:;<=>?@A-ZÄÖÑÜ§¿a-zäöñüà^{}\[~\]|€£¥]+$/;
-    return gsm7Regex.test(str);
-}
-
-function smsSegments(str) {
-    const length = str.length;
-    const gsm7 = isGsm7(str);
-
-    if (gsm7) {
-        if (length <= 160) return 1;
-        return Math.ceil(length / 153);
-    } else {
-        if (length <= 70) return 1;
-        return Math.ceil(length / 67);
-    }
 }
