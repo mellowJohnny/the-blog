@@ -1,3 +1,40 @@
+document.addEventListener("DOMContentLoaded", () => {
+
+    const textarea = document.getElementById("message");
+    const stats = document.getElementById("sms-stats");
+
+    function isGsm7(str) {
+        const gsm7Regex = /^[\x00-\x7F€£¥èéùìòÇØøÅåΔΦΓΛΩΠΨΣΘΞÆæßÉ!"#$%&'()*+,\-./0-9:;<=>?@A-ZÄÖÑÜ§¿a-zäöñüà^{}\[~\]|€£¥]*$/;
+        return gsm7Regex.test(str);
+    }
+
+    function smsSegments(str) {
+        const length = str.length;
+        const gsm7 = isGsm7(str);
+
+        if (gsm7) {
+            if (length <= 160) return 1;
+            return Math.ceil(length / 153);
+        } else {
+            if (length <= 70) return 1;
+            return Math.ceil(length / 67);
+        }
+    }
+
+    textarea.addEventListener("input", () => {
+        const text = textarea.value;
+        const length = text.length;
+        const gsm7 = isGsm7(text);
+        const segments = smsSegments(text);
+
+        stats.innerHTML = `
+            Characters: ${length}<br>
+            Encoding: ${gsm7 ? "GSM‑7" : "Unicode"}<br>
+            Segments: ${segments}
+        `;
+    });
+
+});
 
 document.getElementById("sendBtn").addEventListener("click", sendBroadcast);
 
@@ -81,4 +118,27 @@ async function sendBroadcast(event) {
     `;
     table.style.display = "table";
   }
+}
+
+// Character count helper functions
+function countCharacters(str) {
+    return str.length;
+}
+
+function isGsm7(str) {
+    const gsm7Regex = /^[\x00-\x7F€£¥èéùìòÇØøÅåΔΦΓΛΩΠΨΣΘΞÆæßÉ!"#$%&'()*+,\-./0-9:;<=>?@A-ZÄÖÑÜ§¿a-zäöñüà^{}\[~\]|€£¥]+$/;
+    return gsm7Regex.test(str);
+}
+
+function smsSegments(str) {
+    const length = str.length;
+    const gsm7 = isGsm7(str);
+
+    if (gsm7) {
+        if (length <= 160) return 1;
+        return Math.ceil(length / 153);
+    } else {
+        if (length <= 70) return 1;
+        return Math.ceil(length / 67);
+    }
 }
