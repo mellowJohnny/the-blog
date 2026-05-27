@@ -62,27 +62,31 @@ function gsmSafe(str) {
         .replace(/\u00A0/g, " "); // non-breaking space
 }
 
-
 document.getElementById("sendBtn").addEventListener("click", sendBroadcast);
 
 async function sendBroadcast(event) {
   event.preventDefault(); // <-- stops form submission
 
-  const message = document.getElementById("message").value.trim();
+  const textarea = document.getElementById("message");
+  const message = textarea.value.trim();
   const table = document.getElementById("resultsTable");
   const tbody = table.querySelector("tbody");
+  const overlay = document.getElementById("autobus-spinner-overlay");
 
   if (!message) {
     alert("Please enter a message");
     return;
   }
 
+  // Show spinner
+  if (overlay) {
+    overlay.style.display = "flex";
+  }
+
+  // Clear previous results
   tbody.innerHTML = "";
   table.style.display = "none";
-
-  // Clear previous results 
-    tbody.innerHTML = "";
-    document.getElementById("autobus-sent-message").style.display = "none";
+  document.getElementById("autobus-sent-message").style.display = "none";
 
   try {
     const res = await fetch("https://yzivv3xuw2.execute-api.us-east-2.amazonaws.com/prod/admin/send", {
@@ -97,16 +101,16 @@ async function sendBroadcast(event) {
     if (data.results && Array.isArray(data.results)) {
       let successCount = 0;
       let failureCount = 0;
-      
-// New functionality to display the actual message we sent...
-        const titleEl = document.getElementById("autobus-sent-message-title");
-        const bubbleEl = document.getElementById("autobus-sent-message");
 
-        titleEl.innerHTML = `The following recipients received this message:`;
-        bubbleEl.textContent = message;
+      // New functionality to display the actual message we sent...
+      const titleEl = document.getElementById("autobus-sent-message-title");
+      const bubbleEl = document.getElementById("autobus-sent-message");
 
-        titleEl.style.display = "block";
-        bubbleEl.style.display = "inline-block";
+      titleEl.innerHTML = `The following recipients received this message:`;
+      bubbleEl.textContent = message;
+
+      titleEl.style.display = "block";
+      bubbleEl.style.display = "inline-block";
 
       data.results.forEach(item => {
         const row = document.createElement("tr");
@@ -136,6 +140,10 @@ async function sendBroadcast(event) {
       tbody.appendChild(summaryRow);
 
       table.style.display = "table";
+
+      // ✅ Clear textarea on success and reset counter
+      textarea.value = "";
+      textarea.dispatchEvent(new Event("input"));
     }
 
   } catch (err) {
@@ -145,8 +153,15 @@ async function sendBroadcast(event) {
       <tr><td colspan="4" style="color:red;">Error sending message</td></tr>
     `;
     table.style.display = "table";
+
+  } finally {
+    // Hide spinner no matter what
+    if (overlay) {
+      overlay.style.display = "none";
+    }
   }
 }
+
 
 // Character count helper functions
 function countCharacters(str) {
