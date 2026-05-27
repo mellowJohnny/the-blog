@@ -22,19 +22,48 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     textarea.addEventListener("input", () => {
-        const text = textarea.value;
-        const length = text.length;
-        const gsm7 = isGsm7(text);
-        const segments = smsSegments(text);
+    let text = textarea.value;
 
-        stats.innerHTML = `
-            Characters: ${length}<br>
-            Encoding: ${gsm7 ? "GSM‑7" : "Unicode"}<br>
-            Segments: ${segments}
-        `;
-    });
+    // If GSM-Safe Mode is enabled, sanitize the text
+    if (document.getElementById("gsmSafeMode").checked) {
+        const cleaned = gsmSafe(text);
+        if (cleaned !== text) {
+            text = cleaned;
+            textarea.value = cleaned; // update the textarea live
+        }
+    }
+
+    const length = text.length;
+    const gsm7 = isGsm7(text);
+    const segments = smsSegments(text);
+
+    let warning = "";
+    if (gsm7 && length > 160) {
+        warning = `<span style="color:#c00; font-weight:bold;">Warning: exceeds 160 characters</span><br>`;
+    }
+
+    stats.innerHTML = `
+        Characters: ${length}<br>
+        Encoding: ${gsm7 ? "GSM‑7" : "Unicode"}<br>
+        Segments: ${segments}<br>
+        ${warning}
+    `;
+});
+
 
 });
+
+function gsmSafe(str) {
+    return str
+        .replace(/[‘’]/g, "'")
+        .replace(/[“”]/g, '"')
+        .replace(/–/g, "-")
+        .replace(/—/g, "-")
+        .replace(/…/g, "...")
+        .replace(/•/g, "*")
+        .replace(/\u00A0/g, " "); // non-breaking space
+}
+
 
 document.getElementById("sendBtn").addEventListener("click", sendBroadcast);
 
