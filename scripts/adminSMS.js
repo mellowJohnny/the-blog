@@ -43,9 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     stats.innerHTML = `
-        Characters: ${length}<br>
-        Encoding: ${gsm7 ? "GSM‑7" : "Unicode"}<br>
-        Segments: ${segments}<br>
+        Characters: ${length} &nbsp; Encoding: ${gsm7 ? "GSM‑7" : "Unicode"} &nbsp; Segments: ${segments}<br>
         ${warning}
     `;
 });
