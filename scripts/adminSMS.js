@@ -9,8 +9,18 @@ async function sendBroadcast(event) {
   const tbody = table.querySelector("tbody");
   const overlay = document.getElementById("autobus-spinner-overlay");
 
-  // NEW: determine mode
+  // Determine mode
   const mode = document.getElementById("testMode").checked ? "test" : "live";
+
+  // Confirmation dialog for LIVE mode
+  if (mode === "live") {
+    const ok = confirm(
+      "⚠️ LIVE MODE\n\nThis will send your message to ALL subscribed users.\n\nAre you absolutely sure you want to proceed?"
+    );
+    if (!ok) {
+      return; // user cancelled
+    }
+  }
 
   if (!message) {
     alert("Please enter a message");
@@ -29,7 +39,7 @@ async function sendBroadcast(event) {
     const res = await fetch("https://yzivv3xuw2.execute-api.us-east-2.amazonaws.com/prod/admin/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, mode })   // <-- UPDATED
+      body: JSON.stringify({ message, mode })
     });
 
     const data = await res.json();
