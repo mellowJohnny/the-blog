@@ -1,9 +1,77 @@
 document.getElementById("sendBtn").addEventListener("click", sendBroadcast);
 
-async function sendBroadcast(event) {
-  event.preventDefault(); // <-- stops form submission
+const textarea = document.getElementById("message");
+const statsEl = document.getElementById("sms-stats");
+const gsmSafeMode = document.getElementById("gsmSafeMode");
 
-  const textarea = document.getElementById("message");
+// GSM‑7 character set
+const GSM_7 = new Set([
+  "@", "£", "$", "¥", "è", "é", "ù", "ì", "ò", "Ç",
+  "\n", "Ø", "ø", "\r", "Å", "å", "Δ", "_", "Φ", "Γ",
+  "Λ", "Ω", "Π", "Ψ", "Σ", "Θ", "Ξ",
+  " ", "!", "\"", "#", "¤", "%", "&", "'", "(", ")",
+  "*", "+", ",", "-", ".", "/", "0", "1", "2", "3",
+  "4", "5", "6", "7", "8", "9", ":", ";", "<", "=",
+  ">", "?", "¡", "A", "B", "C", "D", "E", "F", "G",
+  "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
+  "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Ä",
+  "Ö", "Ñ", "Ü", "§", "¿", "a", "b", "c", "d", "e",
+  "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
+  "p", "q", "r", "s", "t", "u", "v", "w", "x", "y",
+  "z", "ä", "ö", "ñ", "ü", "à"
+]);
+
+// Replace curly quotes & smart punctuation
+function applyGsmSafeMode(text) {
+  return text
+    .replace(/[“”]/g, '"')
+    .replace(/[‘’]/g, "'")
+    .replace(/–/g, "-")
+    .replace(/—/g, "-")
+    .replace(/…/g, "...");
+}
+
+// Detect encoding + segments
+function updateSmsStats() {
+  let text = textarea.value;
+
+  if (gsmSafeMode.checked) {
+    text = applyGsmSafeMode(text);
+    textarea.value = text;
+  }
+
+  let isGsm7 = true;
+  for (const ch of text) {
+    if (!GSM_7.has(ch)) {
+      isGsm7 = false;
+      break;
+    }
+  }
+
+  const encoding = isGsm7 ? "GSM‑7" : "Unicode";
+  const limit = isGsm7 ? 160 : 70;
+  const segLimit = isGsm7 ? 153 : 67;
+
+  const chars = text.length;
+  const segments = chars <= limit ? 1 : Math.ceil(chars / segLimit);
+
+  statsEl.innerHTML = `Characters: ${chars} &nbsp; Encoding: ${encoding} &nbsp; Segments: ${segments}`;
+}
+
+// Attach listeners
+textarea.addEventListener("input", updateSmsStats);
+gsmSafeMode.addEventListener("change", updateSmsStats);
+
+// INITIALIZE COUNTER
+updateSmsStats();
+
+
+// ---------------------------------------------------------
+// SEND BROADCAST
+// ---------------------------------------------------------
+async function sendBroadcast(event) {
+  event.preventDefault();
+
   const message = textarea.value.trim();
   const table = document.getElementById("resultsTable");
   const tbody = table.querySelector("tbody");
@@ -17,9 +85,7 @@ async function sendBroadcast(event) {
     const ok = confirm(
       "⚠️ LIVE MODE\n\nThis will send your message to ALL subscribed users.\n\nAre you absolutely sure you want to proceed?"
     );
-    if (!ok) {
-      return; // user cancelled
-    }
+    if (!ok) return;
   }
 
   if (!message) {
@@ -49,7 +115,6 @@ async function sendBroadcast(event) {
       let successCount = 0;
       let failureCount = 0;
 
-      // Show the message we sent
       const titleEl = document.getElementById("autobus-sent-message-title");
       const bubbleEl = document.getElementById("autobus-sent-message");
 
@@ -102,7 +167,6 @@ async function sendBroadcast(event) {
     table.style.display = "table";
 
   } finally {
-    // Hide spinner
     if (overlay) overlay.style.display = "none";
   }
 }
