@@ -106,7 +106,7 @@ async function sendBroadcast(event) {
       const titleEl = document.getElementById("autobus-sent-message-title");
       const bubbleEl = document.getElementById("autobus-sent-message");
 
-      titleEl.innerHTML = `The following recipients received this message:`;
+      titleEl.innerHTML = `The following message was sent to:`;
       bubbleEl.textContent = message;
 
       titleEl.style.display = "block";
