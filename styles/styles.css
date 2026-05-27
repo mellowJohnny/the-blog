@@ -64,6 +64,12 @@ h1 {
     white-space: pre-wrap;        /* preserves line breaks */
 }
 
+.autobus-sent-message-title {
+    margin: 0 0 6px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #000;
+}
 
 
 /* Shared table layout width */

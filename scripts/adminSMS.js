@@ -34,15 +34,14 @@ async function sendBroadcast(event) {
       let successCount = 0;
       let failureCount = 0;
 // New functionality to displ;ay the actual message we sent...
-      const sentMessageEl = document.getElementById("autobus-sent-message");
-            sentMessageEl.innerHTML = `
-                <strong style="display:block; margin-bottom:6px; color:#000;">
-                    The following recipients received this message:
-                </strong>
-                ${message}
-            `;
-        sentMessageEl.style.display = "block";
+        const titleEl = document.getElementById("autobus-sent-message-title");
+        const bubbleEl = document.getElementById("autobus-sent-message");
 
+        titleEl.innerHTML = `The following recipients received this message:`;
+        bubbleEl.textContent = message;
+
+        titleEl.style.display = "block";
+        bubbleEl.style.display = "inline-block";
 
       data.results.forEach(item => {
         const row = document.createElement("tr");
