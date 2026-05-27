@@ -36,9 +36,11 @@ async function sendBroadcast(event) {
 // New functionality to displ;ay the actual message we sent...
       const sentMessageEl = document.getElementById("autobus-sent-message");
             sentMessageEl.innerHTML = `
-            <strong>The following recipients received this message:</strong><br>
-        ${message}
-        `;
+                <strong style="display:block; margin-bottom:6px; color:#000;">
+                    The following recipients received this message:
+                </strong>
+                ${message}
+            `;
         sentMessageEl.style.display = "block";
 
 
