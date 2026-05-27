@@ -51,41 +51,44 @@
                 </nav>
               </div>
             </section>
-            <!-- Form -->
-            <section>
-                <form class="autobus-form">
-                    <label for="message">Message:</label>
-                    <textarea id="message" class="autobus-textarea" rows="4"></textarea>
-                    <div id="sms-stats" style="margin-top:6px; font-size:14px; color:#555;">
-                        Characters: 0 &nbsp; Encoding: GSM‑7 &nbsp; Segments: 1
+            <!-- Form and Two Column Layout -->
+                <section class="autobus-two-col">
+                    <div class="autobus-left">
+                        <form class="autobus-form">
+                            <label for="message">Message:</label>
+                            <textarea id="message" class="autobus-textarea" rows="4"></textarea>
+                            <div id="sms-stats" style="margin-top:6px; font-size:14px; color:#555;">
+                                Characters: 0 &nbsp; Encoding: GSM‑7 &nbsp; Segments: 1
+                            </div>
+                            <label style="display:block; margin-top:8px;">
+                            <input type="checkbox" id="gsmSafeMode">
+                                GSM‑Safe Mode (replace curly quotes & smart punctuation)
+                            </label>
+
+                            <button id="sendBtn" class="autobus-send-btn">Send</button>
+                        </form>
                     </div>
-                    <label style="display:block; margin-top:8px;">
-                    <input type="checkbox" id="gsmSafeMode">
-                        GSM‑Safe Mode (replace curly quotes & smart punctuation)
-                    </label>
 
-                    <button id="sendBtn" class="autobus-send-btn">Send</button>
-                </form>
+                    <div class="autobus-right">
+                        <div class="autobus-results">
+                            <h2 class="autobus-h2">Results:</h2>
+                            <p id="autobus-sent-message-title" class="autobus-sent-message-title" style="display:none;"></p>
+                            <p id="autobus-sent-message" class="autobus-sent-message" style="display:none;"></p>
 
-
-                <br><br>
-                <div class="autobus-results">
-                    <h2 class="autobus-h2">Results:</h2>
-                    <p id="autobus-sent-message-title" class="autobus-sent-message-title" style="display:none;"></p>
-                    <p id="autobus-sent-message" class="autobus-sent-message" style="display:none;"></p>
-
-                    <table id="resultsTable" class="autobus-results-table" style="display:none;">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Phone Number</th>
-                                <th>Status</th>
-                                <th>Error</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+                            <table id="resultsTable" class="autobus-results-table" style="display:none;">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Phone Number</th>
+                                        <th>Status</th>
+                                        <th>Error</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
             </section>
         </main>
         
