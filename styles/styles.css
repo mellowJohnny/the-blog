@@ -61,15 +61,6 @@ h1 {
     color: #000;
 }
 
-
-.autobus-sent-message-title {
-    font-family: "Work Sans", sans-serif;
-    margin: 0 0 6px 0;
-    font-size: 15px;
-    font-weight: 600;
-    color: #000;
-}
-
 /* Shared table layout width */
 .autobus-form,
 .autobus-results {
@@ -200,6 +191,7 @@ h1 {
 }
 
 .autobus-results-label {
+    font-family: "Work Sans", sans-serif;
     display: block;
     font-weight: 600;
     font-size: 15px;
