@@ -173,7 +173,7 @@ async function sendBroadcast(event) {
 
 // Bulk Import Stuff
 
-const BULK_IMPORT_API = 'https://YOUR_API_ID.execute-api.YOUR_REGION.amazonaws.com/YOUR_STAGE/subscribers/bulk-upload';
+const BULK_IMPORT_API = 'https://05b6ofo7i1.execute-api.us-east-2.amazonaws.com/prod/subscribers/bulk-upload';
 
 const overlay      = document.getElementById('bulkImportOverlay');
 const navLink      = document.getElementById('bulkImportLink');
