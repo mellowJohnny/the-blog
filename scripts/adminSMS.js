@@ -102,10 +102,16 @@ async function sendBroadcast(event) {
   table.style.display = "none";
   document.getElementById("autobus-sent-message").style.display = "none";
 
-  try {
+// ---------------- The Send
+try {
+    const token = await getAuthToken();
+
     const res = await fetch("https://yzivv3xuw2.execute-api.us-east-2.amazonaws.com/prod/admin/send", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": token
+      },
       body: JSON.stringify({ message, mode })
     });
 
@@ -155,7 +161,7 @@ async function sendBroadcast(event) {
       table.style.display = "table";
 
       // Clear textarea + reset counter
-      textarea.value = "";
+      textarea.value = "Autobus Cycling Club:\n";
       textarea.dispatchEvent(new Event("input"));
     }
 
@@ -170,7 +176,7 @@ async function sendBroadcast(event) {
   } finally {
     if (overlay) overlay.style.display = "none";
   }
-}
+}  
 
 // Bulk Import Stuff
 
@@ -307,10 +313,16 @@ uploadBtn.addEventListener('click', async () => {
   cancelBtn.disabled = true;
   showFeedback('Uploading...', 'success');
 
-  try {
+  // ------------- The Fetch
+try {
+    const token = await getAuthToken();
+
     const res = await fetch(BULK_IMPORT_API, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': token
+      },
       body: JSON.stringify(parsedItems),
     });
 
