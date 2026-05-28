@@ -1106,7 +1106,7 @@ textarea {
 
 .close:hover,
 .close:focus {
-  color: black;
+  color: #e551f5;
   text-decoration: none;
   cursor: pointer;
 }
@@ -1216,7 +1216,7 @@ textarea {
   cursor: pointer;
 }
 .preview-modal .close:hover {
-  color: #000;
+  color: #e551f5;
 }
 
 
