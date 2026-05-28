@@ -1,6 +1,7 @@
 document.getElementById("sendBtn").addEventListener("click", sendBroadcast);
 
 const textarea = document.getElementById("message");
+textarea.value = "Autobus Cycling Club:\n"; // Pre-fill the textarea 
 const statsEl = document.getElementById("sms-stats");
 const gsmSafeMode = document.getElementById("gsmSafeMode");
 
