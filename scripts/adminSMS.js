@@ -212,6 +212,9 @@ function resetModal() {
   fileInput.value = '';
   fileNameEl.textContent = '';
   uploadBtn.disabled = true;
+  uploadBtn.style.display = 'inline-block';
+  cancelBtn.style.display = 'inline-block';
+  closeBtn.style.display = 'none';
   hideFeedback();
 }
 
@@ -277,6 +280,11 @@ function handleFile(file) {
 uploadBtn.addEventListener('click', async () => {
   if (!parsedItems) return;
 
+  const ok = confirm(
+    `⚠️ This will delete ALL existing subscribers and replace them with ${parsedItems.length} new record(s).\n\nAre you sure you want to proceed?`
+  );
+  if (!ok) return;
+
   uploadBtn.disabled = true;
   cancelBtn.disabled = true;
   showFeedback('Uploading...', 'success');
@@ -291,7 +299,7 @@ uploadBtn.addEventListener('click', async () => {
     const json = await res.json();
 
     if (res.ok) {
-        showFeedback(`✓ Successfully imported ${json.count} subscriber(s).`, 'success');
+        showFeedback(`✓ Deleted ${json.deletedCount} existing subscriber(s) and imported ${json.importedCount} new one(s).`, 'success');
         uploadBtn.style.display = 'none';
         cancelBtn.style.display = 'none';
         closeBtn.style.display = 'inline-block';
