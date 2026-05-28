@@ -47,6 +47,9 @@
                     <tr>
                       <td class="cms-nav-td"><a href="/cms/wlcms.html">back to cms...</a> </td>
                     </tr>
+                    <td class="cms-nav-td">
+                        <a href="#" id="bulkImportLink">bulk import...</a>
+                    </td>
                   </table>
                 </nav>
               </div>
@@ -93,6 +96,29 @@
                     </div>
                 </section>
             </section>
+            <div id="bulkImportOverlay" class="bulk-overlay" style="display:none;">
+            <div class="bulk-modal">
+                <h2 class="bulk-modal-title">Bulk Import Subscribers</h2>
+
+                <p class="bulk-modal-instructions">
+                Select a pre-processed DynamoDB JSON file to import. Each record must already be
+                in DynamoDB typed JSON format with <code>phoneNumber</code> as the partition key.
+                </p>
+
+                <div class="bulk-drop-zone" id="bulkDropZone">
+                <span id="bulkDropLabel">Drop JSON file here or <label for="bulkFileInput" class="bulk-file-label">browse</label></span>
+                <input type="file" id="bulkFileInput" accept=".json" style="display:none;" />
+                <p id="bulkFileName" class="bulk-file-name"></p>
+                </div>
+
+                <div id="bulkFeedback" class="bulk-feedback" style="display:none;"></div>
+
+                <div class="bulk-modal-actions">
+                <button id="bulkCancelBtn" class="bulk-btn bulk-btn-cancel">Cancel</button>
+                <button id="bulkUploadBtn" class="bulk-btn bulk-btn-upload" disabled>Upload</button>
+                </div>
+            </div>
+            </div>
         </main>
         <!-- Progress Spinner  -->
         <div id="autobus-spinner-overlay">

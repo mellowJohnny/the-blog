@@ -233,7 +233,144 @@ h1 {
     to { transform: rotate(360deg); }
 }
 
+/* --- Overlay --- */
+.bulk-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+/* --- Modal container --- */
+.bulk-modal {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 32px 36px;
+  width: 480px;
+  max-width: 92vw;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.bulk-modal-title {
+  font-family: 'Work Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin: 0 0 12px 0;
+  color: #222;
+}
+
+.bulk-modal-instructions {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 0 0 20px 0;
+  line-height: 1.5;
+}
+
+.bulk-modal-instructions code {
+  background: #f4f4f4;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.85rem;
+}
+
+/* --- Drop zone --- */
+.bulk-drop-zone {
+  border: 2px dashed #aaa;
+  border-radius: 4px;
+  padding: 28px 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.bulk-drop-zone.drag-over {
+  border-color: #555;
+  background: #f9f9f9;
+}
+
+.bulk-file-label {
+  color: #333;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.bulk-file-name {
+  margin: 8px 0 0 0;
+  font-size: 0.85rem;
+  color: #333;
+  font-weight: 600;
+}
+
+/* --- Feedback --- */
+.bulk-feedback {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.bulk-feedback.success {
+  background: #edfaed;
+  border: 1px solid #7cc47c;
+  color: #2a6b2a;
+}
+
+.bulk-feedback.error {
+  background: #fdecea;
+  border: 1px solid #e08080;
+  color: #8b1a1a;
+}
+
+/* --- Buttons --- */
+.bulk-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.bulk-btn {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 8px 22px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.bulk-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.bulk-btn-cancel {
+  background: #eee;
+  color: #333;
+}
+
+.bulk-btn-cancel:hover:not(:disabled) {
+  background: #ddd;
+}
+
+.bulk-btn-upload {
+  background: #333;
+  color: #fff;
+}
+
+.bulk-btn-upload:hover:not(:disabled) {
+  opacity: 0.8;
+}
 
 
 
