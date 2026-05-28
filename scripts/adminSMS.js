@@ -179,6 +179,7 @@ const overlay      = document.getElementById('bulkImportOverlay');
 const navLink      = document.getElementById('bulkImportLink');
 const cancelBtn    = document.getElementById('bulkCancelBtn');
 const uploadBtn    = document.getElementById('bulkUploadBtn');
+const closeBtn     = document.getElementById('bulkCloseBtn');
 const fileInput    = document.getElementById('bulkFileInput');
 const dropZone     = document.getElementById('bulkDropZone');
 const fileNameEl   = document.getElementById('bulkFileName');
@@ -194,6 +195,8 @@ navLink.addEventListener('click', (e) => {
 });
 
 cancelBtn.addEventListener('click', closeModal);
+
+closeBtn.addEventListener('click', closeModal);
 
 overlay.addEventListener('click', (e) => {
   if (e.target === overlay) closeModal();
@@ -288,7 +291,10 @@ uploadBtn.addEventListener('click', async () => {
     const json = await res.json();
 
     if (res.ok) {
-      showFeedback(`✓ Successfully imported ${json.count} subscriber(s).`, 'success');
+        showFeedback(`✓ Successfully imported ${json.count} subscriber(s).`, 'success');
+        uploadBtn.style.display = 'none';
+        cancelBtn.style.display = 'none';
+        closeBtn.style.display = 'inline-block';
     } else {
       showFeedback(`Upload failed: ${json.message || 'Unknown error.'}`, 'error');
       uploadBtn.disabled = false;
