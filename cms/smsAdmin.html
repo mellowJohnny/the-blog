@@ -47,6 +47,7 @@
                     <tr>
                         <td class="cms-nav-td"><a href="/cms/wlcms.html">back to cms...</a> </td>
                         <td class="cms-nav-td"><a href="#" id="bulkImportLink">bulk import...</a></td>
+                        <td class="cms-nav-td"><a href="#" id="helpLink">user guide...</a></td>
                     </tr>
                   </table>
                 </nav>
@@ -115,6 +116,46 @@
                 <button id="bulkCancelBtn" class="bulk-btn bulk-btn-cancel">Cancel</button>
                 <button id="bulkUploadBtn" class="bulk-btn bulk-btn-upload" disabled>Upload</button>
                 <button id="bulkCloseBtn" class="bulk-btn bulk-btn-upload" style="display:none;">Close</button>
+                </div>
+            </div>
+            </div>
+            <div id="helpOverlay" class="bulk-overlay" style="display:none;">
+                
+            <!-- User Guide Content for MOdal -->
+            <div class="help-modal">
+                <h2 class="bulk-modal-title">Autobus Messaging Platform — User Guide</h2>
+
+                <div class="help-content">
+
+                <h3 class="help-section-title">Sending a Message</h3>
+                <p>Type your message in the text box. The message will always start with the default template <strong>"Autobus Cycling Club:"</strong> — just add your ride details after it.</p>
+                <p>As you type, the stats bar below the text box shows:</p>
+                <ul>
+                    <li><strong>Characters</strong> — the total length of your message</li>
+                    <li><strong>Encoding</strong> — GSM‑7 is the standard format and fits more characters per SMS. Unicode is used automatically if your message contains special characters like curly quotes or em dashes.</li>
+                    <li><strong>Segments</strong> — SMS messages over 160 characters (GSM‑7) or 70 characters (Unicode) are split into multiple segments. Each segment is billed separately by Twilio, so shorter messages are more economical.</li>
+                </ul>
+
+                <h3 class="help-section-title">GSM‑Safe Mode</h3>
+                <p>Check the <strong>GSM‑Safe Mode</strong> box to automatically replace smart punctuation — curly quotes, em dashes, ellipsis characters — with their plain equivalents. This keeps your message in the more efficient GSM‑7 format and avoids unexpected encoding issues on some handsets.</p>
+
+                <h3 class="help-section-title">Test Mode</h3>
+                <p>Check the <strong>Test Mode</strong> box before sending to deliver the message only to subscribers flagged as test users. Use this to verify your message looks correct before sending it to the full list. When Test Mode is unchecked, the message goes to all active subscribers.</p>
+
+                <h3 class="help-section-title">Sending</h3>
+                <p>Click the <strong>Send</strong> button when your message is ready. If you are in Live Mode (Test Mode unchecked), you will be asked to confirm before anything is sent. The results panel on the right will show the delivery status for each recipient, along with a summary of successful and failed sends.</p>
+
+                <h3 class="help-section-title">Bulk Import Subscribers</h3>
+                <p>Click <strong>bulk import...</strong> in the navigation to load a new subscriber list. The file must be a pre-processed JSON file in the correct format — this is prepared separately once a year from the club sign-up data.</p>
+                <p>Once you select or drop a file, the number of records is shown for review. Clicking <strong>Upload</strong> will permanently delete all existing subscribers and replace them with the new list. You will be asked to confirm before anything is deleted. A summary showing how many records were removed and how many were imported is displayed on completion.</p>
+
+                <h3 class="help-section-title">A Note on Segments &amp; Cost</h3>
+                <p>Each SMS segment sent via Twilio incurs a small cost. Keeping messages concise and using GSM‑Safe Mode where possible helps keep the number of segments — and therefore cost — to a minimum.</p>
+
+                </div>
+
+                <div class="help-modal-actions">
+                <button id="helpCloseBtn" class="bulk-btn bulk-btn-upload">Close</button>
                 </div>
             </div>
             </div>

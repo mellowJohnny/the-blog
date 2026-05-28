@@ -185,6 +185,11 @@ const fileInput    = document.getElementById('bulkFileInput');
 const dropZone     = document.getElementById('bulkDropZone');
 const fileNameEl   = document.getElementById('bulkFileName');
 const feedbackEl   = document.getElementById('bulkFeedback');
+// --- Help modal ---
+const helpOverlay  = document.getElementById('helpOverlay');
+const helpLink     = document.getElementById('helpLink');
+const helpCloseBtn = document.getElementById('helpCloseBtn');
+
 
 let parsedItems = null;
 
@@ -195,12 +200,24 @@ navLink.addEventListener('click', (e) => {
   overlay.style.display = 'flex';
 });
 
+// ---- Event Listeners ----
 cancelBtn.addEventListener('click', closeModal);
-
 closeBtn.addEventListener('click', closeModal);
-
 overlay.addEventListener('click', (e) => {
   if (e.target === overlay) closeModal();
+});
+
+helpLink.addEventListener('click', (e) => {
+  e.preventDefault();
+  helpOverlay.style.display = 'flex';
+});
+
+helpCloseBtn.addEventListener('click', () => {
+  helpOverlay.style.display = 'none';
+});
+
+helpOverlay.addEventListener('click', (e) => {
+  if (e.target === helpOverlay) helpOverlay.style.display = 'none';
 });
 
 function closeModal() {
