@@ -356,3 +356,110 @@ function hideFeedback() {
   feedbackEl.style.display = 'none';
   feedbackEl.className = 'bulk-feedback';
 }
+
+// ---------- Add Subscriber Modal JS --------------
+const ADD_SUBSCRIBER_API = 'https://05b6ofo7i1.execute-api.us-east-2.amazonaws.com/prod/subscribers';
+
+const addSubscriberOverlay    = document.getElementById('addSubscriberOverlay');
+const addSubscriberLink       = document.getElementById('addSubscriberLink');
+const addSubscriberCancelBtn  = document.getElementById('addSubscriberCancelBtn');
+const addSubscriberSaveBtn    = document.getElementById('addSubscriberSaveBtn');
+const addSubscriberCloseBtn   = document.getElementById('addSubscriberCloseBtn');
+const addFirstName            = document.getElementById('addFirstName');
+const addPhone                = document.getElementById('addPhone');
+const addSubscriberFeedback   = document.getElementById('addSubscriberFeedback');
+
+// --- Open / close ---
+addSubscriberLink.addEventListener('click', (e) => {
+  e.preventDefault();
+  resetAddSubscriberModal();
+  addSubscriberOverlay.style.display = 'flex';
+  addFirstName.focus();
+});
+
+addSubscriberCancelBtn.addEventListener('click', closeAddSubscriberModal);
+addSubscriberCloseBtn.addEventListener('click', closeAddSubscriberModal);
+
+addSubscriberOverlay.addEventListener('click', (e) => {
+  if (e.target === addSubscriberOverlay) closeAddSubscriberModal();
+});
+
+function closeAddSubscriberModal() {
+  addSubscriberOverlay.style.display = 'none';
+  resetAddSubscriberModal();
+}
+
+function resetAddSubscriberModal() {
+  addFirstName.value = '';
+  addPhone.value = '';
+  addSubscriberSaveBtn.disabled = false;
+  addSubscriberSaveBtn.style.display = 'inline-block';
+  addSubscriberCancelBtn.style.display = 'inline-block';
+  addSubscriberCloseBtn.style.display = 'none';
+  hideAddSubscriberFeedback();
+}
+
+// --- Submit ---
+addSubscriberSaveBtn.addEventListener('click', async () => {
+  const firstName = addFirstName.value.trim();
+  const phoneNumber = addPhone.value.trim();
+
+  // Basic client-side validation
+  if (!firstName) {
+    showAddSubscriberFeedback('Please enter a name.', 'error');
+    addFirstName.focus();
+    return;
+  }
+
+  if (!phoneNumber) {
+    showAddSubscriberFeedback('Please enter a mobile number.', 'error');
+    addPhone.focus();
+    return;
+  }
+
+  addSubscriberSaveBtn.disabled = true;
+  addSubscriberCancelBtn.disabled = true;
+  showAddSubscriberFeedback('Saving...', 'success');
+
+  try {
+    const token = await getAuthToken();
+
+    const res = await fetch(ADD_SUBSCRIBER_API, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token
+      },
+      body: JSON.stringify({ firstName, phoneNumber })
+    });
+
+    const json = await res.json();
+
+    if (res.ok) {
+      showAddSubscriberFeedback(`✓ ${firstName} has been successfully added.`, 'success');
+      addSubscriberSaveBtn.style.display = 'none';
+      addSubscriberCancelBtn.style.display = 'none';
+      addSubscriberCloseBtn.style.display = 'inline-block';
+    } else {
+      showAddSubscriberFeedback(`${json.error || 'Unknown error.'}`, 'error');
+      addSubscriberSaveBtn.disabled = false;
+    }
+  } catch (err) {
+    showAddSubscriberFeedback(`Network error: ${err.message}`, 'error');
+    addSubscriberSaveBtn.disabled = false;
+  } finally {
+    addSubscriberCancelBtn.disabled = false;
+  }
+});
+
+// --- Feedback helpers ---
+function showAddSubscriberFeedback(msg, type) {
+  addSubscriberFeedback.textContent = msg;
+  addSubscriberFeedback.className = `bulk-feedback ${type}`;
+  addSubscriberFeedback.style.display = 'block';
+}
+
+function hideAddSubscriberFeedback() {
+  addSubscriberFeedback.style.display = 'none';
+  addSubscriberFeedback.className = 'bulk-feedback';
+}

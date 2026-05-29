@@ -1219,6 +1219,39 @@ textarea {
   color: #e551f5;
 }
 
+/*  Add Subscriber Modal */
+.add-subscriber-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.add-subscriber-label {
+  font-family: 'Work Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #333;
+  margin-top: 10px;
+}
+
+.add-subscriber-input {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.95rem;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  color: #222;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.add-subscriber-input:focus {
+  outline: none;
+  border-color: #555;
+}
+
 
 /* ****************************************************************************************************
    ********************************     PREVIEW CONTENT — CARD-SET STYLING ****************************
