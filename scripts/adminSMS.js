@@ -57,6 +57,16 @@ function updateSmsStats() {
   const segments = chars <= limit ? 1 : Math.ceil(chars / segLimit);
 
   statsEl.innerHTML = `Characters: ${chars} &nbsp; Encoding: ${encoding} &nbsp; Segments: ${segments}`;
+
+  // BOLD & RED TEXT FOR EXCEEDING 160 CHARACTERS
+  const charCountEl = document.getElementById('sms-stats');
+if (chars > 160) {
+  charCountEl.style.color = 'red';
+  charCountEl.style.fontWeight = 'bold';
+} else {
+  charCountEl.style.color = '#555';
+  charCountEl.style.fontWeight = 'normal';
+}
 }
 
 // Attach listeners
