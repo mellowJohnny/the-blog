@@ -3,7 +3,12 @@ NOTE: Removed all overflow: scroll settings as in April 2023 it started
 messing up the layout with white borders and scoll bars
 **/
 
-/** Clean-up with Cursor on June 17, 2026 **/
+/* Media query to set the font size to 12px for screens between 320px - 480px... */
+@media only screen and (min-width: 320px) and (max-width: 480px) {
+  body {
+    font-size: 24px;
+  }
+}
 
 /* Set up the flex container */
 .flex-container {
@@ -495,7 +500,7 @@ h1 {
   font-family: 'Spicy Rice';
   font-size: 20px;
   color:rgb(11, 62, 100);
-  height: 30px;
+  height: 30;
 }
 
 .header-img-cell {
@@ -505,7 +510,11 @@ h1 {
 
 
 /********************************** Set-O-Matic styling **************************************/
-.junk-set-nav-td,
+.junk-set-nav-td {
+  margin: 1px;
+  padding-left: 25px;
+}
+
 .classic-set-nav-td {
   margin: 1px;
   padding-left: 25px;
@@ -574,8 +583,9 @@ form {
 }
 
 select {
+  width: 250px;
   font-size: 16px;
-  width: 100px;
+  width: 100px; /* Hard code text box width */
   padding: 6px 10px;
   margin: 8px 0;
   display: inline-block;
@@ -699,18 +709,22 @@ textarea {
   filter: contrast(0.92) brightness(1.03); /* Reduce contrast a bit for that vinathe look */
 }
 
-.wax-reviews-mast-table::before { /* Blurred background image with noise overlay for a vintage vibe */
+.wax-reviews-mast-table::before { /* Added to blurr the background image, adds noise for a vintage vibe */
   content: "";
   position: absolute;
   inset: 0;
-  background-image:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='noise'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/></filter><rect width='100%' height='100%' filter='url(%23noise)' opacity='0.08'/></svg>"),
-    url('images/wax-reviews-masthead-bg.png');
+  background-image: url('images/wax-reviews-masthead-bg.png');
   background-size: cover;
   background-position: center;
-  filter: blur(7px);
-  transform: scale(1.05);
+  filter: blur(7px); /* adjust strength */
+  transform: scale(1.05); /* prevents blur from clipping at edges */
   z-index: 0;
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='noise'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/></filter><rect width='100%' height='100%' filter='url(%23noise)' opacity='0.08'/></svg>");
+  background-size: cover;
+  z-index: 1;
   pointer-events: none;
 }
 
@@ -785,6 +799,7 @@ textarea {
   font-size: 18px;
   margin: 5px auto;
   width: 950px;
+ /** overflow: scroll; *//
 }
 
 .blog-entry { /* USED BY ALL REVIEW PAGES */ 
@@ -1252,6 +1267,7 @@ textarea {
   font-size: 18px;
   line-height: 1.4;
   font-family: 'Source Sans 3', sans-serif;
+  font-size: 18px;
   font-weight: 400; /* Light */
 }
 
@@ -1350,6 +1366,20 @@ textarea {
     box-sizing: border-box;
   }
 
+  /* Masthead scales nicely already with 7vw, but reduce padding */
+  .masthead {
+    padding-left: 5px;
+    font-size: 10vw;
+  }
+
+  /* Navigation links */
+  .nav-td {
+    font-size: 16px;
+    padding: 10px;
+    margin: 5px;
+    display: inline-block;
+  }
+
   .top-nav {
     font-size: 24px;
   }
@@ -1404,6 +1434,16 @@ textarea {
   .set-html {
     font-size: 0.9rem;
     padding: 8px;
+  }
+
+  .table-header-img {
+    width: 100px;
+    min-width: 80px;
+  }
+
+  .table-footer-img {
+    width: 100%;
+    max-width: 300px;
   }
 
   .card-table-style td {
@@ -1470,7 +1510,6 @@ textarea {
   }
 
   .masthead {
-    padding-left: 5px;
     font-size: 9vw;
     white-space: nowrap;
   }
