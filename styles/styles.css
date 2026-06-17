@@ -3,6 +3,8 @@ NOTE: Removed all overflow: scroll settings as in April 2023 it started
 messing up the layout with white borders and scoll bars
 **/
 
+/** Clean-up with Cursor on June 17, 2026 **/
+
 /* Set up the flex container */
 .flex-container {
     display: flex;
