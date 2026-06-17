@@ -1,0 +1,1607 @@
+/**
+NOTE: Removed all overflow: scroll settings as in April 2023 it started 
+messing up the layout with white borders and scoll bars
+**/
+
+/* Media query to set the font size to 12px for screens between 320px - 480px... */
+@media only screen and (min-width: 320px) and (max-width: 480px) {
+  body {
+    font-size: 24px;
+  }
+}
+
+/* Set up the flex container */
+.flex-container {
+    display: flex;
+    justify-content: center;
+    
+  }
+  
+  .flex-container div {
+    width: 1000px;
+    padding: 15px;  
+   /** overflow: scroll; **/
+    margin: 5px; 
+  }
+
+  a:link, a:visited {
+    color: #3FA7D6;
+}
+
+h1 {
+  font-size: 2.5rem;
+  line-height: 1.1;
+}
+
+/********************** Autobus SMS Styles *************************/
+
+/* ============================
+   BASE SHARED STYLES
+   ============================ */
+
+.autobus-results-table,
+.autobus-textarea,
+.autobus-send-btn {
+    font-family: "Work Sans", sans-serif;
+}
+
+.autobus-h2 {
+    margin: 0 0 10px 0;   /* removes browser default left indent */
+    padding: 0;
+}
+
+.autobus-sent-message-title {
+    font-family: "Work Sans", sans-serif;
+    display: block;
+    background: none;
+    padding: 0;
+    margin: 0 0 6px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #000;
+}
+
+/* Shared table layout width */
+.autobus-form,
+.autobus-results {
+    width: 100%;
+    max-width: 700px;
+    margin-left: 20px;
+}
+
+/* ============================
+   RESULTS WRAPPER (CENTERING)
+   ============================ */
+
+.autobus-results-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* ============================
+   RESULTS TABLE
+   ============================ */
+
+.autobus-results-table {
+    margin-left: 0;   /* ensures perfect alignment with form */
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    font-size: 15px;
+    margin-top: 20px;
+}
+
+.autobus-results-table thead th {
+    background: #f4f4f4;
+    padding: 10px;
+    border-bottom: 2px solid #ccc;
+    text-align: left;
+    font-weight: 700;
+}
+
+.autobus-results-table tbody td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.autobus-results-table tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.autobus-summary-row {
+    background: #f0f8ff;
+    font-weight: bold;
+    text-align: center;
+    border-top: 2px solid #ccc;
+}
+
+/* ============================
+   FORM (LEFT ALIGNED)
+   ============================ */
+
+.autobus-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.autobus-textarea {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    resize: vertical;
+}
+
+/* ============================
+   SEND BUTTON
+   ============================ */
+
+.autobus-send-btn {
+    display: block;
+    margin: 20px auto 0 auto;
+    padding: 12px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #222;
+    color: #fff;
+
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.autobus-send-btn:hover {
+    background-color: #e551f5;
+}
+
+.autobus-send-btn:active {
+    transform: scale(0.97);
+}
+
+/* ============================
+   RESULTS SECTION ALIGNMENT
+   ============================ */
+
+.autobus-results {
+    margin-top: 30px;
+}
+
+/* ============================
+   TWO COLUMN LAYOUT SECTION 
+   ============================ */
+.autobus-two-col {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    margin-top: 20px;
+}
+
+.autobus-left {
+    flex: 1;
+    padding-top: 35px;
+}
+
+.autobus-right {
+    flex: 1;
+}
+
+.autobus-results-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 22px;
+    display: block;
+    /* font-weight: 600; */
+    margin-bottom: 6px;
+    color: #000;
+}
+
+/* Remove default browser margins */
+.autobus-left label,
+.autobus-results-label {
+    margin-top: 0;
+}
+
+/* Progress Spinner */
+#autobus-spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.75);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.autobus-spinner {
+    width: 60px;
+    height: 60px;
+    border: 6px solid #ccc;
+    border-top-color: #333;
+    border-radius: 50%;
+    animation: autobus-spin 0.8s linear infinite;
+}
+
+@keyframes autobus-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* --- Overlay --- */
+.bulk-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Modal container --- */
+.bulk-modal {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 32px 36px;
+  width: 480px;
+  max-width: 92vw;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.bulk-modal-title {
+  font-family: 'Work Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin: 0 0 12px 0;
+  color: #222;
+}
+
+.bulk-modal-instructions {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 0 0 20px 0;
+  line-height: 1.5;
+}
+
+.bulk-modal-instructions code {
+  background: #f4f4f4;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.85rem;
+}
+
+/* --- Drop zone --- */
+.bulk-drop-zone {
+  border: 2px dashed #aaa;
+  border-radius: 4px;
+  padding: 28px 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.bulk-drop-zone.drag-over {
+  border-color: #555;
+  background: #f9f9f9;
+}
+
+.bulk-file-label {
+  color: #333;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.bulk-file-name {
+  margin: 8px 0 0 0;
+  font-size: 0.85rem;
+  color: #333;
+  font-weight: 600;
+}
+
+/* --- Feedback --- */
+.bulk-feedback {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.bulk-feedback.success {
+  background: #edfaed;
+  border: 1px solid #7cc47c;
+  color: #2a6b2a;
+}
+
+.bulk-feedback.error {
+  background: #fdecea;
+  border: 1px solid #e08080;
+  color: #8b1a1a;
+}
+
+/* --- Buttons --- */
+.bulk-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.bulk-btn {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 8px 22px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.bulk-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.bulk-btn-cancel {
+  background: #eee;
+  color: #333;
+}
+
+.bulk-btn-cancel:hover:not(:disabled) {
+  background: #ddd;
+}
+
+.bulk-btn-upload {
+  background: #333;
+  color: #fff;
+}
+
+.bulk-btn-upload:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+/* User Guide Modal */
+/* --- Help modal container --- */
+.help-modal {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 32px 36px;
+  width: 620px;
+  max-width: 92vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+/* --- Help content --- */
+.help-content {
+  font-size: 0.9rem;
+  color: #444;
+  line-height: 1.6;
+}
+
+.help-section-title {
+  font-family: 'Work Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #222;
+  margin: 20px 0 6px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #eee;
+}
+
+.help-content p {
+  margin: 0 0 10px 0;
+}
+
+.help-content ul {
+  margin: 0 0 10px 0;
+  padding-left: 20px;
+}
+
+.help-content ul li {
+  margin-bottom: 4px;
+}
+
+.help-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+
+
+  .blog-img {
+    border: 3px solid rgb(5, 60, 82);
+    border-radius: 4px;
+    padding: 3px;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+  }
+
+/** Navigation link formatting **/
+.nav-td {
+  font-family: 'Nunito', sans-serif;
+  font-size: 22px;
+  margin: 15px;
+  padding: 20px;
+}
+
+/** Active link highlighting */
+.nav-td a.active-link {
+  color: rgb(9, 78, 123);     
+  font-weight: bold;
+}
+
+
+.top-nav {
+  font-family: 'Nunito';
+  font-size: 36px;
+  font-weight: bold;
+  color:rgb(11, 62, 100);
+}
+
+#global-nav-placeholder {
+  height: 70px; /* Helps CLS - sets aside height for global nav */
+}
+
+.cms-nav-td {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 24px;
+  color:rgb(11, 62, 100);
+  margin: 15px;
+  padding: 20px;
+}
+
+.cms-top-nav {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 36px;
+  color:rgb(11, 62, 100);
+  margin: 15px;
+  padding: 20px;
+}
+
+.cms-form-table {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 18px;
+  width: 50%;
+  margin: 20px 0;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  text-align: left;
+}
+
+.cms-form-table td {
+  /* padding: 10px 12px; */
+  padding: 8px 10px;
+  vertical-align: top;
+  white-space: normal;
+}
+
+.card-set-nav {
+  font-family: 'Spicy Rice';
+  font-size: 20px;
+  color:rgb(11, 62, 100);
+  height: 30;
+}
+
+.header-img-cell {
+  height: 285px;      /* matches the image height */
+  vertical-align: middle;
+}
+
+
+/********************************** Set-O-Matic styling **************************************/
+.junk-set-nav-td {
+  margin: 1px;
+  padding-left: 25px;
+}
+
+.classic-set-nav-td {
+  margin: 1px;
+  padding-left: 25px;
+}
+
+.set-o-matic-picker {
+  font-family: 'Spicy Rice';
+  font-size: 30px;
+  text-align: center;
+  height: 42px;
+}
+/********************************** MAIN Styling Rules **************************************/
+body {
+    height:100%;
+    /* background-color: rgb(160, 188, 240); */
+    background-color: rgb(229, 239, 245);
+
+    /* Set a default font size for the page, then use em to set relative sizes to this */
+    font-size: 18px;
+}
+
+hr {
+  height:2px;
+  width: 75%;
+  border-width:0;
+  color:gray;
+  background-color:rgb(14, 74, 114)
+}
+
+a {
+  text-decoration: none;
+  /* color: rgb(12, 101, 136); */
+  color: rgb(2, 70, 153)
+}
+
+.header-link {
+  text-decoration: none;
+  color: #3FA7D6;
+}
+
+table {
+  border-collapse: collapse;
+ }
+
+form {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 20px;
+  padding-left: 1.5%;
+ }
+
+ .recaptcha-desc {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 18px;
+ }
+
+ /************************************** CMS TEXTBOX FORM Styling ********************************/
+ input[type=text] { 
+  font-size: 16px;
+  width: 450px; /* Hard code text box width */
+  padding: 6px 10px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid rgb(85, 174, 233);
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+select {
+  width: 250px;
+  font-size: 16px;
+  width: 100px; /* Hard code text box width */
+  padding: 6px 10px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid rgb(85, 174, 233);
+  border-radius: 2px;
+}
+
+textarea {
+  font-size: 24px;
+  font-family: 'Consolas', Courier, monospace;
+  width: 80%;
+  height: 150px;
+  box-sizing: border-box;
+  border: 1px solid rgb(85, 174, 233);
+  border-radius: 2px;
+  resize: none;
+  overflow: scroll;
+} 
+
+.input-button {
+  background-color: #256386;
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.input-text-disabled {
+  background-color: #c5cdd3;
+}
+
+ .mast-table {
+  border-collapse: collapse;
+  width: 100%;
+  background-color: rgb(44, 82, 137);
+}
+
+.autobus-mast-table {
+  border-collapse: collapse;
+  width: 100%;
+  background-color: rgb(0, 0, 0);
+}
+
+.autobus-h2 {
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.mast-table td {
+  vertical-align: top;
+  padding: 0;
+  margin: 0;
+}
+
+.mast-table tr {
+  height: 7vw; /* matches masthead font size */
+}
+
+.mast-table img {
+  display: block;
+  height: 100%;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+
+
+.masthead {
+  font-family: 'Spicy Rice';
+  font-size: 7vw;
+  color: #3FA7D6;
+  background-color: rgb(44, 82, 137);
+  padding: 1px 10px 0 10px;
+}
+
+.autobus-masthead {
+  font-family: 'Arial';
+  font-size: 7vw;
+  color: #000000;
+  background-color: rgb(0, 0, 0);
+  padding: 1px 10px 0 10px;
+}
+
+.cms-logo {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 40px;
+  text-align: left; 
+  font-weight: 500;         
+  color: #3FA7D6;
+  background-color: rgb(44, 82, 137);
+  padding: 4px 16px 4px 10px; /* add more right padding */
+  line-height: 1.2;
+  display: block;             /* ensures alignment behaves predictably */
+}
+
+.autobus-cms-logo {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 40px;
+  text-align: left; 
+  font-weight: 500;         
+  color: #f574e0;
+  background-color: rgb(0, 0, 0);
+  padding: 4px 16px 4px 10px; /* add more right padding */
+  line-height: 1.2;
+  display: block;             /* ensures alignment behaves predictably */
+}
+
+
+.wax-reviews-mast-table {
+  width: 100%;
+  height: 150px;
+  position: relative;
+  overflow: hidden;
+  background-image: url('https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hella_habs_masthead.webp'); 
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: white;
+  font-family: sans-serif;
+  filter: contrast(0.92) brightness(1.03); /* Reduce contrast a bit for that vinathe look */
+}
+
+.wax-reviews-mast-table::before { /* Added to blurr the background image, adds noise for a vintage vibe */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('images/wax-reviews-masthead-bg.png');
+  background-size: cover;
+  background-position: center;
+  filter: blur(7px); /* adjust strength */
+  transform: scale(1.05); /* prevents blur from clipping at edges */
+  z-index: 0;
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='noise'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/></filter><rect width='100%' height='100%' filter='url(%23noise)' opacity='0.08'/></svg>");
+  background-size: cover;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.wax-reviews-mast-table::after { /* Adds a tint */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 240, 0.25); /* soft cream tint */
+  z-index: 0;
+}
+
+
+.wax-reviews-masthead a {
+  font-family: Bebas Neue;
+  font-weight: 500;
+  font-size: 128px;
+  position: relative;
+  z-index: 1; /* keeps text above the blur */
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgb(252, 252, 245);
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+  padding-top: 14px;
+  height: 150px;
+  text-shadow:
+    -2px -2px 0 rgb(2, 70, 153),
+     2px -2px 0 rgb(2, 70, 153),
+    -2px  2px 0 rgb(2, 70, 153),
+     2px  2px 0 rgb(2, 70, 153);
+}
+
+
+.body-cms {
+  height:100%;
+  background-color: rgb(124, 151, 201);
+}
+
+.blog-type-divider {
+  margin-top: 24px;
+  margin-bottom: 8px;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 1.3rem;
+  font-weight: bold;
+  font-style: italic;
+  color: #3FA7D6;
+  border-bottom: 2px solid #0564a3;
+  padding-bottom: 4px;
+  width: 325px; /* Makes the dividing line fixed length */
+  
+}
+
+.header-style h1{
+    font-family: 'Work Sans', sans-serif;
+    font-size: 28px;
+    margin: 5px;
+    position: relative;
+    top: 1px;
+}
+
+.section-style-intro p {
+    font-family: 'Caveat', cursive;
+    font-size: 24px;
+    margin: 5px auto;
+    width: 900px;
+  /**  overflow: scroll; **/
+}
+
+.intro {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 18px;
+  margin: 5px auto;
+  width: 950px;
+ /** overflow: scroll; *//
+}
+
+.blog-entry { /* USED BY ALL REVIEW PAGES */ 
+    font-family: 'Source Sans 3';
+    background: rgb(212, 233, 241);
+    border-radius: 3px;
+    color:rgb(34, 38, 41);
+    font-size: 18px;
+    font-weight: 400; /* Light */
+    text-align: left;
+    padding: 10px; /* changing to 10px */
+} 
+
+.blog-title {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 22px;
+  color:rgb(11, 109, 167);
+}
+
+.blurb p {
+  font-family: 'Source Sans 3', sans-serif;
+  color:rgb(34, 38, 41);
+  font-size: 16px;
+  text-align: left;
+}
+
+.weather-style p {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 14px;
+  margin: 5px;
+  position: relative;
+  top: 10px;
+}
+
+ /* The weather box */
+.weather {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 15px;
+    color:rgb(169, 220, 243);
+    width: 80%;
+    height: 150px; 
+    
+  }
+
+  #weather {
+    display: flex;
+    justify-content: left;
+    min-height: 50px;
+  }
+
+.caption {
+  font-family: "Special Elite";
+  font-size: 16px;
+}
+    
+
+/* Table Stuff */
+.table-style {
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Nunito';
+  font-size: 16px;
+  text-align: left;
+}
+
+.set-html {
+  font-size: 18px;
+  line-height: 1.4;
+  padding: 10px;
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.set-details-table-style {
+  width: 100%;
+  table-layout: fixed;
+  font-size: 18px;
+  line-height: 1.4;
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+#cardSetDiv {
+  min-height: 750px;   /* small amount of pre-setting for set review height - soften the impact for CLS */
+}
+
+#blogsDiv {
+  min-height: 750px;   /* small amount of pre-setting for set review height - soften the impact for CLS */
+}
+
+/* Used to style the first table displaying the main set details */
+
+.set-details-table-style td {
+  display: table-cell;
+  table-layout: fixed;
+  margin-left: 5px;
+  margin-right: 5px;
+  font-family: 'Special Elite', sans-serif; 
+  font-size: 18px;
+  text-align: left;
+  padding: 2px 4px;
+  width: auto;
+}
+
+.set-details-table-style td[rowspan] {
+  padding: 4px 6px;
+}
+/* Move the set image closer to the card set details */
+.set-details-table-style td:first-child {
+  max-width: 60%;
+}
+
+.card-table-style td{
+  margin-left: 5px;
+  margin-right: 5px;
+  font-family: 'Special Elite';
+  font-style: italic;
+  font-size: 16px;
+  text-align: left;
+  padding: 6px;
+}
+
+.cms-set-picker {
+  width: 800px;
+  margin-left: 200px;
+}
+
+.like-button-table {
+  text-align: center;
+}
+
+.set-footer-table-style td {
+  padding: 8px;
+}
+
+/*************************************** Image Styles ****************************************/
+
+.table-header-img {
+  max-width: 620px; /* or whatever size feels right */
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 8px auto 0 auto; /* top margin + horizontal centering */
+  border: 1px solid;
+  border-color: rgb(22, 86, 138);
+  border-radius: 2px;
+  box-shadow: 5px 10px 18px #888888;
+}
+
+.card-middle-img {
+  /* First four values center the image, no table needed */
+  width: 75%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border: 2px solid;
+  border-color: rgb(22, 86, 138);
+  border-radius: 2px;
+  box-shadow: 5px 10px 18px #888888;
+}
+
+.mache-sync-img {
+  /* First four values center the image, no table needed */
+  width: 50%;
+  height: 50%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border: 2px solid;
+  border-color: rgb(22, 86, 138);
+  border-radius: 2px;
+  box-shadow: 5px 10px 18px #888888;
+}
+
+.tech-gif-img {
+  display: block;
+  max-width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.img-wrap-left {
+  float: left;
+  margin: 0 15px 15px 0;
+}
+
+.img-wrap-right {
+  float: right;
+  margin: 0 0 15px 15px;
+}
+
+
+.tech-masthead td {
+  vertical-align: top;
+  padding: 0;
+  margin: 0;
+  line-height: 0;
+  font-size: 0;
+}
+
+
+.table-footer-img {
+  width: 90%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid;
+  border-color: rgb(22, 86, 138);
+  border-radius: 2px;
+  box-shadow: 5px 10px 18px #888888;
+  text-align: right;
+}
+
+.page-footer {
+    font-size: 10px;
+    font-family: 'Work Sans', sans-serif;
+    padding: 20px;
+    display: inline;
+}
+
+.password-style {
+	font-family: "Special Elite";
+	font-size: 16px;
+}
+
+.error-msg {
+  font-family: 'Fira Code';
+  font-size: 18px;
+  color:rgb(7, 62, 126);
+  width:400px;
+}
+
+#cms-gif {
+  vertical-align: middle;
+  padding: 8px;
+  padding-bottom: 3px;
+}
+
+/** NEW dynamic menu stuff... **/
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  padding: 12px 16px;
+  z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/**********************************************************
+*********************** S3 BUCKET MODAL *******************
+***********************************************************/
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1000; 
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 20px 30px;
+  border: 1px solid #888;
+  width: 900px;
+  max-width: 90%;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+/* Image list grid */
+#imageList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #e551f5;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/*************************************** Pagination Styles... ********************************/
+.pagination-link {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 1.4rem;
+  color: #3FA7D6; 
+  text-decoration: none;
+  margin: 0 15px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.pagination-link:hover {
+  text-decoration: underline;
+}
+
+.pagination-link.disabled {
+  color: #999;
+  pointer-events: none;
+  text-decoration: none;
+  cursor: default;
+}
+
+.pagination-page {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 1rem;
+  margin: 0 10px;
+  color: #444;
+}
+
+
+.masthead-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 15px 20px;
+  background-color: rgb(44, 82, 137);
+  flex-wrap: nowrap;
+}
+
+.weather-box {
+  font-size: 1rem;
+  color: rgb(169, 220, 243);
+  text-align: left;
+  max-width: 500px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  margin-left: auto;
+}
+
+/* Let's make sure the fonts are always applied */
+.weather-box,
+.weather-full,
+.weather-condensed {
+  font-family: 'Work Sans', sans-serif;
+}
+
+/* ============================================
+   PREVIEW MODAL — OVERLAY + CONTENT BOX
+   Completely isolated from the CMS image-picker modal
+   ============================================ */
+
+/* Modal overlay */
+.preview-modal {
+  display: none;               /* Hidden by default */
+  position: fixed;
+  z-index: 9999;
+  inset: 0;                    /* shorthand for top/left/right/bottom: 0 */
+  background-color: rgba(0,0,0,0.6);
+  overflow-y: auto;
+  padding-top: 40px;
+}
+
+/* Modal content box */
+.preview-modal-content {
+  background-color: #dbeff8;
+  margin: 40px auto;
+  padding: 20px 30px;
+  border-radius: 8px;
+  width: 1000px; /* Match the width of the live site's flex container */
+  max-width: 95vw;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 18px;
+  font-weight: 400; /* Light */
+}
+
+/* Adding this here to try and break Preview Modal from inheriting from other rule */
+/* Break all inherited typography inside the preview modal */
+.preview-modal,
+.preview-modal * {
+  font-family: 'Source Sans 3', sans-serif !important;
+  font-size: 18px;
+  font-weight: 400; /* Light */
+  text-align: left;
+}
+
+/* Close button */
+.preview-modal .close {
+  float: right;
+  font-size: 32px;
+  font-weight: bold;
+  color: #444;
+  cursor: pointer;
+}
+.preview-modal .close:hover {
+  color: #e551f5;
+}
+
+/*  Add Subscriber Modal */
+.add-subscriber-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.add-subscriber-label {
+  font-family: 'Work Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #333;
+  margin-top: 10px;
+}
+
+.add-subscriber-input {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.95rem;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  color: #222;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.add-subscriber-input:focus {
+  outline: none;
+  border-color: #555;
+}
+
+
+/* ****************************************************************************************************
+   ********************************     PREVIEW CONTENT — CARD-SET STYLING ****************************
+                                  Matches the live site, scoped only to preview
+   ****************************************************************************************************/
+
+#previewContainer table.set-details-table-style,
+#previewContainer table.set-details-author,
+#previewContainer table.set-footer-table-style {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: 18px;
+  line-height: 1.4;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 18px;
+  font-weight: 400; /* Light */
+}
+
+/* Apply Special Elite to ALL descendants of the set-details tables */
+/* Ensure hard-coded field labels use Special Elite */
+.preview-modal #previewContainer table.set-details-table-style td strong,
+.preview-modal #previewContainer table.set-details-table-style td i {
+  font-family: 'Special Elite', sans-serif !important;
+}
+
+.preview-modal #previewContainer table.set-details-author td strong,
+.preview-modal #previewContainer table.set-details-author td i,
+.preview-modal #previewContainer table.set-footer-table-style td strong,
+.preview-modal #previewContainer table.set-footer-table-style td i {
+  font-family: 'Special Elite', sans-serif !important;
+}
+
+/* General table cell styling */
+#previewContainer td {
+  padding: 6px 4px;
+  font-size: 18px;
+  text-align: left;
+}
+
+/* Header + footer images */
+#previewContainer img.table-header-img,
+#previewContainer img.table-footer-img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Center only the header image cell */
+#previewContainer .header-img-cell {
+  text-align: center;
+  vertical-align: top;
+}
+
+/* Caption styling */
+.preview-modal #previewContainer p.caption {
+  font-family: "Special Elite" !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  text-align: left !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+
+
+
+
+
+
+
+/* ========================================================================================================================
+///////////////// MOBILE RESPONSIVE STYLES ////////////////////////////////////////////////////////////////////////
+======================================================================================================================== */
+@media (max-width: 600px) {
+
+  /* Global font scaling */
+  body {
+    font-size: 16px;
+  }
+
+  .wax-reviews-masthead a {
+    font-size: 48px;          /* Scales down from 128px */
+    height: 90px;             /* Matches reduced text size */
+    padding-left: 12px;       /* Keeps left alignment tight */
+    padding-top: 10px;        /* Centers vertically */
+    text-shadow:
+      -1px -1px 0 rgb(2, 70, 153),
+       1px -1px 0 rgb(2, 70, 153),
+      -1px  1px 0 rgb(2, 70, 153),
+       1px  1px 0 rgb(2, 70, 153);
+  }
+
+  .wax-reviews-mast-table {
+    height: 90px;             /* Match the reduced masthead height */
+  }
+
+
+  /* Flex container should not force 1000px width */
+  .flex-container div {
+    width: 100%;
+    padding: 10px;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  /* Blog intro + section intro */
+  .intro,
+  .section-style-intro p {
+    width: 100%;
+    font-size: 18px;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+
+  /* Masthead scales nicely already with 7vw, but reduce padding */
+  .masthead {
+    padding-left: 5px;
+    font-size: 10vw;
+  }
+
+  /* Navigation links */
+  .nav-td {
+    font-size: 16px;
+    padding: 10px;
+    margin: 5px;
+    display: inline-block;
+  }
+
+  .top-nav {
+    font-size: 24px;
+  }
+
+  /* Weather widget */
+  .weather {
+    width: 100%;
+    height: auto;
+    font-size: 14px;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+
+  /* Blog images */
+  .blog-img {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+  }
+
+  /* Blog entry container */
+  .blog-entry {
+    font-size: 18px;
+    padding: 10px;
+  }
+
+  /* Pagination */
+  .pagination-link {
+    font-size: 1rem;
+    margin: 0 8px;
+  }
+
+  .pagination-page {
+    font-size: 0.9rem;
+  }
+
+  /* Tables should scroll instead of overflow */
+  table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+  }
+
+  /* Set picker */
+  .cms-set-picker {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  /* card set stuff */
+
+  .set-html {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  .table-header-img {
+    width: 100px;
+    min-width: 80px;
+  }
+
+  .table-footer-img {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .card-table-style td {
+    font-size: 12px;
+    padding: 2px 1px;}
+
+/* ============================
+   MOBILE HAMBURGER NAVIGATION
+   ============================ */
+
+  /* Hide the table nav by default */
+  .nav-links {
+    display: none;
+    width: 100%;
+    background-color: rgb(44, 82, 137);
+    padding: 10px 0;
+  }
+
+  /* When menu is open */
+  .nav-links.open {
+    display: block;
+  }
+
+  /* Hamburger button */
+  .hamburger {
+    font-size: 32px;
+    cursor: pointer;
+    padding: 10px;
+    color: #3FA7D6;
+    display: block;
+  }
+
+  /* Make table behave like a vertical list */
+  .nav-table {
+    width: 100%;
+  }
+
+  .nav-table tr {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nav-td {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0;
+    text-align: left;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .nav-td a {
+    color: #fff;
+  }
+
+  /* Masthead & Weather Mobile Styles */
+  .masthead-container {
+    flex-direction: row;         /* keep horizontal layout */
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+  }
+
+  .masthead {
+    font-size: 9vw;
+    white-space: nowrap;
+  }
+
+  .weather-box {
+    font-size: 0.75rem;
+    max-width: 50%;
+    text-align: right;
+    margin-left: auto;
+    padding-left: 10px;
+  }
+
+  .set-details-table-style {
+  width: 100%;
+  table-layout: auto;
+  }
+
+  /**/
+  .set-details-table-style tr {
+    display: block;
+    width: 100%;
+  }
+
+  .set-details-author {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  font-style: italic;
+}
+
+  .set-details-table-style td {
+  display: table-cell;
+  table-layout: fixed;
+  margin: 0; /* Remove side margins */
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 18px;
+  line-height: 1.4;
+  text-align: left;
+  padding: 2px 4px; /* Reduce vertical and horizontal padding */
+  width: auto;
+}
+
+.set-details-table-style td[rowspan] {
+  width: 1%; /* forces the column to shrink to fit the image */
+  white-space: nowrap;
+}
+
+  .table-header-img {
+  display: block;
+  margin: 0 auto;
+  max-width: 260px; /* adjust as needed */
+  width: 100%;
+}
+
+
+  .table-footer-img {
+    display: block;
+    margin: 10px auto;
+    width: 100%;
+    max-width: 300px;
+  }
+
+
+  .weather-full { display: none; }
+  .weather-condensed { display: block; }
+
+} /* END MOBILE RESPONSIVE */
+
+
+/* Don't show condensed weather on desktop */
+.weather-condensed {
+  display: none;
+}
+
+
+/* Desktop: hide hamburger, show normal nav */
+@media (min-width: 601px) {
+  .hamburger {
+    display: none;
+  }
+
+  .nav-links {
+    display: block;
+  }
+}
+
+
+
+
+
+
+
+
+
+
