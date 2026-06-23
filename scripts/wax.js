@@ -29,8 +29,8 @@ function renderCardIntro(pageName) {
     `;
   } else if (pageName === "mcd") {
     introHTML = `
-      <h2>McDonald's Canada Hockey</h2><p>McDonald's Canada launched the very first "All Star" set for the 1991-92 NHL season, and continued the tradition for 18 years (minus the '04-'05 lockout), ending with the last 2009-10 Upper Deck set.</p>
-      <p>Early McHockey sets were small All-Star game retrospectives, but slowly grew in size and dropped the All-Star focus, eventually becoming "regular" hockey sets, pushing over 100 cards. A sign of things to come for the Tim Hortons sets which ultimately replaced them. </p>
+      <h2>McDonald's Canada Hockey</h2><p>McDonald's Canada launched the very first "All Star" set for the 1991-92 NHL season, and continued the tradition for 18 years (minus the '04-'05 lockout), ending with the last 2009-10 Upper Deck set.
+      Early sets were small All-Star game retrospectives, but slowly grew in size and dropped the All-Star focus, eventually becoming "regular" hockey sets, pushing over 100 cards. A sign of things to come for the Tim Hortons sets which ultimately replaced them. </p>
     `;
   }
     const introEl = document.getElementById("card-intro");
