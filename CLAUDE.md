@@ -39,6 +39,17 @@ branch or preview environment, so a push to `main` goes live as soon
 as Amplify's build finishes. Amplify emails on build completion. See
 `Documentation/ARCHITECTURE.md` for details.
 
+**Checking Amplify build status from the CLI**: AWS CLI v2 is
+installed, and a read-only IAM user (`amplify-readonly-cli`, scoped to
+`amplify:Get*`/`List*` only) is configured in `~/.aws/credentials` on
+this machine — no setup needed, just run e.g.:
+```
+aws amplify list-jobs --app-id d20qsyoicusf3p --branch-name main --max-results 3 --region us-east-2
+```
+That credential is long-lived (`aws configure`-style, not SSO) and
+persists across sessions/machines-state until manually rotated — see
+`Documentation/ARCHITECTURE.md` for details and where to rotate it.
+
 ## Architecture, in brief
 
 - **Frontend**: one standalone `.html` file per page at the repo root and under `/cms`, no framework. Shared logic lives in `scripts/*.js` and is wired up per-page via `<script src>` tags. Pages coordinate via URL query params (`?year=`, `?blogType=`, `?pageName=`, `?blogCat=`) rather than client-side routing. Details: `Documentation/FRONTEND.md`.

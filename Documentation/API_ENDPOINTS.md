@@ -1,4 +1,4 @@
-# API Endpoints
+I # API Endpoints
 
 Every endpoint below was found by grepping the frontend `scripts/*.js`
 files for `fetch(...)` calls. Each one is its own API Gateway REST API

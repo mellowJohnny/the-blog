@@ -49,6 +49,33 @@ This is separate from Lambda deployment, which is manual per-function
 uploading a `.zip` through the Lambda console, and the other Lambdas
 are edited directly in the Console with no source control at all).
 
+### Verifying a deploy from the CLI
+
+As of 2026-07-16, AWS CLI v2 is installed on the primary dev machine,
+authenticated as a dedicated IAM user, `amplify-readonly-cli`
+(account `339740904141`), scoped to a custom read-only policy
+(`AmplifyReadOnly` — `amplify:Get*`/`List*` actions only, no write
+access to anything). This lets a build be checked without opening the
+Amplify console:
+
+```bash
+aws sts get-caller-identity                          # confirm auth
+aws amplify list-apps --region us-east-2              # find the app ID (currently d20qsyoicusf3p, "the-blog")
+aws amplify list-jobs --app-id d20qsyoicusf3p --branch-name main --max-results 3 --region us-east-2
+```
+
+Each job entry includes `commitId`, `commitMessage`, and `status`
+(`SUCCEED`/`FAILED`/`RUNNING`/etc), so a specific push can be matched
+to its build result directly.
+
+**Credential lifecycle**: this was set up via `aws configure` (static
+access key + secret in `~/.aws/credentials`), not AWS SSO — see
+`AUTH.md`'s discussion of the tradeoff if this pattern gets reused
+elsewhere. Practically, that means:
+- The credential does **not** expire on its own and does **not** need to be re-entered per session — it persists on disk until manually rotated or deleted.
+- To rotate/revoke it: IAM console → Users → `amplify-readonly-cli` → Security credentials → deactivate or delete the access key (and issue a new one via `aws configure` if still needed).
+- Being read-only limits the blast radius if the key were ever exposed, but it's still a standing credential sitting on disk indefinitely — worth keeping in mind if the dev machine's disk/backups are ever shared or exposed.
+
 ## Frontend
 
 Plain multi-page HTML site, no bundler/framework:
