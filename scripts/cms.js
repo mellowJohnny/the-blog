@@ -21,7 +21,7 @@ function initTinyEditor(selector = '#postBody')
   selector: 'textarea',
   plugins: 'autoresize',
   min_height: 400, // The starting/minimum height
-  max_height: 800  // The maximum limit before a scrollbar appears
+  max_height: 600  // The maximum limit before a scrollbar appears
   }); 
 }
 
