@@ -67,60 +67,80 @@
     
     <main>
       <form class="form-style">
-
-        <label>Status <sup>*</sup></label><br>
-        <select id="published" name="published" title="published">
-          <option value="false">Staging</option>
-          <option value="true">Live</option>
-        </select><br><br>
-
-        <label>Blog Post Title <sup>*</sup></label><br>
-        <input type="text" id="title" required title="blogPostTitle"><br><br>
-
-        <label>Type <sup>*</sup></label><br>
-        <div>
-          <select id="blogType" name="blogType" class="form-style" title="blogType">
-            <option value="1">Technology</option>
-            <option value="5">Raspberry Pi</option>
-            <option value="2">Hockey Cards</option>
-            <option value="3">Mach-E</option>
-            <option value="4">SYNC Update</option>
-            <option value="99">Home Page</option>
-          </select>
-        </div><br><br>
-
-        <label>Author <sup>*</sup></label><br>
-        <div>
-          <select id="author" name="author" class="form-style" title="author">
-            <option value="Christian Couillard">Christian Couillard</option>
-          </select>
-        </div><br><br>
-
-        <label>Image</label><br>
-        <!-- ⭐ existing behavior preserved: full URL lives in imgName -->
-        <input type="text" id="imgName" title="imgName" value="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/blog/"><br>
-        <!-- ⭐ ADDED: Browse button for blog images -->
-        <button class="input-button" type="button" onclick="openBlogImageBrowser('imgName')">Browse</button>
-        <br><br>
-
-        <label>Image Caption</label><br>
-        <input type="text" id="imgCap" title="imgCap"><br><br>
-
-        <label>Post Body <sup>*</sup></label><br>
-        <textarea id="postBody" required title="blogBody"></textarea>
-        <br><br>
-
-        <button class="input-button" type="button" id="cmsSubmitButton"
-          onclick="createBlogPost(
-            document.getElementById('published').value,
-            document.getElementById('title').value,
-            document.getElementById('imgName').value,
-            document.getElementById('imgCap').value,
-            document.getElementById('author').value,
-            document.getElementById('blogType').value
-          )">
-          Submit Post
-        </button>
+       <table class="cms-form-table">
+        <tr> <!-- 1st Row - dropdown -->
+          <td colspan="2">
+            <label>Status <sup>*</sup></label><br>
+            <select id="published" name="published" title="published" style="width: 200px;">
+              <option value="false">Staging</option>
+              <option value="true">Live</option>
+            </select>
+          </td>
+        </tr>
+        <tr> <!-- 2nd Row -->
+          <td colspan="2">
+            <label>Blog Post Title <sup>*</sup></label><br>
+            <input type="text" id="title" required title="blogPostTitle">
+          </td>
+        </tr>
+        <tr> <!-- 3rd Row -->
+          <td>
+            <label>Author <sup>*</sup></label><br>
+            <div>
+              <select id="author" name="author" class="form-style" title="author" style="width: 200px;">
+                <option value="Christian Couillard">Christian Couillard</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <label>Type <sup>*</sup></label><br>
+            <div>
+              <select id="blogType" name="blogType" class="form-style" title="blogType" style="width: 200px;">
+                <option value="1">Technology</option>
+                <option value="5">Raspberry Pi</option>
+                <option value="2">Hockey Cards</option>
+                <option value="3">Mach-E</option>
+                <option value="4">SYNC Update</option>
+                <option value="99">Home Page</option>
+              </select>
+            </div>
+          </td>
+        </tr>
+        <tr> <!-- 4th Row -->
+          <td>
+            <label>Image</label><br>
+            <!-- ⭐ existing behavior preserved: full URL lives in imgName -->
+            <input type="text" id="imgName" title="imgName" value="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/blog/"><br>
+            <!-- ⭐ ADDED: Browse button for blog images -->
+            <button class="input-button" type="button" onclick="openBlogImageBrowser('imgName')">Browse</button>
+          </td>
+          <td>
+            <label>Image Caption</label><br>
+            <input type="text" id="imgCap" title="imgCap">
+          </td>
+        </tr>
+        <tr> <!-- 5th Row -->
+          <td colspan="2">
+            <label>Post Body <sup>*</sup></label><br><br>
+            <textarea id="postBody" required title="blogBody"></textarea>
+          </td>
+        </tr>
+        <tr> <!-- 6th Row - SUBMIT BUTTON -->
+          <td colspan="2" align="left">
+            <button class="input-button" type="button" id="cmsSubmitButton"
+              onclick="createBlogPost(
+                document.getElementById('published').value,
+                document.getElementById('title').value,
+                document.getElementById('imgName').value,
+                document.getElementById('imgCap').value,
+                document.getElementById('author').value,
+                document.getElementById('blogType').value
+              )">
+              Submit Post
+            </button>
+          </td>
+        </tr>
+       </table>
       </form>
     </main>
   </div>
