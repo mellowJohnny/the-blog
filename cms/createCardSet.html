@@ -71,15 +71,14 @@
 <main>
 <form class="form-style">
   <table class="cms-form-table">
-    <tr> <!-- First Row - only one form field -->
-      <td colspan="2"><label>Status</label><br> 
+    <tr> <!-- 1st Row -->
+      <td>
+        <label>Status</label><br>
         <select id="blogStatus" name="blogStatus" title="blogStatus" style="width: 150px;">
           <option value="staged">Staging</option>
           <option value="OK">Live</option>
         </select>
       </td>
-    </tr>
-    <tr>
       <td>
         <label>Set Category <sup>*</sup></label><br>
           <select id="blogCat" name="blogCat" title="blogCat" style="width: 150px;">
@@ -109,7 +108,7 @@
         <input type="text" id="seoTags">
       </td>
     </tr>
-    <tr>
+    <tr> <!-- 4th Row -->
       <td>
         <label>Author <sup>*</sup></label><br>
         <div>
@@ -118,33 +117,27 @@
           </select>
         </div>
       </td>
-    </tr>
-    <tr> <!-- 4th Row -->
-      <td colspan="2">
+      <td>
         <label>Set Name</label><br>
         <input type="text" id="setName" required>
       </td>
     </tr>
     <tr> <!-- 5th Row -->
-      <td colspan="2">
+      <td>
         <label>Release Year</label><br>
         <input type="text" id="year" required>
       </td>
-    </tr>
-    <tr> <!-- 6th Row -->
-      <td colspan="2">
+      <td>
         <label>Set Size</label><br>
         <input type="text" id="size">
       </td>
     </tr>
-    <tr> <!-- 7th Row -->
-      <td colspan="2">
+    <tr> <!-- 6th Row -->
+      <td>
         <label>Inserts</label><br>
-        <input type="text" id="subsets">                           
+        <input type="text" id="subsets">
       </td>
-    </tr>
-    <tr> <!-- 8th Row -->
-      <td colspan="2">
+      <td>
         <label>Star Rating</label><br>
         <select id="stars" style="width: 150px;">
           <option value="1">One Star</option>
@@ -155,14 +148,12 @@
         </select>
       </td>
     </tr>
-    <tr> <!-- 9th Row -->
-      <td colspan="2">
+    <tr> <!-- 7th Row -->
+      <td>
         <label>Formats</label><br>
         <input type="text" id="formats">
       </td>
-    </tr>
-    <tr> <!-- 10th Row -->
-      <td colspan="2">
+      <td>
         <label>Manufacturer</label><br>
         <select id="mfg" style="width: 150px;">
           <option value="O-Pee-Chee">O-Pee-Chee</option>
@@ -177,15 +168,13 @@
         </select>
       </td>
     </tr>
-    <tr> <!-- 11th Row -->
-      <td colspan="2">
+    <tr> <!-- 8th Row -->
+      <td>
         <label>Header Image Name</label><br>
         <input type="text" id="headerImgName"><br>
           <button class="input-button" type="button" onclick="openImageBrowser('headerImgName')">Browse</button>
       </td>
-    </tr>
-    <tr> <!-- 12th Row -->
-      <td colspan="2">
+      <td>
         <label>Footer Image Name</label><br>
         <input type="text" id="footerImgName"><br>
           <button class="input-button" type="button" onclick="openImageBrowser('footerImgName')">Browse</button>
