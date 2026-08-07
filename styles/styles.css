@@ -1175,7 +1175,6 @@ textarea {
   padding: 20px 30px;
   border-radius: 8px;
   width: 1000px; /* Match the width of the live site's flex container */
-  max-width: 95vw;
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
   font-family: 'Source Sans 3', sans-serif;
   font-size: 18px;
@@ -1248,7 +1247,6 @@ textarea {
 #previewContainer table.set-footer-table-style {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px;
   font-size: 18px;
   line-height: 1.4;
   font-family: 'Source Sans 3', sans-serif;
@@ -1271,7 +1269,7 @@ textarea {
 
 /* General table cell styling */
 #previewContainer td {
-  padding: 6px 4px;
+  padding: 2px 4px;
   font-size: 18px;
   text-align: left;
 }
