@@ -19,7 +19,7 @@ function initTinyEditor(selector = '#postBody')
   width: 1000,
   browser_spellcheck: true,
   min_height: 400, // The starting/minimum height
-  max_height: 600  // The maximum limit before a scrollbar appears
+  max_height: 500  // The maximum limit before a scrollbar appears
   });
 }
 
