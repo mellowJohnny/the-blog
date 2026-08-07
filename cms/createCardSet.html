@@ -71,25 +71,27 @@
 <main>
 <form class="form-style">
   <table class="cms-form-table">
-    <tr> <!-- 1st Row - dropdowns -->
-      <td>
+    <tr> <!-- 1st Row - dropdown -->
+      <td colspan="2">
         <label>Status</label><br>
-        <select id="blogStatus" name="blogStatus" title="blogStatus" style="width: 150px;">
+        <select id="blogStatus" name="blogStatus" title="blogStatus" style="width: 200px;">
           <option value="staged">Staging</option>
           <option value="OK">Live</option>
         </select>
       </td>
-      <td>
+    </tr>
+    <tr> <!-- 2nd Row - dropdown -->
+      <td colspan="2">
         <label>Set Category <sup>*</sup></label><br>
-          <select id="blogCat" name="blogCat" title="blogCat" style="width: 150px;">
+          <select id="blogCat" name="blogCat" title="blogCat" style="width: 200px;">
             <option value="reg">Regular</option>
             <option value="tims">Tim Hortons</option>
             <option value="mcd">McDonald's</option>
           </select>
       </td>
     </tr>
-    <tr> <!-- 2nd Row - dropdowns -->
-      <td>
+    <tr> <!-- 3rd Row - dropdown -->
+      <td colspan="2">
         <label>Author <sup>*</sup></label><br>
         <div>
           <select id="author" name="author" class="form-style" title="author" style="width: 200px;">
@@ -97,9 +99,11 @@
           </select>
         </div>
       </td>
-      <td>
+    </tr>
+    <tr> <!-- 4th Row - dropdown -->
+      <td colspan="2">
         <label>Star Rating</label><br>
-        <select id="stars" style="width: 150px;">
+        <select id="stars" style="width: 200px;">
           <option value="1">One Star</option>
           <option value="2">Two Stars</option>
           <option value="3">Three Stars</option>
@@ -108,10 +112,10 @@
         </select>
       </td>
     </tr>
-    <tr> <!-- 3rd Row - dropdown -->
+    <tr> <!-- 5th Row - dropdown -->
       <td colspan="2">
         <label>Manufacturer</label><br>
-        <select id="mfg" style="width: 150px;">
+        <select id="mfg" style="width: 200px;">
           <option value="O-Pee-Chee">O-Pee-Chee</option>
           <option value="Topps">Topps</option>
           <option value="Upper Deck">Upper Deck</option>
@@ -124,7 +128,7 @@
         </select>
       </td>
     </tr>
-    <tr> <!-- 4th Row - two SEO fields -->
+    <tr> <!-- 6th Row - two SEO fields -->
       <td>
         <label>SEO Title</label><br>
         <input type="text" id="seoPageTitle">
@@ -134,7 +138,7 @@
         <input type="text" id="seoMetaDesc">
       </td>
     </tr>
-    <tr> <!-- 5th Row - two SEO fields -->
+    <tr> <!-- 7th Row - two SEO fields -->
       <td>
         <label>SEO Friendly URL</label><br>
         <input type="text" id="seoURLSlug">
@@ -144,7 +148,7 @@
         <input type="text" id="seoTags">
       </td>
     </tr>
-    <tr> <!-- 6th Row -->
+    <tr> <!-- 8th Row -->
       <td>
         <label>Set Name</label><br>
         <input type="text" id="setName" required>
@@ -154,7 +158,7 @@
         <input type="text" id="size">
       </td>
     </tr>
-    <tr> <!-- 7th Row -->
+    <tr> <!-- 9th Row -->
       <td>
         <label>Release Year</label><br>
         <input type="text" id="year" required>
@@ -164,13 +168,13 @@
         <input type="text" id="subsets">
       </td>
     </tr>
-    <tr> <!-- 8th Row -->
+    <tr> <!-- 10th Row -->
       <td colspan="2">
         <label>Formats</label><br>
         <input type="text" id="formats">
       </td>
     </tr>
-    <tr> <!-- 9th Row -->
+    <tr> <!-- 11th Row -->
       <td>
         <label>Header Image Name</label><br>
         <input type="text" id="headerImgName"><br>
@@ -182,7 +186,7 @@
           <button class="input-button" type="button" onclick="openImageBrowser('footerImgName')">Browse</button>
       </td>
     </tr>
-    <tr> <!-- 14th Row -->
+    <tr> <!-- 12th Row -->
       <td colspan="2">
         <label>Set Review Text</label><br><br>
         <textarea id="postBody"></textarea>
