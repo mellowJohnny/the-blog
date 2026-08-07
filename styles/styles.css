@@ -918,6 +918,12 @@ textarea {
   padding: 8px;
 }
 
+/* Trim the trailing margin left by the last paragraph of the review body,
+   so it doesn't read as a gap before the footer table */
+.set-details-author td > *:last-child {
+  margin-bottom: 0;
+}
+
 /*************************************** Image Styles ****************************************/
 
 .table-header-img {
