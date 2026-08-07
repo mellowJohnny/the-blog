@@ -11,18 +11,16 @@
  * This function is called from every CMS page, allowing for a single place to contol the WYSIWYG editor
  */
 
-function initTinyEditor(selector = '#postBody') 
-{ tinymce.init({ 
-  selector: selector, 
-  plugins: ['lists', 'link', 'image', 'code'], // only actual plugins 
-  toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | advlist autolink link image lists charmap preview code | wordcount', 
-  width: 1000, 
+function initTinyEditor(selector = '#postBody')
+{ tinymce.init({
+  selector: selector,
+  plugins: ['lists', 'link', 'image', 'code', 'autoresize'],
+  toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link image lists code | wordcount',
+  width: 1000,
   browser_spellcheck: true,
-  selector: 'textarea',
-  plugins: 'autoresize',
   min_height: 400, // The starting/minimum height
   max_height: 600  // The maximum limit before a scrollbar appears
-  }); 
+  });
 }
 
 /**
