@@ -116,12 +116,22 @@
                              <table class="cms-form-table">
                               <tr> <!-- First Row - only one form field -->
                                 <td colspan="2"><label>Status</label><br>
-                                  <select id="blogStatus" name="blogStatus" title="blogStatus">
+                                  <select id="blogStatus" name="blogStatus" title="blogStatus" style="width: 200px;">
                                     <!-- The option tags are dynamically added by the CMS.js populateCardSet() function -->
                                   </select>
                                 </td>
                               </tr>
-                              <tr> <!-- 2nd Row - two SEO fields -->
+                              <tr> <!-- 2nd Row -->
+                                <td colspan="2">
+                                  <label>Author <sup>*</sup></label><br>
+                                      <div>
+                                        <select id="author" name="author" title="author" style="width: 200px;">
+                                          <option value="Christian Couillard">Christian Couillard</option>
+                                        </select>
+                                      </div>
+                                </td>
+                              </tr>
+                              <tr> <!-- 3rd Row - two SEO fields -->
                                 <td>
                                   <label>SEO Title</label><br>
                                   <input type="text" id="seoPageTitle">
@@ -131,7 +141,7 @@
                                   <input type="text" id="seoMetaDesc">
                                 </td>
                               </tr>
-                              <tr> <!-- 3rd Row - two SEO fields -->
+                              <tr> <!-- 4th Row - two SEO fields -->
                                 <td>
                                   <label>SEO Friendly URL</label><br>
                                   <input type="text" id="seoURLSlug">
@@ -139,16 +149,6 @@
                                 <td>
                                   <label>SEO Tags</label><br>
                                   <input type="text" id="seoTags">
-                                </td>
-                              </tr>
-                              <tr> <!-- 4th Row -->
-                                <td>
-                                  <label>Set Name</label><br>
-                                  <input class="input-text-disabled" type="text" id="setName" title="setName" readonly disabled>
-                                </td>
-                                <td>
-                                  <label>Release Year</label><br>
-                                   <input class="input-text-disabled" type="text" id="year" title="year" readonly disabled>
                                 </td>
                               </tr>
                               <tr> <!-- 5th Row -->
@@ -182,19 +182,19 @@
                                 </td>
                               </tr>
                               <tr> <!-- 8th Row -->
-                                <td colspan="2">
-                                  <label>Footer Image Slug</label><br>
-                                  <input type="text" id="footerImgName" title="footerImgName">
+                                <td>
+                                  <label>Set Name</label><br>
+                                  <input class="input-text-disabled" type="text" id="setName" title="setName" readonly disabled>
+                                </td>
+                                <td>
+                                  <label>Release Year</label><br>
+                                   <input class="input-text-disabled" type="text" id="year" title="year" readonly disabled>
                                 </td>
                               </tr>
                               <tr> <!-- 9th Row -->
                                 <td colspan="2">
-                                  <label>Author <sup>*</sup></label><br>
-                                      <div>
-                                        <select id="author" name="author" title="author" style="width: 200px;">
-                                          <option value="Christian Couillard">Christian Couillard</option>
-                                        </select>
-                                      </div>
+                                  <label>Footer Image Slug</label><br>
+                                  <input type="text" id="footerImgName" title="footerImgName">
                                 </td>
                               </tr>
                               <tr> <!-- 10th Row -->
