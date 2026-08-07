@@ -71,7 +71,7 @@
 <main>
 <form class="form-style">
   <table class="cms-form-table">
-    <tr> <!-- 1st Row -->
+    <tr> <!-- 1st Row - dropdowns -->
       <td>
         <label>Status</label><br>
         <select id="blogStatus" name="blogStatus" title="blogStatus" style="width: 150px;">
@@ -88,27 +88,7 @@
           </select>
       </td>
     </tr>
-    <tr> <!-- 2nd Row - two SEO fields -->
-      <td>
-        <label>SEO Title</label><br>
-        <input type="text" id="seoPageTitle">
-      </td>
-      <td>
-        <label>SEO Meta Description</label><br>
-        <input type="text" id="seoMetaDesc">
-      </td>
-    </tr>
-    <tr> <!-- 3rd Row - two SEO fields -->
-      <td>
-        <label>SEO Friendly URL</label><br>
-        <input type="text" id="seoURLSlug">
-      </td>
-      <td>
-        <label>SEO Tags</label><br>
-        <input type="text" id="seoTags">
-      </td>
-    </tr>
-    <tr> <!-- 4th Row -->
+    <tr> <!-- 2nd Row - dropdowns -->
       <td>
         <label>Author <sup>*</sup></label><br>
         <div>
@@ -116,26 +96,6 @@
             <option value="Christian Couillard">Christian Couillard</option>
           </select>
         </div>
-      </td>
-      <td>
-        <label>Set Name</label><br>
-        <input type="text" id="setName" required>
-      </td>
-    </tr>
-    <tr> <!-- 5th Row -->
-      <td>
-        <label>Release Year</label><br>
-        <input type="text" id="year" required>
-      </td>
-      <td>
-        <label>Set Size</label><br>
-        <input type="text" id="size">
-      </td>
-    </tr>
-    <tr> <!-- 6th Row -->
-      <td>
-        <label>Inserts</label><br>
-        <input type="text" id="subsets">
       </td>
       <td>
         <label>Star Rating</label><br>
@@ -148,12 +108,8 @@
         </select>
       </td>
     </tr>
-    <tr> <!-- 7th Row -->
-      <td>
-        <label>Formats</label><br>
-        <input type="text" id="formats">
-      </td>
-      <td>
+    <tr> <!-- 3rd Row - dropdown -->
+      <td colspan="2">
         <label>Manufacturer</label><br>
         <select id="mfg" style="width: 150px;">
           <option value="O-Pee-Chee">O-Pee-Chee</option>
@@ -168,7 +124,53 @@
         </select>
       </td>
     </tr>
+    <tr> <!-- 4th Row - two SEO fields -->
+      <td>
+        <label>SEO Title</label><br>
+        <input type="text" id="seoPageTitle">
+      </td>
+      <td>
+        <label>SEO Meta Description</label><br>
+        <input type="text" id="seoMetaDesc">
+      </td>
+    </tr>
+    <tr> <!-- 5th Row - two SEO fields -->
+      <td>
+        <label>SEO Friendly URL</label><br>
+        <input type="text" id="seoURLSlug">
+      </td>
+      <td>
+        <label>SEO Tags</label><br>
+        <input type="text" id="seoTags">
+      </td>
+    </tr>
+    <tr> <!-- 6th Row -->
+      <td>
+        <label>Set Name</label><br>
+        <input type="text" id="setName" required>
+      </td>
+      <td>
+        <label>Set Size</label><br>
+        <input type="text" id="size">
+      </td>
+    </tr>
+    <tr> <!-- 7th Row -->
+      <td>
+        <label>Release Year</label><br>
+        <input type="text" id="year" required>
+      </td>
+      <td>
+        <label>Inserts</label><br>
+        <input type="text" id="subsets">
+      </td>
+    </tr>
     <tr> <!-- 8th Row -->
+      <td colspan="2">
+        <label>Formats</label><br>
+        <input type="text" id="formats">
+      </td>
+    </tr>
+    <tr> <!-- 9th Row -->
       <td>
         <label>Header Image Name</label><br>
         <input type="text" id="headerImgName"><br>
