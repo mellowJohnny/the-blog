@@ -950,6 +950,13 @@ textarea {
   text-align: center;
 }
 
+/* Unlike set-details-table-style / set-details-author, this table never
+   had an explicit width - it shrink-wrapped to its image content and sat
+   left-aligned instead of letting the image's margin:auto center it */
+.set-footer-table-style {
+  width: 100%;
+}
+
 .set-footer-table-style td {
   padding: 8px;
 }
@@ -1604,16 +1611,31 @@ textarea {
   .table-header-img {
   display: block;
   margin: 0 auto;
-  max-width: 260px; /* adjust as needed */
+  max-width: 320px; /* adjust as needed */
   width: 100%;
 }
 
+
+  /* .set-details-table-style gets its own tr/td display overrides above;
+     .set-footer-table-style didn't, so it fell back to the generic mobile
+     `table { display: block; }` rule while its td stayed default
+     table-cell - a mismatched context that left the footer image without
+     a properly-centered containing block */
+  .set-footer-table-style {
+    width: 100%;
+  }
+
+  .set-footer-table-style td {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
 
   .table-footer-img {
     display: block;
     margin: 10px auto;
     width: 100%;
-    max-width: 300px;
+    max-width: 360px;
   }
 
 
