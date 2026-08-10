@@ -266,21 +266,19 @@ function renderSetPicker(year, blogCat, pageName) {
     const label = `${y}-${(y + 1).toString().slice(-2)}`;
 
     cells += (y === parseInt(year))
-      ? `<td class="${range.className}">${label}</td>`
-      : `<td class="${range.className}">
+      ? `<div class="${range.className}">${label}</div>`
+      : `<div class="${range.className}">
            <a href="/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}">
              ${label}
            </a>
-         </td>`;
+         </div>`;
   }
 
-  // A single row - .card-set-nav tr is a flex-wrap container (styles.css),
-  // so it wraps onto as many lines as needed at any viewport width and any
-  // total year count, with no split point to maintain as ranges grow.
+  // .card-set-nav is a flex-wrap container (styles.css), so it wraps onto
+  // as many lines as needed at any viewport width and any total year
+  // count, with no split point to maintain as ranges grow.
   setPicker.innerHTML = `
-    <table class="card-set-nav">
-      <tr style="text-align: center;">${cells}</tr>
-    </table>
+    <div class="card-set-nav">${cells}</div>
   `;
 }
 
