@@ -992,6 +992,14 @@ textarea {
   margin: 0 0 15px 15px;
 }
 
+/* Images inserted into the review body via the WYSIWYG editor carry
+   whatever inline width/height the editor set (or none at all) - scale
+   them to their container instead of rendering at raw/mismatched size */
+.set-details-author img {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
 
 .tech-masthead td {
   vertical-align: top;
