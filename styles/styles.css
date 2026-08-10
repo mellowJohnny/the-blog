@@ -958,6 +958,7 @@ textarea {
 }
 
 .set-footer-table-style td {
+  width: 100%;
   padding: 8px;
 }
 
