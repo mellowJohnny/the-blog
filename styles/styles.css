@@ -456,6 +456,17 @@ h1 {
 
 #global-nav-placeholder {
   height: 70px; /* Helps CLS - sets aside height for global nav */
+  position: relative;
+}
+
+/* Float the open mobile menu above page content instead of letting it
+   overflow the 70px CLS placeholder and get painted over by <main> */
+#global-nav-placeholder .nav-links.open {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
 }
 
 .cms-nav-td {
@@ -1403,6 +1414,42 @@ textarea {
     margin-left: 0;
   }
 
+  /* Set-O-Matic year picker (waxReviews.html) */
+  .set-o-matic-picker {
+    font-size: 20px;
+    height: auto;
+    padding: 8px 0;
+  }
+
+  .card-set-nav {
+    display: block;
+    width: 100%;
+    height: auto;
+    font-size: 16px;
+    overflow-x: visible;
+  }
+
+  .card-set-nav tr {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .junk-set-nav-td,
+  .classic-set-nav-td {
+    display: inline-block;
+    margin: 4px;
+    padding: 0;
+    text-align: center;
+  }
+
+  .junk-set-nav-td a,
+  .classic-set-nav-td a {
+    display: inline-block;
+    padding: 8px 10px;
+  }
+
   /* card set stuff */
 
   .set-html {
@@ -1499,10 +1546,8 @@ textarea {
   }
 
   .set-details-author {
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: 'Source Sans 3', sans-serif;
   font-size: 18px;
-  font-weight: bold;
-  font-style: italic;
 }
 
   .set-details-table-style td {
@@ -1521,6 +1566,13 @@ textarea {
   width: 1%; /* forces the column to shrink to fit the image */
   white-space: nowrap;
 }
+
+  /* Override the desktop fixed-height cell and inline width: 75% (wax.js/cms.js) */
+  .set-details-table-style td.header-img-cell {
+    height: auto;
+    width: 100% !important;
+    text-align: center;
+  }
 
   .table-header-img {
   display: block;
