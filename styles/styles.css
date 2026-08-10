@@ -996,7 +996,7 @@ textarea {
    whatever inline width/height got hand-set in the stored post content */
 .img-wrap-left,
 .img-wrap-right {
-  max-width: 100px !important;
+  max-width: 50px !important;
   height: auto !important;
 }
 
@@ -1438,19 +1438,21 @@ textarea {
   }
 
   .card-set-nav {
-    display: block;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
     width: 100%;
     height: auto;
     font-size: 16px;
     overflow-x: visible;
   }
 
+  /* Some categories (e.g. mcd) split their years across two <tr>s for
+     desktop balance; flatten that here so all years wrap as one
+     continuous sequence and every row gets the same number of links */
   .card-set-nav tr {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
+    display: contents;
   }
 
   /* Fixed basis so every row lines up into the same 3 columns, and the
