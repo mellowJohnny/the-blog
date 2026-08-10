@@ -992,6 +992,14 @@ textarea {
   margin: 0 0 15px 15px;
 }
 
+/* These are small accent/logo images - cap their size regardless of
+   whatever inline width/height got hand-set in the stored post content */
+.img-wrap-left,
+.img-wrap-right {
+  max-width: 100px !important;
+  height: auto !important;
+}
+
 /* Images inserted into the review body via the WYSIWYG editor carry
    whatever inline width/height the editor set (or none at all) - scale
    them to their container instead of rendering at raw/mismatched size */
@@ -1441,21 +1449,27 @@ textarea {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    gap: 8px;
     width: 100%;
   }
 
+  /* Fixed basis so every row lines up into the same 3 columns, and the
+     active (unlinked) year gets the same box as the linked years */
   .junk-set-nav-td,
   .classic-set-nav-td {
-    display: inline-block;
-    margin: 4px;
-    padding: 0;
+    display: block;
+    flex: 0 0 30%;
+    max-width: 30%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 8px 10px;
     text-align: center;
   }
 
   .junk-set-nav-td a,
   .classic-set-nav-td a {
-    display: inline-block;
-    padding: 8px 10px;
+    display: block;
+    padding: 0;
   }
 
   /* card set stuff */
