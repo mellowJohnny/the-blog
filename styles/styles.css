@@ -1631,10 +1631,11 @@ textarea {
     text-align: center;
   }
 
+  /* Match .table-header-img's proven mobile technique (display:block +
+     margin:auto) instead of the inline-block approach used on desktop */
   .table-footer-img {
-    display: inline-block;
-    vertical-align: top;
-    margin: 10px 0 0 0;
+    display: block;
+    margin: 10px auto 0 auto;
     width: 100%;
     max-width: 360px;
   }
