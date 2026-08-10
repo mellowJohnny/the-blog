@@ -505,13 +505,18 @@ h1 {
 /* Plain divs (not a <table>), so flex-wrap/justify-content behave
    predictably everywhere - wraps onto as many lines as the current total
    needs, at any viewport width, with no JS split to maintain as ranges
-   grow year over year */
-.card-set-nav {
+   grow year over year.
+   Scoped under #set-picker (id specificity) because .flex-container div
+   (a bare descendant selector, see top of file) would otherwise match
+   every nested div here too and force each one to width: 1000px. */
+#set-picker .card-set-nav {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
   width: 100%;
+  margin: 0;
+  padding: 0;
   font-family: 'Spicy Rice';
   font-size: 20px;
   color:rgb(11, 62, 100);
@@ -525,16 +530,19 @@ h1 {
 
 
 /********************************** Set-O-Matic styling **************************************/
-.junk-set-nav-td,
-.classic-set-nav-td {
+#set-picker .junk-set-nav-td,
+#set-picker .classic-set-nav-td {
   display: block;
+  width: auto;
+  max-width: none;
   margin: 0;
   padding: 4px 10px;
   text-align: center;
+  box-sizing: border-box;
 }
 
-.junk-set-nav-td a,
-.classic-set-nav-td a {
+#set-picker .junk-set-nav-td a,
+#set-picker .classic-set-nav-td a {
   display: block;
   padding: 0;
 }
@@ -1454,14 +1462,14 @@ textarea {
     padding: 8px 0;
   }
 
-  .card-set-nav {
+  #set-picker .card-set-nav {
     font-size: 16px;
   }
 
   /* Fixed basis so every row lines up into the same 3 columns, and the
      active (unlinked) year gets the same box as the linked years */
-  .junk-set-nav-td,
-  .classic-set-nav-td {
+  #set-picker .junk-set-nav-td,
+  #set-picker .classic-set-nav-td {
     flex: 0 0 30%;
     max-width: 30%;
     box-sizing: border-box;
