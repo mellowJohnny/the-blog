@@ -1525,9 +1525,14 @@ textarea {
   }
 
   /* Autobus form/results two-column layout - stack on mobile instead of
-     squeezing both columns to roughly half the screen width */
+     squeezing both columns to roughly half the screen width.
+     align-items:flex-start (desktop, base rule) controls vertical
+     alignment in row direction, but becomes horizontal sizing once
+     flex-direction is column - override to stretch so the stacked
+     columns fill the full width instead of shrinking to content */
   .autobus-two-col {
     flex-direction: column;
+    align-items: stretch;
     gap: 20px;
   }
 
