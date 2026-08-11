@@ -1491,18 +1491,9 @@ textarea {
     padding: 10px 14px;
   }
 
-  /* cardStack CMS masthead (shared across every cms/*.html page) - stack
-     the logo above the "Content Management System" subtitle instead of
-     squeezing a fixed 40px font into a 20%-width table column */
+  /* cardStack CMS masthead (shared across every cms/*.html page) */
   .mast-table tr {
-    display: block;
-    height: auto;
-  }
-
-  .mast-table td {
-    display: block;
-    width: 100%;
-    text-align: center;
+    height: auto; /* let the row grow to fit the larger mobile font below */
   }
 
   .masthead {
@@ -1511,10 +1502,10 @@ textarea {
     padding: 8px 10px 4px 10px;
   }
 
+  /* Hide the "Content Management System" subtitle on mobile rather than
+     squeezing a fixed 40px font into a 20%-width table column */
   .cms-logo {
-    font-size: 16px;
-    text-align: center;
-    padding: 0 10px 10px 10px;
+    display: none;
   }
 
   /* Set-O-Matic year picker (waxReviews.html) */
