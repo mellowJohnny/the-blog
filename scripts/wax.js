@@ -353,14 +353,18 @@ function renderPaginationControls() {
   const prevLabel = prevSet ? `← Back To: ${prevSet.setName}` : "← Previous";
   const nextLabel = nextSet ? `Next Up: ${nextSet.setName} →` : "Next →";
 
-  controls.innerHTML = `
-    <a 
-      href="javascript:void(0)" 
-      onclick="prevPage()" 
-      class="pagination-link ${currentPage === 1 ? "disabled" : ""}"
+  const prevLink = currentPage === 1 ? "" : `
+    <a
+      href="javascript:void(0)"
+      onclick="prevPage()"
+      class="pagination-link"
     >
       ${prevLabel}
     </a>
+  `;
+
+  controls.innerHTML = `
+    ${prevLink}
 
     <span class="pagination-page">Page ${currentPage} of ${totalPages}</span>
 

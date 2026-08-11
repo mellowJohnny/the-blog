@@ -5,6 +5,14 @@ Cognito login (see `AUTH.md`): **cardStack** (blog posts + card set
 reviews) and the **Autobus Messaging Platform** (SMS broadcast tool,
 unrelated to blog content, for a cycling club).
 
+Both tools' pages (including `wlcms.html`'s nav menu and
+`smsAdmin.html`'s two-column form/results layout) now have mobile
+support via the site's shared `@media (max-width: 600px)` breakpoint —
+see `FRONTEND.md`'s "Mobile / responsive design" section for the
+gotchas encountered doing that pass (missing viewport meta tags, a
+descendant-selector CSS trap, table display-role quirks) before
+changing layout CSS on these pages.
+
 ## cardStack — blog & card set authoring
 
 Entry point: `cms/wlcms.html` — a simple menu linking to:

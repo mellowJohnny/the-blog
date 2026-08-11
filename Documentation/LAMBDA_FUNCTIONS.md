@@ -1,23 +1,49 @@
 # Lambda Functions
 
-Per your note: **all Lambda functions except `sendAlertHandler` live
-only in the AWS Console** — their current source isn't in this repo
-and wasn't reviewed here. This doc covers (1) the one Lambda that *is*
-in the repo, and (2) an inventory of the prototype/legacy Lambda code
-that *is* checked in under `Lambda Functions/`, which looks like early
-drafts that predate the current live behavior (see the mismatches
-noted below and cross-referenced from `API_ENDPOINTS.md`/`DATA_MODEL.md`).
-Treat this whole document as a placeholder to fill in properly once
-you're back in the AWS Console — that review is flagged as a follow-up
-task, not done here.
+Per your note: **all Lambda functions except `sendAlertHandler` and
+`castVoteHandler` live only in the AWS Console** — their current
+source isn't in this repo and wasn't reviewed here. This doc covers
+(1) the two Lambdas that *are* in the repo, and (2) an inventory of
+the prototype/legacy Lambda code that *is* checked in under `Lambda
+Functions/`, which looks like early drafts that predate the current
+live behavior (see the mismatches noted below and cross-referenced
+from `API_ENDPOINTS.md`/`DATA_MODEL.md`). Treat this whole document as
+a placeholder to fill in properly once you're back in the AWS Console
+— that review is flagged as a follow-up task, not done here.
 
-## `sendAlertHandler/` — the one Lambda in this repo
+## `sendAlertHandler/` — Lambda #1 in this repo
 
 - **File**: `sendAlertHandler/index.mjs` (ES module, Node.js).
 - **Deployment**: manual — the file's own header comment is explicit about this: *"NEVER change this code in the AWS Console. ONLY change in VS Code, then redeploy by uploading the new .zip file (Console → Code tab → Update dropdown → Update from a .zip file)."* A pre-built `sendAlertHandler.zip` sits alongside it in the repo — presumably the last thing actually uploaded; keep it (or regenerate it) in sync with `index.mjs` when you change the code.
 - **Dependencies** (`package.json`): `twilio` (^6.0.2), plus `@aws-sdk/client-dynamodb` used in code but not listed in `package.json` `dependencies` — likely available via the Lambda Node.js runtime's bundled AWS SDK v3 layer, but worth double-checking if a fresh `npm install` / redeploy ever fails on it.
 - **What it does**: backs the "Send broadcast" button in the Autobus Messaging Platform (`cms/smsAdmin.html`). See `API_ENDPOINTS.md` for the full request/response contract. In short: reads `message` + `mode` (`"test"`/`"live"`) from the request body, scans either `SubscribersTest` or `Subscribers` for `status = "subscribed"`, sends each one an SMS via Twilio (credentials from Lambda environment variables — not in this repo), and returns a per-recipient success/failure list. CORS is hardcoded to allow only `https://www.mellowjohnny.cc`.
 - **Note**: this Lambda only handles *sending*. Bulk subscriber import and single-subscriber add (the other two Autobus endpoints in `API_ENDPOINTS.md`) must be separate Lambdas — their source isn't in this repo at all.
+
+## `castVoteHandler/` — Lambda #2 in this repo
+
+- **File**: `castVoteHandler/index.mjs` (ES module, Node.js). Same
+  manual-deploy convention as `sendAlertHandler/` (header comment
+  says never edit in the Console — edit here, zip, upload via "Update
+  from a .zip file").
+- **Dependencies** (`package.json`): none listed — only uses
+  `@aws-sdk/client-dynamodb`, which ships with the Lambda Node.js
+  runtime, so no `npm install` is needed before zipping.
+- **What it does**: backs the thumbs up/down voting feature on
+  `waxReviews.html` card set reviews. Takes `{ setName, year,
+  voteType }` (`voteType` is `"up"` or `"down"`) and does an atomic
+  DynamoDB `UpdateItem` with `ADD upvotes :inc` / `ADD downvotes
+  :inc` on the `Cards` table, keyed on `setName` (partition key) +
+  `year` (sort key) — see `DATA_MODEL.md`. A `ConditionExpression:
+  attribute_exists(setName)` guard returns a 404 instead of silently
+  creating a garbage item for a bad/mistyped `setName`+`year` pair.
+  Full request/response contract: `API_ENDPOINTS.md`. CORS is
+  hardcoded to allow only `https://www.mellowjohnny.cc`, same as
+  `sendAlertHandler/`.
+- **Frontend**: `castVote()` in `scripts/wax.js` calls it optimistically
+  (UI updates immediately on click, rolls back if the request fails)
+  and tracks which sets a browser has already voted on via
+  `localStorage` (no auth on public pages, so this is a lightweight
+  deterrent against repeat votes, not tamper-proof).
 
 ## `Lambda Functions/` — legacy/prototype code, not confirmed current
 

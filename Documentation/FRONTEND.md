@@ -30,8 +30,8 @@ one year+category combination.
 | File | Responsibility |
 |---|---|
 | `blogs.js` | Blog intro copy (`renderBlogIntro()`), `fetchBlogs()`/pagination/rendering for the blog stream, and the homepage weather widget (calls OpenWeatherMap directly from the browser using the visitor's geolocation). |
-| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews. |
-| `helper.js` | Cross-page utilities: `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), sort comparators (`getSortOrder()` for blogs, `cardSetSorter()` for card sets by star rating), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker table builder (`renderSetPicker()`), hamburger menu toggle, cookie helper, and copyright-year footer. |
+| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, and the thumbs up/down vote widget (`castVote()` — see "Voting feature" below). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple. |
+| `helper.js` | Cross-page utilities: `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), sort comparators (`getSortOrder()` for blogs, `cardSetSorter()` for card sets by star rating), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below), hamburger menu toggle, cookie helper, and copyright-year footer. |
 | `auth.js` | Cognito OAuth2 code exchange + token refresh, gates every `/cms` page. See `AUTH.md`. |
 | `cms.js` | All CMS create/edit/list logic + the S3 image browser/upload modal + TinyMCE init. See `CMS_GUIDE.md`. |
 | `adminSMS.js` | Autobus SMS admin page logic: character/segment counter, GSM-7 vs Unicode encoding detection, broadcast send, bulk subscriber import, add-subscriber modal. See `CMS_GUIDE.md`. |
@@ -51,8 +51,83 @@ The top nav is entirely data-driven and rebuilt on every page load by
 
 The "set-o-matic" year picker (`renderSetPicker()`) works the same way
 — a `categoryRanges` object maps `blogCat` → `{start, end}` year ranges
-per page, and the function generates the picker table dynamically
-instead of hand-written year links.
+per page, and the function generates the picker links dynamically
+instead of hand-written year links. It emits one flat list of `<div>`
+year cells (no per-desktop/mobile split, no `<table>`) into a single
+`.card-set-nav` flex-wrap container — see "Mobile / responsive design"
+below for why it's `<div>`-based rather than a table.
+
+## Mobile / responsive design
+
+The whole site uses a single breakpoint: `@media (max-width: 600px)`
+in `styles/styles.css`. There's no intermediate/tablet breakpoint —
+`.flex-container div` (the main content-width wrapper, see below) is a
+fixed `1000px` above 600px, so the layout jumps straight from
+"desktop, fixed width" to "mobile, fluid width" with nothing in
+between. A round of mobile-responsiveness work (waxReviews.html, the
+CMS pages, smsAdmin.html) surfaced a few recurring gotchas worth
+knowing before touching this CSS again:
+
+- **Every page needs `<meta name="viewport" content="width=device-width, initial-scale=1">`.**
+  `cms/smsAdmin.html` was missing it entirely, which meant mobile
+  Safari rendered the page at a wide desktop-width virtual viewport and
+  just zoomed the whole thing out to fit the screen — the
+  `max-width: 600px` media query never actually triggered, even though
+  the page visually looked "mobile-sized." Every page now has this tag
+  with an explanatory comment above it; keep it on any new page.
+- **`.flex-container div` is a bare descendant selector, not a
+  direct-child combinator** (`styles.css` top of file: `.flex-container
+  div { width: 1000px; padding: 15px; margin: 5px; }`). It was written
+  assuming exactly one wrapper `<div>` immediately inside
+  `.flex-container`, but as a plain space-combinator selector it
+  matches *every* `<div>` nested at *any* depth inside `.flex-container`
+  — including any new `<div>`s added later inside `#cardSetDiv` (e.g.
+  the vote widget, the footer caption). This has bitten several fixes
+  this round (the set-o-matic picker forcing every pill to
+  `width: 1000px`, the footer caption inheriting an unwanted
+  `padding-left: 15px`/`margin-left: 5px`). The fix pattern used
+  throughout: scope the correction under a more specific ancestor
+  (`#set-picker .foo`, `#cardSetDiv .foo`) so ID specificity beats the
+  class+element specificity of the offending rule, rather than editing
+  the shared `.flex-container div` rule itself (which other pages rely
+  on for their intended 1000px content column).
+- **`<table>` elements resist non-table `display` overrides
+  unpredictably across browsers.** Several bugs this round traced back
+  to forcing `display: flex`/`display: block` onto a `<table>`/`<tr>`
+  while a sibling kept a mismatched table-related display role (or to
+  `display: contents` on a `<tr>`, which is a known-unreliable
+  combination in Safari specifically). The fix each time was the same:
+  stop fighting the table model and use plain `<div>`s with flexbox
+  instead — see the set-o-matic picker (`renderSetPicker()` in
+  `helper.js`) and the footer caption/image block
+  (`.set-footer-table-style` in `displayCardSet()`, `wax.js`), both of
+  which used to be `<table>`s and are now `<div>`s for exactly this
+  reason.
+
+## Voting feature (waxReviews.html)
+
+Each card set review ends with a thumbs up/down widget (`castVote()`
+in `wax.js`) — see `Documentation/API_ENDPOINTS.md` for the endpoint
+contract and `Documentation/LAMBDA_FUNCTIONS.md` for the backend
+(`castVoteHandler/`). Frontend behavior worth knowing:
+
+- Vote identity is `setName` + `year` (the `Cards` table's real key —
+  see `DATA_MODEL.md`), not `setID`. Because `setName` can contain
+  characters like apostrophes (e.g. `"McDonald's Hockey"`), the vote
+  buttons pass this through `data-set-name`/`data-year` attributes read
+  via `this.dataset` in `castVote(btn)`, rather than interpolating
+  `setName` into an inline `onclick="..."` string, which would break on
+  the first apostrophe.
+- No auth exists on public pages, so repeat-vote prevention is a
+  `localStorage` flag (`votedSets: {"<setName>-<year>": "up"|"down"}`)
+  — a deterrent, not tamper-proof (clearing storage or switching
+  browsers resets it).
+- Voting is optimistic: the click immediately updates the displayed
+  count and disables/highlights the buttons, before the network
+  request resolves. On success the count is reconciled with the
+  authoritative server value; on failure (network error, or the
+  Lambda's 404 guard for a bad `setName`/`year`) the UI rolls back —
+  count, button state, and the `localStorage` entry all revert.
 
 ## Orphaned / legacy files
 
