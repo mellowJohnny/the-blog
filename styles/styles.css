@@ -470,19 +470,32 @@ h1 {
 }
 
 .cms-nav-td {
+  display: block;
   font-family: 'Source Sans 3', sans-serif;
   font-size: 24px;
   color:rgb(11, 62, 100);
-  margin: 15px;
-  padding: 20px;
+  margin: 0;
+  padding: 12px 16px;
 }
 
+/* Shared by wlcms.html and smsAdmin.html - flex-wrap so a row of nav
+   links wraps instead of overflowing, on both desktop and mobile */
 .cms-top-nav {
+  display: block;
+  width: 100%;
   font-family: 'Source Sans 3', sans-serif;
   font-size: 36px;
   color:rgb(11, 62, 100);
-  margin: 15px;
-  padding: 20px;
+  margin: 15px 0;
+  padding: 20px 0;
+}
+
+.cms-top-nav tr {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
 }
 
 .cms-form-table {
@@ -1460,6 +1473,48 @@ textarea {
   .cms-set-picker {
     width: 100%;
     margin-left: 0;
+  }
+
+  /* cardStack/Autobus CMS top nav (wlcms.html, smsAdmin.html) */
+  .cms-top-nav {
+    font-size: 20px;
+    margin: 10px 0;
+    padding: 10px 0;
+  }
+
+  .cms-top-nav tr {
+    gap: 8px;
+  }
+
+  .cms-nav-td {
+    font-size: 16px;
+    padding: 10px 14px;
+  }
+
+  /* cardStack CMS masthead (shared across every cms/*.html page) - stack
+     the logo above the "Content Management System" subtitle instead of
+     squeezing a fixed 40px font into a 20%-width table column */
+  .mast-table tr {
+    display: block;
+    height: auto;
+  }
+
+  .mast-table td {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+
+  .masthead {
+    font-size: 14vw;
+    text-align: center;
+    padding: 8px 10px 4px 10px;
+  }
+
+  .cms-logo {
+    font-size: 16px;
+    text-align: center;
+    padding: 0 10px 10px 10px;
   }
 
   /* Set-O-Matic year picker (waxReviews.html) */
