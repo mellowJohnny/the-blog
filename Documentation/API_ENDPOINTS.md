@@ -35,6 +35,14 @@ All URLs are `https://{id}.execute-api.us-east-2.amazonaws.com/{stage}`.
 - **Called from**: `fetchCardSetsByYear()` in `scripts/wax.js` (used by `waxReviews.html`)
 - **Response**: JSON array directly (each item has `postBody`, `year`, `mfg`, `size`, `subsets`, `stars`, `formats`, `headerImg`, `headerImgName`, `footerImg`, `footerImgName`, `setName`, `author`, `now`).
 
+### Cast a vote on a card set
+- **URL**: `https://lo07upgip8.execute-api.us-east-2.amazonaws.com/dev`
+- **Method**: POST
+- **Body**: `{ setName, year, voteType }` — `voteType` is `"up"` or `"down"`. `setName`+`year` together are the `Cards` table's actual partition/sort key.
+- **Called from**: `castVote()` in `scripts/wax.js` (used by `waxReviews.html`)
+- **Response**: `{ upvotes }` or `{ downvotes }` (whichever was incremented) on success; `{ error }` with a 400 (missing/invalid fields) or 404 (no matching card set) on failure.
+- **Lambda**: `castVoteHandler/` — source *is* version-controlled in this repo (see `CLAUDE.md`), unlike most other Lambdas. Does an atomic DynamoDB `UpdateItem` with `ADD`, guarded by `ConditionExpression: attribute_exists(setName)` so a bad `setName`/`year` pair 404s instead of silently creating a garbage item.
+
 ## CMS — blog authoring
 
 ### Create blog post

@@ -31,9 +31,15 @@ The two oldest prototype Lambdas in the repo (`Lambda Functions/getBlogs/getBlog
 
 Holds every hockey card set review.
 
+**Confirmed key schema** (per the site owner, resolving the "confirm which
+GSI pattern is live" question this doc used to raise): partition key
+`setName` (String), sort key `year` (Number). `setID` below is a separate,
+non-key attribute used only by the `setID-index` GSI lookup path.
+
 | Field | Type | Notes |
 |---|---|---|
 | `setID` | String | Randomly generated (`Math.random().toString(36)`) in `Lambda Functions/createCardSet/createCardPost.js`; used as the lookup key by `getCardSetByID`. A `setID-index` GSI is referenced in `Lambda Functions/getCardSets/getCardSet_FUTURE.js`. |
+| `upvotes` / `downvotes` | Number | Added for the thumbs up/down voting feature (`castVoteHandler/`). Not present on older items until the first vote is cast — DynamoDB creates the attribute on first `ADD`, no migration needed. |
 | `setName` | String | e.g. `"1991-92 Upper Deck Hockey"`. |
 | `year` | Number | Release year, e.g. `1991`. Drives the year-picker on `waxReviews.html` (`renderSetPicker()` in `scripts/helper.js`). |
 | `mfg` | String | Manufacturer — one of O-Pee-Chee, Topps, Upper Deck, Score, Pro Set, Fleer, Leaf, Pinnacle, Pacific (per the `createCardSet.html` dropdown). |

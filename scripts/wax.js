@@ -106,7 +106,9 @@ function renderCardSetPage() {
       item.footerImgName,
       item.setName,
       item.author,
-      item.now
+      item.now,
+      item.upvotes,
+      item.downvotes
     );
     // Populate the page title
     fetchPageTitle(item.setName);
@@ -129,13 +131,13 @@ function fetchPageTitle(setName)
  * Function to FORMAT & DISPLAY card sets
  */
 
-   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date) 
+   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date,upvotes,downvotes)
    {
-    
+
     if (year === "2005"){
-      
+
     }
-    
+
     // Convert stars to a number
     const numStars = parseInt(stars);
 
@@ -147,6 +149,18 @@ function fetchPageTitle(setName)
 
     // Calculate Reading Time
     const readingStats = estimateReadingTime(postBody); // lives in helper.js
+
+    // Voting - the Cards table's real key is (setName, year), so that's
+    // what identifies a set for voting. Counts come from DynamoDB
+    // (undefined until the first vote is ever cast, since the attribute
+    // doesn't exist yet). voteKey is a DOM/localStorage-safe id derived
+    // from setName+year, since setName can contain characters (spaces,
+    // apostrophes) that aren't valid in an HTML id.
+    const upCount = upvotes || 0;
+    const downCount = downvotes || 0;
+    const voteKey = `${setName}-${year}`.replace(/[^a-zA-Z0-9]+/g, "-");
+    const votedSets = JSON.parse(localStorage.getItem("votedSets") || "{}");
+    const existingVote = votedSets[voteKey]; // "up", "down", or undefined
 
     // Reference to the div where everything goes
     let cardBody = document.getElementById("cardSetDiv");
@@ -214,7 +228,79 @@ function fetchPageTitle(setName)
         <br>
         <hr/>
         <br><br>
+
+        <div class="vote-widget" id="vote-widget-${voteKey}">
+            <button
+              class="vote-btn vote-up ${existingVote === 'up' ? 'voted' : ''}"
+              data-set-name="${setName}"
+              data-year="${year}"
+              data-vote-type="up"
+              onclick="castVote(this)"
+              ${existingVote ? 'disabled' : ''}>
+                &#128077; <span class="vote-count" id="upvotes-${voteKey}">${upCount}</span>
+            </button>
+            <button
+              class="vote-btn vote-down ${existingVote === 'down' ? 'voted' : ''}"
+              data-set-name="${setName}"
+              data-year="${year}"
+              data-vote-type="down"
+              onclick="castVote(this)"
+              ${existingVote ? 'disabled' : ''}>
+                &#128078; <span class="vote-count" id="downvotes-${voteKey}">${downCount}</span>
+            </button>
+        </div>
+        <br><br>
     `;
+}
+
+/**
+ * Casts a thumbs up/down vote on a card set review.
+ * One vote per set per browser, tracked in localStorage (no auth on the
+ * public site, so this is a lightweight deterrent, not tamper-proof).
+ *
+ * Takes the button element itself (rather than setName interpolated into
+ * an inline onclick string) since setName can contain characters like
+ * apostrophes (e.g. "McDonald's Hockey") that would break a quoted JS
+ * string built via template literal.
+ */
+function castVote(btn) {
+  const setName = btn.dataset.setName;
+  const year = btn.dataset.year;
+  const voteType = btn.dataset.voteType;
+  const voteKey = `${setName}-${year}`.replace(/[^a-zA-Z0-9]+/g, "-");
+
+  const votedSets = JSON.parse(localStorage.getItem("votedSets") || "{}");
+  if (votedSets[voteKey]) return; // already voted - buttons should already be disabled
+
+  const VOTE_API_URL = "https://lo07upgip8.execute-api.us-east-2.amazonaws.com/dev";
+
+  fetch(VOTE_API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ setName, year: parseInt(year, 10), voteType })
+  })
+    .then(response => response.json())
+    .then(data => {
+      const attr = voteType === "up" ? "upvotes" : "downvotes";
+      const countEl = document.getElementById(`${attr}-${voteKey}`);
+      if (countEl && typeof data[attr] === "number") {
+        countEl.textContent = data[attr];
+      }
+
+      // Remember the vote locally so this browser can't vote again
+      votedSets[voteKey] = voteType;
+      localStorage.setItem("votedSets", JSON.stringify(votedSets));
+
+      // Disable both buttons and highlight the one chosen
+      const widget = document.getElementById(`vote-widget-${voteKey}`);
+      if (widget) {
+        widget.querySelectorAll(".vote-btn").forEach(b => b.disabled = true);
+        widget.querySelector(`.vote-${voteType}`)?.classList.add("voted");
+      }
+    })
+    .catch(err => {
+      console.log("Vote failed:", err);
+    });
 }
 
 
