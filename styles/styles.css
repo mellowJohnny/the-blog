@@ -998,6 +998,16 @@ textarea {
   margin: 0;
 }
 
+/* Breathing room between the end of the review text and the caption */
+#cardSetDiv .set-footer-table-style {
+  margin-top: 16px;
+}
+
+/* ...and between the caption and the image below it */
+#cardSetDiv .set-footer-table-style .caption {
+  margin-bottom: 12px;
+}
+
 .set-footer-table-style td {
   width: 100%;
   padding: 8px;
