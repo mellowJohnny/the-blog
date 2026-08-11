@@ -56,6 +56,15 @@ h1 {
     color: #000;
 }
 
+/* Had no rule at all previously, so it fell back to the browser's
+   default serif font instead of matching the rest of the page */
+.autobus-sent-message {
+    font-family: "Work Sans", sans-serif;
+    display: block;
+    font-size: 16px;
+    color: #000;
+}
+
 /* Shared table layout width */
 .autobus-form,
 .autobus-results {
@@ -88,7 +97,7 @@ h1 {
     border-collapse: collapse;
     background: #ffffff;
     border: 1px solid #ddd;
-    font-size: 15px;
+    font-size: 16px;
     margin-top: 20px;
 }
 
@@ -191,7 +200,7 @@ h1 {
 }
 
 .autobus-results-label {
-    font-family: 'Source Sans 3', sans-serif;
+    font-family: "Work Sans", sans-serif;
     font-size: 16px;
     display: block;
     /* font-weight: 600; */
