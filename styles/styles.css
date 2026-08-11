@@ -1603,6 +1603,14 @@ textarea {
     display: none;
   }
 
+  /* tech.html masthead banner gif - had no CSS at all, so it rendered
+     at native pixel size and overflowed the mobile masthead row */
+  .cms-gif {
+    max-width: 50px;
+    height: auto;
+    display: block;
+  }
+
   /* Autobus Messaging Platform masthead (smsAdmin.html) - same treatment
      as the cardStack masthead above */
   .autobus-mast-table tr {
