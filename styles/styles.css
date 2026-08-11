@@ -1508,6 +1508,38 @@ textarea {
     display: none;
   }
 
+  /* Autobus Messaging Platform masthead (smsAdmin.html) - same treatment
+     as the cardStack masthead above */
+  .autobus-mast-table tr {
+    height: auto;
+  }
+
+  .autobus-masthead img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .autobus-cms-logo {
+    display: none;
+  }
+
+  /* Autobus form/results two-column layout - stack on mobile instead of
+     squeezing both columns to roughly half the screen width */
+  .autobus-two-col {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .autobus-form,
+  .autobus-results {
+    max-width: 100%;
+    margin-left: 0;
+  }
+
+  .autobus-left {
+    padding-top: 0;
+  }
+
   /* Set-O-Matic year picker (waxReviews.html) */
   .set-o-matic-picker {
     font-size: 20px;
