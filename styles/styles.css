@@ -125,6 +125,7 @@ h1 {
 
 .autobus-textarea {
     width: 100%;
+    box-sizing: border-box;
     padding: 14px;
     font-size: 16px;
     border: 1px solid #ccc;
