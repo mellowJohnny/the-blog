@@ -1640,13 +1640,17 @@ textarea {
     text-align: center;
   }
 
-  /* Match .table-header-img's proven mobile technique (display:block +
-     margin:auto) instead of the inline-block approach used on desktop */
+  /* Centered via the td's text-align:center (inline-block respects that
+     reliably) rather than width:100%+max-width+margin:auto, since that
+     combination wasn't resolving correctly here */
   .table-footer-img {
-    display: block;
-    margin: 10px auto 0 auto;
+    display: inline-block;
+    vertical-align: top;
+    margin: 10px 0 0 0;
     width: 100%;
     max-width: 360px;
+    box-sizing: border-box; /* base rule's border:1px was adding 2px on
+      top of width:100%, same overflow class of bug as the td padding */
   }
 
 
