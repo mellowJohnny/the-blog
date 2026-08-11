@@ -150,12 +150,12 @@ function fetchPageTitle(setName)
     // Calculate Reading Time
     const readingStats = estimateReadingTime(postBody); // lives in helper.js
 
-    // Voting - the Cards table's real key is (setName, year), so that's
+    // Voting - the Cards table's key is (setName, year), so that's
     // what identifies a set for voting. Counts come from DynamoDB
     // (undefined until the first vote is ever cast, since the attribute
-    // doesn't exist yet). voteKey is a DOM/localStorage-safe id derived
-    // from setName+year, since setName can contain characters (spaces,
-    // apostrophes) that aren't valid in an HTML id.
+    // doesn't exist yet). 
+    // voteKey is a DOM/localStorage-safe id derived
+    // from setName+year, since setName can contain characters (spaces, apostrophes) that aren't valid in an HTML id.
     const upCount = upvotes || 0;
     const downCount = downvotes || 0;
     const voteKey = `${setName}-${year}`.replace(/[^a-zA-Z0-9]+/g, "-");
@@ -228,7 +228,7 @@ function fetchPageTitle(setName)
         <br>
         <hr/>
         <br><br>
-
+        
         <div class="vote-widget" id="vote-widget-${voteKey}">
             <button
               class="vote-btn vote-up ${existingVote === 'up' ? 'voted' : ''}"
@@ -254,6 +254,7 @@ function fetchPageTitle(setName)
 }
 
 /**
+ * Written entirely by Claude Code :-) It did a good job...
  * Casts a thumbs up/down vote on a card set review.
  * One vote per set per browser, tracked in localStorage (no auth on the
  * public site, so this is a lightweight deterrent, not tamper-proof).
@@ -289,6 +290,7 @@ function castVote(btn) {
   votedSets[voteKey] = voteType;
   localStorage.setItem("votedSets", JSON.stringify(votedSets));
 
+  // The new API used to write votes to the card set in DynamoDB
   const VOTE_API_URL = "https://lo07upgip8.execute-api.us-east-2.amazonaws.com/dev";
 
   fetch(VOTE_API_URL, {
@@ -310,8 +312,7 @@ function castVote(btn) {
     .catch(err => {
       console.log("Vote failed:", err);
 
-      // Roll back the optimistic update so the UI doesn't lie about a
-      // vote that was never actually recorded
+      // Roll back the optimistic update so the UI doesn't lie about a vote that was never actually recorded
       if (countEl && optimisticCount !== null) {
         countEl.textContent = optimisticCount - 1;
       }
