@@ -1244,6 +1244,7 @@ textarea {
 /*************************************** Vote Widget Styles... ********************************/
 .vote-widget {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
   margin: 10px 0;
@@ -1543,6 +1544,17 @@ textarea {
 
   .pagination-page {
     font-size: 0.9rem;
+  }
+
+  /* Vote widget - the "Love this set!"/"Not a fan..." labels need room
+     to breathe on narrow screens */
+  .vote-widget {
+    gap: 10px;
+  }
+
+  .vote-btn {
+    font-size: 14px;
+    padding: 8px 12px;
   }
 
   /* Tables should scroll instead of overflow */

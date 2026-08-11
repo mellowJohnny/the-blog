@@ -237,7 +237,7 @@ function fetchPageTitle(setName)
               data-vote-type="up"
               onclick="castVote(this)"
               ${existingVote ? 'disabled' : ''}>
-                &#128077; <span class="vote-count" id="upvotes-${voteKey}">${upCount}</span>
+                &#128077; Love this set! <span class="vote-count" id="upvotes-${voteKey}">${upCount}</span>
             </button>
             <button
               class="vote-btn vote-down ${existingVote === 'down' ? 'voted' : ''}"
@@ -246,7 +246,7 @@ function fetchPageTitle(setName)
               data-vote-type="down"
               onclick="castVote(this)"
               ${existingVote ? 'disabled' : ''}>
-                &#128078; <span class="vote-count" id="downvotes-${voteKey}">${downCount}</span>
+                &#128078; Not a fan... <span class="vote-count" id="downvotes-${voteKey}">${downCount}</span>
             </button>
         </div>
         <br><br>
@@ -272,6 +272,23 @@ function castVote(btn) {
   const votedSets = JSON.parse(localStorage.getItem("votedSets") || "{}");
   if (votedSets[voteKey]) return; // already voted - buttons should already be disabled
 
+  const attr = voteType === "up" ? "upvotes" : "downvotes";
+  const countEl = document.getElementById(`${attr}-${voteKey}`);
+  const widget = document.getElementById(`vote-widget-${voteKey}`);
+  const optimisticCount = countEl ? parseInt(countEl.textContent, 10) + 1 : null;
+
+  // Update the UI immediately (optimistic) rather than waiting on the
+  // network round trip, then reconcile/roll back once the response lands
+  if (countEl && optimisticCount !== null) {
+    countEl.textContent = optimisticCount;
+  }
+  if (widget) {
+    widget.querySelectorAll(".vote-btn").forEach(b => b.disabled = true);
+    widget.querySelector(`.vote-${voteType}`)?.classList.add("voted");
+  }
+  votedSets[voteKey] = voteType;
+  localStorage.setItem("votedSets", JSON.stringify(votedSets));
+
   const VOTE_API_URL = "https://lo07upgip8.execute-api.us-east-2.amazonaws.com/dev";
 
   fetch(VOTE_API_URL, {
@@ -279,27 +296,31 @@ function castVote(btn) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ setName, year: parseInt(year, 10), voteType })
   })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) throw new Error(`Vote request failed: ${response.status}`);
+      return response.json();
+    })
     .then(data => {
-      const attr = voteType === "up" ? "upvotes" : "downvotes";
-      const countEl = document.getElementById(`${attr}-${voteKey}`);
+      // Reconcile with the authoritative server count (in case someone
+      // else voted in between the optimistic guess and this response)
       if (countEl && typeof data[attr] === "number") {
         countEl.textContent = data[attr];
-      }
-
-      // Remember the vote locally so this browser can't vote again
-      votedSets[voteKey] = voteType;
-      localStorage.setItem("votedSets", JSON.stringify(votedSets));
-
-      // Disable both buttons and highlight the one chosen
-      const widget = document.getElementById(`vote-widget-${voteKey}`);
-      if (widget) {
-        widget.querySelectorAll(".vote-btn").forEach(b => b.disabled = true);
-        widget.querySelector(`.vote-${voteType}`)?.classList.add("voted");
       }
     })
     .catch(err => {
       console.log("Vote failed:", err);
+
+      // Roll back the optimistic update so the UI doesn't lie about a
+      // vote that was never actually recorded
+      if (countEl && optimisticCount !== null) {
+        countEl.textContent = optimisticCount - 1;
+      }
+      if (widget) {
+        widget.querySelectorAll(".vote-btn").forEach(b => b.disabled = false);
+        widget.querySelector(`.vote-${voteType}`)?.classList.remove("voted");
+      }
+      delete votedSets[voteKey];
+      localStorage.setItem("votedSets", JSON.stringify(votedSets));
     });
 }
 
