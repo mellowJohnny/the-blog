@@ -1318,7 +1318,7 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
     <table class="set-footer-table-style">
         <tr>
             <td style="text-align:left">
-                <strong>...and the winners are...</strong>
+                <strong>and the winners are...</strong>
             </td>
         </tr>
         <tr>

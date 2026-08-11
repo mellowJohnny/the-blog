@@ -985,6 +985,19 @@ textarea {
   width: 100%;
 }
 
+/* .set-footer-table-style is now plain <div>s (see wax.js) - .flex-container
+   div (a bare descendant selector, top of file) matches every div nested
+   inside #cardSetDiv too, forcing width:1000px/padding:15px/margin:5px
+   onto this and the .caption div inside it. Override with #cardSetDiv's
+   higher specificity, same fix as the #set-picker one above. */
+#cardSetDiv .set-footer-table-style,
+#cardSetDiv .set-footer-table-style > div {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  margin: 0;
+}
+
 .set-footer-table-style td {
   width: 100%;
   padding: 8px;
