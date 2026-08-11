@@ -1603,11 +1603,15 @@ textarea {
     display: none;
   }
 
-  /* tech.html masthead banner gif - had no CSS at all, so it rendered
-     at native pixel size and overflowed the mobile masthead row */
-  .cms-gif {
-    max-width: 50px;
-    height: auto;
+  /* tech.html masthead banner gif - had no CSS of its own, so the
+     generic `.mast-table img { height:100%; width:auto; }` rule (higher
+     specificity) won for height while this only capped width, squishing
+     it non-proportionally. Beat that rule's specificity and set both
+     dimensions explicitly instead of relying on auto for either. */
+  .mast-table .cms-gif {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
     display: block;
   }
 
