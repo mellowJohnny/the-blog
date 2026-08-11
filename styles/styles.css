@@ -1215,8 +1215,8 @@ textarea {
 /*************************************** Pagination Styles... ********************************/
 .pagination-link {
   font-family: 'Work Sans', sans-serif;
-  font-size: 1.4rem;
-  color: #3FA7D6; 
+  font-size: 1rem;
+  color: #3FA7D6;
   text-decoration: none;
   margin: 0 15px;
   cursor: pointer;
