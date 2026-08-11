@@ -198,22 +198,18 @@ function fetchPageTitle(setName)
           </tr>
         </table>
 
-        <table class="set-footer-table-style">
-            <tr>
-                <td style="text-align:left" class="caption">
-                    <strong>...and the winners are...</strong>
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align:center">
-                    <img src="${footerImg}${footerImgName}" 
-                    class="table-footer-img" 
-                    loading="lazy" 
-                    alt="Vintage hockey cards from the ${year} ${mfg} set"
-                    width="890">
-                </td>
-            </tr>
-        </table>
+        <div class="set-footer-table-style">
+            <div style="text-align:left" class="caption">
+                <strong>...and the winners are...</strong>
+            </div>
+            <div style="text-align:center">
+                <img src="${footerImg}${footerImgName}"
+                class="table-footer-img"
+                loading="lazy"
+                alt="Vintage hockey cards from the ${year} ${mfg} set"
+                width="890">
+            </div>
+        </div>
 
         <br>
         <hr/>
