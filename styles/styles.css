@@ -1627,6 +1627,11 @@ textarea {
       turned this into a scroll container once its td overflowed below */
   }
 
+  .set-footer-table-style tr {
+    display: block;
+    width: 100%;
+  }
+
   .set-footer-table-style td {
     display: block;
     width: 100%;
