@@ -192,17 +192,19 @@ h1 {
 
 .autobus-results-label {
     font-family: 'Source Sans 3', sans-serif;
-    font-size: 22px;
+    font-size: 16px;
     display: block;
     /* font-weight: 600; */
     margin-bottom: 6px;
     color: #000;
 }
 
-/* Remove default browser margins */
+/* Standardize on the textarea's 16px (autobus-left label was inheriting
+   20px from the generic `form { font-size: 20px }` rule) */
 .autobus-left label,
 .autobus-results-label {
     margin-top: 0;
+    font-size: 16px;
 }
 
 /* Progress Spinner */
