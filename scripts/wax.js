@@ -229,6 +229,13 @@ function renderPaginationControls() {
   const totalPages = Math.ceil(allCardSets.length / pageSize);
   const controls = document.getElementById("paginationControls");
 
+  // Only years from 1989-90 onward have more than one set reviewed -
+  // don't show pagination at all when there's nothing to page through
+  if (totalPages <= 1) {
+    controls.innerHTML = "";
+    return;
+  }
+
   const start = (currentPage - 1) * pageSize;
   const end = start + pageSize - 1;
 
