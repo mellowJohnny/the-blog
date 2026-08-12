@@ -40,11 +40,6 @@ h1 {
     font-family: "Work Sans", sans-serif;
 }
 
-.autobus-h2 {
-    margin: 0 0 10px 0;   /* removes browser default left indent */
-    padding: 0;
-}
-
 .autobus-sent-message-title {
     font-family: "Work Sans", sans-serif;
     display: block;
@@ -74,17 +69,6 @@ h1 {
     margin-left: 20px;
     padding-left: 0; /* override the generic `form { padding-left: 1.5% }`
       rule below, which was pushing .autobus-form past its container */
-}
-
-/* ============================
-   RESULTS WRAPPER (CENTERING)
-   ============================ */
-
-.autobus-results-wrapper {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
 }
 
 /* ============================
@@ -455,12 +439,6 @@ h1 {
   padding: 20px;
 }
 
-/** Active link highlighting */
-.nav-td a.active-link {
-  color: rgb(9, 78, 123);     
-  font-weight: bold;
-}
-
 
 .top-nav {
   font-family: 'Nunito';
@@ -558,8 +536,7 @@ h1 {
 
 
 /********************************** Set-O-Matic styling **************************************/
-#set-picker .junk-set-nav-td,
-#set-picker .classic-set-nav-td {
+#set-picker .junk-set-nav-td {
   display: block;
   width: auto;
   max-width: none;
@@ -569,8 +546,7 @@ h1 {
   box-sizing: border-box;
 }
 
-#set-picker .junk-set-nav-td a,
-#set-picker .classic-set-nav-td a {
+#set-picker .junk-set-nav-td a {
   display: block;
   padding: 0;
 }
@@ -618,11 +594,6 @@ form {
   font-family: 'Work Sans', sans-serif;
   font-size: 20px;
   padding-left: 1.5%;
- }
-
- .recaptcha-desc {
-    font-family: 'Work Sans', sans-serif;
-    font-size: 18px;
  }
 
  /************************************** CMS TEXTBOX FORM Styling ********************************/
@@ -683,10 +654,6 @@ textarea {
   border-collapse: collapse;
   width: 100%;
   background-color: rgb(0, 0, 0);
-}
-
-.autobus-h2 {
-  font-family: 'Source Sans 3', sans-serif;
 }
 
 .mast-table td {
@@ -809,11 +776,6 @@ textarea {
 }
 
 
-.body-cms {
-  height:100%;
-  background-color: rgb(124, 151, 201);
-}
-
 .blog-type-divider {
   margin-top: 24px;
   margin-bottom: 8px;
@@ -834,14 +796,6 @@ textarea {
     margin: 5px;
     position: relative;
     top: 1px;
-}
-
-.section-style-intro p {
-    font-family: 'Caveat', cursive;
-    font-size: 24px;
-    margin: 5px auto;
-    width: 900px;
-  /**  overflow: scroll; **/
 }
 
 .intro {
@@ -875,24 +829,6 @@ textarea {
   text-align: left;
 }
 
-.weather-style p {
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 14px;
-  margin: 5px;
-  position: relative;
-  top: 10px;
-}
-
- /* The weather box */
-.weather {
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 15px;
-    color:rgb(169, 220, 243);
-    width: 80%;
-    height: 150px; 
-    
-  }
-
   #weather {
     display: flex;
     justify-content: left;
@@ -912,13 +848,6 @@ textarea {
   font-family: 'Nunito';
   font-size: 16px;
   text-align: left;
-}
-
-.set-html {
-  font-size: 18px;
-  line-height: 1.4;
-  padding: 10px;
-  font-family: 'Source Sans 3', sans-serif;
 }
 
 .set-details-table-style {
@@ -972,10 +901,6 @@ textarea {
 .cms-set-picker {
   width: 800px;
   margin-left: 200px;
-}
-
-.like-button-table {
-  text-align: center;
 }
 
 /* Unlike set-details-table-style / set-details-author, this table never
@@ -1058,14 +983,6 @@ textarea {
   box-shadow: 5px 10px 18px #888888;
 }
 
-.tech-gif-img {
-  display: block;
-  max-width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
 .img-wrap-left {
   float: left;
   margin: 0 15px 15px 0;
@@ -1092,14 +1009,6 @@ textarea {
   height: auto !important;
 }
 
-
-.tech-masthead td {
-  vertical-align: top;
-  padding: 0;
-  margin: 0;
-  line-height: 0;
-  font-size: 0;
-}
 
 
 .table-footer-img {
@@ -1130,32 +1039,6 @@ textarea {
   font-size: 18px;
   color:rgb(7, 62, 126);
   width:400px;
-}
-
-#cms-gif {
-  vertical-align: middle;
-  padding: 8px;
-  padding-bottom: 3px;
-}
-
-/** NEW dynamic menu stuff... **/
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  padding: 12px 16px;
-  z-index: 1;
-}
-
-.dropdown:hover .dropdown-content {
-  display: block;
 }
 
 /**********************************************************
@@ -1501,9 +1384,8 @@ textarea {
     box-sizing: border-box;
   }
 
-  /* Blog intro + section intro */
-  .intro,
-  .section-style-intro p {
+  /* Blog intro */
+  .intro {
     width: 100%;
     font-size: 18px;
     padding: 0 10px;
@@ -1512,15 +1394,6 @@ textarea {
 
   .top-nav {
     font-size: 24px;
-  }
-
-  /* Weather widget */
-  .weather {
-    width: 100%;
-    height: auto;
-    font-size: 14px;
-    padding: 10px;
-    box-sizing: border-box;
   }
 
   /* Blog images */
@@ -1672,8 +1545,7 @@ textarea {
 
   /* Fixed basis so every row lines up into the same 3 columns, and the
      active (unlinked) year gets the same box as the linked years */
-  #set-picker .junk-set-nav-td,
-  #set-picker .classic-set-nav-td {
+  #set-picker .junk-set-nav-td {
     flex: 0 0 30%;
     max-width: 30%;
     box-sizing: border-box;
@@ -1681,11 +1553,6 @@ textarea {
   }
 
   /* card set stuff */
-
-  .set-html {
-    font-size: 0.9rem;
-    padding: 8px;
-  }
 
   .card-table-style td {
     font-size: 12px;
