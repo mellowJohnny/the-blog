@@ -1578,10 +1578,10 @@ textarea {
   }
 
   /* cardStack CMS masthead (shared across every cms/*.html page) - a
-     real height (not auto) so height:100% on any img inside the row
-     (e.g. tech.html's .cms-gif below) has something to compute against;
-     auto height makes percentage-height children fall back to their
-     native size instead. Scaled to roughly match the 14vw masthead font. */
+     real height (not auto) so height:100% on any img inside the row has
+     something to compute against; auto height makes percentage-height
+     children fall back to their native size instead. Scaled to roughly
+     match the 14vw masthead font. */
   .mast-table tr {
     height: 16vw;
   }
@@ -1595,20 +1595,6 @@ textarea {
   /* Hide the "Content Management System" subtitle on mobile rather than
      squeezing a fixed 40px font into a 20%-width table column */
   .cms-logo {
-    display: none;
-  }
-
-  /* tech.html masthead banner gif - its aspect ratio genuinely doesn't
-     fit the ~20vw column width at full row height without either
-     cropping or leaving a gap (see git history/conversation for the
-     failed attempts at both). Simplest resolution: drop it on mobile,
-     where screen space is tightest anyway. Desktop keeps the original
-     .mast-table img rule, unchanged.
-     Scoped as .mast-table .cms-gif (not just .cms-gif) because the
-     generic .mast-table img { display: block; } rule outranks a
-     single-class selector on specificity and was winning over
-     display:none. */
-  .mast-table .cms-gif {
     display: none;
   }
 
