@@ -185,7 +185,6 @@ h1 {
 
 .autobus-results-label {
     font-family: "Work Sans", sans-serif;
-    font-size: 16px;
     display: block;
     /* font-weight: 600; */
     margin-bottom: 6px;
@@ -856,6 +855,14 @@ textarea {
   font-size: 18px;
   line-height: 1.4;
   font-family: 'Source Sans 3', sans-serif;
+}
+
+/* Previously had no base/desktop rule at all - only the mobile override
+   existed, so desktop relied purely on inherited styling. Matches the
+   mobile values intentionally now instead of by inheritance accident. */
+.set-details-author {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 18px;
 }
 
 #cardSetDiv {
@@ -1664,11 +1671,6 @@ textarea {
     width: 100%;
   }
 
-  .set-details-author {
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 18px;
-}
-
   .set-details-table-style td {
   display: table-cell;
   table-layout: fixed;
@@ -1757,13 +1759,11 @@ textarea {
 } /* END MOBILE RESPONSIVE */
 
 
-/* Don't show condensed weather on desktop */
-.weather-condensed {
-  display: none;
-}
-
-
-/* Desktop: hide hamburger, show normal nav */
+/* Desktop: hide hamburger, show normal nav; hide the mobile-condensed
+   weather text (was previously unconditional/unscoped - same specificity
+   as the mobile "display: block" rule for .weather-condensed and later
+   in the file, so it silently won on mobile too, hiding the weather
+   widget entirely there. Same bug shape as the .masthead conflict.) */
 @media (min-width: 601px) {
   .hamburger {
     display: none;
@@ -1771,6 +1771,10 @@ textarea {
 
   .nav-links {
     display: block;
+  }
+
+  .weather-condensed {
+    display: none;
   }
 }
 
