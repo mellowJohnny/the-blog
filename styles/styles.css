@@ -781,7 +781,6 @@ textarea {
   display: flex;
   align-items: center;
   padding-left: 20px;
-  padding-top: 14px;
   height: 150px;
   text-shadow:
     -2px -2px 0 var(--color-heading-outline),
@@ -1671,7 +1670,10 @@ textarea {
     font-size: 48px;          /* Scales down from 128px */
     height: 90px;             /* Matches reduced text size */
     padding-left: 12px;       /* Keeps left alignment tight */
-    padding-top: 10px;        /* Centers vertically */
+    /* Vertical centering comes from the base rule's align-items:center
+       (flexbox) - a manual padding-top here was fighting that and
+       visibly skewing it off-center, since mobile's shorter text has
+       much more slack in its box than desktop's does */
     text-shadow:
       -1px -1px 0 var(--color-heading-outline),
        1px -1px 0 var(--color-heading-outline),
