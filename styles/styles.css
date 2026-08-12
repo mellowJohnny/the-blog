@@ -1612,8 +1612,12 @@ textarea {
      cropping or leaving a gap (see git history/conversation for the
      failed attempts at both). Simplest resolution: drop it on mobile,
      where screen space is tightest anyway. Desktop keeps the original
-     .mast-table img rule, unchanged. */
-  .cms-gif {
+     .mast-table img rule, unchanged.
+     Scoped as .mast-table .cms-gif (not just .cms-gif) because the
+     generic .mast-table img { display: block; } rule outranks a
+     single-class selector on specificity and was winning over
+     display:none. */
+  .mast-table .cms-gif {
     display: none;
   }
 
