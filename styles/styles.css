@@ -707,6 +707,19 @@ textarea {
   padding: 0;
 }
 
+/* tech.html masthead banner gif - height:100%/width:auto (above) only
+   scales proportionally to the image's own aspect ratio, which doesn't
+   guarantee it fills its cell's actual width, leaving a gap. Pin both
+   dimensions explicitly (vw, not % - unreliable inside table cells) and
+   crop with object-fit so it always fills the box edge-to-edge. */
+.mast-table .cms-gif {
+  height: 7vw;
+  width: 20vw;
+  object-fit: cover;
+  display: block;
+  margin-left: auto;
+}
+
 
 .masthead {
   font-family: 'Spicy Rice';
@@ -1607,14 +1620,17 @@ textarea {
     display: none;
   }
 
-  /* tech.html masthead banner gif - percentage height inside a table
-     cell is unreliable across browsers (same category of bug as the
-     footer-image/autobus-form padding issues earlier), so it was
-     falling back to native intrinsic size instead of resolving against
-     the row. Match the row's height directly with a vw value instead. */
+  /* tech.html masthead banner gif - height was matching the tr's own
+     height:16vw exactly, but height on a <tr> is only a minimum: the
+     padded 14vw masthead text renders taller than that, so the row
+     grows past 16vw while the gif stayed fixed at it, exposing a
+     sliver of background at the bottom. Bump the height to safely
+     cover the actual (taller) row, and crop with object-fit so it
+     fills its width edge-to-edge like the desktop rule. */
   .mast-table .cms-gif {
-    height: 16vw;
-    width: auto;
+    height: 20vw;
+    width: 20vw;
+    object-fit: cover;
     display: block;
     margin-left: auto;
   }
