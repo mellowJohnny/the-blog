@@ -1354,27 +1354,13 @@ textarea {
 ======================================================================================================================== */
 @media (max-width: 600px) {
 
-  /* Global font scaling */
+/* ============================
+   GLOBAL / SITE-WIDE
+   ============================ */
+
   body {
     font-size: 16px;
   }
-
-  .wax-reviews-masthead a {
-    font-size: 48px;          /* Scales down from 128px */
-    height: 90px;             /* Matches reduced text size */
-    padding-left: 12px;       /* Keeps left alignment tight */
-    padding-top: 10px;        /* Centers vertically */
-    text-shadow:
-      -1px -1px 0 rgb(2, 70, 153),
-       1px -1px 0 rgb(2, 70, 153),
-      -1px  1px 0 rgb(2, 70, 153),
-       1px  1px 0 rgb(2, 70, 153);
-  }
-
-  .wax-reviews-mast-table {
-    height: 90px;             /* Match the reduced masthead height */
-  }
-
 
   /* Flex container should not force 1000px width */
   .flex-container div {
@@ -1384,16 +1370,85 @@ textarea {
     box-sizing: border-box;
   }
 
+  /* Tables should scroll instead of overflow */
+  table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+  }
+
+  /* Simple "Home / Back to CMS" nav table used on several pages
+     (createBlogPost.html, createCardSet.html, etc.) */
+  .top-nav {
+    font-size: 24px;
+  }
+
+/* ============================
+   MOBILE HAMBURGER NAVIGATION
+   ============================ */
+
+  /* Hide the table nav by default */
+  .nav-links {
+    display: none;
+    width: fit-content;
+    background-color: rgb(44, 82, 137);
+  }
+
+  /* When menu is open */
+  .nav-links.open {
+    display: block;
+  }
+
+  /* Hamburger button */
+  .hamburger {
+    font-size: 32px;
+    cursor: pointer;
+    padding: 10px;
+    color: #3FA7D6;
+    display: block;
+  }
+
+  /* Make table behave like a vertical list */
+  .nav-table {
+    width: 100%;
+  }
+
+  .nav-table tr {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nav-td {
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
+
+  /* Padding moved here (from .nav-td above) so the whole row is
+     clickable, not just the text itself */
+  .nav-td a {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 16px;
+    color: #fff;
+  }
+
+/* ============================
+   HOME PAGE & BLOG STREAM (index.html, tech.html)
+   ============================ */
+
   /* Blog intro */
   .intro {
     width: 100%;
     font-size: 18px;
     padding: 0 10px;
     box-sizing: border-box;
-  }
-
-  .top-nav {
-    font-size: 24px;
   }
 
   /* Blog images */
@@ -1419,23 +1474,42 @@ textarea {
     font-size: 0.9rem;
   }
 
-  /* Vote widget - the "Love this set!"/"Not a fan..." labels need room
-     to breathe on narrow screens */
-  .vote-widget {
-    gap: 10px;
+  /* Masthead & Weather Mobile Styles (index.html only - .masthead-container
+     is unique to that page). Scoped to .masthead-container .masthead
+     specifically - a bare .masthead rule here would collide with the
+     CMS/tech.html masthead rule below (same specificity, so whichever
+     came later in the file would silently win for shared properties
+     like font-size on every page, not just this one). */
+  .masthead-container {
+    flex-direction: row;         /* keep horizontal layout */
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: nowrap;
   }
 
-  .vote-btn {
-    font-size: 14px;
-    padding: 8px 12px;
+  .masthead-container .masthead {
+    padding-left: 5px;
+    font-size: 9vw;
+    white-space: nowrap;
   }
 
-  /* Tables should scroll instead of overflow */
-  table {
-    width: 100%;
-    display: block;
-    overflow-x: auto;
+  .weather-box {
+    font-size: 0.75rem;
+    max-width: 50%;
+    text-align: right;
+    margin-left: auto;
+    padding-left: 10px;
   }
+
+  .weather-full { display: none; }
+  .weather-condensed { display: block; }
+
+/* ============================
+   cardStack CMS SHARED CHROME (wlcms.html, createBlogPost.html,
+   createCardSet.html, blogEdit.html, setEdit.html, pickBlog.html,
+   pickCardSet.html) - also tech.html for the masthead/mast-table rules,
+   since it reuses the same masthead markup
+   ============================ */
 
   /* Set picker */
   .cms-set-picker {
@@ -1494,8 +1568,12 @@ textarea {
     display: none;
   }
 
-  /* Autobus Messaging Platform masthead (smsAdmin.html) - same treatment
-     as the cardStack masthead above */
+/* ============================
+   AUTOBUS MESSAGING PLATFORM (smsAdmin.html)
+   ============================ */
+
+  /* Autobus Messaging Platform masthead - same treatment as the
+     cardStack masthead above */
   .autobus-mast-table tr {
     height: auto;
   }
@@ -1531,7 +1609,10 @@ textarea {
     padding-top: 0;
   }
 
-  /* Set-O-Matic year picker (waxReviews.html) */
+/* ============================
+   waxReviews.html - SET-O-MATIC YEAR PICKER
+   ============================ */
+
   .set-o-matic-picker {
     font-size: 20px;
     height: auto;
@@ -1552,93 +1633,24 @@ textarea {
     padding: 2px 10px;
   }
 
-  /* card set stuff */
-
-  .card-table-style td {
-    font-size: 12px;
-    padding: 2px 1px;}
-
 /* ============================
-   MOBILE HAMBURGER NAVIGATION
+   waxReviews.html - CARD SET REVIEW CONTENT
    ============================ */
 
-  /* Hide the table nav by default */
-  .nav-links {
-    display: none;
-    width: fit-content;
-    background-color: rgb(44, 82, 137);
+  .wax-reviews-masthead a {
+    font-size: 48px;          /* Scales down from 128px */
+    height: 90px;             /* Matches reduced text size */
+    padding-left: 12px;       /* Keeps left alignment tight */
+    padding-top: 10px;        /* Centers vertically */
+    text-shadow:
+      -1px -1px 0 rgb(2, 70, 153),
+       1px -1px 0 rgb(2, 70, 153),
+      -1px  1px 0 rgb(2, 70, 153),
+       1px  1px 0 rgb(2, 70, 153);
   }
 
-  /* When menu is open */
-  .nav-links.open {
-    display: block;
-  }
-
-  /* Hamburger button */
-  .hamburger {
-    font-size: 32px;
-    cursor: pointer;
-    padding: 10px;
-    color: #3FA7D6;
-    display: block;
-  }
-
-  /* Make table behave like a vertical list */
-  .nav-table {
-    width: 100%;
-  }
-
-  .nav-table tr {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .nav-td {
-    display: block;
-    width: 100%;
-    padding: 0;
-    margin: 0;
-    text-align: left;
-    font-size: 0.9rem;
-    border-bottom: 1px solid rgba(255,255,255,0.2);
-  }
-
-  /* Padding moved here (from .nav-td above) so the whole row is
-     clickable, not just the text itself */
-  .nav-td a {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px 16px;
-    color: #fff;
-  }
-
-  /* Masthead & Weather Mobile Styles (index.html only - .masthead-container
-     is unique to that page). Scoped to .masthead-container .masthead
-     specifically - a bare .masthead rule here would collide with the
-     CMS/tech.html masthead rule above (same specificity, so whichever
-     came later in the file would silently win for shared properties
-     like font-size on every page, not just this one). */
-  .masthead-container {
-    flex-direction: row;         /* keep horizontal layout */
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: nowrap;
-  }
-
-  .masthead-container .masthead {
-    padding-left: 5px;
-    font-size: 9vw;
-    white-space: nowrap;
-  }
-
-  .weather-box {
-    font-size: 0.75rem;
-    max-width: 50%;
-    text-align: right;
-    margin-left: auto;
-    padding-left: 10px;
+  .wax-reviews-mast-table {
+    height: 90px;             /* Match the reduced masthead height */
   }
 
   .set-details-table-style {
@@ -1726,9 +1738,21 @@ textarea {
       top of width:100%, same overflow class of bug as the td padding */
   }
 
+  /* Used inline within some stored review bodies (postBody content) */
+  .card-table-style td {
+    font-size: 12px;
+    padding: 2px 1px;}
 
-  .weather-full { display: none; }
-  .weather-condensed { display: block; }
+  /* Vote widget - the "Love this set!"/"Not a fan..." labels need room
+     to breathe on narrow screens */
+  .vote-widget {
+    gap: 10px;
+  }
+
+  .vote-btn {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
 
 } /* END MOBILE RESPONSIVE */
 
