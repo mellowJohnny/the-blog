@@ -707,20 +707,6 @@ textarea {
   padding: 0;
 }
 
-/* tech.html masthead banner gif - height is a minimum on a <tr>, and the
-   masthead text's actual rendered height (line-height + padding) runs a
-   bit past the declared 7vw, so matching it exactly left a gap at the
-   bottom. Overshoot slightly instead. width stays auto (proportional to
-   the image's own aspect ratio) rather than a forced box + object-fit,
-   which cropped this landscape image's sides to fit a squarer box.
-   margin-left:auto pushes it to the right edge of its cell. */
-.mast-table .cms-gif {
-  height: 8vw;
-  width: auto;
-  display: block;
-  margin-left: auto;
-}
-
 
 .masthead {
   font-family: 'Spicy Rice';
@@ -1621,15 +1607,14 @@ textarea {
     display: none;
   }
 
-  /* tech.html masthead banner gif - same fix as the desktop rule: no
-     forced width/object-fit (was cropping this landscape image's sides
-     to fit a squarer box), just proportional width:auto with a height
-     that safely overshoots the row rather than matching it exactly */
-  .mast-table .cms-gif {
-    height: 20vw;
-    width: auto;
-    display: block;
-    margin-left: auto;
+  /* tech.html masthead banner gif - its aspect ratio genuinely doesn't
+     fit the ~20vw column width at full row height without either
+     cropping or leaving a gap (see git history/conversation for the
+     failed attempts at both). Simplest resolution: drop it on mobile,
+     where screen space is tightest anyway. Desktop keeps the original
+     .mast-table img rule, unchanged. */
+  .cms-gif {
+    display: none;
   }
 
   /* Autobus Messaging Platform masthead (smsAdmin.html) - same treatment
