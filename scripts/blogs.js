@@ -370,9 +370,8 @@ if('geolocation' in navigator) {
           </p>
 
           <p class="weather-condensed">
-            <strong>${city}:</strong><br>
-            ${temp}°C <br>
-            🌙 ${getTime(sunset)}
+            <strong>${city}</strong><br>
+            ${temp}°C
           </p>`;
 
       }
