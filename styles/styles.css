@@ -1607,11 +1607,13 @@ textarea {
     display: none;
   }
 
-  /* tech.html masthead banner gif - fill the row height like it does on
-     desktop (matches the generic .mast-table img rule), and push it to
-     the right edge of its cell instead of sitting flush left */
+  /* tech.html masthead banner gif - percentage height inside a table
+     cell is unreliable across browsers (same category of bug as the
+     footer-image/autobus-form padding issues earlier), so it was
+     falling back to native intrinsic size instead of resolving against
+     the row. Match the row's height directly with a vw value instead. */
   .mast-table .cms-gif {
-    height: 100%;
+    height: 16vw;
     width: auto;
     display: block;
     margin-left: auto;
