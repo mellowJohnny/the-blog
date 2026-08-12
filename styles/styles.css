@@ -1529,6 +1529,14 @@ textarea {
     box-sizing: border-box;
   }
 
+  /* #weather is display:flex (base rule, justify-content:left) since
+     the element carries both id="weather" and class="weather-box" - the
+     text-align:center above does nothing because its children are flex
+     items, not inline text. Override the actual alignment mechanism. */
+  #weather {
+    justify-content: center;
+  }
+
   .weather-full { display: none; }
   .weather-condensed { display: block; }
 
