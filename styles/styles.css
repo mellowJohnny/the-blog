@@ -1614,7 +1614,12 @@ textarea {
     color: #fff;
   }
 
-  /* Masthead & Weather Mobile Styles */
+  /* Masthead & Weather Mobile Styles (index.html only - .masthead-container
+     is unique to that page). Scoped to .masthead-container .masthead
+     specifically - a bare .masthead rule here would collide with the
+     CMS/tech.html masthead rule above (same specificity, so whichever
+     came later in the file would silently win for shared properties
+     like font-size on every page, not just this one). */
   .masthead-container {
     flex-direction: row;         /* keep horizontal layout */
     justify-content: space-between;
@@ -1622,7 +1627,7 @@ textarea {
     flex-wrap: nowrap;
   }
 
-  .masthead {
+  .masthead-container .masthead {
     padding-left: 5px;
     font-size: 9vw;
     white-space: nowrap;
