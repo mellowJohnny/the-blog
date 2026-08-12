@@ -1516,12 +1516,17 @@ textarea {
     white-space: nowrap;
   }
 
+  /* flex:1 so this actually claims the leftover row width as real box
+     width, instead of margin-left:auto pushing it right while the box
+     itself stays shrink-wrapped to its content (the previous approach
+     turned unused space into invisible margin instead of usable room) */
   .weather-box {
     font-size: 0.75rem;
+    flex: 1;
     max-width: 70%;
     text-align: right;
-    margin-left: auto;
     padding-left: 10px;
+    box-sizing: border-box;
   }
 
   .weather-full { display: none; }
