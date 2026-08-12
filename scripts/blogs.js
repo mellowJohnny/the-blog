@@ -372,7 +372,6 @@ if('geolocation' in navigator) {
           <p class="weather-condensed">
             <strong>${city}:</strong><br>
             ${temp}°C <br>
-            ${wind} km/h ${degreesToRose(windDirection)}<br>
             🌙 ${getTime(sunset)}
           </p>`;
 
