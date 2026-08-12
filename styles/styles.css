@@ -1431,6 +1431,14 @@ textarea {
     display: block;
   }
 
+  /* The 70px base value (styles.css, non-mobile-scoped) is sized for
+     desktop's full nav table; the mobile hamburger icon only needs
+     ~58px (32px font + 10px top/bottom padding), leaving a visible gap
+     before the page content below it */
+  #global-nav-placeholder {
+    height: 58px;
+  }
+
   /* Make table behave like a vertical list */
   .nav-table {
     width: 100%;
