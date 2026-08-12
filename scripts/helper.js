@@ -350,6 +350,19 @@ function toggleMenu() {
   nav.classList.toggle("open");
 }
 
+// Close the mobile menu when tapping/clicking anywhere outside it (the
+// hamburger icon itself is inside #global-nav-placeholder too, so this
+// doesn't fight with toggleMenu() re-opening it on the same click)
+document.addEventListener("click", (event) => {
+  const navPlaceholder = document.getElementById("global-nav-placeholder");
+  const nav = document.getElementById("global-nav");
+  if (!navPlaceholder || !nav) return;
+
+  if (nav.classList.contains("open") && !navPlaceholder.contains(event.target)) {
+    nav.classList.remove("open");
+  }
+});
+
 
 
 // --------------- Cookie! --------------------------
