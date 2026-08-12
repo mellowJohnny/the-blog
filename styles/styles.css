@@ -1700,7 +1700,6 @@ textarea {
     display: none;
     width: fit-content;
     background-color: rgb(44, 82, 137);
-    padding: 10px 0;
   }
 
   /* When menu is open */
