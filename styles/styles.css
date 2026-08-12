@@ -1727,14 +1727,20 @@ textarea {
   .nav-td {
     display: block;
     width: 100%;
-    padding: 12px 16px;
+    padding: 0;
     margin: 0;
     text-align: left;
     font-size: 0.9rem;
     border-bottom: 1px solid rgba(255,255,255,0.2);
   }
 
+  /* Padding moved here (from .nav-td above) so the whole row is
+     clickable, not just the text itself */
   .nav-td a {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 16px;
     color: #fff;
   }
 
