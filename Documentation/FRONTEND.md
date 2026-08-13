@@ -10,9 +10,9 @@ inline in the `<head>`.
 | Page | Purpose | Key query params | Scripts used |
 |---|---|---|---|
 | `index.html` | Homepage — shows the "Home Page" blog stream (`blogType=99`), plus the weather widget. | — | `blogs.js`, `helper.js` |
-| `tech.html` | Tech / Mach-E / Raspberry Pi blog stream, filtered by `blogType`. | `blogType`, `pageName` | `blogs.js`, `helper.js` |
+| `tech.html` | Tech / Mach-E / Raspberry Pi blog stream, filtered by `blogType`. Masthead uses the same `.masthead-container` (masthead + weather widget) layout as `index.html` — it used to show a decorative gif instead and never actually rendered the weather widget (loaded `blogs.js`, which unconditionally targets `#weather`, but had no such element — silently broken). Fixed by adopting `index.html`'s markup. | `blogType`, `pageName` | `blogs.js`, `helper.js` |
 | `waxReviews.html` | Card set review stream — the main hockey card content. | `year`, `pageName`, `blogCat`, `sortOrder` | `wax.js`, `helper.js` |
-| `cards.html` | Static "what is Junk Wax" essay/intro page. No API calls. | — | `wax.js` (unused on this page beyond nav helpers), `helper.js` |
+| `cards.html` | **Deprecated** — per the site owner (2026-08-12), don't include this page in site-wide updates (mobile passes, shared CSS/JS changes, font/font-import work, etc.) even though it's still live/linked and shares markup patterns with other pages. Static "what is Junk Wax" essay/intro page, no API calls. | — | `wax.js` (unused on this page beyond nav helpers), `helper.js` |
 | `cardChecker.html` | "Card-O-Matic" utility: given a card number, calculates which page/pocket (of a standard 9-pocket page) it belongs in. | — | `cardSlotCalc.js`, SweetAlert |
 | `lockout.html` | Static essay about the 2004-05 NHL lockout. Special-cased redirect target — see below. | — | `helper.js` |
 
@@ -103,6 +103,45 @@ knowing before touching this CSS again:
   (`.set-footer-table-style` in `displayCardSet()`, `wax.js`), both of
   which used to be `<table>`s and are now `<div>`s for exactly this
   reason.
+
+## Typography / fonts
+
+Every live page (everything above except the deprecated `cards.html` and
+`cms/formioSandbox.html`, which wasn't brought into this pass) loads the
+identical Google Fonts set via the identical `preload`+`onload`+
+`noscript` pattern: Spicy Rice, Nunito (200), Special Elite, Work Sans
+(400/700), Source Sans 3 (200/400/700), Fira Code (300). A font audit
+found and fixed real bugs here — several CMS pages were silently
+missing Work Sans/Source Sans 3/Special Elite for content that actually
+renders on them (falling back to a generic system font), while
+simultaneously loading Audiowide and Caveat, which nothing on the site
+ever uses. Keep any new page's font `<link>` block byte-for-byte
+identical to the others unless it genuinely needs a font none of them
+load.
+
+`waxReviews.html`'s masthead is the one deliberate exception: it uses a
+self-hosted `Bebas Neue` (`@font-face`, only imported by `waxReviews.html`
+and `lockout.html`) instead of the `Spicy Rice` every other masthead
+uses — **confirmed intentional by the site owner**, not drift, so don't
+"fix" it to match. Same for the pseudo-headline convention inside body
+content: blog posts (`index.html`/`tech.html`) use plain bold text for
+section breaks, while card reviews use `<p class="caption">` (Special
+Elite) baked into the stored `postBody` — also confirmed intentional.
+
+One real CSS gotcha found while fixing the waxReviews masthead's mobile
+vertical alignment: `.wax-reviews-masthead a` centers its text via
+flexbox (`display: flex; align-items: center;`), which was previously
+also carrying a manual `padding-top` "to help centering." The two fight
+each other, and the padding's visual impact isn't uniform — desktop's
+128px text nearly fills its 150px box (little slack for `align-items`
+to distribute, so the extra padding barely showed), while mobile's 48px
+text sits in a much roomier 90px box (lots of slack, so the same
+padding visibly skewed it off-center). Fixed by dropping the manual
+padding and trusting `align-items: center` alone. Same lesson as the
+`.masthead-container .masthead`/`.mast-table .masthead` fixed-height
+issues in the mobile section above — don't hand-tune spacing to
+"assist" a centering mechanism that's already doing the job; the two
+values drift out of sync differently at each screen size.
 
 ## Voting feature (waxReviews.html)
 
