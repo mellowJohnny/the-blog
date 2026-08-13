@@ -369,10 +369,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const tinyBody = tinymce.activeEditor.getContent();
 
-  let myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-
-  let raw = JSON.stringify({
+  const payload = {
     published,
     title,
     imgName,
@@ -380,21 +377,16 @@ document.addEventListener("DOMContentLoaded", function () {
     author,
     postBody: tinyBody,
     blogType
-  });
-
-  console.log(`In createBlogPost(): ${raw}`);
-
-  let requestOptions = {
-    method: 'POST',
-    headers: myHeaders,
-    body: raw,
-    redirect: 'follow'
   };
 
-  fetch("https://s4ge5t9w06.execute-api.us-east-2.amazonaws.com/dev", requestOptions) // createBlogPost API
+  fetch("https://s4ge5t9w06.execute-api.us-east-2.amazonaws.com/dev", { // createBlogPost API
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
     .then(response => response.json())
     .then(result => alert(result.message))
-    .catch(error => console.log('error', error));
+    .catch(error => console.log("error", error));
 }
 
   
@@ -434,43 +426,32 @@ document.addEventListener("DOMContentLoaded", function () {
   // Call the Tiny API to fetch the content from the editor...
   const tinyBody = tinymce.activeEditor.getContent();
 
-  // instantiate a headers object
-  let myHeaders = new Headers();
-
-  // add content type header to object
-  myHeaders.append("Content-Type", "application/json");
-
-  // using built in JSON utility package turn object to string and store in a variable
-  let raw = JSON.stringify({
-    "blogStatus": blogStatus,
-    "seoPageTitle": seoPageTitle,
-    "seoMetaDesc": seoMetaDesc,
-    "seoURLSlug": seoURLSlug,
-    "seoTags": seoTags,
-    "author": author,
-    "setName": setName,
-    "size": size,
-    "subsets": subsets,
-    "stars": stars,
-    "formats": formats,
-    "year": year,
-    "postBody": tinyBody,
-    "mfg": mfg,
-    "headerImgName": headerImgName,
-    "footerImgName": footerImgName,
-    "blogCat": blogCat
-  });
-
-  // create a JSON object with parameters for API call and store in a variable
-  let requestOptions = {
-    method: 'POST',
-    headers: myHeaders,
-    body: raw,
-    redirect: 'follow'
+  const payload = {
+    blogStatus,
+    seoPageTitle,
+    seoMetaDesc,
+    seoURLSlug,
+    seoTags,
+    author,
+    setName,
+    size,
+    subsets,
+    stars,
+    formats,
+    year,
+    postBody: tinyBody,
+    mfg,
+    headerImgName,
+    footerImgName,
+    blogCat
   };
 
   // make API call to cardPost endpoint with parameters and use promises to get response
-  fetch("https://05uss9ffij.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
+  fetch("https://05uss9ffij.execute-api.us-east-2.amazonaws.com/dev", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
     .then(async response => {
       // Parse JSON safely
       let data;
@@ -498,7 +479,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     })
     .catch(error => {
-      console.log('Create error:', error);
+      console.log("Create error:", error);
       alert("Network error creating the card set.");
     });
 }

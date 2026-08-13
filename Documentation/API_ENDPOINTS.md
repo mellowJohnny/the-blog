@@ -25,7 +25,7 @@ All URLs are `https://{id}.execute-api.us-east-2.amazonaws.com/{stage}`.
 - **URL**: `https://0t14dphgwb.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
 - **Query params**: `blogType`
-- **Called from**: `fetchBlogIntroByType()` in `scripts/blogs.js` — defined but **not currently called** anywhere; intro text is now rendered client-side by `renderBlogIntro()`/`renderCardIntro()` instead (hardcoded copy per type). Looks like a deprecated/replaced approach kept around in case it's needed again.
+- **Called from**: nothing — `fetchBlogIntroByType()`, the only caller, was dead code (never invoked) and was removed from `scripts/blogs.js` on 2026-08-12. Intro text is rendered client-side by `renderBlogIntro()`/`renderCardIntro()` instead (hardcoded copy per type). This endpoint itself may now be orphaned entirely.
 - **Response**: `{ Items: [{ introText }] }`
 
 ### Get card sets by year

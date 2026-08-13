@@ -45,7 +45,7 @@ non-key attribute used only by the `setID-index` GSI lookup path.
 | `mfg` | String | Manufacturer — one of O-Pee-Chee, Topps, Upper Deck, Score, Pro Set, Fleer, Leaf, Pinnacle, Pacific (per the `createCardSet.html` dropdown). |
 | `size` | String/Number | Set size, e.g. "660 cards". |
 | `subsets` | String | Free-text description of inserts/subsets. |
-| `stars` | Number (1-5) | "Hella Rating" — rendered as star emoji, sortable via `cardSetSorter()`. |
+| `stars` | Number (1-5) | "Hella Rating" — rendered as star emoji, sortable via `getSortOrder()` (`scripts/helper.js`; consolidated from the formerly-separate `cardSetSorter()` on 2026-08-12). |
 | `formats` | String | e.g. "Wax, Rack, Cello". |
 | `blogCat` | String | `"reg"` (regular O-Pee-Chee/junk-wax sets), `"tims"` (Tim Hortons), `"mcd"` (McDonald's). Drives which nav/year-picker range applies (`renderSetPicker()`, `categoryRanges` in `scripts/helper.js`). |
 | `blogStatus` / `status` | String | `"OK"` = live, `"staged"` = draft. Note the field is named `status` in the older prototype Lambdas (`getCardSets.js`, which queries a `status-year-index` GSI) but `blogStatus` in the current CMS create/update forms — likely the same field, renamed at some point; confirm which name the live table actually uses. |

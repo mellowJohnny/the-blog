@@ -59,13 +59,13 @@ function updateSmsStats() {
   statsEl.innerHTML = `Characters: ${chars} &nbsp; Encoding: ${encoding} &nbsp; Segments: ${segments}`;
 
   // BOLD & RED TEXT FOR EXCEEDING 160 CHARACTERS
-  const charCountEl = document.getElementById('sms-stats');
+  const charCountEl = document.getElementById("sms-stats");
 if (chars > 160) {
-  charCountEl.style.color = 'red';
-  charCountEl.style.fontWeight = 'bold';
+  charCountEl.style.color = "red";
+  charCountEl.style.fontWeight = "bold";
 } else {
-  charCountEl.style.color = '#555';
-  charCountEl.style.fontWeight = 'normal';
+  charCountEl.style.color = "#555";
+  charCountEl.style.fontWeight = "normal";
 }
 }
 
@@ -190,91 +190,91 @@ try {
 
 // Bulk Import Stuff
 
-const BULK_IMPORT_API = 'https://05b6ofo7i1.execute-api.us-east-2.amazonaws.com/prod/subscribers/bulk-upload';
+const BULK_IMPORT_API = "https://05b6ofo7i1.execute-api.us-east-2.amazonaws.com/prod/subscribers/bulk-upload";
 
-const overlay      = document.getElementById('bulkImportOverlay');
-const navLink      = document.getElementById('bulkImportLink');
-const cancelBtn    = document.getElementById('bulkCancelBtn');
-const uploadBtn    = document.getElementById('bulkUploadBtn');
-const closeBtn     = document.getElementById('bulkCloseBtn');
-const fileInput    = document.getElementById('bulkFileInput');
-const dropZone     = document.getElementById('bulkDropZone');
-const fileNameEl   = document.getElementById('bulkFileName');
-const feedbackEl   = document.getElementById('bulkFeedback');
+const overlay      = document.getElementById("bulkImportOverlay");
+const navLink      = document.getElementById("bulkImportLink");
+const cancelBtn    = document.getElementById("bulkCancelBtn");
+const uploadBtn    = document.getElementById("bulkUploadBtn");
+const closeBtn     = document.getElementById("bulkCloseBtn");
+const fileInput    = document.getElementById("bulkFileInput");
+const dropZone     = document.getElementById("bulkDropZone");
+const fileNameEl   = document.getElementById("bulkFileName");
+const feedbackEl   = document.getElementById("bulkFeedback");
 // --- Help modal ---
-const helpOverlay  = document.getElementById('helpOverlay');
-const helpLink     = document.getElementById('helpLink');
-const helpCloseBtn = document.getElementById('helpCloseBtn');
+const helpOverlay  = document.getElementById("helpOverlay");
+const helpLink     = document.getElementById("helpLink");
+const helpCloseBtn = document.getElementById("helpCloseBtn");
 
 
 let parsedItems = null;
 
 // --- Open / close modal ---
-navLink.addEventListener('click', (e) => {
+navLink.addEventListener("click", (e) => {
   e.preventDefault();
   resetModal();
-  overlay.style.display = 'flex';
+  overlay.style.display = "flex";
 });
 
 // ---- Event Listeners ----
-cancelBtn.addEventListener('click', closeModal);
-closeBtn.addEventListener('click', closeModal);
-overlay.addEventListener('click', (e) => {
+cancelBtn.addEventListener("click", closeModal);
+closeBtn.addEventListener("click", closeModal);
+overlay.addEventListener("click", (e) => {
   if (e.target === overlay) closeModal();
 });
 
-helpLink.addEventListener('click', (e) => {
+helpLink.addEventListener("click", (e) => {
   e.preventDefault();
-  helpOverlay.style.display = 'flex';
+  helpOverlay.style.display = "flex";
 });
 
-helpCloseBtn.addEventListener('click', () => {
-  helpOverlay.style.display = 'none';
+helpCloseBtn.addEventListener("click", () => {
+  helpOverlay.style.display = "none";
 });
 
-helpOverlay.addEventListener('click', (e) => {
-  if (e.target === helpOverlay) helpOverlay.style.display = 'none';
+helpOverlay.addEventListener("click", (e) => {
+  if (e.target === helpOverlay) helpOverlay.style.display = "none";
 });
 
 function closeModal() {
-  overlay.style.display = 'none';
+  overlay.style.display = "none";
   resetModal();
 }
 
 function resetModal() {
   parsedItems = null;
-  fileInput.value = '';
-  fileNameEl.textContent = '';
+  fileInput.value = "";
+  fileNameEl.textContent = "";
   uploadBtn.disabled = true;
-  uploadBtn.style.display = 'inline-block';
-  cancelBtn.style.display = 'inline-block';
-  closeBtn.style.display = 'none';
+  uploadBtn.style.display = "inline-block";
+  cancelBtn.style.display = "inline-block";
+  closeBtn.style.display = "none";
   hideFeedback();
 }
 
 // --- File selection ---
-fileInput.addEventListener('change', () => {
+fileInput.addEventListener("change", () => {
   if (fileInput.files[0]) handleFile(fileInput.files[0]);
 });
 
 // Allow clicking the drop zone to trigger file browse
-dropZone.addEventListener('click', (e) => {
+dropZone.addEventListener("click", (e) => {
   if (e.target !== fileInput) fileInput.click();
 });
 
 // --- Drag and drop ---
-dropZone.addEventListener('dragover', (e) => {
+dropZone.addEventListener("dragover", (e) => {
   e.preventDefault();
-  dropZone.classList.add('drag-over');
+  dropZone.classList.add("drag-over");
 });
 
-dropZone.addEventListener('dragleave', () => {
-  dropZone.classList.remove('drag-over');
+dropZone.addEventListener("dragleave", () => {
+  dropZone.classList.remove("drag-over");
 });
 
-dropZone.addEventListener('drop', (e) => {
+dropZone.addEventListener("drop", (e) => {
   e.preventDefault();
-  dropZone.classList.remove('drag-over');
+  dropZone.classList.remove("drag-over");
   const file = e.dataTransfer.files[0];
   if (file) handleFile(file);
 });
@@ -285,8 +285,8 @@ function handleFile(file) {
   parsedItems = null;
   uploadBtn.disabled = true;
 
-  if (!file.name.endsWith('.json')) {
-    showFeedback('Please select a .json file.', 'error');
+  if (!file.name.endsWith(".json")) {
+    showFeedback("Please select a .json file.", "error");
     return;
   }
 
@@ -297,21 +297,21 @@ function handleFile(file) {
     try {
       const data = JSON.parse(e.target.result);
       if (!Array.isArray(data) || data.length === 0) {
-        showFeedback('Invalid format: file must contain a non-empty JSON array.', 'error');
+        showFeedback("Invalid format: file must contain a non-empty JSON array.", "error");
         return;
       }
       parsedItems = data;
       uploadBtn.disabled = false;
-      showFeedback(`${data.length} record(s) ready to import.`, 'success');
+      showFeedback(`${data.length} record(s) ready to import.`, "success");
     } catch {
-      showFeedback('Could not parse JSON. Please check the file and try again.', 'error');
+      showFeedback("Could not parse JSON. Please check the file and try again.", "error");
     }
   };
   reader.readAsText(file);
 }
 
 // --- Upload ---
-uploadBtn.addEventListener('click', async () => {
+uploadBtn.addEventListener("click", async () => {
   if (!parsedItems) return;
 
   const ok = confirm(
@@ -321,17 +321,17 @@ uploadBtn.addEventListener('click', async () => {
 
   uploadBtn.disabled = true;
   cancelBtn.disabled = true;
-  showFeedback('Uploading...', 'success');
+  showFeedback("Uploading...", "success");
 
   // ------------- The Fetch
 try {
     const token = await getAuthToken();
 
     const res = await fetch(BULK_IMPORT_API, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': token
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": token
       },
       body: JSON.stringify(parsedItems),
     });
@@ -339,16 +339,16 @@ try {
     const json = await res.json();
 
     if (res.ok) {
-        showFeedback(`✓ Deleted ${json.deletedCount} existing subscriber(s) and imported ${json.importedCount} new one(s).`, 'success');
-        uploadBtn.style.display = 'none';
-        cancelBtn.style.display = 'none';
-        closeBtn.style.display = 'inline-block';
+        showFeedback(`✓ Deleted ${json.deletedCount} existing subscriber(s) and imported ${json.importedCount} new one(s).`, "success");
+        uploadBtn.style.display = "none";
+        cancelBtn.style.display = "none";
+        closeBtn.style.display = "inline-block";
     } else {
-      showFeedback(`Upload failed: ${json.message || 'Unknown error.'}`, 'error');
+      showFeedback(`Upload failed: ${json.message || "Unknown error."}`, "error");
       uploadBtn.disabled = false;
     }
   } catch (err) {
-    showFeedback(`Network error: ${err.message}`, 'error');
+    showFeedback(`Network error: ${err.message}`, "error");
     uploadBtn.disabled = false;
   } finally {
     cancelBtn.disabled = false;
@@ -359,86 +359,86 @@ try {
 function showFeedback(msg, type) {
   feedbackEl.textContent = msg;
   feedbackEl.className = `bulk-feedback ${type}`;
-  feedbackEl.style.display = 'block';
+  feedbackEl.style.display = "block";
 }
 
 function hideFeedback() {
-  feedbackEl.style.display = 'none';
-  feedbackEl.className = 'bulk-feedback';
+  feedbackEl.style.display = "none";
+  feedbackEl.className = "bulk-feedback";
 }
 
 // ---------- Add Subscriber Modal JS --------------
-const ADD_SUBSCRIBER_API = 'https://05b6ofo7i1.execute-api.us-east-2.amazonaws.com/prod/subscribers';
+const ADD_SUBSCRIBER_API = "https://05b6ofo7i1.execute-api.us-east-2.amazonaws.com/prod/subscribers";
 
-const addSubscriberOverlay    = document.getElementById('addSubscriberOverlay');
-const addSubscriberLink       = document.getElementById('addSubscriberLink');
-const addSubscriberCancelBtn  = document.getElementById('addSubscriberCancelBtn');
-const addSubscriberSaveBtn    = document.getElementById('addSubscriberSaveBtn');
-const addSubscriberCloseBtn   = document.getElementById('addSubscriberCloseBtn');
-const addFirstName            = document.getElementById('addFirstName');
-const addPhone                = document.getElementById('addPhone');
-const addSubscriberFeedback   = document.getElementById('addSubscriberFeedback');
+const addSubscriberOverlay    = document.getElementById("addSubscriberOverlay");
+const addSubscriberLink       = document.getElementById("addSubscriberLink");
+const addSubscriberCancelBtn  = document.getElementById("addSubscriberCancelBtn");
+const addSubscriberSaveBtn    = document.getElementById("addSubscriberSaveBtn");
+const addSubscriberCloseBtn   = document.getElementById("addSubscriberCloseBtn");
+const addFirstName            = document.getElementById("addFirstName");
+const addPhone                = document.getElementById("addPhone");
+const addSubscriberFeedback   = document.getElementById("addSubscriberFeedback");
 
 // --- Open / close ---
-addSubscriberLink.addEventListener('click', (e) => {
+addSubscriberLink.addEventListener("click", (e) => {
   e.preventDefault();
   resetAddSubscriberModal();
-  addSubscriberOverlay.style.display = 'flex';
+  addSubscriberOverlay.style.display = "flex";
   addFirstName.focus();
 });
 
-addSubscriberCancelBtn.addEventListener('click', closeAddSubscriberModal);
-addSubscriberCloseBtn.addEventListener('click', closeAddSubscriberModal);
+addSubscriberCancelBtn.addEventListener("click", closeAddSubscriberModal);
+addSubscriberCloseBtn.addEventListener("click", closeAddSubscriberModal);
 
-addSubscriberOverlay.addEventListener('click', (e) => {
+addSubscriberOverlay.addEventListener("click", (e) => {
   if (e.target === addSubscriberOverlay) closeAddSubscriberModal();
 });
 
 function closeAddSubscriberModal() {
-  addSubscriberOverlay.style.display = 'none';
+  addSubscriberOverlay.style.display = "none";
   resetAddSubscriberModal();
 }
 
 function resetAddSubscriberModal() {
-  addFirstName.value = '';
-  addPhone.value = '';
+  addFirstName.value = "";
+  addPhone.value = "";
   addSubscriberSaveBtn.disabled = false;
-  addSubscriberSaveBtn.style.display = 'inline-block';
-  addSubscriberCancelBtn.style.display = 'inline-block';
-  addSubscriberCloseBtn.style.display = 'none';
+  addSubscriberSaveBtn.style.display = "inline-block";
+  addSubscriberCancelBtn.style.display = "inline-block";
+  addSubscriberCloseBtn.style.display = "none";
   hideAddSubscriberFeedback();
 }
 
 // --- Submit ---
-addSubscriberSaveBtn.addEventListener('click', async () => {
+addSubscriberSaveBtn.addEventListener("click", async () => {
   const firstName = addFirstName.value.trim();
   const phoneNumber = addPhone.value.trim();
 
   // Basic client-side validation
   if (!firstName) {
-    showAddSubscriberFeedback('Please enter a name.', 'error');
+    showAddSubscriberFeedback("Please enter a name.", "error");
     addFirstName.focus();
     return;
   }
 
   if (!phoneNumber) {
-    showAddSubscriberFeedback('Please enter a mobile number.', 'error');
+    showAddSubscriberFeedback("Please enter a mobile number.", "error");
     addPhone.focus();
     return;
   }
 
   addSubscriberSaveBtn.disabled = true;
   addSubscriberCancelBtn.disabled = true;
-  showAddSubscriberFeedback('Saving...', 'success');
+  showAddSubscriberFeedback("Saving...", "success");
 
   try {
     const token = await getAuthToken();
 
     const res = await fetch(ADD_SUBSCRIBER_API, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': token
+        "Content-Type": "application/json",
+        "Authorization": token
       },
       body: JSON.stringify({ firstName, phoneNumber })
     });
@@ -446,16 +446,16 @@ addSubscriberSaveBtn.addEventListener('click', async () => {
     const json = await res.json();
 
     if (res.ok) {
-      showAddSubscriberFeedback(`✓ ${firstName} has been successfully added.`, 'success');
-      addSubscriberSaveBtn.style.display = 'none';
-      addSubscriberCancelBtn.style.display = 'none';
-      addSubscriberCloseBtn.style.display = 'inline-block';
+      showAddSubscriberFeedback(`✓ ${firstName} has been successfully added.`, "success");
+      addSubscriberSaveBtn.style.display = "none";
+      addSubscriberCancelBtn.style.display = "none";
+      addSubscriberCloseBtn.style.display = "inline-block";
     } else {
-      showAddSubscriberFeedback(`${json.error || 'Unknown error.'}`, 'error');
+      showAddSubscriberFeedback(`${json.error || "Unknown error."}`, "error");
       addSubscriberSaveBtn.disabled = false;
     }
   } catch (err) {
-    showAddSubscriberFeedback(`Network error: ${err.message}`, 'error');
+    showAddSubscriberFeedback(`Network error: ${err.message}`, "error");
     addSubscriberSaveBtn.disabled = false;
   } finally {
     addSubscriberCancelBtn.disabled = false;
@@ -466,10 +466,10 @@ addSubscriberSaveBtn.addEventListener('click', async () => {
 function showAddSubscriberFeedback(msg, type) {
   addSubscriberFeedback.textContent = msg;
   addSubscriberFeedback.className = `bulk-feedback ${type}`;
-  addSubscriberFeedback.style.display = 'block';
+  addSubscriberFeedback.style.display = "block";
 }
 
 function hideAddSubscriberFeedback() {
-  addSubscriberFeedback.style.display = 'none';
-  addSubscriberFeedback.className = 'bulk-feedback';
+  addSubscriberFeedback.style.display = "none";
+  addSubscriberFeedback.className = "bulk-feedback";
 }
