@@ -33,21 +33,15 @@ function estimateReadingTime(htmlString) {
 
    function fixDate(date){
     const d = new Date(date);
-    // Get the day of the week as an Integer, then convert it to the name of the day
-    const dayNum = d.getDay();
-    // const weekDay = getDayOfTheWeek(dayNum); Removing for now
 
     // Get the month as an Integer, convert it to the name
-    const monthNum = d.getMonth(); 
+    const monthNum = d.getMonth();
     const month = getMonthName(monthNum);
     // Get the year
-    const year = d.getFullYear(); 
+    const year = d.getFullYear();
 
     // Gets the day of the month
-    const dateNum = d.getDate(); 
-
-    // Smoosh it all together and send it back...
-    // return weekDay + ", " + month + " " + dateNum + ", " + year; OLD, long version
+    const dateNum = d.getDate();
 
     return month + " " + dateNum + ", " + year;
 }
@@ -76,46 +70,6 @@ function getMonthName(monthNum) {
   return months[monthNum] || null; // or "Invalid month"
 }
 
-/**
- * Helper function to get the day name, given an Integer value
- * @param {*} day 
- * Refactored to use an Object Map
- */
-
-function getDayOfTheWeek(dayNum) {
-  const days = {
-    0: "Sunday",
-    1: "Monday",
-    2: "Tuesday",
-    3: "Wednesday",
-    4: "Thursday",
-    5: "Friday",
-    6: "Saturday"
-  };
-
-  return days[dayNum] || null; // or "Invalid day"
-}
-
-
-
-    // ************* Helper functions to change CMS Submit state *************
-
-    // Change the submit button colour & text on Submit
-    function submitButtonClicked() {
-        document.getElementById('regSubmitButton').style.backgroundColor = "#36a5e6";
-        document.getElementById('regSubmitButton').innerHTML = "Crossing Fingers...";
-    }
-
-    // Post-Submit - change the CREATE submit button colour & text back to initial state 
-    function submitButtonReset() {
-        setTimeout(changeMeBack, 1500);
-    }
-
-    function changeMeBack(){
-        document.getElementById('regSubmitButton').style.backgroundColor = "#256386";
-        document.getElementById('regSubmitButton').innerHTML = "sign Me UP!";
-    }
-
 
     //************ Helper Function To Generate Copyright Date for any <div id="copy"> tag ********************
     function fetchCopyrightYear() {
@@ -125,96 +79,50 @@ function getDayOfTheWeek(dayNum) {
         
     }
 
-// -------------------- Helper Function for Sorting Blog Posts ----------------------
-// When "order" is "first", newest blogs first
-// When "order" is "last", oldest blogs first
-// Default is newest blogs first
+// -------------------- Helper Function for Sorting by a Property ----------------------
+// Used for both blog posts (sorted by "time") and card set reviews (sorted by "stars")
+// When "order" is "first", highest/newest value first
+// When "order" is "last", lowest/oldest value first
+// Default is highest/newest first
 
-function getSortOrder(property,order) {    
-    return function(a, b) {    
-        if (a[property] > b[property]) { 
+function getSortOrder(property,order) {
+    return function(a, b) {
+        if (a[property] > b[property]) {
             if (order === "first") {
                 return -1;
-            }  
+            }
             else if (order === "last") {
                 return 1;
             }
             else {
                 return -1;
             }
-                
-        } else if (a[property] < b[property]) { 
+
+        } else if (a[property] < b[property]) {
             if (order === "first") {
                 return 1;
-            }  
+            }
             else if (order === "last") {
                 return -1;
             }
             else {
                 return 1;
-            }    
-        }   
+            }
+        }
         else {
-            if (a[property] > b[property]) { 
+            if (a[property] > b[property]) {
                 if (order === "first") {
                     return -1;
-                }  
+                }
                 else if (order === "last") {
                     return 1;
                 }
                 else {
                     return -1;
                 }
-            } 
-        return 0;    
-            }    
-    }
-} // end sort function
-
-// -------------------- Helper Function for Sorting Card Set Posts ----------------------
-// CardSetSorter Function - Sorts Card Set Reviews by number of stars...
-// When "order" is "first", highest stars first
-// When "order" is "last", lowest stars first
-// Default is highest stars first
-function cardSetSorter(property,order) {  
-   // console.log(`Sort Order is: ${order}`)  
-    return function(a, b) {    
-        if (a[property] > b[property]) { 
-            if (order === "first") {
-                return -1;
-            }  
-            else if (order === "last") {
-                return 1;
             }
-            else {
-                return -1;
+        return 0;
             }
-                
-        } else if (a[property] < b[property]) { 
-            if (order === "first") {
-                return 1;
-            }  
-            else if (order === "last") {
-                return -1;
-            }
-            else {
-                return 1;
-            }    
-        }   
-        else {
-            if (a[property] > b[property]) { 
-                if (order === "first") {
-                    return -1;
-                }  
-                else if (order === "last") {
-                    return 1;
-                }
-                else {
-                    return -1;
-                }
-            } 
-        return 0;    
-            }    
     }
 } // end sort function
 

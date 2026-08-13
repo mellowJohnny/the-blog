@@ -56,9 +56,9 @@ function renderCardIntro(pageName) {
 
             // Sorting
             if (sortOrder === "last") {
-                data.sort(cardSetSorter("stars", "last"));
+                data.sort(getSortOrder("stars", "last"));
             } else {
-                data.sort(cardSetSorter("stars", "first"));
+                data.sort(getSortOrder("stars", "first"));
             }
 
             // Store results for pagination
@@ -133,10 +133,6 @@ function fetchPageTitle(setName)
 
    function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date,upvotes,downvotes)
    {
-
-    if (year === "2005"){
-
-    }
 
     // Convert stars to a number
     const numStars = parseInt(stars);

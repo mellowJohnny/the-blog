@@ -1,5 +1,4 @@
 // BLOG Pagination Global Variables
-var globalPageName = "";
 let allBlogs = []; // Used in pagination - holds all the Blogs so we can paginate through it
 let currentBlogPage = 1; // Which Blog to start with
 const blogPageSize = 1; // how many blogs to display at a time
@@ -210,47 +209,6 @@ function prevBlogPage() {
     document.getElementById("blog-intro").scrollIntoView({ behavior: "smooth" });
   }
 }
-
-
-/*********************************************** fetchBlogIntroByType *************************************/
-
- /** 
-    * This function calls an underlying AWS call used to FETCH blogs intros given a specific blogType
-    * AWS API Gateway API call - getBlogIntro end-point (& getBlogIntro Lambda)
-  */
-
- function fetchBlogIntroByType(blogType) {
-
-   // console.log("In fetchBlog...");
-   // console.log(`blogType is: ${blogType}`);
-
-    const urlToFetch = `https://0t14dphgwb.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`;
-
-    fetch(urlToFetch)
-        .then(response => response.json())
-        .then(data => {
-          //  console.log("API returned:", data);
-
-            // DynamoDB returns an object with an Items array
-            if (!data.Items || data.Items.length === 0) {
-                document.getElementById("blog-intro").innerHTML =
-                    "...this blog needs no introduction!!";
-                return;
-            }
-
-            // Extract the intro text from the first item
-            const intro = data.Items[0].introText;
-
-            // Display it
-            document.getElementById("blog-intro").innerHTML = intro;
-        })
-        .catch(err => {
-            console.log("Something went wrong:", err);
-            document.getElementById("blog-intro").innerHTML =
-                "...Ah, Houston, we've had a problem...";
-        });
-}
-
 
 
 /**
