@@ -364,10 +364,26 @@ document.addEventListener("DOMContentLoaded", function () {
 // NOTE: We don't pass in the postBody textarea content from the form anymore, we call the TinyMCE API to get it
  function createBlogPost(published, title, imgName, imgCap, author, blogType) {
 
-  cmsButtonSubmit();
-  cmsCreateButtonReset();
+  // Basic client-side validation - Title and Post Body are marked required
+  // in the HTML, but the Submit button is type="button" (not type="submit"),
+  // so native HTML5 required validation never actually fires; enforce it here instead
+  if (!title || !title.trim()) {
+    alert("Blog Post Title is required.");
+    document.getElementById("title").focus();
+    return;
+  }
 
   const tinyBody = tinymce.activeEditor.getContent();
+  const tinyBodyText = tinymce.activeEditor.getContent({ format: "text" }).trim();
+
+  if (!tinyBodyText) {
+    alert("Post Body is required.");
+    tinymce.activeEditor.focus();
+    return;
+  }
+
+  cmsButtonSubmit();
+  cmsCreateButtonReset();
 
   const payload = {
     published,
@@ -436,6 +452,25 @@ document.addEventListener("DOMContentLoaded", function () {
   // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
   function createCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, blogCat) {
 
+  // Basic client-side validation - setName is marked required in the HTML,
+  // but the Submit button is type="button" (not type="submit"), so native
+  // HTML5 required validation never actually fires; enforce it here instead
+  if (!setName || !setName.trim()) {
+    alert("Set Name is required.");
+    document.getElementById("setName").focus();
+    return;
+  }
+
+  // Call the Tiny API to fetch the content from the editor...
+  const tinyBody = tinymce.activeEditor.getContent();
+  const tinyBodyText = tinymce.activeEditor.getContent({ format: "text" }).trim();
+
+  if (!tinyBodyText) {
+    alert("Set Review Text is required.");
+    tinymce.activeEditor.focus();
+    return;
+  }
+
   // Let's change the state of the button, now that we've clicked it...
   cmsButtonSubmit();
 
@@ -443,9 +478,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // Because the timer is longer, usually, then the amount of time it takes to call the API (which then waits for the result)
   // this makes it look like the button is waiting for the modal to close first :-)
   cmsCreateButtonReset();
-  
-  // Call the Tiny API to fetch the content from the editor...
-  const tinyBody = tinymce.activeEditor.getContent();
 
   const payload = {
     blogStatus,

@@ -660,6 +660,12 @@ textarea {
   background-color: #a83232;
 }
 
+/* Required-field marker, e.g. <label>Set Name <sup>*</sup></label> across the CMS forms */
+label sup {
+  color: #a83232;
+  font-weight: bold;
+}
+
 .input-text-disabled {
   background-color: #c5cdd3;
 }
