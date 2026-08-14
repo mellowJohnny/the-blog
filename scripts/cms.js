@@ -756,7 +756,7 @@ function getBlogsForUpdate() {
       const blogArray = data.items || [];
 
       if (blogArray.length === 0) {
-        document.getElementById("noBlogsDiv").innerHTML = `...no staged blogs found`;
+        document.getElementById("noStagedBlogsDiv").innerHTML = `...no staged blogs found`;
         return;
       }
 
@@ -786,7 +786,7 @@ function getBlogsForUpdate() {
       }
     })
     .catch(err => {
-      document.getElementById("noBlogsDiv").innerHTML = `...Ah, Houston, we've had a problem...`;
+      document.getElementById("noStagedBlogsDiv").innerHTML = `...Ah, Houston, we've had a problem...`;
       console.log("Something went wrong...: " + err);
     });
 }
