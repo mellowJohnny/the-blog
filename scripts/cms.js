@@ -1,8 +1,7 @@
 
 
-/** This Script defines all the functions used by the CMS section of the site 
- * to both CREATE and UPDATE existing blog posts and card set reviews
- * There is no ability to delete a blog. Why would you want to? ;-)
+/** This Script defines all the functions used by the CMS section of the site
+ * to CREATE, UPDATE, and DELETE blog posts and card set reviews
  */
 
 /**
@@ -591,9 +590,8 @@ function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTag
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
   })
-    .then(response => response.json())
-    .then(data => {
-     // console.log("UPDATE RESPONSE:", data);
+    .then(async response => {
+      const data = await response.json();
 
       let message = "Update complete.";
 
@@ -612,6 +610,11 @@ function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTag
       }
 
       alert(message);
+
+      // Only leave the page once the update is confirmed successful
+      if (response.ok) {
+        window.location.href = "/cms/pickCardSet.html";
+      }
     })
     .catch(error => {
       console.log("Update error:", error);
@@ -713,10 +716,24 @@ function deleteCardSet(setID, setName, year) {
   };
 
   fetch("https://836pk40tsl.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
-    .then(response => response.json())
-    .then(result => {
-      // Expecting something like: { message: "Blog updated successfully" }
-      alert(result.message || "Blog updated.");
+    .then(async response => {
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        alert("Unexpected server response.");
+        return;
+      }
+
+      // If Lambda returned an error status, show the error and stay on the page
+      if (!response.ok) {
+        alert(data.message || data.error || "Error updating blog.");
+        return;
+      }
+
+      // SUCCESS: Expecting something like: { message: "Blog updated successfully" }
+      alert(data.message || "Blog updated.");
+      window.location.href = "/cms/pickBlog.html";
     })
     .catch(error => {
       console.log("Error updating blog:", error);

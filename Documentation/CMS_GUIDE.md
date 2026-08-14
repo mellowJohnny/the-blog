@@ -40,7 +40,53 @@ time.
 `pickBlog.html` and `pickCardSet.html` both show live and staged items
 side-by-side in two columns, grouped under headers by blog type /
 card set category (`BLOG_TYPE_LABELS`, `CARDSET_CATEGORY_LABELS` in
-`scripts/cms.js`).
+`scripts/cms.js`). `fetchAllStagedCardSets()` also falls back to
+`blogCat = "reg"` when a staged card set has a `mfg` value but no
+`blogCat` — a defensive guard against records ever created directly in
+DynamoDB rather than through `createCardSet.html`'s form (which always
+sets `blogCat`); see `API_ENDPOINTS.md`'s "Get all staged (draft) card
+sets" entry for the 2026-08-14 Lambda projection bug this was layered
+on top of.
+
+### Required-field validation
+
+Every "Submit"/"Update"/"Delete" button on these forms is
+`type="button"` with an `onclick` handler that reads field `.value`s
+directly and calls a `scripts/cms.js` function — none of them are
+`type="submit"` inside a real form-submission flow. That means the
+`required` HTML attribute on a field (and the `<sup>*</sup>` marker
+next to its label, styled red/bold via the `label sup` CSS rule) is
+purely **visual** — the browser's native required-field validation
+never actually fires on click. Each `create*()` function in
+`scripts/cms.js` re-implements that check by hand (blank/whitespace
+check + `alert()` + `.focus()` back to the offending field, or
+`tinymce.activeEditor.focus()` for the TinyMCE-backed body fields) —
+if you add a new required field to a create form, you must add a
+matching guard in its JS handler too, or a blank submission will sail
+straight through to the Lambda (this is exactly what caused a 500 on
+`createCardSet.html` before `setName` got a guard — see
+`API_ENDPOINTS.md`'s "Create card set" entry).
+
+### Delete
+
+`blogEdit.html` and `setEdit.html` each have a red "Delete Post"/"Delete
+Set" button, right-justified next to the Update button, added
+2026-08-14. Both confirm with a JS `confirm()` dialog first (no
+soft-delete/undo — this is a real, permanent DynamoDB `DeleteItem`),
+then redirect to the corresponding picker page (`pickBlog.html`/
+`pickCardSet.html`) on success. Backed by the two newest in-repo
+Lambdas, `deleteBlogHandler/` and `deleteCardSetHandler/` — see
+`LAMBDA_FUNCTIONS.md`.
+
+### Redirect on successful create
+
+`createBlogPost()` and `createCardSet()` (`scripts/cms.js`) both
+redirect to their respective picker page (`pickBlog.html`/
+`pickCardSet.html`) after a confirmed-successful create — "confirmed"
+meaning the fetch response's `response.ok` was checked, not just that
+a response arrived. On an error response, the form stays put with its
+data intact rather than redirecting, so a failed submission can be
+fixed and retried without re-typing everything.
 
 ### Image picker / uploader
 
