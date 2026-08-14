@@ -384,8 +384,29 @@ document.addEventListener("DOMContentLoaded", function () {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
   })
-    .then(response => response.json())
-    .then(result => alert(result.message))
+    .then(async response => {
+      // Parse JSON safely
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        alert("Unexpected server response.");
+        return;
+      }
+
+      // If Lambda returned an error status, show the error and stay on the page
+      if (!response.ok) {
+        // Lambda error format: { error: "...", details: "..." }
+        const errMsg = data.error || data.message || "An unknown error occurred.";
+        alert(errMsg);
+        return;
+      }
+
+      // SUCCESS: Lambda decides the message
+      // Lambda always returns: { message: "..." }
+      alert(data.message || "Success, but no message returned from server.");
+      window.location.href = "/cms/pickBlog.html";
+    })
     .catch(error => console.log("error", error));
 }
 
