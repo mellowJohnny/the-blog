@@ -1097,13 +1097,38 @@ function fetchBlogByID(id,type) {
       return;
     }
 
+    // Sort by blogCat first, then by year - matches fetchAllCardSets()
+    stagedSets.sort((a, b) => {
+      if (a.blogCat < b.blogCat) return -1;
+      if (a.blogCat > b.blogCat) return 1;
+      return a.year - b.year;
+    });
+
+    const container = document.getElementById("stagedBlogsDiv");
+    container.innerHTML = "";
+
+    let lastCat = null;
+
+    // Render grouped sections - matches fetchAllCardSets()
     stagedSets.forEach(set => {
-      displayStagedCardSets(set.setID, set.setName);
+      const { setID, setName, blogCat } = set;
+
+      // Insert header when category changes
+      if (blogCat !== lastCat) {
+        const header = document.createElement("h2");
+        header.textContent = CARDSET_CATEGORY_LABELS[blogCat] || "Other";
+        header.className = "blog-type-divider";
+        container.appendChild(header);
+
+        lastCat = blogCat;
+      }
+
+      displayStagedCardSets(setID, setName);
     });
 
   } catch (err) {
     console.log("Something went wrong:", err);
-    document.getElementById("editBlogsDiv").innerHTML =
+    document.getElementById("noStagedBlogsDiv").innerHTML =
       `...Ah, Houston, we've had a problem...`;
   }
 }
