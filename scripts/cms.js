@@ -620,6 +620,47 @@ function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTag
 }
 
 
+//* ---------------------------------------------------------------- Delete Card Set ------------------------------------------------------ *
+
+/**
+ * This function is used to DELETE an existing Card Set review
+ * Calls the deleteCardSet API which removes the matching record from DynamoDB
+ * Confirms with the user first since this is destructive and irreversible
+ * Cards table key is setName + year, so both are required (setID is
+ * also sent along as a safety check the Lambda verifies before deleting)
+ *
+ * @param {*} setID
+ * @param {*} setName
+ * @param {*} year
+ **/
+
+function deleteCardSet(setID, setName, year) {
+  const ok = confirm("Delete this card set? This cannot be undone.");
+  if (!ok) return;
+
+  const payload = {
+    setID: setID,
+    setName: setName,
+    year: Number(year)
+  };
+
+  fetch("https://8q5ly5ixej.execute-api.us-east-2.amazonaws.com/dev", { // deleteCardSetHandler API
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+    .then(response => response.json())
+    .then(result => {
+      alert(result.message || "Card set deleted.");
+      window.location.href = "/cms/pickCardSet.html";
+    })
+    .catch(error => {
+      console.log("Error deleting card set:", error);
+      alert("Error deleting card set.");
+    });
+}
+
+
 //* ---------------------------------------------------- Update Blog Post ----------------------------------------- *
 
 /** 

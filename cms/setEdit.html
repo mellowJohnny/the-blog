@@ -186,28 +186,39 @@
                                 </td>
                               </tr>
                               <tr> <!-- 11th Row - SUBMIT BUTTON -->
-                                <td colspan="2" align="left">
-                                  <!-- NOTE: We don't need to grab the postBody becasue the updateBlog() gets it from the tinyMCE function  -->
-                                  <button class="input-button" type="button" id="cmsSubmitButton"
-                                      onclick="updateCardSet(
-                                              document.getElementById('blogStatus').value,
-                                              document.getElementById('seoPageTitle').value,
-                                              document.getElementById('seoMetaDesc').value,
-                                              document.getElementById('seoURLSlug').value,
-                                              document.getElementById('seoTags').value,
-                                              document.getElementById('author').value,
-                                              document.getElementById('setName').value,
-                                              document.getElementById('size').value,
-                                              document.getElementById('subsets').value,
-                                              document.getElementById('stars').value,
-                                              document.getElementById('formats').value,
-                                              document.getElementById('year').value,
-                                              document.getElementById('headerImgName').value,
-                                              document.getElementById('footerImgName').value,
-                                              document.getElementById('mfg').value)" >
-                                      Update Post
-                                  </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                  <button class="input-button" type="button" onclick="openPreview()">Preview</button>
+                                <td colspan="2">
+                                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <div>
+                                      <!-- NOTE: We don't need to grab the postBody becasue the updateBlog() gets it from the tinyMCE function  -->
+                                      <button class="input-button" type="button" id="cmsSubmitButton"
+                                          onclick="updateCardSet(
+                                                  document.getElementById('blogStatus').value,
+                                                  document.getElementById('seoPageTitle').value,
+                                                  document.getElementById('seoMetaDesc').value,
+                                                  document.getElementById('seoURLSlug').value,
+                                                  document.getElementById('seoTags').value,
+                                                  document.getElementById('author').value,
+                                                  document.getElementById('setName').value,
+                                                  document.getElementById('size').value,
+                                                  document.getElementById('subsets').value,
+                                                  document.getElementById('stars').value,
+                                                  document.getElementById('formats').value,
+                                                  document.getElementById('year').value,
+                                                  document.getElementById('headerImgName').value,
+                                                  document.getElementById('footerImgName').value,
+                                                  document.getElementById('mfg').value)" >
+                                          Update Post
+                                      </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                      <button class="input-button" type="button" onclick="openPreview()">Preview</button>
+                                    </div>
+                                    <button class="input-button delete-btn" type="button"
+                                        onclick="deleteCardSet(
+                                                setID,
+                                                document.getElementById('setName').value,
+                                                document.getElementById('year').value)">
+                                      Delete Set
+                                    </button>
+                                  </div>
                                 </td>
                               </tr>
                              </table> 

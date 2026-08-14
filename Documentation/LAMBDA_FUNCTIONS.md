@@ -1,10 +1,10 @@
 # Lambda Functions
 
 Per your note: **all Lambda functions except `sendAlertHandler`,
-`castVoteHandler`, and `deleteBlogHandler` live only in the AWS
-Console** — their current
+`castVoteHandler`, `deleteBlogHandler`, and `deleteCardSetHandler` live
+only in the AWS Console** — their current
 source isn't in this repo and wasn't reviewed here. This doc covers
-(1) the two Lambdas that *are* in the repo, and (2) an inventory of
+(1) the Lambdas that *are* in the repo, and (2) an inventory of
 the prototype/legacy Lambda code that *is* checked in under `Lambda
 Functions/`, which looks like early drafts that predate the current
 live behavior (see the mismatches noted below and cross-referenced
@@ -71,6 +71,30 @@ a placeholder to fill in properly once you're back in the AWS Console
   `confirm()` dialog first (this is a destructive, irreversible
   action — no soft-delete/undo), then calls the Lambda and redirects
   to `cms/pickBlog.html` on success.
+
+## `deleteCardSetHandler/` — Lambda #4 in this repo
+
+- **File**: `deleteCardSetHandler/index.mjs` (ES module, Node.js). Same
+  manual-deploy convention as the other three (header comment says
+  never edit in the Console — edit here, zip, upload via "Update from
+  a .zip file"). Deployed 2026-08-14 alongside the "Delete Set" button
+  on `cms/setEdit.html`.
+- **Dependencies** (`package.json`): none listed — only uses
+  `@aws-sdk/client-dynamodb`, which ships with the Lambda Node.js
+  runtime, so no `npm install` is needed before zipping.
+- **What it does**: backs the "Delete Set" button on `cms/setEdit.html`.
+  Takes `{ setID, setName, year }` and does a DynamoDB `DeleteItem` on
+  the `Cards` table, keyed on `setName` (partition key, String) +
+  `year` (sort key, Number) — see `DATA_MODEL.md`. A
+  `ConditionExpression: setID = :setID` guard requires the `setID` to
+  also match before deleting (returns 404 otherwise), as a safety
+  check against a stale or mismatched `setName`+`year` pair silently
+  deleting the wrong set. CORS is hardcoded to allow only
+  `https://www.mellowjohnny.cc`, same as the others.
+- **Frontend**: `deleteCardSet()` in `scripts/cms.js` shows a JS
+  `confirm()` dialog first (destructive, irreversible — no
+  soft-delete/undo), then calls the Lambda and redirects to
+  `cms/pickCardSet.html` on success.
 
 ## `Lambda Functions/` — legacy/prototype code, not confirmed current
 

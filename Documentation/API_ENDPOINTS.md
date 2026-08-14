@@ -104,6 +104,14 @@ All URLs are `https://{id}.execute-api.us-east-2.amazonaws.com/{stage}`.
 - **Called from**: `updateCardSet()` in `scripts/cms.js` (used by `cms/setEdit.html`)
 - **Response**: accepted in several shapes — a plain string, `{ message }`, or `{ body }` (itself either a JSON string to parse or plain text). See `updateCardSet()` in `scripts/cms.js` for the exact unwrapping logic.
 
+### Delete card set
+- **URL**: `https://8q5ly5ixej.execute-api.us-east-2.amazonaws.com/dev`
+- **Method**: DELETE
+- **Body**: `{ setID, setName, year }`
+- **Called from**: `deleteCardSet()` in `scripts/cms.js` (used by `cms/setEdit.html`, confirmed with the user via a JS `confirm()` dialog first)
+- **Response**: `{ message }` on success, `{ error }` on failure (404 if the `setID`/`setName`/`year` combination doesn't match an existing item, since the Lambda's `DeleteItemCommand` uses `setName`+`year` as the key with a `ConditionExpression` requiring `setID` to also match as a safety check)
+- **Lambda**: `deleteCardSetHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`)
+
 ### Get all live card sets (for the edit picker)
 - **URL**: `https://tx7romovbd.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
