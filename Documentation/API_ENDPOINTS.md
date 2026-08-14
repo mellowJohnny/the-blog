@@ -114,7 +114,7 @@ All URLs are `https://{id}.execute-api.us-east-2.amazonaws.com/{stage}`.
 - **URL**: `https://ecy21wzgkl.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
 - **Called from**: `fetchAllStagedCardSets()` in `scripts/cms.js` (used by `cms/pickCardSet.html`)
-- **Response**: same tolerant unwrapping as above; expects at least `setID`, `setName`.
+- **Response**: same tolerant unwrapping as above; items include `setID`, `setName`, `blogCat`, `year`. **Fixed 2026-08-14**: the `getStagedCardSets` Lambda's `ProjectionExpression` originally only requested `setName, setID` from the `blogStatus-year-index` GSI, so `blogCat`/`year` came back `undefined` on every item — this silently broke both category grouping (everything fell back to "Other") and sort order (`year` comparisons were `NaN`). Fixed by expanding the projection to `setName, setID, blogCat, #yr` with `year` aliased via `ExpressionAttributeNames` (`year` is a DynamoDB reserved word, can't appear unescaped in a `ProjectionExpression`). `fetchAllStagedCardSets()` in `scripts/cms.js` also keeps a defensive fallback — a staged set with no `blogCat` but a `mfg` value is treated as `"reg"` — kept intentionally in case a record is ever created directly in DynamoDB without going through the CMS form.
 
 ### Get a single card set by ID
 - **URL**: `https://733bwunxq6.execute-api.us-east-2.amazonaws.com/dev`

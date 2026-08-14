@@ -1097,6 +1097,18 @@ function fetchBlogByID(id,type) {
       return;
     }
 
+    // Staged sets created before the blogCat field existed on the create
+    // form have no blogCat value at all. Fall back to "reg" (Regular) when
+    // a manufacturer is present - the mfg dropdown only ever offers real
+    // card companies (O-Pee-Chee, Topps, Upper Deck, etc.), never "Tim
+    // Hortons"/"McDonald's" literally, so any set with a manufacturer but
+    // no blogCat predates that distinction and is a Regular set.
+    stagedSets.forEach(set => {
+      if (!set.blogCat && set.mfg) {
+        set.blogCat = "reg";
+      }
+    });
+
     // Sort by blogCat first, then by year - matches fetchAllCardSets()
     stagedSets.sort((a, b) => {
       if (a.blogCat < b.blogCat) return -1;
