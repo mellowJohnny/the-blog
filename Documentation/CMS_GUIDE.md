@@ -78,15 +78,23 @@ then redirect to the corresponding picker page (`pickBlog.html`/
 Lambdas, `deleteBlogHandler/` and `deleteCardSetHandler/` — see
 `LAMBDA_FUNCTIONS.md`.
 
-### Redirect on successful create
+### Redirect on success
 
-`createBlogPost()` and `createCardSet()` (`scripts/cms.js`) both
-redirect to their respective picker page (`pickBlog.html`/
-`pickCardSet.html`) after a confirmed-successful create — "confirmed"
-meaning the fetch response's `response.ok` was checked, not just that
-a response arrived. On an error response, the form stays put with its
-data intact rather than redirecting, so a failed submission can be
-fixed and retried without re-typing everything.
+Every create/update/delete action in `scripts/cms.js` redirects to its
+content type's picker page on a confirmed success — "confirmed"
+meaning `response.ok` was checked (or, for `updateCardSet()`, whose
+Lambda doesn't reliably signal errors via response body shape — see
+"Update card set" in `API_ENDPOINTS.md` — `response.ok` is still
+checked before redirecting, independent of body-shape parsing):
+
+- `createBlogPost()`, `updateBlogPost()`, `deleteBlogPost()` → `pickBlog.html`
+- `createCardSet()`, `updateCardSet()`, `deleteCardSet()` → `pickCardSet.html`
+
+On an error response, the form stays put with its data intact rather
+than redirecting, so a failed submission can be fixed and retried
+without re-typing everything. (Deletes don't have "data to keep" in
+the same sense, but the same guard means a failed delete doesn't
+redirect either — see "Delete" above.)
 
 ### Image picker / uploader
 
