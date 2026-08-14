@@ -628,6 +628,47 @@ function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTag
 }
 
 
+//* ---------------------------------------------------------------- Delete Blog Post ----------------------------------------------------- *
+
+/**
+ * This function is used to DELETE an existing Blog Post
+ * Calls the deleteBlogPost API which removes the matching record from DynamoDB
+ * Confirms with the user first since this is destructive and irreversible
+ * Blogs table key is blogType + time, so both are required (blogID is
+ * also sent along as a safety check the Lambda verifies before deleting)
+ *
+ * @param {*} blogID
+ * @param {*} blogType
+ * @param {*} time
+ **/
+
+function deleteBlogPost(blogID, blogType, time) {
+  const ok = confirm("Delete this blog post? This cannot be undone.");
+  if (!ok) return;
+
+  const payload = {
+    blogID: blogID,
+    blogType: Number(blogType),
+    time: time
+  };
+
+  fetch("https://j9dhm7nwhk.execute-api.us-east-2.amazonaws.com/dev", { // deleteBlogHandler API
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+    .then(response => response.json())
+    .then(result => {
+      alert(result.message || "Blog post deleted.");
+      window.location.href = "/cms/pickBlog.html";
+    })
+    .catch(error => {
+      console.log("Error deleting blog:", error);
+      alert("Error deleting blog.");
+    });
+}
+
+
 /*********************************************************************************************
  ****************************************** Helper Functions *********************************
  *********************************************************************************************/

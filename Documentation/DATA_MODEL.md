@@ -13,19 +13,28 @@ Pi, SYNC updates, hockey cards, and the homepage intro/tagline
 entries). One flat table for all blog content, distinguished by
 `blogType`.
 
+**Key schema (confirmed against the DynamoDB console, 2026-08-14)**:
+partition key `blogType` (Number), sort key `time` (String). `blogID`
+is a regular (non-key) attribute — it's the human-facing identifier
+used by `getBlogByID`'s lookup, but `updateBlogPost()` and (the new)
+`deleteBlogPost()` both operate on `blogType`+`time` under the hood,
+which is why every blog-editing call in the CMS always carries `time`
+around alongside `blogID`, even though it's just displayed read-only
+in a disabled form field.
+
 | Field | Type | Notes |
 |---|---|---|
-| `blogID` | String | Looks like the item's identifier — used as the lookup key by `getBlogByID` / `updateBlogPost` (see `API_ENDPOINTS.md`). Early sample data (`Documentation/BlogArchive.txt`) used a millisecond timestamp string as `id`, e.g. `"1640119360299"` — `blogID` is likely the same idea, possibly renamed. |
-| `blogType` | Number | `1`=Tech, `2`=Hockey Cards (per the `createBlogPost.html` dropdown, though card content actually goes to the `Cards` table, not `Blogs`), `3`=Mach-E, `4`=SYNC Updates, `5`=Raspberry Pi, `99`=Home Page. See `BLOG_TYPE_LABELS` in `scripts/cms.js`. |
+| `blogID` | String | The item's human-facing identifier — used as the lookup key by `getBlogByID` (see `API_ENDPOINTS.md`), but is *not* the DynamoDB key (see above). Early sample data (`Documentation/BlogArchive.txt`) used a millisecond timestamp string as `id`, e.g. `"1640119360299"` — `blogID` is likely the same idea, possibly renamed. |
+| `blogType` | Number | Partition key. `1`=Tech, `2`=Hockey Cards (per the `createBlogPost.html` dropdown, though card content actually goes to the `Cards` table, not `Blogs`), `3`=Mach-E, `4`=SYNC Updates, `5`=Raspberry Pi, `99`=Home Page. See `BLOG_TYPE_LABELS` in `scripts/cms.js`. |
 | `title` | String | Post title. |
 | `author` | String | Free text; CMS forms currently only offer "Christian Couillard". |
 | `postBody` | String | HTML content, authored via TinyMCE. |
 | `img` | String | Full image URL (or `"none"`) — field is called `imgName` in the CMS form/create payload but stored/read back as `img` (see `updateBlogPost()` / `populateBlog()` in `scripts/cms.js` — this rename is a real inconsistency worth knowing about, not a mistake in this doc). |
 | `imgCap` | String | Image caption, rendered under the image. |
-| `time` | String (ISO 8601) | Creation timestamp, used for sort order (`getSortOrder()` in `scripts/helper.js`) and displayed via `fixDate()`. |
+| `time` | String (ISO 8601) | Sort key. Creation timestamp, used for sort order (`getSortOrder()` in `scripts/helper.js`) and displayed via `fixDate()`. |
 | `published` | Boolean | `true` = live, `false` = staged/draft. Drives the "live blogs" vs "staged blogs" split in `cms/pickBlog.html`. |
 
-The two oldest prototype Lambdas in the repo (`Lambda Functions/getBlogs/getBlogs.js` and its sibling `getTechBlogs.js`) query this table with `KeyConditionExpression` on `blogType` alone, which only works if `blogType` is the table's partition key (with no fixed sort key, or the Lambda is relying on a GSI) — this predates the `blogID`-based lookups used everywhere else in the current CMS, so the live table's key schema may no longer match what these two files imply. Treat those two files as historical, not authoritative.
+The two oldest prototype Lambdas in the repo (`Lambda Functions/getBlogs/getBlogs.js` and its sibling `getTechBlogs.js`) query this table with `KeyConditionExpression` on `blogType` alone — consistent with `blogType` being the confirmed partition key above (a partition-key-only query is normal; it just doesn't narrow to a single item without also supplying the sort key). Treat those two files as historical prototypes regardless — they predate the current CMS's `blogID`-based lookups.
 
 ## `Cards` table
 

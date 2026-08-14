@@ -1,7 +1,8 @@
 # Lambda Functions
 
-Per your note: **all Lambda functions except `sendAlertHandler` and
-`castVoteHandler` live only in the AWS Console** — their current
+Per your note: **all Lambda functions except `sendAlertHandler`,
+`castVoteHandler`, and `deleteBlogHandler` live only in the AWS
+Console** — their current
 source isn't in this repo and wasn't reviewed here. This doc covers
 (1) the two Lambdas that *are* in the repo, and (2) an inventory of
 the prototype/legacy Lambda code that *is* checked in under `Lambda
@@ -44,6 +45,32 @@ a placeholder to fill in properly once you're back in the AWS Console
   and tracks which sets a browser has already voted on via
   `localStorage` (no auth on public pages, so this is a lightweight
   deterrent against repeat votes, not tamper-proof).
+
+## `deleteBlogHandler/` — Lambda #3 in this repo
+
+- **File**: `deleteBlogHandler/index.mjs` (ES module, Node.js). Same
+  manual-deploy convention as `sendAlertHandler/`/`castVoteHandler/`
+  (header comment says never edit in the Console — edit here, zip,
+  upload via "Update from a .zip file"). Deployed 2026-08-14 alongside
+  the "Delete Post" button on `cms/blogEdit.html`.
+- **Dependencies** (`package.json`): none listed — only uses
+  `@aws-sdk/client-dynamodb`, which ships with the Lambda Node.js
+  runtime, so no `npm install` is needed before zipping.
+- **What it does**: backs the "Delete Post" button on
+  `cms/blogEdit.html`. Takes `{ blogID, blogType, time }` and does a
+  DynamoDB `DeleteItem` on the `Blogs` table, keyed on `blogType`
+  (partition key, Number) + `time` (sort key, String) — this is the
+  first place that key schema was confirmed directly against the
+  Console rather than inferred (see `DATA_MODEL.md`). A
+  `ConditionExpression: blogID = :blogID` guard requires the `blogID`
+  to also match before deleting (returns 404 otherwise), as a safety
+  check against a stale or mismatched `blogType`+`time` pair silently
+  deleting the wrong post. CORS is hardcoded to allow only
+  `https://www.mellowjohnny.cc`, same as the other two.
+- **Frontend**: `deleteBlogPost()` in `scripts/cms.js` shows a JS
+  `confirm()` dialog first (this is a destructive, irreversible
+  action — no soft-delete/undo), then calls the Lambda and redirects
+  to `cms/pickBlog.html` on success.
 
 ## `Lambda Functions/` — legacy/prototype code, not confirmed current
 

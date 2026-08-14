@@ -135,20 +135,31 @@
                     </td>
                   </tr>
                   <tr> <!-- 6th Row - SUBMIT BUTTON -->
-                    <td colspan="2" align="left">
-                      <!-- NOTE: We don't need to grab the postBody becasue the updateBlogPost() in cms.js gets it from the tinyMCE function  -->
-                      <button class="input-button" type="button" id="cmsSubmitButton"
-                          onclick="updateBlogPost(
-                                  document.getElementById('title').value,
-                                  document.getElementById('imgName').value,
-                                  document.getElementById('imgCap').value,
-                                  document.getElementById('published').value,
-                                  document.getElementById('blogType').value,
-                                  document.getElementById('time').value,
-                                  blogID)">
-                          Update Post
-                      </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <!--  <button class="input-button" type="button" onclick="openPreview()">Preview</button> -->
+                    <td colspan="2">
+                      <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                          <!-- NOTE: We don't need to grab the postBody becasue the updateBlogPost() in cms.js gets it from the tinyMCE function  -->
+                          <button class="input-button" type="button" id="cmsSubmitButton"
+                              onclick="updateBlogPost(
+                                      document.getElementById('title').value,
+                                      document.getElementById('imgName').value,
+                                      document.getElementById('imgCap').value,
+                                      document.getElementById('published').value,
+                                      document.getElementById('blogType').value,
+                                      document.getElementById('time').value,
+                                      blogID)">
+                              Update Post
+                          </button>
+                        <!--  <button class="input-button" type="button" onclick="openPreview()">Preview</button> -->
+                        </div>
+                        <button class="input-button delete-btn" type="button"
+                            onclick="deleteBlogPost(
+                                    blogID,
+                                    document.getElementById('blogType').value,
+                                    document.getElementById('time').value)">
+                          Delete Post
+                        </button>
+                      </div>
                     </td>
                   </tr>
                  </table>

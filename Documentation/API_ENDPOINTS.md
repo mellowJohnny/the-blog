@@ -61,6 +61,14 @@ All URLs are `https://{id}.execute-api.us-east-2.amazonaws.com/{stage}`.
 - **Called from**: `updateBlogPost()` in `scripts/cms.js` (used by `cms/blogEdit.html`)
 - **Response**: `{ message }`
 
+### Delete blog post
+- **URL**: `https://j9dhm7nwhk.execute-api.us-east-2.amazonaws.com/dev`
+- **Method**: DELETE
+- **Body**: `{ blogID, blogType, time }`
+- **Called from**: `deleteBlogPost()` in `scripts/cms.js` (used by `cms/blogEdit.html`, confirmed with the user via a JS `confirm()` dialog first)
+- **Response**: `{ message }` on success, `{ error }` on failure (404 if the `blogID`/`blogType`/`time` combination doesn't match an existing item, since the Lambda's `DeleteItemCommand` uses `blogType`+`time` as the key with a `ConditionExpression` requiring `blogID` to also match as a safety check)
+- **Lambda**: `deleteBlogHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`)
+
 ### Get all live blogs (for the edit picker)
 - **URL**: `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET

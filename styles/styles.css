@@ -655,6 +655,11 @@ textarea {
   cursor: pointer;
 }
 
+/* Modifier for destructive actions - e.g. the Delete Post button on blogEdit.html */
+.delete-btn {
+  background-color: #a83232;
+}
+
 .input-text-disabled {
   background-color: #c5cdd3;
 }

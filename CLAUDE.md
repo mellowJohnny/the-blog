@@ -24,14 +24,15 @@ files directly and open them in a browser (or push to deploy — see
 below). There is nothing to `npm install` or `npm run` at the repo
 root.
 
-The exceptions are `sendAlertHandler/` and `castVoteHandler/` (Lambdas
-whose source lives in this repo), each with its own `package.json`
-(`sendAlertHandler` has a `twilio` dependency; `castVoteHandler` has
-none — it only uses `@aws-sdk/client-dynamodb`, which ships with the
-Lambda Node.js runtime). Neither is deployed via any command here —
-per the comment at the top of each `index.mjs`, edit it in this repo,
-then manually zip and upload it through the Lambda console's "Update
-from a .zip file" option. Never edit either directly in the AWS
+The exceptions are `sendAlertHandler/`, `castVoteHandler/`, and
+`deleteBlogHandler/` (Lambdas whose source lives in this repo), each
+with its own `package.json` (`sendAlertHandler` has a `twilio`
+dependency; `castVoteHandler` and `deleteBlogHandler` have none — they
+only use `@aws-sdk/client-dynamodb`, which ships with the Lambda
+Node.js runtime). None of the three is deployed via any command here — per the comment at the top of each `index.mjs`,
+edit it in this repo, then manually zip and upload it through the
+Lambda console's "Update
+from a .zip file" option. Never edit any of them directly in the AWS
 Console.
 
 **Deployment of the static site itself**: AWS Amplify Hosting
@@ -55,7 +56,7 @@ persists across sessions/machines-state until manually rotated — see
 
 - **Frontend**: one standalone `.html` file per page at the repo root and under `/cms`, no framework. Shared logic lives in `scripts/*.js` and is wired up per-page via `<script src>` tags. Pages coordinate via URL query params (`?year=`, `?blogType=`, `?pageName=`, `?blogCat=`) rather than client-side routing. Details: `Documentation/FRONTEND.md`.
 - **Backend**: "one Lambda + one API Gateway REST API per action" — there is no shared backend app/router. Every distinct operation (get blogs, create a blog post, get a card set by ID, get an S3 upload URL, send an SMS...) has its own hardcoded API Gateway URL, called directly from whichever `scripts/*.js` file needs it. Full inventory with request/response shapes: `Documentation/API_ENDPOINTS.md`.
-- **Except `sendAlertHandler/` and `castVoteHandler/`, no Lambda source is version-controlled** — every other Lambda behind those API Gateway endpoints is edited directly in the AWS Console. The prototype code checked into `Lambda Functions/` predates the current live behavior in several confirmed ways (missing fields, hardcoded test values, mismatched field names) — treat it as historical reference, not as what's actually deployed. Details: `Documentation/LAMBDA_FUNCTIONS.md`.
+- **Except `sendAlertHandler/`, `castVoteHandler/`, and `deleteBlogHandler/`, no Lambda source is version-controlled** — every other Lambda behind those API Gateway endpoints is edited directly in the AWS Console. The prototype code checked into `Lambda Functions/` predates the current live behavior in several confirmed ways (missing fields, hardcoded test values, mismatched field names) — treat it as historical reference, not as what's actually deployed. Details: `Documentation/LAMBDA_FUNCTIONS.md`.
 - **Data**: DynamoDB tables `Blogs` (all blog post types, including the hockey-card-adjacent ones, distinguished by `blogType`), `Cards` (card set reviews, distinguished by `blogCat`), and `Subscribers`/`SubscribersTest` (SMS opt-in list, real vs. test). Field-naming is inconsistent across older and newer code paths (e.g. `img` vs `imgName`, `status` vs `blogStatus`) — see `Documentation/DATA_MODEL.md` before assuming a field name.
 - **Images**: served from S3 bucket `mellowjohnny.cc.files` (`img/blog/`, `img/cards/`, `img/cms/`). The CMS uploads new images via a Lambda-issued presigned URL, PUT directly from the browser to S3.
 - **Auth**: Cognito Hosted UI gates page access to everything under `/cms` (`scripts/auth.js`). Note that this only gates the *page* — most CMS write APIs (create/update blog posts and card sets, image upload) are called with no `Authorization` header and accept unauthenticated requests; only the three Autobus SMS endpoints actually attach a bearer token. See `Documentation/AUTH.md`.
