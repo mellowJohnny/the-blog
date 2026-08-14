@@ -452,12 +452,18 @@ document.addEventListener("DOMContentLoaded", function () {
   // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
   function createCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, blogCat) {
 
-  // Basic client-side validation - setName is marked required in the HTML,
-  // but the Submit button is type="button" (not type="submit"), so native
-  // HTML5 required validation never actually fires; enforce it here instead
+  // Basic client-side validation - setName and year are marked required in
+  // the HTML, but the Submit button is type="button" (not type="submit"),
+  // so native HTML5 required validation never actually fires; enforce it here instead
   if (!setName || !setName.trim()) {
     alert("Set Name is required.");
     document.getElementById("setName").focus();
+    return;
+  }
+
+  if (!year || !String(year).trim()) {
+    alert("Release Year is required.");
+    document.getElementById("year").focus();
     return;
   }
 
@@ -525,11 +531,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // SUCCESS: Lambda decides the message
       // Lambda always returns: { message: "..." }
-      if (data.message) {
-        alert(data.message);
-      } else {
-        alert("Success, but no message returned from server.");
-      }
+      alert(data.message || "Success, but no message returned from server.");
+      window.location.href = "/cms/pickCardSet.html";
     })
     .catch(error => {
       console.log("Create error:", error);
