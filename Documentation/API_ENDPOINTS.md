@@ -13,12 +13,24 @@ All URLs are `https://{id}.execute-api.us-east-2.amazonaws.com/{stage}`.
 
 ## Public site — read APIs
 
+**Caching (added 2026-08-14)**: the two highest-traffic endpoints in
+this section (this one and "Get card sets by year" below) return a
+`Cache-Control: public, max-age=...` header — a free, browser-only
+cache with no CloudFront in front of API Gateway, so it only helps a
+single visitor's repeat requests within the TTL, not cross-visitor
+Lambda/DynamoDB load. Every other endpoint on the site (all CMS
+reads/writes, voting, SMS) deliberately has no caching header — the
+CMS picker pages in particular need to reflect fresh state immediately
+after a create/update/delete redirects back to them (see
+`CMS_GUIDE.md`'s "Redirect on success"), so don't add caching to those
+without changing that expectation first.
+
 ### Get all blogs of a given type
 - **URL**: `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
 - **Query params**: `blogType` (e.g. `1`, `3`, `5`, `99`)
 - **Called from**: `fetchBlogs()` in `scripts/blogs.js` (used by `index.html`, `tech.html`)
-- **Response**: JSON array of blog objects directly (`postBody`, `author`, `time`, `title`, `img`, `imgCap`) — *not* wrapped in `{Items: [...]}` the way raw DynamoDB `scan`/`query` results are, so the Lambda must post-process the DynamoDB response.
+- **Response**: JSON array of blog objects directly (`postBody`, `author`, `time`, `title`, `img`, `imgCap`) — *not* wrapped in `{Items: [...]}` the way raw DynamoDB `scan`/`query` results are, so the Lambda must post-process the DynamoDB response. `Cache-Control: public, max-age=600` (10 min) on the success response only — added 2026-08-14, the error responses (400/500) intentionally have no caching header.
 - **Likely Lambda**: `getBlogs` (evolved past `Lambda Functions/getBlogs/getBlogs.js`, which returns the raw `{Items:[...]}` DynamoDB shape and hardcodes `blogType`, neither of which matches current usage).
 
 ### Get blog intro text by type
@@ -33,7 +45,7 @@ All URLs are `https://{id}.execute-api.us-east-2.amazonaws.com/{stage}`.
 - **Method**: GET
 - **Query params**: `year`, `blogCat`
 - **Called from**: `fetchCardSetsByYear()` in `scripts/wax.js` (used by `waxReviews.html`)
-- **Response**: JSON array directly (each item has `postBody`, `year`, `mfg`, `size`, `subsets`, `stars`, `formats`, `headerImg`, `headerImgName`, `footerImg`, `footerImgName`, `setName`, `author`, `now`).
+- **Response**: JSON array directly (each item has `postBody`, `year`, `mfg`, `size`, `subsets`, `stars`, `formats`, `headerImg`, `headerImgName`, `footerImg`, `footerImgName`, `setName`, `author`, `now`). `Cache-Control: public, max-age=1800` (30 min) on the success response — the Lambda's own comment says "CloudFront cache," but no CloudFront actually sits in front of this endpoint (see the caching note above), so today this is browser-only. Bumped from an original `max-age=300` to `1800` on 2026-08-14, since a published set review essentially never changes and votes are tracked via the separate `castVoteHandler` endpoint, not this one.
 
 ### Cast a vote on a card set
 - **URL**: `https://lo07upgip8.execute-api.us-east-2.amazonaws.com/dev`
