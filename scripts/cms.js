@@ -591,22 +591,38 @@ function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTag
     body: JSON.stringify(payload)
   })
     .then(async response => {
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
 
-      let message = "Update complete.";
+      let message;
 
       // Normalize all possible shapes
       if (typeof data === "string") {
         message = data;
       } else if (data.message) {
         message = data.message;
+      } else if (data.error) {
+        message = data.error;
       } else if (data.body) {
         try {
           const parsed = JSON.parse(data.body);
-          message = parsed.message || data.body;
+          message = parsed.message || parsed.error || data.body;
         } catch {
           message = data.body;
         }
+      }
+
+      // Only default to a positive message when the request actually
+      // succeeded - an unrecognized error shape should never silently
+      // read as "Update complete."
+      if (!message) {
+        message = response.ok
+          ? "Update complete."
+          : `Update failed (status ${response.status}).`;
       }
 
       alert(message);
