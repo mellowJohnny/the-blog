@@ -32,11 +32,20 @@ after its AWS Lambda function name (e.g. `Lambdas/sendAlertHandler/`,
 `package.json` — only `sendAlertHandler` has a real dependency
 (`twilio`); every other function uses only `@aws-sdk/*` packages,
 which ship with the Lambda Node.js runtime, so `dependencies` is
-empty. None of them is deployed via any command here — per the header
-comment most carry, edit the code in this repo, then manually zip and
-upload it through the Lambda console's "Update from a .zip file"
-option. **Never edit any of them directly in the AWS Console** — this
-repo is the source of truth. One caveat: most of these were pulled
+empty. None of them is deployed via any command here — edit the code
+in this repo, then redeploy manually. **How you redeploy depends on
+whether the function has a real dependency**: the 20 with empty
+`dependencies` just need the updated `index.mjs` pasted directly into
+the Lambda Console's inline code editor (Code tab) and Deploy clicked
+— no zip needed, since there's nothing to bundle. Only
+`sendAlertHandler` (the one with `twilio`) needs the full zip
+treatment: `npm install` inside `Lambdas/sendAlertHandler/`, zip the
+code plus `node_modules`, upload via Code tab → Update dropdown →
+"Update from a .zip file" — pasting just the code into the inline
+editor would break it (`Cannot find module 'twilio'` at runtime). Per
+the header comment most files carry: **never edit any of them directly
+in the AWS Console without also updating this repo** — this repo is
+the source of truth. One caveat: most of these were pulled
 from the live Console on 2026-08-15 via `aws lambda get-function`, not
 authored with that workflow in mind from the start — if a function's
 behavior in production ever doesn't match what's in its file here,

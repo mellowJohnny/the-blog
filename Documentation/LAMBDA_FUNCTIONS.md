@@ -16,11 +16,16 @@ remaining 4 of the 25 (`getCardIntro`, `getBlogIntro`,
 confirmed dead, and removed again the same day — see "Orphaned/dead
 Lambdas" below.
 
-Deployment is still entirely manual for every one of them — edit the
-code in this repo, then zip and upload via the Lambda console's
-"Update from a .zip file" option (per the header comment most files
-carry). **Never edit any of them directly in the Console** — this repo
-is now the source of truth, and a Console-only edit made after
+Deployment is still entirely manual for every one of them, but the
+mechanics differ by function: the 20 with no real dependencies
+(`dependencies: {}` in `package.json`) just need the updated
+`index.mjs` pasted into the Lambda Console's inline code editor and
+Deploy clicked — no zip needed. Only `sendAlertHandler` (has `twilio`)
+needs a full `npm install` + zip (code + `node_modules`) + "Update
+from a .zip file" upload — see its section below. Per the header
+comment most files carry: **never edit any of them directly in the
+Console without also updating this repo** — this repo is now the
+source of truth, and a Console-only edit made after
 2026-08-15 would silently drift out of sync with what's checked in
 here.
 
@@ -47,11 +52,13 @@ since that history predates this doc being kept current.
 
 - **File**: `Lambdas/castVoteHandler/index.mjs` (ES module, Node.js). Same
   manual-deploy convention as `Lambdas/sendAlertHandler/` (header comment
-  says never edit in the Console — edit here, zip, upload via "Update
-  from a .zip file").
+  says never edit in the Console without also updating this repo) —
+  but unlike `sendAlertHandler`, no zip needed: paste the updated
+  `index.mjs` straight into the Lambda Console's inline code editor
+  and Deploy.
 - **Dependencies** (`package.json`): none listed — only uses
   `@aws-sdk/client-dynamodb`, which ships with the Lambda Node.js
-  runtime, so no `npm install` is needed before zipping.
+  runtime, so there's nothing to `npm install` or bundle.
 - **What it does**: backs the thumbs up/down voting feature on
   `waxReviews.html` card set reviews. Takes `{ setName, year,
   voteType }` (`voteType` is `"up"` or `"down"`) and does an atomic
@@ -72,13 +79,13 @@ since that history predates this doc being kept current.
 ## `Lambdas/deleteBlogHandler/` — hand-built in this repo
 
 - **File**: `Lambdas/deleteBlogHandler/index.mjs` (ES module, Node.js). Same
-  manual-deploy convention as `Lambdas/sendAlertHandler/`/`Lambdas/castVoteHandler/`
-  (header comment says never edit in the Console — edit here, zip,
-  upload via "Update from a .zip file"). Deployed 2026-08-14 alongside
+  manual-deploy convention as the other hand-built ones — no zip
+  needed, paste `index.mjs` into the Lambda Console's inline code
+  editor and Deploy. Deployed 2026-08-14 alongside
   the "Delete Post" button on `cms/blogEdit.html`.
 - **Dependencies** (`package.json`): none listed — only uses
   `@aws-sdk/client-dynamodb`, which ships with the Lambda Node.js
-  runtime, so no `npm install` is needed before zipping.
+  runtime, so there's nothing to `npm install` or bundle.
 - **What it does**: backs the "Delete Post" button on
   `cms/blogEdit.html`. Takes `{ blogID, blogType, time }` and does a
   DynamoDB `DeleteItem` on the `Blogs` table, keyed on `blogType`
@@ -98,13 +105,13 @@ since that history predates this doc being kept current.
 ## `Lambdas/deleteCardSetHandler/` — hand-built in this repo
 
 - **File**: `Lambdas/deleteCardSetHandler/index.mjs` (ES module, Node.js). Same
-  manual-deploy convention as the other three (header comment says
-  never edit in the Console — edit here, zip, upload via "Update from
-  a .zip file"). Deployed 2026-08-14 alongside the "Delete Set" button
+  manual-deploy convention as the other three — no zip needed, paste
+  `index.mjs` into the Lambda Console's inline code editor and Deploy.
+  Deployed 2026-08-14 alongside the "Delete Set" button
   on `cms/setEdit.html`.
 - **Dependencies** (`package.json`): none listed — only uses
   `@aws-sdk/client-dynamodb`, which ships with the Lambda Node.js
-  runtime, so no `npm install` is needed before zipping.
+  runtime, so there's nothing to `npm install` or bundle.
 - **What it does**: backs the "Delete Set" button on `cms/setEdit.html`.
   Takes `{ setID, setName, year }` and does a DynamoDB `DeleteItem` on
   the `Cards` table, keyed on `setName` (partition key, String) +
