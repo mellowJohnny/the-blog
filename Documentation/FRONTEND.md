@@ -148,7 +148,7 @@ values drift out of sync differently at each screen size.
 Each card set review ends with a thumbs up/down widget (`castVote()`
 in `wax.js`) — see `Documentation/API_ENDPOINTS.md` for the endpoint
 contract and `Documentation/LAMBDA_FUNCTIONS.md` for the backend
-(`castVoteHandler/`). Frontend behavior worth knowing:
+(`Lambdas/castVoteHandler/`). Frontend behavior worth knowing:
 
 - Vote identity is `setName` + `year` (the `Cards` table's real key —
   see `DATA_MODEL.md`), not `setID`. Because `setName` can contain

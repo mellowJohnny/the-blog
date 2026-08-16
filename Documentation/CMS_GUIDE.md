@@ -75,7 +75,7 @@ Set" button, right-justified next to the Update button, added
 soft-delete/undo — this is a real, permanent DynamoDB `DeleteItem`),
 then redirect to the corresponding picker page (`pickBlog.html`/
 `pickCardSet.html`) on success. Backed by the two newest in-repo
-Lambdas, `deleteBlogHandler/` and `deleteCardSetHandler/` — see
+Lambdas, `Lambdas/deleteBlogHandler/` and `Lambdas/deleteCardSetHandler/` — see
 `LAMBDA_FUNCTIONS.md`.
 
 ### Redirect on success
@@ -120,8 +120,7 @@ a modal — lets you check formatting before publishing. `createBlogPost.html`/`
 A separate, unrelated tool bolted onto the same `/cms` area and
 Cognito login, for sending SMS broadcasts to a cycling club's member
 list via Twilio. Logic lives in `scripts/adminSMS.js`; the send itself
-is handled by the one Lambda whose source is in this repo,
-`sendAlertHandler` (see `LAMBDA_FUNCTIONS.md`).
+is handled by `Lambdas/sendAlertHandler/` (see `LAMBDA_FUNCTIONS.md`).
 
 The in-app "user guide" link (`#helpLink`) opens a modal with the
 fullest first-party explanation of this tool, summarized here:

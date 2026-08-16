@@ -48,7 +48,7 @@ non-key attribute used only by the `setID-index` GSI lookup path.
 | Field | Type | Notes |
 |---|---|---|
 | `setID` | String | Randomly generated (`Math.random().toString(36)`) in `Lambda Functions/createCardSet/createCardPost.js`; used as the lookup key by `getCardSetByID`. A `setID-index` GSI is referenced in `Lambda Functions/getCardSets/getCardSet_FUTURE.js`. |
-| `upvotes` / `downvotes` | Number | Added for the thumbs up/down voting feature (`castVoteHandler/`). Not present on older items until the first vote is cast — DynamoDB creates the attribute on first `ADD`, no migration needed. |
+| `upvotes` / `downvotes` | Number | Added for the thumbs up/down voting feature (`Lambdas/castVoteHandler/`). Not present on older items until the first vote is cast — DynamoDB creates the attribute on first `ADD`, no migration needed. |
 | `setName` | String | e.g. `"1991-92 Upper Deck Hockey"`. |
 | `year` | Number | Release year, e.g. `1991`. Drives the year-picker on `waxReviews.html` (`renderSetPicker()` in `scripts/helper.js`). |
 | `mfg` | String | Manufacturer — one of O-Pee-Chee, Topps, Upper Deck, Score, Pro Set, Fleer, Leaf, Pinnacle, Pacific (per the `createCardSet.html` dropdown). |
@@ -89,11 +89,24 @@ Back the Autobus SMS Messaging Platform (`cms/smsAdmin.html`).
 |---|---|---|
 | `phoneNumber` | String | Partition key (per `cms/smsAdmin.html`'s bulk-import instructions: "each record must already be in DynamoDB typed JSON format with `phoneNumber` as the partition key"). E.164 format. |
 | `firstName` | String | |
-| `status` | String | `sendAlertHandler`'s broadcast Lambda filters on `status = "subscribed"` — other status values (e.g. unsubscribed) presumably exist but aren't visible in this codebase. |
+| `status` | String | `sendAlertHandler`'s broadcast Lambda filters on `status = "subscribed"`. **Confirmed 2026-08-15** (via `Lambdas/inboundSMSHandler/`, the Twilio inbound-reply webhook — see `LAMBDA_FUNCTIONS.md`): the other value is `"unsubscribed"`, set when a subscriber texts STOP (also stamps `unsubTimestamp`); resubscribing via START sets it back to `"subscribed"` and stamps `optInTimestamp`. Both keyword-triggered writes set `source: "mobile"`; `Lambdas/subscribeHandler/`'s single-add endpoint instead sets `source: "web"` when a subscriber signs up through the site. |
 
 `Subscribers` is the live/production list; `SubscribersTest` is a
 parallel table used when "Test Mode" is checked in the SMS admin tool,
 so test broadcasts never reach real members.
+
+## `BlogIntro` / `CardIntro` tables — dead, backing orphaned Lambdas
+
+Discovered 2026-08-15 while briefly pulling the full Lambda inventory
+into the repo (see `LAMBDA_FUNCTIONS.md`). Both are simple lookup
+tables (`pageName`/`blogType` → `introText`) that predate the current
+approach of hardcoding intro copy client-side in `renderBlogIntro()`
+(`scripts/blogs.js`) and `renderCardIntro()` (`scripts/wax.js`). Their
+backing Lambdas (`getBlogIntro`, `getCardIntro`) were confirmed dead —
+nothing in this repo's frontend called either one — and were removed
+from the repo the same day (still live in AWS unless separately
+deleted there too). The two DynamoDB tables themselves weren't
+touched. Not otherwise documented here since nothing reads from them.
 
 ## S3 bucket: `mellowjohnny.cc.files`
 
