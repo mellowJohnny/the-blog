@@ -100,7 +100,6 @@ Plain multi-page HTML site, no bundler/framework:
 - **Twilio** — outbound SMS for the Autobus Messaging Platform, called from the `sendAlertHandler` Lambda using account credentials stored as Lambda environment variables (not in this repo).
 - **Google Analytics (gtag.js)** — `G-JMGVGK09QX`, loaded on most public pages.
 - **SweetAlert** (`unpkg.com/sweetalert`) — used for the small utility pages (Card-O-Matic, Quadratic solver) instead of native `alert()`.
-- **Form.io** — `cms/formioSandbox.html` is an experiment embedding a hosted Form.io form; doesn't appear to be linked from anywhere else on the site.
 
 ## Notable cross-cutting patterns
 

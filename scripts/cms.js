@@ -394,11 +394,11 @@ document.addEventListener("DOMContentLoaded", function () {
     blogType
   };
 
-  fetch("https://s4ge5t9w06.execute-api.us-east-2.amazonaws.com/dev", { // createBlogPost API
+  getAuthToken().then(token => fetch("https://s4ge5t9w06.execute-api.us-east-2.amazonaws.com/dev", { // createBlogPost API
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "Authorization": token },
     body: JSON.stringify(payload)
-  })
+  }))
     .then(async response => {
       // Parse JSON safely
       let data;
@@ -505,11 +505,11 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   // make API call to cardPost endpoint with parameters and use promises to get response
-  fetch("https://05uss9ffij.execute-api.us-east-2.amazonaws.com/dev", {
+  getAuthToken().then(token => fetch("https://05uss9ffij.execute-api.us-east-2.amazonaws.com/dev", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "Authorization": token },
     body: JSON.stringify(payload)
-  })
+  }))
     .then(async response => {
       // Parse JSON safely
       let data;
@@ -585,11 +585,11 @@ function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTag
     mfg
   };
 
-  fetch("https://bb8yehibjb.execute-api.us-east-2.amazonaws.com/dev", {
+  getAuthToken().then(token => fetch("https://bb8yehibjb.execute-api.us-east-2.amazonaws.com/dev", {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "Authorization": token },
     body: JSON.stringify(payload)
-  })
+  }))
     .then(async response => {
       let data;
       try {
@@ -663,11 +663,11 @@ function deleteCardSet(setID, setName, year) {
     year: Number(year)
   };
 
-  fetch("https://8q5ly5ixej.execute-api.us-east-2.amazonaws.com/dev", { // deleteCardSetHandler API
+  getAuthToken().then(token => fetch("https://8q5ly5ixej.execute-api.us-east-2.amazonaws.com/dev", { // deleteCardSetHandler API
     method: "DELETE",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "Authorization": token },
     body: JSON.stringify(payload)
-  })
+  }))
     .then(response => response.json())
     .then(result => {
       alert(result.message || "Card set deleted.");
@@ -722,16 +722,19 @@ function deleteCardSet(setID, setName, year) {
 
   // console.log("UPDATE PAYLOAD:", payload);
 
-  const requestOptions = {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(payload),
-    redirect: "follow"
-  };
+  getAuthToken().then(token => {
+    const requestOptions = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": token
+      },
+      body: JSON.stringify(payload),
+      redirect: "follow"
+    };
 
-  fetch("https://836pk40tsl.execute-api.us-east-2.amazonaws.com/dev", requestOptions)
+    return fetch("https://836pk40tsl.execute-api.us-east-2.amazonaws.com/dev", requestOptions);
+  })
     .then(async response => {
       let data;
       try {
@@ -782,11 +785,11 @@ function deleteBlogPost(blogID, blogType, time) {
     time: time
   };
 
-  fetch("https://j9dhm7nwhk.execute-api.us-east-2.amazonaws.com/dev", { // deleteBlogHandler API
+  getAuthToken().then(token => fetch("https://j9dhm7nwhk.execute-api.us-east-2.amazonaws.com/dev", { // deleteBlogHandler API
     method: "DELETE",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "Authorization": token },
     body: JSON.stringify(payload)
-  })
+  }))
     .then(response => response.json())
     .then(result => {
       alert(result.message || "Blog post deleted.");
@@ -819,7 +822,7 @@ function deleteBlogPost(blogID, blogType, time) {
 function getBlogsForUpdate() {
   const urlToFetch = `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev`; // getBlogsForUpdate API
 
-  fetch(urlToFetch)
+  getAuthToken().then(token => fetch(urlToFetch, { headers: { "Authorization": token } }))
     .then(response => response.json())
     .then(data => {
 
@@ -879,7 +882,7 @@ function getBlogsForUpdate() {
 
   const urlToFetch = `https://sh8girwnxg.execute-api.us-east-2.amazonaws.com/dev`;
 
-  fetch(urlToFetch)
+  getAuthToken().then(token => fetch(urlToFetch, { headers: { "Authorization": token } }))
     .then(response => response.json())
     .then(data => {
 
@@ -1002,7 +1005,7 @@ function fetchBlogByID(id,type) {
 
   const urlToFetch = `https://gcd40hir88.execute-api.us-east-2.amazonaws.com/dev?blogID=${id}&blogType=${type}`;
 
-  fetch(urlToFetch)
+  getAuthToken().then(token => fetch(urlToFetch, { headers: { "Authorization": token } }))
     .then(response => response.json())
     .then(data => {
 
@@ -1074,7 +1077,8 @@ function fetchBlogByID(id,type) {
   const urlToFetch = `https://tx7romovbd.execute-api.us-east-2.amazonaws.com/dev`;
 
   try {
-    const response = await fetch(urlToFetch);
+    const token = await getAuthToken();
+    const response = await fetch(urlToFetch, { headers: { "Authorization": token } });
     const data = await response.json();
 
     let cardSets = [];
@@ -1148,7 +1152,8 @@ function fetchBlogByID(id,type) {
   const urlToFetch = `https://ecy21wzgkl.execute-api.us-east-2.amazonaws.com/dev`;
 
   try {
-    const response = await fetch(urlToFetch);
+    const token = await getAuthToken();
+    const response = await fetch(urlToFetch, { headers: { "Authorization": token } });
     const data = await response.json();
 
    // console.log("STAGED RAW DATA:", data);
@@ -1286,7 +1291,7 @@ function fetchBlogByID(id,type) {
   function fetchCardSetByID(id) {
   const urlToFetch = `https://733bwunxq6.execute-api.us-east-2.amazonaws.com/dev?setID=${id}`;
 
-  fetch(urlToFetch)
+  getAuthToken().then(token => fetch(urlToFetch, { headers: { "Authorization": token } }))
     .then(response => response.json())
     .then(data => {
 

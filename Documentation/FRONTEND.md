@@ -106,9 +106,8 @@ knowing before touching this CSS again:
 
 ## Typography / fonts
 
-Every live page (everything above except the deprecated `cards.html` and
-`cms/formioSandbox.html`, which wasn't brought into this pass) loads the
-identical Google Fonts set via the identical `preload`+`onload`+
+Every live page (everything above except the deprecated `cards.html`)
+loads the identical Google Fonts set via the identical `preload`+`onload`+
 `noscript` pattern: Spicy Rice, Nunito (200), Special Elite, Work Sans
 (400/700), Source Sans 3 (200/400/700), Fira Code (300). A font audit
 found and fixed real bugs here — several CMS pages were silently
