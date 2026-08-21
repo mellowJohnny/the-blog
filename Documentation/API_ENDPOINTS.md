@@ -14,6 +14,16 @@ All URLs are `https://{id}.execute-api.us-east-2.amazonaws.com/{stage}`.
 
 ## Public site — read APIs
 
+**Throttling**: these three endpoints — the ones reachable with no
+auth at all — have per-stage request throttling set on their `dev`
+stage in API Gateway: rate 10 req/s, burst 20. This is a blunt,
+account-level-default-is-way-too-permissive mitigation against basic
+scripted abuse, not a precise traffic-shaping tool; a real visitor
+loading the page normally never gets near it. A request over the
+limit gets back `429 Too Many Requests`. Every other endpoint on the
+site (CMS reads/writes, SMS) sits behind Cognito instead (see
+`AUTH.md`), so throttling matters less there and hasn't been added.
+
 **Caching (added 2026-08-14)**: the two highest-traffic endpoints in
 this section (this one and "Get card sets by year" below) return a
 `Cache-Control: public, max-age=...` header — a free, browser-only

@@ -49,6 +49,14 @@ This is separate from Lambda deployment, which is manual per-function
 uploading a `.zip` through the Lambda console, and the other Lambdas
 are edited directly in the Console with no source control at all).
 
+### Cost/abuse backstop: AWS Budgets
+
+A $5/month AWS Budget alerts by email if account spend approaches that
+threshold — a cheap early-warning signal for runaway costs (e.g. from
+API abuse — see `API_ENDPOINTS.md`'s throttling note) that doesn't
+depend on actively watching anything. Configured in Billing and Cost
+Management → Budgets, not tied to any specific service or region.
+
 ### Verifying a deploy from the CLI
 
 As of 2026-07-16, AWS CLI v2 is installed on the primary dev machine,
