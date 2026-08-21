@@ -82,6 +82,14 @@ the wrapped desktop nav in landscape. The matching `@media (min-width:
 back off and shows the full table nav on
 genuine desktop widths.
 
+Within that hamburger-nav range, a third, narrower band —
+`@media (min-width: 601px) and (max-width: 1400px)` — bumps the
+hamburger icon and open-menu sizing up (32px → 48px icon, 0.9rem →
+1.3rem menu text, more generous link padding) beyond the phone-tuned
+defaults from the block above. Phone widths (≤600px) keep the smaller
+original sizing; a tablet's screen is big enough that phone-sized
+sizing read as too small.
+
 A round of mobile-responsiveness work (waxReviews.html, the
 CMS pages, smsAdmin.html) surfaced a few recurring gotchas worth
 knowing before touching this CSS again:
