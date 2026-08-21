@@ -1799,6 +1799,29 @@ label sup {
   }
 }
 
+/* Tablet only: the hamburger icon and menu sizes above were tuned for
+   phone widths and look undersized on a much bigger tablet screen -
+   scale both up. Phone (<=600px) keeps the smaller sizes from the
+   block above. */
+@media (min-width: 601px) and (max-width: 1400px) {
+  .hamburger {
+    font-size: 48px;
+    padding: 14px;
+  }
+
+  #global-nav-placeholder {
+    height: 76px;
+  }
+
+  .nav-td {
+    font-size: 1.3rem;
+  }
+
+  .nav-td a {
+    padding: 18px 24px;
+  }
+}
+
 
 /* Hide the mobile-condensed weather text above phone width (was
    previously unconditional/unscoped - same specificity as the mobile
