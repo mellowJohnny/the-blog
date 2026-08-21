@@ -1,0 +1,1325 @@
+{
+  "setName": "1986-87 O-Pee-Chee Hockey",
+  "cards": [
+    {
+      "cardNumber": "1",
+      "playerName": "Ray Bourque",
+      "notes": ""
+    },
+    {
+      "cardNumber": "2",
+      "playerName": "Pat LaFontaine",
+      "notes": ""
+    },
+    {
+      "cardNumber": "3",
+      "playerName": "Wayne Gretzky",
+      "notes": ""
+    },
+    {
+      "cardNumber": "4",
+      "playerName": "Lindy Ruff",
+      "notes": ""
+    },
+    {
+      "cardNumber": "5",
+      "playerName": "Brad McCrimmon",
+      "notes": ""
+    },
+    {
+      "cardNumber": "6",
+      "playerName": "Dave Williams",
+      "notes": ""
+    },
+    {
+      "cardNumber": "7",
+      "playerName": "Denis Savard",
+      "notes": ""
+    },
+    {
+      "cardNumber": "8",
+      "playerName": "Lanny McDonald",
+      "notes": ""
+    },
+    {
+      "cardNumber": "9",
+      "playerName": "John Vanbiesbrouck",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "10",
+      "playerName": "Greg Adams",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "11",
+      "playerName": "Steve Yzerman",
+      "notes": ""
+    },
+    {
+      "cardNumber": "12",
+      "playerName": "Craig Hartsburg",
+      "notes": ""
+    },
+    {
+      "cardNumber": "13",
+      "playerName": "John Anderson",
+      "notes": ""
+    },
+    {
+      "cardNumber": "14",
+      "playerName": "Bob Bourne",
+      "notes": ""
+    },
+    {
+      "cardNumber": "15",
+      "playerName": "Kjell Dahlin",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "16",
+      "playerName": "Dave Andreychuk",
+      "notes": ""
+    },
+    {
+      "cardNumber": "17",
+      "playerName": "Rob Ramage",
+      "notes": ""
+    },
+    {
+      "cardNumber": "18",
+      "playerName": "Ron Greschner",
+      "notes": ""
+    },
+    {
+      "cardNumber": "19",
+      "playerName": "Bruce Driver",
+      "notes": ""
+    },
+    {
+      "cardNumber": "20",
+      "playerName": "Peter Stastny",
+      "notes": ""
+    },
+    {
+      "cardNumber": "21",
+      "playerName": "Dave Christian",
+      "notes": ""
+    },
+    {
+      "cardNumber": "22",
+      "playerName": "Doug Keans",
+      "notes": ""
+    },
+    {
+      "cardNumber": "23",
+      "playerName": "Scott Bjugstad",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "24",
+      "playerName": "Doug Bodger",
+      "notes": ""
+    },
+    {
+      "cardNumber": "25",
+      "playerName": "Troy Murray",
+      "notes": ""
+    },
+    {
+      "cardNumber": "26",
+      "playerName": "Al Iafrate",
+      "notes": ""
+    },
+    {
+      "cardNumber": "27",
+      "playerName": "Kelly Hrudey",
+      "notes": ""
+    },
+    {
+      "cardNumber": "28",
+      "playerName": "Doug Jarvis",
+      "notes": ""
+    },
+    {
+      "cardNumber": "29",
+      "playerName": "Rich Sutter",
+      "notes": ""
+    },
+    {
+      "cardNumber": "30",
+      "playerName": "Marcel Dionne",
+      "notes": ""
+    },
+    {
+      "cardNumber": "31",
+      "playerName": "Curt Fraser",
+      "notes": ""
+    },
+    {
+      "cardNumber": "32",
+      "playerName": "Doug Lidster",
+      "notes": ""
+    },
+    {
+      "cardNumber": "33",
+      "playerName": "Brian MacLellan",
+      "notes": ""
+    },
+    {
+      "cardNumber": "34",
+      "playerName": "Barry Pederson",
+      "notes": ""
+    },
+    {
+      "cardNumber": "35",
+      "playerName": "Craig Laughlin",
+      "notes": ""
+    },
+    {
+      "cardNumber": "36",
+      "playerName": "Ilkka Sinisalo",
+      "notes": ""
+    },
+    {
+      "cardNumber": "37",
+      "playerName": "John MacLean",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "38",
+      "playerName": "Brian Mullen",
+      "notes": ""
+    },
+    {
+      "cardNumber": "39",
+      "playerName": "Duane Sutter",
+      "notes": ""
+    },
+    {
+      "cardNumber": "40",
+      "playerName": "Brian Engblom",
+      "notes": ""
+    },
+    {
+      "cardNumber": "41",
+      "playerName": "Chris Cichocki",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "42",
+      "playerName": "Gordie Roberts",
+      "notes": ""
+    },
+    {
+      "cardNumber": "43",
+      "playerName": "Ron Francis",
+      "notes": ""
+    },
+    {
+      "cardNumber": "44",
+      "playerName": "Joe Mullen",
+      "notes": ""
+    },
+    {
+      "cardNumber": "45",
+      "playerName": "Moe Mantha",
+      "notes": ""
+    },
+    {
+      "cardNumber": "46",
+      "playerName": "Pat Verbeek",
+      "notes": ""
+    },
+    {
+      "cardNumber": "47",
+      "playerName": "Clint Malarchuk",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "48",
+      "playerName": "Bob Brooke",
+      "notes": ""
+    },
+    {
+      "cardNumber": "49",
+      "playerName": "Darryl Sutter",
+      "notes": ""
+    },
+    {
+      "cardNumber": "50",
+      "playerName": "Stan Smyl",
+      "notes": ""
+    },
+    {
+      "cardNumber": "51",
+      "playerName": "Greg Stefan",
+      "notes": ""
+    },
+    {
+      "cardNumber": "52",
+      "playerName": "Bill Hajt",
+      "notes": ""
+    },
+    {
+      "cardNumber": "53",
+      "playerName": "Patrick Roy",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "54",
+      "playerName": "Gord Kluzak",
+      "notes": ""
+    },
+    {
+      "cardNumber": "55",
+      "playerName": "Bob Froese",
+      "notes": ""
+    },
+    {
+      "cardNumber": "56",
+      "playerName": "Grant Fuhr",
+      "notes": ""
+    },
+    {
+      "cardNumber": "57",
+      "playerName": "Mark Hunter",
+      "notes": ""
+    },
+    {
+      "cardNumber": "58",
+      "playerName": "Dana Murzyn",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "59",
+      "playerName": "Mike Gartner",
+      "notes": ""
+    },
+    {
+      "cardNumber": "60",
+      "playerName": "Dennis Maruk",
+      "notes": ""
+    },
+    {
+      "cardNumber": "61",
+      "playerName": "Rich Preston",
+      "notes": ""
+    },
+    {
+      "cardNumber": "62",
+      "playerName": "Larry Robinson",
+      "notes": ""
+    },
+    {
+      "cardNumber": "63",
+      "playerName": "Dave Taylor",
+      "notes": ""
+    },
+    {
+      "cardNumber": "64",
+      "playerName": "Bob Murray",
+      "notes": ""
+    },
+    {
+      "cardNumber": "65",
+      "playerName": "Ken Morrow",
+      "notes": ""
+    },
+    {
+      "cardNumber": "66",
+      "playerName": "Mike Ridley",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "67",
+      "playerName": "John Tucker",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "68",
+      "playerName": "Miroslav Frycer",
+      "notes": ""
+    },
+    {
+      "cardNumber": "69",
+      "playerName": "Danny Gare",
+      "notes": ""
+    },
+    {
+      "cardNumber": "70",
+      "playerName": "Randy Burridge",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "71",
+      "playerName": "Dave Poulin",
+      "notes": "UER"
+    },
+    {
+      "cardNumber": "72",
+      "playerName": "Brian Sutter",
+      "notes": ""
+    },
+    {
+      "cardNumber": "73",
+      "playerName": "Dave Babych",
+      "notes": ""
+    },
+    {
+      "cardNumber": "74",
+      "playerName": "Dale Hawerchuk",
+      "notes": ""
+    },
+    {
+      "cardNumber": "75",
+      "playerName": "Brian Bellows",
+      "notes": ""
+    },
+    {
+      "cardNumber": "76",
+      "playerName": "Dave Pasin",
+      "notes": "RC, UER"
+    },
+    {
+      "cardNumber": "77",
+      "playerName": "Pete Peeters",
+      "notes": ""
+    },
+    {
+      "cardNumber": "78",
+      "playerName": "Tomas Jonsson",
+      "notes": ""
+    },
+    {
+      "cardNumber": "79",
+      "playerName": "Gilbert Perreault",
+      "notes": ""
+    },
+    {
+      "cardNumber": "80",
+      "playerName": "Glenn Anderson",
+      "notes": ""
+    },
+    {
+      "cardNumber": "81",
+      "playerName": "Don Maloney",
+      "notes": ""
+    },
+    {
+      "cardNumber": "82",
+      "playerName": "Ed Olczyk",
+      "notes": ""
+    },
+    {
+      "cardNumber": "83",
+      "playerName": "Mike Bullard",
+      "notes": ""
+    },
+    {
+      "cardNumber": "84",
+      "playerName": "Tom Fergus",
+      "notes": ""
+    },
+    {
+      "cardNumber": "85",
+      "playerName": "Dave Lewis",
+      "notes": ""
+    },
+    {
+      "cardNumber": "86",
+      "playerName": "Brian Propp",
+      "notes": ""
+    },
+    {
+      "cardNumber": "87",
+      "playerName": "John Ogrodnick",
+      "notes": ""
+    },
+    {
+      "cardNumber": "88",
+      "playerName": "Kevin Dineen",
+      "notes": ""
+    },
+    {
+      "cardNumber": "89",
+      "playerName": "Don Beaupre",
+      "notes": ""
+    },
+    {
+      "cardNumber": "90",
+      "playerName": "Mike Bossy",
+      "notes": ""
+    },
+    {
+      "cardNumber": "91",
+      "playerName": "Tom Barrasso",
+      "notes": ""
+    },
+    {
+      "cardNumber": "92",
+      "playerName": "Michel Goulet",
+      "notes": ""
+    },
+    {
+      "cardNumber": "93",
+      "playerName": "Doug Gilmour",
+      "notes": ""
+    },
+    {
+      "cardNumber": "94",
+      "playerName": "Kirk Muller",
+      "notes": ""
+    },
+    {
+      "cardNumber": "95",
+      "playerName": "Larry Melnyk",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "96",
+      "playerName": "Bob Gainey",
+      "notes": ""
+    },
+    {
+      "cardNumber": "97",
+      "playerName": "Steve Kasper",
+      "notes": ""
+    },
+    {
+      "cardNumber": "98",
+      "playerName": "Petr Klima",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "99",
+      "playerName": "Neal Broten",
+      "notes": ""
+    },
+    {
+      "cardNumber": "100",
+      "playerName": "Al Secord",
+      "notes": ""
+    },
+    {
+      "cardNumber": "101",
+      "playerName": "Bryan Erickson",
+      "notes": ""
+    },
+    {
+      "cardNumber": "102",
+      "playerName": "Reggie Lemelin",
+      "notes": ""
+    },
+    {
+      "cardNumber": "103",
+      "playerName": "Sylvain Turgeon",
+      "notes": ""
+    },
+    {
+      "cardNumber": "104",
+      "playerName": "Bob Nystrom",
+      "notes": ""
+    },
+    {
+      "cardNumber": "105",
+      "playerName": "Bernie Federko",
+      "notes": ""
+    },
+    {
+      "cardNumber": "106",
+      "playerName": "Doug Wilson",
+      "notes": ""
+    },
+    {
+      "cardNumber": "107",
+      "playerName": "Alan Haworth",
+      "notes": ""
+    },
+    {
+      "cardNumber": "108",
+      "playerName": "Jari Kurri",
+      "notes": ""
+    },
+    {
+      "cardNumber": "109",
+      "playerName": "Ron Sutter",
+      "notes": ""
+    },
+    {
+      "cardNumber": "110",
+      "playerName": "Reed Larson",
+      "notes": ""
+    },
+    {
+      "cardNumber": "111",
+      "playerName": "Terry Ruskowski",
+      "notes": ""
+    },
+    {
+      "cardNumber": "112",
+      "playerName": "Mark Johnson",
+      "notes": ""
+    },
+    {
+      "cardNumber": "113",
+      "playerName": "James Patrick",
+      "notes": ""
+    },
+    {
+      "cardNumber": "114",
+      "playerName": "Paul MacLean",
+      "notes": ""
+    },
+    {
+      "cardNumber": "115",
+      "playerName": "Mike Ramsey",
+      "notes": ""
+    },
+    {
+      "cardNumber": "116",
+      "playerName": "Kelly Kisio",
+      "notes": ""
+    },
+    {
+      "cardNumber": "117",
+      "playerName": "Brent Sutter",
+      "notes": ""
+    },
+    {
+      "cardNumber": "118",
+      "playerName": "Joel Quenneville",
+      "notes": ""
+    },
+    {
+      "cardNumber": "119",
+      "playerName": "Curt Giles",
+      "notes": ""
+    },
+    {
+      "cardNumber": "120",
+      "playerName": "Tony Tanti",
+      "notes": ""
+    },
+    {
+      "cardNumber": "121",
+      "playerName": "Doug Sulliman",
+      "notes": ""
+    },
+    {
+      "cardNumber": "122",
+      "playerName": "Mario Lemieux",
+      "notes": ""
+    },
+    {
+      "cardNumber": "123",
+      "playerName": "Mark Howe",
+      "notes": ""
+    },
+    {
+      "cardNumber": "124",
+      "playerName": "Bob Sauve",
+      "notes": ""
+    },
+    {
+      "cardNumber": "125",
+      "playerName": "Anton Stastny",
+      "notes": ""
+    },
+    {
+      "cardNumber": "126",
+      "playerName": "Scott Stevens",
+      "notes": ""
+    },
+    {
+      "cardNumber": "127",
+      "playerName": "Mike Foligno",
+      "notes": ""
+    },
+    {
+      "cardNumber": "128",
+      "playerName": "Reijo Ruotsalainen",
+      "notes": ""
+    },
+    {
+      "cardNumber": "129",
+      "playerName": "Denis Potvin",
+      "notes": ""
+    },
+    {
+      "cardNumber": "130",
+      "playerName": "Keith Crowder",
+      "notes": ""
+    },
+    {
+      "cardNumber": "131",
+      "playerName": "Bob Janecyk",
+      "notes": ""
+    },
+    {
+      "cardNumber": "132",
+      "playerName": "John Tonelli",
+      "notes": ""
+    },
+    {
+      "cardNumber": "133",
+      "playerName": "Mike Liut",
+      "notes": ""
+    },
+    {
+      "cardNumber": "134",
+      "playerName": "Tim Kerr",
+      "notes": ""
+    },
+    {
+      "cardNumber": "135",
+      "playerName": "Al Jensen",
+      "notes": ""
+    },
+    {
+      "cardNumber": "136",
+      "playerName": "Mel Bridgman",
+      "notes": ""
+    },
+    {
+      "cardNumber": "137",
+      "playerName": "Paul Coffey",
+      "notes": ""
+    },
+    {
+      "cardNumber": "138",
+      "playerName": "Dino Ciccarelli",
+      "notes": ""
+    },
+    {
+      "cardNumber": "139",
+      "playerName": "Steve Larmer",
+      "notes": ""
+    },
+    {
+      "cardNumber": "140",
+      "playerName": "Mike O'Connell",
+      "notes": ""
+    },
+    {
+      "cardNumber": "141",
+      "playerName": "Clark Gillies",
+      "notes": ""
+    },
+    {
+      "cardNumber": "142",
+      "playerName": "Phil Russell",
+      "notes": ""
+    },
+    {
+      "cardNumber": "143",
+      "playerName": "Dirk Graham",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "144",
+      "playerName": "Randy Carlyle",
+      "notes": ""
+    },
+    {
+      "cardNumber": "145",
+      "playerName": "Charlie Simmer",
+      "notes": ""
+    },
+    {
+      "cardNumber": "146",
+      "playerName": "Ron Flockhart",
+      "notes": ""
+    },
+    {
+      "cardNumber": "147",
+      "playerName": "Tom Laidlaw",
+      "notes": ""
+    },
+    {
+      "cardNumber": "148",
+      "playerName": "Dave Tippett",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "149",
+      "playerName": "Wendel Clark",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "150",
+      "playerName": "Bob Carpenter",
+      "notes": ""
+    },
+    {
+      "cardNumber": "151",
+      "playerName": "Bill Watson",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "152",
+      "playerName": "Roberto Romano",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "153",
+      "playerName": "Doug Shedden",
+      "notes": ""
+    },
+    {
+      "cardNumber": "154",
+      "playerName": "Phil Housley",
+      "notes": ""
+    },
+    {
+      "cardNumber": "155",
+      "playerName": "Bryan Trottier",
+      "notes": ""
+    },
+    {
+      "cardNumber": "156",
+      "playerName": "Patrik Sundstrom",
+      "notes": ""
+    },
+    {
+      "cardNumber": "157",
+      "playerName": "Rick Middleton",
+      "notes": ""
+    },
+    {
+      "cardNumber": "158",
+      "playerName": "Glenn Resch",
+      "notes": ""
+    },
+    {
+      "cardNumber": "159",
+      "playerName": "Bernie Nicholls",
+      "notes": ""
+    },
+    {
+      "cardNumber": "160",
+      "playerName": "Ray Ferraro",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "161",
+      "playerName": "Mats Naslund",
+      "notes": ""
+    },
+    {
+      "cardNumber": "162",
+      "playerName": "Patrick Flatley",
+      "notes": ""
+    },
+    {
+      "cardNumber": "163",
+      "playerName": "Joe Cirella",
+      "notes": ""
+    },
+    {
+      "cardNumber": "164",
+      "playerName": "Rod Langway",
+      "notes": ""
+    },
+    {
+      "cardNumber": "165",
+      "playerName": "Checklist: 1-132",
+      "notes": "CL"
+    },
+    {
+      "cardNumber": "166",
+      "playerName": "Carey Wilson",
+      "notes": ""
+    },
+    {
+      "cardNumber": "167",
+      "playerName": "Murray Craven",
+      "notes": ""
+    },
+    {
+      "cardNumber": "168",
+      "playerName": "Paul Gillis",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "169",
+      "playerName": "Borje Salming",
+      "notes": ""
+    },
+    {
+      "cardNumber": "170",
+      "playerName": "Perry Turnbull",
+      "notes": ""
+    },
+    {
+      "cardNumber": "171",
+      "playerName": "Chris Chelios",
+      "notes": ""
+    },
+    {
+      "cardNumber": "172",
+      "playerName": "Keith Acton",
+      "notes": ""
+    },
+    {
+      "cardNumber": "173",
+      "playerName": "Al MacInnis",
+      "notes": ""
+    },
+    {
+      "cardNumber": "174",
+      "playerName": "Russ Courtnall",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "175",
+      "playerName": "Brad Marsh",
+      "notes": ""
+    },
+    {
+      "cardNumber": "176",
+      "playerName": "Guy Carbonneau",
+      "notes": ""
+    },
+    {
+      "cardNumber": "177",
+      "playerName": "Ray Neufeld",
+      "notes": ""
+    },
+    {
+      "cardNumber": "178",
+      "playerName": "Craig MacTavish",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "179",
+      "playerName": "Rick Lanz",
+      "notes": ""
+    },
+    {
+      "cardNumber": "180",
+      "playerName": "Murray Bannerman",
+      "notes": ""
+    },
+    {
+      "cardNumber": "181",
+      "playerName": "Brent Ashton",
+      "notes": ""
+    },
+    {
+      "cardNumber": "182",
+      "playerName": "Jim Peplinski",
+      "notes": ""
+    },
+    {
+      "cardNumber": "183",
+      "playerName": "Mark Napier",
+      "notes": ""
+    },
+    {
+      "cardNumber": "184",
+      "playerName": "Laurie Boschman",
+      "notes": ""
+    },
+    {
+      "cardNumber": "185",
+      "playerName": "Larry Murphy",
+      "notes": ""
+    },
+    {
+      "cardNumber": "186",
+      "playerName": "Mark Messier",
+      "notes": ""
+    },
+    {
+      "cardNumber": "187",
+      "playerName": "Risto Siltanen",
+      "notes": ""
+    },
+    {
+      "cardNumber": "188",
+      "playerName": "Bobby Smith",
+      "notes": ""
+    },
+    {
+      "cardNumber": "189",
+      "playerName": "Gary Suter",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "190",
+      "playerName": "Peter Zezel",
+      "notes": ""
+    },
+    {
+      "cardNumber": "191",
+      "playerName": "Rick Vaive",
+      "notes": ""
+    },
+    {
+      "cardNumber": "192",
+      "playerName": "Dale Hunter",
+      "notes": ""
+    },
+    {
+      "cardNumber": "193",
+      "playerName": "Mike Krushelnyski",
+      "notes": ""
+    },
+    {
+      "cardNumber": "194",
+      "playerName": "Scott Arniel",
+      "notes": ""
+    },
+    {
+      "cardNumber": "195",
+      "playerName": "Larry Playfair",
+      "notes": ""
+    },
+    {
+      "cardNumber": "196",
+      "playerName": "Doug Risebrough",
+      "notes": ""
+    },
+    {
+      "cardNumber": "197",
+      "playerName": "Kevin Lowe",
+      "notes": ""
+    },
+    {
+      "cardNumber": "198",
+      "playerName": "Checklist: 133-264",
+      "notes": "CL"
+    },
+    {
+      "cardNumber": "199",
+      "playerName": "Chris Nilan",
+      "notes": ""
+    },
+    {
+      "cardNumber": "200",
+      "playerName": "Paul Cyr",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "201",
+      "playerName": "Ric Seiling",
+      "notes": ""
+    },
+    {
+      "cardNumber": "202",
+      "playerName": "Doug Smith",
+      "notes": ""
+    },
+    {
+      "cardNumber": "203",
+      "playerName": "Jamie Macoun",
+      "notes": ""
+    },
+    {
+      "cardNumber": "204",
+      "playerName": "Dan Quinn",
+      "notes": ""
+    },
+    {
+      "cardNumber": "205",
+      "playerName": "Paul Reinhart",
+      "notes": ""
+    },
+    {
+      "cardNumber": "206",
+      "playerName": "Keith Brown",
+      "notes": ""
+    },
+    {
+      "cardNumber": "207",
+      "playerName": "Jack O'Callahan",
+      "notes": ""
+    },
+    {
+      "cardNumber": "208",
+      "playerName": "Steve Richmond",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "209",
+      "playerName": "Warren Young",
+      "notes": ""
+    },
+    {
+      "cardNumber": "210",
+      "playerName": "Lee Fogolin",
+      "notes": ""
+    },
+    {
+      "cardNumber": "211",
+      "playerName": "Charlie Huddy",
+      "notes": ""
+    },
+    {
+      "cardNumber": "212",
+      "playerName": "Andy Moog",
+      "notes": ""
+    },
+    {
+      "cardNumber": "213",
+      "playerName": "Wayne Babych",
+      "notes": ""
+    },
+    {
+      "cardNumber": "214",
+      "playerName": "Torrie Robertson",
+      "notes": ""
+    },
+    {
+      "cardNumber": "215",
+      "playerName": "Jim Fox",
+      "notes": ""
+    },
+    {
+      "cardNumber": "216",
+      "playerName": "Phil Sykes",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "217",
+      "playerName": "Jay Wells",
+      "notes": ""
+    },
+    {
+      "cardNumber": "218",
+      "playerName": "Dave Langevin",
+      "notes": ""
+    },
+    {
+      "cardNumber": "219",
+      "playerName": "Steve Payne",
+      "notes": ""
+    },
+    {
+      "cardNumber": "220",
+      "playerName": "Craig Ludwig",
+      "notes": ""
+    },
+    {
+      "cardNumber": "221",
+      "playerName": "Mike McPhee",
+      "notes": ""
+    },
+    {
+      "cardNumber": "222",
+      "playerName": "Steve Penney",
+      "notes": ""
+    },
+    {
+      "cardNumber": "223",
+      "playerName": "Mario Tremblay",
+      "notes": ""
+    },
+    {
+      "cardNumber": "224",
+      "playerName": "Ryan Walter",
+      "notes": ""
+    },
+    {
+      "cardNumber": "225",
+      "playerName": "Alain Chevrier",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "226",
+      "playerName": "Uli Hiemer",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "227",
+      "playerName": "Tim Higgins",
+      "notes": ""
+    },
+    {
+      "cardNumber": "228",
+      "playerName": "Billy Smith",
+      "notes": ""
+    },
+    {
+      "cardNumber": "229",
+      "playerName": "Richard Kromm",
+      "notes": ""
+    },
+    {
+      "cardNumber": "230",
+      "playerName": "Tomas Sandstrom",
+      "notes": ""
+    },
+    {
+      "cardNumber": "231",
+      "playerName": "Jim Johnson",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "232",
+      "playerName": "Willy Lindstrom",
+      "notes": ""
+    },
+    {
+      "cardNumber": "233",
+      "playerName": "Alain Cote",
+      "notes": ""
+    },
+    {
+      "cardNumber": "234",
+      "playerName": "Gilbert Delorme",
+      "notes": ""
+    },
+    {
+      "cardNumber": "235",
+      "playerName": "Mario Gosselin",
+      "notes": ""
+    },
+    {
+      "cardNumber": "236",
+      "playerName": "David Shaw",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "237",
+      "playerName": "Dave Barr",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "238",
+      "playerName": "Ed Beers",
+      "notes": ""
+    },
+    {
+      "cardNumber": "239",
+      "playerName": "Charlie Bourgeois",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "240",
+      "playerName": "Rick Wamsley",
+      "notes": ""
+    },
+    {
+      "cardNumber": "241",
+      "playerName": "Dan Daoust",
+      "notes": ""
+    },
+    {
+      "cardNumber": "242",
+      "playerName": "Brad Maxwell",
+      "notes": ""
+    },
+    {
+      "cardNumber": "243",
+      "playerName": "Gary Nylund",
+      "notes": ""
+    },
+    {
+      "cardNumber": "244",
+      "playerName": "Greg Terrion",
+      "notes": ""
+    },
+    {
+      "cardNumber": "245",
+      "playerName": "Steve Thomas",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "246",
+      "playerName": "Richard Brodeur",
+      "notes": ""
+    },
+    {
+      "cardNumber": "247",
+      "playerName": "Joel Otto",
+      "notes": "RC, UER"
+    },
+    {
+      "cardNumber": "248",
+      "playerName": "Doug Halward",
+      "notes": ""
+    },
+    {
+      "cardNumber": "249",
+      "playerName": "Moe Lemay",
+      "notes": "UER"
+    },
+    {
+      "cardNumber": "250",
+      "playerName": "Cam Neely",
+      "notes": ""
+    },
+    {
+      "cardNumber": "251",
+      "playerName": "Brent Peterson",
+      "notes": ""
+    },
+    {
+      "cardNumber": "252",
+      "playerName": "Petri Skriko",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "253",
+      "playerName": "Greg Adams",
+      "notes": "RC"
+    },
+    {
+      "cardNumber": "254",
+      "playerName": "Bill Derlago",
+      "notes": ""
+    },
+    {
+      "cardNumber": "255",
+      "playerName": "Brian Hayward",
+      "notes": ""
+    },
+    {
+      "cardNumber": "256",
+      "playerName": "Doug Smail",
+      "notes": ""
+    },
+    {
+      "cardNumber": "257",
+      "playerName": "Thomas Steen",
+      "notes": ""
+    },
+    {
+      "cardNumber": "258",
+      "playerName": "Jari Kurri",
+      "notes": "LL"
+    },
+    {
+      "cardNumber": "259",
+      "playerName": "Wayne Gretzky",
+      "notes": "LL"
+    },
+    {
+      "cardNumber": "260",
+      "playerName": "Wayne Gretzky",
+      "notes": "LL"
+    },
+    {
+      "cardNumber": "261",
+      "playerName": "Tim Kerr",
+      "notes": "LL"
+    },
+    {
+      "cardNumber": "262",
+      "playerName": "Kjell Dahlin",
+      "notes": "LL"
+    },
+    {
+      "cardNumber": "263",
+      "playerName": "Bob Froese",
+      "notes": "LL"
+    },
+    {
+      "cardNumber": "264",
+      "playerName": "Bob Froese",
+      "notes": "LL"
+    }
+  ]
+}
