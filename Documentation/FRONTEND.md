@@ -67,14 +67,19 @@ jumps straight from "desktop, fixed width" to "mobile, fluid width"
 with nothing in between.
 
 The global nav is the one exception: it has its own second breakpoint,
-`@media (max-width: 1024px)`, that keeps the hamburger-menu nav
+`@media (max-width: 1400px)`, that keeps the hamburger-menu nav
 (normally phone-only) active through tablet widths too. Below desktop
 width, the full `<table class="nav-table">` (one `<td>` per
 `NAV_ITEMS` entry, built by `fetchNav()` in `helper.js`) doesn't have
 room to lay out on one line — it shrinks each cell until label text
-wraps mid-word, which is what a tablet visitor sees without this. The
-matching `@media (min-width: 1025px)` block (further down the file)
-is what turns the hamburger back off and shows the full table nav on
+wraps mid-word, which is what a tablet visitor sees without this.
+1400px, not the more obvious-looking 1024px, because current iPads'
+landscape CSS viewport width ranges from ~1080px (mini) up to 1366px
+(12.9" Pro) — 1024px only ever matched the old "classic iPad
+landscape" assumption and left every modern iPad falling through to
+the wrapped desktop nav in landscape. The matching `@media (min-width:
+1401px)` block (further down the file) is what turns the hamburger
+back off and shows the full table nav on
 genuine desktop widths.
 
 A round of mobile-responsiveness work (waxReviews.html, the

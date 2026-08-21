@@ -1736,8 +1736,12 @@ label sup {
    lay out on one line below desktop widths - it shrinks each cell
    until label text wraps mid-word instead of overflowing cleanly, so
    this reuses the same hamburger treatment as phone widths rather than
-   building a separate cramped-but-not-wrapped layout just for tablets. */
-@media (max-width: 1024px) {
+   building a separate cramped-but-not-wrapped layout just for tablets.
+   1400px (not 1024px) because current iPads' landscape CSS viewport
+   width ranges from ~1080px (mini) up to 1366px (12.9" Pro) - 1024px
+   was the old "classic iPad landscape" assumption and left every
+   modern iPad showing the wrapped desktop nav in landscape. */
+@media (max-width: 1400px) {
   .nav-links {
     display: none;
     width: fit-content;
@@ -1808,10 +1812,10 @@ label sup {
 }
 
 /* Desktop only: hide the hamburger and show the normal table nav.
-   Tablets stay on the hamburger nav above (max-width: 1024px), since
-   the table doesn't have room to lay out without wrapping until
-   roughly iPad-landscape width and up. */
-@media (min-width: 1025px) {
+   Tablets stay on the hamburger nav above (max-width: 1400px) - see
+   the comment there for why 1400px rather than the more obvious-looking
+   1024px. */
+@media (min-width: 1401px) {
   .hamburger {
     display: none;
   }
