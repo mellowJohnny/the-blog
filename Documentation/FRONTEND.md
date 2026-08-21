@@ -59,12 +59,25 @@ below for why it's `<div>`-based rather than a table.
 
 ## Mobile / responsive design
 
-The whole site uses a single breakpoint: `@media (max-width: 600px)`
-in `styles/styles.css`. There's no intermediate/tablet breakpoint —
-`.flex-container div` (the main content-width wrapper, see below) is a
-fixed `1000px` above 600px, so the layout jumps straight from
-"desktop, fixed width" to "mobile, fluid width" with nothing in
-between. A round of mobile-responsiveness work (waxReviews.html, the
+The main content layout uses a single breakpoint: `@media (max-width:
+600px)` in `styles/styles.css`. There's no intermediate/tablet
+breakpoint for it — `.flex-container div` (the main content-width
+wrapper, see below) is a fixed `1000px` above 600px, so the layout
+jumps straight from "desktop, fixed width" to "mobile, fluid width"
+with nothing in between.
+
+The global nav is the one exception: it has its own second breakpoint,
+`@media (max-width: 1024px)`, that keeps the hamburger-menu nav
+(normally phone-only) active through tablet widths too. Below desktop
+width, the full `<table class="nav-table">` (one `<td>` per
+`NAV_ITEMS` entry, built by `fetchNav()` in `helper.js`) doesn't have
+room to lay out on one line — it shrinks each cell until label text
+wraps mid-word, which is what a tablet visitor sees without this. The
+matching `@media (min-width: 1025px)` block (further down the file)
+is what turns the hamburger back off and shows the full table nav on
+genuine desktop widths.
+
+A round of mobile-responsiveness work (waxReviews.html, the
 CMS pages, smsAdmin.html) surfaced a few recurring gotchas worth
 knowing before touching this CSS again:
 

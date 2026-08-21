@@ -1417,70 +1417,6 @@ label sup {
   }
 
 /* ============================
-   MOBILE HAMBURGER NAVIGATION
-   ============================ */
-
-  /* Hide the table nav by default */
-  .nav-links {
-    display: none;
-    width: fit-content;
-    background-color: var(--color-masthead-bg);
-  }
-
-  /* When menu is open */
-  .nav-links.open {
-    display: block;
-  }
-
-  /* Hamburger button */
-  .hamburger {
-    font-size: 32px;
-    cursor: pointer;
-    padding: 10px;
-    color: var(--color-link);
-    display: block;
-  }
-
-  /* The 70px base value (styles.css, non-mobile-scoped) is sized for
-     desktop's full nav table; the mobile hamburger icon only needs
-     ~58px (32px font + 10px top/bottom padding), leaving a visible gap
-     before the page content below it */
-  #global-nav-placeholder {
-    height: 58px;
-  }
-
-  /* Make table behave like a vertical list */
-  .nav-table {
-    width: 100%;
-  }
-
-  .nav-table tr {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .nav-td {
-    display: block;
-    width: 100%;
-    padding: 0;
-    margin: 0;
-    text-align: left;
-    font-size: 0.9rem;
-    border-bottom: 1px solid rgba(255,255,255,0.2);
-  }
-
-  /* Padding moved here (from .nav-td above) so the whole row is
-     clickable, not just the text itself */
-  .nav-td a {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px 16px;
-    color: #fff;
-  }
-
-/* ============================
    HOME PAGE & BLOG STREAM (index.html, tech.html)
    ============================ */
 
@@ -1795,22 +1731,93 @@ label sup {
 } /* END MOBILE RESPONSIVE */
 
 
-/* Desktop: hide hamburger, show normal nav; hide the mobile-condensed
-   weather text (was previously unconditional/unscoped - same specificity
-   as the mobile "display: block" rule for .weather-condensed and later
-   in the file, so it silently won on mobile too, hiding the weather
-   widget entirely there. Same bug shape as the .masthead conflict.) */
+/* Tablet + mobile: keep the nav collapsed into the hamburger menu. The
+   full table nav (one <td> per NAV_ITEMS entry) doesn't have room to
+   lay out on one line below desktop widths - it shrinks each cell
+   until label text wraps mid-word instead of overflowing cleanly, so
+   this reuses the same hamburger treatment as phone widths rather than
+   building a separate cramped-but-not-wrapped layout just for tablets. */
+@media (max-width: 1024px) {
+  .nav-links {
+    display: none;
+    width: fit-content;
+    background-color: var(--color-masthead-bg);
+  }
+
+  .nav-links.open {
+    display: block;
+  }
+
+  .hamburger {
+    font-size: 32px;
+    cursor: pointer;
+    padding: 10px;
+    color: var(--color-link);
+    display: block;
+  }
+
+  /* The 70px base value (styles.css, non-mobile-scoped) is sized for
+     desktop's full nav table; the hamburger icon only needs ~58px
+     (32px font + 10px top/bottom padding), leaving a visible gap
+     before the page content below it */
+  #global-nav-placeholder {
+    height: 58px;
+  }
+
+  .nav-table {
+    width: 100%;
+  }
+
+  .nav-table tr {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nav-td {
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
+
+  /* Padding moved here (from .nav-td above) so the whole row is
+     clickable, not just the text itself */
+  .nav-td a {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 16px;
+    color: #fff;
+  }
+}
+
+
+/* Hide the mobile-condensed weather text above phone width (was
+   previously unconditional/unscoped - same specificity as the mobile
+   "display: block" rule for .weather-condensed and later in the file,
+   so it silently won on mobile too, hiding the weather widget entirely
+   there. Same bug shape as the .masthead conflict.) */
 @media (min-width: 601px) {
+  .weather-condensed {
+    display: none;
+  }
+}
+
+/* Desktop only: hide the hamburger and show the normal table nav.
+   Tablets stay on the hamburger nav above (max-width: 1024px), since
+   the table doesn't have room to lay out without wrapping until
+   roughly iPad-landscape width and up. */
+@media (min-width: 1025px) {
   .hamburger {
     display: none;
   }
 
   .nav-links {
     display: block;
-  }
-
-  .weather-condensed {
-    display: none;
   }
 }
 
