@@ -16,7 +16,12 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { PDFParse } from "pdf-parse";
+// Pinned to pdf-parse v1 (not v2 - see Lambdas/parseChecklistPdf/index.mjs
+// for the reasons: v2's native canvas dependency, and importing
+// lib/pdf-parse.js directly to dodge a bug in the package root's
+// top-level index.js). Kept in sync with that Lambda deliberately -
+// same parsing logic, same library version.
+import pdfParse from "pdf-parse/lib/pdf-parse.js";
 
 const args = process.argv.slice(2);
 const pdfPath = args[0];
@@ -87,12 +92,10 @@ function parseChecklistText(text) {
 }
 
 const dataBuffer = fs.readFileSync(pdfPath);
-const parser = new PDFParse({ data: dataBuffer });
-const textResult = await parser.getText();
-await parser.destroy();
+const pdfData = await pdfParse(dataBuffer);
 
 const setName = setNameOverride || deriveSetName(pdfPath);
-const { cards, skippedDuplicates } = parseChecklistText(textResult.text);
+const { cards, skippedDuplicates } = parseChecklistText(pdfData.text);
 
 if (skippedDuplicates.length > 0) {
   console.warn(`Skipped ${skippedDuplicates.length} duplicate-number line(s) (kept first occurrence):`);

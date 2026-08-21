@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<!-- Without this, mobile Safari renders at a wide desktop-width virtual
+     viewport and just zooms the page out to fit, so the @media
+     (max-width: 600px) rules in styles.css never trigger -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<html lang="en">
+<title>cardStack CMS - checklist upload</title>
+<head>
+    <script src="/scripts/auth.js"></script>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon.ico">
+      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon.png">
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap" as="style" onload="this.rel='stylesheet'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
+    </noscript>
+    <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+      <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+
+    <script>
+      window.addEventListener('load', () => {
+        fetchCopyrightYear();
+      });
+    </script>
+</head>
+
+<script src="/scripts/cms.js"></script>
+<script src="/scripts/checklistUpload.js"></script>
+<script src="/scripts/helper.js"></script>
+
+<body>
+<section>
+    <table class="mast-table">
+      <tr>
+        <td width="80%">
+          <div>
+           <header class="masthead">card<i>Stack</i></header>
+        </td>
+        <td class="cms-logo">
+          <i>Content</i><br>
+          <strong>Management</strong><br>
+          <i>System</i><br>
+        </td>
+      </tr>
+    </table>
+  </section>
+
+<section>
+<div>
+    <nav>
+      <table class="cms-top-nav">
+        <tr>
+          <td class="cms-nav-td"><a href="index.html">...home</a></td>
+          <td class="cms-nav-td"><a href="/cms/wlcms.html">...back to cms</a></td>
+        </tr>
+      </table>
+    </nav>
+</div>
+</section>
+
+<div class="header-style">
+    <h1>...upload a card set checklist</h1>
+    <br><br>
+</div>
+
+<section>
+<div>
+<main>
+
+  <div>
+    <!-- Styled label acting as the visible "Choose File" button -->
+    <label for="checklistFileInput" style="
+      background-color: #256386;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      display: inline-block;
+    ">
+      Choose PDF
+    </label>
+
+    <input type="file" id="checklistFileInput" accept="application/pdf" style="display: none;">
+
+    <span id="checklistFileName" style="font-size: 14px; color: #333;">No file chosen</span>
+
+    <button type="button" id="parseChecklistButton" onclick="parseChecklistPdf()" style="
+      background-color: #256386;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    ">
+      Parse PDF
+    </button>
+  </div>
+
+  <div id="checklistStatus" class="error-msg" style="width: auto; max-width: 700px;"></div>
+
+  <div id="checklistReviewSection" style="display: none;">
+
+    <br>
+    <label for="checklistSetName">Set Name <sup>*</sup></label><br>
+    <input type="text" id="checklistSetName" style="
+      width: 100%;
+      max-width: 500px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 16px;
+      padding: 6px 8px;
+      border: 1px solid var(--color-input-border);
+      border-radius: 3px;
+      box-sizing: border-box;
+    ">
+
+    <table class="checklist-review-table">
+      <thead>
+        <tr>
+          <th>Card #</th>
+          <th>Player Name</th>
+          <th>Notes</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="checklistTableBody"></tbody>
+    </table>
+
+    <button type="button" onclick="addChecklistRow()" style="
+      background-color: #256386;
+      color: white;
+      padding: 6px 14px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    ">
+      + Add Row
+    </button>
+
+    <br><br>
+
+    <button type="button" id="cmsSubmitButton" onclick="saveChecklist()" style="
+      background-color: rgb(2, 70, 153);
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    ">
+      Save to DynamoDB
+    </button>
+
+  </div>
+
+</main>
+</div>
+</section>
+
+<footer class="page-footer">
+  <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
+  <div id="copy"></div>
+</footer>
+</body>
+</html>
