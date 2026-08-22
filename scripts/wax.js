@@ -108,7 +108,8 @@ function renderCardSetPage() {
       item.author,
       item.now,
       item.upvotes,
-      item.downvotes
+      item.downvotes,
+      item.hasChecklist
     );
     // Populate the page title
     fetchPageTitle(item.setName);
@@ -131,7 +132,7 @@ function fetchPageTitle(setName)
  * Function to FORMAT & DISPLAY card sets
  */
 
-   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date,upvotes,downvotes)
+   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date,upvotes,downvotes,hasChecklist)
    {
 
     // Convert stars to a number
@@ -161,15 +162,28 @@ function fetchPageTitle(setName)
     // Reference to the div where everything goes
     let cardBody = document.getElementById("cardSetDiv");
 
+    // hasChecklist comes from the Cards item (set by saveChecklist the
+    // first time a checklist is uploaded for this set - see
+    // Lambdas/saveChecklist/index.mjs). Only add the row - and bump the
+    // image cell's rowspan to match - when there's actually a checklist
+    // to point to. Not a real link yet - that's Step 2, fetching and
+    // displaying the checklist itself.
+    const detailRowCount = hasChecklist ? 8 : 7;
+    const checklistRow = hasChecklist
+        ? `<tr>
+                <td><strong><i>Checklist:</i></strong> Full Checklist</td>
+            </tr>`
+        : "";
+
     cardBody.innerHTML += `
         <table class="set-details-table-style">
             <tr>
                 <td style="width: 25%; font-size: 20px;">
                     <strong>${setName}</strong>
                 </td>
-                <td rowspan="7" class="header-img-cell" style="width: 75%; text-align: center;">
-                    <img src="${headerImg}${headerImgName}" 
-                    class="table-header-img" 
+                <td rowspan="${detailRowCount}" class="header-img-cell" style="width: 75%; text-align: center;">
+                    <img src="${headerImg}${headerImgName}"
+                    class="table-header-img"
                     fetchpriority="high"
                     alt="Vintage hockey cards from the ${year} ${mfg} set"
                     width="620">
@@ -191,6 +205,7 @@ function fetchPageTitle(setName)
             <tr>
                 <td><strong><i>Manufacturer:</i></strong> ${mfg}</td>
             </tr>
+            ${checklistRow}
             <tr>
                 <td><strong><i>Hella Rating:</i></strong> ${cleanStars}</td>
             </tr>

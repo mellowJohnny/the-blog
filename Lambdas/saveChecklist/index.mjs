@@ -41,9 +41,18 @@
 // uploading/replacing one insert set never touches the main set's rows,
 // or a different insert set's rows, even though they all share the same
 // setName.
+//
+// After a successful save, also flips hasChecklist = true on the
+// matching Cards item (found by setName - Cards' own partition key,
+// via a Query, not a Scan) - this is what waxReviews.html checks to
+// decide whether to show a "Full Checklist" link for that set. This is
+// a non-critical side effect with its own try/catch, same design
+// principle as updateCardSet's TinyMCE cleanup pass: its failure (e.g.
+// no matching Cards item yet, or a transient error) never fails the
+// checklist save itself, which already fully succeeded by this point.
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, QueryCommand, BatchWriteCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, QueryCommand, BatchWriteCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient({ region: "us-east-2" });
 const db = DynamoDBDocumentClient.from(client);
@@ -55,6 +64,7 @@ const CORS_HEADERS = {
 };
 
 const TABLE_NAME = "Checklists";
+const CARDS_TABLE_NAME = "Cards";
 const BATCH_SIZE = 25; // DynamoDB BatchWriteItem's hard limit
 
 function chunk(arr, size) {
@@ -110,6 +120,33 @@ async function getExistingSortKeys(setName, prefix) {
   } while (lastEvaluatedKey);
 
   return sortKeys;
+}
+
+// Cards' key is setName (partition) + year (sort) - Checklists only
+// tracks setName, so find the matching Cards item(s) by setName first
+// (Query, not Scan) rather than assuming a year. In practice there's
+// only ever one, since this site's setName strings already embed the
+// year (e.g. "1986-87 O-Pee-Chee Hockey"), but loop in case that ever
+// isn't true.
+async function flagCardsHasChecklist(setName) {
+  const result = await db.send(new QueryCommand({
+    TableName: CARDS_TABLE_NAME,
+    KeyConditionExpression: "setName = :setName",
+    ExpressionAttributeValues: { ":setName": setName },
+    // year is a DynamoDB reserved word, can't appear unescaped in a
+    // ProjectionExpression - same issue documented for getStagedCardSets.
+    ProjectionExpression: "setName, #yr",
+    ExpressionAttributeNames: { "#yr": "year" }
+  }));
+
+  for (const item of result.Items || []) {
+    await db.send(new UpdateCommand({
+      TableName: CARDS_TABLE_NAME,
+      Key: { setName: item.setName, year: item.year },
+      UpdateExpression: "SET hasChecklist = :true",
+      ExpressionAttributeValues: { ":true": true }
+    }));
+  }
 }
 
 export const handler = async (event) => {
@@ -195,6 +232,14 @@ export const handler = async (event) => {
           error: `${unwrittenCount} of ${cards.length} cards failed to save after retries for ${groupLabel} (existing data was already cleared - please retry).`
         })
       };
+    }
+
+    // Step 3: flag the matching Cards item so waxReviews.html knows to
+    // show a checklist link - non-critical, see header comment.
+    try {
+      await flagCardsHasChecklist(setName);
+    } catch (err) {
+      console.error("Failed to flag hasChecklist on Cards item (non-critical):", err);
     }
 
     return {
