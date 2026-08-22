@@ -646,6 +646,7 @@ textarea {
 } 
 
 .input-button {
+  font-family: 'Source Sans 3', sans-serif;
   background-color: #256386;
   border: none;
   color: white;
@@ -1075,14 +1076,24 @@ label sup {
 }
 
 /* Checklist upload/review (cms/uploadChecklist.html) */
+.checklist-trigger-row {
+  padding-left: 8px;
+}
+
+#checklistImportLink {
+  color: white;
+}
+
 .checklist-page-content {
+  font-family: 'Source Sans 3', sans-serif;
   max-width: 700px;
-  margin: 0 auto;
+  padding-left: 8px;
 }
 
 .checklist-status-msg {
   font-family: 'Source Sans 3', sans-serif;
   font-size: 16px;
+  max-width: 900px;
   margin-top: 16px;
   color: rgb(7, 62, 126);
 }
