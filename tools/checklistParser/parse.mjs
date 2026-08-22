@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Parses a TCDB.com-style checklist PDF (one row per card: number, then
-// player name, with optional trailing all-caps markers like RC/UER/CL/LL)
-// into JSON: { setName, cards: [{ cardNumber, playerName, notes }] }
+// Parses a checklist PDF (one row per card: number, then player name,
+// with optional trailing all-caps markers like RC/UER/CL/LL) into JSON:
+// { setName, cards: [{ cardNumber, playerName, notes }] }
 //
 // Usage:
 //   node parse.mjs <path-to-pdf> [--set "Custom Set Name"] [--out output.json]
@@ -9,10 +9,10 @@
 // With no --out, writes to checklists/<setName>.json at the repo root
 // (created if needed) rather than printing to stdout.
 //
-// Assumes Title Case player names (tcdb.com's own formatting) - a checklist
-// source that prints names in ALL CAPS would need the note-detection logic
-// below adjusted, since it currently treats any trailing all-caps token as
-// a note rather than part of the name.
+// Assumes Title Case player names - a checklist source that prints names
+// in ALL CAPS would need the note-detection logic below adjusted, since
+// it currently treats any trailing all-caps token as a note rather than
+// part of the name.
 
 import fs from "node:fs";
 import path from "node:path";
