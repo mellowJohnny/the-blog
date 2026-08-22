@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 // Parses a checklist PDF (one row per card: number, then player name,
 // with optional trailing all-caps markers like RC/UER/CL/LL) into JSON:
-// { setName, cards: [{ cardNumber, playerName, notes }] }
+// { setName, insertSetName, cards: [{ cardNumber, playerName, notes }] }
+//
+// setName/insertSetName are derived from the filename, not PDF content -
+// a comma splits it into the base set name and the insert set name (see
+// Lambdas/parseChecklistPdf/index.mjs's header comment; kept in sync
+// deliberately). No comma means insertSetName is "" - a main-set upload.
 //
 // Usage:
 //   node parse.mjs <path-to-pdf> [--set "Custom Set Name"] [--out output.json]
 //
-// With no --out, writes to checklists/<setName>.json at the repo root
-// (created if needed) rather than printing to stdout.
+// With no --out, writes to checklists/<setName>[ - insertSetName].json
+// at the repo root (created if needed) rather than printing to stdout.
 //
 // Assumes Title Case player names - a checklist source that prints names
 // in ALL CAPS would need the note-detection logic below adjusted, since
@@ -35,9 +40,18 @@ const outFlagIndex = args.indexOf("--out");
 const setNameOverride = setFlagIndex !== -1 ? args[setFlagIndex + 1] : null;
 const outPath = outFlagIndex !== -1 ? args[outFlagIndex + 1] : null;
 
-function deriveSetName(filePath) {
+function deriveSetNames(filePath) {
   const base = path.basename(filePath, path.extname(filePath));
-  return base.replace(/\s*-\s*checklist\s*$/i, "").trim();
+  const withoutSuffix = base.replace(/\s*-\s*checklist\s*$/i, "").trim();
+
+  const commaIndex = withoutSuffix.indexOf(",");
+  if (commaIndex === -1) {
+    return { setName: withoutSuffix, insertSetName: "" };
+  }
+  return {
+    setName: withoutSuffix.slice(0, commaIndex).trim(),
+    insertSetName: withoutSuffix.slice(commaIndex + 1).trim()
+  };
 }
 
 // A "note" token is a trailing word that's entirely uppercase letters
@@ -61,7 +75,12 @@ function splitNameAndNotes(remainder) {
   };
 }
 
-const CARD_LINE_RE = /^(\d+[A-Za-z]?)\s+(\S.*)$/;
+// Leading letters are optional (insert sets are commonly numbered with a
+// prefix, e.g. "R1", "R2" for a "Predictors" insert set) and a single
+// trailing letter is also optional (e.g. "165a"). Requiring at least one
+// digit somewhere in the middle is what keeps this from matching prose
+// lines like "Trading Card Database" or the set title line.
+const CARD_LINE_RE = /^([A-Za-z]*\d+[A-Za-z]?)\s+(\S.*)$/;
 
 function parseChecklistText(text) {
   const lines = text.split(/\r?\n/);
@@ -94,7 +113,9 @@ function parseChecklistText(text) {
 const dataBuffer = fs.readFileSync(pdfPath);
 const pdfData = await pdfParse(dataBuffer);
 
-const setName = setNameOverride || deriveSetName(pdfPath);
+const derived = deriveSetNames(pdfPath);
+const setName = setNameOverride || derived.setName;
+const insertSetName = derived.insertSetName;
 const { cards, skippedDuplicates } = parseChecklistText(pdfData.text);
 
 if (skippedDuplicates.length > 0) {
@@ -102,11 +123,12 @@ if (skippedDuplicates.length > 0) {
   skippedDuplicates.forEach((l) => console.warn(`  ${l}`));
 }
 
-const result = { setName, cards };
+const result = { setName, insertSetName, cards };
 const json = JSON.stringify(result, null, 2);
 
+const outFileName = insertSetName ? `${setName} - ${insertSetName}.json` : `${setName}.json`;
 const repoRoot = path.resolve(import.meta.dirname, "..", "..");
-const defaultOutPath = path.join(repoRoot, "checklists", `${setName}.json`);
+const defaultOutPath = path.join(repoRoot, "checklists", outFileName);
 const finalOutPath = outPath || defaultOutPath;
 
 fs.mkdirSync(path.dirname(finalOutPath), { recursive: true });

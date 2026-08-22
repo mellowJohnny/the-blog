@@ -202,6 +202,7 @@ function parseChecklistPdf(file, { parseBtn, cancelBtn, closeModal }) {
       }
 
       document.getElementById("checklistSetName").value = data.setName || "";
+      document.getElementById("checklistInsertSetName").value = data.insertSetName || "";
       renderChecklistTable(data.cards || []);
       document.getElementById("checklistReviewSection").style.display = "block";
 
@@ -245,6 +246,8 @@ function saveChecklist() {
     return;
   }
 
+  const insertSetName = document.getElementById("checklistInsertSetName").value.trim();
+
   const cards = collectChecklistRows();
   if (cards.length === 0) {
     alert("At least one card row is required.");
@@ -266,7 +269,7 @@ function saveChecklist() {
       fetch(SAVE_CHECKLIST_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": token },
-        body: JSON.stringify({ setName, cards })
+        body: JSON.stringify({ setName, insertSetName, cards })
       })
     )
     .then(async (response) => {

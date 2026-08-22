@@ -6,10 +6,18 @@
 // editor won't work; see CLAUDE.md's Lambda deployment section)
 //
 // Accepts a base64-encoded checklist PDF, parses it into
-// { setName, cards: [{ cardNumber, playerName, notes }] }, and returns
-// that for review in the CMS before anything is written to DynamoDB -
-// this function never touches the Checklists table itself, see
-// saveChecklist for that.
+// { setName, insertSetName, cards: [{ cardNumber, playerName, notes }] },
+// and returns that for review in the CMS before anything is written to
+// DynamoDB - this function never touches the Checklists table itself,
+// see saveChecklist for that.
+//
+// setName/insertSetName are derived from the filename, not PDF content:
+// a comma in the filename splits it into the base set name and the
+// insert set name (e.g. "1986-87 O-Pee-Chee Hockey, Team Canada -
+// Checklist.pdf" -> setName "1986-87 O-Pee-Chee Hockey", insertSetName
+// "Team Canada"). No comma means insertSetName is "" - a main-set
+// upload. This convention (not a `type` field) is what saveChecklist
+// keys its full-replace scoping off of.
 //
 // Parsing logic (regex, note-token detection, dedup) mirrors
 // tools/checklistParser/parse.mjs in this repo - keep the two in sync if
@@ -56,7 +64,12 @@ function splitNameAndNotes(remainder) {
   };
 }
 
-const CARD_LINE_RE = /^(\d+[A-Za-z]?)\s+(\S.*)$/;
+// Leading letters are optional (insert sets are commonly numbered with a
+// prefix, e.g. "R1", "R2" for a "Predictors" insert set) and a single
+// trailing letter is also optional (e.g. "165a"). Requiring at least one
+// digit somewhere in the middle is what keeps this from matching prose
+// lines like "Trading Card Database" or the set title line.
+const CARD_LINE_RE = /^([A-Za-z]*\d+[A-Za-z]?)\s+(\S.*)$/;
 
 function parseChecklistText(text) {
   const lines = text.split(/\r?\n/);
@@ -86,9 +99,18 @@ function parseChecklistText(text) {
   return { cards, skippedDuplicates };
 }
 
-function deriveSetName(fileName) {
+function deriveSetNames(fileName) {
   const base = (fileName || "").replace(/\.pdf$/i, "");
-  return base.replace(/\s*-\s*checklist\s*$/i, "").trim();
+  const withoutSuffix = base.replace(/\s*-\s*checklist\s*$/i, "").trim();
+
+  const commaIndex = withoutSuffix.indexOf(",");
+  if (commaIndex === -1) {
+    return { setName: withoutSuffix, insertSetName: "" };
+  }
+  return {
+    setName: withoutSuffix.slice(0, commaIndex).trim(),
+    insertSetName: withoutSuffix.slice(commaIndex + 1).trim()
+  };
 }
 
 export const handler = async (event) => {
@@ -108,13 +130,15 @@ export const handler = async (event) => {
     const dataBuffer = Buffer.from(fileContent, "base64");
     const pdfData = await pdfParse(dataBuffer);
 
-    const setName = body.setName?.trim() || deriveSetName(fileName);
+    const derived = deriveSetNames(fileName);
+    const setName = body.setName?.trim() || derived.setName;
+    const insertSetName = body.insertSetName?.trim() ?? derived.insertSetName;
     const { cards, skippedDuplicates } = parseChecklistText(pdfData.text);
 
     return {
       statusCode: 200,
       headers: CORS_HEADERS,
-      body: JSON.stringify({ setName, cards, skippedDuplicates })
+      body: JSON.stringify({ setName, insertSetName, cards, skippedDuplicates })
     };
 
   } catch (err) {

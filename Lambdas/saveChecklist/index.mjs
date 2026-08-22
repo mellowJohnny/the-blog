@@ -4,19 +4,43 @@
 // the Console's inline Code tab and clicking Deploy (no real dependency,
 // so no .zip needed - see CLAUDE.md's Lambda deployment section).
 //
-// Writes a reviewed checklist (setName + array of cards, already
-// corrected in the CMS after parseChecklistPdf) to the Checklists table:
-// partition key setName (String), sort key cardNumber (String) - one
-// item per card. This function only ever writes/deletes - it doesn't
-// parse PDFs itself.
+// Writes a reviewed checklist (setName + optional insertSetName + array
+// of cards, already corrected in the CMS after parseChecklistPdf) to the
+// Checklists table: partition key setName (String), sort key cardNumber
+// (String) - one item per card. This function only ever writes/deletes -
+// it doesn't parse PDFs itself.
+//
+// Main-set cards and insert-set cards can share the same setName (an
+// insert set's own base setName, e.g. "1994-95 Upper Deck", is the same
+// whether you're uploading the base set or one of its insert sets - see
+// parseChecklistPdf's header comment on how insertSetName is derived
+// from the filename). Insert sets commonly reuse low card numbers of
+// their own (R1, R2, ...), which would collide with the main set's own
+// numbering under a plain setName+cardNumber key. To avoid that, the
+// actual DynamoDB sort key value stored in the cardNumber attribute is
+// prefixed by group:
+//   main set:   MAIN#<cardNumber>
+//   insert set: INSERT#<insertSetName>#<cardNumber>
+// The human-readable card number (unprefixed) is kept separately in a
+// cardNumberDisplay attribute - the sort key's actual value is never
+// shown to a user, just used for key uniqueness/grouping.
+//
+// Each item also gets a plain integer sortIndex (its position in the
+// reviewed table at save time, 0-based within its own group). This is
+// deliberately separate from the DynamoDB sort key above - a future
+// checklist-display feature should group by type/insertSetName then
+// order by sortIndex, not rely on raw DynamoDB item order (which sorts
+// the prefixed key as a plain string - "INSERT#" sorts before "MAIN#",
+// and numbers don't sort numerically once turned into strings).
 //
 // Full-replace semantics, same pattern as bulkSubscriberUpload: every
-// save first deletes all existing items for this setName, then writes
-// the new set - so re-uploading a corrected PDF can't leave stale rows
-// behind (e.g. a card that got renumbered or removed between two
-// uploads of "the same" set). Unlike bulkSubscriberUpload this only
-// deletes the rows for the one setName being saved, not the whole
-// table - other sets' checklists live in the same table untouched.
+// save first deletes all existing items for this setName+group, then
+// writes the new set - so re-uploading a corrected PDF can't leave
+// stale rows behind. Scoped to the group (via the sort-key prefix and a
+// begins_with key condition), not the whole setName partition - so
+// uploading/replacing one insert set never touches the main set's rows,
+// or a different insert set's rows, even though they all share the same
+// setName.
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, QueryCommand, BatchWriteCommand } from "@aws-sdk/lib-dynamodb";
@@ -65,31 +89,34 @@ async function batchWriteAll(requests) {
 }
 
 // Queries (not scans - setName is the partition key) every existing
-// card number for this set, handling pagination in case a set is ever
-// large enough to need it.
-async function getExistingCardNumbers(setName) {
-  const cardNumbers = [];
+// sort-key value in this setName+group, handling pagination in case a
+// set is ever large enough to need it. Scoped to the group via
+// begins_with, so this never touches a different group's rows even
+// though they share the same setName partition.
+async function getExistingSortKeys(setName, prefix) {
+  const sortKeys = [];
   let lastEvaluatedKey;
 
   do {
     const result = await db.send(new QueryCommand({
       TableName: TABLE_NAME,
-      KeyConditionExpression: "setName = :setName",
-      ExpressionAttributeValues: { ":setName": setName },
+      KeyConditionExpression: "setName = :setName AND begins_with(cardNumber, :prefix)",
+      ExpressionAttributeValues: { ":setName": setName, ":prefix": prefix },
       ProjectionExpression: "cardNumber",
       ExclusiveStartKey: lastEvaluatedKey
     }));
-    cardNumbers.push(...(result.Items || []).map((item) => item.cardNumber));
+    sortKeys.push(...(result.Items || []).map((item) => item.cardNumber));
     lastEvaluatedKey = result.LastEvaluatedKey;
   } while (lastEvaluatedKey);
 
-  return cardNumbers;
+  return sortKeys;
 }
 
 export const handler = async (event) => {
   try {
     const body = JSON.parse(event.body || "{}");
     const setName = body.setName?.trim();
+    const insertSetName = body.insertSetName?.trim() || "";
     const cards = body.cards;
 
     if (!setName || !Array.isArray(cards) || cards.length === 0) {
@@ -112,11 +139,15 @@ export const handler = async (event) => {
       }
     }
 
-    // Step 1: delete every existing card for this set (full-replace,
-    // not a merge - see header comment)
-    const existingCardNumbers = await getExistingCardNumbers(setName);
-    const deleteRequests = existingCardNumbers.map((cardNumber) => ({
-      DeleteRequest: { Key: { setName, cardNumber } }
+    const type = insertSetName ? "insertSet" : "main";
+    const prefix = insertSetName ? `INSERT#${insertSetName}#` : "MAIN#";
+    const groupLabel = insertSetName ? `"${setName}" / insert set "${insertSetName}"` : `"${setName}" (main set)`;
+
+    // Step 1: delete every existing card in this group (full-replace,
+    // not a merge - see header comment). Scoped to this group only.
+    const existingSortKeys = await getExistingSortKeys(setName, prefix);
+    const deleteRequests = existingSortKeys.map((sortKey) => ({
+      DeleteRequest: { Key: { setName, cardNumber: sortKey } }
     }));
     const undeletedCount = await batchWriteAll(deleteRequests);
 
@@ -125,22 +156,35 @@ export const handler = async (event) => {
         statusCode: 502,
         headers: CORS_HEADERS,
         body: JSON.stringify({
-          error: `${undeletedCount} existing card(s) for "${setName}" failed to clear after retries - aborted before writing the new set to avoid mixing old and new data. Please try again.`
+          error: `${undeletedCount} existing card(s) for ${groupLabel} failed to clear after retries - aborted before writing the new set to avoid mixing old and new data. Please try again.`
         })
       };
     }
 
     // Step 2: write the new set
-    const putRequests = cards.map((card) => ({
-      PutRequest: {
-        Item: {
-          setName,
-          cardNumber: card.cardNumber.toString().trim(),
-          playerName: card.playerName.toString().trim(),
-          notes: card.notes?.toString().trim() || ""
+    const putRequests = cards.map((card, sortIndex) => {
+      const cardNumberDisplay = card.cardNumber.toString().trim();
+      return {
+        PutRequest: {
+          Item: {
+            setName,
+            cardNumber: `${prefix}${cardNumberDisplay}`,
+            cardNumberDisplay,
+            playerName: card.playerName.toString().trim(),
+            notes: card.notes?.toString().trim() || "",
+            type,
+            insertSetName,
+            // Display order within this group (main, or this one insert
+            // set) - the DynamoDB sort key above is for uniqueness/safe
+            // group-scoped replace, not display order (it won't sort
+            // numerically, and "INSERT#" sorts before "MAIN#" as plain
+            // strings). A future "get checklist" feature should group by
+            // type, then order by this - not by raw DynamoDB item order.
+            sortIndex
+          }
         }
-      }
-    }));
+      };
+    });
     const unwrittenCount = await batchWriteAll(putRequests);
 
     if (unwrittenCount > 0) {
@@ -148,7 +192,7 @@ export const handler = async (event) => {
         statusCode: 502,
         headers: CORS_HEADERS,
         body: JSON.stringify({
-          error: `${unwrittenCount} of ${cards.length} cards failed to save after retries for "${setName}" (existing data was already cleared - please retry).`
+          error: `${unwrittenCount} of ${cards.length} cards failed to save after retries for ${groupLabel} (existing data was already cleared - please retry).`
         })
       };
     }
@@ -157,7 +201,7 @@ export const handler = async (event) => {
       statusCode: 200,
       headers: CORS_HEADERS,
       body: JSON.stringify({
-        message: `Replaced ${existingCardNumbers.length} existing card(s) with ${cards.length} new card(s) for "${setName}".`
+        message: `Replaced ${existingSortKeys.length} existing card(s) with ${cards.length} new card(s) for ${groupLabel}.`
       })
     };
 
