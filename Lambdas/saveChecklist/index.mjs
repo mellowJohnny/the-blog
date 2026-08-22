@@ -50,6 +50,11 @@
 // principle as updateCardSet's TinyMCE cleanup pass: its failure (e.g.
 // no matching Cards item yet, or a transient error) never fails the
 // checklist save itself, which already fully succeeded by this point.
+// It's surfaced, though, not just logged - the success message includes
+// a warning whenever this step throws OR finds zero matching Cards
+// items, so a setName mismatch (e.g. the checklist title has "Hockey"
+// on the end and the Cards item doesn't) shows up in the CMS instead of
+// silently never linking the two.
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, QueryCommand, BatchWriteCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
@@ -139,7 +144,8 @@ async function flagCardsHasChecklist(setName) {
     ExpressionAttributeNames: { "#yr": "year" }
   }));
 
-  for (const item of result.Items || []) {
+  const items = result.Items || [];
+  for (const item of items) {
     await db.send(new UpdateCommand({
       TableName: CARDS_TABLE_NAME,
       Key: { setName: item.setName, year: item.year },
@@ -147,6 +153,8 @@ async function flagCardsHasChecklist(setName) {
       ExpressionAttributeValues: { ":true": true }
     }));
   }
+
+  return items.length; // matched-item count, so the caller can tell a genuine zero-match apart from success
 }
 
 export const handler = async (event) => {
@@ -235,18 +243,27 @@ export const handler = async (event) => {
     }
 
     // Step 3: flag the matching Cards item so waxReviews.html knows to
-    // show a checklist link - non-critical, see header comment.
+    // show a checklist link - non-critical (doesn't fail the checklist
+    // save itself), but surfaced as a warning rather than only logged,
+    // see header comment.
+    let cardsLinkWarning = null;
     try {
-      await flagCardsHasChecklist(setName);
+      const matchedCount = await flagCardsHasChecklist(setName);
+      if (matchedCount === 0) {
+        cardsLinkWarning = `no Cards item found with setName "${setName}" - the "Full Checklist" link won't appear on waxReviews.html until one exists with this exact setName.`;
+      }
     } catch (err) {
-      console.error("Failed to flag hasChecklist on Cards item (non-critical):", err);
+      console.error("Failed to flag hasChecklist on Cards item:", err);
+      cardsLinkWarning = `failed to link this checklist to its card set review (${err.message || "unknown error"}) - the "Full Checklist" link won't appear on waxReviews.html yet.`;
     }
+
+    const baseMessage = `Replaced ${existingSortKeys.length} existing card(s) with ${cards.length} new card(s) for ${groupLabel}.`;
 
     return {
       statusCode: 200,
       headers: CORS_HEADERS,
       body: JSON.stringify({
-        message: `Replaced ${existingSortKeys.length} existing card(s) with ${cards.length} new card(s) for ${groupLabel}.`
+        message: cardsLinkWarning ? `${baseMessage} Warning: ${cardsLinkWarning}` : baseMessage
       })
     };
 

@@ -112,16 +112,25 @@ function parseChecklistText(text) {
   return { cards, skippedDuplicates };
 }
 
+// Checklist source titles often end with the sport name (e.g. "1986-87
+// O-Pee-Chee Hockey"), but this site's own Cards.setName convention
+// doesn't include it (e.g. "1986-87 O-Pee-Chee") - strip it so the two
+// match exactly, since saveChecklist's Cards lookup (hasChecklist flag)
+// depends on an exact setName match.
+function stripTrailingSport(setName) {
+  return setName.replace(/\s+hockey\s*$/i, "").trim();
+}
+
 function deriveSetNames(fileName) {
   const base = (fileName || "").replace(/\.pdf$/i, "");
   const withoutSuffix = base.replace(/\s*-\s*checklist\s*$/i, "").trim();
 
   const commaIndex = withoutSuffix.indexOf(",");
   if (commaIndex === -1) {
-    return { setName: withoutSuffix, insertSetName: "" };
+    return { setName: stripTrailingSport(withoutSuffix), insertSetName: "" };
   }
   return {
-    setName: withoutSuffix.slice(0, commaIndex).trim(),
+    setName: stripTrailingSport(withoutSuffix.slice(0, commaIndex).trim()),
     insertSetName: withoutSuffix.slice(commaIndex + 1).trim()
   };
 }
