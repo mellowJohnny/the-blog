@@ -240,20 +240,20 @@ function collectChecklistRows() {
 function saveChecklist() {
   const setName = document.getElementById("checklistSetName").value.trim();
   if (!setName) {
-    setChecklistStatus("Set Name is required.", true);
+    alert("Set Name is required.");
     document.getElementById("checklistSetName").focus();
     return;
   }
 
   const cards = collectChecklistRows();
   if (cards.length === 0) {
-    setChecklistStatus("At least one card row is required.", true);
+    alert("At least one card row is required.");
     return;
   }
 
   const missingRow = cards.find((c) => !c.cardNumber || !c.playerName);
   if (missingRow) {
-    setChecklistStatus("Every row needs both a Card # and a Player Name.", true);
+    alert("Every row needs both a Card # and a Player Name.");
     return;
   }
 
@@ -274,21 +274,21 @@ function saveChecklist() {
       try {
         data = await response.json();
       } catch {
-        setChecklistStatus("Unexpected server response.", true);
+        alert("Unexpected server response.");
         return;
       }
 
       if (!response.ok) {
-        setChecklistStatus(data.error || "Failed to save checklist.", true);
+        alert(data.error || "Failed to save checklist.");
         return;
       }
 
-      setChecklistStatus(data.message || "Saved.", false);
+      alert(data.message || "Saved.");
       window.location.href = "/cms/wlcms.html";
     })
     .catch((error) => {
       console.log("Save error:", error);
-      setChecklistStatus("Network error saving the checklist.", true);
+      alert("Network error saving the checklist.");
     })
     .finally(() => {
       saveButton.style.backgroundColor = "rgb(2, 70, 153)";
