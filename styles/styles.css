@@ -1145,10 +1145,6 @@ label sup {
   width: 5em;
 }
 
-.checklist-review-table td.checklist-notes-col input {
-  width: 8em;
-}
-
 .checklist-row-delete-btn {
   background: none;
   border: none;
