@@ -441,7 +441,11 @@ function renderChecklistCard(item) {
   const notes = item.notes
     ? ` <span class="checklist-modal-card-notes">${escapeHtml(item.notes)}</span>`
     : "";
-  return `<div class="checklist-modal-card"><span class="checklist-modal-card-num">#${escapeHtml(item.cardNumberDisplay)}</span> ${escapeHtml(item.playerName)}${notes}</div>`;
+  // The checkbox is print-only (hidden on screen, shown in @media print
+  // - styles.css) - there's no on-screen "owned" state to track, it's
+  // just there so a printed checklist can be checked off with a pen,
+  // matching the source PDFs' own convention.
+  return `<div class="checklist-modal-card"><span class="checklist-modal-card-checkbox"></span><span class="checklist-modal-card-num">#${escapeHtml(item.cardNumberDisplay)}</span> ${escapeHtml(item.playerName)}${notes}</div>`;
 }
 
 /**

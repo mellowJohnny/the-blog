@@ -1285,6 +1285,11 @@ label sup {
   line-height: 1.4;
 }
 
+/* Print-only - see @media print below for the visible version */
+.checklist-modal-card-checkbox {
+  display: none;
+}
+
 .checklist-modal-card-num {
   color: var(--color-text-dark);
   font-weight: 700;
@@ -1344,6 +1349,15 @@ label sup {
 
   .checklist-modal-controls {
     display: none !important;
+  }
+
+  .checklist-modal-card-checkbox {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 1px solid #000;
+    margin-right: 6px;
+    vertical-align: middle;
   }
 }
 
