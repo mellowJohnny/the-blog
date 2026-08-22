@@ -1193,6 +1193,7 @@ label sup {
   justify-content: flex-end;
   align-items: center;
   gap: 16px;
+  margin-bottom: 16px;
 }
 
 .checklist-modal-print-btn {
