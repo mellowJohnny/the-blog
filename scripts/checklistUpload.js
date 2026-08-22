@@ -287,7 +287,7 @@ function saveChecklist() {
       }
 
       alert(data.message || "Saved.");
-      window.location.href = "/cms/wlcms.html";
+      window.location.href = "/cms/uploadChecklist.html";
     })
     .catch((error) => {
       console.log("Save error:", error);

@@ -82,7 +82,20 @@ function parseChecklistText(text) {
     if (!line) continue;
 
     const match = line.match(CARD_LINE_RE);
-    if (!match) continue;
+    if (!match) {
+      // A line that doesn't look like "<number> <name>" is either
+      // header/title noise before the first card (nothing to attach it
+      // to yet), or - for some PDFs - a note that wrapped onto its own
+      // line instead of staying on the card's line (e.g. "RDM"/"Long
+      // Shot RDM" trailing a card in some insert-set checklists). Once
+      // at least one card has been seen, treat it as the latter and
+      // append it to that card's notes rather than silently dropping it.
+      if (cards.length > 0) {
+        const lastCard = cards[cards.length - 1];
+        lastCard.notes = lastCard.notes ? `${lastCard.notes} ${line}` : line;
+      }
+      continue;
+    }
 
     const [, cardNumber, remainder] = match;
 
