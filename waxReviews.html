@@ -201,7 +201,11 @@
            fetches and fills it in on click. -->
       <div id="checklistModalOverlay" class="checklist-modal-overlay">
         <div class="checklist-modal-content">
-          <span class="checklist-modal-close" onclick="closeChecklistModal()">&times;</span>
+          <div class="checklist-modal-controls">
+            <button type="button" class="checklist-modal-print-btn" onclick="window.print()">🖨 Print</button>
+            <span class="checklist-modal-close" onclick="closeChecklistModal()">&times;</span>
+          </div>
+          <header class="checklist-modal-masthead"><a href="index.html">the hella files</a></header>
           <h2 id="checklistModalTitle" class="checklist-modal-title"></h2>
           <div id="checklistModalBody"></div>
         </div>

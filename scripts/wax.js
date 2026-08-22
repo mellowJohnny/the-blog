@@ -369,6 +369,11 @@ function openChecklistModal(link) {
   title.textContent = setName;
   body.innerHTML = "<p>Loading checklist...</p>";
   overlay.style.display = "block";
+  // Scopes the @media print rules (styles.css) to hide the rest of the
+  // page and print only the modal - without this, printing the page
+  // normally (modal closed) would print nothing at all, since those
+  // rules would otherwise apply unconditionally.
+  document.body.classList.add("checklist-modal-open");
 
   fetch(`${CHECKLIST_API_URL}?setName=${encodeURIComponent(setName)}`)
     .then(response => {
@@ -386,13 +391,14 @@ function openChecklistModal(link) {
 
 function closeChecklistModal() {
   document.getElementById("checklistModalOverlay").style.display = "none";
+  document.body.classList.remove("checklist-modal-open");
 }
 
 // Clicking the dark backdrop (not the content box itself) also closes it
 document.addEventListener("click", (event) => {
   const overlay = document.getElementById("checklistModalOverlay");
   if (overlay && event.target === overlay) {
-    overlay.style.display = "none";
+    closeChecklistModal();
   }
 });
 

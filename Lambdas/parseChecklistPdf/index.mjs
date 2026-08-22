@@ -85,14 +85,35 @@ function parseChecklistText(text) {
     if (!match) {
       // A line that doesn't look like "<number> <name>" is either
       // header/title noise before the first card (nothing to attach it
-      // to yet), or - for some PDFs - a note that wrapped onto its own
-      // line instead of staying on the card's line (e.g. "RDM"/"Long
-      // Shot RDM" trailing a card in some insert-set checklists). Once
-      // at least one card has been seen, treat it as the latter and
-      // append it to that card's notes rather than silently dropping it.
+      // to yet), or - for some PDFs - text that wrapped onto its own
+      // line instead of staying on the card's line. Once at least one
+      // card has been seen, attach it to that card rather than silently
+      // dropping it - but what kind of text it is depends on how much
+      // of a name the card already has:
+      //   - exactly one word so far (e.g. "Blaine") almost certainly
+      //     means the surname got cut off mid-name (e.g. "130 Blaine" /
+      //     "Stoughton" -> "Blaine Stoughton", sometimes with a trailing
+      //     note on the same wrapped line too, e.g. "Stoughton IA") - so
+      //     run it through the same name/notes split as a normal line
+      //     and merge each half in.
+      //   - two or more words already (e.g. "Points Leader") means the
+      //     name is already complete, so the wrapped line is a genuine
+      //     note (e.g. "RDM"/"Long Shot RDM") and gets appended whole.
       if (cards.length > 0) {
         const lastCard = cards[cards.length - 1];
-        lastCard.notes = lastCard.notes ? `${lastCard.notes} ${line}` : line;
+        const nameWordCount = lastCard.playerName.split(/\s+/).filter(Boolean).length;
+
+        if (nameWordCount === 1) {
+          const { playerName: nameContinuation, notes: noteContinuation } = splitNameAndNotes(line);
+          if (nameContinuation) {
+            lastCard.playerName = `${lastCard.playerName} ${nameContinuation}`;
+          }
+          if (noteContinuation) {
+            lastCard.notes = lastCard.notes ? `${lastCard.notes} ${noteContinuation}` : noteContinuation;
+          }
+        } else {
+          lastCard.notes = lastCard.notes ? `${lastCard.notes} ${line}` : line;
+        }
       }
       continue;
     }

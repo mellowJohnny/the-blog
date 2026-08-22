@@ -1188,16 +1188,65 @@ label sup {
   font-family: 'Source Sans 3', sans-serif;
 }
 
+.checklist-modal-controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+}
+
+.checklist-modal-print-btn {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  background-color: #256386;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.checklist-modal-print-btn:hover {
+  opacity: 0.85;
+}
+
 .checklist-modal-close {
-  float: right;
   font-size: 32px;
   font-weight: bold;
   color: #444;
   cursor: pointer;
+  line-height: 1;
 }
 
 .checklist-modal-close:hover {
   color: var(--color-accent-hover);
+}
+
+/* Scaled-down version of .wax-reviews-masthead's Bebas Neue treatment
+   (same font/outline-text-shadow look) - a flat background color
+   instead of that masthead's photographic one, both because a modal
+   header has nowhere near that much room and because background
+   images are unreliable in print output (suppressed by default in
+   most browsers) and this masthead exists here specifically so a
+   printed checklist keeps its branding. */
+.checklist-modal-masthead {
+  background-color: var(--color-masthead-bg);
+  margin: 0 -32px 16px -32px;
+  padding: 14px 32px;
+}
+
+.checklist-modal-masthead a {
+  font-family: 'Bebas Neue';
+  font-weight: 500;
+  font-size: 40px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgb(252, 252, 245);
+  text-shadow:
+    -1px -1px 0 var(--color-heading-outline),
+     1px -1px 0 var(--color-heading-outline),
+    -1px  1px 0 var(--color-heading-outline),
+     1px  1px 0 var(--color-heading-outline);
 }
 
 .checklist-modal-title {
@@ -1206,7 +1255,6 @@ label sup {
   font-size: 1.4rem;
   color: var(--color-text-dark);
   margin: 0 0 16px 0;
-  clear: both;
 }
 
 .checklist-modal-cards {
@@ -1254,6 +1302,47 @@ label sup {
 
   .checklist-modal-cards {
     columns: 1;
+  }
+}
+
+/* Scoped to body.checklist-modal-open (toggled in openChecklistModal()/
+   closeChecklistModal(), scripts/wax.js) so printing the page normally
+   - modal never opened - is completely unaffected. Without that scope,
+   these rules would hide the whole page any time it's printed, modal
+   open or not, since #checklistModalOverlay would still be empty. */
+@media print {
+  body.checklist-modal-open > *:not(#checklistModalOverlay) {
+    display: none !important;
+  }
+
+  body.checklist-modal-open .checklist-modal-overlay {
+    position: static;
+    background: none;
+    padding: 0;
+    overflow: visible;
+  }
+
+  body.checklist-modal-open .checklist-modal-content {
+    box-shadow: none;
+    border-radius: 0;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  body.checklist-modal-open .checklist-modal-masthead {
+    margin: 0 0 16px 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body.checklist-modal-open .checklist-modal-cards {
+    columns: 2;
+  }
+
+  .checklist-modal-controls {
+    display: none !important;
   }
 }
 
