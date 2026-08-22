@@ -194,6 +194,21 @@ contract and `Documentation/LAMBDA_FUNCTIONS.md` for the backend
   Lambda's 404 guard for a bad `setName`/`year`) the UI rolls back —
   count, button state, and the `localStorage` entry all revert.
 
+## Checklist link (waxReviews.html)
+
+`displayCardSet()` in `wax.js` takes a `hasChecklist` param (the `Cards`
+item's own `hasChecklist` boolean — see `DATA_MODEL.md`) and, when true,
+adds a "Full Checklist" row to the set-details table between
+Manufacturer and Hella Rating, bumping the header image cell's
+`rowspan` from 7 to 8 to match; when false, the table renders exactly
+as it always has, with no extra row. `hasChecklist` is set by
+`saveChecklist` the first time a checklist is uploaded for that exact
+`setName` (see `LAMBDA_FUNCTIONS.md`) — this is Step 1 of a two-step
+plan for connecting the `Cards` and `Checklists` tables on the public
+site; the row is plain text for now, not yet a link to anything (Step
+2, not built yet, is actually fetching and displaying checklist
+content).
+
 ## Orphaned / legacy files
 
 These exist in the repo but aren't reachable from the current site

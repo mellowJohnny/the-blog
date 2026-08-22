@@ -127,22 +127,32 @@ create/edit form: **upload → review → save**.
    "Parse" sends the PDF (base64-encoded, no S3 step — checklist PDFs
    are small) to `parseChecklistPdf`.
 2. **Review**: on a successful parse, the modal closes and an editable
-   table appears on the page — one row per card (`Card #` / `Player
-   Name` / `Notes`), each cell a plain text input, with a delete button
-   per row and an "+ Add Row" button. Nothing has been saved yet; this
-   step exists because parsing heuristics aren't perfect (e.g. a
-   duplicate-numbered line from a stray caption in the source PDF gets
-   dropped automatically, but is worth a glance).
+   table appears on the page — a Set Name field, an optional Insert Set
+   Name field (blank for the base/main set; filled in when the PDF's
+   filename indicated one — see `LAMBDA_FUNCTIONS.md`), and one table
+   row per card (`Card #` / `Player Name` / `Notes`), each cell a plain
+   text input, with a delete button per row and an "+ Add Row" button.
+   Nothing has been saved yet; this step exists because parsing
+   heuristics aren't perfect (e.g. a duplicate-numbered line from a
+   stray caption in the source PDF gets dropped automatically, but is
+   worth a glance).
 3. **Save**: "Save to DynamoDB" reads whatever's currently in the table
    (including any hand-edits) and sends it to `saveChecklist`, which
-   fully replaces that set's rows in the `Checklists` table (see
-   `DATA_MODEL.md`) rather than merging. Every outcome — validation
-   errors, server errors, success — uses a plain `alert()`, same
-   convention as `createCardSet()`/`createBlogPost()`/etc.; on success,
-   the redirect to `cms/wlcms.html` only fires after the alert is
-   dismissed (`alert()` blocks until then). There's no
-   checklist-specific picker page yet, so it redirects to the CMS home
-   instead of a `pick*.html` page.
+   fully replaces that group's rows in the `Checklists` table (see
+   `DATA_MODEL.md`) — the main set, or the one specific insert set named
+   in the Insert Set Name field, not merging and not touching the
+   table's other groups for that same base set. It also flips a
+   `hasChecklist` flag on the matching `Cards` item, which is what makes
+   the "Full Checklist" row appear on `waxReviews.html` (see
+   `FRONTEND.md`) — if that particular step fails (e.g. no `Cards` item
+   exists yet with that exact `setName`), the save still succeeds, but
+   the success alert includes a warning saying so. Every outcome —
+   validation errors, server errors, success (with or without that
+   warning) — uses a plain `alert()`, same convention as
+   `createCardSet()`/`createBlogPost()`/etc.; on success, the redirect
+   back to `cms/uploadChecklist.html` itself (a fresh page load, ready
+   for the next upload) only fires after the alert is dismissed
+   (`alert()` blocks until then).
 
 See `API_ENDPOINTS.md` → "CMS — checklist upload" for the two Lambdas'
 exact request/response shapes, and `tools/checklistParser/` for the

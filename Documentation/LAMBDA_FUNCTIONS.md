@@ -150,18 +150,35 @@ since that history predates this doc being kept current.
   `lib/pdf-parse.js` is the real implementation without that wrapper.
 - **What it does**: backs `cms/uploadChecklist.html`'s upload step.
   Takes a base64-encoded PDF, extracts its text, and parses it into
-  `{ setName, cards: [{ cardNumber, playerName, notes }] }` — one row
-  per line matching `<number> <name> [NOTES]`, where a trailing
-  all-caps token (or several, e.g. `"RC, UER"`) is treated as a note
-  rather than part of the name. Duplicate card numbers are dropped
-  (first occurrence kept) rather than erroring, since real checklist
-  PDFs can have stray duplicate lines (e.g. a sample-card caption
-  repeating a number already used in the main grid). **Never writes to
-  DynamoDB** — returns the parsed result for review/correction in the
-  browser; `saveChecklist` below is the only one that writes. Same
-  parsing logic (regex, note-detection, dedup) as the standalone
-  `tools/checklistParser/parse.mjs` script in this repo — kept in sync
-  deliberately, see that file's own comments.
+  `{ setName, insertSetName, cards: [{ cardNumber, playerName, notes }] }`
+  — one row per line matching `<number> <name> [NOTES]`, where a
+  trailing all-caps token (or several, e.g. `"RC, UER"`) is treated as a
+  note rather than part of the name. The card number itself may have a
+  leading letter prefix (e.g. `"R1"`, common for insert sets numbered
+  separately from the base set) and/or a single trailing letter (e.g.
+  `"165a"`). A line that doesn't match the `<number> <name>` pattern at
+  all is either header/title noise before the first card (ignored), or
+  — once at least one card has been seen — treated as a note that
+  wrapped onto its own line in the source PDF and gets appended to the
+  *previous* card's `notes` (e.g. `"RDM"`/`"Long Shot RDM"` trailing
+  some insert-set cards). Duplicate card numbers are dropped (first
+  occurrence kept) rather than erroring, since real checklist PDFs can
+  have stray duplicate lines (e.g. a sample-card caption repeating a
+  number already used in the main grid). **Never writes to DynamoDB** —
+  returns the parsed result for review/correction in the browser;
+  `saveChecklist` below is the only one that writes. Same parsing logic
+  as the standalone `tools/checklistParser/parse.mjs` script in this
+  repo — kept in sync deliberately, see that file's own comments.
+- **`setName`/`insertSetName` derivation**: both come from the
+  filename, not PDF content. A comma splits it into the base set name
+  and the insert set name (e.g. `"1994-95 Upper Deck,Predictors
+  (Retail)).pdf"` → `setName: "1994-95 Upper Deck"`, `insertSetName:
+  "Predictors (Retail)"`); no comma means `insertSetName: ""` — a
+  main-set upload. The result also has a trailing sport name stripped
+  from `setName` (e.g. `"...O-Pee-Chee Hockey"` → `"...O-Pee-Chee"`) —
+  checklist source titles often include it, but this site's own
+  `Cards.setName` convention doesn't, and `saveChecklist`'s `Cards`
+  lookup (see below) depends on an exact match.
 - **Memory/timeout**: needed bumping up from Lambda's defaults
   (128MB/3s) to get reliable runs — `pdf-parse`/`pdfjs-dist` isn't
   lightweight, and the defaults caused intermittent 502s (crash/OOM)
@@ -177,21 +194,43 @@ since that history predates this doc being kept current.
   the Lambda Node.js runtime.
 - **What it does**: backs `cms/uploadChecklist.html`'s save step, after
   the parsed result has been reviewed/corrected in the browser. Takes
-  `{ setName, cards }` and writes it to the `Checklists` table (see
-  `DATA_MODEL.md`) — but as a **full replace**, not a merge: it first
-  `Query`s (partition key `setName`, not a `Scan`) every existing
-  `cardNumber` for that set, deletes them all, and only then writes the
-  new set, same overall pattern as `bulkSubscriberUpload`'s
-  delete-all-then-import (scoped to one set's rows here, not the whole
-  table — other sets' checklists share the same table). If the delete
-  step doesn't fully succeed after retries, the function aborts before
-  writing anything new, rather than risking a mix of old and new rows.
-  `BatchWriteItem`'s `UnprocessedItems` (from throttling) are retried
-  a few times with backoff on both the delete and write passes.
-- **Execution role**: needs `dynamodb:Query` and
-  `dynamodb:BatchWriteItem` on the `Checklists` table specifically —
-  easy to accidentally grant to `parseChecklistPdf` instead by mistake
-  (it doesn't need either, since it never touches DynamoDB).
+  `{ setName, insertSetName, cards }` and writes it to the `Checklists`
+  table (see `DATA_MODEL.md`) — but as a **full replace, scoped to the
+  exact group** (main set, or this one specific insert set), not a
+  merge and not the whole `setName` partition: it first `Query`s
+  (partition key `setName` + a `begins_with` condition on the group's
+  sort-key prefix, not a `Scan`) every existing item in that group,
+  deletes them all, and only then writes the new set — same overall
+  pattern as `bulkSubscriberUpload`'s delete-all-then-import, but
+  scoped down to one group's rows rather than the whole table, since
+  main-set and insert-set cards for the same `setName` share the table
+  (and can otherwise collide — see `DATA_MODEL.md`'s prefixed-sort-key
+  explanation). If the delete step doesn't fully succeed after retries,
+  the function aborts before writing anything new, rather than risking
+  a mix of old and new rows. `BatchWriteItem`'s `UnprocessedItems`
+  (from throttling) are retried a few times with backoff on both the
+  delete and write passes. Each written item also gets `type`,
+  `insertSetName`, `cardNumberDisplay`, and `sortIndex` — see
+  `DATA_MODEL.md` for what each is for.
+- **`hasChecklist` linking (non-critical, but surfaced)**: after a
+  successful save, it `Query`s the `Cards` table by the same `setName`
+  (Cards' own partition key) and sets `hasChecklist: true` on the
+  matching item(s) — this is what `waxReviews.html` checks to show a
+  "Full Checklist" row (see `FRONTEND.md`). This step has its own
+  try/catch, same design principle as `updateCardSet`'s TinyMCE cleanup
+  pass below — its failure never fails the checklist save itself, which
+  already fully succeeded by this point. It's not silent, though: if
+  this step throws, or finds zero matching `Cards` items (e.g. a
+  `setName` mismatch — this happened for real with the trailing
+  "Hockey" case above, before that strip was added), the success
+  message gets a `Warning: ...` suffix explaining it, so a broken link
+  shows up in the CMS instead of just quietly never happening.
+- **Execution role**: needs `dynamodb:Query` and `dynamodb:BatchWriteItem`
+  on `Checklists`, **plus** `dynamodb:Query` and `dynamodb:UpdateItem`
+  on `Cards` for the linking step above — easy to accidentally grant
+  the `Checklists` permissions to `parseChecklistPdf` instead by
+  mistake (it doesn't need any DynamoDB access, since it never touches
+  the database).
 
 ## `Lambdas/updateCardSet/` — pre-existing, with a real incident behind it
 

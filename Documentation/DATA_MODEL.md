@@ -64,6 +64,7 @@ non-key attribute used only by the `setID-index` GSI lookup path.
 | `author` | String | |
 | `seoPageTitle`, `seoMetaDesc`, `seoURLSlug`, `seoTags` | String | SEO metadata fields added to the create/edit forms; not currently read by any public page's `<head>` — likely intended for a future SEO pass. |
 | `now` / `date` | String | Passed through as `item.now` in `wax.js`'s `renderCardSetPage()` and used as the review's displayed date. |
+| `hasChecklist` | Boolean | Set by `saveChecklist` (see the `Checklists` table below) the first time a checklist is successfully uploaded for this set's exact `setName` — not present at all until then. Drives the "Full Checklist" row on `waxReviews.html` (`displayCardSet()` in `scripts/wax.js`). Not written by any CMS create/update form directly. |
 
 ### `cmsContent/` directory
 
@@ -91,21 +92,33 @@ per set. Populated via `cms/uploadChecklist.html`, which parses an
 uploaded checklist PDF and lets the result be reviewed/corrected before
 anything is written (see `CMS_GUIDE.md` and `LAMBDA_FUNCTIONS.md`).
 
-Partition key `setName` (String, matches the `Cards` table's `setName`
-convention exactly, e.g. `"1986-87 O-Pee-Chee Hockey"`), sort key
-`cardNumber` (String).
+Partition key `setName` (String — always the *base* set name, e.g.
+`"1986-87 O-Pee-Chee"`, whether the item is a main-set card or belongs
+to one of that set's insert sets; a checklist source's title commonly
+adds the sport name on the end (e.g. "...O-Pee-Chee Hockey"), which
+`parseChecklistPdf` strips so this matches the `Cards` table's
+`setName` exactly — see `LAMBDA_FUNCTIONS.md`), sort key `cardNumber`
+(String).
 
 | Field | Type | Notes |
 |---|---|---|
-| `setName` | String | Partition key. Not a foreign key to `Cards` in any enforced sense — just a matching string convention. |
-| `cardNumber` | String | Sort key. String rather than Number since some sets use alphanumeric card numbers (e.g. `"1a"`) — sort numerically client-side when displaying, DynamoDB won't do it for you. |
+| `setName` | String | Partition key. Matches the `Cards` table's `setName` exactly — not an enforced foreign key, just a matching string convention that `saveChecklist`'s `hasChecklist` linkage (see `Cards` above) depends on. |
+| `cardNumber` | String | Sort key. **Not the human-readable card number** — see `cardNumberDisplay` below. Prefixed by group for uniqueness/safe scoped-replace: `MAIN#<cardNumber>` for a main-set card, `INSERT#<insertSetName>#<cardNumber>` for an insert-set card (main and insert cards can otherwise collide, e.g. both numbered starting at "1"/"R1"). Never shown to a user. |
+| `cardNumberDisplay` | String | The actual printed card number/designation, e.g. `"76"` or `"R1"` (insert sets are commonly numbered with a letter prefix) or `"165a"`. String rather than Number since these are often alphanumeric. |
 | `playerName` | String | |
-| `notes` | String | Trailing markers from the source checklist (e.g. `"RC"`, `"UER"`, `"RC, UER"`) — empty string, not omitted, when there are none. |
+| `notes` | String | Trailing markers from the source checklist (e.g. `"RC"`, `"UER"`, `"RC, UER"`), plus anything from a note that wrapped onto its own line in the source PDF instead of staying on the card's line (e.g. `"RDM"`, `"Long Shot RDM"` — `parseChecklistPdf` reattaches a non-matching line to the card immediately before it). Empty string, not omitted, when there are none. |
+| `type` | String | `"main"` or `"insertSet"` — derived from whether the upload had an insert set name (see `insertSetName` below), not stored independently. What a future checklist-display feature should group by. |
+| `insertSetName` | String | The insert set's name (e.g. `"Predictors (Retail)"`), derived from the checklist PDF's filename — a comma splits it into base set name + insert set name (e.g. `"1994-95 Upper Deck,Predictors (Retail).pdf"`). Empty string for main-set cards. |
+| `sortIndex` | Number | This card's position (0-based) in the reviewed table at save time, within its own group (main, or this one insert set) — the review table preserves the PDF's printed order, and rows can be freely reordered/added/deleted there before saving. Deliberately separate from the `cardNumber` sort key above, which doesn't sort numerically or group main-before-insert on its own (plain string comparison — `"INSERT#"` sorts before `"MAIN#"`, and `"10"` sorts before `"2"`). A future checklist-display feature should group by `type`/`insertSetName` then order by this. |
 
-**Full-replace on every save**: `saveChecklist` queries and deletes every
-existing item for that `setName` before writing the new set, rather than
-merging — so re-uploading a corrected PDF can't leave stale/renumbered
-rows behind from a previous upload.
+**Full-replace on every save, scoped to the group**: `saveChecklist`
+queries and deletes every existing item matching that exact `setName` +
+group (main, or this one insert set — via a `begins_with` condition on
+the prefixed sort key) before writing the new set, rather than merging.
+This is scoped deliberately to just that group, not the whole `setName`
+partition — uploading/replacing one insert set never touches the main
+set's rows, or a different insert set's rows, even though they all
+share the same `setName`.
 
 ## `Subscribers` / `SubscribersTest` tables
 

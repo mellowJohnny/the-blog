@@ -180,16 +180,16 @@ doesn't.
 - **Method**: POST
 - **Body**: `{ fileName, fileContent }` — `fileContent` is the PDF, base64-encoded client-side via `FileReader`. No S3 round-trip; checklist PDFs are small enough (a few hundred KB) to send directly in the request body.
 - **Called from**: `parseChecklistPdf()` in `scripts/checklistUpload.js`
-- **Response**: `{ setName, cards: [{ cardNumber, playerName, notes }], skippedDuplicates }` on success — `setName` is derived from the filename unless overridden, `skippedDuplicates` lists any duplicate-numbered lines the parser dropped (kept the first occurrence). Never writes to DynamoDB itself — purely parse-and-return, so a bad parse can be corrected in the browser before anything is saved.
+- **Response**: `{ setName, insertSetName, cards: [{ cardNumber, playerName, notes }], skippedDuplicates }` on success. `setName`/`insertSetName` are derived from the filename unless overridden (a comma splits base set name from insert set name; `insertSetName` is `""` for a main-set upload) — see `LAMBDA_FUNCTIONS.md` for the exact filename convention, including the trailing-sport-name strip. `skippedDuplicates` lists any duplicate-numbered lines the parser dropped (kept the first occurrence). Never writes to DynamoDB itself — purely parse-and-return, so a bad parse can be corrected in the browser before anything is saved.
 - **Lambda**: `Lambdas/parseChecklistPdf/` (source in this repo — see `LAMBDA_FUNCTIONS.md`).
 
 ### Save a reviewed checklist
 - **URL**: `https://w46hwbexed.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: POST
-- **Body**: `{ setName, cards: [{ cardNumber, playerName, notes }] }` — the parsed result, after any hand-editing in the review table (add/delete rows, fix a name, etc).
+- **Body**: `{ setName, insertSetName, cards: [{ cardNumber, playerName, notes }] }` — the parsed result, after any hand-editing in the review table (add/delete rows, fix a name, etc). `insertSetName` is optional/empty for a main-set save.
 - **Called from**: `saveChecklist()` in `scripts/checklistUpload.js`
-- **Response**: `{ message }` on success (e.g. `"Replaced 0 existing card(s) with 264 new card(s) for \"...\"."`); `{ error }` on a validation failure (400) or a partial DynamoDB failure after retries (502).
-- **Lambda**: `Lambdas/saveChecklist/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Full-replace semantics — deletes every existing item for that `setName` before writing the new set.
+- **Response**: `{ message }` on success (e.g. `"Replaced 0 existing card(s) with 264 new card(s) for \"...\" (main set)."`) — the message can also carry a `Warning:` suffix if the (non-fatal) Cards-table linking step failed or found no matching set, so the checklist itself still saved but won't show a "Full Checklist" link on `waxReviews.html` yet. `{ error }` on a validation failure (400) or a partial DynamoDB failure after retries (502).
+- **Lambda**: `Lambdas/saveChecklist/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Full-replace semantics, scoped to the exact group (main set, or one specific insert set) being saved — deletes every existing item in that group before writing the new set. Also flips `hasChecklist: true` on the matching `Cards` item — see `DATA_MODEL.md`.
 
 ## CMS — image management (S3)
 
