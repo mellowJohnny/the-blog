@@ -76,38 +76,46 @@
 <main>
 
   <div>
-    <!-- Styled label acting as the visible "Choose File" button -->
-    <label for="checklistFileInput" style="
+    <a href="#" id="checklistImportLink" style="
       background-color: #256386;
       color: white;
       padding: 8px 16px;
-      border: none;
       border-radius: 4px;
-      cursor: pointer;
       font-size: 14px;
+      text-decoration: none;
       display: inline-block;
     ">
-      Choose PDF
-    </label>
-
-    <input type="file" id="checklistFileInput" accept="application/pdf" style="display: none;">
-
-    <span id="checklistFileName" style="font-size: 14px; color: #333;">No file chosen</span>
-
-    <button type="button" id="parseChecklistButton" onclick="parseChecklistPdf()" style="
-      background-color: #256386;
-      color: white;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    ">
-      Parse PDF
-    </button>
+      Upload Checklist PDF...
+    </a>
   </div>
 
   <div id="checklistStatus" class="error-msg" style="width: auto; max-width: 700px;"></div>
+
+  <!-- Upload/parse modal - mirrors cms/smsAdmin.html's bulk import modal -->
+  <div id="checklistImportOverlay" class="bulk-overlay" style="display:none;">
+    <div class="bulk-modal">
+      <h2 class="bulk-modal-title">Upload Checklist PDF</h2>
+
+      <p class="bulk-modal-instructions">
+        Select a checklist PDF (tcdb.com-style: card number, then player name,
+        with optional trailing markers like <code>RC</code>/<code>UER</code>/<code>CL</code>).
+        You'll be able to review and edit every row before anything is saved.
+      </p>
+
+      <div class="bulk-drop-zone" id="checklistDropZone">
+        <span id="checklistDropLabel">Drop PDF file here or <label for="checklistFileInput" class="bulk-file-label">browse</label></span>
+        <input type="file" id="checklistFileInput" accept="application/pdf" style="display: none;" />
+        <p id="checklistModalFileName" class="bulk-file-name"></p>
+      </div>
+
+      <div id="checklistModalFeedback" class="bulk-feedback" style="display:none;"></div>
+
+      <div class="bulk-modal-actions">
+        <button id="checklistCancelBtn" class="bulk-btn bulk-btn-cancel">Cancel</button>
+        <button id="checklistParseBtn" class="bulk-btn bulk-btn-upload" disabled>Parse</button>
+      </div>
+    </div>
+  </div>
 
   <div id="checklistReviewSection" style="display: none;">
 

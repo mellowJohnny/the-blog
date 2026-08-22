@@ -9,15 +9,102 @@
 const PARSE_CHECKLIST_URL = "https://uurjs2v7i0.execute-api.us-east-2.amazonaws.com/dev";
 const SAVE_CHECKLIST_URL = "https://w46hwbexed.execute-api.us-east-2.amazonaws.com/dev";
 
+// --- Upload/parse modal - mirrors cms/smsAdmin.html's bulk import modal ---
+let selectedFile = null;
+
 document.addEventListener("DOMContentLoaded", () => {
+  const importLink = document.getElementById("checklistImportLink");
+  if (!importLink) return; // this script also loads on pages without the modal
+
+  const overlay = document.getElementById("checklistImportOverlay");
+  const cancelBtn = document.getElementById("checklistCancelBtn");
+  const parseBtn = document.getElementById("checklistParseBtn");
   const fileInput = document.getElementById("checklistFileInput");
-  if (!fileInput) return;
+  const dropZone = document.getElementById("checklistDropZone");
+  const fileNameEl = document.getElementById("checklistModalFileName");
+
+  function resetModal() {
+    selectedFile = null;
+    fileInput.value = "";
+    fileNameEl.textContent = "";
+    parseBtn.disabled = true;
+    parseBtn.textContent = "Parse";
+    hideModalFeedback();
+  }
+
+  function closeModal() {
+    overlay.style.display = "none";
+    resetModal();
+  }
+
+  importLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    resetModal();
+    overlay.style.display = "flex";
+  });
+
+  cancelBtn.addEventListener("click", closeModal);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeModal();
+  });
 
   fileInput.addEventListener("change", () => {
-    const fileNameSpan = document.getElementById("checklistFileName");
-    fileNameSpan.textContent = fileInput.files[0]?.name || "No file chosen";
+    if (fileInput.files[0]) handleFileSelected(fileInput.files[0], fileNameEl, parseBtn);
+  });
+
+  dropZone.addEventListener("click", (e) => {
+    if (e.target !== fileInput) fileInput.click();
+  });
+
+  dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.classList.add("drag-over");
+  });
+
+  dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("drag-over");
+  });
+
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("drag-over");
+    const file = e.dataTransfer.files[0];
+    if (file) handleFileSelected(file, fileNameEl, parseBtn);
+  });
+
+  parseBtn.addEventListener("click", () => {
+    if (!selectedFile) return;
+    parseChecklistPdf(selectedFile, { parseBtn, cancelBtn, closeModal });
   });
 });
+
+function handleFileSelected(file, fileNameEl, parseBtn) {
+  hideModalFeedback();
+
+  if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+    showModalFeedback("Please select a PDF file.", "error");
+    selectedFile = null;
+    parseBtn.disabled = true;
+    return;
+  }
+
+  selectedFile = file;
+  fileNameEl.textContent = file.name;
+  parseBtn.disabled = false;
+}
+
+function showModalFeedback(msg, type) {
+  const feedbackEl = document.getElementById("checklistModalFeedback");
+  feedbackEl.textContent = msg;
+  feedbackEl.className = `bulk-feedback ${type}`;
+  feedbackEl.style.display = "block";
+}
+
+function hideModalFeedback() {
+  const feedbackEl = document.getElementById("checklistModalFeedback");
+  feedbackEl.style.display = "none";
+  feedbackEl.className = "bulk-feedback";
+}
 
 function readFileAsBase64(file) {
   return new Promise((resolve, reject) => {
@@ -81,17 +168,14 @@ function addChecklistRow() {
   tbody.appendChild(buildChecklistRow({ cardNumber: "", playerName: "", notes: "" }));
 }
 
-function parseChecklistPdf() {
-  const fileInput = document.getElementById("checklistFileInput");
-  const file = fileInput.files[0];
+function parseChecklistPdf(file, { parseBtn, cancelBtn, closeModal }) {
+  parseBtn.disabled = true;
+  cancelBtn.disabled = true;
+  parseBtn.textContent = "Parsing...";
+  hideModalFeedback();
 
-  if (!file) {
-    setChecklistStatus("Choose a PDF file first.", true);
-    return;
-  }
-
-  setChecklistStatus("Parsing...", false);
   document.getElementById("checklistReviewSection").style.display = "none";
+  setChecklistStatus("", false);
 
   readFileAsBase64(file)
     .then((fileContent) =>
@@ -108,12 +192,12 @@ function parseChecklistPdf() {
       try {
         data = await response.json();
       } catch {
-        setChecklistStatus("Unexpected server response.", true);
+        showModalFeedback("Unexpected server response.", "error");
         return;
       }
 
       if (!response.ok) {
-        setChecklistStatus(data.error || "Failed to parse PDF.", true);
+        showModalFeedback(data.error || "Failed to parse PDF.", "error");
         return;
       }
 
@@ -126,10 +210,16 @@ function parseChecklistPdf() {
         statusMsg += ` (Skipped ${data.skippedDuplicates.length} duplicate-numbered line(s) - check the source PDF if that's unexpected.)`;
       }
       setChecklistStatus(statusMsg, false);
+      closeModal();
     })
     .catch((error) => {
       console.log("Parse error:", error);
-      setChecklistStatus("Network error parsing the PDF.", true);
+      showModalFeedback("Network error parsing the PDF.", "error");
+    })
+    .finally(() => {
+      parseBtn.disabled = false;
+      cancelBtn.disabled = false;
+      parseBtn.textContent = "Parse";
     });
 }
 
