@@ -890,6 +890,14 @@ label sup {
 .set-details-author {
   font-family: 'Source Sans 3', sans-serif;
   font-size: 18px;
+  /* Missing these let the review body (postBody, TinyMCE-authored HTML
+     of widely varying quality/vintage) push this table wider than its
+     container on at least one set - width:auto tables aren't reliably
+     bounded by their container, unlike .set-details-table-style right
+     above it (the image/details box), which already sets both and
+     renders correctly contained. */
+  width: 100%;
+  table-layout: fixed;
 }
 
 #cardSetDiv {
