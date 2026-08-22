@@ -87,8 +87,16 @@ function splitNameAndNotes(remainder) {
 // prefix, e.g. "R1", "R2" for a "Predictors" insert set) and a single
 // trailing letter is also optional (e.g. "165a"). Requiring at least one
 // digit somewhere in the middle is what keeps this from matching prose
-// lines like "Trading Card Database" or the set title line.
-const CARD_LINE_RE = /^([A-Za-z]*\d+[A-Za-z]?)\s+(\S.*)$/;
+// lines like "Trading Card Database" or the set title line - except for
+// "NNO" ("No Number"), a standard checklist designation for unnumbered
+// cards with no digit in it at all, matched as a specific exception
+// rather than loosening the digit requirement generally (which would
+// start matching ordinary prose lines).
+const CARD_LINE_RE = /^(NNO|[A-Za-z]*\d+[A-Za-z]?)\s+(\S.*)$/i;
+
+function isUnnumbered(cardNumber) {
+  return cardNumber.toUpperCase() === "NNO";
+}
 
 function parseChecklistText(text) {
   const lines = text.split(/\r?\n/);
@@ -115,14 +123,21 @@ function parseChecklistText(text) {
       //     note on the same wrapped line too, e.g. "Stoughton IA") - so
       //     run it through the same name/notes split as a normal line
       //     and merge each half in.
-      //   - two or more words already (e.g. "Points Leader") means the
-      //     name is already complete, so the wrapped line is a genuine
-      //     note (e.g. "RDM"/"Long Shot RDM") and gets appended whole.
+      //   - an unclosed "(" so far (e.g. a title like "Canada Cup
+      //     Checklist (Brett Hull") means the name is mid-parenthetical
+      //     regardless of word count - same merge treatment.
+      //   - otherwise (e.g. "Points Leader", complete and balanced)
+      //     the name is already finished, so the wrapped line is a
+      //     genuine note (e.g. "RDM"/"Long Shot RDM") and gets appended
+      //     whole.
       if (cards.length > 0) {
         const lastCard = cards[cards.length - 1];
         const nameWordCount = lastCard.playerName.split(/\s+/).filter(Boolean).length;
+        const openParens = (lastCard.playerName.match(/\(/g) || []).length;
+        const closeParens = (lastCard.playerName.match(/\)/g) || []).length;
+        const nameLooksUnfinished = nameWordCount === 1 || openParens > closeParens;
 
-        if (nameWordCount === 1) {
+        if (nameLooksUnfinished) {
           const { playerName: nameContinuation, notes: noteContinuation } = splitNameAndNotes(line);
           if (nameContinuation) {
             lastCard.playerName = `${lastCard.playerName} ${nameContinuation}`;
@@ -139,11 +154,18 @@ function parseChecklistText(text) {
 
     const [, cardNumber, remainder] = match;
 
-    if (seenNumbers.has(cardNumber)) {
-      skippedDuplicates.push(line);
-      continue;
+    // "NNO" isn't a unique identifier - a set can legitimately have
+    // several different unnumbered cards, all designated "NNO" - so
+    // unlike a real duplicate card number (a genuine parsing artifact,
+    // e.g. a stray repeated caption), repeated "NNO" lines are each a
+    // separate card and none of them get skipped as duplicates.
+    if (!isUnnumbered(cardNumber)) {
+      if (seenNumbers.has(cardNumber)) {
+        skippedDuplicates.push(line);
+        continue;
+      }
+      seenNumbers.add(cardNumber);
     }
-    seenNumbers.add(cardNumber);
 
     const { playerName, notes } = splitNameAndNotes(remainder);
     cards.push({ cardNumber, playerName, notes });
