@@ -138,15 +138,15 @@
       <tbody id="checklistTableBody"></tbody>
     </table>
 
-    <button type="button" onclick="addChecklistRow()" class="input-button">
-      + Add Row
-    </button>
+    <div class="checklist-button-row">
+      <button type="button" onclick="addChecklistRow()" class="input-button checklist-add-row-btn">
+        + Add Row
+      </button>
 
-    <br><br>
-
-    <button type="button" id="cmsSubmitButton" onclick="saveChecklist()" class="input-button">
-      Save to DynamoDB
-    </button>
+      <button type="button" id="cmsSubmitButton" onclick="saveChecklist()" class="input-button">
+        Save to DynamoDB
+      </button>
+    </div>
 
   </div>
 
