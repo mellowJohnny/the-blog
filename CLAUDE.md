@@ -29,29 +29,31 @@ this site's API Gateway endpoints now has its source checked into this
 repo (as of 2026-08-15), one directory per function, named exactly
 after its AWS Lambda function name (e.g. `Lambdas/sendAlertHandler/`,
 `Lambdas/getBlogs/`, `Lambdas/updateCardSet/`). Each has its own minimal
-`package.json` — only `sendAlertHandler` has a real dependency
-(`twilio`); every other function uses only `@aws-sdk/*` packages,
+`package.json` — two functions have a real dependency,
+`sendAlertHandler` (`twilio`) and `parseChecklistPdf` (`pdf-parse`,
+deliberately pinned to its v1 major — see `Documentation/LAMBDA_FUNCTIONS.md`
+for why); every other function uses only `@aws-sdk/*` packages,
 which ship with the Lambda Node.js runtime, so `dependencies` is
 empty. None of them is deployed via any command here — edit the code
 in this repo, then redeploy manually. **How you redeploy depends on
-whether the function has a real dependency**: the 20 with empty
+whether the function has a real dependency**: the 21 with empty
 `dependencies` just need the updated `index.mjs` pasted directly into
 the Lambda Console's inline code editor (Code tab) and Deploy clicked
-— no zip needed, since there's nothing to bundle. Only
-`sendAlertHandler` (the one with `twilio`) needs the full zip
-treatment: `npm install` inside `Lambdas/sendAlertHandler/`, zip the
-code plus `node_modules`, upload via Code tab → Update dropdown →
-"Update from a .zip file" — pasting just the code into the inline
-editor would break it (`Cannot find module 'twilio'` at runtime). Per
-the header comment most files carry: **never edit any of them directly
-in the AWS Console without also updating this repo** — this repo is
-the source of truth. One caveat: most of these were pulled
-from the live Console on 2026-08-15 via `aws lambda get-function`, not
-authored with that workflow in mind from the start — if a function's
-behavior in production ever doesn't match what's in its file here,
-someone edited it in the Console after that date without syncing back;
-check `LastModified` via `aws lambda get-function --function-name X`
-against this repo's git history for that file.
+— no zip needed, since there's nothing to bundle. `sendAlertHandler`
+and `parseChecklistPdf` need the full zip treatment instead: `npm
+install` inside their directory, zip the code plus `node_modules`,
+upload via Code tab → Update dropdown → "Update from a .zip file" —
+pasting just the code into the inline editor would break it (`Cannot
+find module` at runtime). Per the header comment most files carry:
+**never edit any of them directly in the AWS Console without also
+updating this repo** — this repo is the source of truth. One caveat:
+most of these were pulled from the live Console on 2026-08-15 via `aws
+lambda get-function`, not authored with that workflow in mind from the
+start — if a function's behavior in production ever doesn't match what's
+in its file here, someone edited it in the Console after that date
+without syncing back; check `LastModified` via `aws lambda
+get-function --function-name X` against this repo's git history for
+that file.
 
 **Deployment of the static site itself**: AWS Amplify Hosting
 auto-builds and deploys on every push to `main` — there is no staging
@@ -84,9 +86,9 @@ anything.
 - **Frontend**: one standalone `.html` file per page at the repo root and under `/cms`, no framework. Shared logic lives in `scripts/*.js` and is wired up per-page via `<script src>` tags. Pages coordinate via URL query params (`?year=`, `?blogType=`, `?pageName=`, `?blogCat=`) rather than client-side routing. Details: `Documentation/FRONTEND.md`.
 - **Backend**: "one Lambda + one API Gateway REST API per action" — there is no shared backend app/router. Every distinct operation (get blogs, create a blog post, get a card set by ID, get an S3 upload URL, send an SMS...) has its own hardcoded API Gateway URL, called directly from whichever `scripts/*.js` file needs it. Full inventory with request/response shapes: `Documentation/API_ENDPOINTS.md`.
 - **Every live Lambda's source is version-controlled**, under `Lambdas/` — one directory per function, matching its exact AWS Lambda function name; see the `## Commands` section above for the sync/deploy workflow. Four turned out to be dead/orphaned (not called by any live frontend code) when the full inventory was pulled in on 2026-08-15, and were removed again once confirmed — see `Documentation/LAMBDA_FUNCTIONS.md` for which. A separate, older prototype directory, `Lambda Functions/` (note the space — a different thing from the no-space `Lambdas/`), no longer exists in this repo at all (deleted 2026-08-06, unrelated to the 2026-08-15 sync) — some docs still reference specific files that used to live there for historical context, even though those files are gone. Details: `Documentation/LAMBDA_FUNCTIONS.md`.
-- **Data**: DynamoDB tables `Blogs` (all blog post types, including the hockey-card-adjacent ones, distinguished by `blogType`), `Cards` (card set reviews, distinguished by `blogCat`), and `Subscribers`/`SubscribersTest` (SMS opt-in list, real vs. test). Field-naming is inconsistent across older and newer code paths (e.g. `img` vs `imgName`, `status` vs `blogStatus`) — see `Documentation/DATA_MODEL.md` before assuming a field name.
+- **Data**: DynamoDB tables `Blogs` (all blog post types, including the hockey-card-adjacent ones, distinguished by `blogType`), `Cards` (card set reviews, distinguished by `blogCat`), `Checklists` (full card-by-card checklists per set, one item per card — see the CMS bullet below), and `Subscribers`/`SubscribersTest` (SMS opt-in list, real vs. test). Field-naming is inconsistent across older and newer code paths (e.g. `img` vs `imgName`, `status` vs `blogStatus`) — see `Documentation/DATA_MODEL.md` before assuming a field name.
 - **Images**: served from S3 bucket `mellowjohnny.cc.files` (`img/blog/`, `img/cards/`, `img/cms/`). The CMS uploads new images via a Lambda-issued presigned URL, PUT directly from the browser to S3.
-- **Auth**: Cognito Hosted UI gates page access to everything under `/cms` (`scripts/auth.js`). Note that this only gates the *page*. All three Autobus SMS endpoints and all 12 cardStack create/update/delete/list endpoints (blog posts, card sets — `scripts/cms.js`) attach a bearer token via `getAuthToken()`, and (confirmed 2026-08-20) all 15 genuinely enforce it server-side too, via a Cognito Authorizer on each of their API Gateway routes — not just a client-side courtesy. Image upload/list (`cmsImageUploader`, `cmsImagePicker`) are the one remaining gap — no token sent, no authorizer. `robots.txt` + a `noindex, nofollow` meta tag on every `/cms` page reduce discoverability but don't affect any of the above. See `Documentation/AUTH.md`.
+- **Auth**: Cognito Hosted UI gates page access to everything under `/cms` (`scripts/auth.js`). Note that this only gates the *page*. All three Autobus SMS endpoints, all 12 cardStack create/update/delete/list endpoints (blog posts, card sets — `scripts/cms.js`), and both checklist-upload endpoints (`scripts/checklistUpload.js`) attach a bearer token via `getAuthToken()`, and (confirmed 2026-08-20 for the first 15, checklist endpoints added after) genuinely enforce it server-side too, via a Cognito Authorizer on each of their API Gateway routes — not just a client-side courtesy. Image upload/list (`cmsImageUploader`, `cmsImagePicker`) are the one remaining gap — no token sent, no authorizer. `robots.txt` + a `noindex, nofollow` meta tag on every `/cms` page reduce discoverability but don't affect any of the above. See `Documentation/AUTH.md`.
 - **Two unrelated tools share `/cms`**: the "cardStack" content CMS (blog posts + card set reviews, TinyMCE-based) and the "Autobus Messaging Platform" (Twilio SMS broadcast tool for a cycling club, nothing to do with blog/card content). See `Documentation/CMS_GUIDE.md`.
 - **Response-shape defensiveness**: frontend code that reads from several of these APIs (especially in `scripts/cms.js`) unwraps the response in multiple possible shapes (raw array, `{body: "...json..."}`, `{body: [...]}`, `{Items: [...]}`) in the same function — a sign the underlying Lambdas' contracts have shifted over time. When touching this code, check what shape the *current* Lambda actually returns rather than assuming the frontend's existing unwrap logic is exhaustive or correct.
 

@@ -79,7 +79,33 @@ repeated `card` objects with `number`, `playerName`, `team`,
 `isRookie`, `isShortPrint`, `subset`). No page or script currently
 reads this either. Combined with `Lambda Functions/getCardSets/getCardSet_FUTURE.js`
 (a stub Lambda with a hardcoded single set/year lookup), this looks
-like the groundwork for an unfinished "full checklist per set" feature.
+like the groundwork for an unfinished "full checklist per set" feature —
+since actually built, independently and differently (PDF upload rather
+than this JSON format), as the live `Checklists` table below. This
+directory itself is still unused.
+
+## `Checklists` table
+
+Full card-by-card checklists per set — one item per card, not one item
+per set. Populated via `cms/uploadChecklist.html`, which parses an
+uploaded checklist PDF and lets the result be reviewed/corrected before
+anything is written (see `CMS_GUIDE.md` and `LAMBDA_FUNCTIONS.md`).
+
+Partition key `setName` (String, matches the `Cards` table's `setName`
+convention exactly, e.g. `"1986-87 O-Pee-Chee Hockey"`), sort key
+`cardNumber` (String).
+
+| Field | Type | Notes |
+|---|---|---|
+| `setName` | String | Partition key. Not a foreign key to `Cards` in any enforced sense — just a matching string convention. |
+| `cardNumber` | String | Sort key. String rather than Number since some sets use alphanumeric card numbers (e.g. `"1a"`) — sort numerically client-side when displaying, DynamoDB won't do it for you. |
+| `playerName` | String | |
+| `notes` | String | Trailing markers from the source checklist (e.g. `"RC"`, `"UER"`, `"RC, UER"`) — empty string, not omitted, when there are none. |
+
+**Full-replace on every save**: `saveChecklist` queries and deletes every
+existing item for that `setName` before writing the new set, rather than
+merging — so re-uploading a corrected PDF can't leave stale/renumbered
+rows behind from a previous upload.
 
 ## `Subscribers` / `SubscribersTest` tables
 

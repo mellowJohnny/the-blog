@@ -25,6 +25,7 @@ Entry point: `cms/wlcms.html` — a simple menu linking to:
 | `cms/pickCardSet.html` | Same, for card sets. |
 | `cms/blogEdit.html` | Edit form for a single blog post, reached via `?blogID=&blogType=`. |
 | `cms/setEdit.html` | Edit form for a single card set, reached via `?setID=`. |
+| `cms/uploadChecklist.html` | Upload a card set checklist PDF, review/correct the parsed result, save to the `Checklists` table — see "Checklist upload" below. |
 
 All create/edit forms use a hosted **TinyMCE** WYSIWYG editor
 (`initTinyEditor()` in `scripts/cms.js`) for the body text — the
@@ -114,6 +115,39 @@ See `API_ENDPOINTS.md` → "CMS — image management" for the exact calls.
 `scripts/cms.js`) that renders the card set exactly as it will appear
 on the live site, using the current (possibly unsaved) form values, in
 a modal — lets you check formatting before publishing. `createBlogPost.html`/`blogEdit.html` don't currently have an equivalent preview.
+
+### Checklist upload
+
+`cms/uploadChecklist.html` is a separate, three-step flow rather than a
+create/edit form: **upload → review → save**.
+
+1. **Upload**: an "Upload Checklist PDF..." button opens a modal that
+   mirrors `smsAdmin.html`'s bulk-import modal exactly — same `.bulk-*`
+   CSS classes, same drag-and-drop/click-to-browse drop zone. Clicking
+   "Parse" sends the PDF (base64-encoded, no S3 step — checklist PDFs
+   are small) to `parseChecklistPdf`.
+2. **Review**: on a successful parse, the modal closes and an editable
+   table appears on the page — one row per card (`Card #` / `Player
+   Name` / `Notes`), each cell a plain text input, with a delete button
+   per row and an "+ Add Row" button. Nothing has been saved yet; this
+   step exists because parsing heuristics aren't perfect (e.g. a
+   duplicate-numbered line from a stray caption in the source PDF gets
+   dropped automatically, but is worth a glance).
+3. **Save**: "Save to DynamoDB" reads whatever's currently in the table
+   (including any hand-edits) and sends it to `saveChecklist`, which
+   fully replaces that set's rows in the `Checklists` table (see
+   `DATA_MODEL.md`) rather than merging. Every outcome — validation
+   errors, server errors, success — uses a plain `alert()`, same
+   convention as `createCardSet()`/`createBlogPost()`/etc.; on success,
+   the redirect to `cms/wlcms.html` only fires after the alert is
+   dismissed (`alert()` blocks until then). There's no
+   checklist-specific picker page yet, so it redirects to the CMS home
+   instead of a `pick*.html` page.
+
+See `API_ENDPOINTS.md` → "CMS — checklist upload" for the two Lambdas'
+exact request/response shapes, and `tools/checklistParser/` for the
+standalone CLI version of the same parsing logic (used for the first
+set, before this page existed).
 
 ## Autobus Messaging Platform — `cms/smsAdmin.html`
 

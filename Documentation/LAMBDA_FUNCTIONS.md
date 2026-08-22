@@ -1,33 +1,36 @@
 # Lambda Functions
 
-**21 of the 25 Lambda functions behind this site's API Gateway
+**23 of the 27 Lambda functions behind this site's API Gateway
 endpoints have their source checked into this repo**, under
 `Lambdas/` (as of 2026-08-15, one directory per function, named
 exactly after its AWS Lambda function name). Most were pulled directly
 from the live Console via `aws lambda get-function` using the
 `amplify-readonly-cli` credential (see `CLAUDE.md` — its actual IAM
 scope turned out to be broader than its name suggests: it can read
-full Lambda source, though not API Gateway config). Four were already
+full Lambda source, though not API Gateway config). Six were already
 in the repo, hand-built here rather than pulled:
 `Lambdas/sendAlertHandler/`, `Lambdas/castVoteHandler/`,
-`Lambdas/deleteBlogHandler/`, `Lambdas/deleteCardSetHandler/`. The
-remaining 4 of the 25 (`getCardIntro`, `getBlogIntro`,
+`Lambdas/deleteBlogHandler/`, `Lambdas/deleteCardSetHandler/`, and —
+added later, for the checklist-upload feature —
+`Lambdas/parseChecklistPdf/` and `Lambdas/saveChecklist/`. The
+remaining 4 of the 27 (`getCardIntro`, `getBlogIntro`,
 `fetchCardSetPreview`, `invalidateCache`) were pulled in the same pass,
 confirmed dead, and removed again the same day — see "Orphaned/dead
 Lambdas" below.
 
 Deployment is still entirely manual for every one of them, but the
-mechanics differ by function: the 20 with no real dependencies
+mechanics differ by function: the 21 with no real dependencies
 (`dependencies: {}` in `package.json`) just need the updated
 `index.mjs` pasted into the Lambda Console's inline code editor and
-Deploy clicked — no zip needed. Only `sendAlertHandler` (has `twilio`)
-needs a full `npm install` + zip (code + `node_modules`) + "Update
-from a .zip file" upload — see its section below. Per the header
-comment most files carry: **never edit any of them directly in the
-Console without also updating this repo** — this repo is now the
-source of truth, and a Console-only edit made after
-2026-08-15 would silently drift out of sync with what's checked in
-here.
+Deploy clicked — no zip needed. Two need a full `npm install` + zip
+(code + `node_modules`) + "Update from a .zip file" upload instead:
+`sendAlertHandler` (has `twilio`) and `parseChecklistPdf` (has
+`pdf-parse`, pinned to its v1 major — see that section below for why)
+— see their sections for specifics. Per the header comment most files
+carry: **never edit any of them directly in the Console without also
+updating this repo** — this repo is now the source of truth, and a
+Console-only edit made after 2026-08-15 would silently drift out of
+sync with what's checked in here.
 
 This doc covers (1) the Lambdas with enough of a story to be worth
 prose — either because they're hand-built/heavily modified in this
@@ -125,6 +128,70 @@ since that history predates this doc being kept current.
   `confirm()` dialog first (destructive, irreversible — no
   soft-delete/undo), then calls the Lambda and redirects to
   `cms/pickCardSet.html` on success.
+
+## `Lambdas/parseChecklistPdf/` — hand-built in this repo
+
+- **File**: `Lambdas/parseChecklistPdf/index.mjs`. Same "never edit in
+  Console" convention as the others, but deployed via the **.zip**
+  path (Console → Code tab → Update dropdown → Update from a .zip
+  file) — see the intro above for why.
+- **Dependencies** (`package.json`): `pdf-parse`, deliberately pinned to
+  its **v1** major rather than the current v2. v2 needs a native
+  `@napi-rs/canvas` binary even for plain text extraction, and `npm
+  install` on a Mac pulls the macOS binary — wrong for Lambda's Linux
+  runtime, and there's no simple way to force the right platform
+  binary without a Linux-matching install step. v1 is pure JS, no
+  native deps, so a zip built on a Mac just works on Lambda. The code
+  also imports `pdf-parse/lib/pdf-parse.js` directly rather than the
+  package root — v1's top-level `index.js` has a long-standing bug
+  (`isDebugMode = !module.parent`) that misfires under ESM/dynamic
+  import (reportedly including AWS Lambda's own module loader) and
+  tries to read a nonexistent test fixture file, crashing on load;
+  `lib/pdf-parse.js` is the real implementation without that wrapper.
+- **What it does**: backs `cms/uploadChecklist.html`'s upload step.
+  Takes a base64-encoded PDF, extracts its text, and parses it into
+  `{ setName, cards: [{ cardNumber, playerName, notes }] }` — one row
+  per line matching `<number> <name> [NOTES]`, where a trailing
+  all-caps token (or several, e.g. `"RC, UER"`) is treated as a note
+  rather than part of the name. Duplicate card numbers are dropped
+  (first occurrence kept) rather than erroring, since real checklist
+  PDFs can have stray duplicate lines (e.g. a sample-card caption
+  repeating a number already used in the main grid). **Never writes to
+  DynamoDB** — returns the parsed result for review/correction in the
+  browser; `saveChecklist` below is the only one that writes. Same
+  parsing logic (regex, note-detection, dedup) as the standalone
+  `tools/checklistParser/parse.mjs` script in this repo — kept in sync
+  deliberately, see that file's own comments.
+- **Memory/timeout**: needed bumping up from Lambda's defaults
+  (128MB/3s) to get reliable runs — `pdf-parse`/`pdfjs-dist` isn't
+  lightweight, and the defaults caused intermittent 502s (crash/OOM)
+  or timeouts on real checklist PDFs even though everything worked
+  fine testing the code directly outside Lambda.
+
+## `Lambdas/saveChecklist/` — hand-built in this repo
+
+- **File**: `Lambdas/saveChecklist/index.mjs`. No real dependency —
+  inline-paste deployable like most of the others, not zipped.
+- **Dependencies** (`package.json`): none listed — only uses
+  `@aws-sdk/client-dynamodb`/`@aws-sdk/lib-dynamodb`, which ship with
+  the Lambda Node.js runtime.
+- **What it does**: backs `cms/uploadChecklist.html`'s save step, after
+  the parsed result has been reviewed/corrected in the browser. Takes
+  `{ setName, cards }` and writes it to the `Checklists` table (see
+  `DATA_MODEL.md`) — but as a **full replace**, not a merge: it first
+  `Query`s (partition key `setName`, not a `Scan`) every existing
+  `cardNumber` for that set, deletes them all, and only then writes the
+  new set, same overall pattern as `bulkSubscriberUpload`'s
+  delete-all-then-import (scoped to one set's rows here, not the whole
+  table — other sets' checklists share the same table). If the delete
+  step doesn't fully succeed after retries, the function aborts before
+  writing anything new, rather than risking a mix of old and new rows.
+  `BatchWriteItem`'s `UnprocessedItems` (from throttling) are retried
+  a few times with backoff on both the delete and write passes.
+- **Execution role**: needs `dynamodb:Query` and
+  `dynamodb:BatchWriteItem` on the `Checklists` table specifically —
+  easy to accidentally grant to `parseChecklistPdf` instead by mistake
+  (it doesn't need either, since it never touches DynamoDB).
 
 ## `Lambdas/updateCardSet/` — pre-existing, with a real incident behind it
 
