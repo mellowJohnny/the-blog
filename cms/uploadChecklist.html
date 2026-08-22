@@ -75,21 +75,15 @@
 <div>
 <main>
 
+  <div class="checklist-page-content">
+
   <div>
-    <a href="#" id="checklistImportLink" style="
-      background-color: #256386;
-      color: white;
-      padding: 8px 16px;
-      border-radius: 4px;
-      font-size: 14px;
-      text-decoration: none;
-      display: inline-block;
-    ">
+    <a href="#" id="checklistImportLink" class="checklist-btn">
       Upload Checklist PDF...
     </a>
   </div>
 
-  <div id="checklistStatus" class="error-msg" style="width: auto; max-width: 700px;"></div>
+  <div id="checklistStatus" class="checklist-status-msg"></div>
 
   <!-- Upload/parse modal - mirrors cms/smsAdmin.html's bulk import modal -->
   <div id="checklistImportOverlay" class="bulk-overlay" style="display:none;">
@@ -144,31 +138,17 @@
       <tbody id="checklistTableBody"></tbody>
     </table>
 
-    <button type="button" onclick="addChecklistRow()" style="
-      background-color: #256386;
-      color: white;
-      padding: 6px 14px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    ">
+    <button type="button" onclick="addChecklistRow()" class="checklist-btn">
       + Add Row
     </button>
 
     <br><br>
 
-    <button type="button" id="cmsSubmitButton" onclick="saveChecklist()" style="
-      background-color: rgb(2, 70, 153);
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-    ">
+    <button type="button" id="cmsSubmitButton" onclick="saveChecklist()" class="checklist-btn checklist-btn-primary">
       Save to DynamoDB
     </button>
+
+  </div>
 
   </div>
 
