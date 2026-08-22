@@ -1154,6 +1154,109 @@ label sup {
   padding: 0 6px;
 }
 
+/* Checklist display (waxReviews.html) - the public-facing "Checklist"
+   link + modal, distinct from the CMS upload/review styles above */
+.checklist-view-link {
+  color: var(--color-link);
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.checklist-view-link:hover {
+  color: var(--color-accent-hover);
+}
+
+.checklist-modal-overlay {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  overflow-y: auto;
+  padding: 40px 0;
+}
+
+.checklist-modal-content {
+  background-color: #fff;
+  margin: 0 auto 40px auto;
+  padding: 24px 32px;
+  border-radius: 8px;
+  width: 75%;
+  max-width: 1400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.checklist-modal-close {
+  float: right;
+  font-size: 32px;
+  font-weight: bold;
+  color: #444;
+  cursor: pointer;
+}
+
+.checklist-modal-close:hover {
+  color: var(--color-accent-hover);
+}
+
+.checklist-modal-title {
+  font-family: 'Work Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--color-text-dark);
+  margin: 0 0 16px 0;
+  clear: both;
+}
+
+.checklist-modal-cards {
+  columns: 3;
+  column-gap: 32px;
+}
+
+.checklist-modal-group-title {
+  column-span: all;
+  font-family: 'Work Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-text-dark);
+  border-bottom: 2px solid var(--color-input-border);
+  margin: 20px 0 8px 0;
+  padding-bottom: 4px;
+}
+
+.checklist-modal-cards .checklist-modal-group-title:first-child {
+  margin-top: 0;
+}
+
+.checklist-modal-card {
+  break-inside: avoid;
+  padding: 3px 0;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.checklist-modal-card-num {
+  color: var(--color-text-dark);
+  font-weight: 700;
+}
+
+.checklist-modal-card-notes {
+  color: #777;
+  font-size: 0.85em;
+}
+
+@media (max-width: 600px) {
+  .checklist-modal-content {
+    width: 92%;
+    padding: 16px 18px;
+  }
+
+  .checklist-modal-cards {
+    columns: 1;
+  }
+}
+
 /**********************************************************
 *********************** S3 BUCKET MODAL *******************
 ***********************************************************/

@@ -166,12 +166,13 @@ function fetchPageTitle(setName)
     // first time a checklist is uploaded for this set - see
     // Lambdas/saveChecklist/index.mjs). Only add the row - and bump the
     // image cell's rowspan to match - when there's actually a checklist
-    // to point to. Not a real link yet - that's Step 2, fetching and
-    // displaying the checklist itself.
+    // to point to. setName is passed via data-set-name rather than
+    // interpolated into the onclick string, same reason as the vote
+    // buttons below - it can contain apostrophes.
     const detailRowCount = hasChecklist ? 8 : 7;
     const checklistRow = hasChecklist
         ? `<tr>
-                <td><strong><i>Checklist:</i></strong> Full Checklist</td>
+                <td><a href="#" class="checklist-view-link" data-set-name="${escapeHtml(setName)}" onclick="openChecklistModal(this); return false;">Checklist</a></td>
             </tr>`
         : "";
 
@@ -336,6 +337,106 @@ function castVote(btn) {
     });
 }
 
+
+/**
+ * Checklist modal (waxReviews.html "Checklist" link)
+ * Fetches every card for a set's setName from getChecklistBySetName
+ * (both the main set and any insert sets, undifferentiated in the
+ * response - see Lambdas/getChecklistBySetName/index.mjs) and renders
+ * them grouped by type (main first, then each insert set by name),
+ * sorted within each group by sortIndex - not by raw DynamoDB item
+ * order, which doesn't sort numerically or group main-before-insert on
+ * its own. See DATA_MODEL.md's Checklists table for why.
+ */
+
+const CHECKLIST_API_URL = "https://xbizlwvad5.execute-api.us-east-2.amazonaws.com/dev";
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function openChecklistModal(link) {
+  const setName = link.dataset.setName;
+  const overlay = document.getElementById("checklistModalOverlay");
+  const title = document.getElementById("checklistModalTitle");
+  const body = document.getElementById("checklistModalBody");
+
+  title.textContent = setName;
+  body.innerHTML = "<p>Loading checklist...</p>";
+  overlay.style.display = "block";
+
+  fetch(`${CHECKLIST_API_URL}?setName=${encodeURIComponent(setName)}`)
+    .then(response => {
+      if (!response.ok) throw new Error(`Checklist request failed: ${response.status}`);
+      return response.json();
+    })
+    .then(items => {
+      body.innerHTML = renderChecklistGroups(items);
+    })
+    .catch(err => {
+      console.log("Checklist fetch failed:", err);
+      body.innerHTML = "<p>Couldn't load the checklist right now - please try again.</p>";
+    });
+}
+
+function closeChecklistModal() {
+  document.getElementById("checklistModalOverlay").style.display = "none";
+}
+
+// Clicking the dark backdrop (not the content box itself) also closes it
+document.addEventListener("click", (event) => {
+  const overlay = document.getElementById("checklistModalOverlay");
+  if (overlay && event.target === overlay) {
+    overlay.style.display = "none";
+  }
+});
+
+function renderChecklistGroups(items) {
+  if (!items || items.length === 0) {
+    return "<p>No checklist data found for this set.</p>";
+  }
+
+  const byGroup = (a, b) => (a.sortIndex ?? 0) - (b.sortIndex ?? 0);
+
+  const mainCards = items.filter(item => item.type !== "insertSet").sort(byGroup);
+
+  const insertGroups = new Map();
+  items
+    .filter(item => item.type === "insertSet")
+    .forEach(item => {
+      const name = item.insertSetName || "Insert Set";
+      if (!insertGroups.has(name)) insertGroups.set(name, []);
+      insertGroups.get(name).push(item);
+    });
+  insertGroups.forEach(group => group.sort(byGroup));
+
+  let html = `<div class="checklist-modal-cards">`;
+
+  if (mainCards.length > 0) {
+    html += `<div class="checklist-modal-group-title">Main Set</div>`;
+    html += mainCards.map(renderChecklistCard).join("");
+  }
+
+  insertGroups.forEach((group, name) => {
+    html += `<div class="checklist-modal-group-title">${escapeHtml(name)}</div>`;
+    html += group.map(renderChecklistCard).join("");
+  });
+
+  html += `</div>`;
+  return html;
+}
+
+function renderChecklistCard(item) {
+  const notes = item.notes
+    ? ` <span class="checklist-modal-card-notes">${escapeHtml(item.notes)}</span>`
+    : "";
+  return `<div class="checklist-modal-card"><span class="checklist-modal-card-num">#${escapeHtml(item.cardNumberDisplay)}</span> ${escapeHtml(item.playerName)}${notes}</div>`;
+}
 
 /**
  * Pagination controls

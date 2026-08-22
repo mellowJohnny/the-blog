@@ -195,5 +195,17 @@
         <div id="copy"></div> <!-- fetchCopyrightYear() called from fetchCardSetsByYear() on page load -->
       </footer>
 
+      <!-- Checklist modal - opened by the "Checklist" link in displayCardSet()
+           (scripts/wax.js) when a set has one (Cards.hasChecklist). Shared by
+           every set on the page, not rebuilt per set - openChecklistModal()
+           fetches and fills it in on click. -->
+      <div id="checklistModalOverlay" class="checklist-modal-overlay">
+        <div class="checklist-modal-content">
+          <span class="checklist-modal-close" onclick="closeChecklistModal()">&times;</span>
+          <h2 id="checklistModalTitle" class="checklist-modal-title"></h2>
+          <div id="checklistModalBody"></div>
+        </div>
+      </div>
+
     </body>
   </html>
