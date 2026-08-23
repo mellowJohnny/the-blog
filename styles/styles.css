@@ -1441,7 +1441,7 @@ label sup {
 /*************************************** Pagination Styles... ********************************/
 .pagination-link {
   font-family: 'Work Sans', sans-serif;
-  font-size: 1.15rem;
+  font-size: 1.4rem;
   color: var(--color-link);
   text-decoration: none;
   margin: 0 15px;
@@ -1462,7 +1462,7 @@ label sup {
 
 .pagination-page {
   font-family: 'Work Sans', sans-serif;
-  font-size: 1rem;
+  font-size: 1.2rem;
   margin: 0 10px;
   color: #444;
 }
