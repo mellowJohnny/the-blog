@@ -239,11 +239,10 @@ function fetchPageTitle(setName)
 
         <br>
         <hr/>
-        <br><br>
 
         <!-- Filled in by renderPaginationControls() (below), called right
              after this whole set's HTML is inserted - see renderCardSetPage() -->
-        <div id="paginationControls" style="text-align:center; margin:20px 0;"></div>
+        <div id="paginationControls" style="text-align:center; margin:8px 0 20px 0;"></div>
 
         <div class="vote-widget" id="vote-widget-${voteKey}">
             <button

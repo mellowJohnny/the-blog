@@ -76,15 +76,17 @@ function splitNameAndNotes(remainder) {
 }
 
 // Leading letters are optional (insert sets are commonly numbered with a
-// prefix, e.g. "R1", "R2" for a "Predictors" insert set) and a single
-// trailing letter is also optional (e.g. "165a"). Requiring at least one
-// digit somewhere in the middle is what keeps this from matching prose
-// lines like "Trading Card Database" or the set title line - except for
-// "NNO" ("No Number"), a standard checklist designation for unnumbered
-// cards with no digit in it at all, matched as a specific exception
-// rather than loosening the digit requirement generally (which would
-// start matching ordinary prose lines).
-const CARD_LINE_RE = /^(NNO|[A-Za-z]*\d+[A-Za-z]?)\s+(\S.*)$/i;
+// prefix, e.g. "R1", "R2" for a "Predictors" insert set, or "PR-1" for a
+// "Parkie Reprints" insert set - the optional hyphen between the letters
+// and digits is for exactly this) and a single trailing letter is also
+// optional (e.g. "165a"). Requiring at least one digit somewhere in the
+// middle is what keeps this from matching prose lines like "Trading
+// Card Database" or the set title line - except for "NNO" ("No
+// Number"), a standard checklist designation for unnumbered cards with
+// no digit in it at all, matched as a specific exception rather than
+// loosening the digit requirement generally (which would start matching
+// ordinary prose lines).
+const CARD_LINE_RE = /^(NNO|[A-Za-z]*-?\d+[A-Za-z]?)\s+(\S.*)$/i;
 
 function isUnnumbered(cardNumber) {
   return cardNumber.toUpperCase() === "NNO";
@@ -101,7 +103,18 @@ function parseChecklistText(text) {
     if (!line) continue;
 
     const match = line.match(CARD_LINE_RE);
-    if (!match) {
+    // A checklist card's own description commonly references a range
+    // of the real card numbers it covers, e.g. "NNO Parkies Checklist
+    // #1:" wrapping onto "PR-1 - PR-8 CL". That continuation line
+    // starts with what looks like a valid card number ("PR-1") followed
+    // by a bare "-", which is the range dash, not part of a name - a
+    // real card's remainder is a player name, never a bare "-". Treat
+    // that shape as "not actually a new card" so it falls through to
+    // the continuation-merge logic below instead of being read as a
+    // (duplicate, and therefore silently dropped) fresh card.
+    const isRangeReference = match && /^-\s/.test(match[2]);
+
+    if (!match || isRangeReference) {
       // A line that doesn't look like "<number> <name>" is either
       // header/title noise before the first card (nothing to attach it
       // to yet - cards.length is still 0), or - for some PDFs - text
@@ -134,21 +147,32 @@ function parseChecklistText(text) {
     }
 
     const [, cardNumber, remainder] = match;
+    const { playerName, notes } = splitNameAndNotes(remainder);
 
     // "NNO" isn't a unique identifier - a set can legitimately have
     // several different unnumbered cards, all designated "NNO" - so
     // unlike a real duplicate card number (a genuine parsing artifact,
     // e.g. a stray repeated caption), repeated "NNO" lines are each a
     // separate card and none of them get skipped as duplicates.
+    //
+    // The dedup key is cardNumber + notes, not cardNumber alone: some
+    // sets legitimately reuse a card number across distinct parallels/
+    // variants sharing the same base slot (e.g. "125 Patrick Roy AU,
+    // SN1000" and "125 Patrick Roy AU, SN250" - two different serial-
+    // numbered autograph parallels; or "AW5 Ray Bourque ERR" and "AW5
+    // Ray Bourque COR" - an error and its correction). Those have
+    // different notes, so they're kept as separate cards. A true parsing
+    // artifact (the same line's text extracted twice) has identical
+    // notes too, so it still collides and gets skipped.
     if (!isUnnumbered(cardNumber)) {
-      if (seenNumbers.has(cardNumber)) {
+      const dedupeKey = `${cardNumber}|${notes}`;
+      if (seenNumbers.has(dedupeKey)) {
         skippedDuplicates.push(line);
         continue;
       }
-      seenNumbers.add(cardNumber);
+      seenNumbers.add(dedupeKey);
     }
 
-    const { playerName, notes } = splitNameAndNotes(remainder);
     cards.push({ cardNumber, playerName, notes });
   }
 
