@@ -1298,6 +1298,10 @@ label sup {
   display: none;
 }
 
+.checklist-modal-print-footer {
+  display: none;
+}
+
 .checklist-modal-card-num {
   color: var(--color-text-dark);
   font-weight: 700;
@@ -1366,6 +1370,17 @@ label sup {
     border: 1px solid #000;
     margin-right: 6px;
     vertical-align: middle;
+  }
+
+  .checklist-modal-print-footer {
+    display: block;
+    margin-top: 24px;
+    padding-top: 8px;
+    border-top: 1px solid #ccc;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 12px;
+    color: #666;
+    text-align: center;
   }
 }
 

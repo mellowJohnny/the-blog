@@ -402,6 +402,16 @@ document.addEventListener("click", (event) => {
   }
 });
 
+// Print-only footer text (hidden on screen - see .checklist-modal-print-footer,
+// styles.css). Set once here rather than on every openChecklistModal()
+// call since the year won't change mid-session.
+(() => {
+  const printFooter = document.getElementById("checklistModalPrintFooter");
+  if (printFooter) {
+    printFooter.textContent = `© ${new Date().getFullYear()} www.mellowjohnny.cc`;
+  }
+})();
+
 function renderChecklistGroups(items) {
   if (!items || items.length === 0) {
     return "<p>No checklist data found for this set.</p>";

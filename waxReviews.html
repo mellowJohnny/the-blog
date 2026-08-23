@@ -208,6 +208,12 @@
           <header class="checklist-modal-masthead"><a href="index.html">the hella files</a></header>
           <h2 id="checklistModalTitle" class="checklist-modal-title"></h2>
           <div id="checklistModalBody"></div>
+          <!-- Print-only - see @media print, styles.css. Browsers won't
+               let a page suppress their own native print header/footer
+               (title/URL/date - a "Headers and footers" checkbox in the
+               print dialog, not something CSS can turn off), so this is
+               a second, clean footer for once that's toggled off. -->
+          <div id="checklistModalPrintFooter" class="checklist-modal-print-footer"></div>
         </div>
       </div>
 
