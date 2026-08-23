@@ -68,14 +68,25 @@ function deriveSetNames(filePath) {
 // periods (T.J.), so they never match this.
 function isNoteToken(token) {
   const stripped = token.replace(/[.,]+$/, "");
-  return /^[A-Z]{2,}$/.test(stripped);
+  // Uppercase letters and digits both allowed (e.g. "1000PC" for a
+  // "1000 Point Club" parallel), but require at least one letter -
+  // otherwise a lone number could get misread as a note.
+  return /^[A-Z0-9]{2,}$/.test(stripped) && /[A-Z]/.test(stripped);
+}
+
+// Inserts a space at digit<->letter boundaries in a note token, e.g.
+// "500GC" -> "500 GC" (the source has no space, but it reads better
+// with one). Pure-letter notes like "RC"/"VAR" have no such boundary
+// and pass through unchanged.
+function formatNoteToken(token) {
+  return token.replace(/(\d)([A-Za-z])/g, "$1 $2").replace(/([A-Za-z])(\d)/g, "$1 $2");
 }
 
 function splitNameAndNotes(remainder) {
   const tokens = remainder.split(/\s+/).filter(Boolean);
   const noteTokens = [];
   while (tokens.length > 0 && isNoteToken(tokens[tokens.length - 1])) {
-    noteTokens.unshift(tokens.pop());
+    noteTokens.unshift(formatNoteToken(tokens.pop()));
   }
   return {
     playerName: tokens.join(" "),
@@ -112,41 +123,30 @@ function parseChecklistText(text) {
     if (!match) {
       // A line that doesn't look like "<number> <name>" is either
       // header/title noise before the first card (nothing to attach it
-      // to yet), or - for some PDFs - text that wrapped onto its own
-      // line instead of staying on the card's line. Once at least one
-      // card has been seen, attach it to that card rather than silently
-      // dropping it - but what kind of text it is depends on how much
-      // of a name the card already has:
-      //   - exactly one word so far (e.g. "Blaine") almost certainly
-      //     means the surname got cut off mid-name (e.g. "130 Blaine" /
-      //     "Stoughton" -> "Blaine Stoughton", sometimes with a trailing
-      //     note on the same wrapped line too, e.g. "Stoughton IA") - so
-      //     run it through the same name/notes split as a normal line
-      //     and merge each half in.
-      //   - an unclosed "(" so far (e.g. a title like "Canada Cup
-      //     Checklist (Brett Hull") means the name is mid-parenthetical
-      //     regardless of word count - same merge treatment.
-      //   - otherwise (e.g. "Points Leader", complete and balanced)
-      //     the name is already finished, so the wrapped line is a
-      //     genuine note (e.g. "RDM"/"Long Shot RDM") and gets appended
-      //     whole.
+      // to yet - cards.length is still 0), or - for some PDFs - text
+      // that wrapped onto its own line instead of staying on the
+      // card's line (e.g. "456 Pittsburgh Wins Patrick" / "Division",
+      // or "R30 Points Leader" / "Long Shot RDM"). Once at least one
+      // card has been seen, run the wrapped line through the same
+      // name/notes split used for a normal line and merge each half in
+      // - whatever isn't a trailing all-caps note extends the name,
+      // whatever is extends the notes. There's no reliable way to tell
+      // "the name/title wasn't finished yet" apart from "this actually
+      // is an independent note" from the text alone - both look like
+      // plain Title-Case word(s) - so this favours completing the
+      // name/title, which empirically is the more common case. The
+      // rare case where a wrapped line is genuinely an independent note
+      // phrase with no all-caps marker of its own (e.g. "Long Shot"
+      // ahead of "RDM") ends up appended to the name instead - a minor
+      // imperfection to catch in the review step, not a lost note.
       if (cards.length > 0) {
         const lastCard = cards[cards.length - 1];
-        const nameWordCount = lastCard.playerName.split(/\s+/).filter(Boolean).length;
-        const openParens = (lastCard.playerName.match(/\(/g) || []).length;
-        const closeParens = (lastCard.playerName.match(/\)/g) || []).length;
-        const nameLooksUnfinished = nameWordCount === 1 || openParens > closeParens;
-
-        if (nameLooksUnfinished) {
-          const { playerName: nameContinuation, notes: noteContinuation } = splitNameAndNotes(line);
-          if (nameContinuation) {
-            lastCard.playerName = `${lastCard.playerName} ${nameContinuation}`;
-          }
-          if (noteContinuation) {
-            lastCard.notes = lastCard.notes ? `${lastCard.notes} ${noteContinuation}` : noteContinuation;
-          }
-        } else {
-          lastCard.notes = lastCard.notes ? `${lastCard.notes} ${line}` : line;
+        const { playerName: nameContinuation, notes: noteContinuation } = splitNameAndNotes(line);
+        if (nameContinuation) {
+          lastCard.playerName = `${lastCard.playerName} ${nameContinuation}`;
+        }
+        if (noteContinuation) {
+          lastCard.notes = lastCard.notes ? `${lastCard.notes} ${noteContinuation}` : noteContinuation;
         }
       }
       continue;
