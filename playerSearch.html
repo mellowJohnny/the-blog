@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<html lang="en-ca">
+  <head>
+  <meta charset="utf-8">
+    <!-- Without this, mobile Safari renders at a wide desktop-width
+         virtual viewport and just zooms the page out to fit, so the
+         @media (max-width: 600px) rules in styles.css never trigger -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+    <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <title>the hella files...Player Search - find which vintage hockey card sets a player appears in</title>
+
+    <meta name="description"
+          content="Search by player name to find every vintage and junk wax hockey card set reviewed on the hella files that they appear in, with a direct link to each set's review.">
+
+    <!-- Load the stylesheet -->
+    <link rel="preload" href="/styles/styles.css" as="style" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/styles/styles.css"></noscript>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap" as="style" onload="this.rel='stylesheet'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
+    </noscript>
+
+    <!-- Load the Hella Files scripts -->
+    <script src="scripts/playerSearch.js" defer></script>
+    <script src="/scripts/helper.js" defer></script>
+    <!-- blogs.js is only loaded here for the weather widget (its
+         geolocation/fetch logic runs at the top level of that file, no
+         explicit call needed) - masthead-container's weather box would
+         otherwise sit stuck on its placeholder text forever, matching a
+         bug already documented once on tech.html (see FRONTEND.md). -->
+    <script src="scripts/blogs.js" defer></script>
+
+    <script>
+      const params = new URLSearchParams(document.location.search);
+      const pageName = "playerSearch"; // matches the NAV_MAP key in helper.js, not the "search" NAV_ITEMS id
+
+      window.addEventListener('load', (event) => {
+        // *** Fetch copyright year from helper.js
+        fetchCopyrightYear();
+
+        // *** Fetch the Top Nav from helper.js
+        fetchNav(pageName);
+
+        // *** If a ?q= is already in the URL (e.g. a shared link), run
+        // that search immediately on load.
+        const initialQuery = params.get("q");
+        if (initialQuery) {
+          document.getElementById("playerSearchInput").value = initialQuery;
+          runPlayerSearch(initialQuery);
+        }
+      });
+    </script>
+ </head>
+
+ <body>
+  <section> <!-- Responsive Masthead -->
+    <div class="masthead-container">
+      <header class="masthead"><a href="index.html">the hella files</a></header>
+      <div id="weather" class="weather-box">Waiting for the Weather Forecast...</div>
+    </div>
+  </section>
+  <div>
+    <nav>
+          <!-- Hamberger menu for mobile in helper.js -->
+        <div class="nav-container" id="global-nav-placeholder">
+          <div class="hamburger" onclick="toggleMenu()">☰</div>
+          <div id="global-nav" class="nav-links"></div>
+        </div>
+      </nav>
+  </div>
+    <main>
+      <section>
+        <div class="header-style">
+          <h1>Player Search</h1>
+        </div>
+        <div class="flex-container">
+          <div class="intro">
+            <p>Find every set on the hella files a player appears in - search across
+            every uploaded checklist by name.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="flex-container">
+          <div id="player-search-form">
+            <form onsubmit="event.preventDefault(); runPlayerSearch(document.getElementById('playerSearchInput').value);">
+              <label for="playerSearchInput">Player name</label><br>
+              <input type="text" id="playerSearchInput" placeholder="e.g. Gretzky" autocomplete="off">
+              <button type="submit" class="input-button">Search</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="flex-container">
+          <div id="playerSearchResults" class="player-search-results"></div>
+        </div>
+      </section>
+    </main>
+
+  <footer class="page-footer">
+    <div id="copy"></div> <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
+   </footer>
+</body>
+
+</html>

@@ -354,14 +354,7 @@ function castVote(btn) {
 
 const CHECKLIST_API_URL = "https://xbizlwvad5.execute-api.us-east-2.amazonaws.com/dev";
 
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
+// escapeHtml() now lives in helper.js (shared with playerSearch.js).
 
 function openChecklistModal(link) {
   const setName = link.dataset.setName;

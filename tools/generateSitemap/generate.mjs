@@ -56,7 +56,7 @@ const TECH_BLOG_TYPES = [
 ];
 
 function buildUrls() {
-  const urls = [`${SITE_ORIGIN}/`];
+  const urls = [`${SITE_ORIGIN}/`, `${SITE_ORIGIN}/playerSearch.html`];
 
   for (const { blogType, pageName } of TECH_BLOG_TYPES) {
     urls.push(`${SITE_ORIGIN}/tech.html?blogType=${blogType}&pageName=${pageName}`);

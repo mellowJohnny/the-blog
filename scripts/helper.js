@@ -1,6 +1,18 @@
 /** HELPER FUNCTIONS *** HELPER FUNCTIONS *** HELPER FUNCTIONS *** HELPER FUNCTIONS */
 
-/** 
+// Generic HTML escaper - shared by wax.js (checklist modal) and
+// playerSearch.js (search results), both of which render API-sourced
+// text (player names, notes) into innerHTML.
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+/**
  * Helper function to estimate reading time for blogs OR cardsets
  */
 
@@ -137,22 +149,41 @@ function getSortOrder(property,order) {
 // Scalability: Adding new years is as simple as extending the range.
 // This way, instead of maintaining hundreds of lines of repetitive HTML, you only maintain the ranges. Much easier to extend and debug.
 
+// Category + pageName specific ranges - shared by renderSetPicker() (the
+// year-picker widget) and getPageNameForYear() below (used by
+// playerSearch.js to build a working link back to a matched set's
+// review - Checklists/Cards items don't store pageName anywhere, it's
+// purely a UI/nav grouping concept derived from blogCat + year).
+const categoryRanges = {
+  reg: {
+    classicWax: { start: 1981, end: 1986, className: "junk-set-nav-td", pageName: "classicWax" },
+    junkWax:    { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" }
+  },
+  mcd: {
+    mcd: { start: 1991, end: 2005, className: "junk-set-nav-td", pageName: "mcd" }
+  },
+  tims: {
+    timmies: { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
+  }
+};
+
+// Given a blogCat + year, finds which pageName range it falls in (see
+// categoryRanges above). Returns null if there's no matching range (a
+// year/category combination outside every configured range).
+function getPageNameForYear(blogCat, year) {
+  const catConfig = categoryRanges[blogCat];
+  if (!catConfig) return null;
+
+  const y = parseInt(year, 10);
+  for (const key in catConfig) {
+    const range = catConfig[key];
+    if (y >= range.start && y <= range.end) return range.pageName;
+  }
+  return null;
+}
+
 function renderSetPicker(year, blogCat, pageName) {
   const setPicker = document.getElementById("set-picker");
-
-  // Category + pageName specific ranges
-  const categoryRanges = {
-    reg: {
-      classicWax: { start: 1981, end: 1986, className: "junk-set-nav-td", pageName: "classicWax" },
-      junkWax:    { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" }
-    },
-    mcd: {
-      mcd: { start: 1991, end: 2005, className: "junk-set-nav-td", pageName: "mcd" }
-    },
-    tims: {
-      timmies: { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
-    }
-  };
 
   const catConfig = categoryRanges[blogCat];
   if (!catConfig) {
@@ -208,19 +239,21 @@ const NAV_ITEMS = {
   timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2020&pageName=timmies&blogCat=tims" },
   mcd: { label: "McDonald's Hockey", href: "/waxReviews.html?year=1991&pageName=mcd&blogCat=mcd" },
   tech: { label: "Tech", href: "/tech.html?blogType=1&pageName=tech" },
-  mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3&pageName=ev" }
+  mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3&pageName=ev" },
+  search: { label: "Player Search", href: "/playerSearch.html" }
 };
 
 // Step 2: Define which pages show which items
 // The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
-  index: ["home", "classic", "junk", "mcd", "timmies", "tech", "mache"],
-  tech: ["home", "classic", "junk", "mcd", "timmies", "mache"],
-  ev: ["home", "classic", "junk", "mcd", "timmies","tech"],
-  junkWax: ["home", "classic", "mcd", "timmies", "tech", "mache"],
-  classicWax: ["home", "junk", "mcd", "timmies", "tech", "mache"],
-  timmies: ["home", "classic", "junk", "mcd", "tech", "mache"],
-  mcd: ["home", "classic", "junk", "timmies", "tech", "mache"]
+  index: ["home", "classic", "junk", "mcd", "timmies", "tech", "mache", "search"],
+  tech: ["home", "classic", "junk", "mcd", "timmies", "mache", "search"],
+  ev: ["home", "classic", "junk", "mcd", "timmies","tech", "search"],
+  junkWax: ["home", "classic", "mcd", "timmies", "tech", "mache", "search"],
+  classicWax: ["home", "junk", "mcd", "timmies", "tech", "mache", "search"],
+  timmies: ["home", "classic", "junk", "mcd", "tech", "mache", "search"],
+  mcd: ["home", "classic", "junk", "timmies", "tech", "mache", "search"],
+  playerSearch: ["home", "classic", "junk", "mcd", "timmies", "tech", "mache"]
 };
 
 // Step 3: Build a dynamic table generator
