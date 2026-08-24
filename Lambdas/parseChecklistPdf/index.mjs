@@ -77,16 +77,18 @@ function splitNameAndNotes(remainder) {
 
 // Leading letters are optional (insert sets are commonly numbered with a
 // prefix, e.g. "R1", "R2" for a "Predictors" insert set, or "PR-1" for a
-// "Parkie Reprints" insert set - the optional hyphen between the letters
-// and digits is for exactly this) and a single trailing letter is also
-// optional (e.g. "165a"). Requiring at least one digit somewhere in the
-// middle is what keeps this from matching prose lines like "Trading
-// Card Database" or the set title line - except for "NNO" ("No
-// Number"), a standard checklist designation for unnumbered cards with
-// no digit in it at all, matched as a specific exception rather than
-// loosening the digit requirement generally (which would start matching
-// ordinary prose lines).
-const CARD_LINE_RE = /^(NNO|[A-Za-z]*-?\d+[A-Za-z]?)\s+(\S.*)$/i;
+// "Parkie Reprints" insert set, or "McD 1" for a McDonald's insert set -
+// the optional single hyphen or space between the letters and digits is
+// for exactly this) and a single trailing letter is also optional (e.g.
+// "165a"). Requiring at least one digit somewhere in the middle is what
+// keeps this from matching prose lines like "Trading Card Database" or
+// the set title line (which also always has a hyphen inside its year,
+// e.g. "1997-98", immediately breaking the digit run before any
+// whitespace) - except for "NNO" ("No Number"), a standard checklist
+// designation for unnumbered cards with no digit in it at all, matched
+// as a specific exception rather than loosening the digit requirement
+// generally (which would start matching ordinary prose lines).
+const CARD_LINE_RE = /^(NNO|[A-Za-z]*[-\s]?\d+[A-Za-z]?)\s+(\S.*)$/i;
 
 function isUnnumbered(cardNumber) {
   return cardNumber.toUpperCase() === "NNO";
