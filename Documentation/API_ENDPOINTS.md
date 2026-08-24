@@ -23,13 +23,18 @@ real visitor loading the page normally never gets near it. A request
 over the limit gets back `429 Too Many Requests`. Every other endpoint
 on the site (CMS reads/writes, SMS) sits behind Cognito instead (see
 `AUTH.md`), so throttling matters less there and hasn't been added.
-"Get checklist by set name" (added later, below) is the same public,
-no-auth trust level as these three, but its own throttling config
-hasn't been separately confirmed — check API Gateway directly if that
-matters.
+"Get checklist by set name" and "Search players by name" (both added
+later, below) are the same public, no-auth trust level as these three,
+but their own throttling config hasn't been separately confirmed —
+check API Gateway directly if that matters. Worth noting for "Search
+players by name" specifically: its `Scan`-per-request design (see
+`LAMBDA_FUNCTIONS.md`) is far more expensive per call than any other
+endpoint in this section, so it's the one most worth actually confirming
+has throttling if traffic ever becomes a concern.
 
-**Caching (added 2026-08-14)**: the two highest-traffic endpoints in
-this section (this one and "Get card sets by year" below) return a
+**Caching (added 2026-08-14)**: the highest-traffic endpoints in
+this section (this one, "Get card sets by year", "Get checklist by set
+name", and "Search players by name") return a
 `Cache-Control: public, max-age=...` header — a free, browser-only
 cache with no CloudFront in front of API Gateway, so it only helps a
 single visitor's repeat requests within the TTL, not cross-visitor
@@ -79,6 +84,15 @@ without changing that expectation first.
 - **Called from**: `openChecklistModal()` in `scripts/wax.js` (used by `waxReviews.html`'s "Checklist" link/modal — see `FRONTEND.md`)
 - **Response**: raw JSON array of every `Checklists` item for that `setName` (main-set and insert-set cards together, undifferentiated) — `Cache-Control: public, max-age=1800`, same convention as "Get card sets by year" above.
 - **Lambda**: `Lambdas/getChecklistBySetName/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). `Query`, not `Scan`, on `Checklists`' partition key. Public, no Cognito Authorizer — built later than the other three endpoints in this section (Step 2 of the checklist feature), but the same public trust level.
+
+### Search players by name
+- **URL**: `https://evlsyozjb0.execute-api.us-east-2.amazonaws.com/dev`
+- **Method**: GET
+- **Query params**: `q` (a player name or partial name, minimum 2 characters) **or** `audit=1` — mutually exclusive modes, see below.
+- **Called from**: `scripts/playerSearch.js` (used by `playerSearch.html`)
+- **Response** (`q` mode): `{ query, results: [{ setName, year, blogCat, cards: [{ cardNumberDisplay, playerName, notes, type, insertSetName }] }] }` — grouped by set, sorted alphabetically by `setName`. `year`/`blogCat` are `null` when no matching `Cards` item was found for that `setName` (the frontend shows the set name as plain text instead of a link in that case). `{ error }` with a 400 if `q` is missing or under 2 characters.
+- **Response** (`audit=1` mode): `{ totalDistinctSetNames, linkedCount, unlinkedSetNames }` — a data-integrity check, not part of the search feature itself; enumerates every distinct `setName` in `Checklists` and reports which have no matching `Cards` item. See `DATA_MODEL.md`'s "setName ↔ Cards.setName 1:1 assumption" note.
+- **Lambda**: `Lambdas/searchPlayerName/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Full paginated `Scan` of `Checklists` (no index on `playerName`), matched case-insensitively in code, plus a per-matched-set `Query` against `Cards`. Public, no Cognito Authorizer — same trust level as "Get checklist by set name" above; `Access-Control-Allow-Origin: "*"`.
 
 ## CMS — blog authoring
 

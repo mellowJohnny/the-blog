@@ -62,6 +62,7 @@ Looking at how the resulting token is actually used:
 - **Checklist upload** (`parseChecklistPdf`, `saveChecklist` — `scripts/checklistUpload.js`): same pattern, confirmed enforced — both attach `getAuthToken()` as the `Authorization` header and both API Gateway routes have a Cognito Authorizer on the POST method only, verified the same way (`401` unauthenticated, `200` on `OPTIONS`).
 - **Image upload/list** (`cmsImageUploader`, `cmsImagePicker`): not yet included in the above — still send no `Authorization` header and have no authorizer. Lower severity (upload requires knowing the presign contract; list just discloses bucket filenames) but the same fix would apply if hardened later.
 - **Get checklist by set name** (`getChecklistBySetName` — powers the "Checklist" modal on `waxReviews.html`, a *public* page, not `/cms`): no `Authorization` header, no authorizer — but unlike the image-upload/list gap above, this is intentional, not an oversight. Same public trust level as `getBlogs`/`getCardSetsByYear`, the other unauthenticated public-read endpoints. See `API_ENDPOINTS.md`.
+- **Search players by name** (`searchPlayerName` — powers `playerSearch.html`, also public): same story, deliberately unauthenticated, including its `?audit=1` data-integrity mode (not a hidden admin flag - anyone who knows to append it can trigger it, same trust level as the rest of the endpoint). See `LAMBDA_FUNCTIONS.md`.
 
 ## Discoverability (defense-in-depth, not access control)
 

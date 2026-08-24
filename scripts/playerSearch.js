@@ -45,7 +45,7 @@ function renderPlayerSearchResults(query, results) {
     return `
       <div class="player-search-group">
         <h3 class="player-search-set-name">Set: ${setHeading}</h3>
-        <ul class="player-search-card-list">Card(s): ${cardRows}</ul>
+        <ul class="player-search-card-list">${cardRows}</ul>
       </div>
     `;
   }).join("");

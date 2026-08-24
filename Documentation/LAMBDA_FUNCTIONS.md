@@ -1,19 +1,21 @@
 # Lambda Functions
 
-**24 of the 28 Lambda functions behind this site's API Gateway
+**25 of the 29 Lambda functions behind this site's API Gateway
 endpoints have their source checked into this repo**, under
 `Lambdas/` (as of 2026-08-15, one directory per function, named
 exactly after its AWS Lambda function name). Most were pulled directly
 from the live Console via `aws lambda get-function` using the
 `amplify-readonly-cli` credential (see `CLAUDE.md` — its actual IAM
 scope turned out to be broader than its name suggests: it can read
-full Lambda source, though not API Gateway config). Seven were already
-in the repo, hand-built here rather than pulled:
+full Lambda source, though not API Gateway config, and (confirmed
+2026-08-24) not DynamoDB or IAM policy introspection either). Eight
+were already in the repo, hand-built here rather than pulled:
 `Lambdas/sendAlertHandler/`, `Lambdas/castVoteHandler/`,
 `Lambdas/deleteBlogHandler/`, `Lambdas/deleteCardSetHandler/`, and —
 added later, for the checklist-upload feature and its front-end display —
-`Lambdas/parseChecklistPdf/`, `Lambdas/saveChecklist/`, and
-`Lambdas/getChecklistBySetName/`. The remaining 4 of the 28
+`Lambdas/parseChecklistPdf/`, `Lambdas/saveChecklist/`,
+`Lambdas/getChecklistBySetName/`, and — for the player-search feature —
+`Lambdas/searchPlayerName/`. The remaining 4 of the 29
 (`getCardIntro`, `getBlogIntro`, `fetchCardSetPreview`,
 `invalidateCache`) were pulled in the same pass, confirmed dead, and
 removed again the same day — see "Orphaned/dead Lambdas" below.
@@ -309,6 +311,61 @@ since that history predates this doc being kept current.
   Lambda matching this site's existing "one Lambda per action" pattern
   was the better fit, and doesn't slow down the page (only fetched on
   demand when the modal is opened, not on initial page load).
+
+## `Lambdas/searchPlayerName/` — hand-built in this repo
+
+- **File**: `Lambdas/searchPlayerName/index.mjs`. No real dependency —
+  inline-paste deployable, not zipped.
+- **Dependencies** (`package.json`): none listed — only uses
+  `@aws-sdk/client-dynamodb`/`@aws-sdk/lib-dynamodb`, which ship with
+  the Lambda Node.js runtime.
+- **What it does**: backs `playerSearch.html` — takes `?q=` (a player
+  name or partial name, min 2 characters) and returns every set that
+  player appears in across the whole `Checklists` table, grouped by
+  `setName`, each with a working link back to that set's review (via a
+  `Cards` lookup — see below).
+- **Full-table `Scan`, matched case-insensitively in code**: `Checklists`
+  has no index on `playerName` (its only key is `setName`+`cardNumber`),
+  so there's no way to `Query` it by player name — this does a full
+  paginated `Scan`, checking `item.playerName.toLowerCase().includes(...)`
+  in code rather than a DynamoDB `FilterExpression`, since `contains()`
+  is case-sensitive and would give poor search UX. **This is genuinely
+  expensive**: cost/latency scale with total `Checklists` table size on
+  *every* search, not with the number of matches. It exhausted the
+  table's provisioned RCU ceiling under light manual testing the day
+  this was built — see `ARCHITECTURE.md`/`DATA_MODEL.md`'s billing-mode
+  note; `Checklists` is now On-Demand specifically because of this. A
+  GSI (or a stored lowercase mirror field) would be the real fix if this
+  table grows much larger; not built yet, since it'd also mean
+  backfilling every already-uploaded checklist.
+- **`Cards` cross-reference for the review link**: for each distinct
+  matching `setName`, a second, cheap `Query` (partition key, not a
+  scan) against `Cards` gets `year`/`blogCat`, so the frontend can build
+  a working `waxReviews.html` link. `pageName` (the third param that URL
+  needs) isn't looked up here — it's a pure UI/nav concept derived from
+  `blogCat`+`year`, computed client-side via `getPageNameForYear()` in
+  `scripts/helper.js` instead of duplicating that mapping server-side
+  too (see `FRONTEND.md`). A `setName` with zero matching `Cards` items
+  still shows up in results, just without a link — see the `?audit=1`
+  mode below for finding these before a user does.
+- **`?audit=1` mode**: a data-integrity check, not part of the search
+  feature itself — reuses the same full-`Scan` machinery to enumerate
+  every distinct `setName` in `Checklists` and report which ones have no
+  matching `Cards` item at all (`{ totalDistinctSetNames, linkedCount,
+  unlinkedSetNames }`). Added 2026-08-24 specifically to verify the
+  assumed 1:1 `Checklists`↔`Cards` relationship holds across every
+  already-uploaded checklist, not just whichever ones a given search
+  happens to touch — see `DATA_MODEL.md` for what it found and how the
+  fix works (deleting every card row under the stale `setName`, not just
+  one). No auth on this mode either — same public trust level as the
+  rest of this endpoint, so it's not a secret admin flag, just an
+  unlinked one.
+- **CORS**: `Access-Control-Allow-Origin: "*"` (not restricted to
+  `https://www.mellowjohnny.cc`) — deliberately matches
+  `getChecklistBySetName`/`getCardSetsByYear`/`getBlogs`, the site's
+  other fully-public, read-only, no-auth GET endpoints. Fine here for
+  the same reasons: no cookies/auth in play (no CSRF/session risk), and
+  it returns data that's already public elsewhere.
 
 ## `Lambdas/updateCardSet/` — pre-existing, with a real incident behind it
 

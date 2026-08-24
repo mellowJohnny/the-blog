@@ -120,6 +120,29 @@ partition — uploading/replacing one insert set never touches the main
 set's rows, or a different insert set's rows, even though they all
 share the same `setName`.
 
+**Billing mode**: switched from Provisioned to On-Demand on 2026-08-24
+— see `ARCHITECTURE.md` for why (a full-table `Scan`-per-search design
+in `searchPlayerName` — see `LAMBDA_FUNCTIONS.md` — exhausted the
+provisioned RCU ceiling almost immediately under light testing).
+
+**The `setName` ↔ `Cards.setName` 1:1 assumption, and how to verify
+it**: every `Checklists` item's `setName` is expected to match exactly
+one `Cards` item's `setName` (see `saveChecklist`'s `hasChecklist`
+linking above, and `searchPlayerName`'s per-set `Cards` lookup - see
+`LAMBDA_FUNCTIONS.md`) - but nothing *enforces* this; it's a
+string-matching convention, and a typo'd or pre-fix (missing the
+trailing-"Hockey" strip) filename at upload time can silently produce a
+`Checklists` partition with no matching `Cards` item. `searchPlayerName`'s
+`?audit=1` mode is the tool for checking this across every uploaded
+checklist at once - it enumerates every distinct `setName` in
+`Checklists` and reports any with zero matching `Cards` items. Two such
+mismatches were found and fixed this way on 2026-08-24 (a hyphenation
+difference and a double-space filename typo, both requiring every item
+under that stale `setName` partition to be deleted, not just one row -
+`Checklists` is one item *per card*, not one item per set, so a
+"delete the bad set" cleanup means deleting every card row sharing that
+`setName`).
+
 **Sort-key collision guard**: `parseChecklistPdf` intentionally keeps
 two entries with the same printed card number as separate cards when
 their `notes` differ — real checklists sometimes reuse a card number

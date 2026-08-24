@@ -246,9 +246,12 @@ const NAV_ITEMS = {
 // Step 2: Define which pages show which items
 // The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
-  index: ["home", "classic", "junk", "mcd", "timmies", "tech", "mache", "search"],
-  tech: ["home", "classic", "junk", "mcd", "timmies", "mache", "search"],
-  ev: ["home", "classic", "junk", "mcd", "timmies","tech", "search"],
+  index: ["home", "classic", "junk", "mcd", "timmies", "tech", "mache"],
+  tech: ["home", "classic", "junk", "mcd", "timmies", "mache"],
+  ev: ["home", "classic", "junk", "mcd", "timmies","tech"],
+  // "search" (Player Search) only appears on the waxReviews.html-backed
+  // pages below (junkWax, classicWax, timmies, mcd) - per the site
+  // owner, not site-wide.
   junkWax: ["home", "classic", "mcd", "timmies", "tech", "mache", "search"],
   classicWax: ["home", "junk", "mcd", "timmies", "tech", "mache", "search"],
   timmies: ["home", "classic", "junk", "mcd", "tech", "mache", "search"],
