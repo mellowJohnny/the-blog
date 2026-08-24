@@ -1,2 +1,4 @@
 User-agent: *
 Disallow: /cms/
+
+Sitemap: https://www.mellowjohnny.cc/sitemap.xml
