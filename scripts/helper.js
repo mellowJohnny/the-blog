@@ -251,11 +251,11 @@ const NAV_MAP = {
   ev: ["home", "classic", "junk", "mcd", "timmies","tech"],
   // "search" (Player Search) only appears on the waxReviews.html-backed
   // pages below (junkWax, classicWax, timmies, mcd) - per the site
-  // owner, not site-wide.
-  junkWax: ["home", "classic", "mcd", "timmies", "tech", "mache", "search"],
-  classicWax: ["home", "junk", "mcd", "timmies", "tech", "mache", "search"],
-  timmies: ["home", "classic", "junk", "mcd", "tech", "mache", "search"],
-  mcd: ["home", "classic", "junk", "timmies", "tech", "mache", "search"],
+  // owner, not site-wide - and always immediately before "tech".
+  junkWax: ["home", "classic", "mcd", "timmies", "search", "tech", "mache"],
+  classicWax: ["home", "junk", "mcd", "timmies", "search", "tech", "mache"],
+  timmies: ["home", "classic", "junk", "mcd", "search", "tech", "mache"],
+  mcd: ["home", "classic", "junk", "timmies", "search", "tech", "mache"],
   playerSearch: ["home", "classic", "junk", "mcd", "timmies", "tech", "mache"]
 };
 
