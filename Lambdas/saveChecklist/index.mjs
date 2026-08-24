@@ -188,6 +188,39 @@ export const handler = async (event) => {
     const prefix = insertSetName ? `INSERT#${insertSetName}#` : "MAIN#";
     const groupLabel = insertSetName ? `"${setName}" / insert set "${insertSetName}"` : `"${setName}" (main set)`;
 
+    // Two cards can legitimately share a printed card number - different
+    // parallels/variants of the same slot (e.g. two different serial-
+    // numbered autograph runs, or an error/corrected pair) -
+    // parseChecklistPdf's dedup now keeps both of those as separate rows
+    // (see its own comments) rather than silently dropping the second.
+    // But the DynamoDB sort key here is prefix+cardNumberDisplay alone,
+    // with no room for that distinction, so two cards with the same
+    // cardNumber would collide - and BatchWriteItem rejects duplicate
+    // keys within the same request outright (a raw ValidationException,
+    // failing the whole batch, not just those rows). Catch that here
+    // with a clear, actionable error instead: the fix is editing the
+    // Card # field for one of the conflicting rows in the review table
+    // (e.g. "125" -> "125 SN250") before saving.
+    const seenKeys = new Map();
+    const collidingNumbers = new Set();
+    for (const card of cards) {
+      const cardNumberDisplay = card.cardNumber.toString().trim();
+      const key = `${prefix}${cardNumberDisplay}`;
+      if (seenKeys.has(key)) {
+        collidingNumbers.add(cardNumberDisplay);
+      }
+      seenKeys.set(key, true);
+    }
+    if (collidingNumbers.size > 0) {
+      return {
+        statusCode: 400,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({
+          error: `These card number(s) are used by more than one row: ${[...collidingNumbers].join(", ")}. Each card number must be unique within ${groupLabel} - edit the Card # field for the conflicting rows (e.g. append a distinguishing suffix) before saving.`
+        })
+      };
+    }
+
     // Step 1: delete every existing card in this group (full-replace,
     // not a merge - see header comment). Scoped to this group only.
     const existingSortKeys = await getExistingSortKeys(setName, prefix);

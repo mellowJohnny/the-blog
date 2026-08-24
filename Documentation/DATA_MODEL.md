@@ -64,7 +64,7 @@ non-key attribute used only by the `setID-index` GSI lookup path.
 | `author` | String | |
 | `seoPageTitle`, `seoMetaDesc`, `seoURLSlug`, `seoTags` | String | SEO metadata fields added to the create/edit forms; not currently read by any public page's `<head>` — likely intended for a future SEO pass. |
 | `now` / `date` | String | Passed through as `item.now` in `wax.js`'s `renderCardSetPage()` and used as the review's displayed date. |
-| `hasChecklist` | Boolean | Set by `saveChecklist` (see the `Checklists` table below) the first time a checklist is successfully uploaded for this set's exact `setName` — not present at all until then. Drives the "Full Checklist" row on `waxReviews.html` (`displayCardSet()` in `scripts/wax.js`). Not written by any CMS create/update form directly. |
+| `hasChecklist` | Boolean | Set by `saveChecklist` (see the `Checklists` table below) the first time a checklist is successfully uploaded for this set's exact `setName` — not present at all until then. Drives the "Checklist" link on `waxReviews.html` (`displayCardSet()` in `scripts/wax.js`), which opens a modal fetching and displaying the full checklist — see `FRONTEND.md`. Not written by any CMS create/update form directly. |
 
 ### `cmsContent/` directory
 
@@ -104,9 +104,9 @@ adds the sport name on the end (e.g. "...O-Pee-Chee Hockey"), which
 |---|---|---|
 | `setName` | String | Partition key. Matches the `Cards` table's `setName` exactly — not an enforced foreign key, just a matching string convention that `saveChecklist`'s `hasChecklist` linkage (see `Cards` above) depends on. |
 | `cardNumber` | String | Sort key. **Not the human-readable card number** — see `cardNumberDisplay` below. Prefixed by group for uniqueness/safe scoped-replace: `MAIN#<cardNumber>` for a main-set card, `INSERT#<insertSetName>#<cardNumber>` for an insert-set card (main and insert cards can otherwise collide, e.g. both numbered starting at "1"/"R1"). Never shown to a user. |
-| `cardNumberDisplay` | String | The actual printed card number/designation, e.g. `"76"` or `"R1"` (insert sets are commonly numbered with a letter prefix) or `"165a"`. String rather than Number since these are often alphanumeric. |
+| `cardNumberDisplay` | String | The actual printed card number/designation, e.g. `"76"`, `"R1"`/`"PR-1"` (insert sets are commonly numbered with a letter prefix, sometimes hyphenated), `"165a"`, or `"NNO"` ("No Number" — a standard checklist designation for unnumbered cards; a set can have several distinct `NNO` cards, so this value alone is never treated as unique — see `saveChecklist` below). String rather than Number since these are often alphanumeric. **Not guaranteed unique within a group on its own** — see the sort-key collision note below. |
 | `playerName` | String | |
-| `notes` | String | Trailing markers from the source checklist (e.g. `"RC"`, `"UER"`, `"RC, UER"`), plus anything from a note that wrapped onto its own line in the source PDF instead of staying on the card's line (e.g. `"RDM"`, `"Long Shot RDM"` — `parseChecklistPdf` reattaches a non-matching line to the card immediately before it). Empty string, not omitted, when there are none. |
+| `notes` | String | Trailing markers from the source checklist (e.g. `"RC"`, `"UER"`, `"RC, UER"`, alphanumeric parallels like `"1000 PC"`/`"SN 250"` — `parseChecklistPdf` inserts a space at the digit/letter boundary of these even when the source has none), plus anything from a note that wrapped onto its own line in the source PDF instead of staying on the card's line (e.g. `"RDM"`, `"Long Shot RDM"`, or a checklist card's own range reference like `"PR-1 - PR-8 CL"` — `parseChecklistPdf` reattaches a non-matching line to the card immediately before it; see `LAMBDA_FUNCTIONS.md` for the full parsing-logic history). Empty string, not omitted, when there are none. |
 | `type` | String | `"main"` or `"insertSet"` — derived from whether the upload had an insert set name (see `insertSetName` below), not stored independently. What a future checklist-display feature should group by. |
 | `insertSetName` | String | The insert set's name (e.g. `"Predictors (Retail)"`), derived from the checklist PDF's filename — a comma splits it into base set name + insert set name (e.g. `"1994-95 Upper Deck,Predictors (Retail).pdf"`). Empty string for main-set cards. |
 | `sortIndex` | Number | This card's position (0-based) in the reviewed table at save time, within its own group (main, or this one insert set) — the review table preserves the PDF's printed order, and rows can be freely reordered/added/deleted there before saving. Deliberately separate from the `cardNumber` sort key above, which doesn't sort numerically or group main-before-insert on its own (plain string comparison — `"INSERT#"` sorts before `"MAIN#"`, and `"10"` sorts before `"2"`). A future checklist-display feature should group by `type`/`insertSetName` then order by this. |
@@ -119,6 +119,20 @@ This is scoped deliberately to just that group, not the whole `setName`
 partition — uploading/replacing one insert set never touches the main
 set's rows, or a different insert set's rows, even though they all
 share the same `setName`.
+
+**Sort-key collision guard**: `parseChecklistPdf` intentionally keeps
+two entries with the same printed card number as separate cards when
+their `notes` differ — real checklists sometimes reuse a card number
+across distinct parallels/variants sharing the same base slot (e.g. two
+different serial-numbered autograph runs, or an error/corrected pair —
+see `LAMBDA_FUNCTIONS.md`). But the DynamoDB sort key here is
+`prefix + cardNumberDisplay` alone, with no room for that distinction —
+so two cards sharing a `cardNumberDisplay` within the same group would
+otherwise collide, and `BatchWriteItem` rejects duplicate keys within
+one request outright. `saveChecklist` checks for this before writing
+and returns a `400` naming the conflicting card number(s) if found —
+the fix is editing the Card # field for one of the conflicting rows in
+the CMS review table (e.g. `"125"` → `"125 SN250"`) before saving.
 
 ## `Subscribers` / `SubscribersTest` tables
 

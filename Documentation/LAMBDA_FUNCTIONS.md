@@ -1,22 +1,22 @@
 # Lambda Functions
 
-**23 of the 27 Lambda functions behind this site's API Gateway
+**24 of the 28 Lambda functions behind this site's API Gateway
 endpoints have their source checked into this repo**, under
 `Lambdas/` (as of 2026-08-15, one directory per function, named
 exactly after its AWS Lambda function name). Most were pulled directly
 from the live Console via `aws lambda get-function` using the
 `amplify-readonly-cli` credential (see `CLAUDE.md` — its actual IAM
 scope turned out to be broader than its name suggests: it can read
-full Lambda source, though not API Gateway config). Six were already
+full Lambda source, though not API Gateway config). Seven were already
 in the repo, hand-built here rather than pulled:
 `Lambdas/sendAlertHandler/`, `Lambdas/castVoteHandler/`,
 `Lambdas/deleteBlogHandler/`, `Lambdas/deleteCardSetHandler/`, and —
-added later, for the checklist-upload feature —
-`Lambdas/parseChecklistPdf/` and `Lambdas/saveChecklist/`. The
-remaining 4 of the 27 (`getCardIntro`, `getBlogIntro`,
-`fetchCardSetPreview`, `invalidateCache`) were pulled in the same pass,
-confirmed dead, and removed again the same day — see "Orphaned/dead
-Lambdas" below.
+added later, for the checklist-upload feature and its front-end display —
+`Lambdas/parseChecklistPdf/`, `Lambdas/saveChecklist/`, and
+`Lambdas/getChecklistBySetName/`. The remaining 4 of the 28
+(`getCardIntro`, `getBlogIntro`, `fetchCardSetPreview`,
+`invalidateCache`) were pulled in the same pass, confirmed dead, and
+removed again the same day — see "Orphaned/dead Lambdas" below.
 
 Deployment is still entirely manual for every one of them, but the
 mechanics differ by function: the 21 with no real dependencies
@@ -150,25 +150,60 @@ since that history predates this doc being kept current.
   `lib/pdf-parse.js` is the real implementation without that wrapper.
 - **What it does**: backs `cms/uploadChecklist.html`'s upload step.
   Takes a base64-encoded PDF, extracts its text, and parses it into
-  `{ setName, insertSetName, cards: [{ cardNumber, playerName, notes }] }`
+  `{ setName, insertSetName, cards: [{ cardNumber, playerName, notes }], skippedDuplicates }`
   — one row per line matching `<number> <name> [NOTES]`, where a
-  trailing all-caps token (or several, e.g. `"RC, UER"`) is treated as a
-  note rather than part of the name. The card number itself may have a
-  leading letter prefix (e.g. `"R1"`, common for insert sets numbered
-  separately from the base set) and/or a single trailing letter (e.g.
-  `"165a"`). A line that doesn't match the `<number> <name>` pattern at
-  all is either header/title noise before the first card (ignored), or
-  — once at least one card has been seen — treated as a note that
-  wrapped onto its own line in the source PDF and gets appended to the
-  *previous* card's `notes` (e.g. `"RDM"`/`"Long Shot RDM"` trailing
-  some insert-set cards). Duplicate card numbers are dropped (first
-  occurrence kept) rather than erroring, since real checklist PDFs can
-  have stray duplicate lines (e.g. a sample-card caption repeating a
-  number already used in the main grid). **Never writes to DynamoDB** —
-  returns the parsed result for review/correction in the browser;
-  `saveChecklist` below is the only one that writes. Same parsing logic
-  as the standalone `tools/checklistParser/parse.mjs` script in this
-  repo — kept in sync deliberately, see that file's own comments.
+  trailing token that's uppercase letters and/or digits (2+ characters,
+  at least one letter — e.g. `"RC"`, `"UER"`, `"1000PC"`) is treated as
+  a note rather than part of the name, with a space inserted at any
+  digit/letter boundary before it's stored (`"500GC"` → `"500 GC"`,
+  `"SN1000"` → `"SN 1000"`). The card number itself may have a leading
+  letter prefix (e.g. `"R1"`, common for insert sets numbered separately
+  from the base set), an optional single hyphen between the letters and
+  digits (e.g. `"PR-1"`), and/or a single trailing letter (e.g.
+  `"165a"`) — or be the literal `"NNO"` ("No Number"), matched as a
+  specific exception since it has no digit at all.
+  A line that doesn't match the `<number> <name>` pattern — or does
+  match but is actually a checklist card's own range reference wrapped
+  onto its own line (e.g. `"PR-1 - PR-8 CL"`, continuing an `"NNO
+  Parkies Checklist #1:"` card; recognized by the remainder starting
+  with a bare `-` ) — is either header/title noise before the first card
+  (ignored, if none has been seen yet), or, once at least one card
+  exists, merged into the *previous* card: run through the same
+  name/notes split as a normal line, with the name half appended to
+  `playerName` and the note half appended to `notes` (covers both a
+  trailing note that wrapped onto its own line, e.g. `"RDM"`/`"Long Shot
+  RDM"`, and a title that wrapped mid-sentence, e.g. `"Pittsburgh Wins
+  Patrick"` / `"Division"` — there's no reliable way to tell those two
+  cases apart from the text alone, so this favors completing the
+  name/title as the more common case).
+  Duplicate cards are dropped (first occurrence kept, reported in
+  `skippedDuplicates`) rather than erroring, since real checklist PDFs
+  can have stray duplicate lines (e.g. a sample-card caption repeating a
+  number already used in the main grid) — but the dedup key is
+  `cardNumber + notes`, not `cardNumber` alone, so two cards that
+  legitimately share a printed number but represent different
+  parallels/variants (different serial numbering, an error/corrected
+  pair) are *not* treated as duplicates and both survive into the
+  result — see `saveChecklist` below for how a genuine same-number
+  collision is still caught before anything gets written.
+  **Never writes to DynamoDB** — returns the parsed result for
+  review/correction in the browser; `saveChecklist` below is the only
+  one that writes. Same parsing logic as the standalone
+  `tools/checklistParser/parse.mjs` script in this repo — kept in sync
+  deliberately, see that file's own comments.
+- **Local regression testing**: real checklist source PDFs (the actual
+  files being uploaded, one per set/insert set) now live in `checklists/`
+  at the repo root — moved there from the site owner's Desktop since
+  they're the source of truth for this feature. Every parsing-logic
+  change in this session has been verified by invoking `handler()` (or
+  the equivalent `parseChecklistText()`) directly against these real
+  files and sweeping the whole directory for zero-card results or
+  unexpected `skippedDuplicates`, before regenerating the zip. **Naming
+  collision to be aware of**: `tools/checklistParser/parse.mjs` (below)
+  also defaults to writing its JSON *output* into this same
+  `checklists/` directory when run without `--out` — worth passing
+  `--out` explicitly, or writing elsewhere, now that the directory holds
+  real source PDFs rather than being an empty scratch/output location.
 - **`setName`/`insertSetName` derivation**: both come from the
   filename, not PDF content. A comma splits it into the base set name
   and the insert set name (e.g. `"1994-95 Upper Deck,Predictors
@@ -231,6 +266,49 @@ since that history predates this doc being kept current.
   the `Checklists` permissions to `parseChecklistPdf` instead by
   mistake (it doesn't need any DynamoDB access, since it never touches
   the database).
+- **Duplicate-card-number guard**: since `parseChecklistPdf`'s dedup key
+  is `cardNumber + notes` (see above), two submitted cards can share a
+  `cardNumber` (different parallels/variants of the same slot) — but
+  the DynamoDB sort key here is `prefix + cardNumberDisplay` alone, so
+  that would collide, and `BatchWriteItem` rejects duplicate keys within
+  one request outright (a raw `ValidationException` failing the whole
+  batch). Before writing anything, this Lambda checks the submitted
+  `cards` array for exactly that collision and returns a `400` naming
+  the conflicting card number(s) if found, rather than letting the
+  batch write throw — the CMS review table is where the user fixes it
+  (edit the Card # field on one of the conflicting rows, e.g. `"125"` →
+  `"125 SN250"`).
+
+## `Lambdas/getChecklistBySetName/` — hand-built in this repo
+
+- **File**: `Lambdas/getChecklistBySetName/index.mjs`. No real
+  dependency — inline-paste deployable, not zipped.
+- **Dependencies** (`package.json`): none listed — only uses
+  `@aws-sdk/client-dynamodb`/`@aws-sdk/lib-dynamodb`, which ship with
+  the Lambda Node.js runtime.
+- **What it does**: backs the "Checklist" link/modal on
+  `waxReviews.html` — Step 2 of connecting the `Cards` and `Checklists`
+  tables on the public site (Step 1 was just the `hasChecklist` boolean
+  and a plain-text row; see `DATA_MODEL.md` and `FRONTEND.md`). Public
+  GET, no Cognito Authorizer — deliberately the same trust level as
+  `getCardSetsByYear`/`getBlogs`, not the CMS-auth-gated checklist
+  *upload* endpoints. Takes `setName` as a query param and does a plain
+  `Query` (not `Scan`) against `Checklists` by its partition key,
+  returning the raw `Items` array — both main-set and insert-set cards
+  together, undifferentiated; the frontend groups and sorts them (see
+  `FRONTEND.md`). `Access-Control-Allow-Origin: "*"` and
+  `Cache-Control: public, max-age=1800`, matching
+  `getCardSetsByYear`'s exact conventions (see the caching note in
+  `API_ENDPOINTS.md`).
+- **Why a new Lambda rather than reusing `saveChecklist`**: the site
+  owner initially proposed reusing `saveChecklist` to also look up a
+  matching checklist, to avoid standing up a new Lambda just for a read.
+  That would have meant a write-oriented, CMS-auth-gated endpoint also
+  serving public reads — the wrong shape for a page-load-time public
+  fetch, and a needless mix of concerns. A small, public, read-only
+  Lambda matching this site's existing "one Lambda per action" pattern
+  was the better fit, and doesn't slow down the page (only fetched on
+  demand when the modal is opened, not on initial page load).
 
 ## `Lambdas/updateCardSet/` — pre-existing, with a real incident behind it
 

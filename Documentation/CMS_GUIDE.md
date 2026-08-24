@@ -143,12 +143,18 @@ create/edit form: **upload → review → save**.
    in the Insert Set Name field, not merging and not touching the
    table's other groups for that same base set. It also flips a
    `hasChecklist` flag on the matching `Cards` item, which is what makes
-   the "Full Checklist" row appear on `waxReviews.html` (see
+   the "Checklist" link appear on `waxReviews.html` (see
    `FRONTEND.md`) — if that particular step fails (e.g. no `Cards` item
    exists yet with that exact `setName`), the save still succeeds, but
-   the success alert includes a warning saying so. Every outcome —
-   validation errors, server errors, success (with or without that
-   warning) — uses a plain `alert()`, same convention as
+   the success alert includes a warning saying so. A save can also fail
+   outright with a `400` if two rows share the same Card # within this
+   group (different parallels/variants of the same slot, e.g. two
+   different serial-numbered autograph runs) — the parse/review step
+   deliberately keeps both as separate rows rather than silently
+   dropping one, but they need distinguishing Card # values before they
+   can be saved; see `DATA_MODEL.md`'s "Sort-key collision guard". Every
+   outcome — validation errors, server errors, success (with or without
+   a warning) — uses a plain `alert()`, same convention as
    `createCardSet()`/`createBlogPost()`/etc.; on success, the redirect
    back to `cms/uploadChecklist.html` itself (a fresh page load, ready
    for the next upload) only fires after the alert is dismissed
@@ -157,7 +163,14 @@ create/edit form: **upload → review → save**.
 See `API_ENDPOINTS.md` → "CMS — checklist upload" for the two Lambdas'
 exact request/response shapes, and `tools/checklistParser/` for the
 standalone CLI version of the same parsing logic (used for the first
-set, before this page existed).
+set, before this page existed) — note that its default output location
+(`checklists/` at the repo root, unless `--out` is passed) is the same
+directory that now holds the real source PDFs (see
+`LAMBDA_FUNCTIONS.md`), so pass `--out` explicitly when using it now.
+
+Once a checklist is uploaded and linked, `waxReviews.html` displays it
+in a print-friendly modal — see `FRONTEND.md`'s "Checklist display"
+section for that half of the feature.
 
 ## Autobus Messaging Platform — `cms/smsAdmin.html`
 

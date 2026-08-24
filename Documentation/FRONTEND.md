@@ -30,7 +30,7 @@ one year+category combination.
 | File | Responsibility |
 |---|---|
 | `blogs.js` | Blog intro copy (`renderBlogIntro()`), `fetchBlogs()`/pagination/rendering for the blog stream, and the homepage weather widget (calls OpenWeatherMap directly from the browser using the visitor's geolocation). |
-| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, and the thumbs up/down vote widget (`castVote()` — see "Voting feature" below). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple. |
+| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()` — see "Checklist display" below). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. |
 | `helper.js` | Cross-page utilities: `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below), hamburger menu toggle, cookie helper, and copyright-year footer. |
 | `auth.js` | Cognito OAuth2 code exchange + token refresh, gates every `/cms` page. See `AUTH.md`. |
 | `cms.js` | All CMS create/edit/list logic + the S3 image browser/upload modal + TinyMCE init. See `CMS_GUIDE.md`. |
@@ -194,20 +194,71 @@ contract and `Documentation/LAMBDA_FUNCTIONS.md` for the backend
   Lambda's 404 guard for a bad `setName`/`year`) the UI rolls back —
   count, button state, and the `localStorage` entry all revert.
 
-## Checklist link (waxReviews.html)
+## Checklist display (waxReviews.html)
 
-`displayCardSet()` in `wax.js` takes a `hasChecklist` param (the `Cards`
-item's own `hasChecklist` boolean — see `DATA_MODEL.md`) and, when true,
-adds a "Full Checklist" row to the set-details table between
-Manufacturer and Hella Rating, bumping the header image cell's
-`rowspan` from 7 to 8 to match; when false, the table renders exactly
-as it always has, with no extra row. `hasChecklist` is set by
-`saveChecklist` the first time a checklist is uploaded for that exact
-`setName` (see `LAMBDA_FUNCTIONS.md`) — this is Step 1 of a two-step
-plan for connecting the `Cards` and `Checklists` tables on the public
-site; the row is plain text for now, not yet a link to anything (Step
-2, not built yet, is actually fetching and displaying checklist
-content).
+Connecting the `Cards` and `Checklists` tables on the public site was
+built as two steps. **Step 1**: `displayCardSet()` in `wax.js` takes a
+`hasChecklist` param (the `Cards` item's own `hasChecklist` boolean —
+see `DATA_MODEL.md`, set by `saveChecklist` the first time a checklist
+is uploaded for that exact `setName`) and, when true, adds a row to the
+set-details table between Manufacturer and Hella Rating, bumping the
+header image cell's `rowspan` from 7 to 8 to match. **Step 2** (built
+after Step 1 shipped) turned that row into an actual "Checklist" link
+that opens a modal displaying the full checklist, fetched on demand
+from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
+`API_ENDPOINTS.md`.
+
+- **The link**: `<a class="checklist-view-link" data-set-name="...">Checklist</a>`,
+  styled as a bold underlined blue link. `setName` is passed via a
+  `data-set-name` attribute (same reasoning as the vote buttons above —
+  avoids breaking on an apostrophe in an inline `onclick` string), read
+  by `openChecklistModal(link)`.
+- **The modal**: one shared `#checklistModalOverlay` in `waxReviews.html`
+  (not rebuilt per set) — `openChecklistModal()` sets its title, adds
+  `body.checklist-modal-open`, shows the overlay, then fetches and
+  fills it in. `closeChecklistModal()` reverses all of that; the
+  backdrop-click-to-close handler routes through this same function
+  rather than toggling the overlay directly, so the body class is
+  always correctly removed. 75% width (max 1400px) on desktop, 92% on
+  mobile (`@media (max-width: 600px)`, matching the site's one
+  breakpoint — see "Mobile / responsive design" above); cards render in
+  a 3-column CSS multi-column layout (1 column under 600px).
+- **Grouping/ordering**: `renderChecklistGroups()` groups the fetched
+  items main-set cards first, then each insert set by name, and sorts
+  within each group by `sortIndex` — never by raw fetch order, since
+  the DynamoDB sort key sorts as a plain string (`"INSERT#"` sorts
+  before `"MAIN#"`, and card numbers don't sort numerically) — see
+  `DATA_MODEL.md`.
+- **Escaping**: all rendered checklist text goes through a
+  general-purpose `escapeHtml()` helper added to `wax.js` for this
+  feature (distinct from `checklistUpload.js`'s narrower `escapeAttr()`,
+  used only for CMS review-table attribute values).
+- **Print**: a "🖨 Print" button in the modal calls `window.print()`.
+  The masthead inside the modal (`.checklist-modal-masthead`) mirrors
+  `waxReviews.html`'s real masthead treatment (scaled-down Bebas Neue)
+  but on a flat background color rather than the photographic hero
+  image — both for modal-size reasons and because background images are
+  unreliable in print output. `@media print` rules are scoped under
+  `body.checklist-modal-open` (added after an early, unscoped version
+  blanked out the *entire* page on any print, not just while the modal
+  was open); print output hides everything except the modal, drops to 2
+  columns, hides the print/close buttons, and shows print-only
+  checkboxes beside each card (`.checklist-modal-card-checkbox`,
+  `display: none` on screen). It also shows a custom print-only footer
+  (`© {year} www.mellowjohnny.cc`, populated once via `new
+  Date().getFullYear()`) — browsers don't let a page suppress their own
+  native print header/footer (title/URL/date) via CSS; that's a
+  user-controlled "Headers and footers" checkbox in the print dialog,
+  not something the page can override, so this is a second, clean
+  footer shown only for the parts of the print output that need one.
+- **Known bug, deliberately not yet fixed**: `fetchPageTitle(setName)`
+  appends a new `<title>` tag on every card-set render
+  (`pageTitle.innerHTML += ...`) without clearing previous ones — paging
+  through multiple sets in the same year without a full reload
+  accumulates `<title>` tags, and the browser locks onto whichever
+  registered first (stale). The custom print footer above exists partly
+  to route around this for print purposes rather than requiring the fix
+  first; the underlying bug is still open.
 
 ## Orphaned / legacy files
 

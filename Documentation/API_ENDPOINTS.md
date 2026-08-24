@@ -14,15 +14,19 @@ All URLs are `https://{id}.execute-api.us-east-2.amazonaws.com/{stage}`.
 
 ## Public site — read APIs
 
-**Throttling**: these three endpoints — the ones reachable with no
-auth at all — have per-stage request throttling set on their `dev`
-stage in API Gateway: rate 10 req/s, burst 20. This is a blunt,
-account-level-default-is-way-too-permissive mitigation against basic
-scripted abuse, not a precise traffic-shaping tool; a real visitor
-loading the page normally never gets near it. A request over the
-limit gets back `429 Too Many Requests`. Every other endpoint on the
-site (CMS reads/writes, SMS) sits behind Cognito instead (see
+**Throttling**: the original three endpoints in this section — the
+ones reachable with no auth at all — have per-stage request throttling
+set on their `dev` stage in API Gateway: rate 10 req/s, burst 20. This
+is a blunt, account-level-default-is-way-too-permissive mitigation
+against basic scripted abuse, not a precise traffic-shaping tool; a
+real visitor loading the page normally never gets near it. A request
+over the limit gets back `429 Too Many Requests`. Every other endpoint
+on the site (CMS reads/writes, SMS) sits behind Cognito instead (see
 `AUTH.md`), so throttling matters less there and hasn't been added.
+"Get checklist by set name" (added later, below) is the same public,
+no-auth trust level as these three, but its own throttling config
+hasn't been separately confirmed — check API Gateway directly if that
+matters.
 
 **Caching (added 2026-08-14)**: the two highest-traffic endpoints in
 this section (this one and "Get card sets by year" below) return a
@@ -67,6 +71,14 @@ without changing that expectation first.
 - **Called from**: `castVote()` in `scripts/wax.js` (used by `waxReviews.html`)
 - **Response**: `{ upvotes }` or `{ downvotes }` (whichever was incremented) on success; `{ error }` with a 400 (missing/invalid fields) or 404 (no matching card set) on failure.
 - **Lambda**: `Lambdas/castVoteHandler/` — source *is* version-controlled in this repo (see `CLAUDE.md`), unlike most other Lambdas. Does an atomic DynamoDB `UpdateItem` with `ADD`, guarded by `ConditionExpression: attribute_exists(setName)` so a bad `setName`/`year` pair 404s instead of silently creating a garbage item.
+
+### Get checklist by set name
+- **URL**: `https://xbizlwvad5.execute-api.us-east-2.amazonaws.com/dev`
+- **Method**: GET
+- **Query params**: `setName`
+- **Called from**: `openChecklistModal()` in `scripts/wax.js` (used by `waxReviews.html`'s "Checklist" link/modal — see `FRONTEND.md`)
+- **Response**: raw JSON array of every `Checklists` item for that `setName` (main-set and insert-set cards together, undifferentiated) — `Cache-Control: public, max-age=1800`, same convention as "Get card sets by year" above.
+- **Lambda**: `Lambdas/getChecklistBySetName/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). `Query`, not `Scan`, on `Checklists`' partition key. Public, no Cognito Authorizer — built later than the other three endpoints in this section (Step 2 of the checklist feature), but the same public trust level.
 
 ## CMS — blog authoring
 
@@ -188,7 +200,7 @@ doesn't.
 - **Method**: POST
 - **Body**: `{ setName, insertSetName, cards: [{ cardNumber, playerName, notes }] }` — the parsed result, after any hand-editing in the review table (add/delete rows, fix a name, etc). `insertSetName` is optional/empty for a main-set save.
 - **Called from**: `saveChecklist()` in `scripts/checklistUpload.js`
-- **Response**: `{ message }` on success (e.g. `"Replaced 0 existing card(s) with 264 new card(s) for \"...\" (main set)."`) — the message can also carry a `Warning:` suffix if the (non-fatal) Cards-table linking step failed or found no matching set, so the checklist itself still saved but won't show a "Full Checklist" link on `waxReviews.html` yet. `{ error }` on a validation failure (400) or a partial DynamoDB failure after retries (502).
+- **Response**: `{ message }` on success (e.g. `"Replaced 0 existing card(s) with 264 new card(s) for \"...\" (main set)."`) — the message can also carry a `Warning:` suffix if the (non-fatal) Cards-table linking step failed or found no matching set, so the checklist itself still saved but won't show a checklist link on `waxReviews.html` yet. `{ error }` on a validation failure (400 — missing fields, or two cards sharing the same card number within this group; see `DATA_MODEL.md`'s "Sort-key collision guard") or a partial DynamoDB failure after retries (502).
 - **Lambda**: `Lambdas/saveChecklist/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Full-replace semantics, scoped to the exact group (main set, or one specific insert set) being saved — deletes every existing item in that group before writing the new set. Also flips `hasChecklist: true` on the matching `Cards` item — see `DATA_MODEL.md`.
 
 ## CMS — image management (S3)
