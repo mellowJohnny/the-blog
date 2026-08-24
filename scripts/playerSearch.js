@@ -38,7 +38,13 @@ function renderPlayerSearchResults(query, results) {
 
     const cardRows = result.cards.map((card) => {
       const insertNote = card.insertSetName ? ` — ${escapeHtml(card.insertSetName)}` : "";
-      const noteSpan = card.notes ? ` <span class="player-search-card-notes">${escapeHtml(card.notes)}</span>` : "";
+      // "RC" (Rookie Card) is the most sought-after marker in the notes
+      // column - call it out visually rather than blending in with
+      // every other trailing marker (UER, LL, VAR, etc). \b keeps this
+      // from matching "RC" as a substring inside some other token.
+      const isRookieCard = card.notes && /\bRC\b/.test(card.notes);
+      const notesClass = isRookieCard ? "player-search-card-notes player-search-card-notes-rc" : "player-search-card-notes";
+      const noteSpan = card.notes ? ` <span class="${notesClass}">${escapeHtml(card.notes)}</span>` : "";
       return `<li>${escapeHtml(card.cardNumberDisplay)} ${escapeHtml(card.playerName)}${insertNote}${noteSpan}</li>`;
     }).join("");
 

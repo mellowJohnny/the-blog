@@ -1563,6 +1563,15 @@ label sup {
   opacity: 0.75;
 }
 
+/* Rookie cards (RC in the notes column) are the most sought-after -
+   call them out instead of blending in with every other marker. Same
+   red as .delete-btn/label sup elsewhere on the site. */
+.player-search-card-notes-rc {
+  font-weight: bold;
+  color: #a83232;
+  opacity: 1;
+}
+
 
 .masthead-container {
   display: flex;
