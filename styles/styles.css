@@ -1514,6 +1514,16 @@ label sup {
 }
 
 /*************************************** Player Search Styles... ********************************/
+/* The global `form { padding-left: 1.5%; }` rule (written for the CMS
+   forms) also applies here - override it so the label/input line up
+   with the plain text above/below rather than sitting indented past
+   it. Scoped under #player-search-form rather than editing the shared
+   rule, same pattern as other .flex-container-related fixes - see
+   FRONTEND.md's Mobile / responsive design gotchas. */
+#player-search-form form {
+  padding-left: 0;
+}
+
 #player-search-form input[type="text"] {
   width: 100%;
   max-width: 450px;
@@ -1524,9 +1534,18 @@ label sup {
   font-family: 'Work Sans', sans-serif;
 }
 
-.player-search-group {
+/* #playerSearchResults prefix (id specificity) beats the bare
+   .flex-container div descendant selector, which otherwise also
+   matches this nested div and forces width:1000px/padding:15px/
+   margin:5px onto it - same recurring gotcha documented in
+   FRONTEND.md (the set-o-matic picker, the footer caption). Without
+   this, every result group also overflows its container to the left,
+   since forcing children to width:1000px each defeats the outer
+   #playerSearchResults div's own flex-shrink. */
+#playerSearchResults .player-search-group {
+  width: auto;
+  padding: 0 0 16px 0;
   margin: 24px 0;
-  padding-bottom: 16px;
   border-bottom: 1px solid var(--color-input-border);
 }
 
