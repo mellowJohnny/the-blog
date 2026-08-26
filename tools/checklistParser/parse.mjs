@@ -103,14 +103,27 @@ function splitNameAndNotes(remainder) {
 // keeps this from matching prose lines like "Trading Card Database" or
 // the set title line (which also always has a hyphen inside its year,
 // e.g. "1997-98", immediately breaking the digit run before any
-// whitespace) - except for "NNO" ("No Number"), a standard checklist
-// designation for unnumbered cards with no digit in it at all, matched
-// as a specific exception rather than loosening the digit requirement
-// generally (which would start matching ordinary prose lines).
-const CARD_LINE_RE = /^(NNO|[A-Za-z]*[-\s]?\d+[A-Za-z]?)\s+(\S.*)$/i;
+// whitespace) - except for "NNO" ("No Number") and the letters-hyphen-
+// letters shape (e.g. "J-AM" for a jersey/memorabilia insert numbered
+// by player initials, no digit anywhere in it), both matched as
+// specific exceptions rather than loosening the digit requirement
+// generally (which would start matching ordinary prose lines). The
+// letters-hyphen-letters case additionally requires ALL CAPS (checked
+// in code, not here - see isAllCapsLetterCode) since the regex alone
+// can't distinguish "J-AM" from an ordinary Title-Case hyphenated
+// phrase like "Self-Titled" that happens to share the same shape.
+const CARD_LINE_RE = /^(NNO|[A-Za-z]+-[A-Za-z]+|[A-Za-z]*[-\s]?\d+[A-Za-z]?)\s+(\S.*)$/i;
 
 function isUnnumbered(cardNumber) {
   return cardNumber.toUpperCase() === "NNO";
+}
+
+// A letters-hyphen-letters card number (no digit at all) is only a
+// real card code when printed in ALL CAPS in the source - see
+// CARD_LINE_RE's comment above for why this can't just be baked into
+// the regex (which is case-insensitive throughout).
+function isAllCapsLetterCode(cardNumber) {
+  return /^[A-Z]+-[A-Z]+$/.test(cardNumber);
 }
 
 function parseChecklistText(text) {
@@ -135,7 +148,13 @@ function parseChecklistText(text) {
     // (duplicate, and therefore silently dropped) fresh card.
     const isRangeReference = match && /^-\s/.test(match[2]);
 
-    if (!match || isRangeReference) {
+    // See isAllCapsLetterCode()'s comment: a letters-hyphen-letters
+    // match (no digit, not "NNO") is only a real card number if it's
+    // printed in ALL CAPS - otherwise it's an ordinary hyphenated
+    // phrase that happened to match the same broad shape.
+    const isBogusLetterCode = match && !/\d/.test(match[1]) && !isUnnumbered(match[1]) && !isAllCapsLetterCode(match[1]);
+
+    if (!match || isRangeReference || isBogusLetterCode) {
       // A line that doesn't look like "<number> <name>" is either
       // header/title noise before the first card (nothing to attach it
       // to yet - cards.length is still 0), or - for some PDFs - text
