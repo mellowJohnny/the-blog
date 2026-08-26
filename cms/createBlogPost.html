@@ -118,9 +118,12 @@
         <tr> <!-- 4th Row -->
           <td>
             <label>Image</label><br>
-            <!-- ⭐ existing behavior preserved: full URL lives in imgName -->
-            <input type="text" id="imgName" title="imgName" value="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/blog/"><br>
-            <!-- ⭐ ADDED: Browse button for blog images -->
+            <!-- Defaults to "none" - the sentinel displayBlog() in blogs.js
+                 checks for to skip rendering an <img> tag entirely. Picking
+                 an image via Browse overwrites this with the full URL
+                 (see openBlogImageBrowser()'s click handler in cms.js) -
+                 this default is only what gets saved if that's skipped. -->
+            <input type="text" id="imgName" title="imgName" value="none"><br>
             <button class="input-button" type="button" onclick="openBlogImageBrowser('imgName')">Browse</button>
           </td>
           <td>

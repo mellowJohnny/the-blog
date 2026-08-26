@@ -44,6 +44,20 @@ function extractImgUrlsFromHtml(html) {
     .filter(Boolean);
 }
 
+// A blog with no image is supposed to be marked with the literal
+// string "none" (see displayBlog() in blogs.js, which skips rendering
+// an <img> tag at all for that case - a deliberately optional field,
+// not a bug). But at least some posts instead have img set to just the
+// bare S3 folder prefix with no filename after it (e.g. ".../img/blog/")
+// - not literally "none", but functionally the same "no image was
+// provided" case. Treat both the same way: not a real image reference,
+// so not something this check should flag as broken.
+function hasRealImageFilename(url) {
+  if (!url || url === "none") return false;
+  const lastSegment = url.trim().split("/").pop();
+  return lastSegment.length > 0;
+}
+
 // fetchErrors collects any failed/unexpected-shape API response instead
 // of letting the whole check crash on one bad request - the site's own
 // Lambdas can return an error object instead of the expected array
@@ -62,7 +76,7 @@ async function collectBlogImageCandidates(onProgress, fetchErrors) {
     }
     for (const blog of body) {
       const label = `Blog: "${blog.title}" (${BLOG_TYPE_LABELS[blogType] || blogType})`;
-      if (blog.img && blog.img !== "none") {
+      if (hasRealImageFilename(blog.img)) {
         candidates.push({ label, field: "img", url: blog.img });
       }
       for (const url of extractImgUrlsFromHtml(blog.postBody)) {
