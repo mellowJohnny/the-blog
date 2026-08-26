@@ -13,9 +13,11 @@
     <title>the hella files...a tech blog, Mustang Mach-E blog, vintage and junk wax hockey card set reviews, and an AWS playground</title>
   
     
-    <!-- Load the stylesheet --> 
-    <link rel="preload" href="/styles/styles.css" as="style" onload="this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="/styles/styles.css"></noscript> 
+    <!-- Load the stylesheet - plain blocking link, deliberately not the
+         preload+swap trick (see index.html's comment - that let raw
+         unstyled HTML paint before CSS was ready, a visible flash on
+         every navigation). -->
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

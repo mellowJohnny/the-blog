@@ -20,9 +20,12 @@
 
   <title>the hella files...junk wax hockey card set reviews and tech blog</title>
 
-  <!-- Stylesheet -->
-  <link rel="preload" href="/styles/styles.css" as="style" onload="this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="/styles/styles.css"></noscript> 
+  <!-- Stylesheet - a plain blocking link, not preload+swap: the async
+       version let the browser paint raw unstyled HTML before CSS was
+       ready, causing a visible flash on every navigation. Blocking is
+       the standard fix - a marginally later first paint beats a flash
+       of unstyled content. -->
+  <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
