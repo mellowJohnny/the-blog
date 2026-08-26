@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<!-- Without this, mobile Safari renders at a wide desktop-width virtual
+     viewport and just zooms the page out to fit, so the @media
+     (max-width: 600px) rules in styles.css never trigger -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<html lang="en">
+<title>cardStack CMS - admin tools</title>
+<head>
+    <script src="/scripts/auth.js"></script>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon.ico">
+      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon.png">
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap" as="style" onload="this.rel='stylesheet'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
+    </noscript>
+    <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+      <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+
+    <script>
+      window.addEventListener('load', () => {
+        fetchCopyrightYear();
+      });
+    </script>
+</head>
+
+<script src="/scripts/cms.js"></script>
+<script src="/scripts/adminTools.js"></script>
+<script src="/scripts/helper.js"></script>
+
+<body>
+<section>
+    <table class="mast-table">
+      <tr>
+        <td width="80%">
+          <div>
+           <header class="masthead">card<i>Stack</i></header>
+        </td>
+        <td class="cms-logo">
+          <i>Content</i><br>
+          <strong>Management</strong><br>
+          <i>System</i><br>
+        </td>
+      </tr>
+    </table>
+  </section>
+
+<section>
+<div>
+    <nav>
+      <table class="cms-top-nav">
+        <tr>
+          <td class="cms-nav-td"><a href="index.html">...home</a></td>
+          <td class="cms-nav-td"><a href="/cms/wlcms.html">...back to cms</a></td>
+        </tr>
+      </table>
+    </nav>
+</div>
+</section>
+
+<div class="header-style">
+    <h1>...admin tools</h1>
+    <br><br>
+</div>
+
+<section>
+<div>
+<main>
+
+  <!-- Each tool below is a self-contained card: a short description, a
+       button, a status line, and a results area. Add a new one the
+       same way - a function in scripts/adminTools.js, a matching card
+       here. See that file's header comment. -->
+
+  <div class="admin-tool-card">
+    <h2>Broken Image Check</h2>
+    <p>
+      Loads every image the live public site references - blog post
+      images, card set header/footer images, and anything embedded in
+      a review's body text - and checks whether each one actually
+      loads. Only covers published/live content, not staged drafts.
+      Takes a minute or two.
+    </p>
+    <button type="button" id="imageCheckBtn" class="input-button" onclick="runBrokenImageCheck()">
+      Run Check
+    </button>
+    <p id="imageCheckStatus" class="admin-status-msg"></p>
+    <div id="imageCheckResults"></div>
+  </div>
+
+  <div class="admin-tool-card">
+    <h2>Checklist Integrity Check</h2>
+    <p>
+      Every uploaded checklist is supposed to link back to exactly one
+      card set review by an exact <code>setName</code> match. This
+      checks every uploaded checklist at once and flags any that don't
+      have a matching review - e.g. a typo'd filename at upload time.
+    </p>
+    <button type="button" id="checklistCheckBtn" class="input-button" onclick="runChecklistIntegrityCheck()">
+      Run Check
+    </button>
+    <p id="checklistCheckStatus" class="admin-status-msg"></p>
+    <div id="checklistCheckResults"></div>
+  </div>
+
+</main>
+</div>
+</section>
+
+<footer class="page-footer">
+  <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
+  <div id="copy"></div>
+</footer>
+</body>
+</html>

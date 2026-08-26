@@ -757,13 +757,12 @@ label sup {
   filter: contrast(0.92) brightness(1.03); /* Reduce contrast a bit for that vinathe look */
 }
 
-.wax-reviews-mast-table::before { /* Blurred background image with noise overlay for a vintage vibe */
+.wax-reviews-mast-table::before { /* Blurred noise overlay for a vintage vibe */
   content: "";
   position: absolute;
   inset: 0;
   background-image:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='noise'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/></filter><rect width='100%' height='100%' filter='url(%23noise)' opacity='0.08'/></svg>"),
-    url('images/wax-reviews-masthead-bg.png');
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='noise'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/></filter><rect width='100%' height='100%' filter='url(%23noise)' opacity='0.08'/></svg>");
   background-size: cover;
   background-position: center;
   filter: blur(7px);
@@ -1589,6 +1588,48 @@ label sup {
   font-weight: bold;
   color: #a83232;
   opacity: 1;
+}
+
+/*************************************** Admin Tools Styles... ********************************/
+.admin-tool-card {
+  max-width: 900px;
+  margin: 0 0 32px 0;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-input-border);
+  font-family: 'Work Sans', sans-serif;
+}
+
+.admin-tool-card h2 {
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.admin-status-msg {
+  font-weight: bold;
+  margin: 8px 0;
+}
+
+.admin-results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 15px;
+}
+
+.admin-results-table th,
+.admin-results-table td {
+  text-align: left;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--color-input-border);
+  vertical-align: top;
+}
+
+.admin-results-url {
+  word-break: break-all;
+}
+
+.admin-results-list {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 15px;
 }
 
 
