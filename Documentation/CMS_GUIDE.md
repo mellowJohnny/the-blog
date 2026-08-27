@@ -26,6 +26,7 @@ Entry point: `cms/wlcms.html` — a simple menu linking to:
 | `cms/blogEdit.html` | Edit form for a single blog post, reached via `?blogID=&blogType=`. |
 | `cms/setEdit.html` | Edit form for a single card set, reached via `?setID=`. |
 | `cms/uploadChecklist.html` | Upload a card set checklist PDF, review/correct the parsed result, save to the `Checklists` table — see "Checklist upload" below. |
+| `cms/admin.html` | Self-service site-health checks (broken images, checklist-to-review linkage) — see "Admin Tools" below. |
 
 All create/edit forms use a hosted **TinyMCE** WYSIWYG editor
 (`initTinyEditor()` in `scripts/cms.js`) for the body text — the
@@ -109,6 +110,22 @@ that opens a shared modal (`#imageBrowserModal`, driven entirely by
 
 See `API_ENDPOINTS.md` → "CMS — image management" for the exact calls.
 
+**Card sets vs. blog posts pick different things**, and it matters if
+you're touching this code: card set forms (`openImageBrowser()`) write
+just the bare **filename** into `headerImgName`/`footerImgName` — the
+Cards table also stores a separate `headerImg`/`footerImg` prefix
+field, concatenated with the filename at render time in `wax.js`. Blog
+forms (`openBlogImageBrowser()`, a separate function) write the
+**complete URL** into `imgName` — Blogs has no matching prefix field,
+`img` holds the whole thing on its own, and clicking a thumbnail
+overwrites that field entirely rather than appending to it.
+`createBlogPost.html`'s `imgName` input defaults to the literal string
+`"none"` (the sentinel `displayBlog()` in `blogs.js` checks for to skip
+rendering an image at all) — it used to default to the bare S3 prefix
+with no filename, which any post that skipped clicking Browse would
+save as-is, producing a URL that looks valid but 404s. See
+`DATA_MODEL.md`'s `Blogs.img` field note.
+
 ### Preview
 
 `setEdit.html` has a "Preview" button (`openPreview()` in
@@ -171,6 +188,38 @@ directory that now holds the real source PDFs (see
 Once a checklist is uploaded and linked, `waxReviews.html` displays it
 in a print-friendly modal — see `FRONTEND.md`'s "Checklist display"
 section for that half of the feature.
+
+### Admin Tools
+
+`cms/admin.html` is a growing collection of self-service site-health
+checks, run entirely client-side by `scripts/adminTools.js` against the
+site's existing public read APIs — no new backend endpoints, no auth
+needed for the checks themselves (they're just page-gated like every
+other `/cms` page). Each check is its own card on the page: a short
+description, a "Run Check" button, a status line, and a results area.
+Adding a new one means adding a function to `adminTools.js` and a
+matching card here — not growing this into one do-everything script.
+
+Two checks exist today:
+
+- **Broken Image Check**: loads every image the *live* public site
+  references — blog post `img` fields, card set `headerImgName`/
+  `footerImgName`, and any `<img>` tags embedded in a review or post's
+  `postBody` rich text — and test-loads each one client-side the same
+  way a visitor's browser does (an `onload`/`onerror` check, not just an
+  HTTP status check, so it also catches responses a browser would
+  reject outright, e.g. an S3 error body served for a missing object).
+  Only covers published/live content, not staged drafts. A blog's `img`
+  field is skipped as a candidate (not flagged) when it's the `"none"`
+  sentinel *or* a bare S3 prefix with no filename — see `DATA_MODEL.md`'s
+  `Blogs.img` note for why the second form exists. Takes a minute or
+  two; results include which page/set/post each broken image belongs
+  to, and any individual page fetch that failed outright (e.g. from
+  DynamoDB throughput exhaustion — see `ARCHITECTURE.md`'s billing-mode
+  note) is reported separately rather than aborting the whole check.
+- **Checklist Integrity Check**: a thin UI wrapper around
+  `searchPlayerName`'s `?audit=1` mode (see `LAMBDA_FUNCTIONS.md`) —
+  reports any uploaded checklist with no matching `Cards` review.
 
 ## Autobus Messaging Platform — `cms/smsAdmin.html`
 

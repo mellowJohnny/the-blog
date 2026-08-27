@@ -29,7 +29,7 @@ in a disabled form field.
 | `title` | String | Post title. |
 | `author` | String | Free text; CMS forms currently only offer "Christian Couillard". |
 | `postBody` | String | HTML content, authored via TinyMCE. |
-| `img` | String | Full image URL (or `"none"`) — field is called `imgName` in the CMS form/create payload but stored/read back as `img` (see `updateBlogPost()` / `populateBlog()` in `scripts/cms.js` — this rename is a real inconsistency worth knowing about, not a mistake in this doc). |
+| `img` | String | Full image URL (or `"none"`, the sentinel `displayBlog()` in `blogs.js` checks for to skip rendering an `<img>` tag at all) — field is called `imgName` in the CMS form/create payload but stored/read back as `img` (see `updateBlogPost()` / `populateBlog()` in `scripts/cms.js` — this rename is a real inconsistency worth knowing about, not a mistake in this doc). `createBlogPost.html`'s image field defaults to `"none"`; some older posts instead have a bare S3 folder prefix with no filename (`.../img/blog/`) from before that default was fixed — `blogs.js` still tries to render those (so a network request briefly fails, silently caught by an `onerror` handler), functionally the same "no image" outcome, just not as clean. See CMS_GUIDE.md's "Image picker / uploader" section. |
 | `imgCap` | String | Image caption, rendered under the image. |
 | `time` | String (ISO 8601) | Sort key. Creation timestamp, used for sort order (`getSortOrder()` in `scripts/helper.js`) and displayed via `fixDate()`. |
 | `published` | Boolean | `true` = live, `false` = staged/draft. Drives the "live blogs" vs "staged blogs" split in `cms/pickBlog.html`. |
@@ -44,6 +44,10 @@ Holds every hockey card set review.
 GSI pattern is live" question this doc used to raise): partition key
 `setName` (String), sort key `year` (Number). `setID` below is a separate,
 non-key attribute used only by the `setID-index` GSI lookup path.
+
+**Billing mode**: On-Demand, with a maximum-throughput cap set — see
+`ARCHITECTURE.md`'s billing-mode note for why (both this table and
+`Checklists` moved off Provisioned after real throttling incidents).
 
 | Field | Type | Notes |
 |---|---|---|
@@ -120,10 +124,11 @@ partition — uploading/replacing one insert set never touches the main
 set's rows, or a different insert set's rows, even though they all
 share the same `setName`.
 
-**Billing mode**: switched from Provisioned to On-Demand on 2026-08-24
-— see `ARCHITECTURE.md` for why (a full-table `Scan`-per-search design
-in `searchPlayerName` — see `LAMBDA_FUNCTIONS.md` — exhausted the
-provisioned RCU ceiling almost immediately under light testing).
+**Billing mode**: On-Demand, with a maximum-throughput cap set — see
+`ARCHITECTURE.md`'s billing-mode note (a full-table `Scan`-per-search
+design in `searchPlayerName` — see `LAMBDA_FUNCTIONS.md` — exhausted a
+provisioned RCU ceiling almost immediately under light testing; `Cards`
+moved off Provisioned for the same underlying reason).
 
 **The `setName` ↔ `Cards.setName` 1:1 assumption, and how to verify
 it**: every `Checklists` item's `setName` is expected to match exactly

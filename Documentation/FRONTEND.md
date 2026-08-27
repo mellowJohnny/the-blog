@@ -60,6 +60,7 @@ them to a crawler (or a human visitor navigating by link).
 | `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. |
 | `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time), hamburger menu toggle, cookie helper, and copyright-year footer. |
 | `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise). See "Player search" below. |
+| `adminTools.js` | `cms/admin.html` support code: a growing set of self-service site-health checks (broken images, checklist-to-review linkage), each its own function calling the site's existing public read APIs directly. See `CMS_GUIDE.md`'s "Admin Tools" section. |
 | `auth.js` | Cognito OAuth2 code exchange + token refresh, gates every `/cms` page. See `AUTH.md`. |
 | `cms.js` | All CMS create/edit/list logic + the S3 image browser/upload modal + TinyMCE init. See `CMS_GUIDE.md`. |
 | `adminSMS.js` | Autobus SMS admin page logic: character/segment counter, GSM-7 vs Unicode encoding detection, broadcast send, bulk subscriber import, add-subscriber modal. See `CMS_GUIDE.md`. |
@@ -145,7 +146,16 @@ knowing before touching this CSS again:
   (`#set-picker .foo`, `#cardSetDiv .foo`) so ID specificity beats the
   class+element specificity of the offending rule, rather than editing
   the shared `.flex-container div` rule itself (which other pages rely
-  on for their intended 1000px content column).
+  on for their intended 1000px content column). Recurred again on
+  `playerSearch.html`: the shared rule was also forcing every
+  `.player-search-group` result div to `width: 1000px`/its own
+  padding+margin, which both misaligned the results (pushing the whole
+  block into overflow, since `#playerSearchResults` itself has to
+  flex-shrink to fit but its own forced-width children didn't) and
+  silently stomped that div's *intended* spacing/border-bottom, since
+  the shared rule's specificity beat it too. Same fix pattern: an
+  `#playerSearchResults .player-search-group` override, not touching
+  the shared rule.
 - **`<table>` elements resist non-table `display` overrides
   unpredictably across browsers.** Several bugs this round traced back
   to forcing `display: flex`/`display: block` onto a `<table>`/`<tr>`
@@ -173,9 +183,21 @@ ever uses. Keep any new page's font `<link>` block byte-for-byte
 identical to the others unless it genuinely needs a font none of them
 load.
 
-`waxReviews.html`'s masthead is the one deliberate exception: it uses a
-self-hosted `Bebas Neue` (`@font-face`, only imported by `waxReviews.html`
-and `lockout.html`) instead of the `Spicy Rice` every other masthead
+**`styles.css` itself does *not* use this preload pattern** — every
+public page loads it with a plain blocking `<link rel="stylesheet">`.
+It used to use the same `preload`+`onload`-swap trick the Google Fonts
+links still use (non-render-blocking, so the browser could paint HTML
+before CSS was ready), but that meant a real, visible flash of
+completely unstyled content on every navigation - worse as
+`styles.css` grew. Switched to blocking specifically to fix that; the
+Google Fonts links are unaffected and still use the non-blocking
+pattern deliberately (a missing/slow *font* swaps to a fallback
+gracefully, which is a much smaller visual disruption than missing all
+page layout/color).
+
+`waxReviews.html`'s masthead treatment (also used by `lockout.html` and
+`playerSearch.html`) is the one deliberate exception: it uses a
+self-hosted `Bebas Neue` (`@font-face`) instead of the `Spicy Rice` every other masthead
 uses — **confirmed intentional by the site owner**, not drift, so don't
 "fix" it to match. Same for the pseudo-headline convention inside body
 content: blog posts (`index.html`/`tech.html`) use plain bold text for
@@ -320,10 +342,20 @@ uploaded checklists, with a link to each set's review. Added
   deliberately only shown on the `waxReviews.html`-backed `NAV_MAP`
   entries (`junkWax`, `classicWax`, `timmies`, `mcd`), not site-wide;
   `index`/`tech`/`ev` and `playerSearch`'s own `NAV_MAP` entry don't
-  include it (see "Navigation system" above).
+  include it (see "Navigation system" above). Positioned immediately
+  before `tech` in each of those four lists.
 - **Escaping**: all rendered text (player names, notes, set names) goes
   through the shared `escapeHtml()` in `helper.js` (see the `scripts/`
   table above).
+- **Masthead**: uses the same `waxReviews.html`/`lockout.html` masthead
+  treatment (self-hosted Bebas Neue, no weather widget) rather than the
+  `index.html`/`tech.html` one - see "Typography / fonts" above.
+- **Rookie cards called out**: a card whose `notes` contain `RC` as a
+  whole word (`\bRC\b` - so it won't match `RC` as a substring inside
+  some other token) renders bold and in the site's one established red
+  (`#a83232`, same as `.delete-btn`/`label sup`) via a
+  `.player-search-card-notes-rc` class, rather than blending in with
+  every other trailing marker.
 
 ## Orphaned / legacy files
 
