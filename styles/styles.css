@@ -506,6 +506,12 @@ h1 {
   width: 100%;
 }
 
+/* wlcms.html only - left-justify its nav rather than centering it like
+   smsAdmin.html's, which also shares .cms-top-nav */
+#wlcms-top-nav tr {
+  justify-content: flex-start;
+}
+
 .cms-form-table {
   font-family: 'Source Sans 3', sans-serif;
   font-size: 18px;
