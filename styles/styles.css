@@ -506,10 +506,88 @@ h1 {
   width: 100%;
 }
 
-/* wlcms.html only - left-justify its nav rather than centering it like
-   smsAdmin.html's, which also shares .cms-top-nav */
-#wlcms-top-nav tr {
+/* wlcms.html's dropdown/flyout main nav - Cards / Blogs / Admin parents
+   each reveal a flyout of links on click (toggled via a small inline
+   script in wlcms.html, not CSS :hover, so it behaves the same on touch
+   and desktop); "Exit" has no flyout. A separate component from the
+   plain .cms-top-nav breadcrumb table used by every other cms/*.html
+   page, left-justified per its own layout rather than centered. */
+.cms-dropdown-nav {
+  display: flex;
+  flex-wrap: wrap;
   justify-content: flex-start;
+  align-items: flex-start;
+  gap: 12px;
+  list-style: none;
+  width: 100%;
+  margin: 15px 0;
+  padding: 20px 0;
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.cms-nav-item {
+  position: relative;
+  margin: 0;
+}
+
+.cms-nav-parent,
+.cms-nav-item-plain > a {
+  display: block;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 24px;
+  color: var(--color-text-dark);
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.cms-nav-parent::after {
+  content: "\25BE";
+  font-size: 0.6em;
+  margin-left: 8px;
+  display: inline-block;
+}
+
+.cms-nav-item.open > .cms-nav-parent::after {
+  content: "\25B4";
+}
+
+.cms-nav-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 240px;
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.cms-nav-item.open > .cms-nav-dropdown {
+  display: block;
+}
+
+.cms-nav-dropdown li {
+  margin: 0;
+}
+
+.cms-nav-dropdown a {
+  display: block;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 18px;
+  color: var(--color-text-dark);
+  padding: 10px 16px;
+  white-space: nowrap;
+}
+
+.cms-nav-dropdown a:hover {
+  background-color: var(--color-page-bg);
 }
 
 .cms-form-table {
@@ -1956,6 +2034,42 @@ label sup {
   .cms-nav-td {
     font-size: 16px;
     padding: 10px 14px;
+  }
+
+  /* wlcms.html dropdown/flyout nav - stack the parents full-width and
+     turn each flyout into an inline accordion instead of an absolutely
+     positioned overlay, which doesn't have room to sit next to its
+     parent at mobile widths */
+  .cms-dropdown-nav {
+    flex-direction: column;
+    gap: 0;
+    margin: 10px 0;
+    padding: 10px 0;
+  }
+
+  .cms-nav-item {
+    width: 100%;
+  }
+
+  .cms-nav-parent,
+  .cms-nav-item-plain > a {
+    font-size: 18px;
+    padding: 10px 14px;
+  }
+
+  .cms-nav-dropdown {
+    position: static;
+    width: auto;
+    min-width: 0;
+    margin-left: 14px;
+    border-left: 3px solid var(--color-input-border);
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .cms-nav-dropdown a {
+    font-size: 16px;
+    padding: 8px 14px;
   }
 
   /* cardStack CMS masthead (shared across every cms/*.html page) - a

@@ -58,22 +58,67 @@
             <main>
               <div>
                 <nav>
-                  <table class="cms-top-nav" id="wlcms-top-nav">
-                    <tr>
-                      <td class="cms-nav-td"><a href="/cms/createCardSet.html">...new card set</a> </td>
-                      <td class="cms-nav-td"><a href="/cms/pickCardSet.html">...edit a card set</a> </td>
-                      <td class="cms-nav-td"><a href="/cms/uploadChecklist.html">...upload a checklist</a> </td>
-                      <tr><td></td></tr>
-                      <td class="cms-nav-td"><a href="/cms/createBlogPost.html">...new blog post</a> </td>
-                      <td class="cms-nav-td"><a href="/cms/pickBlog.html">....edit a blog post</a> </td>
-                      <tr><td></td></tr>
-                      <td class="cms-nav-td"><a href="/cms/admin.html">...admin tools</a> </td>
-                      <td class="cms-nav-td"><a href="/cms/smsAdmin.html">-> AMP SMS</a> </td>
-                      <tr><td></td></tr>
-                      <td class="cms-nav-td"><a href="index.html">...exit</a> </td>
-                    </tr>
-                  </table>
+                  <ul class="cms-dropdown-nav" id="wlcms-top-nav">
+                    <li class="cms-nav-item">
+                      <button type="button" class="cms-nav-parent" aria-haspopup="true" aria-expanded="false">Cards</button>
+                      <ul class="cms-nav-dropdown">
+                        <li><a href="/cms/createCardSet.html">...new card set</a></li>
+                        <li><a href="/cms/pickCardSet.html">...edit a card set</a></li>
+                        <li><a href="/cms/uploadChecklist.html">...upload a checklist</a></li>
+                      </ul>
+                    </li>
+                    <li class="cms-nav-item">
+                      <button type="button" class="cms-nav-parent" aria-haspopup="true" aria-expanded="false">Blogs</button>
+                      <ul class="cms-nav-dropdown">
+                        <li><a href="/cms/createBlogPost.html">...new blog post</a></li>
+                        <li><a href="/cms/pickBlog.html">...edit a blog post</a></li>
+                      </ul>
+                    </li>
+                    <li class="cms-nav-item">
+                      <button type="button" class="cms-nav-parent" aria-haspopup="true" aria-expanded="false">Admin</button>
+                      <ul class="cms-nav-dropdown">
+                        <li><a href="/cms/admin.html">...admin tools</a></li>
+                        <li><a href="/cms/smsAdmin.html">-> AMP SMS</a></li>
+                      </ul>
+                    </li>
+                    <li class="cms-nav-item cms-nav-item-plain">
+                      <a href="index.html">...exit</a>
+                    </li>
+                  </ul>
                 </nav>
+                <script>
+                  // Click-toggle flyouts (not CSS :hover) so this behaves the
+                  // same on touch and desktop. Scoped to #wlcms-top-nav only.
+                  (function () {
+                    const nav = document.getElementById('wlcms-top-nav');
+                    if (!nav) return;
+
+                    function closeAll(except) {
+                      nav.querySelectorAll('.cms-nav-item.open').forEach((item) => {
+                        if (item === except) return;
+                        item.classList.remove('open');
+                        const btn = item.querySelector('.cms-nav-parent');
+                        if (btn) btn.setAttribute('aria-expanded', 'false');
+                      });
+                    }
+
+                    nav.querySelectorAll('.cms-nav-parent').forEach((btn) => {
+                      btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const item = btn.closest('.cms-nav-item');
+                        const isOpen = item.classList.contains('open');
+                        closeAll();
+                        item.classList.toggle('open', !isOpen);
+                        btn.setAttribute('aria-expanded', String(!isOpen));
+                      });
+                    });
+
+                    document.addEventListener('click', () => closeAll());
+                    document.addEventListener('keydown', (e) => {
+                      if (e.key === 'Escape') closeAll();
+                    });
+                  })();
+                </script>
               </div>
               
             </main>
