@@ -15,13 +15,15 @@ changing layout CSS on these pages.
 
 ## cardStack — blog & card set authoring
 
-Entry point: `cms/wlcms.html` — its nav is grouped into three
-click-to-open dropdown/flyout menus (Cards, Blogs, Admin) plus a plain
-Exit link, rather than one flat row of links; on mobile each dropdown
-becomes an inline accordion instead of a floating flyout (no room to
-sit beside its parent at that width). Toggling is handled by a small
-inline script scoped to `#wlcms-top-nav`, not CSS `:hover`, so it
-behaves the same on touch and desktop. Grouped page links:
+Entry point: `cms/wlcms.html` — its centered nav is grouped into three
+dropdown/flyout menus (Cards, Blogs, Admin) plus a plain Exit link,
+rather than one flat row of links. Each opens two ways, independently:
+a small inline script scoped to `#wlcms-top-nav` toggles an `open`
+class on click (this is what drives it on touch, where hover isn't
+meaningful), and a `@media (hover: hover) and (pointer: fine)` CSS
+rule opens it on mouse hover on desktop/trackpad. On mobile each
+dropdown becomes an inline accordion instead of a floating flyout (no
+room to sit beside its parent at that width). Grouped page links:
 
 | Page | Purpose |
 |---|---|

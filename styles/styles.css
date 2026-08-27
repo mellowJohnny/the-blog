@@ -507,15 +507,18 @@ h1 {
 }
 
 /* wlcms.html's dropdown/flyout main nav - Cards / Blogs / Admin parents
-   each reveal a flyout of links on click (toggled via a small inline
-   script in wlcms.html, not CSS :hover, so it behaves the same on touch
-   and desktop); "Exit" has no flyout. A separate component from the
-   plain .cms-top-nav breadcrumb table used by every other cms/*.html
-   page, left-justified per its own layout rather than centered. */
+   each reveal a flyout of links; "Exit" has no flyout. Opens via click
+   (a small inline script in wlcms.html toggles an "open" class - this
+   is what drives it on mobile/touch, where hover isn't meaningful) OR
+   via CSS :hover on real pointer devices (below) - the two mechanisms
+   are independent and don't conflict, since either one alone is enough
+   to satisfy the "show the dropdown" selectors. A separate component
+   from the plain .cms-top-nav breadcrumb table used by every other
+   cms/*.html page. */
 .cms-dropdown-nav {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: flex-start;
   gap: 12px;
   list-style: none;
@@ -588,6 +591,19 @@ h1 {
 
 .cms-nav-dropdown a:hover {
   background-color: var(--color-page-bg);
+}
+
+/* Hover-to-open, desktop/trackpad only - excluded on touch so a tap
+   doesn't leave a dropdown stuck open via a "phantom" hover state with
+   no mouseleave to clear it. Mobile keeps the click-toggle above. */
+@media (hover: hover) and (pointer: fine) {
+  .cms-nav-item:hover > .cms-nav-dropdown {
+    display: block;
+  }
+
+  .cms-nav-item:hover > .cms-nav-parent::after {
+    content: "\25B4";
+  }
 }
 
 .cms-form-table {
