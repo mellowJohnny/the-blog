@@ -1332,7 +1332,7 @@ label sup {
 .checklist-modal-rc-filter input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: var(--color-accent-hover);
+  accent-color: #2e8b57;
   cursor: pointer;
 }
 
