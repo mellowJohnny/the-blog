@@ -164,7 +164,22 @@ export const handler = async (event) => {
         playerName: item.playerName,
         notes: item.notes || "",
         type: item.type,
-        insertSetName: item.insertSetName || ""
+        insertSetName: item.insertSetName || "",
+        sortIndex: item.sortIndex ?? 0
+      });
+    }
+
+    // Order each set's cards main-before-insert, then by sortIndex within
+    // that group - never by Scan/insertion order, and never by
+    // cardNumberDisplay directly, since that's a display string ("T-20",
+    // "NNO") that doesn't sort numerically. Same convention
+    // getChecklistBySetName's items already carry sortIndex for - see
+    // DATA_MODEL.md's Checklists table.
+    for (const cards of bySetName.values()) {
+      cards.sort((a, b) => {
+        if (a.type !== b.type) return a.type === "insertSet" ? 1 : -1;
+        if (a.insertSetName !== b.insertSetName) return a.insertSetName.localeCompare(b.insertSetName);
+        return a.sortIndex - b.sortIndex;
       });
     }
 

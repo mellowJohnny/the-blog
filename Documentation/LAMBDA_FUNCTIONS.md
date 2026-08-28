@@ -324,6 +324,17 @@ since that history predates this doc being kept current.
   player appears in across the whole `Checklists` table, grouped by
   `setName`, each with a working link back to that set's review (via a
   `Cards` lookup — see below).
+- **Cards within a set are ordered main-before-insert, then by
+  `sortIndex`** — the same field/convention `getChecklistBySetName`'s
+  items carry (see `DATA_MODEL.md`'s Checklists table), not raw `Scan`
+  order and not a sort on `cardNumberDisplay` itself, which is a display
+  string ("T-20", "NNO") that doesn't sort numerically. An earlier
+  version omitted `sortIndex` from the trimmed per-card object returned
+  here, which left results in whatever order the `Scan` happened to
+  return them in — visibly out of numeric order for any set with more
+  than ~9 cards (e.g. "22" sorting after "203" as a string). Fixed by
+  carrying `sortIndex` through and sorting each set's `cards` array
+  before returning.
 - **Full-table `Scan`, matched case-insensitively in code**: `Checklists`
   has no index on `playerName` (its only key is `setName`+`cardNumber`),
   so there's no way to `Query` it by player name — this does a full
