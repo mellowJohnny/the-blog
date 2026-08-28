@@ -1303,14 +1303,36 @@ label sup {
   margin-bottom: 16px;
 }
 
+/* Same row as the set-name title, right-justified - see
+   .checklist-modal-title below, which no longer carries its own
+   bottom margin now that this row owns that spacing. */
+.checklist-modal-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 16px 0;
+}
+
 .checklist-modal-rc-filter {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-right: auto;
+  gap: 8px;
+  flex-shrink: 0;
   font-family: 'Source Sans 3', sans-serif;
-  font-size: 15px;
-  color: var(--color-text-dark);
+  font-weight: 700;
+  font-size: 17px;
+  color: #fff;
+  background-color: #256386;
+  border-radius: 20px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.checklist-modal-rc-filter input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-accent-hover);
   cursor: pointer;
 }
 
@@ -1373,7 +1395,7 @@ label sup {
   font-weight: 700;
   font-size: 1.4rem;
   color: var(--color-text-dark);
-  margin: 0 0 16px 0;
+  margin: 0;
 }
 
 .checklist-modal-cards {
@@ -1431,6 +1453,18 @@ label sup {
   .checklist-modal-cards {
     columns: 1;
   }
+
+  /* Not enough width for the title and the badge-style filter to sit
+     side by side - stack them instead. */
+  .checklist-modal-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .checklist-modal-rc-filter {
+    align-self: flex-end;
+  }
 }
 
 /* Scoped to body.checklist-modal-open (toggled in openChecklistModal()/
@@ -1469,7 +1503,8 @@ label sup {
     columns: 2;
   }
 
-  .checklist-modal-controls {
+  .checklist-modal-controls,
+  .checklist-modal-rc-filter {
     display: none !important;
   }
 

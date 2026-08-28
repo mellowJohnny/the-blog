@@ -205,15 +205,17 @@
       <div id="checklistModalOverlay" class="checklist-modal-overlay">
         <div class="checklist-modal-content">
           <div class="checklist-modal-controls">
-            <label class="checklist-modal-rc-filter">
-              <input type="checkbox" id="checklistRookieFilter" onchange="applyChecklistRookieFilter()">
-              Rookies only
-            </label>
             <button type="button" class="checklist-modal-print-btn" onclick="window.print()">🖨 Print</button>
             <span class="checklist-modal-close" onclick="closeChecklistModal()">&times;</span>
           </div>
           <header class="checklist-modal-masthead"><a href="index.html">the hella files</a></header>
-          <h2 id="checklistModalTitle" class="checklist-modal-title"></h2>
+          <div class="checklist-modal-title-row">
+            <h2 id="checklistModalTitle" class="checklist-modal-title"></h2>
+            <label class="checklist-modal-rc-filter">
+              <input type="checkbox" id="checklistRookieFilter" onchange="applyChecklistRookieFilter()">
+              Rookies only
+            </label>
+          </div>
           <div id="checklistModalBody"></div>
           <!-- Print-only - see @media print, styles.css. Browsers won't
                let a page suppress their own native print header/footer
