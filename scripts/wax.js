@@ -356,11 +356,17 @@ const CHECKLIST_API_URL = "https://xbizlwvad5.execute-api.us-east-2.amazonaws.co
 
 // escapeHtml() now lives in helper.js (shared with playerSearch.js).
 
+// Holds the current set's fetched items so the "Rookies only" checkbox
+// (applyChecklistRookieFilter()) can re-render from what's already in
+// memory instead of re-querying getChecklistBySetName on every toggle.
+let currentChecklistItems = [];
+
 function openChecklistModal(link) {
   const setName = link.dataset.setName;
   const overlay = document.getElementById("checklistModalOverlay");
   const title = document.getElementById("checklistModalTitle");
   const body = document.getElementById("checklistModalBody");
+  const rookieFilter = document.getElementById("checklistRookieFilter");
 
   title.textContent = setName;
   body.innerHTML = "<p>Loading checklist...</p>";
@@ -370,6 +376,10 @@ function openChecklistModal(link) {
   // normally (modal closed) would print nothing at all, since those
   // rules would otherwise apply unconditionally.
   document.body.classList.add("checklist-modal-open");
+  currentChecklistItems = [];
+  // The checkbox is shared across every set's modal - reset it so a
+  // filter left on from a previous set doesn't silently carry over.
+  if (rookieFilter) rookieFilter.checked = false;
 
   fetch(`${CHECKLIST_API_URL}?setName=${encodeURIComponent(setName)}`)
     .then(response => {
@@ -377,12 +387,38 @@ function openChecklistModal(link) {
       return response.json();
     })
     .then(items => {
-      body.innerHTML = renderChecklistGroups(items);
+      currentChecklistItems = items;
+      // Route through applyChecklistRookieFilter() rather than
+      // rendering `items` directly - the checkbox was reset to
+      // unchecked above, but a slow fetch leaves a window where the
+      // visitor can toggle it before this resolves, and rendering the
+      // raw list here would silently stomp that choice.
+      applyChecklistRookieFilter();
     })
     .catch(err => {
       console.log("Checklist fetch failed:", err);
       body.innerHTML = "<p>Couldn't load the checklist right now - please try again.</p>";
     });
+}
+
+// "Rookies only" checkbox handler - filters the already-fetched
+// currentChecklistItems client-side (whole-word "RC" in notes, same
+// rule playerSearch.js uses for its RC styling) and re-renders from
+// that in-memory list. No re-fetch/re-query of the Checklists table.
+function applyChecklistRookieFilter() {
+  const rookieFilter = document.getElementById("checklistRookieFilter");
+  const body = document.getElementById("checklistModalBody");
+  const isFiltered = rookieFilter && rookieFilter.checked;
+  const items = isFiltered
+    ? currentChecklistItems.filter(item => item.notes && /\bRC\b/.test(item.notes))
+    : currentChecklistItems;
+
+  // renderChecklistGroups()'s own empty-state message ("No checklist
+  // data found for this set") would be misleading here - a checklist
+  // with zero rookies isn't the same as no checklist existing at all.
+  body.innerHTML = (isFiltered && items.length === 0)
+    ? "<p>No rookie cards found in this checklist.</p>"
+    : renderChecklistGroups(items);
 }
 
 function closeChecklistModal() {

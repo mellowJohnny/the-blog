@@ -1303,6 +1303,17 @@ label sup {
   margin-bottom: 16px;
 }
 
+.checklist-modal-rc-filter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 15px;
+  color: var(--color-text-dark);
+  cursor: pointer;
+}
+
 .checklist-modal-print-btn {
   font-family: 'Work Sans', sans-serif;
   font-size: 14px;

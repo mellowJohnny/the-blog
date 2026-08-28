@@ -205,6 +205,10 @@
       <div id="checklistModalOverlay" class="checklist-modal-overlay">
         <div class="checklist-modal-content">
           <div class="checklist-modal-controls">
+            <label class="checklist-modal-rc-filter">
+              <input type="checkbox" id="checklistRookieFilter" onchange="applyChecklistRookieFilter()">
+              Rookies only
+            </label>
             <button type="button" class="checklist-modal-print-btn" onclick="window.print()">🖨 Print</button>
             <span class="checklist-modal-close" onclick="closeChecklistModal()">&times;</span>
           </div>
