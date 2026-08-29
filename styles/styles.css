@@ -1459,6 +1459,17 @@ label sup {
     columns: 1;
   }
 
+  /* .checklist-modal-masthead's base rule cancels the desktop content
+     box's 32px padding with a matching -32px negative margin so the
+     masthead bar bleeds edge-to-edge. At this breakpoint the content
+     box's own padding shrinks to 18px (above), so that same -32px
+     overshoots by 14px a side, bleeding the masthead past the modal's
+     (and on a narrow phone, the viewport's) edge - match it here. */
+  .checklist-modal-masthead {
+    margin: 0 -18px 16px -18px;
+    padding: 14px 18px;
+  }
+
   /* Not enough width for the title and the badge-style filter to sit
      side by side - stack them instead. */
   .checklist-modal-title-row {
