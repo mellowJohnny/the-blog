@@ -1291,6 +1291,11 @@ label sup {
   border-radius: 8px;
   width: 75%;
   max-width: 1400px;
+  /* Without this, width + padding stack additively (content-box is the
+     default) - at the mobile breakpoint's width:92%/padding:16px 18px
+     that rendered wider than the viewport itself, bleeding a few px
+     off the right edge of the screen on real phones (e.g. iPhone 14). */
+  box-sizing: border-box;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   font-family: 'Source Sans 3', sans-serif;
 }
