@@ -470,12 +470,22 @@ function renderChecklistGroups(items) {
     html += mainCards.map(renderChecklistCard).join("");
   }
 
-  insertGroups.forEach((group, name) => {
-    // "MEM" (memorabilia/jersey relic cards) in any card's notes within
-    // this insert set relabels the whole group "Memorabilia" instead of
-    // the generic "Insert Set" suffix - \b keeps this from matching
-    // "MEM" as a substring inside some other token.
-    const isMemorabilia = group.some(item => item.notes && /\bMEM\b/.test(item.notes));
+  // "MEM" (memorabilia/jersey relic cards) in any card's notes within an
+  // insert set relabels the whole group "Memorabilia" instead of the
+  // generic "Insert Set" suffix - \b keeps this from matching "MEM" as
+  // a substring inside some other token.
+  const insertEntries = [...insertGroups.entries()].map(([name, group]) => ({
+    name,
+    group,
+    isMemorabilia: group.some(item => item.notes && /\bMEM\b/.test(item.notes))
+  }));
+
+  // Memorabilia sections always render after Insert Set sections -
+  // Array#sort is stable, so this only moves Memorabilia groups to the
+  // end, without disturbing either category's own relative order.
+  insertEntries.sort((a, b) => Number(a.isMemorabilia) - Number(b.isMemorabilia));
+
+  insertEntries.forEach(({ name, group, isMemorabilia }) => {
     const groupTypeLabel = isMemorabilia ? "Memorabilia" : "Insert Set";
     html += `<div class="checklist-modal-group-title">${escapeHtml(name)} - ${groupTypeLabel}</div>`;
     html += group.map(renderChecklistCard).join("");

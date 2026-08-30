@@ -308,6 +308,11 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
   cards), in which case the whole group is labeled `"<name> -
   Memorabilia"` instead (e.g. `"NHL Jerseys - Memorabilia"`). `"Main
   Set"` is unaffected — the suffix only applies to insert set titles.
+  Every `"- Insert Set"` group also renders before every `"-
+  Memorabilia"` group, regardless of their relative order in the
+  fetched items — a stable sort (`Array#sort` is stable in modern JS)
+  on the `isMemorabilia` flag reorders the two categories as a block
+  without disturbing either category's own internal order.
 - **"Rookies only" filter**: a badge-style checkbox on the same row as
   the set-name title, right-justified (`.checklist-modal-rc-filter`).
   Filters client-side only — `openChecklistModal()` caches the fetched
