@@ -168,6 +168,28 @@ knowing before touching this CSS again:
   (`.set-footer-table-style` in `displayCardSet()`, `wax.js`), both of
   which used to be `<table>`s and are now `<div>`s for exactly this
   reason.
+- **A percentage `width` plus `padding` on the same box needs
+  `box-sizing: border-box`, or the padding renders as *extra* width
+  rather than eating into it.** `.checklist-modal-content` (the
+  checklist modal — see "Checklist display" below) is `content-box` by
+  default (the browser default; this codebase doesn't reset it
+  globally); at its `width: 92%`/`padding: 16px 18px` mobile rule that
+  rendered a few px wider than the viewport itself, bleeding past the
+  right edge of the screen on a real phone (caught on an iPhone 14).
+  Fixed by adding `box-sizing: border-box` to the shared rule.
+- **A bleed-to-the-edge negative margin has to be re-matched at every
+  breakpoint that changes the parent's padding, or it over/undershoots.**
+  `.checklist-modal-masthead` cancels `.checklist-modal-content`'s
+  padding with an equal-and-opposite negative margin so its background
+  bar spans the full modal width instead of stopping at the padding
+  line. Its desktop values (`-32px` margin / `32px` padding) matched
+  the desktop content padding, but the mobile breakpoint shrinks that
+  content padding to `18px` without touching the masthead - so the
+  unchanged `-32px` overshot by 14px a side, bleeding the masthead past
+  the modal (and on a narrow phone, the viewport) edge, the same
+  overflow as the `box-sizing` bug above but from a different cause.
+  Fixed with a matching mobile override (`margin: 0 -18px 16px -18px;
+  padding: 14px 18px;`) inside the same media block.
 
 ## Typography / fonts
 
@@ -279,10 +301,28 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
   the DynamoDB sort key sorts as a plain string (`"INSERT#"` sorts
   before `"MAIN#"`, and card numbers don't sort numerically) — see
   `DATA_MODEL.md`.
-- **Escaping**: all rendered checklist text goes through a
-  general-purpose `escapeHtml()` helper added to `wax.js` for this
-  feature (distinct from `checklistUpload.js`'s narrower `escapeAttr()`,
-  used only for CMS review-table attribute values).
+- **"Rookies only" filter**: a badge-style checkbox on the same row as
+  the set-name title, right-justified (`.checklist-modal-rc-filter`).
+  Filters client-side only — `openChecklistModal()` caches the fetched
+  items in a module-level `currentChecklistItems`, and toggling the
+  checkbox calls `applyChecklistRookieFilter()`, which filters that
+  cached array (`\bRC\b` whole-word match on `notes`, the same rule
+  `playerSearch.js` uses for its own RC styling) and re-renders via
+  `renderChecklistGroups()` — no re-fetch of `getChecklistBySetName`.
+  Group headers disappear on their own when a filtered group has zero
+  cards, since they're derived from the same filtered array. The
+  checkbox resets to unchecked on every `openChecklistModal()` call so
+  a filter left on from a previous set doesn't carry over, and a fetch
+  that resolves after the checkbox has already been toggled is routed
+  through `applyChecklistRookieFilter()` too (not rendered raw), so a
+  slow response can't silently stomp the visitor's choice. Lives inside
+  `.checklist-modal-title-row`, not `.checklist-modal-controls`, so it's
+  explicitly added to the `@media print` hide rule alongside Print/Close
+  rather than inheriting it for free.
+- **Escaping**: all rendered checklist text goes through the shared
+  `escapeHtml()` in `helper.js` (distinct from `checklistUpload.js`'s
+  narrower `escapeAttr()`, used only for CMS review-table attribute
+  values).
 - **Print**: a "🖨 Print" button in the modal calls `window.print()`.
   The masthead inside the modal (`.checklist-modal-masthead`) mirrors
   `waxReviews.html`'s real masthead treatment (scaled-down Bebas Neue)

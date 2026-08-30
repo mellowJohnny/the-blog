@@ -29,7 +29,7 @@ const REPO_ROOT = path.resolve(import.meta.dirname, "..", "..");
 const CARD_SET_RANGES = [
   { blogCat: "reg", pageName: "classicWax", start: 1981, end: 1986 },
   { blogCat: "reg", pageName: "junkWax", start: 1987, end: 1993 },
-  { blogCat: "mcd", pageName: "mcd", start: 1991, end: 2005 },
+  { blogCat: "mcd", pageName: "mcd", start: 1991, end: 2006 },
   { blogCat: "tims", pageName: "timmies", start: 2020, end: 2025 }
 ];
 

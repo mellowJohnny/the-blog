@@ -160,10 +160,21 @@ since that history predates this doc being kept current.
   digit/letter boundary before it's stored (`"500GC"` → `"500 GC"`,
   `"SN1000"` → `"SN 1000"`). The card number itself may have a leading
   letter prefix (e.g. `"R1"`, common for insert sets numbered separately
-  from the base set), an optional single hyphen between the letters and
-  digits (e.g. `"PR-1"`), and/or a single trailing letter (e.g.
-  `"165a"`) — or be the literal `"NNO"` ("No Number"), matched as a
-  specific exception since it has no digit at all.
+  from the base set), an optional single hyphen *or space* between the
+  letters and digits (e.g. `"PR-1"`, `"McD 1"`), and/or a single
+  trailing letter (e.g. `"165a"`) — or be one of two no-digit
+  exceptions: the literal `"NNO"` ("No Number"), or an all-caps
+  letters-hyphen-letters code (e.g. `"J-AM"`, a jersey/memorabilia
+  insert numbered by player initials instead of a number). Both are
+  matched as specific exceptions rather than loosening the "at least
+  one digit" requirement generally, which is what keeps the regex from
+  matching ordinary prose lines or the set title line (its year always
+  contains a hyphen, e.g. `"1997-98"`). The letters-only case
+  additionally requires the matched text be ALL CAPS in the source,
+  checked in code (`isAllCapsLetterCode()`) rather than in the regex
+  itself (which is case-insensitive throughout) — otherwise it can't be
+  told apart from an ordinary Title-Case hyphenated phrase that happens
+  to share the same shape (e.g. `"Self-Titled"`).
   A line that doesn't match the `<number> <name>` pattern — or does
   match but is actually a checklist card's own range reference wrapped
   onto its own line (e.g. `"PR-1 - PR-8 CL"`, continuing an `"NNO
