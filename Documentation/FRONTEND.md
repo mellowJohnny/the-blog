@@ -301,6 +301,13 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
   the DynamoDB sort key sorts as a plain string (`"INSERT#"` sorts
   before `"MAIN#"`, and card numbers don't sort numerically) — see
   `DATA_MODEL.md`.
+- **Insert set group titles carry a type suffix**: each insert set's
+  heading renders as `"<name> - Insert Set"` (e.g. `"Powerhouse
+  Pillars - Insert Set"`), except when any card in that group has
+  `"MEM"` as a whole word in its `notes` (memorabilia/jersey relic
+  cards), in which case the whole group is labeled `"<name> -
+  Memorabilia"` instead (e.g. `"NHL Jerseys - Memorabilia"`). `"Main
+  Set"` is unaffected — the suffix only applies to insert set titles.
 - **"Rookies only" filter**: a badge-style checkbox on the same row as
   the set-name title, right-justified (`.checklist-modal-rc-filter`).
   Filters client-side only — `openChecklistModal()` caches the fetched

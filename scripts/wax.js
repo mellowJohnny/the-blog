@@ -471,7 +471,13 @@ function renderChecklistGroups(items) {
   }
 
   insertGroups.forEach((group, name) => {
-    html += `<div class="checklist-modal-group-title">${escapeHtml(name)}</div>`;
+    // "MEM" (memorabilia/jersey relic cards) in any card's notes within
+    // this insert set relabels the whole group "Memorabilia" instead of
+    // the generic "Insert Set" suffix - \b keeps this from matching
+    // "MEM" as a substring inside some other token.
+    const isMemorabilia = group.some(item => item.notes && /\bMEM\b/.test(item.notes));
+    const groupTypeLabel = isMemorabilia ? "Memorabilia" : "Insert Set";
+    html += `<div class="checklist-modal-group-title">${escapeHtml(name)} - ${groupTypeLabel}</div>`;
     html += group.map(renderChecklistCard).join("");
   });
 
