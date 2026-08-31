@@ -94,25 +94,30 @@ function splitNameAndNotes(remainder) {
   };
 }
 
-// Leading letters are optional (insert sets are commonly numbered with a
-// prefix, e.g. "R1", "R2" for a "Predictors" insert set, or "PR-1" for a
-// "Parkie Reprints" insert set, or "McD 1" for a McDonald's insert set -
-// the optional single hyphen or space between the letters and digits is
-// for exactly this) and a single trailing letter is also optional (e.g.
-// "165a"). Requiring at least one digit somewhere in the middle is what
-// keeps this from matching prose lines like "Trading Card Database" or
-// the set title line (which also always has a hyphen inside its year,
-// e.g. "1997-98", immediately breaking the digit run before any
-// whitespace) - except for "NNO" ("No Number") and the letters-hyphen-
-// letters shape (e.g. "J-AM" for a jersey/memorabilia insert numbered
-// by player initials, no digit anywhere in it), both matched as
-// specific exceptions rather than loosening the digit requirement
-// generally (which would start matching ordinary prose lines). The
-// letters-hyphen-letters case additionally requires ALL CAPS (checked
-// in code, not here - see isAllCapsLetterCode) since the regex alone
-// can't distinguish "J-AM" from an ordinary Title-Case hyphenated
-// phrase like "Self-Titled" that happens to share the same shape.
-const CARD_LINE_RE = /^(NNO|[A-Za-z]+-[A-Za-z]+|[A-Za-z]*[-\s]?\d+[A-Za-z]?)\s+(\S.*)$/i;
+// Leading prefix is optional (insert sets are commonly numbered with
+// one, e.g. "R1", "R2" for a "Predictors" insert set, "PR-1" for a
+// "Parkie Reprints" insert set, "McD 1" for a McDonald's insert set, or
+// "3D-1" for a "3D" insert set - a digit-then-letters shape rather than
+// letters-then-digits) - the optional single hyphen or space between
+// the prefix and the main number is for exactly this - and a single
+// trailing letter is also optional (e.g. "165a"). The prefix
+// deliberately only matches letters-only ("PR", "R", "McD") or
+// digits-then-letters ("3D") - never digits-only - so it can't absorb
+// a plain numeric run: this is what keeps the whole thing from matching
+// prose lines like "Trading Card Database" or the set title line
+// (which always has a hyphen inside its year, e.g. "1997-98" - the "97"
+// before that hyphen is digits with no trailing letter, so it can't be
+// consumed as this prefix, and the overall match correctly fails).
+// "NNO" ("No Number") and the letters-hyphen-letters shape (e.g. "J-AM"
+// for a jersey/memorabilia insert numbered by player initials, no digit
+// anywhere in it) are both matched as further specific exceptions
+// rather than loosening the digit requirement generally (which would
+// start matching ordinary prose lines). The letters-hyphen-letters case
+// additionally requires ALL CAPS (checked in code, not here - see
+// isAllCapsLetterCode) since the regex alone can't distinguish "J-AM"
+// from an ordinary Title-Case hyphenated phrase like "Self-Titled" that
+// happens to share the same shape.
+const CARD_LINE_RE = /^(NNO|[A-Za-z]+-[A-Za-z]+|(?:[A-Za-z]+|\d+[A-Za-z]+)?[-\s]?\d+[A-Za-z]?)\s+(\S.*)$/i;
 
 function isUnnumbered(cardNumber) {
   return cardNumber.toUpperCase() === "NNO";
