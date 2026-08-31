@@ -1327,6 +1327,57 @@ label sup {
   opacity: 0.85;
 }
 
+/* cmsConfirm() (scripts/helper.js) - reuses .cms-alert-overlay/-content
+   above for the overlay/box itself; only the header color and the
+   button row differ from cmsAlert(), to flag these as the more
+   serious/destructive action. Red matches the site's one established
+   red (.delete-btn, label sup, rookie-card styling). */
+.cms-confirm-header {
+  background-color: #a83232;
+  color: rgb(252, 252, 245);
+  font-family: 'Work Sans', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 12px 20px;
+}
+
+.cms-confirm-btn-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 0 20px 20px 20px;
+}
+
+.cms-confirm-cancel-btn {
+  background-color: #fff;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-input-border);
+  border-radius: 4px;
+  padding: 8px 20px;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cms-confirm-cancel-btn:hover {
+  background-color: var(--color-page-bg);
+}
+
+.cms-confirm-confirm-btn {
+  background-color: #a83232;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 20px;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cms-confirm-confirm-btn:hover {
+  opacity: 0.85;
+}
+
 /* Checklist display (waxReviews.html) - the public-facing "Checklist"
    link + modal, distinct from the CMS upload/review styles above */
 .checklist-view-link {

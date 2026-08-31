@@ -93,7 +93,7 @@ async function sendBroadcast(event) {
 
   // Confirmation dialog for LIVE mode
   if (mode === "live") {
-    const ok = confirm(
+    const ok = await cmsConfirm(
       "⚠️ LIVE MODE\n\nThis will send your message to ALL subscribed users.\n\nAre you absolutely sure you want to proceed?"
     );
     if (!ok) return;
@@ -314,7 +314,7 @@ function handleFile(file) {
 uploadBtn.addEventListener("click", async () => {
   if (!parsedItems) return;
 
-  const ok = confirm(
+  const ok = await cmsConfirm(
     `⚠️ This will delete ALL existing subscribers and replace them with ${parsedItems.length} new record(s).\n\nAre you sure you want to proceed?`
   );
   if (!ok) return;

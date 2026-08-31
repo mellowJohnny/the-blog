@@ -653,8 +653,8 @@ function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTag
  * @param {*} year
  **/
 
-function deleteCardSet(setID, setName, year) {
-  const ok = confirm("Delete this card set? This cannot be undone.");
+async function deleteCardSet(setID, setName, year) {
+  const ok = await cmsConfirm("Delete this card set? This cannot be undone.");
   if (!ok) return;
 
   const payload = {
@@ -775,8 +775,8 @@ function deleteCardSet(setID, setName, year) {
  * @param {*} time
  **/
 
-function deleteBlogPost(blogID, blogType, time) {
-  const ok = confirm("Delete this blog post? This cannot be undone.");
+async function deleteBlogPost(blogID, blogType, time) {
+  const ok = await cmsConfirm("Delete this blog post? This cannot be undone.");
   if (!ok) return;
 
   const payload = {

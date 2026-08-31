@@ -69,7 +69,7 @@ next to its label, styled red/bold via the `label sup` CSS rule) is
 purely **visual** — the browser's native required-field validation
 never actually fires on click. Each `create*()` function in
 `scripts/cms.js` re-implements that check by hand (blank/whitespace
-check + `cmsAlert()` (see "CMS alert modal" below) + `.focus()` back to
+check + `cmsAlert()` (see "CMS alert / confirm modals" below) + `.focus()` back to
 the offending field, or `tinymce.activeEditor.focus()` for the
 TinyMCE-backed body fields) —
 if you add a new required field to a create form, you must add a
@@ -78,48 +78,59 @@ straight through to the Lambda (this is exactly what caused a 500 on
 `createCardSet.html` before `setName` got a guard — see
 `API_ENDPOINTS.md`'s "Create card set" entry).
 
-### CMS alert modal
+### CMS alert / confirm modals
 
 Every validation/success/error message across the CMS (`cms.js`,
-`checklistUpload.js`, `adminSMS.js`) goes through `cmsAlert(message)`
-(`scripts/helper.js` — kept there rather than its own file, in line
-with the site owner's preference to grow `helper.js` for this kind of
-shared utility instead of adding a new `<script>` tag every CMS page
-has to remember to load) rather than the native browser `alert()` — a
-styled modal matching the public checklist modal's look (masthead-blue
-header, white box, box-shadow overlay), added since a native `alert()`
-looks out of place against the rest of the CMS's styling.
+`checklistUpload.js`, `adminSMS.js`) goes through `cmsAlert(message)`,
+and every destructive/serious-action confirmation goes through
+`cmsConfirm(message)` — both in `scripts/helper.js` (kept there rather
+than a dedicated file, in line with the site owner's preference to grow
+`helper.js` for this kind of shared utility instead of adding a new
+`<script>` tag every CMS page has to remember to load), replacing the
+native browser `alert()`/`confirm()`. Both are styled to match the
+public checklist modal's look (white box, box-shadow overlay) — a
+native `alert()`/`confirm()` looked out of place against the rest of
+the CMS's styling. The two differ only in their header color and button
+count: `cmsAlert()` has the site's masthead-blue header and a single OK
+button; `cmsConfirm()` has a **red** header (`#a83232`, the site's one
+established red — same as `.delete-btn`/`label sup`/rookie-card
+styling) and two buttons, Cancel/Confirm, to visually flag the more
+serious action.
 
-- **Async, not blocking**: native `alert()` blocks all JS execution
-  until dismissed, which every call site relied on for "show a
-  message, then redirect/focus" ordering. No JS API can block like
-  that outside `alert()` itself, so `cmsAlert()` instead returns a
-  Promise that resolves on dismiss — every call site now does
-  `await cmsAlert(...)` (making its enclosing function/callback
-  `async` where it wasn't already) to get the same effective ordering:
-  a redirect or `.focus()` call after the `await` only runs once the
-  modal is actually dismissed, exactly like the code read before.
-- **Dismiss**: clicking OK, clicking the dark backdrop, or pressing
-  Escape/Enter all resolve the same way.
-- **Lazily injected**: the modal's markup doesn't live in any page's
-  HTML — `cmsAlert()` creates and appends it to `document.body` on its
-  first call (checking `#cmsAlertOverlay` first so a second call reuses
-  the same element rather than injecting a duplicate). Adding it to a
-  new CMS page is just making sure `<script src="/scripts/helper.js">`
-  is loaded, same as any other `helper.js` function.
-- **Deliberately doesn't cover `confirm()`**: the four destructive
-  delete/live-mode confirmations (see "Delete" below and the AMP SMS
-  pages) still use the native browser `confirm()` dialog — restructuring
-  every delete handler to await an async confirm would be a bigger
-  change for a case where native browser chrome's heavier, OS-level
-  framing arguably suits a "you are about to do something irreversible"
-  moment better anyway.
+- **Async, not blocking**: native `alert()`/`confirm()` block all JS
+  execution until dismissed, which every call site relied on for
+  "show a message/get an answer, then redirect/focus/proceed"
+  ordering. No JS API can block like that outside those two natives
+  themselves, so `cmsAlert()`/`cmsConfirm()` instead return a Promise
+  (`cmsConfirm()`'s resolves to a boolean — `true` only if Confirm was
+  clicked) — every call site now does `await cmsAlert(...)` or
+  `const ok = await cmsConfirm(...)` (making its enclosing
+  function/callback `async` where it wasn't already) to get the same
+  effective ordering: whatever comes after the `await` only runs once
+  the modal is actually dismissed, exactly like the code read before.
+- **Dismiss**: for `cmsAlert()`, clicking OK, the dark backdrop, or
+  Escape/Enter all resolve the same way. For `cmsConfirm()`, the dark
+  backdrop and Escape both resolve `false` (cancel) — the safe default
+  — but Enter is deliberately **not** bound to Confirm, unlike
+  `cmsAlert()`'s Enter-to-dismiss: accidentally confirming a "this
+  cannot be undone" delete via a stray Enter keypress is exactly the
+  kind of mistake this modal should make harder, not easier, so
+  confirming requires an explicit click on the Confirm button.
+- **Lazily injected, independently of each other**: neither modal's
+  markup lives in any page's HTML — each creates and appends its own
+  overlay to `document.body` on its first call (checking for its own
+  existing overlay element first so a second call reuses it rather than
+  injecting a duplicate). The two use entirely separate element IDs, so
+  they can never collide even though they're never expected to be open
+  at the same time in practice. Adding either to a new CMS page is just
+  making sure `<script src="/scripts/helper.js">` is loaded, same as
+  any other `helper.js` function.
 
 ### Delete
 
 `blogEdit.html` and `setEdit.html` each have a red "Delete Post"/"Delete
-Set" button, right-justified next to the Update button, added
-2026-08-14. Both confirm with a JS `confirm()` dialog first (no
+Set" button, right-justified next to the Update button. Both confirm
+with `cmsConfirm()` first (see "CMS alert / confirm modals" above; no
 soft-delete/undo — this is a real, permanent DynamoDB `DeleteItem`),
 then redirect to the corresponding picker page (`pickBlog.html`/
 `pickCardSet.html`) on success. Backed by the two newest in-repo
@@ -217,7 +228,7 @@ create/edit form: **upload → review → save**.
    dropping one, but they need distinguishing Card # values before they
    can be saved; see `DATA_MODEL.md`'s "Sort-key collision guard". Every
    outcome — validation errors, server errors, success (with or without
-   a warning) — uses `cmsAlert()` (see "CMS alert modal" below), same
+   a warning) — uses `cmsAlert()` (see "CMS alert / confirm modals" below), same
    convention as `createCardSet()`/`createBlogPost()`/etc.; on success,
    the redirect back to `cms/uploadChecklist.html` itself (a fresh page
    load, ready for the next upload) only fires after the modal is
@@ -281,7 +292,7 @@ fullest first-party explanation of this tool, summarized here:
 - **Message box**: always starts pre-filled with `"Autobus Cycling Club:\n"` — you add the ride details after it.
 - **Live character/segment counter**: detects whether the message fits the **GSM-7** SMS character set (160 chars/segment) or has to fall back to **Unicode** (70 chars/segment, e.g. because of curly quotes or emoji) — messages over one segment's worth of characters get split (and billed) as multiple SMS segments by Twilio.
 - **GSM-Safe Mode** checkbox: auto-replaces smart-quotes/em-dashes/ellipses with plain-ASCII equivalents to keep the message in the cheaper GSM-7 encoding.
-- **Test Mode** checkbox (checked by default): sends only to the `SubscribersTest` table instead of the real `Subscribers` list — use this to sanity-check a message before going live. Unchecking it requires confirming a "LIVE MODE" browser dialog before anything sends.
+- **Test Mode** checkbox (checked by default): sends only to the `SubscribersTest` table instead of the real `Subscribers` list — use this to sanity-check a message before going live. Unchecking it requires confirming a "LIVE MODE" warning (`cmsConfirm()` — see "CMS alert / confirm modals" above) before anything sends.
 - **Results panel**: per-recipient success/failure table plus a summary count, after a send.
 - **Bulk import** (nav link): replaces the *entire* subscriber list from an uploaded pre-processed JSON file (already in DynamoDB typed-JSON format). This is destructive — it deletes all existing subscribers first — and is described in-app as something "prepared separately once a year from the club sign-up data," i.e. an external, out-of-band process not represented anywhere in this repo.
 - **Add subscriber** (nav link): a small modal to add one subscriber by name + mobile number without doing a full bulk re-import.

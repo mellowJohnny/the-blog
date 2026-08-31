@@ -327,11 +327,7 @@ document.addEventListener("click", (event) => {
 // consistent "this site's modal" look between the public and CMS
 // sides.
 //
-// Deliberately doesn't replace confirm() - a destructive-action
-// confirmation is a case where native browser chrome's "this is a
-// serious, OS-level prompt" framing is arguably the right amount of
-// friction, and it stays a blocking call (no async restructuring of
-// every delete handler needed).
+// See cmsConfirm() below for the equivalent replacement of confirm().
 function cmsAlert(message) {
   return new Promise((resolve) => {
     let overlay = document.getElementById("cmsAlertOverlay");
@@ -374,6 +370,77 @@ function cmsAlert(message) {
     }
 
     okBtn.addEventListener("click", onDismiss);
+    overlay.addEventListener("click", onBackdropClick);
+    document.addEventListener("keydown", onKeydown);
+  });
+}
+
+// cmsConfirm(message) - a styled replacement for the native confirm()
+// used for the CMS's destructive/serious actions (delete card set,
+// delete blog post, live-mode SMS send, bulk subscriber replace).
+// Same async-Promise approach as cmsAlert() above (see its comment for
+// why), but resolves a boolean instead of nothing - true only if
+// Confirm is clicked. Styled with a red header instead of cmsAlert()'s
+// blue, to visually flag these as the more serious action - separate
+// overlay/element IDs from cmsAlert() so the two never share state.
+//
+// Escape and a backdrop click both resolve false (cancel) - the safe
+// default. Unlike cmsAlert(), Enter is deliberately NOT bound to
+// anything here - accidentally confirming a "this cannot be undone"
+// delete via a stray Enter keypress is exactly the kind of mistake
+// this modal should make harder, not easier, so confirming requires an
+// explicit click on the Confirm button.
+function cmsConfirm(message) {
+  return new Promise((resolve) => {
+    let overlay = document.getElementById("cmsConfirmOverlay");
+
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "cmsConfirmOverlay";
+      overlay.className = "cms-alert-overlay";
+      overlay.innerHTML = `
+        <div class="cms-alert-content">
+          <div class="cms-confirm-header">cardStack CMS</div>
+          <p class="cms-alert-message" id="cmsConfirmMessage"></p>
+          <div class="cms-confirm-btn-row">
+            <button type="button" class="cms-confirm-cancel-btn" id="cmsConfirmCancelBtn">Cancel</button>
+            <button type="button" class="cms-confirm-confirm-btn" id="cmsConfirmConfirmBtn">Confirm</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+    }
+
+    const messageEl = document.getElementById("cmsConfirmMessage");
+    const cancelBtn = document.getElementById("cmsConfirmCancelBtn");
+    const confirmBtn = document.getElementById("cmsConfirmConfirmBtn");
+    messageEl.textContent = message;
+    overlay.style.display = "flex";
+    cancelBtn.focus();
+
+    function close(result) {
+      overlay.style.display = "none";
+      cancelBtn.removeEventListener("click", onCancel);
+      confirmBtn.removeEventListener("click", onConfirm);
+      overlay.removeEventListener("click", onBackdropClick);
+      document.removeEventListener("keydown", onKeydown);
+      resolve(result);
+    }
+    function onCancel() {
+      close(false);
+    }
+    function onConfirm() {
+      close(true);
+    }
+    function onBackdropClick(event) {
+      if (event.target === overlay) close(false);
+    }
+    function onKeydown(event) {
+      if (event.key === "Escape") close(false);
+    }
+
+    cancelBtn.addEventListener("click", onCancel);
+    confirmBtn.addEventListener("click", onConfirm);
     overlay.addEventListener("click", onBackdropClick);
     document.addEventListener("keydown", onKeydown);
   });
