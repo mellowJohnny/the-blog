@@ -1273,8 +1273,13 @@ label sup {
   z-index: 10000;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.6);
-  align-items: center;
+  overflow-y: auto;
+  align-items: flex-start;
   justify-content: center;
+  /* ~25% down the viewport rather than dead-center - center felt too
+     low/disconnected from whatever the CMS action just happened near
+     the top of the page. */
+  padding-top: 25vh;
 }
 
 .cms-alert-content {
