@@ -103,6 +103,28 @@ If, during execution, reality doesn't match the approved plan (you
 discover something the plan didn't account for), stop and return to 
 Plan Mode with a revised plan rather than improvising a fix.
 
+## Testing safety: never trigger a real SMS send
+
+`cms/smsAdmin.html`'s "Send broadcast" button, when the **Test Mode**
+checkbox is unchecked, sends a real SMS via Twilio to every subscriber
+in the live `Subscribers` table (not `SubscribersTest`) — this is not a
+sandbox and there is no dry-run mode. **Never click Send, and never
+drive it via Playwright or any other automation, with Test Mode off** —
+not even to verify a UI/styling change. Test Mode is checked by
+default, so the risk only exists if it's been explicitly unchecked;
+leave it checked for anything that isn't a deliberate, human-confirmed
+real send. The `cmsConfirm()` "⚠️ LIVE MODE" warning this action
+requires (see `Documentation/CMS_GUIDE.md`'s "CMS alert / confirm
+modals" section) exists specifically to catch this — don't route around
+it by clicking through it during a test.
+
+If the send flow itself needs testing (e.g. verifying the confirm
+modal, button states, or request payload), mock the `fetch()` call
+instead of letting it hit the real Twilio-backed endpoint — the same
+approach already used this session to test `cmsAlert()`/`cmsConfirm()`
+against the other CMS delete/create/update endpoints without touching
+real data.
+
 ## Architecture, in brief
 
 - **Frontend**: one standalone `.html` file per page at the repo root and under `/cms`, no framework. Shared logic lives in `scripts/*.js` and is wired up per-page via `<script src>` tags. Pages coordinate via URL query params (`?year=`, `?blogType=`, `?pageName=`, `?blogCat=`) rather than client-side routing. Details: `Documentation/FRONTEND.md`.
