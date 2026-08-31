@@ -69,13 +69,51 @@ next to its label, styled red/bold via the `label sup` CSS rule) is
 purely **visual** — the browser's native required-field validation
 never actually fires on click. Each `create*()` function in
 `scripts/cms.js` re-implements that check by hand (blank/whitespace
-check + `alert()` + `.focus()` back to the offending field, or
-`tinymce.activeEditor.focus()` for the TinyMCE-backed body fields) —
+check + `cmsAlert()` (see "CMS alert modal" below) + `.focus()` back to
+the offending field, or `tinymce.activeEditor.focus()` for the
+TinyMCE-backed body fields) —
 if you add a new required field to a create form, you must add a
 matching guard in its JS handler too, or a blank submission will sail
 straight through to the Lambda (this is exactly what caused a 500 on
 `createCardSet.html` before `setName` got a guard — see
 `API_ENDPOINTS.md`'s "Create card set" entry).
+
+### CMS alert modal
+
+Every validation/success/error message across the CMS (`cms.js`,
+`checklistUpload.js`, `adminSMS.js`) goes through `cmsAlert(message)`
+(`scripts/helper.js` — kept there rather than its own file, in line
+with the site owner's preference to grow `helper.js` for this kind of
+shared utility instead of adding a new `<script>` tag every CMS page
+has to remember to load) rather than the native browser `alert()` — a
+styled modal matching the public checklist modal's look (masthead-blue
+header, white box, box-shadow overlay), added since a native `alert()`
+looks out of place against the rest of the CMS's styling.
+
+- **Async, not blocking**: native `alert()` blocks all JS execution
+  until dismissed, which every call site relied on for "show a
+  message, then redirect/focus" ordering. No JS API can block like
+  that outside `alert()` itself, so `cmsAlert()` instead returns a
+  Promise that resolves on dismiss — every call site now does
+  `await cmsAlert(...)` (making its enclosing function/callback
+  `async` where it wasn't already) to get the same effective ordering:
+  a redirect or `.focus()` call after the `await` only runs once the
+  modal is actually dismissed, exactly like the code read before.
+- **Dismiss**: clicking OK, clicking the dark backdrop, or pressing
+  Escape/Enter all resolve the same way.
+- **Lazily injected**: the modal's markup doesn't live in any page's
+  HTML — `cmsAlert()` creates and appends it to `document.body` on its
+  first call (checking `#cmsAlertOverlay` first so a second call reuses
+  the same element rather than injecting a duplicate). Adding it to a
+  new CMS page is just making sure `<script src="/scripts/helper.js">`
+  is loaded, same as any other `helper.js` function.
+- **Deliberately doesn't cover `confirm()`**: the four destructive
+  delete/live-mode confirmations (see "Delete" below and the AMP SMS
+  pages) still use the native browser `confirm()` dialog — restructuring
+  every delete handler to await an async confirm would be a bigger
+  change for a case where native browser chrome's heavier, OS-level
+  framing arguably suits a "you are about to do something irreversible"
+  moment better anyway.
 
 ### Delete
 
@@ -179,11 +217,12 @@ create/edit form: **upload → review → save**.
    dropping one, but they need distinguishing Card # values before they
    can be saved; see `DATA_MODEL.md`'s "Sort-key collision guard". Every
    outcome — validation errors, server errors, success (with or without
-   a warning) — uses a plain `alert()`, same convention as
-   `createCardSet()`/`createBlogPost()`/etc.; on success, the redirect
-   back to `cms/uploadChecklist.html` itself (a fresh page load, ready
-   for the next upload) only fires after the alert is dismissed
-   (`alert()` blocks until then).
+   a warning) — uses `cmsAlert()` (see "CMS alert modal" below), same
+   convention as `createCardSet()`/`createBlogPost()`/etc.; on success,
+   the redirect back to `cms/uploadChecklist.html` itself (a fresh page
+   load, ready for the next upload) only fires after the modal is
+   dismissed (`await cmsAlert(...)` blocks the calling function until
+   then, the same effective ordering `alert()` gave for free before).
 
 See `API_ENDPOINTS.md` → "CMS — checklist upload" for the two Lambdas'
 exact request/response shapes, and `tools/checklistParser/` for the

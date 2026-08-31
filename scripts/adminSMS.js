@@ -100,7 +100,7 @@ async function sendBroadcast(event) {
   }
 
   if (!message) {
-    alert("Please enter a message");
+    await cmsAlert("Please enter a message");
     return;
   }
 

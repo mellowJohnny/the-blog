@@ -81,6 +81,28 @@ amplify-readonly-cli` before assuming either way; this is still a
 read-only credential regardless of scope, no write/deploy access to
 anything.
 
+## Planning workflow
+
+Before making any multi-file change, non-trivial refactor, or anything 
+touching auth, data migrations, or shared/core modules, enter Plan Mode 
+first (do not edit files until a plan has been reviewed and approved).
+
+In Plan Mode:
+- Read and analyze relevant files before proposing anything.
+- Ask clarifying questions if requirements, architecture, or intended 
+  approach are ambiguous — don't guess and proceed.
+- Present a concrete plan: which files will change, in what order, and 
+  why. Call out any assumptions explicitly (e.g. "I will reuse the 
+  existing X type" — flag this so I can correct it if wrong).
+- Wait for explicit approval before executing.
+
+Exceptions — skip Plan Mode for: typos, single-line fixes, small copy 
+edits, renames, or throwaway prototypes.
+
+If, during execution, reality doesn't match the approved plan (you 
+discover something the plan didn't account for), stop and return to 
+Plan Mode with a revised plan rather than improvising a fix.
+
 ## Architecture, in brief
 
 - **Frontend**: one standalone `.html` file per page at the repo root and under `/cms`, no framework. Shared logic lives in `scripts/*.js` and is wired up per-page via `<script src>` tags. Pages coordinate via URL query params (`?year=`, `?blogType=`, `?pageName=`, `?blogCat=`) rather than client-side routing. Details: `Documentation/FRONTEND.md`.

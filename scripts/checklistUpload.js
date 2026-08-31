@@ -238,10 +238,10 @@ function collectChecklistRows() {
   return cards;
 }
 
-function saveChecklist() {
+async function saveChecklist() {
   const setName = document.getElementById("checklistSetName").value.trim();
   if (!setName) {
-    alert("Set Name is required.");
+    await cmsAlert("Set Name is required.");
     document.getElementById("checklistSetName").focus();
     return;
   }
@@ -250,13 +250,13 @@ function saveChecklist() {
 
   const cards = collectChecklistRows();
   if (cards.length === 0) {
-    alert("At least one card row is required.");
+    await cmsAlert("At least one card row is required.");
     return;
   }
 
   const missingRow = cards.find((c) => !c.cardNumber || !c.playerName);
   if (missingRow) {
-    alert("Every row needs both a Card # and a Player Name.");
+    await cmsAlert("Every row needs both a Card # and a Player Name.");
     return;
   }
 
@@ -277,21 +277,21 @@ function saveChecklist() {
       try {
         data = await response.json();
       } catch {
-        alert("Unexpected server response.");
+        await cmsAlert("Unexpected server response.");
         return;
       }
 
       if (!response.ok) {
-        alert(data.error || "Failed to save checklist.");
+        await cmsAlert(data.error || "Failed to save checklist.");
         return;
       }
 
-      alert(data.message || "Saved.");
+      await cmsAlert(data.message || "Saved.");
       window.location.href = "/cms/uploadChecklist.html";
     })
-    .catch((error) => {
+    .catch(async (error) => {
       console.log("Save error:", error);
-      alert("Network error saving the checklist.");
+      await cmsAlert("Network error saving the checklist.");
     })
     .finally(() => {
       saveButton.style.backgroundColor = "rgb(2, 70, 153)";

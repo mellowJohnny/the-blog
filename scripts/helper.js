@@ -311,6 +311,74 @@ document.addEventListener("click", (event) => {
 
 // --------------- Cookie! --------------------------
 
+// cmsAlert(message) - a styled replacement for the native alert() used
+// throughout the CMS (cms.js, checklistUpload.js, adminSMS.js). Native
+// alert()/confirm() dialogs are synchronous - they block the whole page
+// until dismissed, which every existing call site relies on for
+// "show a message, then redirect/focus" sequencing. cmsAlert() can't
+// block the same way (no JS API does that outside alert() itself), so
+// it returns a Promise that resolves on dismiss instead - callers
+// `await` it and get the same effective ordering.
+//
+// Markup is injected into the DOM lazily on first call rather than
+// living in every CMS page's HTML. Visually matches the checklist
+// modal on waxReviews.html (masthead-blue header, white box,
+// box-shadow overlay) - see styles.css's .cms-alert-* rules - for one
+// consistent "this site's modal" look between the public and CMS
+// sides.
+//
+// Deliberately doesn't replace confirm() - a destructive-action
+// confirmation is a case where native browser chrome's "this is a
+// serious, OS-level prompt" framing is arguably the right amount of
+// friction, and it stays a blocking call (no async restructuring of
+// every delete handler needed).
+function cmsAlert(message) {
+  return new Promise((resolve) => {
+    let overlay = document.getElementById("cmsAlertOverlay");
+
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "cmsAlertOverlay";
+      overlay.className = "cms-alert-overlay";
+      overlay.innerHTML = `
+        <div class="cms-alert-content">
+          <div class="cms-alert-header">cardStack CMS</div>
+          <p class="cms-alert-message" id="cmsAlertMessage"></p>
+          <button type="button" class="cms-alert-ok-btn" id="cmsAlertOkBtn">OK</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+    }
+
+    const messageEl = document.getElementById("cmsAlertMessage");
+    const okBtn = document.getElementById("cmsAlertOkBtn");
+    messageEl.textContent = message;
+    overlay.style.display = "flex";
+    okBtn.focus();
+
+    function close() {
+      overlay.style.display = "none";
+      okBtn.removeEventListener("click", onDismiss);
+      overlay.removeEventListener("click", onBackdropClick);
+      document.removeEventListener("keydown", onKeydown);
+      resolve();
+    }
+    function onDismiss() {
+      close();
+    }
+    function onBackdropClick(event) {
+      if (event.target === overlay) close();
+    }
+    function onKeydown(event) {
+      if (event.key === "Escape" || event.key === "Enter") close();
+    }
+
+    okBtn.addEventListener("click", onDismiss);
+    overlay.addEventListener("click", onBackdropClick);
+    document.addEventListener("keydown", onKeydown);
+  });
+}
+
 function setCookie(cookieName, cookieValue, exp) {
     const d = new Date();
     d.setTime(d.getTime() + (exp*24*60*60*1000));

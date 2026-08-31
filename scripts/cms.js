@@ -361,13 +361,13 @@ document.addEventListener("DOMContentLoaded", function () {
  */
 
 // NOTE: We don't pass in the postBody textarea content from the form anymore, we call the TinyMCE API to get it
- function createBlogPost(published, title, imgName, imgCap, author, blogType) {
+ async function createBlogPost(published, title, imgName, imgCap, author, blogType) {
 
   // Basic client-side validation - Title and Post Body are marked required
   // in the HTML, but the Submit button is type="button" (not type="submit"),
   // so native HTML5 required validation never actually fires; enforce it here instead
   if (!title || !title.trim()) {
-    alert("Blog Post Title is required.");
+    await cmsAlert("Blog Post Title is required.");
     document.getElementById("title").focus();
     return;
   }
@@ -376,7 +376,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const tinyBodyText = tinymce.activeEditor.getContent({ format: "text" }).trim();
 
   if (!tinyBodyText) {
-    alert("Post Body is required.");
+    await cmsAlert("Post Body is required.");
     tinymce.activeEditor.focus();
     return;
   }
@@ -405,7 +405,7 @@ document.addEventListener("DOMContentLoaded", function () {
       try {
         data = await response.json();
       } catch {
-        alert("Unexpected server response.");
+        await cmsAlert("Unexpected server response.");
         return;
       }
 
@@ -413,13 +413,13 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!response.ok) {
         // Lambda error format: { error: "...", details: "..." }
         const errMsg = data.error || data.message || "An unknown error occurred.";
-        alert(errMsg);
+        await cmsAlert(errMsg);
         return;
       }
 
       // SUCCESS: Lambda decides the message
       // Lambda always returns: { message: "..." }
-      alert(data.message || "Success, but no message returned from server.");
+      await cmsAlert(data.message || "Success, but no message returned from server.");
       window.location.href = "/cms/pickBlog.html";
     })
     .catch(error => console.log("error", error));
@@ -449,19 +449,19 @@ document.addEventListener("DOMContentLoaded", function () {
    */
   
   // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
-  function createCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, blogCat) {
+  async function createCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, blogCat) {
 
   // Basic client-side validation - setName and year are marked required in
   // the HTML, but the Submit button is type="button" (not type="submit"),
   // so native HTML5 required validation never actually fires; enforce it here instead
   if (!setName || !setName.trim()) {
-    alert("Set Name is required.");
+    await cmsAlert("Set Name is required.");
     document.getElementById("setName").focus();
     return;
   }
 
   if (!year || !String(year).trim()) {
-    alert("Release Year is required.");
+    await cmsAlert("Release Year is required.");
     document.getElementById("year").focus();
     return;
   }
@@ -471,7 +471,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const tinyBodyText = tinymce.activeEditor.getContent({ format: "text" }).trim();
 
   if (!tinyBodyText) {
-    alert("Set Review Text is required.");
+    await cmsAlert("Set Review Text is required.");
     tinymce.activeEditor.focus();
     return;
   }
@@ -516,7 +516,7 @@ document.addEventListener("DOMContentLoaded", function () {
       try {
         data = await response.json();
       } catch {
-        alert("Unexpected server response.");
+        await cmsAlert("Unexpected server response.");
         return;
       }
 
@@ -524,18 +524,18 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!response.ok) {
         // Lambda error format: { error: "...", details: "..." }
         const errMsg = data.error || data.message || "An unknown error occurred.";
-        alert(errMsg);
+        await cmsAlert(errMsg);
         return;
       }
 
       // SUCCESS: Lambda decides the message
       // Lambda always returns: { message: "..." }
-      alert(data.message || "Success, but no message returned from server.");
+      await cmsAlert(data.message || "Success, but no message returned from server.");
       window.location.href = "/cms/pickCardSet.html";
     })
-    .catch(error => {
+    .catch(async error => {
       console.log("Create error:", error);
-      alert("Network error creating the card set.");
+      await cmsAlert("Network error creating the card set.");
     });
 }
  
@@ -625,16 +625,16 @@ function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTag
           : `Update failed (status ${response.status}).`;
       }
 
-      alert(message);
+      await cmsAlert(message);
 
       // Only leave the page once the update is confirmed successful
       if (response.ok) {
         window.location.href = "/cms/pickCardSet.html";
       }
     })
-    .catch(error => {
+    .catch(async error => {
       console.log("Update error:", error);
-      alert("Something went wrong updating the card set.");
+      await cmsAlert("Something went wrong updating the card set.");
     });
 }
 
@@ -669,13 +669,13 @@ function deleteCardSet(setID, setName, year) {
     body: JSON.stringify(payload)
   }))
     .then(response => response.json())
-    .then(result => {
-      alert(result.message || "Card set deleted.");
+    .then(async result => {
+      await cmsAlert(result.message || "Card set deleted.");
       window.location.href = "/cms/pickCardSet.html";
     })
-    .catch(error => {
+    .catch(async error => {
       console.log("Error deleting card set:", error);
-      alert("Error deleting card set.");
+      await cmsAlert("Error deleting card set.");
     });
 }
 
@@ -740,23 +740,23 @@ function deleteCardSet(setID, setName, year) {
       try {
         data = await response.json();
       } catch {
-        alert("Unexpected server response.");
+        await cmsAlert("Unexpected server response.");
         return;
       }
 
       // If Lambda returned an error status, show the error and stay on the page
       if (!response.ok) {
-        alert(data.message || data.error || "Error updating blog.");
+        await cmsAlert(data.message || data.error || "Error updating blog.");
         return;
       }
 
       // SUCCESS: Expecting something like: { message: "Blog updated successfully" }
-      alert(data.message || "Blog updated.");
+      await cmsAlert(data.message || "Blog updated.");
       window.location.href = "/cms/pickBlog.html";
     })
-    .catch(error => {
+    .catch(async error => {
       console.log("Error updating blog:", error);
-      alert("Error updating blog.");
+      await cmsAlert("Error updating blog.");
     });
 }
 
@@ -791,13 +791,13 @@ function deleteBlogPost(blogID, blogType, time) {
     body: JSON.stringify(payload)
   }))
     .then(response => response.json())
-    .then(result => {
-      alert(result.message || "Blog post deleted.");
+    .then(async result => {
+      await cmsAlert(result.message || "Blog post deleted.");
       window.location.href = "/cms/pickBlog.html";
     })
-    .catch(error => {
+    .catch(async error => {
       console.log("Error deleting blog:", error);
-      alert("Error deleting blog.");
+      await cmsAlert("Error deleting blog.");
     });
 }
 
