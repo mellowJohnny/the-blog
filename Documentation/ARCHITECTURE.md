@@ -22,7 +22,7 @@ Browser (static HTML/CSS/JS, no framework)
    |                        AWS Lambda (one function per endpoint)
    |                              |
    |                              v
-   |                        DynamoDB (Blogs, Cards, Subscribers, SubscribersTest)
+   |                        DynamoDB (Blogs, Cards, Checklists, Subscribers, SubscribersTest)
    |
    |-- <img src>/S3 -----> S3 bucket "mellowjohnny.cc.files" (images, favicons, S3 presigned uploads)
    |

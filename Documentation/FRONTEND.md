@@ -46,7 +46,10 @@ and the `blogType`/`pageName` pairs from `NAV_ITEMS` (both in
 `scripts/helper.js`) rather than importing them — `helper.js` is a
 browser script, not a Node module. Re-run the generator (`node
 tools/generateSitemap/generate.mjs`) and commit the result whenever a
-year range changes there. It also includes `tech.html?blogType=4`
+year range changes there — this drifted out of sync once already (the
+generator's own duplicated `mcd` range stayed at `end: 2005` after
+`categoryRanges` was extended to `2006`, silently leaving the new set
+out of the sitemap until caught and fixed). It also includes `tech.html?blogType=4`
 (SYNC Updates) and `blogType=5` (Raspberry Pi) — real, published blog
 streams confirmed live via `getBlogs`, but not linked from `NAV_ITEMS`/
 `NAV_MAP` at all, so without the sitemap nothing would ever surface
