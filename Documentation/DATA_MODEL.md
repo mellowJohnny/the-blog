@@ -70,24 +70,20 @@ non-key attribute used only by the `setID-index` GSI lookup path.
 | `now` / `date` | String | Passed through as `item.now` in `wax.js`'s `renderCardSetPage()` and used as the review's displayed date. |
 | `hasChecklist` | Boolean | Set by `saveChecklist` (see the `Checklists` table below) the first time a checklist is successfully uploaded for this set's exact `setName` — not present at all until then. Drives the "Checklist" link on `waxReviews.html` (`displayCardSet()` in `scripts/wax.js`), which opens a modal fetching and displaying the full checklist — see `FRONTEND.md`. Not written by any CMS create/update form directly. |
 
-### `cmsContent/` directory
+### `cmsContent/` directory (removed)
 
-`cmsContent/*.html` files (e.g. `93_94_Proset.html`) look like a static,
-file-based archive of card set review bodies — plain HTML snippets, no
-script anywhere in the repo reads them at runtime. Likely a backup/seed
-of what's now stored as `postBody` in DynamoDB, or leftover from before
-the CMS existed.
-
-`cmsContent/cardSetChecklist/*.json` (e.g. `1990-91_OPC_Prem.json`) is a
-different, more granular format — full card-by-card checklists (`set` +
-repeated `card` objects with `number`, `playerName`, `team`,
-`isRookie`, `isShortPrint`, `subset`). No page or script currently
-reads this either. Combined with `Lambda Functions/getCardSets/getCardSet_FUTURE.js`
-(a stub Lambda with a hardcoded single set/year lookup), this looks
-like the groundwork for an unfinished "full checklist per set" feature —
-since actually built, independently and differently (PDF upload rather
-than this JSON format), as the live `Checklists` table below. This
-directory itself is still unused.
+This directory no longer exists in the repo. It formerly held
+`cmsContent/*.html` files (e.g. `93_94_Proset.html`) — a static,
+file-based archive of card set review bodies, likely a backup/seed of
+what's now stored as `postBody` in DynamoDB — and
+`cmsContent/cardSetChecklist/*.json` (e.g. `1990-91_OPC_Prem.json`), a
+different, more granular format holding full card-by-card checklists
+(`set` + repeated `card` objects with `number`, `playerName`, `team`,
+`isRookie`, `isShortPrint`, `subset`). Neither was ever read by any
+live page or script; the groundwork they represented for a "full
+checklist per set" feature was since built independently and
+differently (PDF upload rather than this JSON format), as the live
+`Checklists` table below.
 
 ## `Checklists` table
 

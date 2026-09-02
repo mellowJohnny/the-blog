@@ -62,9 +62,17 @@ Management → Budgets, not tied to any specific service or region.
 As of 2026-07-16, AWS CLI v2 is installed on the primary dev machine,
 authenticated as a dedicated IAM user, `amplify-readonly-cli`
 (account `339740904141`), scoped to a custom read-only policy
-(`AmplifyReadOnly` — `amplify:Get*`/`List*` actions only, no write
-access to anything). This lets a build be checked without opening the
-Amplify console:
+(`AmplifyReadOnly` — nominally `amplify:Get*`/`List*` actions only, no
+write access to anything). Its actual scope turned out to be broader
+than the name suggests: it can also read full Lambda source
+(`aws lambda get-function`/`list-functions`, confirmed 2026-08-15 —
+see `LAMBDA_FUNCTIONS.md`), but not API Gateway (`apigateway:GET`
+denied) and, as of 2026-08-24, not DynamoDB or IAM policy
+introspection either. Still read-only regardless of exact scope — no
+write/deploy access to anything; confirm current scope with
+`aws iam list-attached-user-policies --user-name amplify-readonly-cli`
+before assuming either way. This lets a build be checked without
+opening the Amplify console:
 
 ```bash
 aws sts get-caller-identity                          # confirm auth
@@ -90,13 +98,13 @@ Plain multi-page HTML site, no bundler/framework:
 
 - Every page is a standalone `.html` file at the repo root (`index.html`, `tech.html`, `waxReviews.html`, `playerSearch.html`, `lockout.html`) or under `/cms`. `cards.html` and `cardChecker.html` were both archived to `Old HTML Pages/` on 2026-08-15 — no longer live pages, see `FRONTEND.md`.
 - Shared behaviour lives in `/scripts/*.js`, included per-page via `<script src>` tags — see `FRONTEND.md` for which script does what.
-- Styling is a single `styles/styles.css` (plus an apparently-abandoned `styles/styles copy.css`).
+- Styling is a single `styles/styles.css`.
 - Pages read query-string parameters (`?year=`, `?blogType=`, `?pageName=`, `?blogCat=`) to decide what content to fetch and how to render the nav — see `FRONTEND.md`.
 
 ## Backend
 
-- **API Gateway**: many independent REST APIs (each with its own random subdomain, e.g. `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev`), each fronting exactly one Lambda. Full inventory in `API_ENDPOINTS.md`. 25 of the 28 total endpoints are deployed to a stage named `dev`; only the 3 Autobus SMS endpoints (see `API_ENDPOINTS.md`) are on `prod`. That split is historical, not meaningful — there's no separate dev environment behind either name (no separate Lambda/DynamoDB per stage), and this site has exactly one real target (production; see "Hosting & deployment" above — a push to `main` goes live immediately, no staging step). Not worth renaming the existing 25 to `prod` retroactively, since an API Gateway stage rename changes its invoke URL, which would mean updating every hardcoded URL in `scripts/*.js` plus this doc for a purely cosmetic fix — but any *new* endpoint going forward should be deployed to `prod` from the start, so new work doesn't keep perpetuating the `dev` label.
-- **Lambda**: Node.js, using the legacy `aws-sdk` (v2) `AWS.DynamoDB.DocumentClient`, except `sendAlertHandler` which uses the modern modular `@aws-sdk/client-dynamodb` (v3). All but `sendAlertHandler` live only in the AWS Console — see `LAMBDA_FUNCTIONS.md`.
+- **API Gateway**: many independent REST APIs (each with its own random subdomain, e.g. `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev`), each fronting exactly one Lambda. Full inventory in `API_ENDPOINTS.md`. 22 of the 25 total endpoints are deployed to a stage named `dev`; only the 3 Autobus SMS endpoints (see `API_ENDPOINTS.md`) are on `prod`. That split is historical, not meaningful — there's no separate dev environment behind either name (no separate Lambda/DynamoDB per stage), and this site has exactly one real target (production; see "Hosting & deployment" above — a push to `main` goes live immediately, no staging step). Not worth renaming the existing 22 to `prod` retroactively, since an API Gateway stage rename changes its invoke URL, which would mean updating every hardcoded URL in `scripts/*.js` plus this doc for a purely cosmetic fix — but any *new* endpoint going forward should be deployed to `prod` from the start, so new work doesn't keep perpetuating the `dev` label.
+- **Lambda**: Node.js, using the modern modular `@aws-sdk/*` (v3) packages throughout (e.g. `@aws-sdk/client-dynamodb`), not the legacy `aws-sdk` v2. As of the 2026-08-15 sync, every live function's source is version-controlled in this repo under `Lambdas/`, not just `sendAlertHandler` — see `LAMBDA_FUNCTIONS.md` and the `## Commands` section of `CLAUDE.md` for the sync/deploy workflow.
 - **DynamoDB**: at least `Blogs`, `Cards`, `Checklists`, `Subscribers`, `SubscribersTest` tables. See `DATA_MODEL.md`. **Billing mode**: `Checklists` and `Cards` both run **On-Demand**, not Provisioned — `Checklists` because `searchPlayerName`'s full-table `Scan`-per-search design (see `LAMBDA_FUNCTIONS.md`) exhausted a provisioned RCU ceiling almost immediately; `Cards` for the same reason once `cms/admin.html`'s tools (also `LAMBDA_FUNCTIONS.md`) started making many rapid `Query` calls against it. Both also have an explicit **maximum throughput cap** set (DynamoDB Console → table → Additional settings → Maximum table throughput) — a deliberate middle ground: on-demand alone removes the fixed ceiling that caused the original throttling, but leaves read/write cost technically uncapped, and both tables sit behind fully public, unauthenticated read endpoints. The cap is a coarse, real-time circuit breaker against a runaway/abusive traffic spike, sized well above any known legitimate usage pattern (including bursty admin-tool runs) so it never interferes with normal traffic — complementary to, not a replacement for, the account-wide $5/month AWS Budget alert above, which is after-the-fact rather than preventative. Other tables' billing modes haven't been confirmed either way.
 - **S3**: bucket `mellowjohnny.cc.files` serves all images (`img/blog/`, `img/cards/`, `img/cms/`, favicons) directly over HTTPS, and also receives direct browser PUT uploads via presigned URLs generated by a Lambda (see `API_ENDPOINTS.md` → image upload).
 - **Cognito**: one User Pool, gates the `/cms` authoring tools via its Hosted UI. See `AUTH.md`.

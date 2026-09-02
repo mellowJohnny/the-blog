@@ -21,7 +21,7 @@ added later, for the checklist-upload feature and its front-end display —
 removed again the same day — see "Orphaned/dead Lambdas" below.
 
 Deployment is still entirely manual for every one of them, but the
-mechanics differ by function: the 21 with no real dependencies
+mechanics differ by function: the 23 with no real dependencies
 (`dependencies: {}` in `package.json`) just need the updated
 `index.mjs` pasted into the Lambda Console's inline code editor and
 Deploy clicked — no zip needed. Two need a full `npm install` + zip

@@ -419,5 +419,5 @@ navigation:
 
 - `Old HTML Pages/` — `pw.html`, `quad2.html`, `signup.html`, `thanks.html`, and, as of 2026-08-15, `cards.html` and `cardChecker.html` too (moved here from the repo root — see "Public pages" above). `cardChecker.html`'s own nav bar still links to `/quad2.html` and `/junkWax.html`/`/classicWax.html` (old pre-query-string URL scheme) — these links are stale relative to the current single-page-per-category + query-string routing used elsewhere (`waxReviews.html?...`).
 - `example.html` — a generic Google reCAPTCHA demo snippet, unrelated to this site's own reCAPTCHA usage (if any) or content.
-- `styles/styles copy.css` — an apparent backup/scratch copy of the main stylesheet.
-- `Lambda Functions/newAllBlogs.html` — not reviewed in this pass; name suggests a scratch/reference HTML file that lived alongside the Lambda prototypes.
+
+(`styles/styles copy.css` and `Lambda Functions/newAllBlogs.html`, both previously listed here, no longer exist in the repo.)
