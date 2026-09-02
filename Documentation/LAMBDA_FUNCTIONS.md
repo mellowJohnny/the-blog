@@ -51,6 +51,28 @@ since that history predates this doc being kept current.
 - **Deployment**: manual — the file's own header comment is explicit about this: *"NEVER change this code in the AWS Console. ONLY change in VS Code, then redeploy by uploading the new .zip file (Console → Code tab → Update dropdown → Update from a .zip file)."* A pre-built `sendAlertHandler.zip` sits alongside it in the repo — presumably the last thing actually uploaded; keep it (or regenerate it) in sync with `index.mjs` when you change the code.
 - **Dependencies** (`package.json`): `twilio` (^6.0.2), plus `@aws-sdk/client-dynamodb` used in code but not listed in `package.json` `dependencies` — likely available via the Lambda Node.js runtime's bundled AWS SDK v3 layer, but worth double-checking if a fresh `npm install` / redeploy ever fails on it.
 - **What it does**: backs the "Send broadcast" button in the Autobus Messaging Platform (`cms/smsAdmin.html`). See `API_ENDPOINTS.md` for the full request/response contract. In short: reads `message` + `mode` (`"test"`/`"live"`) from the request body, scans either `SubscribersTest` or `Subscribers` for `status = "subscribed"`, sends each one an SMS via Twilio (credentials from Lambda environment variables — not in this repo), and returns a per-recipient success/failure list. CORS is hardcoded to allow only `https://www.mellowjohnny.cc`.
+- **Lambda Console timeout — hard minimum, do not reset to the default**: per the Confluence "AMP SMS - Platform Core" doc (the source of this Lambda's original write-up, predating this repo's doc workflow), the configured timeout is **1 minute 3 seconds**, and that page calls this out explicitly as a *hard minimum*, not just a comfortable buffer — Twilio's own per-message send time is what requires it. Messages are sent to subscribers **sequentially, one at a time** (not in parallel — see `1.5 Key Design Decisions` on that page: this is deliberate, both to avoid overwhelming the Twilio API and to keep per-recipient result tracking accurate), so total execution time scales with subscriber-list size, and the default Lambda Console timeout (3 seconds) is nowhere close to enough. **If this timeout ever gets reset to the Console default** (e.g. by someone recreating the function, or fat-fingering the Console's General Configuration tab), broadcasts to any list bigger than a handful of subscribers will start failing partway through with a Lambda timeout, likely showing up as `FAILED` results for whichever subscribers hadn't been reached yet when the clock ran out — worth checking this value first if a broadcast to a large list ever comes back with a suspicious cluster of failures near the end of the results list.
+- **Full response shape** (per the same Confluence page, and confirmed against `index.mjs` itself): a top-level `mode` field (echoing back which table was actually used, `"live"` or `"test"`) alongside `results`, an array with one entry per subscriber in the target table with `status = "subscribed"`:
+  ```json
+  {
+    "results": [
+      {
+        "phone": "+16135550123",
+        "firstName": "Christian",
+        "status": "SUCCESS",
+        "error": ""
+      },
+      {
+        "phone": "+16135550124",
+        "firstName": "Jane",
+        "status": "FAILED",
+        "error": "The number is unsubscribed"
+      }
+    ],
+    "mode": "live"
+  }
+  ```
+  `error` is always present in each result entry — an empty string on `SUCCESS`, the caught Twilio error's `message` (or `"Unknown error"` as a fallback) on `FAILED`. An empty subscriber list (zero `status = "subscribed"` items in the target table) still returns `200` with `{ results: [], mode }`, not an error.
 - **Related**: bulk subscriber import (`Lambdas/bulkSubscriberUpload/`) and single-subscriber add (`Lambdas/subscribeHandler/`) are separate Lambdas — see the table below. Inbound SMS replies (STOP/START/HELP) are handled by a completely different, previously-undocumented Lambda — see `Lambdas/inboundSMSHandler/` below.
 
 ## `Lambdas/castVoteHandler/` — hand-built in this repo
@@ -347,7 +369,9 @@ since that history predates this doc being kept current.
   version omitted `sortIndex` from the trimmed per-card object returned
   here, which left results in whatever order the `Scan` happened to
   return them in — visibly out of numeric order for any set with more
-  than ~9 cards (e.g. "22" sorting after "203" as a string). Fixed by
+  than ~9 cards (e.g. "22" sorting after "203" as a string). Caught via
+  a real Wayne Gretzky search — his large card count made the
+  out-of-order results immediately obvious in a screenshot. Fixed by
   carrying `sortIndex` through and sorting each set's `cards` array
   before returning.
 - **Full-table `Scan`, matched case-insensitively in code**: `Checklists`
@@ -427,12 +451,110 @@ since that history predates this doc being kept current.
   side effects beyond the delete itself — but if either ever grows one
   (e.g. cleaning up an S3 image on delete), apply the same lesson.
 
+## `Lambdas/subscribeHandler/` — real, live, backs the CMS "Add Subscriber" modal
+
+- **File**: `Lambdas/subscribeHandler/index.mjs`. No real dependency —
+  only `@aws-sdk/client-dynamodb`, which ships with the Lambda Node.js
+  runtime — so it's inline-paste deployable via the Console's code
+  editor, not zipped, same as most of the other hand-built functions
+  (see the intro above). Confirmed the file/directory naming here
+  already matches the real deployed function exactly (`index.mjs`,
+  directory named `subscribeHandler`) — worth calling out because the
+  Confluence page this section's detail was backported from
+  (2026-05-30, "AMP: Subscriber Management & Inbound SMS
+  Documentation," predates this repo's doc workflow) uses stale labels
+  in a couple of places — `subscribeHandler.mjs` as the filename, and
+  `bulkUploadSubscribers.mjs` for what's actually
+  `Lambdas/bulkSubscriberUpload/` in this repo — neither of which
+  reflects the real checked-in source.
+- **What it does**: backs the "Add Subscriber" modal on
+  `cms/smsAdmin.html` (nav link `add subscriber...`) — adds one new
+  subscriber directly, as opposed to `bulkSubscriberUpload`'s full
+  truncate-and-reimport flow. Takes `{ phoneNumber, firstName }`,
+  requires both fields non-empty (`firstName` missing/empty → 400 `"A
+  name is required"`; `phoneNumber` missing → 400 `"A phone number is
+  required"`), normalizes the phone number (see below; normalization
+  failure → 400 `"Invalid phone number format"`), then writes a new
+  item to the live `Subscribers` table (this Lambda always targets
+  `Subscribers`, never `SubscribersTest` — there's no test-mode
+  concept here the way `sendAlertHandler` has one) via `PutItemCommand`.
+  A successful write returns `200` with
+  `{ ok: true, message: "Subscription successful", phoneNumber, firstName }`.
+  Despite the field being named `firstName` (kept for schema
+  consistency with the bulk-import shape), it stores whatever full
+  name string the admin typed into the modal's Name field — there's no
+  separate last-name field anywhere in this flow.
+- **Phone-number normalization** (`normalizePhoneNumber()` in the
+  source, confirmed 2026-09-02 against `index.mjs`): strips spaces,
+  hyphens, and parentheses first, then tries three patterns in order —
+  (1) already 11 digits starting with `1` → prefix with `+` as-is
+  (`19055550123` → `+19055550123`); (2) already `+` followed by 10–15
+  digits → passed through unchanged (`+19055550123` → `+19055550123`);
+  (3) exactly 10 digits → assumed US/Canada, prefixed with `+1`
+  (`9055550123` → `+19055550123`, and a formatted input like
+  `(905) 555-0123` normalizes the same way once punctuation is
+  stripped). Anything that doesn't match any of the three returns
+  `null` from the helper, which the handler turns into the 400
+  `"Invalid phone number format"` response — e.g. a too-short number
+  like `12345`. This is the exact same `normalizePhoneNumber()` logic
+  (byte-for-byte, per the source read 2026-09-02) as
+  `Lambdas/inboundSMSHandler/` uses on the `From` number of an inbound
+  Twilio webhook — see that section below.
+- **Duplicate-phone dedup / the 409**: the `PutItemCommand` carries
+  `ConditionExpression: "attribute_not_exists(phoneNumber)"` — since
+  `phoneNumber` (the normalized E.164 string) is the table's partition
+  key, this makes the write atomically fail rather than silently
+  overwrite an existing subscriber's record if the (normalized) number
+  is already present. The handler catches specifically
+  `err.name === "ConditionalCheckFailedException"` from that call and
+  turns it into a `409` with
+  `{ ok: false, error: "This phone number is already subscribed" }` —
+  any other DynamoDB error falls through to the outer catch and a
+  generic `500`. This 409 is exactly what the CMS's Add Subscriber
+  modal frontend surfaces to the admin as *"This phone number is
+  already subscribed"* — see `API_ENDPOINTS.md`'s "Add a single
+  subscriber" entry, which documents the same contract from the
+  frontend/caller side; that entry and this one should stay in sync if
+  either changes.
+- **DynamoDB record written** (full shape, all fields sent as typed
+  DynamoDB attribute values since this uses `@aws-sdk/client-dynamodb`
+  directly rather than the `lib-dynamodb` document client):
+  ```json
+  {
+    "phoneNumber":    { "S": "+19055550123" },
+    "firstName":      { "S": "Christian Reid" },
+    "status":         { "S": "subscribed" },
+    "source":         { "S": "web" },
+    "optInTimestamp": { "N": "1234567890000" }
+  }
+  ```
+  `source: "web"` is hardcoded — every subscriber added through this
+  Lambda (i.e. through the CMS admin UI) is, by definition,
+  web-initiated. This is the same `source` field `inboundSMSHandler`
+  sets to `"mobile"` on a START-triggered resubscribe (see below) — the
+  two values together give a simple opt-in audit trail (`web` = added
+  by an admin via the CMS; `mobile` = subscriber self-managed via SMS
+  reply) directly in the DynamoDB record, with no separate logging
+  infrastructure needed.
+- **Auth**: Cognito Authorizer required (`POST /subscribers`), same as
+  every other cardStack/Autobus write endpoint — see `AUTH.md`.
+- **CORS**: `Access-Control-Allow-Origin: https://www.mellowjohnny.cc`,
+  same restricted-origin convention as `sendAlertHandler` and the other
+  CMS-auth-gated POST endpoints.
+
 ## `Lambdas/inboundSMSHandler/` — real, live, previously completely undocumented
 
 - **File**: `Lambdas/inboundSMSHandler/index.mjs`. Discovered 2026-08-15 while
   pulling in the full Lambda inventory — this was not referenced
   anywhere in `API_ENDPOINTS.md` before now, and isn't called from any
-  frontend code in this repo (it can't be — see below).
+  frontend code in this repo (it can't be — see below). Confirmed
+  2026-09-02 that this repo's directory/file naming (`inboundSMSHandler/index.mjs`
+  — capital `SMS`, `.mjs` extension) matches the real deployed function;
+  the Confluence page this section's detail was backported from (2026-05-30,
+  "AMP: Subscriber Management & Inbound SMS Documentation") calls it
+  `inboundSmsHandler.js` throughout (lowercase `Sms`, `.js` extension) —
+  that's a stale/informal label from before the 2026-08-15 sync, not the
+  real filename; don't go looking for a `.js` file.
 - **What it does**: this is the Twilio *inbound* webhook — the URL
   configured directly in the Twilio Console as the phone number's
   "a message comes in" handler, called by Twilio itself when a
@@ -444,11 +566,60 @@ since that history predates this doc being kept current.
   START to the number gets a "private channel, contact a Ride Leader"
   message rather than being silently added), and `HELP`. Responds with
   Twilio's expected TwiML XML, not JSON.
+- **Phone-number normalization**: uses the exact same
+  `normalizePhoneNumber()` logic as `Lambdas/subscribeHandler/` (see
+  above) on the inbound webhook's `From` field, before doing any
+  DynamoDB lookup/update — so a reply from a number Twilio delivers in
+  a slightly different format than what's stored still resolves to the
+  same E.164 key. If normalization fails (returns `null`), the handler
+  short-circuits with a `400` and TwiML body `"Invalid phone number"`
+  before touching DynamoDB at all.
+- **Exact TwiML reply text per keyword/case** (confirmed 2026-09-02 against
+  `index.mjs`, matches the Confluence source doc exactly): the keyword is
+  matched case-insensitively (the inbound `Body` is trimmed and
+  uppercased before comparison).
+  | Keyword(s) | Condition | DynamoDB update | Exact reply text |
+  |---|---|---|---|
+  | `STOP`, `STOPALL`, `UNSUBSCRIBE`, `CANCEL`, `END`, `QUIT` | — | `#s` → `"unsubscribed"`, `unsubTimestamp` set, `#src` → `"mobile"` | `"You have been unsubscribed. Reply START to resubscribe."` |
+  | `START`, `YES`, `UNSTOP` | phone number **found** in `Subscribers` | `#s` → `"subscribed"`, `optInTimestamp` set, `#src` → `"mobile"` | `"You are now subscribed again."` |
+  | `START`, `YES`, `UNSTOP` | phone number **not found** in `Subscribers` (a stranger texting in) | none — no write at all | `"This is a private communication channel for Autobus Cycling Club members only. If you are a member please contact a Ride Leader to be added."` |
+  | `HELP` | — | none | `"Reply START to subscribe, STOP to unsubscribe."` |
+  | anything else (unrecognized text) | — | none | `"Command not recognized. Reply HELP for options."` |
+  | (signature validation failure) | — | none — rejected before any DynamoDB access | `403`, plain (non-TwiML-templated) body `"Forbidden"` |
+  Every TwiML body (other than the 403 case) is wrapped via a small
+  `twiml()` helper in the source that renders
+  `<Response><Message>...</Message></Response>` — a `200` with
+  `Content-Type: application/xml`, not JSON, in every case including
+  the "reject unknown START" and "unrecognized keyword" branches (i.e.
+  those aren't error responses from Twilio's perspective — Twilio just
+  gets told what to text back to the subscriber).
+- **DynamoDB reserved-word aliasing**: both `status` and `source` are
+  DynamoDB reserved words and can't be used as bare attribute names in
+  an `UpdateExpression`, so the code aliases them via
+  `ExpressionAttributeNames`: `status` → `#s`, `source` → `#src`. Both
+  the STOP branch and the (existing-subscriber) START branch use the
+  same `UpdateExpression` shape: `"SET #s = :<value>, <timestampField> = :ts, #src = :source"`
+  — `unsubTimestamp` on the STOP path, `optInTimestamp` on the START
+  path — with `#s`/`#src` resolved via the aliases and the actual
+  values passed through `ExpressionAttributeValues`.
 - **Security**: validates the inbound request's `X-Twilio-Signature`
   header via HMAC-SHA1 against `process.env.TWILIO_AUTH_TOKEN` (env
   var, not hardcoded — no secret in the source) using
   `crypto.timingSafeEqual`, correctly avoiding a timing side-channel.
   Requests that fail validation get a 403 before any DynamoDB access.
+- **Twilio's own STOP/START handling can't be fully disabled — expect
+  occasional double replies**: per the Confluence source doc (section
+  "2.6 Twilio Duplicate Reply Note"), Twilio's platform has its own
+  built-in keyword handling for STOP/START baked in ahead of this
+  webhook, and that behavior cannot be fully turned off account-side.
+  The practical effect: some phone numbers occasionally get **two**
+  reply messages for the same STOP/START text — one auto-generated by
+  Twilio itself, and a second one from this Lambda's own TwiML
+  response. This is a known, accepted limitation (most visible on the
+  "unknown number texts START" edge case) rather than a bug to chase
+  down in this codebase — there's no code-side fix available for it,
+  since the duplicate originates from Twilio's own platform-level
+  keyword interception, upstream of this Lambda ever being invoked.
 - **API Gateway URL**: not confirmed — this codebase's read access
   covers Lambda source but not API Gateway (`apigateway:GET` is
   denied for the `amplify-readonly-cli` credential), and this endpoint
@@ -517,13 +688,12 @@ section title:
 | `Lambdas/getStagedBlogsForUpdate/` | Get all staged (draft) blogs | Same correction as above, mirrored: full `Scan` on `published = false`, full records returned, not a narrow projection. |
 | `Lambdas/createCardPost/` | Create card set | Despite the AWS function name, this is the "create card set" Lambda (its own header comment calls itself `createCardSet Lambda Function`). Generates `setID` via `Math.random().toString(36)` (not a UUID). Hardcodes the S3 image URL prefix (`headerImg`/`footerImg`) server-side — see the CloudFront-migration discussion this repo's git history has around 2026-08-15 for why that matters if image hosting ever moves off direct S3 URLs. |
 | `Lambdas/getCardSets/` | Get all live card sets (for the edit picker) | Queries the `blogStatus-year-index` GSI, `blogStatus = "OK"`. File has old commented-out `ProjectionExpression` variants left in as history of the 2026-08-14 `getStagedCardSets` projection bug fix (see below) — this one already returns full items. |
-| `Lambdas/getStagedCardSets/` | Get all staged (draft) card sets | Same GSI, `blogStatus = "staged"`. This is the Lambda whose `ProjectionExpression` bug (only requesting `setName, setID`, silently dropping `blogCat`/`year`) was found and fixed on 2026-08-14 — see `API_ENDPOINTS.md` for the full story. |
+| `Lambdas/getStagedCardSets/` | Get all staged (draft) card sets | Same GSI, `blogStatus = "staged"`. This is the Lambda whose `ProjectionExpression` bug (only requesting `setName, setID`, silently dropping `blogCat`/`year`) was found and fixed on 2026-08-14 — see `API_ENDPOINTS.md` for the full story. The fixed projection requests `setName, setID, blogCat, year`; `year` is aliased in the expression (e.g. `#y`) since it's a DynamoDB reserved word. |
 | `Lambdas/getCardSetByID/` | Get a single card set by ID | PartiQL `SELECT * FROM Cards WHERE setID=?`. |
 | `Lambdas/getCardSetsByYear/` | Get card sets by year | Queries the `blogCat-year-index` GSI. Returns `Cache-Control: public, max-age=1800`; its own comment says "CloudFront cache" but no CloudFront actually sits in front of it (see `API_ENDPOINTS.md`'s caching note) — today this header is browser-only. |
 | `Lambdas/cmsImageUploader/` | Get S3 upload URL (presigned PUT) | `getSignedUrl()` for a `PutObjectCommand`, 300s expiry, sets `CacheControl: public, max-age=31536000, immutable` on the eventual S3 object. |
 | `Lambdas/cmsImagePicker/` | List images in the bucket | `ListObjectsV2Command` on the whole bucket, no prefix filter server-side (filtering happens client-side in `cms.js`). |
 | `Lambdas/bulkSubscriberUpload/` | Bulk import subscribers | Truncates the target table (`process.env.TABLE_NAME` — not hardcoded to `Subscribers`/`SubscribersTest`, so which one it hits depends on this Lambda's environment config) via paginated `Scan` + chunked `BatchWriteItem` deletes, then bulk-imports the new list the same way, with exponential-backoff retry on unprocessed items. |
-| `Lambdas/subscribeHandler/` | Add a single subscriber | Single `PutItemCommand` with `ConditionExpression: attribute_not_exists(phoneNumber)` (409 on duplicate). Sets `source: "web"` — compare to `Lambdas/inboundSMSHandler/`'s `source: "mobile"` on a START-triggered resubscribe. |
 
 ## `Lambda Functions/` — separate legacy/prototype code, still not confirmed current
 

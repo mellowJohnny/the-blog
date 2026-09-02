@@ -214,7 +214,11 @@ It used to use the same `preload`+`onload`-swap trick the Google Fonts
 links still use (non-render-blocking, so the browser could paint HTML
 before CSS was ready), but that meant a real, visible flash of
 completely unstyled content on every navigation - worse as
-`styles.css` grew. Switched to blocking specifically to fix that; the
+`styles.css` grew, and compounded by `styles.css`'s own CDN cache
+headers: a year-long cache at the edge, but `max-age=0` for the
+browser itself, forcing a revalidation round-trip on every navigation
+before the non-blocking swap could even fire. Switched to blocking
+specifically to fix that; the
 Google Fonts links are unaffected and still use the non-blocking
 pattern deliberately (a missing/slow *font* swaps to a fallback
 gracefully, which is a much smaller visual disruption than missing all
@@ -379,7 +383,10 @@ uploaded checklists, with a link to each set's review. Added
   needlessly expensive.
 - **Results**: grouped by `setName`, each group showing every matching
   card (number, player name, notes, and which insert set it's from, if
-  any) under that set. A group's heading is a link to that set's review
+  any) under that set, ordered main-set cards first then each insert
+  set, sorted within each group by `sortIndex` — the same ordering rule
+  `wax.js`'s checklist modal uses (see "Checklist display" above), not
+  raw fetch order. A group's heading is a link to that set's review
   on `waxReviews.html` when the API returned a `year`/`blogCat` for it
   (i.e. a matching `Cards` item exists); otherwise it's plain text - see
   `DATA_MODEL.md`'s "setName ↔ Cards.setName 1:1 assumption" note for

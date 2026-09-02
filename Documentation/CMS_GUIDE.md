@@ -294,5 +294,75 @@ fullest first-party explanation of this tool, summarized here:
 - **GSM-Safe Mode** checkbox: auto-replaces smart-quotes/em-dashes/ellipses with plain-ASCII equivalents to keep the message in the cheaper GSM-7 encoding.
 - **Test Mode** checkbox (checked by default): sends only to the `SubscribersTest` table instead of the real `Subscribers` list — use this to sanity-check a message before going live. Unchecking it requires confirming a "LIVE MODE" warning (`cmsConfirm()` — see "CMS alert / confirm modals" above) before anything sends.
 - **Results panel**: per-recipient success/failure table plus a summary count, after a send.
-- **Bulk import** (nav link): replaces the *entire* subscriber list from an uploaded pre-processed JSON file (already in DynamoDB typed-JSON format). This is destructive — it deletes all existing subscribers first — and is described in-app as something "prepared separately once a year from the club sign-up data," i.e. an external, out-of-band process not represented anywhere in this repo.
+- **Bulk import** (nav link): replaces the *entire* subscriber list from an uploaded pre-processed JSON file (already in DynamoDB typed-JSON format). This is destructive — it deletes all existing subscribers first — and is described in-app as something "prepared separately once a year from the club sign-up data." See "Annual bulk-import data prep" below for what that prep step actually does.
 - **Add subscriber** (nav link): a small modal to add one subscriber by name + mobile number without doing a full bulk re-import.
+
+### Annual bulk-import data prep (CSV → DynamoDB JSON)
+
+The `.json` file the bulk-import modal expects (see above) isn't produced by
+anything checked into this repo — there's no script or Lambda under
+`Lambdas/` that touches the club's raw sign-up data. It's a manual,
+once-a-year step done entirely outside the codebase, immediately before
+uploading through the modal:
+
+1. The club's sign-up form is exported as a CSV. Of its columns, only two
+   are used: **"Name"** and **"Your mobile number"**.
+2. That CSV is converted to a plain JSON array of DynamoDB typed-JSON
+   objects — the exact shape `bulkSubscriberUpload` (see
+   `LAMBDA_FUNCTIONS.md`) and the upload modal expect, with no
+   `PutRequest`/table-name wrapper, just the array — via a one-off AI chat
+   prompt, not a checked-in script. The mapping it applies:
+   - **Name → `firstName`** (String): only the first whitespace-delimited
+     token of the Name column, capitalized — e.g. "jane q. smith" becomes
+     just `"Jane"`.
+   - **Your mobile number → `phoneNumber`** (String): normalized to
+     **E.164** format, prefixing `+1` for Canadian/US numbers — e.g. a raw
+     `613-555-0123` becomes `+16135550123`.
+   - Two constant String attributes are added to every record regardless of
+     the source data: **`status`** set to `"subscribed"` and **`source`**
+     set to `"web"` (the same `source: "web"` that `subscribeHandler` — see
+     `LAMBDA_FUNCTIONS.md` — sets when a subscriber is added manually
+     through the "Add subscriber" modal instead).
+   - **Duplicate `phoneNumber`s are skipped, keeping the first
+     occurrence** — the club's raw export can contain more than one
+     sign-up row for the same person/number, and this conversion step is
+     where that gets collapsed, before the file ever reaches the
+     bulk-upload endpoint.
+
+   The verbatim prompt used for this conversion (recorded here since this
+   doc is currently its only durable copy — reuse it as-is next time rather
+   than re-deriving the wording):
+
+   ```
+   I have a CSV file I need to convert to DynamoDB typed JSON for bulk
+   upload. Please extract only the "Name" and "Your mobile number"
+   columns. From the Name column, take only the first token (first
+   name), capitalise it, and map it to a String attribute called
+   firstName. Map the phone number to a String attribute called
+   phoneNumber, converting it to E.164 format (+1 for Canadian/US
+   numbers). Add two additional String attributes to every record:
+   status set to "subscribed" and source set to "web". Skip duplicate
+   phone numbers, keeping the first occurrence. Output a plain JSON
+   array of DynamoDB typed JSON objects with no wrapper or PutRequest
+   — just the array. Here is the file.
+   ```
+
+   One example record from the expected output:
+   ```json
+   [
+     {
+       "phoneNumber": { "S": "+16135550123" },
+       "firstName":   { "S": "Christian" },
+       "source":      { "S": "web" },
+       "status":      { "S": "subscribed" }
+     }
+   ]
+   ```
+3. The resulting `.json` file is what actually gets dropped into the
+   bulk-import modal described above.
+
+Belt-and-suspenders note: `bulkSubscriberUpload`'s own writes use
+`PutRequest` (see `LAMBDA_FUNCTIONS.md`), so if a duplicate `phoneNumber`
+ever slipped past the dedup step above, the later record would silently
+overwrite the earlier one (last-write-wins) rather than erroring — in
+practice this hasn't mattered, since dedup already happens before upload.

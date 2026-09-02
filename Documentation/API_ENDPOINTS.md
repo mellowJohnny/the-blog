@@ -1,4 +1,4 @@
-I # API Endpoints
+# API Endpoints
 
 Every endpoint below was found by grepping the frontend `scripts/*.js`
 files for `fetch(...)` calls. Each one is its own API Gateway REST API
@@ -118,7 +118,7 @@ without changing that expectation first.
 - **URL**: `https://j9dhm7nwhk.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: DELETE
 - **Body**: `{ blogID, blogType, time }`
-- **Called from**: `deleteBlogPost()` in `scripts/cms.js` (used by `cms/blogEdit.html`, confirmed with the user via a JS `confirm()` dialog first)
+- **Called from**: `deleteBlogPost()` in `scripts/cms.js` (used by `cms/blogEdit.html`, confirmed with the user via `cmsConfirm()` first — see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section)
 - **Response**: `{ message }` on success, `{ error }` on failure (404 if the `blogID`/`blogType`/`time` combination doesn't match an existing item, since the Lambda's `DeleteItemCommand` uses `blogType`+`time` as the key with a `ConditionExpression` requiring `blogID` to also match as a safety check)
 - **Lambda**: `Lambdas/deleteBlogHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`)
 
@@ -166,7 +166,7 @@ without changing that expectation first.
 - **URL**: `https://8q5ly5ixej.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: DELETE
 - **Body**: `{ setID, setName, year }`
-- **Called from**: `deleteCardSet()` in `scripts/cms.js` (used by `cms/setEdit.html`, confirmed with the user via a JS `confirm()` dialog first)
+- **Called from**: `deleteCardSet()` in `scripts/cms.js` (used by `cms/setEdit.html`, confirmed with the user via `cmsConfirm()` first — see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section)
 - **Response**: `{ message }` on success, `{ error }` on failure (404 if the `setID`/`setName`/`year` combination doesn't match an existing item, since the Lambda's `DeleteItemCommand` uses `setName`+`year` as the key with a `ConditionExpression` requiring `setID` to also match as a safety check)
 - **Lambda**: `Lambdas/deleteCardSetHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`)
 
@@ -244,26 +244,26 @@ so.
 ### Send broadcast
 - **URL**: `https://yzivv3xuw2.execute-api.us-east-2.amazonaws.com/prod/admin/send`
 - **Method**: POST
-- **Body**: `{ message, mode }` — `mode` is `"test"` or `"live"`.
+- **Body**: `{ message, mode }` — `mode` is `"test"` or `"live"`. Per Confluence's "AMP SMS - Platform Core" page (the pre-repo doc for this Lambda), if `mode` is missing or anything other than `"live"` the Lambda defaults to `"test"` — a deliberate safeguard against an accidental live send, not just the frontend's Test Mode checkbox default.
 - **Called from**: `sendBroadcast()` in `scripts/adminSMS.js` (used by `cms/smsAdmin.html`)
 - **Response**: `{ results: [{ phone, firstName, status: "SUCCESS"|"FAILED", error }], mode }`
-- **Lambda**: `Lambdas/sendAlertHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`).
+- **Lambda**: `Lambdas/sendAlertHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Per the same Confluence page: `mode: "live"` scans `Subscribers`, `mode: "test"` scans `SubscribersTest`, and either way only records where `status = "subscribed"` are included. Sends are sequential (one SMS at a time, not parallel) with each send wrapped in its own try/catch, so one recipient's failure is recorded as `FAILED` in the `results` array without aborting the rest of the broadcast. The Lambda's configured timeout is 1 minute 3 seconds specifically to allow for Twilio's per-message send time across the whole batch.
 
 ### Bulk import subscribers
 - **URL**: `https://05b6ofo7i1.execute-api.us-east-2.amazonaws.com/prod/subscribers/bulk-upload`
 - **Method**: POST
 - **Body**: a JSON array of subscriber records, already in DynamoDB typed-JSON format (`{ phoneNumber: { S: "..." }, ... }`), per the in-app help text in `cms/smsAdmin.html`.
 - **Called from**: `uploadBtn` click handler in `scripts/adminSMS.js`
-- **Response**: `{ deletedCount, importedCount }` on success. **Destructive**: this call deletes *all* existing subscribers before importing the new list (confirmed with the user via a JS `confirm()` dialog first).
+- **Response**: `{ deletedCount, importedCount }` on success. **Destructive**: this call deletes *all* existing subscribers before importing the new list (confirmed with the user via `cmsConfirm()` first — see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section).
 - **Lambda**: `Lambdas/bulkSubscriberUpload/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Which table it truncates/imports into is set via `process.env.TABLE_NAME`, not hardcoded to `Subscribers`/`SubscribersTest` in the source — check the Lambda's environment config in the Console to confirm which one it currently targets.
 
 ### Add a single subscriber
 - **URL**: `https://05b6ofo7i1.execute-api.us-east-2.amazonaws.com/prod/subscribers`
 - **Method**: POST
-- **Body**: `{ firstName, phoneNumber }`
+- **Body**: `{ firstName, phoneNumber }`. Per Confluence's "AMP: Subscriber Management & Inbound SMS Documentation" page, `phoneNumber` is accepted in several common formats — bare 10-digit (`9055550123`), 11-digit with leading `1` (`19055550123`), already-E.164 (`+19055550123`), or human-formatted (`(905) 555-0123`) — and normalized server-side to E.164; an unparseable number is rejected with `400`.
 - **Called from**: `addSubscriberSaveBtn` click handler in `scripts/adminSMS.js`
-- **Response**: 2xx on success; `{ error }` on failure (e.g. duplicate phone number, per the in-app copy).
-- **Lambda**: `Lambdas/subscribeHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). `ConditionExpression: attribute_not_exists(phoneNumber)` (409 on duplicate); sets `source: "web"` on the new record.
+- **Response**: 2xx on success; `{ error }` on failure (e.g. duplicate phone number, per the in-app copy). Per the same Confluence page's response-codes table, the exact shapes are: `200` → `{ ok: true, message, phoneNumber, firstName }`; `400` → `{ ok: false, error }`, either for a missing/invalid phone number or for a missing name (`error: "A name is required"`); `409` → `{ ok: false, error: "This phone number is already subscribed" }` on duplicate; `500` → `{ ok: false, error: "Internal server error" }` on unexpected failure.
+- **Lambda**: `Lambdas/subscribeHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). `ConditionExpression: attribute_not_exists(phoneNumber)` (409 on duplicate); sets `source: "web"` on the new record. Per Confluence, the full DynamoDB item written is `{ phoneNumber, firstName, status: "subscribed", source: "web", optInTimestamp }` — `firstName` here stores the full name as entered (the field is named `firstName` only for schema consistency with the bulk-import path, per that page's design-decisions note).
 
 ### Inbound SMS webhook (not called from this frontend)
 - **URL**: not confirmed — see the note below.

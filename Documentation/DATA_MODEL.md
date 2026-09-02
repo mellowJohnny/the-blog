@@ -142,7 +142,8 @@ difference and a double-space filename typo, both requiring every item
 under that stale `setName` partition to be deleted, not just one row -
 `Checklists` is one item *per card*, not one item per set, so a
 "delete the bad set" cleanup means deleting every card row sharing that
-`setName`).
+`setName`). The Checklist Integrity Check on `cms/admin.html` is a
+second entry point into this same `?audit=1` mode - see `CMS_GUIDE.md`.
 
 **Sort-key collision guard**: `parseChecklistPdf` intentionally keeps
 two entries with the same printed card number as separate cards when
