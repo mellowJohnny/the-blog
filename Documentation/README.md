@@ -29,7 +29,9 @@ Cognito — mentioned directly in `index.html`'s meta description.
 | [DATA_MODEL.md](./DATA_MODEL.md) | DynamoDB tables and the fields each one holds |
 | [API_ENDPOINTS.md](./API_ENDPOINTS.md) | Every API Gateway endpoint the frontend calls — URL, method, payload, purpose |
 | [FRONTEND.md](./FRONTEND.md) | Public-facing pages and the `scripts/*.js` files behind them |
+| [PUBLIC_PAGE_FLOWS.md](./PUBLIC_PAGE_FLOWS.md) | Public pages traced end to end — what loads, what runs on load, what each interaction calls and why |
 | [CMS_GUIDE.md](./CMS_GUIDE.md) | The `/cms` authoring tools ("cardStack") and the Autobus SMS admin tool |
+| [CMS_PAGE_FLOWS.md](./CMS_PAGE_FLOWS.md) | Every `/cms` page traced the same way as PUBLIC_PAGE_FLOWS.md |
 | [AUTH.md](./AUTH.md) | Cognito setup and the login flow used to gate `/cms` |
 | [LAMBDA_FUNCTIONS.md](./LAMBDA_FUNCTIONS.md) | The Lambda code that *is* in this repo, and an inventory of the ones that only live in the AWS Console |
 
