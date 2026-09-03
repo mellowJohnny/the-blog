@@ -617,6 +617,15 @@ function buildChecklistPdfDocument(setName, groups) {
   const checkboxSize = 9;
   const lineHeight = 14;
 
+  // Same 2-column split .checklist-modal-cards uses on screen/print
+  // (styles.css:1538-1541's `columns: 3`/print's 2-column override,
+  // gap converted from its 32px to ~24pt).
+  const columnGap = 24;
+  const columnWidth = (contentWidth - columnGap) / 2;
+  function columnX(i) {
+    return marginX + i * (columnWidth + columnGap);
+  }
+
   let y = marginTop;
 
   function ensureSpace(neededHeight) {
@@ -626,12 +635,42 @@ function buildChecklistPdfDocument(setName, groups) {
     }
   }
 
-  // Masthead - same brand text as the on-screen modal's
-  // .checklist-modal-masthead, in the embedded Bebas Neue.
+  // Draws `text` once per small diagonal offset in outlineColor, then
+  // once more in fillColor at the true position - a crude but
+  // effective approximation of .checklist-modal-masthead a's 4-way
+  // 1px text-shadow "outlined text" look (styles.css:1523-1527).
+  // Assumes the desired font/size is already set on `doc`.
+  function drawOutlinedText(text, x, textY, outlineColor, fillColor) {
+    const offset = 0.75;
+    doc.setTextColor(...outlineColor);
+    [[-offset, -offset], [offset, -offset], [-offset, offset], [offset, offset]].forEach(([dx, dy]) => {
+      doc.text(text, x + dx, textY + dy);
+    });
+    doc.setTextColor(...fillColor);
+    doc.text(text, x, textY);
+  }
+
+  // Masthead - matches .checklist-modal-masthead's colored bar +
+  // outlined Bebas Neue brand text (styles.css:1510-1528), not just
+  // plain text. Drawn once, top of page 1 only - same as Phase 1, and
+  // matches real print output (a static block before the column flow
+  // doesn't repeat per page in a browser print either).
+  const mastheadBarColor = [44, 82, 137]; // --color-masthead-bg
+  const mastheadOutlineColor = [2, 70, 153]; // --color-heading-outline
+  const mastheadTextColor = [252, 252, 245];
+  const mastheadFontSize = 26;
+  const mastheadPaddingX = 24;
+  const mastheadPaddingY = 12;
+  const mastheadBarHeight = mastheadFontSize + mastheadPaddingY * 2;
+
+  doc.setFillColor(...mastheadBarColor);
+  doc.rect(marginX, y, contentWidth, mastheadBarHeight, "F");
   doc.setFont("BebasNeue", "normal");
-  doc.setFontSize(28);
-  doc.text("the hella files", marginX, y);
-  y += 30;
+  doc.setFontSize(mastheadFontSize);
+  const mastheadBaseline = y + mastheadBarHeight / 2 + mastheadFontSize * 0.35;
+  drawOutlinedText("THE HELLA FILES", marginX + mastheadPaddingX, mastheadBaseline, mastheadOutlineColor, mastheadTextColor);
+  doc.setTextColor(0);
+  y += mastheadBarHeight + 16;
 
   // Title (setName)
   doc.setFont("SourceSans3", "bold");
@@ -640,32 +679,92 @@ function buildChecklistPdfDocument(setName, groups) {
   doc.text(titleLines, marginX, y);
   y += titleLines.length * 22 + 12;
 
+  // 2-column layout matching .checklist-modal-group-title's
+  // `column-span: all` (styles.css:1544): a title always spans the
+  // full content width and breaks the column flow, so everything
+  // after it restarts filling left-column-first from that point -
+  // independent of how far the other column had previously filled.
+  // `bandTop` tracks where the *current* column pair started, so
+  // switching from column 0 to column 1 mid-group resumes at the same
+  // band rather than the top of the page.
+  let currentColumn = 0;
+  let bandTop = y;
+  // Tracks how far each column has actually been filled within the
+  // current band - a full-width title has to clear WHICHEVER column
+  // is taller, not just resume from wherever the last-drawn column
+  // (often the shorter one, if it filled last) happened to end.
+  let columnBottoms = [bandTop, bandTop];
+
+  function resetBand(top) {
+    bandTop = top;
+    columnBottoms = [top, top];
+  }
+
+  function ensureRoomForTitle(titleHeight) {
+    if (y + titleHeight > pageHeight - marginBottom) {
+      doc.addPage();
+      y = marginTop;
+      resetBand(marginTop);
+    }
+  }
+
+  function advanceToNextSlot() {
+    if (currentColumn === 0) {
+      currentColumn = 1;
+      y = bandTop;
+    } else {
+      doc.addPage();
+      currentColumn = 0;
+      y = marginTop;
+      resetBand(marginTop);
+    }
+  }
+
   groups.forEach(({ title, cards }) => {
-    ensureSpace(24);
+    const titleHeight = 26;
+    ensureRoomForTitle(titleHeight);
+
     doc.setFont("SourceSans3", "bold");
     doc.setFontSize(13);
+    doc.setTextColor(11, 62, 100); // --color-text-dark
     doc.text(title, marginX, y);
-    y += 20;
+    // Bottom border, matching .checklist-modal-group-title's
+    // 2px solid --color-input-border underline.
+    doc.setDrawColor(85, 174, 233);
+    doc.setLineWidth(1.5);
+    doc.line(marginX, y + 6, marginX + contentWidth, y + 6);
+    doc.setTextColor(0);
+    doc.setDrawColor(0);
+
+    y += titleHeight;
+    currentColumn = 0;
+    resetBand(y);
 
     cards.forEach(card => {
       doc.setFont("SourceSans3", "normal");
       doc.setFontSize(10.5);
       const notesText = card.notes ? `  ${card.notes}` : "";
       const fullLine = `${card.cardNumberDisplay}  ${card.playerName}${notesText}`;
-      const textX = marginX + checkboxSize + 8;
-      const wrapped = doc.splitTextToSize(fullLine, contentWidth - checkboxSize - 8);
+      const availWidth = columnWidth - checkboxSize - 8;
+      const wrapped = doc.splitTextToSize(fullLine, availWidth);
       const rowHeight = wrapped.length * lineHeight;
 
-      ensureSpace(rowHeight);
+      if (y + rowHeight > pageHeight - marginBottom) {
+        advanceToNextSlot();
+      }
 
       // Print-style checkbox square - same idea as .checklist-modal-card-checkbox
       // in @media print (styles.css), for checking off with a pen.
-      doc.rect(marginX, y - checkboxSize + 2, checkboxSize, checkboxSize);
-      doc.text(wrapped, textX, y);
+      const colX = columnX(currentColumn);
+      doc.rect(colX, y - checkboxSize + 2, checkboxSize, checkboxSize);
+      doc.text(wrapped, colX + checkboxSize + 8, y);
       y += rowHeight;
+      columnBottoms[currentColumn] = y;
     });
 
-    y += 10;
+    // Next group's title must clear whichever column ended up taller,
+    // not just wherever the last card happened to land.
+    y = Math.max(columnBottoms[0], columnBottoms[1]) + 10;
   });
 
   // Footer - same text as #checklistModalPrintFooter, once at the end
