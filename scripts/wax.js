@@ -676,7 +676,7 @@ function buildChecklistPdfDocument(setName, groups) {
   doc.setFontSize(18);
   const titleLines = doc.splitTextToSize(setName, contentWidth);
   doc.text(titleLines, marginX, y);
-  y += titleLines.length * 22 + 12;
+  y += titleLines.length * 22 + 22;
 
   // 2-column layout matching .checklist-modal-group-title's
   // `column-span: all` (styles.css:1544): a title always spans the
