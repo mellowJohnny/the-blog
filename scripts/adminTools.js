@@ -6,7 +6,7 @@
  * a new one the same way (a function here + a matching section on that
  * page) rather than growing this into one do-everything script.
  *
- * Reuses BLOG_TYPE_LABELS (scripts/cms.js), categoryRanges/escapeHtml
+ * Reuses BLOG_TYPE_LABELS (scripts/cmsBlog.js), categoryRanges/escapeHtml
  * (scripts/helper.js) rather than re-deriving them - see FRONTEND.md.
  */
 

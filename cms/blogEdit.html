@@ -32,7 +32,8 @@
 
         <!-- CMS JavaScript import  -->
         <script src="/scripts/helper.js"></script>
-        <script src="/scripts/cms.js"></script>
+        <script src="/scripts/cmsBlog.js"></script>
+        <script src="/scripts/cmsFormUI.js"></script>
      
       </head>
 
@@ -54,7 +55,7 @@
       // *** Dynamically display the copyright year
       fetchCopyrightYear();
 
-      // Load the TinyMCE WYSIWYG Editor from the global config in cms.js
+      // Load the TinyMCE WYSIWYG Editor from the global config in cmsFormUI.js
       initTinyEditor('#postBody');
   }); 
 </script>
@@ -140,7 +141,7 @@
                     <td colspan="2">
                       <div style="display:flex; justify-content:space-between; align-items:center;">
                         <div>
-                          <!-- NOTE: We don't need to grab the postBody becasue the updateBlogPost() in cms.js gets it from the tinyMCE function  -->
+                          <!-- NOTE: We don't need to grab the postBody becasue the updateBlogPost() in cmsBlog.js gets it from the tinyMCE function  -->
                           <button class="input-button" type="button" id="cmsSubmitButton"
                               onclick="updateBlogPost(
                                       document.getElementById('title').value,

@@ -312,7 +312,8 @@ document.addEventListener("click", (event) => {
 // --------------- Cookie! --------------------------
 
 // cmsAlert(message) - a styled replacement for the native alert() used
-// throughout the CMS (cms.js, checklistUpload.js, adminSMS.js). Native
+// throughout the CMS (cmsBlog.js, cmsCardSet.js, checklistUpload.js,
+// adminSMS.js). Native
 // alert()/confirm() dialogs are synchronous - they block the whole page
 // until dismissed, which every existing call site relies on for
 // "show a message, then redirect/focus" sequencing. cmsAlert() can't
