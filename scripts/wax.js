@@ -811,7 +811,7 @@ function buildChecklistPdfDocument(setName, groups) {
 
     // Next group's title must clear whichever column ended up taller,
     // not just wherever the last card happened to land.
-    y = Math.max(columnBottoms[0], columnBottoms[1]) + 10;
+    y = Math.max(columnBottoms[0], columnBottoms[1]) + 20;
   });
 
   // Footer (every page) + running header (every page after the first) -
