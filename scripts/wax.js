@@ -699,24 +699,29 @@ function buildChecklistPdfDocument(setName, groups) {
     columnBottoms = [top, top];
   }
 
+  // Orphan control: a title with room for itself but only 1-2 card
+  // rows before the page/column runs out reads worse than just
+  // starting the whole section fresh on the next page - so this
+  // checks for the title *plus* a minimum row count, not just the
+  // title alone.
+  const minRowsAfterTitle = 3;
+
   function ensureRoomForTitle(titleHeight) {
-    if (y + titleHeight > pageHeight - marginBottom) {
+    const neededHeight = titleHeight + minRowsAfterTitle * lineHeight;
+    if (y + neededHeight > pageHeight - marginBottom) {
       doc.addPage();
       y = contentTop;
       resetBand(contentTop);
     }
   }
 
-  function advanceToNextSlot() {
-    if (currentColumn === 0) {
-      currentColumn = 1;
-      y = bandTop;
-    } else {
-      doc.addPage();
-      currentColumn = 0;
-      y = contentTop;
-      resetBand(contentTop);
-    }
+  function drawRow({ wrapped, rowHeight }) {
+    // Print-style checkbox square - same idea as .checklist-modal-card-checkbox
+    // in @media print (styles.css), for checking off with a pen.
+    const colX = columnX(currentColumn);
+    doc.rect(colX, y - checkboxSize + 2, checkboxSize, checkboxSize);
+    doc.text(wrapped, colX + checkboxSize + 8, y);
+    y += rowHeight;
   }
 
   groups.forEach(({ title, cards }) => {
@@ -739,27 +744,70 @@ function buildChecklistPdfDocument(setName, groups) {
     currentColumn = 0;
     resetBand(y);
 
-    cards.forEach(card => {
-      doc.setFont("SourceSans3", "normal");
-      doc.setFontSize(10.5);
+    // Pre-measure every row once, up front - both the balance decision
+    // below and the actual draw pass reuse the same wrapped text/height.
+    doc.setFont("SourceSans3", "normal");
+    doc.setFontSize(10.5);
+    const availWidth = columnWidth - checkboxSize - 8;
+    const rows = cards.map(card => {
       const notesText = card.notes ? `  ${card.notes}` : "";
       const fullLine = `${card.cardNumberDisplay}  ${card.playerName}${notesText}`;
-      const availWidth = columnWidth - checkboxSize - 8;
       const wrapped = doc.splitTextToSize(fullLine, availWidth);
-      const rowHeight = wrapped.length * lineHeight;
+      return { wrapped, rowHeight: wrapped.length * lineHeight };
+    });
+    // Lay the group out one band (both columns' worth of one page) at
+    // a time, balancing each band's own rows evenly between the two
+    // columns - not just the group as a whole. A large group's *last*
+    // band (its final, partial page) has exactly the same
+    // "short-ish content, empty column 1" problem a genuinely short
+    // group does, so every band gets the same balancing treatment,
+    // not just groups small enough to fit in a single one.
+    let start = 0;
+    while (start < rows.length) {
+      const availableColumnHeight = pageHeight - marginBottom - bandTop;
+      const bandCapacity = availableColumnHeight * 2;
 
-      if (y + rowHeight > pageHeight - marginBottom) {
-        advanceToNextSlot();
+      let end = start;
+      let bandHeight = 0;
+      // Always take at least one row, even if it alone exceeds the
+      // band's capacity (an implausibly long wrapped note) - avoids
+      // looping forever on a row that can never "fit."
+      while (end < rows.length && (bandHeight + rows[end].rowHeight <= bandCapacity || end === start)) {
+        bandHeight += rows[end].rowHeight;
+        end++;
       }
 
-      // Print-style checkbox square - same idea as .checklist-modal-card-checkbox
-      // in @media print (styles.css), for checking off with a pen.
-      const colX = columnX(currentColumn);
-      doc.rect(colX, y - checkboxSize + 2, checkboxSize, checkboxSize);
-      doc.text(wrapped, colX + checkboxSize + 8, y);
-      y += rowHeight;
-      columnBottoms[currentColumn] = y;
-    });
+      const band = rows.slice(start, end);
+      const target = bandHeight / 2;
+      let splitIndex = band.length;
+      let running = 0;
+      for (let i = 0; i < band.length; i++) {
+        running += band[i].rowHeight;
+        if (running >= target) {
+          splitIndex = i + 1;
+          break;
+        }
+      }
+
+      currentColumn = 0;
+      y = bandTop;
+      band.slice(0, splitIndex).forEach(drawRow);
+      columnBottoms[0] = y;
+
+      currentColumn = 1;
+      y = bandTop;
+      band.slice(splitIndex).forEach(drawRow);
+      columnBottoms[1] = y;
+
+      start = end;
+
+      if (start < rows.length) {
+        // More of this group still to place - move to a fresh band.
+        doc.addPage();
+        y = contentTop;
+        resetBand(contentTop);
+      }
+    }
 
     // Next group's title must clear whichever column ended up taller,
     // not just wherever the last card happened to land.
