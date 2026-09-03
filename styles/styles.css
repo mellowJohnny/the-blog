@@ -1473,6 +1473,21 @@ label sup {
   opacity: 0.85;
 }
 
+.checklist-modal-pdf-btn {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  background-color: #256386;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.checklist-modal-pdf-btn:hover {
+  opacity: 0.85;
+}
+
 .checklist-modal-close {
   font-size: 32px;
   font-weight: bold;

@@ -444,14 +444,23 @@ document.addEventListener("click", (event) => {
   }
 })();
 
-function renderChecklistGroups(items) {
-  if (!items || items.length === 0) {
-    return "<p>No checklist data found for this set.</p>";
-  }
+// Groups/sorts/labels a checklist's items - shared by the on-screen
+// HTML renderer (renderChecklistGroups(), below) and the PDF exporter
+// (exportChecklistPdf(), further down), so both stay in exact sync from
+// one source of truth instead of two hand-maintained implementations.
+// Returns [{ title, cards }, ...] - already ordered, sorted, and
+// labeled; title text is raw/unescaped, since HTML- vs PDF-rendering
+// each have their own escaping/encoding needs.
+function buildChecklistGroups(items) {
+  if (!items || items.length === 0) return [];
 
   const byGroup = (a, b) => (a.sortIndex ?? 0) - (b.sortIndex ?? 0);
+  const groups = [];
 
   const mainCards = items.filter(item => item.type !== "insertSet").sort(byGroup);
+  if (mainCards.length > 0) {
+    groups.push({ title: "Main Set", cards: mainCards });
+  }
 
   const insertGroups = new Map();
   items
@@ -463,21 +472,14 @@ function renderChecklistGroups(items) {
     });
   insertGroups.forEach(group => group.sort(byGroup));
 
-  let html = `<div class="checklist-modal-cards">`;
-
-  if (mainCards.length > 0) {
-    html += `<div class="checklist-modal-group-title">Main Set</div>`;
-    html += mainCards.map(renderChecklistCard).join("");
-  }
-
   // "MEM" (memorabilia/jersey relic cards) in any card's notes within an
   // insert set relabels the whole group "Memorabilia" instead of the
   // generic "Insert Set" suffix - \b keeps this from matching "MEM" as
   // a substring inside some other token.
-  const insertEntries = [...insertGroups.entries()].map(([name, group]) => ({
+  const insertEntries = [...insertGroups.entries()].map(([name, cards]) => ({
     name,
-    group,
-    isMemorabilia: group.some(item => item.notes && /\bMEM\b/.test(item.notes))
+    cards,
+    isMemorabilia: cards.some(item => item.notes && /\bMEM\b/.test(item.notes))
   }));
 
   // Memorabilia sections always render after Insert Set sections -
@@ -485,12 +487,24 @@ function renderChecklistGroups(items) {
   // end, without disturbing either category's own relative order.
   insertEntries.sort((a, b) => Number(a.isMemorabilia) - Number(b.isMemorabilia));
 
-  insertEntries.forEach(({ name, group, isMemorabilia }) => {
-    const groupTypeLabel = isMemorabilia ? "Memorabilia" : "Insert Set";
-    html += `<div class="checklist-modal-group-title">${escapeHtml(name)} - ${groupTypeLabel}</div>`;
-    html += group.map(renderChecklistCard).join("");
+  insertEntries.forEach(({ name, cards, isMemorabilia }) => {
+    groups.push({ title: `${name} - ${isMemorabilia ? "Memorabilia" : "Insert Set"}`, cards });
   });
 
+  return groups;
+}
+
+function renderChecklistGroups(items) {
+  const groups = buildChecklistGroups(items);
+  if (groups.length === 0) {
+    return "<p>No checklist data found for this set.</p>";
+  }
+
+  let html = `<div class="checklist-modal-cards">`;
+  groups.forEach(({ title, cards }) => {
+    html += `<div class="checklist-modal-group-title">${escapeHtml(title)}</div>`;
+    html += cards.map(renderChecklistCard).join("");
+  });
   html += `</div>`;
   return html;
 }
@@ -504,6 +518,166 @@ function renderChecklistCard(item) {
   // just there so a printed checklist can be checked off with a pen,
   // matching the source PDFs' own convention.
   return `<div class="checklist-modal-card"><span class="checklist-modal-card-checkbox"></span><span class="checklist-modal-card-num">${escapeHtml(item.cardNumberDisplay)}</span> ${escapeHtml(item.playerName)}${notes}</div>`;
+}
+
+/**
+ * "Download PDF" - a real, downloadable/shareable alternative to the
+ * Print button above (window.print()), not a replacement for it. Uses
+ * jsPDF + this site's own embedded fonts (see scripts/fonts/), loaded
+ * lazily on first use rather than as static <script> tags, since
+ * jsPDF + 3 embedded font files are ~1MB combined and most visitors
+ * who open a checklist never click Download - no reason to make every
+ * waxReviews.html page load pay for that.
+ */
+
+let jsPdfLoadPromise = null;
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error(`Failed to load ${src}`));
+    document.head.appendChild(script);
+  });
+}
+
+function loadJsPdf() {
+  if (jsPdfLoadPromise) return jsPdfLoadPromise;
+
+  // The font scripts just define plain EMBEDDED_FONT_* globals (base64
+  // data) - no dependency on jsPDF itself, so all four load in
+  // parallel rather than a slower sequential chain.
+  const sources = [
+    "https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.2.1/jspdf.umd.min.js",
+    "scripts/fonts/bebasNeue-normal.js",
+    "scripts/fonts/sourceSans3-normal.js",
+    "scripts/fonts/sourceSans3-bold.js"
+  ];
+
+  jsPdfLoadPromise = Promise.all(sources.map(loadScript));
+
+  return jsPdfLoadPromise;
+}
+
+function sanitizeFilename(name) {
+  return name.replace(/[^\w\- ]+/g, "").trim().replace(/\s+/g, "-") || "checklist";
+}
+
+function exportChecklistPdf() {
+  // Mirrors applyChecklistRookieFilter()'s own filtering exactly, so a
+  // download taken while "Rookies only" is checked matches what's
+  // actually on screen rather than always exporting the full checklist.
+  const rookieFilter = document.getElementById("checklistRookieFilter");
+  const isFiltered = rookieFilter && rookieFilter.checked;
+  const items = isFiltered
+    ? currentChecklistItems.filter(item => item.notes && /\bRC\b/.test(item.notes))
+    : currentChecklistItems;
+
+  const groups = buildChecklistGroups(items);
+  // Nothing to export - the modal body already says so ("No rookie
+  // cards found in this checklist"), so the button is a silent no-op
+  // rather than popping a second message on top of that.
+  if (groups.length === 0) return;
+
+  const setName = document.getElementById("checklistModalTitle").textContent;
+
+  loadJsPdf()
+    .then(() => {
+      buildChecklistPdfDocument(setName, groups).save(`${sanitizeFilename(setName)}-checklist.pdf`);
+    })
+    .catch(err => {
+      console.log("PDF export failed:", err);
+    });
+}
+
+// v1: single-column layout with jsPDF's own automatic page breaks,
+// rather than reproducing the on-screen/print view's 2-column CSS -
+// far less layout math, at the cost of more pages for a big checklist.
+function buildChecklistPdfDocument(setName, groups) {
+  const doc = new jspdf.jsPDF({ unit: "pt", format: "letter" });
+
+  // Fonts are registered per-instance, not globally - jsPDF's VFS/font
+  // registry lives on `this` inside addFileToVFS()/addFont(), so
+  // pre-registering against the shared jsPDF.API object (before any
+  // instance exists) doesn't carry over to instances created afterward.
+  doc.addFileToVFS("BebasNeue-Regular.ttf", EMBEDDED_FONT_BEBAS_NEUE_NORMAL);
+  doc.addFont("BebasNeue-Regular.ttf", "BebasNeue", "normal");
+  doc.addFileToVFS("SourceSans3-Regular.ttf", EMBEDDED_FONT_SOURCE_SANS3_NORMAL);
+  doc.addFont("SourceSans3-Regular.ttf", "SourceSans3", "normal");
+  doc.addFileToVFS("SourceSans3-Bold.ttf", EMBEDDED_FONT_SOURCE_SANS3_BOLD);
+  doc.addFont("SourceSans3-Bold.ttf", "SourceSans3", "bold");
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const marginX = 48;
+  const marginTop = 54;
+  const marginBottom = 54;
+  const contentWidth = pageWidth - marginX * 2;
+  const checkboxSize = 9;
+  const lineHeight = 14;
+
+  let y = marginTop;
+
+  function ensureSpace(neededHeight) {
+    if (y + neededHeight > pageHeight - marginBottom) {
+      doc.addPage();
+      y = marginTop;
+    }
+  }
+
+  // Masthead - same brand text as the on-screen modal's
+  // .checklist-modal-masthead, in the embedded Bebas Neue.
+  doc.setFont("BebasNeue", "normal");
+  doc.setFontSize(28);
+  doc.text("the hella files", marginX, y);
+  y += 30;
+
+  // Title (setName)
+  doc.setFont("SourceSans3", "bold");
+  doc.setFontSize(18);
+  const titleLines = doc.splitTextToSize(setName, contentWidth);
+  doc.text(titleLines, marginX, y);
+  y += titleLines.length * 22 + 12;
+
+  groups.forEach(({ title, cards }) => {
+    ensureSpace(24);
+    doc.setFont("SourceSans3", "bold");
+    doc.setFontSize(13);
+    doc.text(title, marginX, y);
+    y += 20;
+
+    cards.forEach(card => {
+      doc.setFont("SourceSans3", "normal");
+      doc.setFontSize(10.5);
+      const notesText = card.notes ? `  ${card.notes}` : "";
+      const fullLine = `${card.cardNumberDisplay}  ${card.playerName}${notesText}`;
+      const textX = marginX + checkboxSize + 8;
+      const wrapped = doc.splitTextToSize(fullLine, contentWidth - checkboxSize - 8);
+      const rowHeight = wrapped.length * lineHeight;
+
+      ensureSpace(rowHeight);
+
+      // Print-style checkbox square - same idea as .checklist-modal-card-checkbox
+      // in @media print (styles.css), for checking off with a pen.
+      doc.rect(marginX, y - checkboxSize + 2, checkboxSize, checkboxSize);
+      doc.text(wrapped, textX, y);
+      y += rowHeight;
+    });
+
+    y += 10;
+  });
+
+  // Footer - same text as #checklistModalPrintFooter, once at the end
+  // of the last page (not repeated per page, matching the plan).
+  ensureSpace(24);
+  doc.setFont("SourceSans3", "normal");
+  doc.setFontSize(8.5);
+  doc.setTextColor(120);
+  doc.text(`© ${new Date().getFullYear()} www.mellowjohnny.cc`, pageWidth / 2, pageHeight - 28, { align: "center" });
+  doc.setTextColor(0);
+
+  return doc;
 }
 
 /**
