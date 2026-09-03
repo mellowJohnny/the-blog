@@ -621,7 +621,7 @@ function buildChecklistPdfDocument(setName, groups) {
   // the running header (set name) drawn in the per-page pass below -
   // page 1 doesn't need this, its content already starts well below
   // marginTop thanks to the masthead + title.
-  const contentTop = marginTop + 20;
+  const contentTop = marginTop + 30;
 
   // Same 2-column split .checklist-modal-cards uses on screen/print
   // (styles.css:1538-1541's `columns: 3`/print's 2-column override,
