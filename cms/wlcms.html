@@ -1,139 +1,169 @@
-<!DOCTYPE html>
+<!doctype html>
 <!-- Without this, mobile Safari renders at a wide desktop-width virtual
      viewport and just zooms the page out to fit, so the @media
      (max-width: 600px) rules in styles.css never trigger -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
 <html lang="en">
+  <head>
+    <script src="/scripts/auth.js"></script>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
     <title>cardStack cms - home</title>
-    <head>
-      <script src="/scripts/auth.js"></script>
-      <script src="/scripts/helper.js"></script>
-      <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
-      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-      <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-        <meta charset="utf-8">
-        <meta name="robots" content="noindex, nofollow">
-        <link rel="stylesheet" type="text/css" href="/styles/styles.css">
-        <!-- Google Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap" as="style" onload="this.rel='stylesheet'">
-        <noscript>
-          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
-        </noscript>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <link
+      rel="apple-touch-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap"
+      as="style"
+      onload="this.rel='stylesheet'">
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
+    </noscript>
 
-<script>
-  window.addEventListener('load', (event) => {
-    // *** Dynamically display the copyright year
-    fetchCopyrightYear();
-});
-</script>
-</head>
+    <script src="/scripts/helper.js"></script>
 
-<body>
-  <section>
-    <table class="mast-table">
-      <tr>
-        <td width="80%">
-          <div>
-           <header class="masthead">card<i>Stack</i></header>
-        </td>
-        <td class="cms-logo">
-          <i>Content</i><br>
-          <strong>Management</strong><br>
-          <i>System</i><br>
-        </td>
-      </tr>
-    </table>
-  </section>
-        <section></section>
-        <br>
-            <div class="header-style">
-                <h1>...what would you like to do?</h1>
-              </div>
+    <script>
+      window.addEventListener('load', (event) => {
+        // *** Dynamically display the copyright year
+        fetchCopyrightYear();
+      });
+    </script>
 
-            <main>
-              <div>
-                <nav>
-                  <ul class="cms-dropdown-nav" id="wlcms-top-nav">
-                    <li class="cms-nav-item">
-                      <button type="button" class="cms-nav-parent" aria-haspopup="true" aria-expanded="false">Cards</button>
-                      <ul class="cms-nav-dropdown">
-                        <li><a href="/cms/createCardSet.html">...new card set</a></li>
-                        <li><a href="/cms/pickCardSet.html">...edit a card set</a></li>
-                        <li><a href="/cms/uploadChecklist.html">...upload a checklist</a></li>
-                      </ul>
-                    </li>
-                    <li class="cms-nav-item">
-                      <button type="button" class="cms-nav-parent" aria-haspopup="true" aria-expanded="false">Blogs</button>
-                      <ul class="cms-nav-dropdown">
-                        <li><a href="/cms/createBlogPost.html">...new blog post</a></li>
-                        <li><a href="/cms/pickBlog.html">...edit a blog post</a></li>
-                      </ul>
-                    </li>
-                    <li class="cms-nav-item">
-                      <button type="button" class="cms-nav-parent" aria-haspopup="true" aria-expanded="false">Admin</button>
-                      <ul class="cms-nav-dropdown">
-                        <li><a href="/cms/admin.html">...admin tools</a></li>
-                        <li><a href="/cms/smsAdmin.html">AMP SMS</a></li>
-                      </ul>
-                    </li>
-                    <li class="cms-nav-item cms-nav-item-plain">
-                      <a href="index.html">...exit</a>
-                    </li>
-                  </ul>
-                </nav>
-                <script>
-                  // Click-toggle flyouts (not CSS :hover) so this behaves the
-                  // same on touch and desktop. Scoped to #wlcms-top-nav only.
-                  (function () {
-                    const nav = document.getElementById('wlcms-top-nav');
-                    if (!nav) return;
+    <script>
+      // Click-toggle flyouts (not CSS :hover) so this behaves the
+      // same on touch and desktop. Scoped to #wlcms-top-nav only.
+      window.addEventListener('load', () => {
+        const nav = document.getElementById('wlcms-top-nav');
+        if (!nav) return;
 
-                    function closeAll(except) {
-                      nav.querySelectorAll('.cms-nav-item.open').forEach((item) => {
-                        if (item === except) return;
-                        item.classList.remove('open');
-                        const btn = item.querySelector('.cms-nav-parent');
-                        if (btn) btn.setAttribute('aria-expanded', 'false');
-                      });
-                    }
+        function closeAll(except) {
+          nav.querySelectorAll('.cms-nav-item.open').forEach((item) => {
+            if (item === except) return;
+            item.classList.remove('open');
+            const btn = item.querySelector('.cms-nav-parent');
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+          });
+        }
 
-                    nav.querySelectorAll('.cms-nav-parent').forEach((btn) => {
-                      btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const item = btn.closest('.cms-nav-item');
-                        const isOpen = item.classList.contains('open');
-                        closeAll();
-                        item.classList.toggle('open', !isOpen);
-                        btn.setAttribute('aria-expanded', String(!isOpen));
-                      });
-                    });
+        nav.querySelectorAll('.cms-nav-parent').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const item = btn.closest('.cms-nav-item');
+            const isOpen = item.classList.contains('open');
+            closeAll();
+            item.classList.toggle('open', !isOpen);
+            btn.setAttribute('aria-expanded', String(!isOpen));
+          });
+        });
 
-                    document.addEventListener('click', () => closeAll());
-                    document.addEventListener('keydown', (e) => {
-                      if (e.key === 'Escape') closeAll();
-                    });
-                  })();
-                </script>
-              </div>
-              
-            </main>
-        </div>
+        document.addEventListener('click', () => closeAll());
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') closeAll();
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <section>
+      <table class="mast-table">
+        <tr>
+          <td width="80%">
+            <div>
+              <header class="masthead">card<i>Stack</i></header>
+            </div>
+          </td>
+          <td class="cms-logo">
+            <i>Content</i><br>
+            <strong>Management</strong><br>
+            <i>System</i><br>
+          </td>
+        </tr>
+      </table>
     </section>
+    <section></section>
+    <br>
+    <div class="header-style">
+      <h1>...what would you like to do?</h1>
+    </div>
+
+    <main>
+      <div>
+        <nav>
+          <ul class="cms-dropdown-nav" id="wlcms-top-nav">
+            <li class="cms-nav-item">
+              <button
+                type="button"
+                class="cms-nav-parent"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                Cards
+              </button>
+              <ul class="cms-nav-dropdown">
+                <li><a href="/cms/createCardSet.html">...new card set</a></li>
+                <li><a href="/cms/pickCardSet.html">...edit a card set</a></li>
+                <li>
+                  <a href="/cms/uploadChecklist.html">...upload a checklist</a>
+                </li>
+              </ul>
+            </li>
+            <li class="cms-nav-item">
+              <button
+                type="button"
+                class="cms-nav-parent"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                Blogs
+              </button>
+              <ul class="cms-nav-dropdown">
+                <li><a href="/cms/createBlogPost.html">...new blog post</a></li>
+                <li><a href="/cms/pickBlog.html">...edit a blog post</a></li>
+              </ul>
+            </li>
+            <li class="cms-nav-item">
+              <button
+                type="button"
+                class="cms-nav-parent"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                Admin
+              </button>
+              <ul class="cms-nav-dropdown">
+                <li><a href="/cms/admin.html">...admin tools</a></li>
+                <li><a href="/cms/smsAdmin.html">AMP SMS</a></li>
+              </ul>
+            </li>
+            <li class="cms-nav-item cms-nav-item-plain">
+              <a href="index.html">...exit</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </main>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <footer class="page-footer">
       <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
-      <div id="copy"></div> 
-      
+      <div id="copy"></div>
     </footer>
-</body>
+  </body>
 </html>
-
-    
-
-
-

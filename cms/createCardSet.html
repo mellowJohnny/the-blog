@@ -1,32 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <!-- Without this, mobile Safari renders at a wide desktop-width virtual
      viewport and just zooms the page out to fit, so the @media
      (max-width: 600px) rules in styles.css never trigger -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <html lang="en">
-<title>cardStack CMS - new</title>
-<head>
+  <head>
     <script src="/scripts/auth.js"></script>
     <meta charset="utf-8">
     <meta name="robots" content="noindex, nofollow">
-    <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon.ico">
-      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon.png">
+    <title>cardStack CMS - new</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <link
+      rel="apple-touch-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap" as="style" onload="this.rel='stylesheet'">
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap"
+      as="style"
+      onload="this.rel='stylesheet'">
     <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
     </noscript>
-    <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
-      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-      <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
 
     <!-- TinyMCE -->
-    <script src="https://cdn.tiny.cloud/1/eg9hcu6cr4t0wvi6e6uqtb78mj1rycqrixpajuuenn3oaojw/tinymce/8/tinymce.min.js" referrerpolicy="origin"></script>
+    <script
+      src="https://cdn.tiny.cloud/1/eg9hcu6cr4t0wvi6e6uqtb78mj1rycqrixpajuuenn3oaojw/tinymce/8/tinymce.min.js"
+      referrerpolicy="origin"
+    ></script>
+
+    <script src="/scripts/cmsCardSet.js"></script>
+    <script src="/scripts/cmsImageBrowser.js"></script>
+    <script src="/scripts/cmsFormUI.js"></script>
+    <script src="/scripts/helper.js"></script>
 
     <script>
       window.addEventListener('load', () => {
@@ -34,180 +54,227 @@
         initTinyEditor('#postBody');
       });
     </script>
-</head>
+  </head>
 
-<script src="/scripts/cmsCardSet.js"></script>
-<script src="/scripts/cmsImageBrowser.js"></script>
-<script src="/scripts/cmsFormUI.js"></script>
-<script src="/scripts/wax.js"></script>
-<script src="/scripts/helper.js"></script>
-
-<body>
-<section>
-    <table class="mast-table">
-      <tr>
-        <td width="80%">
-          <div>
-           <header class="masthead">card<i>Stack</i></header>
-        </td>
-        <td class="cms-logo">
-          <i>Content</i><br>
-          <strong>Management</strong><br>
-          <i>System</i><br>
-        </td>
-      </tr>
-    </table>
-  </section>
-
-<section>
-<div>
-    <nav>
-      <table class="cms-top-nav">
+  <body>
+    <section>
+      <table class="mast-table">
         <tr>
-          <td class="cms-nav-td"><a href="index.html">...exit</a></td>
-          <td class="cms-nav-td"><a href="/cms/wlcms.html">...back to cms</a></td>
+          <td width="80%">
+            <div>
+              <header class="masthead">card<i>Stack</i></header>
+            </div>
+          </td>
+          <td class="cms-logo">
+            <i>Content</i><br>
+            <strong>Management</strong><br>
+            <i>System</i><br>
+          </td>
         </tr>
       </table>
-    </nav>
-</div>
-</section>
+    </section>
 
-<div class="header-style">
-    <h1>...add a card set</h1>
-    <br><br>
-</div>
+    <section>
+      <div>
+        <nav>
+          <table class="cms-top-nav">
+            <tr>
+              <td class="cms-nav-td"><a href="index.html">...exit</a></td>
+              <td class="cms-nav-td">
+                <a href="/cms/wlcms.html">...back to cms</a>
+              </td>
+            </tr>
+          </table>
+        </nav>
+      </div>
+    </section>
 
-<section>
-<div>
-<main>
-<form class="form-style">
-  <table class="cms-form-table">
-    <tr> <!-- 1st Row - dropdown -->
-      <td colspan="2">
-        <label>Status</label><br>
-        <select id="blogStatus" name="blogStatus" title="blogStatus" style="width: 200px;">
-          <option value="staged">Staging</option>
-          <option value="OK">Live</option>
-        </select>
-      </td>
-    </tr>
-    <tr> <!-- 2nd Row - dropdown -->
-      <td colspan="2">
-        <label>Set Category <sup>*</sup></label><br>
-          <select id="blogCat" name="blogCat" title="blogCat" style="width: 200px;">
-            <option value="reg">Regular</option>
-            <option value="tims">Tim Hortons</option>
-            <option value="mcd">McDonald's</option>
-          </select>
-      </td>
-    </tr>
-    <tr> <!-- 3rd Row - dropdown -->
-      <td colspan="2">
-        <label>Author <sup>*</sup></label><br>
-        <div>
-          <select id="author" name="author" class="form-style" title="author" style="width: 200px;">
-            <option value="Christian Couillard">Christian Couillard</option>
-          </select>
-        </div>
-      </td>
-    </tr>
-    <tr> <!-- 4th Row - dropdown -->
-      <td colspan="2">
-        <label>Star Rating</label><br>
-        <select id="stars" style="width: 200px;">
-          <option value="1">One Star</option>
-          <option value="2">Two Stars</option>
-          <option value="3">Three Stars</option>
-          <option value="4">Four Stars</option>
-          <option value="5">Five Stars</option>
-        </select>
-      </td>
-    </tr>
-    <tr> <!-- 5th Row - dropdown -->
-      <td colspan="2">
-        <label>Manufacturer</label><br>
-        <select id="mfg" style="width: 200px;">
-          <option value="O-Pee-Chee">O-Pee-Chee</option>
-          <option value="Topps">Topps</option>
-          <option value="Upper Deck">Upper Deck</option>
-          <option value="Score">Score</option>
-          <option value="Pro Set">Pro Set</option>
-          <option value="Fleer">Fleer</option>
-          <option value="Leaf">Leaf</option>
-          <option value="Pinnacle">Pinnacle</option>
-          <option value="Pacific">Pacific</option>
-        </select>
-      </td>
-    </tr>
-    <tr> <!-- 6th Row - two SEO fields -->
-      <td>
-        <label>SEO Title</label><br>
-        <input type="text" id="seoPageTitle">
-      </td>
-      <td>
-        <label>SEO Meta Description</label><br>
-        <input type="text" id="seoMetaDesc">
-      </td>
-    </tr>
-    <tr> <!-- 7th Row - two SEO fields -->
-      <td>
-        <label>SEO Friendly URL</label><br>
-        <input type="text" id="seoURLSlug">
-      </td>
-      <td>
-        <label>SEO Tags</label><br>
-        <input type="text" id="seoTags">
-      </td>
-    </tr>
-    <tr> <!-- 8th Row -->
-      <td>
-        <label>Set Name <sup>*</sup></label><br>
-        <input type="text" id="setName" required>
-      </td>
-      <td>
-        <label>Set Size</label><br>
-        <input type="text" id="size">
-      </td>
-    </tr>
-    <tr> <!-- 9th Row -->
-      <td>
-        <label>Release Year <sup>*</sup></label><br>
-        <input type="text" id="year" required>
-      </td>
-      <td>
-        <label>Inserts</label><br>
-        <input type="text" id="subsets">
-      </td>
-    </tr>
-    <tr> <!-- 10th Row -->
-      <td colspan="2">
-        <label>Formats</label><br>
-        <input type="text" id="formats">
-      </td>
-    </tr>
-    <tr> <!-- 11th Row -->
-      <td>
-        <label>Header Image Name</label><br>
-        <input type="text" id="headerImgName"><br>
-          <button class="input-button" type="button" onclick="openImageBrowser('headerImgName')">Browse</button>
-      </td>
-      <td>
-        <label>Footer Image Name</label><br>
-        <input type="text" id="footerImgName"><br>
-          <button class="input-button" type="button" onclick="openImageBrowser('footerImgName')">Browse</button>
-      </td>
-    </tr>
-    <tr> <!-- 12th Row -->
-      <td colspan="2">
-        <label>Set Review Text <sup>*</sup></label><br><br>
-        <textarea id="postBody" required></textarea>
-      </td>
-    </tr>
-    <tr> <!-- 15th Row - SUBMIT BUTTON -->
-      <td colspan="2" align="left">
-        <!-- NOTE: We don't need to grab the postBody becasue the updateBlog() gets it from the tinyMCE function  -->
-        <button class="input-button" type="button" id="cmsSubmitButton"
-          onclick="createCardSet(
+    <div class="header-style">
+      <h1>...add a card set</h1>
+      <br><br>
+    </div>
+
+    <section>
+      <div>
+        <main>
+          <form>
+            <table class="cms-form-table">
+              <tr>
+                <!-- 1st Row - dropdown -->
+                <td colspan="2">
+                  <label>Status</label><br>
+                  <select
+                    id="blogStatus"
+                    name="blogStatus"
+                    title="blogStatus"
+                    style="width: 200px;"
+                  >
+                    <option value="staged">Staging</option>
+                    <option value="OK">Live</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <!-- 2nd Row - dropdown -->
+                <td colspan="2">
+                  <label>Set Category <sup>*</sup></label
+                  ><br>
+                  <select
+                    id="blogCat"
+                    name="blogCat"
+                    title="blogCat"
+                    style="width: 200px;"
+                  >
+                    <option value="reg">Regular</option>
+                    <option value="tims">Tim Hortons</option>
+                    <option value="mcd">McDonald's</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <!-- 3rd Row - dropdown -->
+                <td colspan="2">
+                  <label>Author <sup>*</sup></label
+                  ><br>
+                  <div>
+                    <select
+                      id="author"
+                      name="author"
+                      title="author"
+                      style="width: 200px;"
+                    >
+                      <option value="Christian Couillard">
+                        Christian Couillard
+                      </option>
+                    </select>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <!-- 4th Row - dropdown -->
+                <td colspan="2">
+                  <label>Star Rating</label><br>
+                  <select id="stars" style="width: 200px;">
+                    <option value="1">One Star</option>
+                    <option value="2">Two Stars</option>
+                    <option value="3">Three Stars</option>
+                    <option value="4">Four Stars</option>
+                    <option value="5">Five Stars</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <!-- 5th Row - dropdown -->
+                <td colspan="2">
+                  <label>Manufacturer</label><br>
+                  <select id="mfg" style="width: 200px;">
+                    <option value="O-Pee-Chee">O-Pee-Chee</option>
+                    <option value="Topps">Topps</option>
+                    <option value="Upper Deck">Upper Deck</option>
+                    <option value="Score">Score</option>
+                    <option value="Pro Set">Pro Set</option>
+                    <option value="Fleer">Fleer</option>
+                    <option value="Leaf">Leaf</option>
+                    <option value="Pinnacle">Pinnacle</option>
+                    <option value="Pacific">Pacific</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <!-- 6th Row - two SEO fields -->
+                <td>
+                  <label>SEO Title</label><br>
+                  <input type="text" id="seoPageTitle">
+                </td>
+                <td>
+                  <label>SEO Meta Description</label><br>
+                  <input type="text" id="seoMetaDesc">
+                </td>
+              </tr>
+              <tr>
+                <!-- 7th Row - two SEO fields -->
+                <td>
+                  <label>SEO Friendly URL</label><br>
+                  <input type="text" id="seoURLSlug">
+                </td>
+                <td>
+                  <label>SEO Tags</label><br>
+                  <input type="text" id="seoTags">
+                </td>
+              </tr>
+              <tr>
+                <!-- 8th Row -->
+                <td>
+                  <label>Set Name <sup>*</sup></label
+                  ><br>
+                  <input type="text" id="setName" required>
+                </td>
+                <td>
+                  <label>Set Size</label><br>
+                  <input type="text" id="size">
+                </td>
+              </tr>
+              <tr>
+                <!-- 9th Row -->
+                <td>
+                  <label>Release Year <sup>*</sup></label
+                  ><br>
+                  <input type="text" id="year" required>
+                </td>
+                <td>
+                  <label>Inserts</label><br>
+                  <input type="text" id="subsets">
+                </td>
+              </tr>
+              <tr>
+                <!-- 10th Row -->
+                <td colspan="2">
+                  <label>Formats</label><br>
+                  <input type="text" id="formats">
+                </td>
+              </tr>
+              <tr>
+                <!-- 11th Row -->
+                <td>
+                  <label>Header Image Name</label><br>
+                  <input type="text" id="headerImgName"><br>
+                  <button
+                    class="input-button"
+                    type="button"
+                    onclick="openImageBrowser('headerImgName')"
+                  >
+                    Browse
+                  </button>
+                </td>
+                <td>
+                  <label>Footer Image Name</label><br>
+                  <input type="text" id="footerImgName"><br>
+                  <button
+                    class="input-button"
+                    type="button"
+                    onclick="openImageBrowser('footerImgName')"
+                  >
+                    Browse
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <!-- 12th Row -->
+                <td colspan="2">
+                  <label>Set Review Text <sup>*</sup></label
+                  ><br><br>
+                  <textarea id="postBody" required></textarea>
+                </td>
+              </tr>
+              <tr>
+                <!-- 15th Row - SUBMIT BUTTON -->
+                <td colspan="2" align="left">
+                  <!-- NOTE: We don't need to grab the postBody becasue the updateBlog() gets it from the tinyMCE function  -->
+                  <button
+                    class="input-button"
+                    type="button"
+                    id="cmsSubmitButton"
+                    onclick="createCardSet(
             document.getElementById('blogStatus').value,
             document.getElementById('seoPageTitle').value,
             document.getElementById('seoMetaDesc').value,
@@ -224,32 +291,37 @@
             document.getElementById('footerImgName').value,
             document.getElementById('mfg').value,
             document.getElementById('blogCat').value
-        )">
-        Submit Post
-       </button>
-</table>
-</form>
-</main>
-</div>
-</section>
+        )"
+                  >
+                    Submit Post
+                  </button>
+                </td>
+              </tr>
+            </table>
+          </form>
+        </main>
+      </div>
+    </section>
 
+    <footer class="page-footer">
+      <div id="copy"></div>
+    </footer>
 
-<footer class="page-footer">
-  <div id="copy"></div>
-</footer>
+    <!-- ⭐ ADDED: S3 Image Browser Modal -->
+    <div id="imageBrowserModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeImageBrowser()">&times;</span>
 
+        <h3>Select an Image</h3>
+        <h4>Or Upload A New One</h4>
 
-<!-- ⭐ ADDED: S3 Image Browser Modal -->
-<div id="imageBrowserModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeImageBrowser()">&times;</span>
-
-    <h3>Select an Image</h3>
-    <h4>Or Upload A New One</h4>
-
-  <div id="uploadSection" style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;">
-    <!-- Styled Choose File button -->
-    <label for="uploadFileInput" style="
+        <div
+          style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"
+        >
+          <!-- Styled Choose File button -->
+          <label
+            for="uploadFileInput"
+            style="
       background-color: #256386;
       color: white;
       padding: 8px 16px;
@@ -258,18 +330,28 @@
       cursor: pointer;
       font-size: 14px;
       display: inline-block;
-    ">
-      Choose File
-    </label>
+    "
+          >
+            Choose File
+          </label>
 
-    <!-- Hidden native input -->
-    <input type="file" id="uploadFileInput" accept="image/*" style="display: none;">
+          <!-- Hidden native input -->
+          <input
+            type="file"
+            id="uploadFileInput"
+            accept="image/*"
+            style="display: none;">
 
-    <!-- Filename display -->
-    <span id="selectedFileName" style="font-size: 14px; color: #333;">No file chosen</span>
+          <!-- Filename display -->
+          <span id="selectedFileName" style="font-size: 14px; color: #333;"
+            >No file chosen</span
+          >
 
-    <!-- Upload button -->
-    <button type="button" id="uploadButton" onclick="uploadNewImage()" style="
+          <!-- Upload button -->
+          <button
+            type="button"
+            onclick="uploadNewImage()"
+            style="
       background-color: #256386;
       color: white;
       padding: 8px 16px;
@@ -277,18 +359,24 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 14px;
-    ">
-      Upload
-    </button>
-  </div>
-  <div id="uploadStatus" style="font-size: 13px; color: #555;"></div>
+    "
+          >
+            Upload
+          </button>
+        </div>
+        <div id="uploadStatus" style="font-size: 13px; color: #555;"></div>
 
-  <!-- SEARCH BOX!! -->
-  <input type="text" id="imageSearch" placeholder="Search images..." oninput="filterImageList()"
-  style="width: 100%; padding: 6px; margin-top: 10px; margin-bottom: 10px; font-size: 14px; box-sizing: border-box;">
+        <!-- SEARCH BOX!! -->
+        <input
+          type="text"
+          id="imageSearch"
+          placeholder="Search images..."
+          oninput="filterImageList()"
+          style="width: 100%; padding: 6px; margin-top: 10px; margin-bottom: 10px; font-size: 14px; box-sizing: border-box;">
 
-  <!-- DYNAMICALLY POPULATE THE MODAL-->
-  <div id="imageList"></div>
-</div>
-</body>
+        <!-- DYNAMICALLY POPULATE THE MODAL-->
+        <div id="imageList"></div>
+      </div>
+    </div>
+  </body>
 </html>

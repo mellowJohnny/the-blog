@@ -328,7 +328,7 @@ function getBlogsForUpdate() {
 
         // Insert divider when the type changes
         if (blogType !== lastType) {
-          const header = document.createElement("h3");
+          const header = document.createElement("h2");
           header.textContent = typeLabel;
           header.className = "blog-type-divider";
           container.appendChild(header);

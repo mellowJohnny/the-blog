@@ -13,6 +13,89 @@ gotchas encountered doing that pass (missing viewport meta tags, a
 descendant-selector CSS trap, table display-role quirks) before
 changing layout CSS on these pages.
 
+## HTML conventions for `/cms` pages
+
+All 10 pages under `/cms` were brought into a consistent structure on
+2026-09-03 (script placement, `<head>` element order, dead code). This
+is the convention to follow for any new `/cms` page or edit to an
+existing one. **This is scoped to `/cms` specifically** — the public
+pages at the repo root (`index.html`, `waxReviews.html`, etc.) have
+their own established head structure (SEO meta tags, Core Web Vitals
+image preload, `lang="en-ca"`) that wasn't part of this pass and
+shouldn't be forced to match.
+
+**`<head>` element order** (see any current `/cms/*.html` file as a
+reference, e.g. `cms/admin.html`):
+
+1. `<script src="/scripts/auth.js"></script>` — first, so the
+   Cognito-gate redirect fires as early as possible.
+2. `<meta charset="utf-8">`
+3. `<meta name="robots" content="noindex, nofollow">`
+4. `<title>` — inside `<head>`, not floated between `<html>` and
+   `<head>` (that pattern existed on 9 of the 10 pages pre-cleanup;
+   it's invalid HTML even though browsers tolerate it).
+5. Favicon block — exactly one, using the `favicon2` set only:
+   ```html
+   <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+   <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+   <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+   ```
+   Don't also add the older plain `favicon.ico`/`favicon.png` pair —
+   every page used to carry both, which the cleanup pass removed as a
+   duplicate.
+6. `<link rel="stylesheet" href="/styles/styles.css">`
+7. The Google Fonts preconnect/preload/noscript block (copy verbatim
+   from any current page — it's identical across all 10).
+8. Page-specific `<script>` tags, in this order: any external library
+   (e.g. TinyMCE), then this site's own `<script src="/scripts/...">`
+   tags, then any inline `<script>` block. All of it lives inside
+   `<head>` — none of these 10 pages should have a `<script>` tag
+   after `</head>` or at the bottom of `<body>` anymore (`smsAdmin.html`
+   and `wlcms.html` both used to do this before the cleanup).
+
+An inline script that touches the DOM (e.g. `wlcms.html`'s nav
+dropdown toggle) still needs to run *after* the DOM is parsed even
+though it now lives in `<head>` — wrap it in
+`window.addEventListener('load', () => { ... })`, the same pattern
+already used for `fetchCopyrightYear()` on every page.
+
+**Other conventions**:
+
+- `<html lang="en">` on every page (not `en-ca` — that's specific to
+  the public pages).
+- Void elements (`<meta>`, `<link>`, `<br>`, `<img>`, `<input>`) are
+  not self-closed — no trailing `/>`. `smsAdmin.html` was the one
+  holdout using XHTML-style self-closing tags; it's been normalized to
+  match the other 9.
+- The masthead table cell (`<td><div><header class="masthead">...`)
+  needs an explicit closing `</div>` before `</td>`. Every page was
+  missing this — browsers silently recover, but it broke tooling (see
+  below) and is worth getting right in any new page copied from an
+  existing one.
+- No dead `<script src="...">` tags for scripts the page doesn't
+  actually call into, no commented-out markup left in place "just in
+  case," no `id="..."` attributes with no CSS rule or JS reference
+  pointing at them.
+
+**Formatting**: indentation and whitespace are normalized with
+Prettier (`npx prettier@3 --html-whitespace-sensitivity css
+--tab-width 2 --embedded-language-formatting off <file>` — the last
+flag matters, since Prettier's default HTML formatter reformats
+JavaScript *inside* `onclick`/`onload` attribute values, which is out
+of scope for an HTML whitespace pass). Prettier's HTML parser is
+stricter than a browser and will hard-error on things browsers
+silently auto-correct (an unclosed `<div>`, a stray closing tag with
+no matching open tag) — that's a feature, not a nuisance: it's how the
+masthead `<div>` bug above and several stray closing tags were found
+across these files. If Prettier errors on a `/cms` page, don't work
+around it — the underlying markup is genuinely broken and should be
+fixed the same way. Note Prettier self-closes void elements by
+default (`<meta ... />`); post-process its output to strip the
+trailing `/` to match the no-self-closing convention above, e.g.:
+```
+sed -E 's#<(meta|link|br|img|input|hr)([^>]*)\s*/>#<\1\2>#g'
+```
+
 ## cardStack — blog & card set authoring
 
 Entry point: `cms/wlcms.html` — its centered nav is grouped into three

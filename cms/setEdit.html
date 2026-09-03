@@ -1,73 +1,87 @@
-<!DOCTYPE html>
+<!doctype html>
 <!-- Without this, mobile Safari renders at a wide desktop-width virtual
      viewport and just zooms the page out to fit, so the @media
      (max-width: 600px) rules in styles.css never trigger -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
 <html lang="en">
+  <head>
+    <script src="/scripts/auth.js"></script>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
     <title>cardStack CMS - edit</title>
-    <head>
-        <script src="/scripts/auth.js"></script>
-        <meta charset="utf-8">
-        <meta name="robots" content="noindex, nofollow">
-        <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon.ico">
-      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon.png">
-        <link rel="stylesheet" type="text/css" href="/styles/styles.css">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="preconnect" href="https://s3.us-east-2.amazonaws.com">
-        <link rel="preconnect" href="https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com">
-        <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
-      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-      <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-        <!-- TinyMCE Text Editor Scripts -->
-        <script src="https://cdn.tiny.cloud/1/eg9hcu6cr4t0wvi6e6uqtb78mj1rycqrixpajuuenn3oaojw/tinymce/8/tinymce.min.js" referrerpolicy="origin"></script>
-        
-        <script src="/scripts/cmsCardSet.js"></script>
-        <script src="/scripts/cmsFormUI.js"></script>
-        <script src="/scripts/wax.js"></script>
-        <script src="/scripts/helper.js"></script>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <link
+      rel="apple-touch-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+    <link rel="preconnect" href="https://s3.us-east-2.amazonaws.com">
+    <link
+      rel="preconnect"
+      href="https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com">
 
-        <script>
-            /* Let's get the URL params from the request, and extract the year */  
-            let params = new URLSearchParams(document.location.search);
-            let setID = params.get("setID");
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap"
+      as="style"
+      onload="this.rel='stylesheet'">
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
+    </noscript>
 
+    <!-- TinyMCE Text Editor Scripts -->
+    <script
+      src="https://cdn.tiny.cloud/1/eg9hcu6cr4t0wvi6e6uqtb78mj1rycqrixpajuuenn3oaojw/tinymce/8/tinymce.min.js"
+      referrerpolicy="origin"
+    ></script>
 
-            /* 
-            *   Call to fetchCardSetsByID() on page load, dynamically passing the set year we want to fetch
-            *   It is responsible for calling the underlying AWS web service
-            *   Can also use the year to dynamically populate our page header...removed for now   
-            * */ 
-             
-            window.addEventListener('load', (event) => {
-                fetchCardSetByID(setID);
-                // *** Dynamically display the copyright year
+    <script src="/scripts/cmsCardSet.js"></script>
+    <script src="/scripts/cmsFormUI.js"></script>
+    <script src="/scripts/helper.js"></script>
 
-                fetchCopyrightYear();
+    <script>
+      /* Let's get the URL params from the request, and extract the year */
+      let params = new URLSearchParams(document.location.search);
+      let setID = params.get("setID");
 
-                // Load the TinyMCE WYSIWYG Editor from the global config in cmsFormUI.js
-                initTinyEditor('#postBody');
-            }); 
-			
-        </script>
-        <!-- Google Fonts -->
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap" as="style" onload="this.rel='stylesheet'">
-        <noscript>
-          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
-        </noscript>
+      /*
+      *   Call to fetchCardSetsByID() on page load, dynamically passing the set year we want to fetch
+      *   It is responsible for calling the underlying AWS web service
+      *   Can also use the year to dynamically populate our page header...removed for now
+      * */
 
-    </head>
+      window.addEventListener('load', (event) => {
+          fetchCardSetByID(setID);
+          // *** Dynamically display the copyright year
 
-    <body>
-        <section>
+          fetchCopyrightYear();
+
+          // Load the TinyMCE WYSIWYG Editor from the global config in cmsFormUI.js
+          initTinyEditor('#postBody');
+      });
+    </script>
+  </head>
+
+  <body>
+    <section>
       <table class="mast-table">
         <tr>
           <td width="80%">
             <div>
-            <header class="masthead">card<i>Stack</i></header>
+              <header class="masthead">card<i>Stack</i></header>
+            </div>
           </td>
           <td class="cms-logo">
             <i>Content</i><br>
@@ -78,122 +92,172 @@
       </table>
     </section>
     <section>
-                <main>
-                  <div>
-                    <nav>
-                      <table class="cms-top-nav">
-                        <tr>
-                          <td class="cms-nav-td"><a href="/index.html">...exit</a> </td>
-                          <td class="cms-nav-td"><a href="/cms/wlcms.html">...back to cms</a> </td>
-                        </tr>
-                      </table>
-                    </nav>
-                  </div>
-                  <div class="header-style">
-                    <h1>...set edit</h1>
-                  </div>
-                  <br>
-                  <section>
-                    <div>
-                          <main>
-                            <form>
-                             <table class="cms-form-table">
-                              <tr> <!-- First Row - only one form field -->
-                                <td colspan="2"><label>Status</label><br>
-                                  <select id="blogStatus" name="blogStatus" title="blogStatus" style="width: 200px;">
-                                    <!-- The option tags are dynamically added by the CMS.js populateCardSet() function -->
-                                  </select>
-                                </td>
-                              </tr>
-                              <tr> <!-- 2nd Row -->
-                                <td colspan="2">
-                                  <label>Author <sup>*</sup></label><br>
-                                      <div>
-                                        <select id="author" name="author" title="author" style="width: 200px;">
-                                          <option value="Christian Couillard">Christian Couillard</option>
-                                        </select>
-                                      </div>
-                                </td>
-                              </tr>
-                              <tr> <!-- 3rd Row - two SEO fields -->
-                                <td>
-                                  <label>SEO Title</label><br>
-                                  <input type="text" id="seoPageTitle">
-                                </td>
-                                <td>
-                                  <label>SEO Meta Description</label><br>
-                                  <input type="text" id="seoMetaDesc">
-                                </td>
-                              </tr>
-                              <tr> <!-- 4th Row - two SEO fields -->
-                                <td>
-                                  <label>SEO Friendly URL</label><br>
-                                  <input type="text" id="seoURLSlug">
-                                </td>
-                                <td>
-                                  <label>SEO Tags</label><br>
-                                  <input type="text" id="seoTags">
-                                </td>
-                              </tr>
-                              <tr> <!-- 5th Row -->
-                                <td>
-                                  <label>Set Size</label><br>
-                                  <input type="text" id="size" title="size">
-                                </td>
-                                <td>
-                                  <label>Inserts</label><br>
-                                   <input type="text" id="subsets" title="subsets">
-                                </td>
-                              </tr>
-                              <tr> <!-- 6th Row -->
-                                <td>
-                                  <label>Star Rating</label><br>
-                                   <input type="text" id="stars" title="stars">
-                                </td>
-                                <td>
-                                  <label>Formats</label><br>
-                                   <input type="text" id="formats" title="formats">
-                                </td>
-                              </tr>
-                              <tr> <!-- 7th Row -->
-                                <td>
-                                  <label>Manufacturer</label><br>
-                                  <input type="text" id="mfg" title="mfg">
-                                </td>
-                                <td>
-                                  <label>Header Image Slug</label><br>
-                                  <input type="text" id="headerImgName" title="headerImgName">
-                                </td>
-                              </tr>
-                              <tr> <!-- 8th Row -->
-                                <td>
-                                  <label>Set Name</label><br>
-                                  <input class="input-text-disabled" type="text" id="setName" title="setName" readonly disabled>
-                                </td>
-                                <td>
-                                  <label>Release Year</label><br>
-                                   <input class="input-text-disabled" type="text" id="year" title="year" readonly disabled>
-                                </td>
-                              </tr>
-                              <tr> <!-- 9th Row -->
-                                <td colspan="2">
-                                  <label>Footer Image Slug</label><br>
-                                  <input type="text" id="footerImgName" title="footerImgName">
-                                </td>
-                              </tr>
-                              <tr> <!-- 10th Row -->
-                                <td colspan="2">
-                                  <label>Set Review</label><br><br>
-                                    <textarea id="postBody" title="postBody"></textarea>
-                                </td>
-                              </tr>
-                              <tr> <!-- 11th Row - SUBMIT BUTTON -->
-                                <td colspan="2">
-                                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <div>
-                                      <!-- NOTE: We don't need to grab the postBody becasue the updateBlog() gets it from the tinyMCE function  -->
-                                      <button class="input-button" type="button" id="cmsSubmitButton"
-                                          onclick="updateCardSet(
+      <main>
+        <div>
+          <nav>
+            <table class="cms-top-nav">
+              <tr>
+                <td class="cms-nav-td"><a href="/index.html">...exit</a></td>
+                <td class="cms-nav-td">
+                  <a href="/cms/wlcms.html">...back to cms</a>
+                </td>
+              </tr>
+            </table>
+          </nav>
+        </div>
+        <div class="header-style">
+          <h1>...set edit</h1>
+        </div>
+        <br>
+        <section>
+          <div>
+            <main>
+              <form>
+                <table class="cms-form-table">
+                  <tr>
+                    <!-- First Row - only one form field -->
+                    <td colspan="2">
+                      <label>Status</label><br>
+                      <select
+                        id="blogStatus"
+                        name="blogStatus"
+                        title="blogStatus"
+                        style="width: 200px;"
+                      >
+                        <!-- The option tags are dynamically added by the cmsCardSet.js populateCardSet() function -->
+                      </select>
+                    </td>
+                  </tr>
+                  <tr>
+                    <!-- 2nd Row -->
+                    <td colspan="2">
+                      <label>Author <sup>*</sup></label
+                      ><br>
+                      <div>
+                        <select
+                          id="author"
+                          name="author"
+                          title="author"
+                          style="width: 200px;"
+                        >
+                          <option value="Christian Couillard">
+                            Christian Couillard
+                          </option>
+                        </select>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <!-- 3rd Row - two SEO fields -->
+                    <td>
+                      <label>SEO Title</label><br>
+                      <input type="text" id="seoPageTitle">
+                    </td>
+                    <td>
+                      <label>SEO Meta Description</label><br>
+                      <input type="text" id="seoMetaDesc">
+                    </td>
+                  </tr>
+                  <tr>
+                    <!-- 4th Row - two SEO fields -->
+                    <td>
+                      <label>SEO Friendly URL</label><br>
+                      <input type="text" id="seoURLSlug">
+                    </td>
+                    <td>
+                      <label>SEO Tags</label><br>
+                      <input type="text" id="seoTags">
+                    </td>
+                  </tr>
+                  <tr>
+                    <!-- 5th Row -->
+                    <td>
+                      <label>Set Size</label><br>
+                      <input type="text" id="size" title="size">
+                    </td>
+                    <td>
+                      <label>Inserts</label><br>
+                      <input type="text" id="subsets" title="subsets">
+                    </td>
+                  </tr>
+                  <tr>
+                    <!-- 6th Row -->
+                    <td>
+                      <label>Star Rating</label><br>
+                      <input type="text" id="stars" title="stars">
+                    </td>
+                    <td>
+                      <label>Formats</label><br>
+                      <input type="text" id="formats" title="formats">
+                    </td>
+                  </tr>
+                  <tr>
+                    <!-- 7th Row -->
+                    <td>
+                      <label>Manufacturer</label><br>
+                      <input type="text" id="mfg" title="mfg">
+                    </td>
+                    <td>
+                      <label>Header Image Slug</label><br>
+                      <input
+                        type="text"
+                        id="headerImgName"
+                        title="headerImgName">
+                    </td>
+                  </tr>
+                  <tr>
+                    <!-- 8th Row -->
+                    <td>
+                      <label>Set Name</label><br>
+                      <input
+                        class="input-text-disabled"
+                        type="text"
+                        id="setName"
+                        title="setName"
+                        readonly
+                        disabled>
+                    </td>
+                    <td>
+                      <label>Release Year</label><br>
+                      <input
+                        class="input-text-disabled"
+                        type="text"
+                        id="year"
+                        title="year"
+                        readonly
+                        disabled>
+                    </td>
+                  </tr>
+                  <tr>
+                    <!-- 9th Row -->
+                    <td colspan="2">
+                      <label>Footer Image Slug</label><br>
+                      <input
+                        type="text"
+                        id="footerImgName"
+                        title="footerImgName">
+                    </td>
+                  </tr>
+                  <tr>
+                    <!-- 10th Row -->
+                    <td colspan="2">
+                      <label>Set Review</label><br><br>
+                      <textarea id="postBody" title="postBody"></textarea>
+                    </td>
+                  </tr>
+                  <tr>
+                    <!-- 11th Row - SUBMIT BUTTON -->
+                    <td colspan="2">
+                      <div
+                        style="display:flex; justify-content:space-between; align-items:center;"
+                      >
+                        <div>
+                          <!-- NOTE: We don't need to grab the postBody becasue the updateBlog() gets it from the tinyMCE function  -->
+                          <button
+                            class="input-button"
+                            type="button"
+                            id="cmsSubmitButton"
+                            onclick="updateCardSet(
                                                   document.getElementById('blogStatus').value,
                                                   document.getElementById('seoPageTitle').value,
                                                   document.getElementById('seoMetaDesc').value,
@@ -208,44 +272,52 @@
                                                   document.getElementById('year').value,
                                                   document.getElementById('headerImgName').value,
                                                   document.getElementById('footerImgName').value,
-                                                  document.getElementById('mfg').value)" >
-                                          Update Post
-                                      </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                      <button class="input-button" type="button" onclick="openPreview()">Preview</button>
-                                    </div>
-                                    <button class="input-button delete-btn" type="button"
-                                        onclick="deleteCardSet(
+                                                  document.getElementById('mfg').value)"
+                          >
+                            Update Post</button
+                          >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                          <button
+                            class="input-button"
+                            type="button"
+                            onclick="openPreview()"
+                          >
+                            Preview
+                          </button>
+                        </div>
+                        <button
+                          class="input-button delete-btn"
+                          type="button"
+                          onclick="deleteCardSet(
                                                 setID,
                                                 document.getElementById('setName').value,
-                                                document.getElementById('year').value)">
-                                      Delete Set
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-                             </table> 
-                            </form>
-                              </div>
-                              <!-- This div is rendered if an error occurs... -->
-                              <div id="errorDiv"></div>
-                          </main>
-                  </section>
-                </main>
-            </div>
+                                                document.getElementById('year').value)"
+                        >
+                          Delete Set
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </form>
+            </main>
+          </div>
+          <!-- This div is rendered if an error occurs... -->
+          <div id="errorDiv"></div>
         </section>
+      </main>
+    </section>
 
-<!-- Preview Modal -->
- <div id="previewModal" class="preview-modal">
-  <div class="preview-modal-content">
-    <span class="close" onclick="closePreview()">&times;</span>
-    <div id="previewContainer"></div>
-  </div>
-</div>
+    <!-- Preview Modal -->
+    <div id="previewModal" class="preview-modal">
+      <div class="preview-modal-content">
+        <span class="close" onclick="closePreview()">&times;</span>
+        <div id="previewContainer"></div>
+      </div>
+    </div>
 
-        <footer class="page-footer">
-          <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
-          <div id="copy"></div> 
-          
-        </footer>
-    </body>
+    <footer class="page-footer">
+      <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
+      <div id="copy"></div>
+    </footer>
+  </body>
 </html>

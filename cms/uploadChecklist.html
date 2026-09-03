@@ -1,120 +1,168 @@
-<!DOCTYPE html>
+<!doctype html>
 <!-- Without this, mobile Safari renders at a wide desktop-width virtual
      viewport and just zooms the page out to fit, so the @media
      (max-width: 600px) rules in styles.css never trigger -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <html lang="en">
-<title>cardStack CMS - checklist upload</title>
-<head>
+  <head>
     <script src="/scripts/auth.js"></script>
     <meta charset="utf-8">
     <meta name="robots" content="noindex, nofollow">
-    <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon.ico">
-      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon.png">
+    <title>cardStack CMS - checklist upload</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <link
+      rel="apple-touch-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap" as="style" onload="this.rel='stylesheet'">
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap"
+      as="style"
+      onload="this.rel='stylesheet'">
     <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
     </noscript>
-    <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
-      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-      <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+
+    <script src="/scripts/checklistUpload.js"></script>
+    <script src="/scripts/helper.js"></script>
 
     <script>
       window.addEventListener('load', () => {
         fetchCopyrightYear();
       });
     </script>
-</head>
+  </head>
 
-<script src="/scripts/checklistUpload.js"></script>
-<script src="/scripts/helper.js"></script>
-
-<body>
-<section>
-    <table class="mast-table">
-      <tr>
-        <td width="80%">
-          <div>
-           <header class="masthead">card<i>Stack</i></header>
-        </td>
-        <td class="cms-logo">
-          <i>Content</i><br>
-          <strong>Management</strong><br>
-          <i>System</i><br>
-        </td>
-      </tr>
-    </table>
-  </section>
-
-<section>
-<div>
-    <nav>
-      <table class="cms-top-nav">
+  <body>
+    <section>
+      <table class="mast-table">
         <tr>
-          <td class="cms-nav-td"><a href="index.html">...exit</a></td>
-          <td class="cms-nav-td"><a href="/cms/wlcms.html">...back to cms</a></td>
+          <td width="80%">
+            <div>
+              <header class="masthead">card<i>Stack</i></header>
+            </div>
+          </td>
+          <td class="cms-logo">
+            <i>Content</i><br>
+            <strong>Management</strong><br>
+            <i>System</i><br>
+          </td>
         </tr>
       </table>
-    </nav>
-</div>
-</section>
+    </section>
 
-<div class="header-style">
-    <h1>...upload a checklist</h1>
-    <br><br>
-</div>
-
-<section>
-<div>
-<main>
-
-  <div class="checklist-trigger-row">
-    <a href="#" id="checklistImportLink" class="input-button">
-      Upload Checklist PDF...
-    </a>
-  </div>
-
-  <div id="checklistStatus" class="checklist-status-msg checklist-trigger-row"></div>
-
-  <div class="checklist-page-content">
-
-  <!-- Upload/parse modal - mirrors cms/smsAdmin.html's bulk import modal -->
-  <div id="checklistImportOverlay" class="bulk-overlay" style="display:none;">
-    <div class="bulk-modal">
-      <h2 class="bulk-modal-title">Upload Checklist PDF</h2>
-
-      <p class="bulk-modal-instructions">
-        Select a checklist PDF (one row per card: card number, then player name,
-        with optional trailing markers like <code>RC</code>/<code>UER</code>/<code>CL</code>).
-        You'll be able to review and edit every row before anything is saved.
-      </p>
-
-      <div class="bulk-drop-zone" id="checklistDropZone">
-        <span id="checklistDropLabel">Drop PDF file here or <label for="checklistFileInput" class="bulk-file-label">browse</label></span>
-        <input type="file" id="checklistFileInput" accept="application/pdf" style="display: none;" />
-        <p id="checklistModalFileName" class="bulk-file-name"></p>
+    <section>
+      <div>
+        <nav>
+          <table class="cms-top-nav">
+            <tr>
+              <td class="cms-nav-td"><a href="index.html">...exit</a></td>
+              <td class="cms-nav-td">
+                <a href="/cms/wlcms.html">...back to cms</a>
+              </td>
+            </tr>
+          </table>
+        </nav>
       </div>
+    </section>
 
-      <div id="checklistModalFeedback" class="bulk-feedback" style="display:none;"></div>
-
-      <div class="bulk-modal-actions">
-        <button id="checklistCancelBtn" class="bulk-btn bulk-btn-cancel">Cancel</button>
-        <button id="checklistParseBtn" class="bulk-btn bulk-btn-upload" disabled>Parse</button>
-      </div>
+    <div class="header-style">
+      <h1>...upload a checklist</h1>
+      <br><br>
     </div>
-  </div>
 
-  <div id="checklistReviewSection" style="display: none;">
+    <section>
+      <div>
+        <main>
+          <div class="checklist-trigger-row">
+            <a href="#" id="checklistImportLink" class="input-button">
+              Upload Checklist PDF...
+            </a>
+          </div>
 
-    <br>
-    <label for="checklistSetName">Set Name <sup>*</sup></label><br>
-    <input type="text" id="checklistSetName" style="
+          <div
+            id="checklistStatus"
+            class="checklist-status-msg checklist-trigger-row"
+          ></div>
+
+          <div class="checklist-page-content">
+            <!-- Upload/parse modal - mirrors cms/smsAdmin.html's bulk import modal -->
+            <div
+              id="checklistImportOverlay"
+              class="bulk-overlay"
+              style="display:none;"
+            >
+              <div class="bulk-modal">
+                <h2 class="bulk-modal-title">Upload Checklist PDF</h2>
+
+                <p class="bulk-modal-instructions">
+                  Select a checklist PDF (one row per card: card number, then
+                  player name, with optional trailing markers like
+                  <code>RC</code>/<code>UER</code>/<code>CL</code>). You'll be
+                  able to review and edit every row before anything is saved.
+                </p>
+
+                <div class="bulk-drop-zone" id="checklistDropZone">
+                  <span
+                    >Drop PDF file here or
+                    <label for="checklistFileInput" class="bulk-file-label"
+                      >browse</label
+                    ></span
+                  >
+                  <input
+                    type="file"
+                    id="checklistFileInput"
+                    accept="application/pdf"
+                    style="display: none;">
+                  <p id="checklistModalFileName" class="bulk-file-name"></p>
+                </div>
+
+                <div
+                  id="checklistModalFeedback"
+                  class="bulk-feedback"
+                  style="display:none;"
+                ></div>
+
+                <div class="bulk-modal-actions">
+                  <button
+                    id="checklistCancelBtn"
+                    class="bulk-btn bulk-btn-cancel"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    id="checklistParseBtn"
+                    class="bulk-btn bulk-btn-upload"
+                    disabled
+                  >
+                    Parse
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div id="checklistReviewSection" style="display: none;">
+              <br>
+              <label for="checklistSetName">Set Name <sup>*</sup></label
+              ><br>
+              <input
+                type="text"
+                id="checklistSetName"
+                style="
       width: 100%;
       max-width: 500px;
       font-family: 'Source Sans 3', sans-serif;
@@ -125,10 +173,18 @@
       box-sizing: border-box;
     ">
 
-    <br><br>
+              <br><br>
 
-    <label for="checklistInsertSetName">Insert Set Name <span style="font-weight: normal; font-size: 14px; color: #555;">(leave blank for the main set)</span></label><br>
-    <input type="text" id="checklistInsertSetName" style="
+              <label for="checklistInsertSetName"
+                >Insert Set Name
+                <span style="font-weight: normal; font-size: 14px; color: #555;"
+                  >(leave blank for the main set)</span
+                ></label
+              ><br>
+              <input
+                type="text"
+                id="checklistInsertSetName"
+                style="
       width: 100%;
       max-width: 500px;
       font-family: 'Source Sans 3', sans-serif;
@@ -139,39 +195,45 @@
       box-sizing: border-box;
     ">
 
-    <table class="checklist-review-table">
-      <thead>
-        <tr>
-          <th>Card #</th>
-          <th>Player Name</th>
-          <th>Notes</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="checklistTableBody"></tbody>
-    </table>
+              <table class="checklist-review-table">
+                <thead>
+                  <tr>
+                    <th>Card #</th>
+                    <th>Player Name</th>
+                    <th>Notes</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="checklistTableBody"></tbody>
+              </table>
 
-    <div class="checklist-button-row">
-      <button type="button" onclick="addChecklistRow()" class="input-button checklist-add-row-btn">
-        + Add Row
-      </button>
+              <div class="checklist-button-row">
+                <button
+                  type="button"
+                  onclick="addChecklistRow()"
+                  class="input-button checklist-add-row-btn"
+                >
+                  + Add Row
+                </button>
 
-      <button type="button" id="cmsSubmitButton" onclick="saveChecklist()" class="input-button">
-        Save to DynamoDB
-      </button>
-    </div>
+                <button
+                  type="button"
+                  id="cmsSubmitButton"
+                  onclick="saveChecklist()"
+                  class="input-button"
+                >
+                  Save to DynamoDB
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </section>
 
-  </div>
-
-  </div>
-
-</main>
-</div>
-</section>
-
-<footer class="page-footer">
-  <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
-  <div id="copy"></div>
-</footer>
-</body>
+    <footer class="page-footer">
+      <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
+      <div id="copy"></div>
+    </footer>
+  </body>
 </html>

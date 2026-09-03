@@ -1,72 +1,84 @@
-<!DOCTYPE html>
+<!doctype html>
 <!-- Without this, mobile Safari renders at a wide desktop-width virtual
      viewport and just zooms the page out to fit, so the @media
      (max-width: 600px) rules in styles.css never trigger -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
 <html lang="en">
+  <head>
+    <script src="/scripts/auth.js"></script>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
     <title>cardStack CMS - edit</title>
-    <head>
-        <script src="/scripts/auth.js"></script>
-        <meta charset="utf-8">
-        <meta name="robots" content="noindex, nofollow">
-        <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon.ico">
-      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon.png">
-        <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <link
+      rel="apple-touch-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
-        <!-- Google Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap" as="style" onload="this.rel='stylesheet'">
-        <noscript>
-          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
-        </noscript>
-        <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
-      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-      <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-     
-        <!-- TinyMCE Text Editor Scripts -->
-        <script src="https://cdn.tiny.cloud/1/eg9hcu6cr4t0wvi6e6uqtb78mj1rycqrixpajuuenn3oaojw/tinymce/8/tinymce.min.js" referrerpolicy="origin"></script>
-        
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap"
+      as="style"
+      onload="this.rel='stylesheet'">
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
+    </noscript>
 
-        <!-- CMS JavaScript import  -->
-        <script src="/scripts/helper.js"></script>
-        <script src="/scripts/cmsBlog.js"></script>
-        <script src="/scripts/cmsFormUI.js"></script>
-     
-      </head>
+    <!-- TinyMCE Text Editor Scripts -->
+    <script
+      src="https://cdn.tiny.cloud/1/eg9hcu6cr4t0wvi6e6uqtb78mj1rycqrixpajuuenn3oaojw/tinymce/8/tinymce.min.js"
+      referrerpolicy="origin"
+    ></script>
 
+    <!-- CMS JavaScript import  -->
+    <script src="/scripts/helper.js"></script>
+    <script src="/scripts/cmsBlog.js"></script>
+    <script src="/scripts/cmsFormUI.js"></script>
 
-<script>
-  /* Let's get the URL params from the request, and extract the year */  
-  let params = new URLSearchParams(document.location.search);
-  let blogID = params.get("blogID");
-  let blogType = params.get("blogType");
+    <script>
+      /* Let's get the URL params from the request, and extract the year */
+      let params = new URLSearchParams(document.location.search);
+      let blogID = params.get("blogID");
+      let blogType = params.get("blogType");
 
-  /* 
-  *   Call to fetchCardSetsByID() on page load, dynamically passing the blogID we want to fetch
-  *   It is responsible for calling the underlying AWS web service
-  *   Can also use the year to dynamically populate our page header...removed for now   */ 
-   
-  window.addEventListener('load', (event) => {
-      fetchBlogByID(blogID,blogType);
+      /*
+      *   Call to fetchCardSetsByID() on page load, dynamically passing the blogID we want to fetch
+      *   It is responsible for calling the underlying AWS web service
+      *   Can also use the year to dynamically populate our page header...removed for now   */
 
-      // *** Dynamically display the copyright year
-      fetchCopyrightYear();
+      window.addEventListener('load', (event) => {
+          fetchBlogByID(blogID,blogType);
 
-      // Load the TinyMCE WYSIWYG Editor from the global config in cmsFormUI.js
-      initTinyEditor('#postBody');
-  }); 
-</script>
+          // *** Dynamically display the copyright year
+          fetchCopyrightYear();
 
-<body>
+          // Load the TinyMCE WYSIWYG Editor from the global config in cmsFormUI.js
+          initTinyEditor('#postBody');
+      });
+    </script>
+  </head>
+
+  <body>
     <section>
       <table class="mast-table">
         <tr>
           <td width="80%">
             <div>
-            <header class="masthead">card<i>Stack</i></header>
+              <header class="masthead">card<i>Stack</i></header>
+            </div>
           </td>
           <td class="cms-logo">
             <i>Content</i><br>
@@ -77,120 +89,130 @@
       </table>
     </section>
     <section>
-            <div>
-                <nav>
-                  <table class="cms-top-nav">
-                    <tr>
-                      <td class="cms-nav-td"><a href="index.html">...exit</a> </td>
-                      <td class="cms-nav-td"><a href="/cms/wlcms.html">...back to cms</a> </td>
-                    </tr>
-                  </table>
-                </nav>
-              </div>
+      <div>
+        <nav>
+          <table class="cms-top-nav">
+            <tr>
+              <td class="cms-nav-td"><a href="index.html">...exit</a></td>
+              <td class="cms-nav-td">
+                <a href="/cms/wlcms.html">...back to cms</a>
+              </td>
+            </tr>
+          </table>
+        </nav>
+      </div>
 
-            <div class="header-style">
-                <h1>...edit a blog post</h1>
-              </div>
-              <br>
-              
-            <main>
-                <form class="form-style">
-                 <table class="cms-form-table">
-                  <tr> <!-- 1st Row - dropdown -->
-                    <td colspan="2">
-                      <label>Publication Status</label><br>
-                       <!--  Next let's find out if the set's Publication Status -->
-                          <select id="published" name="published" title="published">
-                            <!-- The option tags are dynamically added by the CMS.js populateBlog() function -->
-                          </select>
-                    </td>
-                  </tr>
-                  <tr> <!-- 2nd Row -->
-                    <td colspan="2">
-                      <label>Blog Post Title (required)</label><br>
-                      <input type="text" id="title" required title="blogPostTitle">
-                    </td>
-                  </tr>
-                  <tr> <!-- 3rd Row -->
-                    <td>
-                      <label>Image Path</label><br>
-                      <input type="text" id="imgName" title="imgName">
-                    </td>
-                    <td>
-                      <label>Image Caption</label><br>
-                      <input type="text" id="imgCap" title="imgCap">
-                    </td>
-                  </tr>
-                  <tr> <!-- 4th Row -->
-                    <td>
-                      <label>Blog Type</label><br>
-                      <input class="input-text-disabled" type="text" id="blogType" disabled title="blogType">
-                    </td>
-                    <td>
-                      <label>Time</label><br>
-                      <input class="input-text-disabled" type="text" id="time" disabled title="time">
-                    </td>
-                  </tr>
-                  <tr> <!-- 5th Row -->
-                    <td colspan="2">
-                      <label>Post Body (required)</label><br><br>
-                      <textarea id="postBody" required title="postBody"></textarea>
-                    </td>
-                  </tr>
-                  <tr> <!-- 6th Row - SUBMIT BUTTON -->
-                    <td colspan="2">
-                      <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                          <!-- NOTE: We don't need to grab the postBody becasue the updateBlogPost() in cmsBlog.js gets it from the tinyMCE function  -->
-                          <button class="input-button" type="button" id="cmsSubmitButton"
-                              onclick="updateBlogPost(
+      <div class="header-style">
+        <h1>...edit a blog post</h1>
+      </div>
+      <br>
+
+      <main>
+        <form>
+          <table class="cms-form-table">
+            <tr>
+              <!-- 1st Row - dropdown -->
+              <td colspan="2">
+                <label>Publication Status</label><br>
+                <!--  Next let's find out if the set's Publication Status -->
+                <select id="published" name="published" title="published">
+                  <!-- The option tags are dynamically added by the cmsBlog.js populateBlog() function -->
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <!-- 2nd Row -->
+              <td colspan="2">
+                <label>Blog Post Title (required)</label><br>
+                <input type="text" id="title" required title="blogPostTitle">
+              </td>
+            </tr>
+            <tr>
+              <!-- 3rd Row -->
+              <td>
+                <label>Image Path</label><br>
+                <input type="text" id="imgName" title="imgName">
+              </td>
+              <td>
+                <label>Image Caption</label><br>
+                <input type="text" id="imgCap" title="imgCap">
+              </td>
+            </tr>
+            <tr>
+              <!-- 4th Row -->
+              <td>
+                <label>Blog Type</label><br>
+                <input
+                  class="input-text-disabled"
+                  type="text"
+                  id="blogType"
+                  disabled
+                  title="blogType">
+              </td>
+              <td>
+                <label>Time</label><br>
+                <input
+                  class="input-text-disabled"
+                  type="text"
+                  id="time"
+                  disabled
+                  title="time">
+              </td>
+            </tr>
+            <tr>
+              <!-- 5th Row -->
+              <td colspan="2">
+                <label>Post Body (required)</label><br><br>
+                <textarea id="postBody" required title="postBody"></textarea>
+              </td>
+            </tr>
+            <tr>
+              <!-- 6th Row - SUBMIT BUTTON -->
+              <td colspan="2">
+                <div
+                  style="display:flex; justify-content:space-between; align-items:center;"
+                >
+                  <div>
+                    <!-- NOTE: We don't need to grab the postBody becasue the updateBlogPost() in cmsBlog.js gets it from the tinyMCE function  -->
+                    <button
+                      class="input-button"
+                      type="button"
+                      id="cmsSubmitButton"
+                      onclick="updateBlogPost(
                                       document.getElementById('title').value,
                                       document.getElementById('imgName').value,
                                       document.getElementById('imgCap').value,
                                       document.getElementById('published').value,
                                       document.getElementById('blogType').value,
                                       document.getElementById('time').value,
-                                      blogID)">
-                              Update Post
-                          </button>
-                        <!--  <button class="input-button" type="button" onclick="openPreview()">Preview</button> -->
-                        </div>
-                        <button class="input-button delete-btn" type="button"
-                            onclick="deleteBlogPost(
+                                      blogID)"
+                    >
+                      Update Post
+                    </button>
+                  </div>
+                  <button
+                    class="input-button delete-btn"
+                    type="button"
+                    onclick="deleteBlogPost(
                                     blogID,
                                     document.getElementById('blogType').value,
-                                    document.getElementById('time').value)">
-                          Delete Post
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                 </table>
-                </form>
-                <!-- This div is rendered if an error occurs... -->
-                <div id="errorDiv"></div>
-            </main>
-        </div>
+                                    document.getElementById('time').value)"
+                  >
+                    Delete Post
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </form>
+        <!-- This div is rendered if an error occurs... -->
+        <div id="errorDiv"></div>
+      </main>
     </section>
-    <!-- Preview Modal 
-    <div id="previewModal" class="preview-modal">
-      <div class="preview-modal-content">
-        <span class="close" onclick="closePreview()">&times;</span>
-        <div id="previewContainer"></div>
-      </div>
-    </div> -->
 
     <footer class="page-footer">
-            <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
-            <div id="copy"></div> 
-            
-          </footer>
-
-      
-
-</body>
-
+      <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
+      <div id="copy"></div>
+    </footer>
+  </body>
 </html>
-
-
-

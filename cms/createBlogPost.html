@@ -1,33 +1,53 @@
-<!DOCTYPE html>
+<!doctype html>
 <!-- Without this, mobile Safari renders at a wide desktop-width virtual
      viewport and just zooms the page out to fit, so the @media
      (max-width: 600px) rules in styles.css never trigger -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <html lang="en">
-<title>cardStack CMS - new</title>
-<head>
+  <head>
     <script src="/scripts/auth.js"></script>
     <meta charset="utf-8">
     <meta name="robots" content="noindex, nofollow">
-    <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon.ico">
-      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon.png">
+    <title>cardStack CMS - new</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <link
+      rel="apple-touch-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap" as="style" onload="this.rel='stylesheet'">
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap"
+      as="style"
+      onload="this.rel='stylesheet'">
     <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
     </noscript>
-    <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
-      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-      <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
 
     <!-- TinyMCE Text Editor Scripts -->
-    <script src="https://cdn.tiny.cloud/1/eg9hcu6cr4t0wvi6e6uqtb78mj1rycqrixpajuuenn3oaojw/tinymce/8/tinymce.min.js" referrerpolicy="origin"></script>
-    
+    <script
+      src="https://cdn.tiny.cloud/1/eg9hcu6cr4t0wvi6e6uqtb78mj1rycqrixpajuuenn3oaojw/tinymce/8/tinymce.min.js"
+      referrerpolicy="origin"
+    ></script>
+
+    <script src="/scripts/helper.js"></script>
+    <script src="/scripts/cmsBlog.js"></script>
+    <script src="/scripts/cmsImageBrowser.js"></script>
+    <script src="/scripts/cmsFormUI.js"></script>
+
     <script>
       window.addEventListener('load', () => {
         // *** Dynamically display the copyright year
@@ -37,145 +57,188 @@
         initTinyEditor('#postBody');
       });
     </script>
-</head>
+  </head>
 
-<script src="/scripts/helper.js"></script>
-<script src="/scripts/cmsBlog.js"></script>
-<script src="/scripts/cmsImageBrowser.js"></script>
-<script src="/scripts/cmsFormUI.js"></script>
-
-<body></body>
-  <section>
-    <table class="mast-table">
-      <tr>
-        <td width="80%">
-          <div>
-           <header class="masthead">card<i>Stack</i></header>
-        </td>
-        <td class="cms-logo">
-          <i>Content</i><br>
-          <strong>Management</strong><br>
-          <i>System</i><br>
-        </td>
-      </tr>
-    </table>
-  </section>
-  <section>
-    <div>
-      <nav>
-        <table class="cms-top-nav">
-          <tr>
-            <td class="cms-nav-td"><a href="index.html">...exit</a></td>
-            <td class="cms-nav-td"><a href="/cms/wlcms.html">...back to cms</a></td>
-          </tr>
-        </table>
-      </nav>
-    </div>
-
-    <div class="header-style">
-      <h1>...author a blog post</h1>
-    </div>
-    <br>
-    
-    <main>
-      <form class="form-style">
-       <table class="cms-form-table">
-        <tr> <!-- 1st Row - dropdown -->
-          <td colspan="2">
-            <label>Status <sup>*</sup></label><br>
-            <select id="published" name="published" title="published" style="width: 200px;">
-              <option value="false">Staging</option>
-              <option value="true">Live</option>
-            </select>
-          </td>
-        </tr>
-        <tr> <!-- 2nd Row -->
-          <td colspan="2">
-            <label>Blog Post Title <sup>*</sup></label><br>
-            <input type="text" id="title" required title="blogPostTitle">
-          </td>
-        </tr>
-        <tr> <!-- 3rd Row -->
-          <td>
-            <label>Author <sup>*</sup></label><br>
+  <body>
+    <section>
+      <table class="mast-table">
+        <tr>
+          <td width="80%">
             <div>
-              <select id="author" name="author" class="form-style" title="author" style="width: 200px;">
-                <option value="Christian Couillard">Christian Couillard</option>
-              </select>
+              <header class="masthead">card<i>Stack</i></header>
             </div>
           </td>
-          <td>
-            <label>Type <sup>*</sup></label><br>
-            <div>
-              <select id="blogType" name="blogType" class="form-style" title="blogType" style="width: 200px;">
-                <option value="1">Technology</option>
-                <option value="5">Raspberry Pi</option>
-                <option value="2">Hockey Cards</option>
-                <option value="3">Mach-E</option>
-                <option value="4">SYNC Update</option>
-                <option value="99">Home Page</option>
-              </select>
-            </div>
+          <td class="cms-logo">
+            <i>Content</i><br>
+            <strong>Management</strong><br>
+            <i>System</i><br>
           </td>
         </tr>
-        <tr> <!-- 4th Row -->
-          <td>
-            <label>Image</label><br>
-            <!-- Defaults to "none" - the sentinel displayBlog() in blogs.js
+      </table>
+    </section>
+    <section>
+      <div>
+        <nav>
+          <table class="cms-top-nav">
+            <tr>
+              <td class="cms-nav-td"><a href="index.html">...exit</a></td>
+              <td class="cms-nav-td">
+                <a href="/cms/wlcms.html">...back to cms</a>
+              </td>
+            </tr>
+          </table>
+        </nav>
+      </div>
+
+      <div class="header-style">
+        <h1>...author a blog post</h1>
+      </div>
+      <br>
+
+      <main>
+        <form>
+          <table class="cms-form-table">
+            <tr>
+              <!-- 1st Row - dropdown -->
+              <td colspan="2">
+                <label>Status <sup>*</sup></label
+                ><br>
+                <select
+                  id="published"
+                  name="published"
+                  title="published"
+                  style="width: 200px;"
+                >
+                  <option value="false">Staging</option>
+                  <option value="true">Live</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <!-- 2nd Row -->
+              <td colspan="2">
+                <label>Blog Post Title <sup>*</sup></label
+                ><br>
+                <input type="text" id="title" required title="blogPostTitle">
+              </td>
+            </tr>
+            <tr>
+              <!-- 3rd Row -->
+              <td>
+                <label>Author <sup>*</sup></label
+                ><br>
+                <div>
+                  <select
+                    id="author"
+                    name="author"
+                    title="author"
+                    style="width: 200px;"
+                  >
+                    <option value="Christian Couillard">
+                      Christian Couillard
+                    </option>
+                  </select>
+                </div>
+              </td>
+              <td>
+                <label>Type <sup>*</sup></label
+                ><br>
+                <div>
+                  <select
+                    id="blogType"
+                    name="blogType"
+                    title="blogType"
+                    style="width: 200px;"
+                  >
+                    <option value="1">Technology</option>
+                    <option value="5">Raspberry Pi</option>
+                    <option value="2">Hockey Cards</option>
+                    <option value="3">Mach-E</option>
+                    <option value="4">SYNC Update</option>
+                    <option value="99">Home Page</option>
+                  </select>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <!-- 4th Row -->
+              <td>
+                <label>Image</label><br>
+                <!-- Defaults to "none" - the sentinel displayBlog() in blogs.js
                  checks for to skip rendering an <img> tag entirely. Picking
                  an image via Browse overwrites this with the full URL
                  (see openBlogImageBrowser()'s click handler in cmsImageBrowser.js) -
                  this default is only what gets saved if that's skipped. -->
-            <input type="text" id="imgName" title="imgName" value="none"><br>
-            <button class="input-button" type="button" onclick="openBlogImageBrowser('imgName')">Browse</button>
-          </td>
-          <td>
-            <label>Image Caption</label><br>
-            <input type="text" id="imgCap" title="imgCap">
-          </td>
-        </tr>
-        <tr> <!-- 5th Row -->
-          <td colspan="2">
-            <label>Post Body <sup>*</sup></label><br><br>
-            <textarea id="postBody" required title="blogBody"></textarea>
-          </td>
-        </tr>
-        <tr> <!-- 6th Row - SUBMIT BUTTON -->
-          <td colspan="2" align="left">
-            <button class="input-button" type="button" id="cmsSubmitButton"
-              onclick="createBlogPost(
+                <input
+                  type="text"
+                  id="imgName"
+                  title="imgName"
+                  value="none"><br>
+                <button
+                  class="input-button"
+                  type="button"
+                  onclick="openBlogImageBrowser('imgName')"
+                >
+                  Browse
+                </button>
+              </td>
+              <td>
+                <label>Image Caption</label><br>
+                <input type="text" id="imgCap" title="imgCap">
+              </td>
+            </tr>
+            <tr>
+              <!-- 5th Row -->
+              <td colspan="2">
+                <label>Post Body <sup>*</sup></label
+                ><br><br>
+                <textarea id="postBody" required title="blogBody"></textarea>
+              </td>
+            </tr>
+            <tr>
+              <!-- 6th Row - SUBMIT BUTTON -->
+              <td colspan="2" align="left">
+                <button
+                  class="input-button"
+                  type="button"
+                  id="cmsSubmitButton"
+                  onclick="createBlogPost(
                 document.getElementById('published').value,
                 document.getElementById('title').value,
                 document.getElementById('imgName').value,
                 document.getElementById('imgCap').value,
                 document.getElementById('author').value,
                 document.getElementById('blogType').value
-              )">
-              Submit Post
-            </button>
-          </td>
-        </tr>
-       </table>
-      </form>
-    </main>
-  </div>
-</section>
+              )"
+                >
+                  Submit Post
+                </button>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </main>
+    </section>
 
-<footer class="page-footer">
-  <div id="copy"></div>
-</footer>
+    <footer class="page-footer">
+      <div id="copy"></div>
+    </footer>
 
-<!-- ⭐ ADDED: S3 Image Browser Modal (same structure as card set page) -->
-<div id="imageBrowserModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeImageBrowser()">&times;</span>
+    <!-- ⭐ ADDED: S3 Image Browser Modal (same structure as card set page) -->
+    <div id="imageBrowserModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeImageBrowser()">&times;</span>
 
-    <h3>Select an Image</h3>
-    <h4>Or Upload A New One</h4>
+        <h3>Select an Image</h3>
+        <h4>Or Upload A New One</h4>
 
-  <div id="uploadSection" style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;">
-    <!-- Styled Choose File button -->
-    <label for="uploadFileInput" style="
+        <div
+          style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"
+        >
+          <!-- Styled Choose File button -->
+          <label
+            for="uploadFileInput"
+            style="
       background-color: #256386;
       color: white;
       padding: 8px 16px;
@@ -185,18 +248,28 @@
       font-size: 14px;
       display: inline-block;
       font-family: 'Nunito';
-    ">
-      Choose File
-    </label>
+    "
+          >
+            Choose File
+          </label>
 
-    <!-- Hidden native input -->
-    <input type="file" id="uploadFileInput" accept="image/*" style="display: none;">
+          <!-- Hidden native input -->
+          <input
+            type="file"
+            id="uploadFileInput"
+            accept="image/*"
+            style="display: none;">
 
-    <!-- Filename display -->
-    <span id="selectedFileName" style="font-size: 14px; color: #333;">No file chosen</span>
+          <!-- Filename display -->
+          <span id="selectedFileName" style="font-size: 14px; color: #333;"
+            >No file chosen</span
+          >
 
-    <!-- Upload button -->
-    <button type="button" id="uploadButton" onclick="uploadNewImage()" style="
+          <!-- Upload button -->
+          <button
+            type="button"
+            onclick="uploadNewImage()"
+            style="
       background-color: #256386;
       color: white;
       padding: 8px 16px;
@@ -205,18 +278,22 @@
       cursor: pointer;
       font-size: 14px;
       font-family: 'Nunito';
-    ">
-      Upload
-    </button>
-  </div>
+    "
+          >
+            Upload
+          </button>
+        </div>
 
-  <div id="uploadStatus" style="font-size: 13px; color: #555;"></div>
-  <!-- SEARCH BOX!! -->
-  <input type="text" id="imageSearch" placeholder="Search images..." oninput="filterBlogImageList()"
-  style="width: 100%; padding: 6px; margin-top: 10px; margin-bottom: 10px; font-size: 14px; box-sizing: border-box; font-family: 'Nunito'">
-  <div id="imageList"></div>
-</div>
-</body>
+        <div id="uploadStatus" style="font-size: 13px; color: #555;"></div>
+        <!-- SEARCH BOX!! -->
+        <input
+          type="text"
+          id="imageSearch"
+          placeholder="Search images..."
+          oninput="filterBlogImageList()"
+          style="width: 100%; padding: 6px; margin-top: 10px; margin-bottom: 10px; font-size: 14px; box-sizing: border-box; font-family: 'Nunito'">
+        <div id="imageList"></div>
+      </div>
+    </div>
+  </body>
 </html>
-
-

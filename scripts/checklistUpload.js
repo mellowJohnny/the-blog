@@ -137,7 +137,6 @@ function buildChecklistRow(card) {
   nameTd.innerHTML = `<input type="text" class="checklist-playername-input" value="${escapeAttr(card.playerName || "")}">`;
 
   const notesTd = document.createElement("td");
-  notesTd.className = "checklist-notes-col";
   notesTd.innerHTML = `<input type="text" class="checklist-notes-input" value="${escapeAttr(card.notes || "")}">`;
 
   const deleteTd = document.createElement("td");
