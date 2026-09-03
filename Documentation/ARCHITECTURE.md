@@ -120,5 +120,5 @@ Plain multi-page HTML site, no bundler/framework:
 ## Notable cross-cutting patterns
 
 - **No shared "API client"**: each script builds its own `fetch()` calls with a hardcoded API Gateway URL. Adding/rotating an endpoint means updating the URL string wherever it's called from.
-- **Inconsistent response shapes**: several frontend functions defensively unwrap the Lambda response in multiple possible shapes (e.g. `fetchAllCardSets()` in `scripts/cms.js` checks for `Array.isArray(data)`, `data.body` as a string, `data.body` as an array, and `data.Items` all in the same function). This strongly suggests the underlying Lambdas have been rewritten/tweaked over time without the response contract being fully stabilized.
+- **Inconsistent response shapes**: several frontend functions defensively unwrap the Lambda response in multiple possible shapes (e.g. `fetchAllCardSets()` in `scripts/cmsCardSet.js` checks for `Array.isArray(data)`, `data.body` as a string, `data.body` as an array, and `data.Items` all in the same function). This strongly suggests the underlying Lambdas have been rewritten/tweaked over time without the response contract being fully stabilized.
 - **`published: true/false` in `Blogs` and `blogStatus: "OK"/"staged"` in `Cards`** are the site's lightweight draft/publish workflow — see `DATA_MODEL.md` and `CMS_GUIDE.md`.

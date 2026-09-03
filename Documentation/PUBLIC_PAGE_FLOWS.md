@@ -189,6 +189,21 @@ static intro copy keyed by `pageName` (`classicWax`/`junkWax`/`timmies`/
 - Print button (inside the modal) → a plain `onclick="window.print()"`
   — no JS function, relies entirely on the `@media print` CSS rules
   scoped to `body.checklist-modal-open`.
+- "⬇ Download PDF" button (inside the modal, alongside Print — additive,
+  not a replacement; Print is untouched) → `exportChecklistPdf()`
+  (`wax.js`). Filters `currentChecklistItems` the same way the "Rookies
+  only" checkbox does before building the file, so a download taken
+  with the filter on only contains the filtered cards. Builds the PDF
+  client-side via jsPDF (cdnjs, pinned to `4.2.1`) plus 3 small embedded
+  font files (`scripts/fonts/bebasNeue-normal.js`,
+  `scripts/fonts/sourceSans3-normal.js`,
+  `scripts/fonts/sourceSans3-bold.js`); all four scripts are injected
+  lazily on first click via a small `loadJsPdf()` loader and cached, not
+  loaded as static `<script>` tags on page load. The grouping/sorting
+  logic (`buildChecklistGroups()`) is shared with the on-screen renderer
+  so the two stay in sync from one source of truth. See `FRONTEND.md`'s
+  "Checklist display" section for the full PDF layout details (masthead,
+  2-column balancing, headers/footers, etc.).
 - Close (`×`) → `closeChecklistModal()`; clicking the dark backdrop
   outside the modal content also triggers it, via a `document`-level
   click listener in `wax.js` that checks `event.target === overlay`.

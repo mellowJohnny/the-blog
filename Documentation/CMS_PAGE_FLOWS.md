@@ -5,19 +5,25 @@ The companion to `PUBLIC_PAGE_FLOWS.md`, covering all 10 pages under
 load, what each interaction triggers, and which API endpoint (named
 exactly as in `API_ENDPOINTS.md`) each function calls. Every page here
 loads `scripts/auth.js` first, which gates page access via Cognito —
-see `AUTH.md` — that's not repeated per page below. Several pages
-define `fetchCopyrightYear()` twice over (it exists, identically, in
-both `scripts/cms.js` and `scripts/helper.js`) since not every CMS page
-loads both files — where that matters for which copy actually runs,
-it's called out.
+see `AUTH.md` — that's not repeated per page below. The old
+1592-line `scripts/cms.js` no longer exists — it was split, moved
+verbatim with no logic changes, into four files by concern:
+`scripts/cmsBlog.js` (blog CRUD), `scripts/cmsCardSet.js` (card-set
+CRUD), `scripts/cmsImageBrowser.js` (the shared image-browser modal
+used by the two "create" forms), and `scripts/cmsFormUI.js`
+(`initTinyEditor()`). Each CMS page's `<script src>` tags were updated
+to load whichever of the four it actually needs. `fetchCopyrightYear()`
+used to be defined identically in both `cms.js` and `scripts/helper.js`
+— that duplicate is gone along with `cms.js`, so `helper.js`'s copy is
+now the only implementation anywhere; every page below that calls it
+resolves to `helper.js`, with no load-order ambiguity left to call
+out.
 
 ## `cms/wlcms.html` — CMS home
 
-**What loads**: `auth.js`, `cms.js`. **No `helper.js`** — this page is
-the one CMS page that doesn't load it at all.
+**What loads**: `auth.js`, `helper.js`.
 
-**On `window load`**: `fetchCopyrightYear()` — resolves to `cms.js`'s
-copy, since `helper.js` isn't loaded here.
+**On `window load`**: `fetchCopyrightYear()` (`helper.js`).
 
 **No API calls happen on this page at all** — it's a pure navigation
 hub, the only CMS page with that property.
@@ -39,20 +45,18 @@ hub, the only CMS page with that property.
 
 ## `cms/createBlogPost.html`
 
-**What loads**: `auth.js` and the TinyMCE CDN script in `<head>`;
-`helper.js` then `cms.js`, both placed just after `</head>` (this
-order means `cms.js`'s `fetchCopyrightYear()` is the one that actually
-runs, since it's defined last and overwrites `helper.js`'s identical
-copy).
+**What loads**: `auth.js` and the TinyMCE CDN script in `<head>`; then,
+placed just after `</head>` in this order: `helper.js`, `cmsBlog.js`,
+`cmsImageBrowser.js`, `cmsFormUI.js`.
 
-**On `window load`**: `fetchCopyrightYear()`, then
-`initTinyEditor('#postBody')` (`cms.js`) — initializes the shared
+**On `window load`**: `fetchCopyrightYear()` (`helper.js`), then
+`initTinyEditor('#postBody')` (`cmsFormUI.js`) — initializes the shared
 TinyMCE config (lists/link/image/code/autoresize plugins, 1000px wide,
 400-500px auto-resizing height) against the Post Body textarea.
 
 **User interactions**:
 - "Browse" button next to Image → `openBlogImageBrowser('imgName')`
-  (`cms.js`) — calls `fetchBlogImageList()`, which calls **List images
+  (`cmsImageBrowser.js`) — calls `fetchBlogImageList()`, which calls **List images
   in the bucket** and filters the result client-side to the `img/blog/`
   prefix, then `renderBlogImageList()` draws a thumbnail grid into
   `#imageList`. Clicking a thumbnail writes the **complete S3 URL**
@@ -66,7 +70,7 @@ TinyMCE config (lists/link/image/code/autoresize plugins, 1000px wide,
   set** picker's state, so typing here filtered against whatever
   empty/stale card-set image list happened to be in memory rather than
   the blog images actually shown.)
-- "Upload" button in the modal → `uploadNewImage()` (`cms.js`) —
+- "Upload" button in the modal → `uploadNewImage()` (`cmsImageBrowser.js`) —
   branches on which target-field variable is set (`_imageBrowserTargetFieldId`
   vs `_blogImageTargetFieldId`) to pick the S3 directory; since this
   page only ever calls `openBlogImageBrowser()`, it correctly resolves
@@ -76,9 +80,9 @@ TinyMCE config (lists/link/image/code/autoresize plugins, 1000px wide,
   `renderBlogImageList()` and sets `#imgName` to the upload response's
   `finalUrl` (a full URL, matching the click-a-thumbnail behavior
   above).
-- Close (`×`) → `closeImageBrowser()`.
+- Close (`×`) → `closeImageBrowser()` (`cmsImageBrowser.js`).
 - "Submit Post" button → `createBlogPost(published, title, imgName,
-  imgCap, author, blogType)` (`cms.js`) — validates `title` is
+  imgCap, author, blogType)` (`cmsBlog.js`) — validates `title` is
   non-blank (`await cmsAlert(...)` + refocus the field if not), then
   reads the TinyMCE body via `tinymce.activeEditor.getContent()` /
   `getContent({format:"text"})` and validates it's non-blank the same
@@ -95,14 +99,13 @@ image) — see `DATA_MODEL.md`'s `Blogs.img` note.
 
 ## `cms/createCardSet.html`
 
-**What loads**: `auth.js` and the TinyMCE CDN script in `<head>`; then
-`cms.js`, `wax.js`, `helper.js` (in that order — `helper.js` loaded
-last, so **its** `fetchCopyrightYear()` is the one that runs here, the
-opposite of `createBlogPost.html`). `wax.js` doesn't appear to back
-anything this page actually calls — none of its functions
-(`fetchCardSetsByYear`, `displayCardSet`, `castVote`, the checklist
-modal functions) are referenced anywhere in this page's markup or
-inline scripts.
+**What loads**: `auth.js` and the TinyMCE CDN script in `<head>`; then,
+placed just after `</head>` in this order: `cmsCardSet.js`,
+`cmsImageBrowser.js`, `cmsFormUI.js`, `wax.js`, `helper.js`. `wax.js`
+doesn't appear to back anything this page actually calls — none of its
+functions (`fetchCardSetsByYear`, `displayCardSet`, `castVote`, the
+checklist modal functions) are referenced anywhere in this page's
+markup or inline scripts.
 
 **On `window load`**: `fetchCopyrightYear()`, then
 `initTinyEditor('#postBody')` — same as `createBlogPost.html`.
@@ -110,7 +113,7 @@ inline scripts.
 **User interactions**:
 - "Browse" buttons next to Header/Footer Image Name →
   `openImageBrowser('headerImgName')` / `openImageBrowser('footerImgName')`
-  (`cms.js`) — calls `fetchImageList()` (**List images in the bucket**,
+  (`cmsImageBrowser.js`) — calls `fetchImageList()` (**List images in the bucket**,
   filtered client-side to `img/cards/`), `renderImageList()` draws the
   thumbnail grid. Clicking a thumbnail writes just the bare
   **filename** into the target field (not a full URL — the `Cards`
@@ -119,16 +122,16 @@ inline scripts.
 - Image search box (`oninput="filterImageList()"`) — correctly wired
   on this page, since `openImageBrowser()` is what actually populated
   the state `filterImageList()` reads.
-- "Upload" button → `uploadNewImage()` — same function as
-  `createBlogPost.html`; here `_imageBrowserTargetFieldId` is the one
-  set, so it resolves to `img/cards/`, re-runs
+- "Upload" button → `uploadNewImage()` (`cmsImageBrowser.js`) — same
+  function as `createBlogPost.html`; here `_imageBrowserTargetFieldId`
+  is the one set, so it resolves to `img/cards/`, re-runs
   `fetchImageList()`/`renderImageList()`, and sets the target field to
   the bare `fileName` (not `finalUrl`) on success.
-- Close (`×`) → `closeImageBrowser()`.
+- Close (`×`) → `closeImageBrowser()` (`cmsImageBrowser.js`).
 - "Submit Post" button → `createCardSet(blogStatus, seoPageTitle,
   seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets,
   stars, formats, year, headerImgName, footerImgName, mfg, blogCat)`
-  (`cms.js`) — three separate validation checks, each its own `await
+  (`cmsCardSet.js`) — three separate validation checks, each its own `await
   cmsAlert(...)` + refocus + early return: `setName` non-blank, `year`
   non-blank, then the TinyMCE body non-blank. Sets the submit button's
   "Crossing Fingers..." state, then calls **Create card set**. Same
@@ -140,13 +143,12 @@ inline scripts.
 
 ## `cms/pickBlog.html`
 
-**What loads**: `auth.js`, `cms.js`. No `helper.js` — like
-`wlcms.html`, `fetchCopyrightYear()` here resolves to `cms.js`'s copy.
-Two separate inline `<script>` blocks each register their own `window
-load` listener (rather than one combined listener) — both fire, in
-the order they were attached.
+**What loads**: `auth.js`, `cmsBlog.js`, `helper.js` (in that order, in
+`<head>`). Two separate inline `<script>` blocks each register their
+own `window load` listener (rather than one combined listener) — both
+fire, in the order they were attached.
 
-**On `window load`** (first listener): `getBlogsForUpdate()` (`cms.js`)
+**On `window load`** (first listener): `getBlogsForUpdate()` (`cmsBlog.js`)
 — calls **Get all live blogs (for the edit picker)** with the Cognito
 `Authorization` header, then groups the result by `blogType` (via
 `BLOG_TYPE_LABELS`), inserting an `<h2>` divider each time the type
@@ -156,7 +158,7 @@ each one a link to `blogEdit.html?blogID=<id>&blogType=<type>` — into
 instead. `fetchCopyrightYear()` also runs in this same listener.
 
 **On `window load`** (second listener): `getStagedBlogsForUpdate()`
-(`cms.js`) — same shape, calling **Get all staged (draft) blogs** instead,
+(`cmsBlog.js`) — same shape, calling **Get all staged (draft) blogs** instead,
 grouping the same way but inserting an `<h3>` divider (not `<h2>` —
 a small, harmless inconsistency versus the live-list divider above)
 into `#listStagedBlogsDiv`, empty case falling back to
@@ -167,13 +169,13 @@ built by `displayBlogs()`/`displayStagedBlogs()`.
 
 ## `cms/pickCardSet.html`
 
-**What loads**: `auth.js`, `cms.js`. No `helper.js` (same as
-`pickBlog.html`). Two separate inline `window load` listeners again —
+**What loads**: `auth.js`, `cmsCardSet.js`, `helper.js` (in that order,
+in `<head>`). Two separate inline `window load` listeners again —
 this time `fetchCopyrightYear()` is grouped into the **second**
 listener (alongside the staged-sets fetch), the opposite grouping from
 `pickBlog.html`, where it's in the first.
 
-**On `window load`** (first listener): `fetchAllCardSets()` (`cms.js`,
+**On `window load`** (first listener): `fetchAllCardSets()` (`cmsCardSet.js`,
 `async`) — calls **Get all live card sets (for the edit picker)** with the
 Authorization header, tolerantly unwraps whichever response shape comes
 back (raw array / `data.body` as a JSON string / `data.body` as an
@@ -184,7 +186,7 @@ array / `data.Items`), sorts by `blogCat` then `year`, groups with an
 `#noBlogsDiv`.
 
 **On `window load`** (second listener): `fetchAllStagedCardSets()`
-(`cms.js`, `async`) + `fetchCopyrightYear()`. The staged fetch calls
+(`cmsCardSet.js`, `async`) + `fetchCopyrightYear()` (`helper.js`). The staged fetch calls
 **Get all staged (draft) card sets**, same tolerant unwrap, then applies a
 defensive fallback — any staged item with a `mfg` value but no
 `blogCat` (a record predating that field, or created directly in
@@ -196,27 +198,27 @@ into `#stagedBlogsDiv`. Empty result → `#noStagedBlogsDiv`.
 
 ## `cms/blogEdit.html`
 
-**What loads**: `auth.js` and the TinyMCE CDN script in `<head>`; then
-(unusually, placed right before `<body>` rather than inside `<head>`
-like every other CMS page) `helper.js` then `cms.js` — `cms.js` loaded
-last, so its `fetchCopyrightYear()` wins here. The `blogID`/`blogType`
-query-param extraction and the `window load` listener live together in
-that same post-`</head>` script block.
+**What loads**: `auth.js` and the TinyMCE CDN script, plus (in that
+order) `helper.js`, `cmsBlog.js`, `cmsFormUI.js`, all inside `<head>`.
+The `blogID`/`blogType` query-param extraction and the `window load`
+listener live together in a separate inline `<script>` block right
+after `</head>`.
 
-**On `window load`**: `fetchBlogByID(blogID, blogType)` (`cms.js`) —
+**On `window load`**: `fetchBlogByID(blogID, blogType)` (`cmsBlog.js`) —
 calls **Get a single blog by ID**, with the Authorization header. If
 `data.item` is missing, shows "Blog not found." in `#errorDiv` and
-stops; otherwise calls `populateBlog(blog)`, which sets the TinyMCE
-content via `tinymce.get("postBody").setContent(blog.postBody)`,
-rebuilds the Published `<select>`'s two `<option>`s with whichever is
-currently true marked `selected`, and fills `title`/`imgName`/`imgCap`/
+stops; otherwise calls `populateBlog(blog)` (internal to `cmsBlog.js`),
+which sets the TinyMCE content via
+`tinymce.get("postBody").setContent(blog.postBody)`, rebuilds the
+Published `<select>`'s two `<option>`s with whichever is currently
+true marked `selected`, and fills `title`/`imgName`/`imgCap`/
 `blogType` (disabled)/`time` (disabled) directly. Also runs
-`fetchCopyrightYear()` and `initTinyEditor('#postBody')` in the same
-listener.
+`fetchCopyrightYear()` (`helper.js`) and `initTinyEditor('#postBody')`
+(`cmsFormUI.js`) in the same listener.
 
 **User interactions**:
 - "Update Post" button → `updateBlogPost(title, imgName, imgCap,
-  published, blogType, time, blogID)` (`cms.js`) — **no client-side
+  published, blogType, time, blogID)` (`cmsBlog.js`) — **no client-side
   required-field validation at all** (unlike the create form for the
   same content type) — it proceeds straight to submitting. Sets the
   submit button's "Crossing Fingers..." state, reads the TinyMCE
@@ -230,7 +232,7 @@ listener.
   stays on the page; on malformed JSON: `await cmsAlert("Unexpected
   server response.")`.
 - "Delete Post" button → `deleteBlogPost(blogID, blogType, time)`
-  (`cms.js`) — `await cmsConfirm("Delete this blog post? This cannot be
+  (`cmsBlog.js`) — `await cmsConfirm("Delete this blog post? This cannot be
   undone.")` first; if cancelled, nothing else happens. If confirmed,
   calls **Delete blog post** with the Authorization header. On success:
   `await cmsAlert(result.message)` then redirect to `pickBlog.html`; on
@@ -243,16 +245,18 @@ out (`<!-- ... onclick="openPreview()" ... -->`) — unlike
 ## `cms/setEdit.html`
 
 **What loads**: `auth.js` and the TinyMCE CDN script in `<head>`; then
-`cms.js`, `wax.js`, `helper.js` (`helper.js` loaded last, wins for
-`fetchCopyrightYear()`). The `setID` extraction and `window load`
-listener are together in `<head>` (unlike `blogEdit.html`'s equivalent
-block, which sits after `</head>`).
+`cmsCardSet.js`, `cmsFormUI.js`, `wax.js`, `helper.js` (in that order,
+all in `<head>`). The `setID` extraction and `window load` listener
+are together in that same `<head>` block, after those script tags
+(unlike `blogEdit.html`'s equivalent block, which sits after
+`</head>`).
 
-**On `window load`**: `fetchCardSetByID(setID)` (`cms.js`) — calls
+**On `window load`**: `fetchCardSetByID(setID)` (`cmsCardSet.js`) — calls
 **Get a single card set by ID**, tolerantly unwraps the response the
 same way `fetchAllCardSets()` does, and takes `items[0]`. Empty result
 shows "these aren't the Droids you're looking for..." in `#errorDiv`;
-otherwise calls `populateCardSet(...)` (15 positional args), which sets
+otherwise calls `populateCardSet(...)` (15 positional args, internal to
+`cmsCardSet.js`), which sets
 the TinyMCE body via `tinymce.activeEditor.selection.setContent(postBody)`
 — note this is yet a **third** distinct way this codebase inserts
 content into TinyMCE (`createCardSet.html`/`createBlogPost.html` never
@@ -261,18 +265,19 @@ need to since they start blank; `blogEdit.html` uses
 `<select>`'s options with the correct one marked `selected`, and fills
 every other field directly (`setName` and `year` are populated but
 `disabled`/`readonly` in the HTML, so they display but can't be
-hand-edited). Also runs `fetchCopyrightYear()` and
-`initTinyEditor('#postBody')`.
+hand-edited). Also runs `fetchCopyrightYear()` (`helper.js`) and
+`initTinyEditor('#postBody')` (`cmsFormUI.js`).
 
 **User interactions**:
 - "Browse" buttons (Header/Footer Image Name) → same
   `openImageBrowser()`/`fetchImageList()`/`renderImageList()`/
-  `uploadNewImage()` flow as `createCardSet.html`, writing a bare
-  filename into the target field.
+  `uploadNewImage()` flow as `createCardSet.html` (`cmsImageBrowser.js`),
+  writing a bare filename into the target field.
 - "Update Post" button → `updateCardSet(blogStatus, seoPageTitle,
   seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets,
-  stars, formats, year, headerImgName, footerImgName, mfg)` (`cms.js`)
-  — no client-side validation, same as `updateBlogPost()`. Sets the
+  stars, formats, year, headerImgName, footerImgName, mfg)`
+  (`cmsCardSet.js`) — no client-side validation, same as
+  `updateBlogPost()`. Sets the
   submit button state, reads `tinymce.activeEditor.getContent()`, then
   calls **Update card set**. This Lambda's response shape isn't
   reliable (plain string / `{message}` / `{body}`, itself either a JSON
@@ -282,10 +287,11 @@ hand-edited). Also runs `fetchCopyrightYear()` and
   genuine failure never gets shown as a false success). `await
   cmsAlert(message)` always runs; the redirect to `pickCardSet.html`
   only fires when `response.ok`.
-- "Preview" button → `openPreview()` (`cms.js`) — reads the current
-  (possibly unsaved) form field values plus
-  `tinymce.get("postBody").getContent()`, and calls `renderPreview(...)`,
-  which builds the same kind of set-details table `displayCardSet()`
+- "Preview" button → `openPreview()` (`cmsCardSet.js`) — reads the
+  current (possibly unsaved) form field values plus
+  `tinymce.get("postBody").getContent()`, and calls `renderPreview(...)`
+  (internal to `cmsCardSet.js`), which builds the same kind of
+  set-details table `displayCardSet()`
   renders on the live site, into `#previewContainer`, then shows
   `#previewModal`. **Purely client-side — no API call.** Two things
   make this not a perfect mirror of the real page: it hardcodes the S3
@@ -294,10 +300,10 @@ hand-edited). Also runs `fetchCopyrightYear()` and
   `rowspan="7"` on the header image cell — it never renders a Checklist
   row, unlike the live `displayCardSet()`, which bumps that to `8` when
   `hasChecklist` is true.
-- Close preview (`×`) → `closePreview()` — hides the modal and clears
-  `#previewContainer`.
-- "Delete Set" button → `deleteCardSet(setID, setName, year)` (`cms.js`)
-  — `await cmsConfirm("Delete this card set? This cannot be undone.")`
+- Close preview (`×`) → `closePreview()` (`cmsCardSet.js`) — hides the
+  modal and clears `#previewContainer`.
+- "Delete Set" button → `deleteCardSet(setID, setName, year)`
+  (`cmsCardSet.js`) — `await cmsConfirm("Delete this card set? This cannot be undone.")`
   first. If confirmed, calls **Delete card set**. On success: `await
   cmsAlert(result.message)` then redirect to `pickCardSet.html`; on
   error: `await cmsAlert("Error deleting card set.")`.
@@ -305,9 +311,8 @@ hand-edited). Also runs `fetchCopyrightYear()` and
 ## `cms/uploadChecklist.html`
 
 **What loads**: `auth.js` and an inline `window load` listener
-(`fetchCopyrightYear()` only) in `<head>`; then `cms.js`,
-`checklistUpload.js`, `helper.js` after `</head>` (`helper.js` last,
-wins for `fetchCopyrightYear()`).
+(`fetchCopyrightYear()` only) in `<head>`; then `checklistUpload.js`,
+`helper.js` after `</head>`, in that order.
 
 **On `DOMContentLoaded`** (registered inside `checklistUpload.js`
 itself, separately from the page's own `window load` listener): wires
@@ -358,8 +363,13 @@ load on a page without the modal present.
 ## `cms/admin.html`
 
 **What loads**: `auth.js` and an inline `window load` listener
-(`fetchCopyrightYear()` only) in `<head>`; then `cms.js`,
-`adminTools.js`, `helper.js` after `</head>` (`helper.js` last, wins).
+(`fetchCopyrightYear()` only) in `<head>`; then `cmsBlog.js`,
+`adminTools.js`, `helper.js` after `</head>`, in that order. Notably,
+`admin.html` itself never calls anything in `cmsBlog.js` directly — it's
+loaded because `adminTools.js` internally references the global
+`BLOG_TYPE_LABELS` constant, which used to arrive for free via the old
+`cms.js` and now lives in `cmsBlog.js`. A non-obvious cross-file
+dependency, not a direct function call from this page.
 
 **No automatic API calls on load** — both checks below only run when
 their button is clicked.

@@ -60,12 +60,15 @@ them to a crawler (or a human visitor navigating by link).
 | File | Responsibility |
 |---|---|
 | `blogs.js` | Blog intro copy (`renderBlogIntro()`), `fetchBlogs()`/pagination/rendering for the blog stream, and the homepage weather widget (calls OpenWeatherMap directly from the browser using the visitor's geolocation). |
-| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. |
+| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. |
 | `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), hamburger menu toggle, cookie helper, and copyright-year footer. |
 | `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise). See "Player search" below. |
 | `adminTools.js` | `cms/admin.html` support code: a growing set of self-service site-health checks (broken images, checklist-to-review linkage), each its own function calling the site's existing public read APIs directly. See `CMS_GUIDE.md`'s "Admin Tools" section. |
 | `auth.js` | Cognito OAuth2 code exchange + token refresh, gates every `/cms` page. See `AUTH.md`. |
-| `cms.js` | All CMS create/edit/list logic + the S3 image browser/upload modal + TinyMCE init. See `CMS_GUIDE.md`. |
+| `cmsBlog.js` | Blog post CRUD: `createBlogPost`, `updateBlogPost`, `deleteBlogPost`, `getBlogsForUpdate`, `getStagedBlogsForUpdate`, `displayBlogs`, `displayStagedBlogs`, `fetchBlogByID`, `populateBlog`, and the `BLOG_TYPE_LABELS` lookup object. One of 4 files split out of the former `scripts/cms.js` (1592 lines, deleted) on a by-concern basis, moved verbatim with no logic changes. See `CMS_GUIDE.md`. |
+| `cmsCardSet.js` | Card-set review CRUD: `createCardSet`, `updateCardSet`, `deleteCardSet`, `fetchAllCardSets`, `fetchAllStagedCardSets`, `displayCardSets`, `displayStagedCardSets`, `fetchCardSetByID`, `populateCardSet`, `openPreview`, `renderPreview`, `closePreview`, and the `CARDSET_CATEGORY_LABELS` lookup object. Split out of the former `cms.js` alongside `cmsBlog.js` — see that row above. See `CMS_GUIDE.md`. |
+| `cmsImageBrowser.js` | The S3 image browser/upload modal, both families together since they share code (card-set images and blog images both use `uploadNewImage()`/`closeImageBrowser()`): `fetchImageList`, `renderImageList`, `openImageBrowser`, `filterImageList`, `openBlogImageBrowser`, `fetchBlogImageList`, `renderBlogImageList`, `filterBlogImageList`, `uploadNewImage`, `closeImageBrowser`. Split out of the former `cms.js` — see `cmsBlog.js` row above. See `CMS_GUIDE.md`. |
+| `cmsFormUI.js` | Generic CMS form UI: `initTinyEditor` (TinyMCE init) plus the submit-button state helpers (`cmsButtonSubmit`, `cmsCreateButtonReset`, `changeMeBack`, `cmsUpdateButtonReset`, `changeMeBackUpdate`). Split out of the former `cms.js` — see `cmsBlog.js` row above. `fetchCopyrightYear()`, also formerly in `cms.js`, was dropped entirely during the split rather than migrated to any of these 4 files — it was a byte-identical duplicate of the copy already in `helper.js`, and every page that used the `cms.js` copy already loaded (or gained) `helper.js`. See `CMS_GUIDE.md`. |
 | `adminSMS.js` | Autobus SMS admin page logic: character/segment counter, GSM-7 vs Unicode encoding detection, broadcast send, bulk subscriber import, add-subscriber modal. See `CMS_GUIDE.md`. |
 | `checklistUpload.js` | `cms/uploadChecklist.html` support code: the upload/parse modal (drag-and-drop, mirrors `adminSMS.js`'s bulk-import modal structure/CSS), rendering the parsed result as an editable table, and `saveChecklist()`. See `CMS_GUIDE.md`. |
 | `cardSlotCalc.js` | `computeGridSpace()` — the Card-O-Matic slot/page calculator, used only by `cardChecker.html`. **No longer live** — `cardChecker.html` moved to `Old HTML Pages/` on 2026-08-15 (see "Public pages" above); this row previously said "Still live," which went stale when that move happened and wasn't updated here. |
@@ -302,12 +305,19 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
   mobile (`@media (max-width: 600px)`, matching the site's one
   breakpoint — see "Mobile / responsive design" above); cards render in
   a 3-column CSS multi-column layout (1 column under 600px).
-- **Grouping/ordering**: `renderChecklistGroups()` groups the fetched
-  items main-set cards first, then each insert set by name, and sorts
-  within each group by `sortIndex` — never by raw fetch order, since
-  the DynamoDB sort key sorts as a plain string (`"INSERT#"` sorts
-  before `"MAIN#"`, and card numbers don't sort numerically) — see
-  `DATA_MODEL.md`.
+- **Grouping/ordering**: `renderChecklistGroups(items)` groups the
+  fetched items main-set cards first, then each insert set by name, and
+  sorts within each group by `sortIndex` — never by raw fetch order,
+  since the DynamoDB sort key sorts as a plain string (`"INSERT#"`
+  sorts before `"MAIN#"`, and card numbers don't sort numerically) —
+  see `DATA_MODEL.md`. The actual grouping/sorting/labeling logic lives
+  in a pure helper, `buildChecklistGroups(items)`, extracted out of
+  `renderChecklistGroups()` when PDF export (below) was added —
+  it returns already-grouped/sorted/labeled data (`[{title, cards},
+  ...]`, "Main Set" first) with no DOM involved, and both the on-screen
+  HTML renderer and `buildChecklistPdfDocument()` call it, so the two
+  outputs share one source of truth for grouping instead of two
+  hand-maintained implementations that could drift apart.
 - **Insert set group titles carry a type suffix**: each insert set's
   heading renders as `"<name> - Insert Set"` (e.g. `"Powerhouse
   Pillars - Insert Set"`), except when any card in that group has
@@ -360,6 +370,63 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
   user-controlled "Headers and footers" checkbox in the print dialog,
   not something the page can override, so this is a second, clean
   footer shown only for the parts of the print output that need one.
+- **Download PDF**: a "⬇ Download PDF" button sits alongside Print in
+  `.checklist-modal-controls` and calls `exportChecklistPdf()` in
+  `wax.js` — a separate, additive feature, not a replacement; Print is
+  untouched. It builds the file client-side with jsPDF (cdnjs, pinned
+  to `4.2.1`) plus three small font files —
+  `scripts/fonts/bebasNeue-normal.js`, `scripts/fonts/sourceSans3-normal.js`,
+  `scripts/fonts/sourceSans3-bold.js`, each just a global base64-encoded
+  TTF string. Fonts come from Google Fonts (github.com/google/fonts):
+  Bebas Neue as-is (matching the masthead font used elsewhere on the
+  site), and Source Sans 3 — which only ships as a variable font
+  upstream — instantiated to static Regular/Bold weights via a one-time
+  `fonttools.varLib.instancer` step before being base64-embedded. All
+  four scripts (jsPDF + 3 fonts, ~1MB combined) are loaded lazily:
+  `loadJsPdf()` is a small promise-chain loader that injects `<script>`
+  tags dynamically on first click of Download PDF and caches the result
+  so a second click doesn't re-fetch, rather than static `<script>` tags
+  in the HTML — most visitors who open a checklist never click Download,
+  so it shouldn't cost anything on a normal page load.
+
+  `exportChecklistPdf()` filters `currentChecklistItems` identically to
+  the on-screen "Rookies only" checkbox before building the PDF, so a
+  download taken while the filter is on only contains the filtered
+  cards. The document itself, built by `buildChecklistPdfDocument()`,
+  matches the on-screen/print look as closely as practical, letter-sized
+  with as many pages as needed:
+  - A masthead bar on page 1 only ("THE HELLA FILES" in embedded Bebas
+    Neue on a colored bar matching the on-screen masthead's background
+    color, with a small 4-direction offset behind the text approximating
+    the on-screen text-shadow/outline effect), then the set name as a
+    title.
+  - A genuine 2-column layout, not a naive "fill column 1, then column
+    2." It replicates the real CSS multi-column behavior where a group
+    title (`column-span: all` on screen) breaks the column flow and
+    forces a restart, and it balances each page's worth of content
+    evenly by height between the two columns rather than greedily
+    filling the first column to its limit — so a short group, or the
+    last partial page of a long group, doesn't leave one column (often
+    half the page) empty beside it. This balancing was added after a
+    real bug surfaced testing against actual production checklist data:
+    an 18-card insert set on the 2024-25 Tim Hortons set rendered
+    entirely in column 1, leaving column 2 empty, before the fix.
+  - Group titles get a colored bottom border matching the on-screen
+    `.checklist-modal-group-title` underline, and won't start a section
+    unless there's room for the title plus at least 3 card rows —
+    otherwise the section starts fresh on the next page/column, avoiding
+    a lonely 1-2-row orphan.
+  - Each card row shows an unfilled checkbox square (same idea as the
+    print-only checkbox above) plus card number, player name, and notes.
+  - A running header appears on every page after the first — the set
+    name in smaller gray text with a thin rule under it — so a reader
+    can tell which set they're looking at without scrolling back to
+    page 1.
+  - A footer appears on every page: copyright text on the left, "Page X
+    of Y" on the right.
+
+  New CSS: `.checklist-modal-pdf-btn` in `styles/styles.css`, styled to
+  match the existing `.checklist-modal-print-btn`.
 - **Known bug, deliberately not yet fixed**: `fetchPageTitle(setName)`
   appends a new `<title>` tag on every card-set render
   (`pageTitle.innerHTML += ...`) without clearing previous ones — paging

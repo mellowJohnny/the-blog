@@ -100,7 +100,7 @@ without changing that expectation first.
 - **URL**: `https://s4ge5t9w06.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: POST
 - **Body**: `{ published, title, imgName, imgCap, author, postBody, blogType }`
-- **Called from**: `createBlogPost()` in `scripts/cms.js` (used by `cms/createBlogPost.html`)
+- **Called from**: `createBlogPost()` in `scripts/cmsBlog.js` (used by `cms/createBlogPost.html`)
 - **Response**: `{ message }`
 - **Note**: this exact URL is the worked example in `Documentation/Creating A New Lambda.txt`, so this is likely the very first endpoint built for the site.
 - **No `Authorization` header sent** — see `AUTH.md`.
@@ -110,7 +110,7 @@ without changing that expectation first.
 - **URL**: `https://836pk40tsl.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: PUT
 - **Body**: `{ blogID, title, img, imgCap, published, blogType, time, postBody }`
-- **Called from**: `updateBlogPost()` in `scripts/cms.js` (used by `cms/blogEdit.html`)
+- **Called from**: `updateBlogPost()` in `scripts/cmsBlog.js` (used by `cms/blogEdit.html`)
 - **Response**: `{ message }`
 - **Lambda**: `Lambdas/updateBlogPost/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Plain `UpdateCommand` keyed on `blogType`+`time`.
 
@@ -118,21 +118,21 @@ without changing that expectation first.
 - **URL**: `https://j9dhm7nwhk.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: DELETE
 - **Body**: `{ blogID, blogType, time }`
-- **Called from**: `deleteBlogPost()` in `scripts/cms.js` (used by `cms/blogEdit.html`, confirmed with the user via `cmsConfirm()` first — see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section)
+- **Called from**: `deleteBlogPost()` in `scripts/cmsBlog.js` (used by `cms/blogEdit.html`, confirmed with the user via `cmsConfirm()` first — see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section)
 - **Response**: `{ message }` on success, `{ error }` on failure (404 if the `blogID`/`blogType`/`time` combination doesn't match an existing item, since the Lambda's `DeleteItemCommand` uses `blogType`+`time` as the key with a `ConditionExpression` requiring `blogID` to also match as a safety check)
 - **Lambda**: `Lambdas/deleteBlogHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`)
 
 ### Get all live blogs (for the edit picker)
 - **URL**: `https://pqf303gfq6.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
-- **Called from**: `getBlogsForUpdate()` in `scripts/cms.js` (used by `cms/pickBlog.html`)
+- **Called from**: `getBlogsForUpdate()` in `scripts/cmsBlog.js` (used by `cms/pickBlog.html`)
 - **Response**: `{ items: [...full blog records...] }`. **Corrected 2026-08-15**: previously documented as `{ blogs: [{ title, blogID, blogType }] }`, a narrow projection — the real Lambda (`Lambdas/listBlogsForUpdate/`) does a full unfiltered `Scan` on `Blogs` (`published = true`) with no `ProjectionExpression` at all, so every field comes back, not just `title`/`blogID`/`blogType`. The frontend just doesn't use the extra fields.
 - **Lambda**: `Lambdas/listBlogsForUpdate/` (source in this repo — note the AWS function name doesn't match the frontend's `getBlogsForUpdate()` caller name; see `LAMBDA_FUNCTIONS.md`).
 
 ### Get all staged (draft) blogs
 - **URL**: `https://sh8girwnxg.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
-- **Called from**: `getStagedBlogsForUpdate()` in `scripts/cms.js` (used by `cms/pickBlog.html`)
+- **Called from**: `getStagedBlogsForUpdate()` in `scripts/cmsBlog.js` (used by `cms/pickBlog.html`)
 - **Response**: `{ items: [...full blog records...] }`. **Corrected 2026-08-15**: same story as "Get all live blogs" above — full `Scan` (`published = false`), full records, not a narrow projection.
 - **Lambda**: `Lambdas/getStagedBlogsForUpdate/` (source in this repo — see `LAMBDA_FUNCTIONS.md`).
 
@@ -140,7 +140,7 @@ without changing that expectation first.
 - **URL**: `https://gcd40hir88.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
 - **Query params**: `blogID`, `blogType`
-- **Called from**: `fetchBlogByID()` in `scripts/cms.js` (used by `cms/blogEdit.html`)
+- **Called from**: `fetchBlogByID()` in `scripts/cmsBlog.js` (used by `cms/blogEdit.html`)
 - **Response**: `{ item: { postBody, published, blogType, time, title, img, imgCap, ... } }`
 - **Lambda**: `Lambdas/getBlogByID/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). `Query` on `blogType` (partition key) + `FilterExpression` on `blogID` (404 if no match).
 
@@ -150,7 +150,7 @@ without changing that expectation first.
 - **URL**: `https://05uss9ffij.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: POST
 - **Body**: `{ blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, postBody, mfg, headerImgName, footerImgName, blogCat }`
-- **Called from**: `createCardSet()` in `scripts/cms.js` (used by `cms/createCardSet.html`)
+- **Called from**: `createCardSet()` in `scripts/cmsCardSet.js` (used by `cms/createCardSet.html`)
 - **Response**: `{ message }` on success; `{ error, details }` on failure (frontend reads `response.ok` to distinguish).
 - **Lambda**: `Lambdas/createCardPost/` (source in this repo — note the AWS function name doesn't match the frontend's `createCardSet()` caller name; its own header comment calls itself `createCardSet Lambda Function`, see `LAMBDA_FUNCTIONS.md`). Generates `setID` via `Math.random().toString(36)` (not a UUID). Hardcodes the S3 image URL prefix (`headerImg`/`footerImg`) server-side — worth knowing if image hosting ever moves off direct S3 URLs (a CloudFront-fronted image bucket was explored and shelved around 2026-08-15).
 
@@ -158,37 +158,37 @@ without changing that expectation first.
 - **URL**: `https://bb8yehibjb.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: PUT
 - **Body**: `{ blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, postBody, headerImgName, footerImgName, mfg }`
-- **Called from**: `updateCardSet()` in `scripts/cms.js` (used by `cms/setEdit.html`)
-- **Response**: accepted in several shapes — a plain string, `{ message }`, or `{ body }` (itself either a JSON string to parse or plain text). See `updateCardSet()` in `scripts/cms.js` for the exact unwrapping logic.
+- **Called from**: `updateCardSet()` in `scripts/cmsCardSet.js` (used by `cms/setEdit.html`)
+- **Response**: accepted in several shapes — a plain string, `{ message }`, or `{ body }` (itself either a JSON string to parse or plain text). See `updateCardSet()` in `scripts/cmsCardSet.js` for the exact unwrapping logic.
 - **Lambda**: `Lambdas/updateCardSet/` (source in this repo — see `LAMBDA_FUNCTIONS.md` for a real incident this Lambda caused on 2026-08-15: an unrelated CloudFront cache-invalidation side effect, sharing a try/catch with the actual DynamoDB update, started throwing 500s on every save after its target distribution was deleted — fixed by removing that side effect entirely).
 
 ### Delete card set
 - **URL**: `https://8q5ly5ixej.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: DELETE
 - **Body**: `{ setID, setName, year }`
-- **Called from**: `deleteCardSet()` in `scripts/cms.js` (used by `cms/setEdit.html`, confirmed with the user via `cmsConfirm()` first — see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section)
+- **Called from**: `deleteCardSet()` in `scripts/cmsCardSet.js` (used by `cms/setEdit.html`, confirmed with the user via `cmsConfirm()` first — see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section)
 - **Response**: `{ message }` on success, `{ error }` on failure (404 if the `setID`/`setName`/`year` combination doesn't match an existing item, since the Lambda's `DeleteItemCommand` uses `setName`+`year` as the key with a `ConditionExpression` requiring `setID` to also match as a safety check)
 - **Lambda**: `Lambdas/deleteCardSetHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`)
 
 ### Get all live card sets (for the edit picker)
 - **URL**: `https://tx7romovbd.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
-- **Called from**: `fetchAllCardSets()` in `scripts/cms.js` (used by `cms/pickCardSet.html`)
+- **Called from**: `fetchAllCardSets()` in `scripts/cmsCardSet.js` (used by `cms/pickCardSet.html`)
 - **Response**: tolerant of several shapes — a raw array, `{ body: "<json array>" }`, `{ body: [...] }`, or `{ Items: [...] }`.
 - **Lambda**: `Lambdas/getCardSets/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Queries the `blogStatus-year-index` GSI, `blogStatus = "OK"`, no projection (full items).
 
 ### Get all staged (draft) card sets
 - **URL**: `https://ecy21wzgkl.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
-- **Called from**: `fetchAllStagedCardSets()` in `scripts/cms.js` (used by `cms/pickCardSet.html`)
-- **Response**: same tolerant unwrapping as above; items include `setID`, `setName`, `blogCat`, `year`. **Fixed 2026-08-14**: the `getStagedCardSets` Lambda's `ProjectionExpression` originally only requested `setName, setID` from the `blogStatus-year-index` GSI, so `blogCat`/`year` came back `undefined` on every item — this silently broke both category grouping (everything fell back to "Other") and sort order (`year` comparisons were `NaN`). Fixed by expanding the projection to `setName, setID, blogCat, #yr` with `year` aliased via `ExpressionAttributeNames` (`year` is a DynamoDB reserved word, can't appear unescaped in a `ProjectionExpression`). `fetchAllStagedCardSets()` in `scripts/cms.js` also keeps a defensive fallback — a staged set with no `blogCat` but a `mfg` value is treated as `"reg"` — kept intentionally in case a record is ever created directly in DynamoDB without going through the CMS form.
+- **Called from**: `fetchAllStagedCardSets()` in `scripts/cmsCardSet.js` (used by `cms/pickCardSet.html`)
+- **Response**: same tolerant unwrapping as above; items include `setID`, `setName`, `blogCat`, `year`. **Fixed 2026-08-14**: the `getStagedCardSets` Lambda's `ProjectionExpression` originally only requested `setName, setID` from the `blogStatus-year-index` GSI, so `blogCat`/`year` came back `undefined` on every item — this silently broke both category grouping (everything fell back to "Other") and sort order (`year` comparisons were `NaN`). Fixed by expanding the projection to `setName, setID, blogCat, #yr` with `year` aliased via `ExpressionAttributeNames` (`year` is a DynamoDB reserved word, can't appear unescaped in a `ProjectionExpression`). `fetchAllStagedCardSets()` in `scripts/cmsCardSet.js` also keeps a defensive fallback — a staged set with no `blogCat` but a `mfg` value is treated as `"reg"` — kept intentionally in case a record is ever created directly in DynamoDB without going through the CMS form.
 - **Lambda**: `Lambdas/getStagedCardSets/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Same GSI as `Lambdas/getCardSets/`, filtered to `blogStatus = "staged"`.
 
 ### Get a single card set by ID
 - **URL**: `https://733bwunxq6.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
 - **Query params**: `setID`
-- **Called from**: `fetchCardSetByID()` in `scripts/cms.js` (used by `cms/setEdit.html`)
+- **Called from**: `fetchCardSetByID()` in `scripts/cmsCardSet.js` (used by `cms/setEdit.html`)
 - **Response**: array of one item (again tolerant of `{items:[...]}` / raw array / `{body:...}` / `{Items:[...]}`), containing `blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, postBody, year, mfg, size, subsets, stars, formats, setName, headerImgName, footerImgName`.
 - **Lambda**: `Lambdas/getCardSetByID/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). PartiQL `SELECT * FROM Cards WHERE setID=?`.
 
@@ -223,14 +223,14 @@ doesn't.
 - **URL**: `https://k95rdenpn5.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: POST
 - **Body**: `{ fileName, directory, contentType }` — `directory` is `"img/cards/"` or `"img/blog/"` depending on which image picker triggered the upload.
-- **Called from**: `uploadNewImage()` in `scripts/cms.js` (used by both create/edit forms' "Browse" image modal)
+- **Called from**: `uploadNewImage()` in `scripts/cmsImageBrowser.js` (used by both create/edit forms' "Browse" image modal)
 - **Response**: `{ uploadUrl, finalUrl }` — `uploadUrl` is a presigned S3 PUT URL the browser then uploads the raw file bytes to directly (bypassing this Lambda for the actual file transfer); `finalUrl` is the resulting public S3 URL.
 - **Lambda**: `Lambdas/cmsImageUploader/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). 300s presign expiry; sets `CacheControl: public, max-age=31536000, immutable` on the eventual S3 object itself (unrelated to the API response's own caching, if any).
 
 ### List images in the bucket
 - **URL**: `https://y3d5n8hq61.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
-- **Called from**: `fetchImageList()` / `fetchBlogImageList()` in `scripts/cms.js` (powers the image-browser modal on both create/edit forms)
+- **Called from**: `fetchImageList()` / `fetchBlogImageList()` in `scripts/cmsImageBrowser.js` (powers the image-browser modal on both create/edit forms)
 - **Response**: `{ files: [...] }` — full flat list of every object key in the bucket; the frontend filters client-side by prefix (`img/cards/` vs `img/blog/`).
 - **Lambda**: `Lambdas/cmsImagePicker/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). `ListObjectsV2Command` on the whole bucket, no server-side prefix filter.
 

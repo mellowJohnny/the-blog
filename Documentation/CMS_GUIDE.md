@@ -37,7 +37,7 @@ room to sit beside its parent at that width). Grouped page links:
 | `cms/admin.html` | Self-service site-health checks (broken images, checklist-to-review linkage) — see "Admin Tools" below. |
 
 All create/edit forms use a hosted **TinyMCE** WYSIWYG editor
-(`initTinyEditor()` in `scripts/cms.js`) for the body text — the
+(`initTinyEditor()` in `scripts/cmsFormUI.js`) for the body text — the
 frontend never reads a plain `<textarea>` value for the post body, it
 always pulls fresh HTML out of the active TinyMCE instance at submit
 time.
@@ -49,8 +49,8 @@ time.
 
 `pickBlog.html` and `pickCardSet.html` both show live and staged items
 side-by-side in two columns, grouped under headers by blog type /
-card set category (`BLOG_TYPE_LABELS`, `CARDSET_CATEGORY_LABELS` in
-`scripts/cms.js`). `fetchAllStagedCardSets()` also falls back to
+card set category (`BLOG_TYPE_LABELS` in `scripts/cmsBlog.js`,
+`CARDSET_CATEGORY_LABELS` in `scripts/cmsCardSet.js`). `fetchAllStagedCardSets()` also falls back to
 `blogCat = "reg"` when a staged card set has a `mfg` value but no
 `blogCat` — a defensive guard against records ever created directly in
 DynamoDB rather than through `createCardSet.html`'s form (which always
@@ -62,13 +62,15 @@ on top of.
 
 Every "Submit"/"Update"/"Delete" button on these forms is
 `type="button"` with an `onclick` handler that reads field `.value`s
-directly and calls a `scripts/cms.js` function — none of them are
+directly and calls a function in `scripts/cmsBlog.js` (blog forms) or
+`scripts/cmsCardSet.js` (card set forms) — none of them are
 `type="submit"` inside a real form-submission flow. That means the
 `required` HTML attribute on a field (and the `<sup>*</sup>` marker
 next to its label, styled red/bold via the `label sup` CSS rule) is
 purely **visual** — the browser's native required-field validation
-never actually fires on click. Each `create*()` function in
-`scripts/cms.js` re-implements that check by hand (blank/whitespace
+never actually fires on click. Each `create*()` function (in
+`scripts/cmsBlog.js` or `scripts/cmsCardSet.js`, depending on the form)
+re-implements that check by hand (blank/whitespace
 check + `cmsAlert()` (see "CMS alert / confirm modals" below) + `.focus()` back to
 the offending field, or `tinymce.activeEditor.focus()` for the
 TinyMCE-backed body fields) —
@@ -80,8 +82,8 @@ straight through to the Lambda (this is exactly what caused a 500 on
 
 ### CMS alert / confirm modals
 
-Every validation/success/error message across the CMS (`cms.js`,
-`checklistUpload.js`, `adminSMS.js`) goes through `cmsAlert(message)`,
+Every validation/success/error message across the CMS (`cmsBlog.js`,
+`cmsCardSet.js`, `checklistUpload.js`, `adminSMS.js`) goes through `cmsAlert(message)`,
 and every destructive/serious-action confirmation goes through
 `cmsConfirm(message)` — both in `scripts/helper.js` (kept there rather
 than a dedicated file, in line with the site owner's preference to grow
@@ -139,7 +141,8 @@ Lambdas, `Lambdas/deleteBlogHandler/` and `Lambdas/deleteCardSetHandler/` — se
 
 ### Redirect on success
 
-Every create/update/delete action in `scripts/cms.js` redirects to its
+Every create/update/delete action (in `scripts/cmsBlog.js` for blog
+posts, `scripts/cmsCardSet.js` for card sets) redirects to its
 content type's picker page on a confirmed success — "confirmed"
 meaning `response.ok` was checked (or, for `updateCardSet()`, whose
 Lambda doesn't reliably signal errors via response body shape — see
@@ -159,7 +162,7 @@ redirect either — see "Delete" above.)
 
 Both create/edit forms include a "Browse" button next to image fields
 that opens a shared modal (`#imageBrowserModal`, driven entirely by
-`scripts/cms.js`):
+`scripts/cmsImageBrowser.js`):
 
 1. Lists every image currently in the S3 bucket (filtered client-side to `img/blog/` or `img/cards/` depending on which form opened it), with thumbnails, via a search box.
 2. Clicking a thumbnail fills in the target form field and closes the modal.
@@ -186,7 +189,7 @@ save as-is, producing a URL that looks valid but 404s. See
 ### Preview
 
 `setEdit.html` has a "Preview" button (`openPreview()` in
-`scripts/cms.js`) that renders the card set exactly as it will appear
+`scripts/cmsCardSet.js`) that renders the card set exactly as it will appear
 on the live site, using the current (possibly unsaved) form values, in
 a modal — lets you check formatting before publishing. `createBlogPost.html`/`blogEdit.html` don't currently have an equivalent preview.
 

@@ -124,8 +124,8 @@ since that history predates this doc being kept current.
   check against a stale or mismatched `blogType`+`time` pair silently
   deleting the wrong post. CORS is hardcoded to allow only
   `https://www.mellowjohnny.cc`, same as the other two.
-- **Frontend**: `deleteBlogPost()` in `scripts/cms.js` shows a JS
-  `confirm()` dialog first (this is a destructive, irreversible
+- **Frontend**: `deleteBlogPost()` in `scripts/cmsBlog.js` shows a
+  `cmsConfirm()` dialog first (this is a destructive, irreversible
   action — no soft-delete/undo), then calls the Lambda and redirects
   to `cms/pickBlog.html` on success.
 
@@ -148,8 +148,8 @@ since that history predates this doc being kept current.
   check against a stale or mismatched `setName`+`year` pair silently
   deleting the wrong set. CORS is hardcoded to allow only
   `https://www.mellowjohnny.cc`, same as the others.
-- **Frontend**: `deleteCardSet()` in `scripts/cms.js` shows a JS
-  `confirm()` dialog first (destructive, irreversible — no
+- **Frontend**: `deleteCardSet()` in `scripts/cmsCardSet.js` shows a
+  `cmsConfirm()` dialog first (destructive, irreversible — no
   soft-delete/undo), then calls the Lambda and redirects to
   `cms/pickCardSet.html` on success.
 
@@ -421,7 +421,7 @@ since that history predates this doc being kept current.
 
 - **File**: `Lambdas/updateCardSet/index.mjs`. This is the "Update card set"
   Lambda (see `API_ENDPOINTS.md`) — backs `updateCardSet()` in
-  `scripts/cms.js`, used by `cms/setEdit.html`.
+  `scripts/cmsCardSet.js`, used by `cms/setEdit.html`.
 - **What it does**: a straightforward DynamoDB `UpdateCommand` on
   `Cards`, keyed on `setName`+`year`, setting every editable field.
   Also runs a TinyMCE cleanup pass on `postBody` before saving (strips
@@ -433,7 +433,7 @@ since that history predates this doc being kept current.
   that (unrelated, apparently-unused) distribution, every subsequent
   card set update started returning a 500 — even though the actual
   DynamoDB write was succeeding every time. The frontend
-  (`updateCardSet()` in `cms.js`) also had its own bug that masked
+  (`updateCardSet()` in `cmsCardSet.js`) also had its own bug that masked
   this for a while: it defaulted to displaying `"Update complete."`
   for any response shape it didn't recognize, so the alert looked like
   success even on a genuine failure. Both were fixed together: the
@@ -653,7 +653,7 @@ here for history even though the source itself is gone:
 - **`fetchCardSetPreview`** — looked like an earlier, server-side
   attempt at the CMS "Preview" feature: queried staged card sets by
   `year`+`blogCat`. The *current* Preview button (`openPreview()` in
-  `scripts/cms.js`, documented in `CMS_GUIDE.md`) is purely
+  `scripts/cmsCardSet.js`, documented in `CMS_GUIDE.md`) is purely
   client-side, rendering from the current unsaved form values with no
   API call at all — this Lambda predated that and was never removed
   from AWS.
@@ -692,7 +692,7 @@ section title:
 | `Lambdas/getCardSetByID/` | Get a single card set by ID | PartiQL `SELECT * FROM Cards WHERE setID=?`. |
 | `Lambdas/getCardSetsByYear/` | Get card sets by year | Queries the `blogCat-year-index` GSI. Returns `Cache-Control: public, max-age=1800`; its own comment says "CloudFront cache" but no CloudFront actually sits in front of it (see `API_ENDPOINTS.md`'s caching note) — today this header is browser-only. |
 | `Lambdas/cmsImageUploader/` | Get S3 upload URL (presigned PUT) | `getSignedUrl()` for a `PutObjectCommand`, 300s expiry, sets `CacheControl: public, max-age=31536000, immutable` on the eventual S3 object. |
-| `Lambdas/cmsImagePicker/` | List images in the bucket | `ListObjectsV2Command` on the whole bucket, no prefix filter server-side (filtering happens client-side in `cms.js`). |
+| `Lambdas/cmsImagePicker/` | List images in the bucket | `ListObjectsV2Command` on the whole bucket, no prefix filter server-side (filtering happens client-side in `cmsImageBrowser.js`). |
 | `Lambdas/bulkSubscriberUpload/` | Bulk import subscribers | Truncates the target table (`process.env.TABLE_NAME` — not hardcoded to `Subscribers`/`SubscribersTest`, so which one it hits depends on this Lambda's environment config) via paginated `Scan` + chunked `BatchWriteItem` deletes, then bulk-imports the new list the same way, with exponential-backoff retry on unprocessed items. |
 
 ## `Lambda Functions/` — separate legacy/prototype code, still not confirmed current
