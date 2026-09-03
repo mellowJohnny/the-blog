@@ -617,6 +617,12 @@ function buildChecklistPdfDocument(setName, groups) {
   const checkboxSize = 9;
   const lineHeight = 14;
 
+  // Continuation pages (2+) reserve a short band above marginTop for
+  // the running header (set name) drawn in the per-page pass below -
+  // page 1 doesn't need this, its content already starts well below
+  // marginTop thanks to the masthead + title.
+  const contentTop = marginTop + 20;
+
   // Same 2-column split .checklist-modal-cards uses on screen/print
   // (styles.css:1538-1541's `columns: 3`/print's 2-column override,
   // gap converted from its 32px to ~24pt).
@@ -627,13 +633,6 @@ function buildChecklistPdfDocument(setName, groups) {
   }
 
   let y = marginTop;
-
-  function ensureSpace(neededHeight) {
-    if (y + neededHeight > pageHeight - marginBottom) {
-      doc.addPage();
-      y = marginTop;
-    }
-  }
 
   // Draws `text` once per small diagonal offset in outlineColor, then
   // once more in fillColor at the true position - a crude but
@@ -703,8 +702,8 @@ function buildChecklistPdfDocument(setName, groups) {
   function ensureRoomForTitle(titleHeight) {
     if (y + titleHeight > pageHeight - marginBottom) {
       doc.addPage();
-      y = marginTop;
-      resetBand(marginTop);
+      y = contentTop;
+      resetBand(contentTop);
     }
   }
 
@@ -715,8 +714,8 @@ function buildChecklistPdfDocument(setName, groups) {
     } else {
       doc.addPage();
       currentColumn = 0;
-      y = marginTop;
-      resetBand(marginTop);
+      y = contentTop;
+      resetBand(contentTop);
     }
   }
 
@@ -767,14 +766,38 @@ function buildChecklistPdfDocument(setName, groups) {
     y = Math.max(columnBottoms[0], columnBottoms[1]) + 10;
   });
 
-  // Footer - same text as #checklistModalPrintFooter, once at the end
-  // of the last page (not repeated per page, matching the plan).
-  ensureSpace(24);
-  doc.setFont("SourceSans3", "normal");
-  doc.setFontSize(8.5);
-  doc.setTextColor(120);
-  doc.text(`© ${new Date().getFullYear()} www.mellowjohnny.cc`, pageWidth / 2, pageHeight - 28, { align: "center" });
-  doc.setTextColor(0);
+  // Footer (every page) + running header (every page after the first) -
+  // drawn in a pass over the finished document rather than inline
+  // during layout, since the final page count isn't known until all
+  // groups/cards have been placed.
+  const totalPages = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i);
+
+    if (i > 1) {
+      // Small running header - just the set name, not the full
+      // masthead/title treatment page 1 has, within the contentTop
+      // band reserved above.
+      doc.setFont("SourceSans3", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(90);
+      doc.text(setName, marginX, marginTop);
+      doc.setDrawColor(200);
+      doc.setLineWidth(0.75);
+      doc.line(marginX, marginTop + 6, pageWidth - marginX, marginTop + 6);
+      doc.setDrawColor(0);
+      doc.setTextColor(0);
+    }
+
+    // Footer - same copyright text as #checklistModalPrintFooter, plus
+    // a page number on the right, on every page.
+    doc.setFont("SourceSans3", "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(120);
+    doc.text(`© ${new Date().getFullYear()} www.mellowjohnny.cc`, marginX, pageHeight - 28);
+    doc.text(`Page ${i} of ${totalPages}`, pageWidth - marginX, pageHeight - 28, { align: "right" });
+    doc.setTextColor(0);
+  }
 
   return doc;
 }
