@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { ExecuteStatementCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient({ region: "us-east-2" });
 const docClient = DynamoDBDocumentClient.from(client);
@@ -27,9 +27,11 @@ export const handler = async (event) => {
     };
   }
 
-  const command = new ExecuteStatementCommand({
-    Statement: "SELECT * FROM Cards WHERE setID=?",
-    Parameters: [setID],
+  const command = new QueryCommand({
+    TableName: "Cards",
+    IndexName: "setID-index",
+    KeyConditionExpression: "setID = :id",
+    ExpressionAttributeValues: { ":id": setID },
   });
 
   try {

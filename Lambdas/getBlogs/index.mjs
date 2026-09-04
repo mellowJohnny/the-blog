@@ -1,8 +1,9 @@
-import { DynamoDBClient, ExecuteStatementCommand } from "@aws-sdk/client-dynamodb";
-import { unmarshall } from "@aws-sdk/util-dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb";
 
 // Create DynamoDB client outside the handler for reuse
 const client = new DynamoDBClient({ region: "us-east-2" });
+const docClient = DynamoDBDocumentClient.from(client);
 
 export const handler = async (event) => {
   try {
@@ -31,19 +32,19 @@ export const handler = async (event) => {
     console.log("VALUE OF blogType:", event.queryStringParameters.blogType);
 
 
-    const command = new ExecuteStatementCommand({
-      Statement: "SELECT * FROM Blogs WHERE blogType = ? AND published = true",
-      Parameters: [
-        { N: blogTypeStr }
-      ]
+    const command = new QueryCommand({
+      TableName: "Blogs",
+      KeyConditionExpression: "blogType = :bt",
+      FilterExpression: "published = :p",
+      ExpressionAttributeValues: {
+        ":bt": Number(blogTypeStr),
+        ":p": true
+      }
     });
-    
-    
 
-    const result = await client.send(command);
+    const result = await docClient.send(command);
 
-    // Convert DynamoDB items to plain JSON
-    const items = (result.Items ?? []).map(unmarshall);
+    const items = result.Items ?? [];
 
     return {
       statusCode: 200,
