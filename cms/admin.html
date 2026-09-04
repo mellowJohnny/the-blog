@@ -9,7 +9,7 @@
     <script src="/scripts/auth.js"></script>
     <meta charset="utf-8">
     <meta name="robots" content="noindex, nofollow">
-    <title>cardStack CMS - admin tools</title>
+    <title>cardStack cms - tools</title>
     <link
       rel="icon"
       type="image/x-icon"
@@ -97,11 +97,8 @@
           <div class="admin-tool-card">
             <h2>Broken Image Check</h2>
             <p>
-              Loads every image the live public site references - blog post
-              images, card set header/footer images, and anything embedded in a
-              review's body text - and checks whether each one actually loads.
-              Only covers published/live content, not staged drafts. Takes a
-              minute or two.
+              Loads every image the live public site references and checks whether each one actually loads.
+              Only covers published/live content, not staged drafts. Takes a minute or two.
             </p>
             <button
               type="button"
@@ -118,10 +115,8 @@
           <div class="admin-tool-card">
             <h2>Checklist Integrity Check</h2>
             <p>
-              Every uploaded checklist is supposed to link back to exactly one
-              card set review by an exact <code>setName</code> match. This
-              checks every uploaded checklist at once and flags any that don't
-              have a matching review - e.g. a typo'd filename at upload time.
+              Every live checklist should link to exactly one card set review 
+              This checks every uploaded checklist and flags any that don't have a matching review 
             </p>
             <button
               type="button"
