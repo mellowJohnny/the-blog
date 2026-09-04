@@ -45,13 +45,25 @@ GSI pattern is live" question this doc used to raise): partition key
 `setName` (String), sort key `year` (Number). `setID` below is a separate,
 non-key attribute used only by the `setID-index` GSI lookup path.
 
+**Global secondary indexes** (confirmed directly from the AWS Console
+2026-09-04 — this table has 5, only 3 of which any live Lambda actually
+queries):
+
+| Index | Partition key | Sort key | Used by |
+|---|---|---|---|
+| `blogCat-year-index` | `blogCat` (String) | `year` (Number) | `Lambdas/getCardSetsByYear/` |
+| `blogStatus-year-index` | `blogStatus` (String) | `year` (Number) | `Lambdas/getCardSets/`, `Lambdas/getStagedCardSets/` |
+| `setID-index` | `setID` (String) | *(none)* | `Lambdas/getCardSetByID/` — converted from a PartiQL scan to a direct `Query` against this index on 2026-09-04, see `LAMBDA_FUNCTIONS.md` |
+| `year-blogStatus-index` | `year` (Number) | `blogStatus` (String) | none currently — no access pattern needs "by year alone" as the primary filter |
+| `year-index` | `year` (Number) | *(none)* | none currently, same reason |
+
 **Billing mode**: On-Demand, with a maximum-throughput cap set — see
 `ARCHITECTURE.md`'s billing-mode note for why (both this table and
 `Checklists` moved off Provisioned after real throttling incidents).
 
 | Field | Type | Notes |
 |---|---|---|
-| `setID` | String | Randomly generated (`Math.random().toString(36)`) in `Lambda Functions/createCardSet/createCardPost.js`; used as the lookup key by `getCardSetByID`. A `setID-index` GSI is referenced in `Lambda Functions/getCardSets/getCardSet_FUTURE.js`. |
+| `setID` | String | Randomly generated (`Math.random().toString(36)`) in `Lambdas/createCardPost/`; used as the lookup key by `getCardSetByID`, which queries the `setID-index` GSI directly (see the GSI table above). |
 | `upvotes` / `downvotes` | Number | Added for the thumbs up/down voting feature (`Lambdas/castVoteHandler/`). Not present on older items until the first vote is cast — DynamoDB creates the attribute on first `ADD`, no migration needed. |
 | `setName` | String | e.g. `"1991-92 Upper Deck Hockey"`. |
 | `year` | Number | Release year, e.g. `1991`. Drives the year-picker on `waxReviews.html` (`renderSetPicker()` in `scripts/helper.js`). |

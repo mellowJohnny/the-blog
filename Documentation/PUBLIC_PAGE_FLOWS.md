@@ -52,8 +52,8 @@ each other):
   category-specific stream like `tech.html`'s) from the `Blogs` table
   in DynamoDB, via **Get all blogs of a given type** (`?blogType=99`),
   fronted by the `getBlogs` Lambda (`Lambdas/getBlogs/`) — it reads via
-  PartiQL (`ExecuteStatementCommand`) rather than a plain `Scan`/`Query`,
-  and unmarshalls the result before returning a plain JSON array. Once
+  a `QueryCommand` on `blogType` (the table's partition key), filtered
+  to `published = true`, and returns a plain JSON array. Once
   the result is back, `fetchBlogs()` sorts it via
   `getSortOrder("time", "first")` (newest first), stores it in the
   module-level `allBlogs`, resets `currentBlogPage = 1`, then calls

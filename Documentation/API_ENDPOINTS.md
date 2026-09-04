@@ -50,8 +50,8 @@ without changing that expectation first.
 - **Method**: GET
 - **Query params**: `blogType` (e.g. `1`, `3`, `5`, `99`)
 - **Called from**: `fetchBlogs()` in `scripts/blogs.js` (used by `index.html`, `tech.html`)
-- **Response**: JSON array of blog objects directly (`postBody`, `author`, `time`, `title`, `img`, `imgCap`) — *not* wrapped in `{Items: [...]}` the way raw DynamoDB `scan`/`query` results are; the Lambda uses PartiQL (`ExecuteStatementCommand`) and unmarshalls before returning. `Cache-Control: public, max-age=600` (10 min) on the success response only — added 2026-08-14, the error responses (400/500) intentionally have no caching header.
-- **Lambda**: `Lambdas/getBlogs/` (source in this repo — see `LAMBDA_FUNCTIONS.md`).
+- **Response**: JSON array of blog objects directly (`postBody`, `author`, `time`, `title`, `img`, `imgCap`) — *not* wrapped in `{Items: [...]}` the way raw DynamoDB `scan`/`query` results are, even though the Lambda now reads via a plain `QueryCommand` (see below) — it unwraps `result.Items` itself before returning. `Cache-Control: public, max-age=600` (10 min) on the success response only — added 2026-08-14, the error responses (400/500) intentionally have no caching header.
+- **Lambda**: `Lambdas/getBlogs/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Converted 2026-09-04 from PartiQL to `QueryCommand` on `blogType` (the `Blogs` table's partition key), filtered to `published = true`.
 
 ### Get blog intro text by type
 - **URL**: `https://0t14dphgwb.execute-api.us-east-2.amazonaws.com/dev`
@@ -190,7 +190,7 @@ without changing that expectation first.
 - **Query params**: `setID`
 - **Called from**: `fetchCardSetByID()` in `scripts/cmsCardSet.js` (used by `cms/setEdit.html`)
 - **Response**: array of one item (again tolerant of `{items:[...]}` / raw array / `{body:...}` / `{Items:[...]}`), containing `blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, postBody, year, mfg, size, subsets, stars, formats, setName, headerImgName, footerImgName`.
-- **Lambda**: `Lambdas/getCardSetByID/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). PartiQL `SELECT * FROM Cards WHERE setID=?`.
+- **Lambda**: `Lambdas/getCardSetByID/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Converted 2026-09-04 from a PartiQL `SELECT * FROM Cards WHERE setID=?` (a non-key `WHERE` clause, so it forced a full-table Scan under the hood) to a `QueryCommand` against the `setID-index` GSI — a real efficiency win, not just a style change. See `DATA_MODEL.md`'s `Cards` GSI table.
 
 ## CMS — checklist upload
 

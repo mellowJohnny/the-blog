@@ -365,8 +365,9 @@ are together in that same `<head>` block, after those script tags
 **On `window load`**: `fetchCardSetByID(setID)` (`cmsCardSet.js`) loads
 the specific set being edited — calls **Get a single card set by ID**,
 fronted by the `getCardSetByID` Lambda (`Lambdas/getCardSetByID/`),
-which does a PartiQL `SELECT * FROM Cards WHERE setID=?` against the
-`Cards` table, tolerantly unwraps the response the same way
+which does a `QueryCommand` against the `Cards` table's `setID-index`
+GSI (converted from a PartiQL `WHERE setID=?` scan on 2026-09-04 — see
+`DATA_MODEL.md`), tolerantly unwraps the response the same way
 `fetchAllCardSets()` does, and takes `items[0]`. Empty result shows
 "these aren't the Droids you're looking for..." in `#errorDiv`;
 otherwise calls `populateCardSet(...)` (15 positional args, internal to
