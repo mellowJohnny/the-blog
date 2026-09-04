@@ -1,79 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-ca">
-<head>
-  <meta charset="utf-8">
-  <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
-  <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-  <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-  <!-- Tag for Algolia site crawl -->
-  <meta name="algolia-site-verification"  content="5ED65F74BB45D9BC" />
-  <!-- Without this, mobile Safari renders at a wide desktop-width
+  <head>
+    <meta charset="utf-8">
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <link
+      rel="apple-touch-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <!-- Tag for Algolia site crawl -->
+    <meta name="algolia-site-verification" content="5ED65F74BB45D9BC">
+    <!-- Without this, mobile Safari renders at a wide desktop-width
        virtual viewport and just zooms the page out to fit, so the
        @media (max-width: 600px) rules in styles.css never trigger -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Welcome to the hella files. A blog with a focus on vintage and Junk Wax hockey card set reviews, tech, and software architecture. The site also serves as a playground for AWS services like Lambda, DynamoDB, and Amplify.">
-  <!-- Google Core Web Vitals image preload -->
-  <link rel="preload"
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Welcome to the hella files. A blog with a focus on vintage and Junk Wax hockey card set reviews, tech, and software architecture. The site also serves as a playground for AWS services like Lambda, DynamoDB, and Amplify.">
+    <!-- Google Core Web Vitals image preload -->
+    <link
+      rel="preload"
       as="image"
       href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp"
       fetchpriority="high">
 
-  <title>the hella files...junk wax hockey card set reviews and tech blog</title>
+    <title>
+      the hella files...junk wax hockey card set reviews and tech blog
+    </title>
 
-  <!-- Stylesheet - a plain blocking link, not preload+swap: the async
+    <!-- Stylesheet - a plain blocking link, not preload+swap: the async
        version let the browser paint raw unstyled HTML before CSS was
        ready, causing a visible flash on every navigation. Blocking is
        the standard fix - a marginally later first paint beats a flash
        of unstyled content. -->
-  <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap" as="style" onload="this.rel='stylesheet'">
-  <noscript>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
-  </noscript>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap"
+      as="style"
+      onload="this.rel='stylesheet'">
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
+    </noscript>
 
+    <!-- Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX"
+    ></script>
 
-  <!-- Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX"></script>
+    <!-- JS -->
+    <script src="/scripts/blogs.js" defer></script>
+    <script src="/scripts/helper.js" defer></script>
 
-  <!-- JS -->
-  <script src="/scripts/blogs.js" defer></script>
-  <script src="/scripts/helper.js" defer></script>
+    <script>
+      window.addEventListener('load', () => {
+        fetchBlogs('99');
+        fetchCopyrightYear();
+        fetchNav("index");
+      });
 
-  <script>
-    window.addEventListener('load', () => {
-      fetchBlogs('99');
-      fetchCopyrightYear();
-      fetchNav("index");
-    });
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JMGVGK09QX');
+    </script>
 
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-JMGVGK09QX');
-  </script>
+    <!-- Wait for the DOM to load, then call the intro function -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+        renderBlogIntro('99');
+      });
+    </script>
+  </head>
 
-  <!-- Wait for the DOM to load, then call the intro function -->
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-    renderBlogIntro('99'); 
-  });
-</script>
-
-
-</head>
-
-
-<body>
-  <section> <!-- Responsive Masthead -->
-    <div class="masthead-container">
-      <header class="masthead">the hella files</header>
-      <div id="weather" class="weather-box">Waiting for the Weather Forecast...</div>
-    </div>
-  </section>
+  <body>
+    <section>
+      <!-- Responsive Masthead -->
+      <div class="masthead-container">
+        <header class="masthead">the hella files</header>
+        <div id="weather" class="weather-box">
+          Waiting for the Weather Forecast...
+        </div>
+      </div>
+    </section>
     <nav>
       <!-- Dynamically fetch the Nav using fetchNav() in helper.js -->
       <div class="nav-container" id="global-nav-placeholder">
@@ -81,34 +102,30 @@
         <div id="global-nav" class="nav-links"></div>
       </div>
     </nav>
-          <main>
-            <!-- Algolia search bar
-            <div id="autocomplete"></div> -->
-            <section>
-              <div class="flex-container">
-               <div class="intro" id="blog-intro"></div>  <!-- Populated by renderBlogIntro() in blog.js -->
-              </div>
-            </section>
-            <section>
-              <div class="flex-container">
-                <div class="blog-entry" id="blogsDiv"></div>
-              </div>
-            </section> 
-          </main>
+    <main>
+      <section>
+        <div class="flex-container">
+          <div class="intro" id="blog-intro"></div>
+          <!-- Populated by renderBlogIntro() in blog.js -->
+        </div>
+      </section>
+      <section>
+        <div class="flex-container">
+          <div class="blog-entry" id="blogsDiv"></div>
+        </div>
+      </section>
+    </main>
 
-          <footer class="page-footer">
-            <div id="copy"></div> <!-- Populated by fetchCopyrightYear() in helper.js -->
-            <a style="color: rgb(229, 239, 245); size: 24px;" rel="nofollow" href="https://mellowjohnny.auth.us-east-2.amazoncognito.com/login?response_type=code&client_id=1m22cfonep7l85th9ut1obk0pe&redirect_uri=https://www.mellowjohnny.cc/cms/wlcms.html">
-                WLCMS</a> 
-            
-           
-          </footer>
-          <!--
-  Ensure these containers exist on your page:
-  - #autocomplete
--->
-
-<!-- Load the Algolia Experiences library at the end of <body> -->
-<script src="https://cdn.jsdelivr.net/npm/@algolia/experiences/dist/experiences.js?appId=MRCSJFVFVC&apiKey=e0a3a59d4e675f62f53f3c43e004077b&experienceId=MRCSJFVFVC&env=prod"></script>
-</body>
+    <footer class="page-footer">
+      <div id="copy"></div>
+      <!-- Populated by fetchCopyrightYear() in helper.js -->
+      <a
+        style="color: rgb(229, 239, 245); size: 24px;"
+        rel="nofollow"
+        href="https://mellowjohnny.auth.us-east-2.amazoncognito.com/login?response_type=code&client_id=1m22cfonep7l85th9ut1obk0pe&redirect_uri=https://www.mellowjohnny.cc/cms/wlcms.html"
+      >
+        WLCMS</a
+      >
+    </footer>
+  </body>
 </html>

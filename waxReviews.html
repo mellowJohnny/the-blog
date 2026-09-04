@@ -1,53 +1,65 @@
-<!DOCTYPE html>
-  
+<!doctype html>
 
-  <html lang="en-ca">
-    <head>
+<html lang="en-ca">
+  <head>
     <meta charset="utf-8">
-      <!-- Without this, mobile Safari renders at a wide desktop-width
+    <!-- Without this, mobile Safari renders at a wide desktop-width
            virtual viewport and just zooms the page out to fit, so the
            @media (max-width: 600px) rules in styles.css never trigger -->
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
-      <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-      <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <link
+      rel="apple-touch-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
 
-      <!-- dynamically fetch the page title using the fetchPageTitle() function, called by fetchCardSetsByYear() in wax.js-->
-        <div id="pageTitle"></div>
-    
-      
-      <meta name="description" 
-            content="Focusing on the Junk Wax Era, in-depth reviews of almost every hockey card set from 1977-78 to 1994-95, including O-Pee-Chee, Upper Deck, Score, Topps, Pinnacle, McDonald's and Tim Hortons. Are any of them still worth collecting? Let's find out!"/> 
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link rel="preconnect" href="https://s3.us-east-2.amazonaws.com">
-      <link rel="preconnect" href="https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com">
-      <!-- Global site tag (gtag.js) - Load Google Analytics until later -->
-      <script>
-        window.addEventListener('load', function() {
-          var g = document.createElement('script');
-          g.src = 'https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX';
-          g.async = true;
-          document.head.appendChild(g);
-        });
-      </script>
-<!-- Magic JS to redirect if year is 2004 -->
-      <script>
-        const paramz = new URLSearchParams(window.location.search);
-        const y = paramz.get("year");
-        const pn = paramz.get("pageName");
-        const bc = paramz.get("blogCat");
-        const isMatch =
-          y === "2004" &&
-          pn === "mcd" &&
-          bc === "mcd";
+    <!-- Default title, overwritten per-set by fetchPageTitle() in wax.js
+           (called from fetchCardSetsByYear()) once the set data loads. -->
+    <title>
+      the hella files...vintage and junk wax hockey card set reviews
+    </title>
 
-        if (isMatch) {
-          window.location.href = "/lockout.html?year=2004&pageName=mcd&blogCat=mcd";
-        }
-      </script>
+    <meta
+      name="description"
+      content="Focusing on the Junk Wax Era, in-depth reviews of almost every hockey card set from 1977-78 to 1994-95, including O-Pee-Chee, Upper Deck, Score, Topps, Pinnacle, McDonald's and Tim Hortons. Are any of them still worth collecting? Let's find out!">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://s3.us-east-2.amazonaws.com">
+    <link
+      rel="preconnect"
+      href="https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com">
+    <!-- Global site tag (gtag.js) - Load Google Analytics until later -->
+    <script>
+      window.addEventListener('load', function() {
+        var g = document.createElement('script');
+        g.src = 'https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX';
+        g.async = true;
+        document.head.appendChild(g);
+      });
+    </script>
+    <!-- Magic JS to redirect if year is 2004 -->
+    <script>
+      const paramz = new URLSearchParams(window.location.search);
+      const y = paramz.get("year");
+      const pn = paramz.get("pageName");
+      const bc = paramz.get("blogCat");
+      const isMatch =
+        y === "2004" &&
+        pn === "mcd" &&
+        bc === "mcd";
 
-      <style>
+      if (isMatch) {
+        window.location.href = "/lockout.html?year=2004&pageName=mcd&blogCat=mcd";
+      }
+    </script>
+
+    <style>
         /* latin-ext */
       @font-face {
         font-family: 'Bebas Neue';
@@ -66,166 +78,203 @@
         src: url(https://fonts.gstatic.com/s/bebasneue/v16/JTUSjIg69CK48gW7PXoo9WlhyyTh89Y.woff2) format('woff2');
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
       }
-      </style>
+    </style>
 
-      <link rel="preload" href="https://fonts.gstatic.com/s/bebasneue/v16/JTUSjIg69CK48gW7PXoo9WdhyyTh89ZNpQ.woff2" as="font" type="font/woff2" crossorigin>
-      <link rel="preload" href="https://fonts.gstatic.com/s/bebasneue/v16/JTUSjIg69CK48gW7PXoo9WlhyyTh89Y.woff2" as="font" type="font/woff2" crossorigin>
-      
-      
-      <!-- Set up some global variables visible to all page scripts -->
-      <script>
-        const params = new URLSearchParams(window.location.search);
-        const year = params.get("year");
-        const sortOrder = params.get("sortOrder");
-        const pageName = params.get("pageName");
-        const blogCat = params.get("blogCat");
-      </script>
+    <link
+      rel="preload"
+      href="https://fonts.gstatic.com/s/bebasneue/v16/JTUSjIg69CK48gW7PXoo9WdhyyTh89ZNpQ.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin>
+    <link
+      rel="preload"
+      href="https://fonts.gstatic.com/s/bebasneue/v16/JTUSjIg69CK48gW7PXoo9WlhyyTh89Y.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin>
 
-      <!-- Google Core Web Vitals Preload: make the "hero" image visible for each year. Makes GCWV happy -->
-       <script>
-        // Build the hero image URL using your new naming convention
-        if (year) {
-          const lcpUrl = `https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cards/${year}_hero.webp`;
+    <!-- Set up some global variables visible to all page scripts -->
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const year = params.get("year");
+      const sortOrder = params.get("sortOrder");
+      const pageName = params.get("pageName");
+      const blogCat = params.get("blogCat");
+    </script>
 
-          // Inject a preload tag into <head>
-          const preload = document.createElement("link");
-          preload.rel = "preload";
-          preload.as = "image";
-          preload.href = lcpUrl;
-          preload.fetchPriority = "high";
+    <!-- Google Core Web Vitals Preload: make the "hero" image visible for each year. Makes GCWV happy -->
+    <script>
+      // Build the hero image URL using your new naming convention
+      if (year) {
+        const lcpUrl = `https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cards/${year}_hero.webp`;
 
-          document.head.appendChild(preload);
-        }
-      </script>
+        // Inject a preload tag into <head>
+        const preload = document.createElement("link");
+        preload.rel = "preload";
+        preload.as = "image";
+        preload.href = lcpUrl;
+        preload.fetchPriority = "high";
 
-      <!-- Load the stylesheet - plain blocking link, deliberately not the
+        document.head.appendChild(preload);
+      }
+    </script>
+
+    <!-- Load the stylesheet - plain blocking link, deliberately not the
            preload+swap trick (see index.html's comment - that let raw
            unstyled HTML paint before CSS was ready, a visible flash on
            every navigation). -->
-      <link rel="stylesheet" type="text/css" href="/styles/styles.css">
-        
-      <!-- Google Fonts -->
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link rel="preload" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap" as="style" onload="this.rel='stylesheet'">
-      <noscript>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
-      </noscript>
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-       
-        <!-- Load the Hella Scripts -->
-        <script src="scripts/wax.js" defer></script>
-        <script src="/scripts/helper.js" defer></script>
+    <!-- Google Fonts -->
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap"
+      as="style"
+      onload="this.rel='stylesheet'">
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
+    </noscript>
 
-        <!-- Wait for the DOM to load, then run the Intro script -->
-        <script>
-          document.addEventListener("DOMContentLoaded", () => {
-          renderCardIntro(pageName); 
-            });
-        </script>
-      
-        <script>
-          // Let's do a bunch of stuff on page load...
-          window.addEventListener('load', (event) => {
-            // First: fetch Global Nav from helper.js
-            fetchNav(pageName);
-            // Next render the page intro section - in helper.js
-            // fetchCardIntro(pageName);
-            // Call the Set-O-Matic Set Picker
-            renderSetPicker(year,blogCat,pageName);
-            //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
-            fetchCardSetsByYear(year,sortOrder,blogCat);
-            
-          });
+    <!-- Load the Hella Scripts -->
+    <script src="/scripts/wax.js" defer></script>
+    <script src="/scripts/helper.js" defer></script>
 
-          // Google Analytics 
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-JMGVGK09QX');
-        </script>
-    </head>
+    <!-- Wait for the DOM to load, then run the Intro script -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+      renderCardIntro(pageName);
+        });
+    </script>
 
-    <body>
+    <script>
+      // Let's do a bunch of stuff on page load...
+      window.addEventListener('load', (event) => {
+        // First: fetch Global Nav from helper.js
+        fetchNav(pageName);
+        // Next render the page intro section - in helper.js
+        // fetchCardIntro(pageName);
+        // Call the Set-O-Matic Set Picker
+        renderSetPicker(year,blogCat,pageName);
+        //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
+        fetchCardSetsByYear(year,sortOrder,blogCat);
 
+      });
+
+      // Google Analytics
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JMGVGK09QX');
+    </script>
+  </head>
+
+  <body>
+    <section>
+      <table class="wax-reviews-mast-table">
+        <tr>
+          <td>
+            <header class="wax-reviews-masthead">
+              <a href="index.html">the hella files</a>
+            </header>
+          </td>
+        </tr>
+      </table>
+    </section>
+
+    <nav>
+      <!-- Hamberger menu for mobile in helper.js -->
+      <div class="nav-container" id="global-nav-placeholder">
+        <div class="hamburger" onclick="toggleMenu()">☰</div>
+        <div id="global-nav" class="nav-links"></div>
+      </div>
+    </nav>
+    <main>
       <section>
-        <table class="wax-reviews-mast-table">
-          <tr>
-            <td>
-              <header class="wax-reviews-masthead"><a href="index.html">the hella files</a></header>
-            </td>
-          </tr>
-        </table>
+        <div class="header-style">
+          <h1 id="pageHeader"></h1>
+          <!-- called by displayCardSet() in main.js-->
+        </div>
+
+        <div class="flex-container">
+          <div class="intro" id="card-intro"></div>
+        </div>
+
+        <div class="set-o-matic-picker">the set-o-matic year picker</div>
+
+        <div class="flex-container">
+          <div id="set-picker">
+            <!-- renderSetPicker() function in helper.js -->
+          </div>
+        </div>
+        <br><br>
       </section>
 
-      <nav>
-          <!-- Hamberger menu for mobile in helper.js -->
-        <div class="nav-container" id="global-nav-placeholder">
-          <div class="hamburger" onclick="toggleMenu()">☰</div>
-          <div id="global-nav" class="nav-links"></div>
-        </div>
-      </nav>
-      <main>
-        <section>
-          <div class="header-style"> 
-            <h1 id="pageHeader"></h1> <!-- called by displayCardSet() in main.js-->
-          </div>
-
-          <div class="flex-container">
-            <div class="intro" id="card-intro"> </div> 
-          </div>
-
-          <div class="set-o-matic-picker">the set-o-matic year picker</div>
-
-          <div class="flex-container">
-            <div id="set-picker"> <!-- renderSetPicker() function in helper.js --> </div>
-          </div>
-          <br><br>
-        </section>
-        
-        <!-- Pagination controls now render inside #cardSetDiv itself
+      <!-- Pagination controls now render inside #cardSetDiv itself
              (see displayCardSet(), scripts/wax.js) - above the vote
              widget - not as a separate element after it. -->
-        <section>
-          <div class="flex-container">
-            <div class="blog-entry" id="cardSetDiv"></div>
-          </div>
-        </section>
+      <section>
+        <div class="flex-container">
+          <div class="blog-entry" id="cardSetDiv"></div>
+        </div>
+      </section>
+    </main>
 
-      </main>
+    <footer class="page-footer">
+      <div id="copy"></div>
+      <!-- fetchCopyrightYear() called from fetchCardSetsByYear() on page load -->
+    </footer>
 
-      <footer class="page-footer">
-        <div id="copy"></div> <!-- fetchCopyrightYear() called from fetchCardSetsByYear() on page load -->
-      </footer>
-
-      <!-- Checklist modal - opened by the "Checklist" link in displayCardSet()
+    <!-- Checklist modal - opened by the "Checklist" link in displayCardSet()
            (scripts/wax.js) when a set has one (Cards.hasChecklist). Shared by
            every set on the page, not rebuilt per set - openChecklistModal()
            fetches and fills it in on click. -->
-      <div id="checklistModalOverlay" class="checklist-modal-overlay">
-        <div class="checklist-modal-content">
-          <div class="checklist-modal-controls">
-            <button type="button" class="checklist-modal-print-btn" onclick="window.print()">🖨 Print</button>
-            <button type="button" class="checklist-modal-pdf-btn" onclick="exportChecklistPdf()">⬇ Download PDF</button>
-            <span class="checklist-modal-close" onclick="closeChecklistModal()">&times;</span>
-          </div>
-          <header class="checklist-modal-masthead"><a href="index.html">the hella files</a></header>
-          <div class="checklist-modal-title-row">
-            <h2 id="checklistModalTitle" class="checklist-modal-title"></h2>
-            <label class="checklist-modal-rc-filter">
-              <input type="checkbox" id="checklistRookieFilter" onchange="applyChecklistRookieFilter()">
-              Rookies only
-            </label>
-          </div>
-          <div id="checklistModalBody"></div>
-          <!-- Print-only - see @media print, styles.css. Browsers won't
+    <div id="checklistModalOverlay" class="checklist-modal-overlay">
+      <div class="checklist-modal-content">
+        <div class="checklist-modal-controls">
+          <button
+            type="button"
+            class="checklist-modal-print-btn"
+            onclick="window.print()"
+          >
+            🖨 Print
+          </button>
+          <button
+            type="button"
+            class="checklist-modal-pdf-btn"
+            onclick="exportChecklistPdf()"
+          >
+            ⬇ Download PDF
+          </button>
+          <span class="checklist-modal-close" onclick="closeChecklistModal()"
+            >&times;</span
+          >
+        </div>
+        <header class="checklist-modal-masthead">
+          <a href="index.html">the hella files</a>
+        </header>
+        <div class="checklist-modal-title-row">
+          <h2 id="checklistModalTitle" class="checklist-modal-title"></h2>
+          <label class="checklist-modal-rc-filter">
+            <input
+              type="checkbox"
+              id="checklistRookieFilter"
+              onchange="applyChecklistRookieFilter()">
+            Rookies only
+          </label>
+        </div>
+        <div id="checklistModalBody"></div>
+        <!-- Print-only - see @media print, styles.css. Browsers won't
                let a page suppress their own native print header/footer
                (title/URL/date - a "Headers and footers" checkbox in the
                print dialog, not something CSS can turn off), so this is
                a second, clean footer for once that's toggled off. -->
-          <div id="checklistModalPrintFooter" class="checklist-modal-print-footer"></div>
-        </div>
+        <div
+          id="checklistModalPrintFooter"
+          class="checklist-modal-print-footer"
+        ></div>
       </div>
-
-    </body>
-  </html>
+    </div>
+  </body>
+</html>

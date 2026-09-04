@@ -1,18 +1,28 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html lang="en-ca">
   <head>
-  <meta charset="utf-8">
+    <meta charset="utf-8">
     <!-- Without this, mobile Safari renders at a wide desktop-width
          virtual viewport and just zooms the page out to fit, so the
          @media (max-width: 600px) rules in styles.css never trigger -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
-    <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-    <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-    <title>the hella files...a tech blog, Mustang Mach-E blog, vintage and junk wax hockey card set reviews, and an AWS playground</title>
-  
-    
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <link
+      rel="apple-touch-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <title>
+      the hella files...a tech blog, Mustang Mach-E blog, vintage and junk wax
+      hockey card set reviews, and an AWS playground
+    </title>
+
     <!-- Load the stylesheet - plain blocking link, deliberately not the
          preload+swap trick (see index.html's comment - that let raw
          unstyled HTML paint before CSS was ready, a visible flash on
@@ -22,27 +32,39 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap" as="style" onload="this.rel='stylesheet'">
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap"
+      as="style"
+      onload="this.rel='stylesheet'">
     <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
     </noscript>
 
+    <!-- Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX"
+    ></script>
+
     <!-- Load the Hella Files scripts-->
-    <script src="scripts/blogs.js" defer></script> 
+    <script src="/scripts/blogs.js" defer></script>
     <script src="/scripts/helper.js" defer></script>
 
     <!-- Wait for the DOM to load, then call the intro function -->
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-      renderBlogIntro(blogType); 
+      renderBlogIntro(blogType);
       });
     </script>
 
     <script>
       const params = new URLSearchParams(document.location.search);
-      const blogType = params.get("blogType"); 
+      const blogType = params.get("blogType");
       const pageName = params.get("pageName");
-      
+
       window.addEventListener('load', (event) => {
         // *** On page load pass blogType
         fetchBlogs(blogType);
@@ -53,46 +75,61 @@
         // *** Fetch the Top Nav from helper.js
         fetchNav(pageName);
         });
-    </script>
- </head>
 
- <body>
-  <section> <!-- Responsive Masthead -->
-    <div class="masthead-container">
-      <header class="masthead"><a href="index.html">the hella files</a></header>
-      <div id="weather" class="weather-box">Waiting for the Weather Forecast...</div>
-    </div>
-  </section>
-  <div>
-    <nav>
-          <!-- Hamberger menu for mobile in helper.js -->
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JMGVGK09QX');
+    </script>
+  </head>
+
+  <body>
+    <section>
+      <!-- Responsive Masthead -->
+      <div class="masthead-container">
+        <header class="masthead">
+          <a href="index.html">the hella files</a>
+        </header>
+        <div id="weather" class="weather-box">
+          Waiting for the Weather Forecast...
+        </div>
+      </div>
+    </section>
+    <div>
+      <nav>
+        <!-- Hamberger menu for mobile in helper.js -->
         <div class="nav-container" id="global-nav-placeholder">
           <div class="hamburger" onclick="toggleMenu()">☰</div>
           <div id="global-nav" class="nav-links"></div>
         </div>
       </nav>
-  </div>
+    </div>
     <main>
       <section>
-        <div class="header-style" id="section-header"></div> <!-- Dynamically fetch the title as part of fetchInto() -->
+        <div class="header-style" id="section-header"></div>
+        <!-- Dynamically fetch the title as part of fetchInto() -->
         <div class="flex-container">
-          <div id="blog-intro" class="intro"></div> <!-- Intro is dynamically rendered by the fetchIntro() function in helper.js -->
+          <div id="blog-intro" class="intro"></div>
+          <!-- Intro is dynamically rendered by the fetchIntro() function in helper.js -->
         </div>
       </section>
 
-       <!-- NEW pagination controls  -->
+      <!-- NEW pagination controls  -->
       <section>
         <div id="blogTop"></div>
         <div class="flex-container">
           <div class="blog-entry" id="blogsDiv"></div>
         </div>
-        <div id="paginationControls" style="text-align:center; margin:20px 0;"></div>
-      </section> 
+        <div
+          id="paginationControls"
+          style="text-align:center; margin:20px 0;"
+        ></div>
+      </section>
     </main>
 
-  <footer class="page-footer">
-    <div id="copy"></div> <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
-   </footer>
-</body>
-
+    <footer class="page-footer">
+      <div id="copy"></div>
+      <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
+    </footer>
+  </body>
 </html>

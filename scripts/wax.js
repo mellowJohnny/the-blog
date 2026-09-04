@@ -120,12 +120,9 @@ function renderCardSetPage() {
 }
 
 /*************** Dynamically create & render the page title for waxReviews.html ***************** */
-function fetchPageTitle(setName) 
+function fetchPageTitle(setName)
 {
-  let pageTitle = document.getElementById("pageTitle");
-    pageTitle.innerHTML += `
-    <title>Review: ${setName}</title>
-    `;
+  document.title = `Review: ${setName}`;
 }
 
 /**
