@@ -427,14 +427,6 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
 
   New CSS: `.checklist-modal-pdf-btn` in `styles/styles.css`, styled to
   match the existing `.checklist-modal-print-btn`.
-- **Known bug, deliberately not yet fixed**: `fetchPageTitle(setName)`
-  appends a new `<title>` tag on every card-set render
-  (`pageTitle.innerHTML += ...`) without clearing previous ones — paging
-  through multiple sets in the same year without a full reload
-  accumulates `<title>` tags, and the browser locks onto whichever
-  registered first (stale). The custom print footer above exists partly
-  to route around this for print purposes rather than requiring the fix
-  first; the underlying bug is still open.
 
 ## Player search (`playerSearch.html`)
 
