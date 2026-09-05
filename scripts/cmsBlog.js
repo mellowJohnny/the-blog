@@ -418,14 +418,14 @@ function displayStagedBlogs(title, blogID, blogType) {
  * @param {*} id
  *
  **/
-function fetchBlogByID(id,type) {
+function fetchBlogByID(id) {
 
   if (!id) {
     document.getElementById("errorDiv").innerHTML = "No blog ID provided.";
     return;
   }
 
-  const urlToFetch = `https://gcd40hir88.execute-api.us-east-2.amazonaws.com/dev?blogID=${id}&blogType=${type}`;
+  const urlToFetch = `https://gcd40hir88.execute-api.us-east-2.amazonaws.com/dev?blogID=${id}`;
 
   getAuthToken().then(token => fetch(urlToFetch, { headers: { "Authorization": token } }))
     .then(response => response.json())

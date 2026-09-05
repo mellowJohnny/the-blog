@@ -8,16 +8,15 @@ export const handler = async (event) => {
   try {
     const qs = event.queryStringParameters || {};
     const blogID = qs.blogID;
-    const blogType = Number(qs.blogType);
 
-    if (!blogID || Number.isNaN(blogType)) {
+    if (!blogID) {
       return {
         statusCode: 400,
         headers: {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": "*"
         },
-        body: JSON.stringify({ error: "Missing or invalid blogID or blogType" })
+        body: JSON.stringify({ error: "Missing blogID" })
       };
     }
 
