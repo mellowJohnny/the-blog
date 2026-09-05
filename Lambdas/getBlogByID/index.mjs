@@ -23,10 +23,9 @@ export const handler = async (event) => {
 
     const command = new QueryCommand({
       TableName: "Blogs",
-      KeyConditionExpression: "blogType = :type",
-      FilterExpression: "blogID = :id",
+      IndexName: "blogID-index",
+      KeyConditionExpression: "blogID = :id",
       ExpressionAttributeValues: {
-        ":type": blogType,
         ":id": blogID
       }
     });
