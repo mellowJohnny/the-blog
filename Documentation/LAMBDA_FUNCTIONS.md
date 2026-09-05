@@ -681,7 +681,7 @@ section title:
 | Function | `API_ENDPOINTS.md` entry | Notes |
 |---|---|---|
 | `Lambdas/getBlogs/` | Get all blogs of a given type | Converted from PartiQL (`ExecuteStatementCommand`) to a plain `QueryCommand` on `blogType` (partition key) + `FilterExpression` on `published` on 2026-09-04 — matching the pattern every other blog/card-set Lambda already used, and sidestepping a documented AWS bug where PartiQL can fail to evaluate a **numeric** partition key correctly (see `listBlogsForUpdate`'s own header comment). |
-| `Lambdas/getBlogByID/` | Get a single blog by ID | `Query` on `blogType` (partition key) + `FilterExpression` on `blogID`. |
+| `Lambdas/getBlogByID/` | Get a single blog by ID | Converted 2026-09-04 from `Query` on `blogType` (partition key) + `FilterExpression` on `blogID` (which read every post of that type before filtering) to a direct `Query` against the `blogID-index` GSI — a real efficiency win, same category as `getCardSetByID`'s conversion. `blogType` is no longer sent by the frontend or required by the Lambda at all, since the lookup only ever needed `blogID`. See `DATA_MODEL.md`'s `Blogs` table. |
 | `Lambdas/createBlogPost/` | Create blog post | Generates `blogID` via `crypto.randomUUID()`; `time` = `new Date().toISOString()` (the actual sort key). |
 | `Lambdas/updateBlogPost/` | Update blog post | Plain `UpdateCommand` keyed on `blogType`+`time`. |
 | `Lambdas/listBlogsForUpdate/` | Get all live blogs (for the edit picker) | **Note**: despite the doc's previous description, this does a full unfiltered `Scan` (`published = :p` where `:p = true`) with no `ProjectionExpression` — the response is full blog records under `{items: [...]}`, not just `{title, blogID, blogType}`. `API_ENDPOINTS.md` corrected 2026-08-15. |

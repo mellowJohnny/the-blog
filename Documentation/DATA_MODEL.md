@@ -15,16 +15,23 @@ entries). One flat table for all blog content, distinguished by
 
 **Key schema (confirmed against the DynamoDB console, 2026-08-14)**:
 partition key `blogType` (Number), sort key `time` (String). `blogID`
-is a regular (non-key) attribute — it's the human-facing identifier
-used by `getBlogByID`'s lookup, but `updateBlogPost()` and (the new)
-`deleteBlogPost()` both operate on `blogType`+`time` under the hood,
-which is why every blog-editing call in the CMS always carries `time`
-around alongside `blogID`, even though it's just displayed read-only
-in a disabled form field.
+is a regular (non-key) attribute on the base table — but it's not a
+full-table Scan to look one up: a `blogID-index` GSI (partition key
+`blogID` (String), no sort key) exists specifically for that, and
+`getBlogByID` was converted to `Query` it directly on 2026-09-04
+(previously it queried `blogType` and filtered the results down to the
+matching `blogID`, reading every post of that type first). `updateBlogPost()`
+and `deleteBlogPost()` still operate on `blogType`+`time` under the
+hood, though, which is why every blog-editing call in the CMS still
+carries `time` around alongside `blogID`, even though it's just
+displayed read-only in a disabled form field.
+
+**Global secondary indexes**: just the one, `blogID-index` (partition
+key `blogID`, no sort key) — see above.
 
 | Field | Type | Notes |
 |---|---|---|
-| `blogID` | String | The item's human-facing identifier — used as the lookup key by `getBlogByID` (see `API_ENDPOINTS.md`), but is *not* the DynamoDB key (see above). Early sample data (`Documentation/BlogArchive.txt`) used a millisecond timestamp string as `id`, e.g. `"1640119360299"` — `blogID` is likely the same idea, possibly renamed. |
+| `blogID` | String | The item's human-facing identifier — used as the lookup key by `getBlogByID`, which queries the `blogID-index` GSI directly (see `API_ENDPOINTS.md`), but is *not* the DynamoDB table's own primary key (see above). Early sample data (`Documentation/BlogArchive.txt`) used a millisecond timestamp string as `id`, e.g. `"1640119360299"` — `blogID` is likely the same idea, possibly renamed. |
 | `blogType` | Number | Partition key. `1`=Tech, `2`=Hockey Cards (per the `createBlogPost.html` dropdown, though card content actually goes to the `Cards` table, not `Blogs`), `3`=Mach-E, `4`=SYNC Updates, `5`=Raspberry Pi, `99`=Home Page. See `BLOG_TYPE_LABELS` in `scripts/cmsBlog.js`. |
 | `title` | String | Post title. |
 | `author` | String | Free text; CMS forms currently only offer "Christian Couillard". |

@@ -139,10 +139,10 @@ without changing that expectation first.
 ### Get a single blog by ID
 - **URL**: `https://gcd40hir88.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
-- **Query params**: `blogID`, `blogType`
+- **Query params**: `blogID` only — `blogType` used to also be required but was dropped 2026-09-04 once the Lambda no longer needed it (see below); `cms/blogEdit.html` still tracks `blogType` itself for `updateBlogPost()`/`deleteBlogPost()`, it just no longer gets sent to this specific endpoint.
 - **Called from**: `fetchBlogByID()` in `scripts/cmsBlog.js` (used by `cms/blogEdit.html`)
 - **Response**: `{ item: { postBody, published, blogType, time, title, img, imgCap, ... } }`
-- **Lambda**: `Lambdas/getBlogByID/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). `Query` on `blogType` (partition key) + `FilterExpression` on `blogID` (404 if no match).
+- **Lambda**: `Lambdas/getBlogByID/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Converted 2026-09-04 to a `Query` against the `blogID-index` GSI (404 if no match) — previously queried `blogType` (partition key) with a `FilterExpression` on `blogID`, reading every post of that type before filtering. See `DATA_MODEL.md`'s `Blogs` table.
 
 ## CMS — card set authoring
 

@@ -297,14 +297,18 @@ The `blogID`/`blogType` query-param extraction and the `window load`
 listener live together in a separate inline `<script>` block right
 after `</head>`.
 
-**On `window load`**: `fetchBlogByID(blogID, blogType)` (`cmsBlog.js`)
-loads the specific post being edited — calls **Get a single blog by
-ID**, fronted by the `getBlogByID` Lambda (`Lambdas/getBlogByID/`),
-which does a `Query` on `blogType` (the table's partition key) plus a
-`FilterExpression` on `blogID` to narrow to the one post, with the
-Authorization header. If `data.item` is missing, shows "Blog not
-found." in `#errorDiv` and stops; otherwise calls `populateBlog(blog)`
-(internal to `cmsBlog.js`), which sets the TinyMCE content via
+**On `window load`**: `fetchBlogByID(blogID)` (`cmsBlog.js`) loads the
+specific post being edited — calls **Get a single blog by ID**,
+fronted by the `getBlogByID` Lambda (`Lambdas/getBlogByID/`), which
+does a `Query` against the `blogID-index` GSI (converted from a
+`Query` on `blogType` filtered down by `blogID` on 2026-09-04 — see
+`DATA_MODEL.md`), with the Authorization header. `blogType` (also
+pulled from this page's own URL) is no longer sent to this endpoint at
+all — it's still used elsewhere on this page, for `updateBlogPost()`/
+`deleteBlogPost()`, which do need it. If `data.item` is missing, shows
+"Blog not found." in `#errorDiv` and stops; otherwise calls
+`populateBlog(blog)` (internal to `cmsBlog.js`), which sets the
+TinyMCE content via
 `tinymce.get("postBody").setContent(blog.postBody)`, rebuilds the
 Published `<select>`'s two `<option>`s with whichever is currently true
 marked `selected`, and fills `title`/`imgName`/`imgCap`/`blogType`
