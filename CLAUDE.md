@@ -5,10 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 "the hella files" (mellowjohnny.cc) — a personal site combining a blog
-(tech, Mustang Mach-E, Raspberry Pi) with an extensive vintage/junk-wax
+(Tech and Mustang Mach-E) with an extensive vintage/junk-wax
 hockey card set review section, a private CMS, and a small SMS
 broadcast tool for a cycling club. It also serves as the owner's AWS
-playground (Lambda, DynamoDB, Amplify).
+playground (Lambda, DynamoDB, Amplify), and a place to use Claude Code.
 
 **Full architecture, data model, API inventory, and CMS docs live in
 `Documentation/` — start with `Documentation/README.md`.** It was
