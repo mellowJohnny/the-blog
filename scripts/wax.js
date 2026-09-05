@@ -111,18 +111,56 @@ function renderCardSetPage() {
       item.downvotes,
       item.hasChecklist
     );
-    // Populate the page title
-    fetchPageTitle(item.setName);
-    
+    // Populate the page title, meta tags, and structured data
+    fetchPageTitle(item);
+
   });
 
   renderPaginationControls();
 }
 
-/*************** Dynamically create & render the page title for waxReviews.html ***************** */
-function fetchPageTitle(setName)
+/*************** Dynamically create & render the page title, meta tags, and
+ * structured data for waxReviews.html/lockout.html, once per set as it loads ***************** */
+function fetchPageTitle(item)
 {
+  const { setName, year, mfg, headerImg, headerImgName, postBody, stars, author, now } = item;
+
   document.title = `Review: ${setName}`;
+
+  const pageHeaderEl = document.getElementById("pageHeader");
+  if (pageHeaderEl) pageHeaderEl.textContent = setName;
+
+  const image = `${headerImg}${headerImgName}`;
+  const description = stripHtmlTags(postBody).trim().slice(0, 300); // helper.js
+
+  setPageMeta({
+    title: `Review: ${setName}`,
+    description: description,
+    image: image,
+    url: window.location.href,
+    type: "website"
+  });
+
+  // Fixed id (not derived from setName): only one set is ever shown per
+  // page at a time (pageSize is 1), so each pagination click should
+  // replace this same block, not accumulate a new one alongside it.
+  setJsonLd("jsonld-cardset", {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": setName,
+    "image": image,
+    "review": {
+      "@type": "Review",
+      "author": { "@type": "Person", "name": author },
+      "datePublished": now,
+      "reviewBody": description,
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": parseInt(stars),
+        "bestRating": 5
+      }
+    }
+  });
 }
 
 /**

@@ -69,6 +69,14 @@
         fetchBlogs('99');
         fetchCopyrightYear();
         fetchNav("index");
+
+        setPageMeta({
+          title: "the hella files...junk wax hockey card set reviews and tech blog",
+          description: "Welcome to the hella files. A blog with a focus on vintage and Junk Wax hockey card set reviews, tech, and software architecture. The site also serves as a playground for AWS services like Lambda, DynamoDB, and Amplify.",
+          image: "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp",
+          url: "https://www.mellowjohnny.cc/",
+          type: "website"
+        });
       });
 
       window.dataLayer = window.dataLayer || [];
@@ -113,6 +121,10 @@
         <div class="flex-container">
           <div class="blog-entry" id="blogsDiv"></div>
         </div>
+        <div
+          id="paginationControls"
+          style="text-align:center; margin:20px 0;"
+        ></div>
       </section>
     </main>
 

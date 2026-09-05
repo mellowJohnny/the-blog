@@ -71,6 +71,17 @@
         // *** Fetch the Top Nav from helper.js
         fetchNav(pageName);
 
+        // Canonical always points at the bare page, ignoring any ?q= -
+        // the search tool itself is what's worth indexing, not thin
+        // per-query result pages.
+        setPageMeta({
+          title: "the hella files...Player Search - find which vintage hockey card sets a player appears in",
+          description: "Search by player name to find every vintage and junk wax hockey card set reviewed on the hella files that they appear in, with a direct link to each set's review.",
+          image: "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp",
+          url: "https://www.mellowjohnny.cc/playerSearch.html",
+          type: "website"
+        });
+
         // *** If a ?q= is already in the URL (e.g. a shared link), run
         // that search immediately on load.
         const initialQuery = params.get("q");

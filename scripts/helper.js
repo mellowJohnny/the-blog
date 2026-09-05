@@ -12,13 +12,20 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
+// Strips HTML tags down to plain text - shared by estimateReadingTime()
+// below and by the meta-description/JSON-LD builders in blogs.js/wax.js,
+// which need plain text pulled from the same raw HTML postBody.
+function stripHtmlTags(htmlString) {
+  return htmlString.replace(/<[^>]*>/g, " ");
+}
+
 /**
  * Helper function to estimate reading time for blogs OR cardsets
  */
 
 function estimateReadingTime(htmlString) {
   // Strip HTML tags so we only count real words
-  const text = htmlString.replace(/<[^>]*>/g, " ");
+  const text = stripHtmlTags(htmlString);
 
   // Split on whitespace and filter out empty entries
   const words = text.trim().split(/\s+/).filter(w => w.length > 0);
@@ -32,6 +39,71 @@ function estimateReadingTime(htmlString) {
     wordCount,
     minutes
   };
+}
+
+// -------------------- SEO / social meta helpers --------------------
+// setPageMeta() updates (creating the tag if it doesn't exist yet)
+// <title>, meta[name=description], link[rel=canonical], the Open
+// Graph og:* meta tags, and the twitter:* meta tags, all from one
+// call. Used by every public page so title/description/canonical/OG
+// tags stay in sync instead of being hand-rolled per page - static
+// pages call it once on load, dynamic pages (waxReviews.html/
+// lockout.html's fetchPageTitle(), tech.html's renderBlogIntro()) call
+// it again each time new content arrives.
+function setPageMeta({ title, description, image, url, type }) {
+  if (title) document.title = title;
+
+  function setMeta(selector, attr, content) {
+    let el = document.querySelector(selector);
+    if (!el) {
+      el = document.createElement("meta");
+      const [, attrName, attrValue] = selector.match(/\[(\w+)=(.+)\]/);
+      el.setAttribute(attrName, attrValue.replace(/"/g, ""));
+      document.head.appendChild(el);
+    }
+    el.setAttribute(attr, content);
+  }
+
+  if (description) {
+    setMeta('meta[name="description"]', "content", description);
+    setMeta('meta[property="og:description"]', "content", description);
+    setMeta('meta[name="twitter:description"]', "content", description);
+  }
+  if (title) {
+    setMeta('meta[property="og:title"]', "content", title);
+    setMeta('meta[name="twitter:title"]', "content", title);
+  }
+  if (image) {
+    setMeta('meta[property="og:image"]', "content", image);
+    setMeta('meta[name="twitter:image"]', "content", image);
+  }
+  if (url) {
+    setMeta('meta[property="og:url"]', "content", url);
+
+    let link = document.querySelector('link[rel="canonical"]');
+    if (!link) {
+      link = document.createElement("link");
+      link.setAttribute("rel", "canonical");
+      document.head.appendChild(link);
+    }
+    link.setAttribute("href", url);
+  }
+  setMeta('meta[property="og:type"]', "content", type || "website");
+  setMeta('meta[name="twitter:card"]', "content", "summary_large_image");
+}
+
+// setJsonLd() creates or replaces a <script type="application/ld+json">
+// block in <head>, keyed by id so a page can update its own structured
+// data as new content loads without piling up duplicate blocks.
+function setJsonLd(id, data) {
+  let script = document.getElementById(id);
+  if (!script) {
+    script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = id;
+    document.head.appendChild(script);
+  }
+  script.textContent = JSON.stringify(data);
 }
 
 
