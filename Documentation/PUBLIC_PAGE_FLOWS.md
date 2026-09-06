@@ -38,11 +38,14 @@ backend — it isn't on the API Endpoints page and has nothing to do with
 the Lambda/DynamoDB stack the rest of this doc traces.
 
 **On `DOMContentLoaded`**: `renderBlogIntro('99')` writes a static,
-hardcoded intro paragraph into `#blog-intro` — purely cosmetic framing
-text above the blog stream, no backend call. `blogType "99"` (the
-special "home page" type) doesn't match any of the function's
-type-specific branches (`"1"`/`"3"`/`"5"`), so it falls through to the
-generic "the blog with a purpose..." copy.
+hardcoded intro paragraph — as an `<h1>` plus body copy — into
+`#blog-intro`. `blogType "99"` (the special "home page" type) doesn't
+match any of the function's type-specific branches (`"1"`/`"3"`/`"5"`),
+so it falls through to the generic "the blog with a purpose..." copy.
+This `<h1>` is the page's one true page-level heading — the individual
+post `displayBlog()` renders below it (see the `fetchBlogs()` bullet
+below) is deliberately an `<h2>`, so the page never has two competing
+`<h1>`s.
 
 **On `window load`** (all three fire independently, not sequenced on
 each other):
@@ -64,10 +67,26 @@ each other):
   tag entirely when `img === "none"`, and otherwise renders one with an
   `onerror` handler that hides both the image and its caption if the
   URL 404s — so a broken or placeholder image fails silently instead of
-  showing a broken-image icon. `renderBlogPage()` finishes by calling
-  `renderBlogPaginationControls()`, which builds the "← previous post
-  title" / "next post title →" links into `#paginationControls`, so a
-  visitor can step through older/newer posts without a full reload.
+  showing a broken-image icon. It also builds a `BlogPosting` JSON-LD
+  block from this same data (`headline`, `author`, `datePublished`,
+  `image` when present, and an `articleBody` excerpt built by stripping
+  HTML tags from `postBody` via `stripHtmlTags()`, `helper.js`) and
+  writes it via `setJsonLd("jsonld-blogpost", ...)` — a fixed id, since
+  only one post is ever shown at a time, so the next pagination click
+  replaces this block rather than piling up a new one. `renderBlogPage()`
+  finishes by calling `renderBlogPaginationControls()`, which builds the
+  "← previous post title" / "next post title →" links into
+  `#paginationControls`, so a visitor can step through older/newer posts
+  without a full reload.
+- `setPageMeta({...})` (`helper.js`, called directly in the `window
+  load` handler, not from a `blogs.js` function) — sets `<title>`, the
+  meta description, canonical (`https://www.mellowjohnny.cc/`, matching
+  `sitemap.xml`'s root entry), and the Open Graph/Twitter Card tags,
+  reusing the same static, already-good title/description this page
+  always had, plus the preloaded hero image
+  (`hellaFilesArch.webp`) as the social-share image. Static and only
+  called once — unlike `tech.html`/`waxReviews.html` below, there's only
+  one URL here, so there's nothing per-instance to vary.
 - `fetchCopyrightYear()` (`helper.js`) — a small, unrelated piece of
   chrome: writes `© <current year> Christian Couillard` into `#copy`.
 - `fetchNav("index")` (`helper.js`) — builds the top nav bar itself
@@ -110,18 +129,37 @@ element — see `index.html`'s section above for that mechanism.
 
 **On `DOMContentLoaded`**: `renderBlogIntro(blogType)` — same function
 as `index.html`, but this time `"1"`, `"3"`, and `"5"` each have their
-own tailored intro copy (Tech/Mach-E/Raspberry Pi respectively).
+own tailored intro copy (Tech/Mach-E/Raspberry Pi respectively), each
+still rendered as the page's one `<h1>` (see `index.html`'s section
+above for why `displayBlog()`'s own heading is an `<h2>` instead).
 `blogType "4"` (SYNC Updates) has no matching branch, so it falls
 through to the same generic fallback copy `"99"` uses on `index.html` —
 worth knowing if that intro ever looks wrong specifically on the SYNC
 Updates stream.
+
+This is also where `tech.html` gets its title/meta description/OG tags
+— something `index.html` doesn't need this function for, since it
+already sets its own statically (see above). Whenever `blogType` isn't
+`"99"` (i.e. this is genuinely `tech.html`, not `index.html` calling
+the same shared function), `renderBlogIntro()` looks up a small
+`metaByType` map keyed by `blogType` (falling back to a generic
+"tech blog" title/description for `"4"`, which has no dedicated entry)
+and calls `setPageMeta({...})` (`helper.js`) with that title/description,
+the shared hero image as `image`, and a canonical built from
+`window.location.search` — e.g.
+`https://www.mellowjohnny.cc/tech.html?blogType=1&pageName=tech` —
+so each of the 4 `blogType` variants in `sitemap.xml` gets its own
+accurate title/description/canonical instead of sharing one generic
+pair, which is what this page had before.
 
 **On `window load`**:
 - `fetchBlogs(blogType)` is the content-loading call, doing exactly
   what `index.html`'s does — same `Blogs` table, same `getBlogs` Lambda,
   same **Get all blogs of a given type** endpoint, same pagination
   behavior — just filtered to whichever `blogType` this page instance
-  represents instead of `99`.
+  represents instead of `99`. Same `displayBlog()` render function too,
+  so the same `BlogPosting` JSON-LD block described in `index.html`'s
+  section above is written here as well.
 - `fetchCopyrightYear()` — same as `index.html`.
 - `fetchNav(pageName)` — called with **only** `pageName`, no `blogType`
   argument, even though `fetchNav(pageName, blogType)` accepts a second
@@ -207,13 +245,28 @@ everything the visitor can see or navigate to on this page.
   function (17 positional params — `postBody`, `year`, `mfg`, `size`,
   `subsets`, `stars`, `formats`, `headerImg`/`headerImgName`,
   `footerImg`/`footerImgName`, `setName`, `author`, `date`, `upvotes`,
-  `downvotes`, `hasChecklist`) plus `fetchPageTitle(item.setName)` for
-  each, which sets `document.title` to `Review: <setName>` so the
-  browser tab and any bookmark reflect the specific set being viewed,
-  not just a generic page title. This same function also calls
-  `fetchCopyrightYear()` itself, unconditionally, right after kicking
-  off the `fetch()` — so the copyright year is set independent of
-  whether the card-set fetch ultimately succeeds or fails.
+  `downvotes`, `hasChecklist`) plus `fetchPageTitle(item)` for each —
+  despite the name, this now does all of this page's per-set SEO work
+  in one place, not just the title: it sets `document.title` to
+  `Review: <setName>` (so the browser tab/bookmark reflect the specific
+  set, not a generic page title), writes that same set name into the
+  previously-empty `<h1 id="pageHeader">` (this element used to have a
+  stale comment claiming `displayCardSet()` populated it — nothing
+  actually did, on either `waxReviews.html` or `lockout.html`, until
+  this fix), calls `setPageMeta({...})` (`helper.js`) with a
+  `Review: <setName>` title, a description built by stripping HTML tags
+  from `postBody` via `stripHtmlTags()` (`helper.js`) and truncating to
+  300 characters, the set's own `headerImg`/`headerImgName` as the
+  social-share image, and a canonical built from `window.location.href`
+  — and writes a `Product`+`Review` JSON-LD block (`name`/`image` on the
+  `Product`, `author`/`datePublished`/`reviewRating` — out of 5, from
+  `stars` — and a stripped-text `reviewBody` on the nested `Review`) via
+  `setJsonLd("jsonld-cardset", ...)`, a fixed id for the same
+  one-set-at-a-time reason `index.html`'s `jsonld-blogpost` block uses.
+  `fetchCardSetsByYear()` itself also calls `fetchCopyrightYear()`
+  unconditionally, right after kicking off the `fetch()` — so the
+  copyright year is set independent of whether the card-set fetch
+  ultimately succeeds or fails.
   `renderCardSetPage()` finishes with `renderPaginationControls()`,
   which only renders anything when there's more than one set for that
   year (most years have exactly one; only 1989-90 onward have
@@ -327,6 +380,13 @@ directly for a player and jump straight to every set they appear in.
   mechanism as every other page. `"playerSearch"`'s own `NAV_MAP` entry
   deliberately does **not** include `"search"` itself (no self-link,
   since you're already there).
+- `setPageMeta({...})` (`helper.js`) — static, called once, reusing this
+  page's already-good title/description and the shared hero image.
+  Canonical is always the bare `https://www.mellowjohnny.cc/playerSearch.html`,
+  **regardless of any `?q=`** — a deliberate choice: the search tool
+  itself is what's worth indexing, not a separate page per query, which
+  would just dilute relevance across effectively infinite thin
+  `?q=`-variant URLs.
 - If the URL already has a `?q=` param (e.g. a shared/bookmarked search
   link), the input field is pre-filled and `runPlayerSearch(initialQuery)`
   fires immediately, so a shared link shows results right away rather
