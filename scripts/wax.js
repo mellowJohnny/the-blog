@@ -123,19 +123,30 @@ function renderCardSetPage() {
  * structured data for waxReviews.html/lockout.html, once per set as it loads ***************** */
 function fetchPageTitle(item)
 {
-  const { setName, year, mfg, headerImg, headerImgName, postBody, stars, author, now } = item;
+  const {
+    setName, year, mfg, headerImg, headerImgName, postBody, stars, author, now,
+    seoPageTitle, seoMetaDesc, seoTags
+  } = item;
 
-  document.title = `Review: ${setName}`;
+  // Prefer the CMS-authored SEO fields when present, falling back to
+  // the generic derivation for sets that don't have them set.
+  const pageTitle = (seoPageTitle && seoPageTitle.trim()) || `Review: ${setName}`;
+  document.title = pageTitle;
 
+  // The on-page H1 always shows the real set name, never seoPageTitle -
+  // that field is for <title>/social previews specifically.
   const pageHeaderEl = document.getElementById("pageHeader");
   if (pageHeaderEl) pageHeaderEl.textContent = setName;
 
   const image = `${headerImg}${headerImgName}`;
-  const description = stripHtmlTags(postBody).trim().slice(0, 300); // helper.js
+  const description = (seoMetaDesc && seoMetaDesc.trim())
+    || stripHtmlTags(postBody).trim().slice(0, 300); // helper.js
+  const keywords = (seoTags && seoTags.trim()) || undefined;
 
   setPageMeta({
-    title: `Review: ${setName}`,
+    title: pageTitle,
     description: description,
+    keywords: keywords,
     image: image,
     url: window.location.href,
     type: "website"
@@ -149,6 +160,7 @@ function fetchPageTitle(item)
     "@type": "Product",
     "name": setName,
     "image": image,
+    ...(keywords ? { "keywords": keywords } : {}),
     "review": {
       "@type": "Review",
       "author": { "@type": "Person", "name": author },

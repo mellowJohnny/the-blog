@@ -50,7 +50,7 @@ function estimateReadingTime(htmlString) {
 // pages call it once on load, dynamic pages (waxReviews.html/
 // lockout.html's fetchPageTitle(), tech.html's renderBlogIntro()) call
 // it again each time new content arrives.
-function setPageMeta({ title, description, image, url, type }) {
+function setPageMeta({ title, description, image, url, type, keywords }) {
   if (title) document.title = title;
 
   function setMeta(selector, attr, content) {
@@ -90,6 +90,9 @@ function setPageMeta({ title, description, image, url, type }) {
   }
   setMeta('meta[property="og:type"]', "content", type || "website");
   setMeta('meta[name="twitter:card"]', "content", "summary_large_image");
+  if (keywords) {
+    setMeta('meta[name="keywords"]', "content", keywords);
+  }
 }
 
 // setJsonLd() creates or replaces a <script type="application/ld+json">
