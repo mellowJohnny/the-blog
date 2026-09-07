@@ -48,15 +48,15 @@ function renderBlogIntro(blogType) {
   if (blogType && blogType !== "99") {
     const metaByType = {
       "1": {
-        title: "the tech blog...at the hella files - AI, iPads, and software architecture musings",
+        title: "the tech blog...at the hella files - AI, iPads & software",
         description: "Random thoughts on technology - from AI to using an iPad for development tasks, plus whatever else strikes my fancy on the tech side of the hella files."
       },
       "3": {
-        title: "the Mustang Mach-E blog...at the hella files - life with our first EV",
+        title: "the Mach-E blog at the hella files - our first EV",
         description: "Thoughts and experiences with our first EV, the Ford Mustang Mach-E - part of the hella files blog."
       },
       "5": {
-        title: "the Raspberry Pi blog...at the hella files - tinkering with a tiny computer",
+        title: "the Raspberry Pi blog...at the hella files",
         description: "Thoughts and experiments with a Raspberry Pi rig - part of the hella files blog."
       }
     };

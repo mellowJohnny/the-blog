@@ -82,7 +82,6 @@
     <script>
       const params = new URLSearchParams(window.location.search);
       const year = params.get("year");
-      const sortOrder = params.get("sortOrder");
       const pageName = params.get("pageName");
       const blogCat = params.get("blogCat");
     </script>
@@ -142,9 +141,20 @@
         // fetchCardIntro(pageName);
         // Call the Set-O-Matic Set Picker
         renderSetPicker(year,blogCat,pageName);
-        //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
-        fetchCardSetsByYear(year,sortOrder,blogCat);
 
+        fetchCopyrightYear();
+
+        // This is a static essay, not a fetched card set - there was never
+        // a 2004-05 McDonald's set to look up (that's the whole point of
+        // this page), so unlike waxReviews.html there's no fetchPageTitle()
+        // call here to set these from real set data. Set them directly instead.
+        document.getElementById("pageHeader").textContent = "2004-05: The Lockout Season";
+        setPageMeta({
+          title: "2004-05: The Lockout Season - no McDonald's Hockey set",
+          description: "The 2004-05 NHL lockout wiped out that season's McDonald's Hockey set - the one gap in an otherwise unbroken run from 1991 to 2009.",
+          url: "https://www.mellowjohnny.cc/lockout.html",
+          type: "website"
+        });
       });
 
       // Google Analytics
@@ -179,7 +189,8 @@
       <section>
         <div class="header-style">
           <h1 id="pageHeader"></h1>
-          <!-- called by displayCardSet() in main.js-->
+          <!-- Set directly in the window load handler above - this is a
+               static essay, not a fetched card set. -->
         </div>
 
         <div class="flex-container">
