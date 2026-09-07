@@ -289,6 +289,13 @@ function applyRandomMastheadTeam() {
   mast.style.setProperty("--team-primary", team.primary);
   mast.style.setProperty("--team-tertiary", team.tertiary);
 
+  // Genuinely two-color (+white) teams (Detroit, Tampa Bay, Toronto -
+  // primary === tertiary in the data above) get a simpler design
+  // instead of the 5-band stripe: a solid background in that one color
+  // with a single white stripe centered at 30% width - see the
+  // .masthead-two-color rule in styles.css.
+  mast.classList.toggle("masthead-two-color", team.primary === team.tertiary);
+
   // Small city-only label, bottom-right corner - lets the site owner
   // visually confirm which team's colors are showing without needing
   // to inspect the CSS custom properties. Created once and reused

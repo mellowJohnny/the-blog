@@ -870,6 +870,19 @@ label sup {
   filter: contrast(0.92) brightness(1.03); /* Reduce contrast a bit for that vinathe look */
 }
 
+/* Genuinely two-color (+white) teams (Detroit, Tampa Bay, Toronto -
+   applyRandomMastheadTeam() in helper.js toggles this class on when
+   --team-primary === --team-tertiary) get a simpler design than the
+   5-band stripe above: a solid background in that one color with a
+   single white stripe centered at 30% of the total width, vertical
+   rather than the horizontal bands used elsewhere. */
+.wax-reviews-mast-table.masthead-two-color {
+  background-image: linear-gradient(to right,
+    var(--team-primary) 0%, var(--team-primary) 35%,
+    #ffffff 35%, #ffffff 65%,
+    var(--team-primary) 65%, var(--team-primary) 100%);
+}
+
 .wax-reviews-mast-table::before { /* Blurred noise overlay for a vintage vibe */
   content: "";
   position: absolute;
@@ -927,6 +940,25 @@ label sup {
      2px -2px 0 var(--color-heading-outline),
     -2px  2px 0 var(--color-heading-outline),
      2px  2px 0 var(--color-heading-outline);
+}
+
+/* .masthead-two-color's centered white stripe sits directly under part
+   of the title - the near-white fill (rgb(252,252,245)) all but
+   vanishes against it, leaving only the thin 2px blue outline above to
+   define the letterforms, which isn't enough on its own. Add a larger,
+   darker outline layer behind the existing blue one (painted first,
+   per text-shadow's back-to-front list order) so the title stays
+   legible over white without changing the stripe's centered position. */
+.wax-reviews-mast-table.masthead-two-color .wax-reviews-masthead a {
+  text-shadow:
+    -2px -2px 0 var(--color-heading-outline),
+     2px -2px 0 var(--color-heading-outline),
+    -2px  2px 0 var(--color-heading-outline),
+     2px  2px 0 var(--color-heading-outline),
+    -3px -3px 0 #000000,
+     3px -3px 0 #000000,
+    -3px  3px 0 #000000,
+     3px  3px 0 #000000;
 }
 
 
