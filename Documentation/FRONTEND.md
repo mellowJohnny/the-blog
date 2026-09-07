@@ -29,10 +29,17 @@ one year+category combination.
 ### Sitemap
 
 `sitemap.xml` (repo root, referenced from `robots.txt`) lists every
-real entry-point page — added for Algolia's hosted crawler (site
-verification tag + Experiences widget live in `index.html`). Since this
-site has no per-post/per-set permalinks (posts/reviews render as
-batches on shared query-string pages, not one URL per item), the
+real entry-point page, for search-engine crawlers (Google, Bing, etc.)
+to discover. It originally existed for Algolia's hosted crawler, back
+when Algolia powered site search — that integration (the `<meta
+name="algolia-site-verification">` tag in `index.html`, and the
+Experiences autocomplete widget before it) has since been removed
+entirely, fully superseded by the custom `playerSearch.html`/
+`searchPlayerName` search feature (see "Player search" below). The
+sitemap itself stays — it's independently useful for standard SEO
+crawling regardless of Algolia. Since this site has no per-post/per-set
+permalinks (posts/reviews render as batches on shared query-string
+pages, not one URL per item), the
 sitemap lists batch-level URLs (home, `playerSearch.html`, each
 `tech.html` `blogType`, each `waxReviews.html` year+category
 combination, `lockout.html`) rather than one entry per post — the
