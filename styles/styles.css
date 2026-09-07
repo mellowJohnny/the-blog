@@ -2521,6 +2521,15 @@ label sup {
     height: auto;
   }
 
+  /* Breathing room between the image and "Set Size" - only needed here,
+     since on desktop the list sits beside the image, not below it.
+     Scoped under #cardSetDiv to beat that same-named rule's own
+     margin:0 reset above (id+class specificity, needed regardless of
+     media-query order - see the .flex-container div note nearby). */
+  #cardSetDiv .set-details-list {
+    margin-top: 12px;
+  }
+
 
   /* .set-details-table-style gets its own tr/td display overrides above;
      .set-footer-table-style didn't, so it fell back to the generic mobile
