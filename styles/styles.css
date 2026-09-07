@@ -848,7 +848,20 @@ label sup {
   height: 150px;
   position: relative;
   overflow: hidden;
-  background-image: url('https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hella_habs_masthead.webp'); 
+  /* Defaults match the original hella_habs_masthead.webp (Canadiens
+     red/navy) - applyRandomMastheadTeam() (helper.js) overrides these
+     on load to a random NHL team's colors; without JS, or before it
+     runs, this renders identically to the old fixed image. */
+  --team-primary: #A6192E;
+  --team-tertiary: #001E62;
+  /* Reproduces the original image's 5-band stripe exactly (measured by
+     sampling its pixels): band proportions 0-33/33-38/38-62/62-67/67-100. */
+  background-image: linear-gradient(to bottom,
+    var(--team-primary) 0%, var(--team-primary) 33%,
+    #ffffff 33%, #ffffff 38%,
+    var(--team-tertiary) 38%, var(--team-tertiary) 62%,
+    #ffffff 62%, #ffffff 67%,
+    var(--team-primary) 67%, var(--team-primary) 100%);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;

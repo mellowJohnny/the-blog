@@ -224,6 +224,65 @@ function getSortOrder(property,order) {
 // Scalability: Adding new years is as simple as extending the range.
 // This way, instead of maintaining hundreds of lines of repetitive HTML, you only maintain the ranges. Much easier to extend and debug.
 
+// -------------------- Masthead team-color randomizer --------------------
+// Primary/tertiary hex per team, from Wikipedia's Module:Sports
+// color/ice hockey (the same data source every NHL team's own Wikipedia
+// infobox pulls its colors from) - verified current for the 2026-27
+// season (32 teams, includes the Arizona Coyotes -> Utah Hockey Club ->
+// Utah Mammoth rebrand). Feeds the .wax-reviews-mast-table masthead
+// gradient in styles.css - "secondary" (white) is omitted since it's
+// white for every team in that module and is already the gradient's
+// own white bands. A few teams (Detroit, Tampa Bay, Toronto) have the
+// same primary/tertiary value - genuinely two-color (+white) teams,
+// not a data error.
+const NHL_TEAM_COLORS = [
+  { name: "Anaheim Ducks", primary: "#CF4520", tertiary: "#89734C" },
+  { name: "Boston Bruins", primary: "#010101", tertiary: "#FFB81C" },
+  { name: "Buffalo Sabres", primary: "#003087", tertiary: "#FFB81C" },
+  { name: "Calgary Flames", primary: "#C8102E", tertiary: "#F1BE48" },
+  { name: "Carolina Hurricanes", primary: "#000000", tertiary: "#CC0000" },
+  { name: "Chicago Blackhawks", primary: "#CE1126", tertiary: "#010101" },
+  { name: "Colorado Avalanche", primary: "#8A2432", tertiary: "#236093" },
+  { name: "Columbus Blue Jackets", primary: "#041E42", tertiary: "#C8102E" },
+  { name: "Dallas Stars", primary: "#00823E", tertiary: "#000000" },
+  { name: "Detroit Red Wings", primary: "#C8102E", tertiary: "#C8102E" },
+  { name: "Edmonton Oilers", primary: "#00205B", tertiary: "#D14520" },
+  { name: "Florida Panthers", primary: "#C8102E", tertiary: "#041E42" },
+  { name: "Los Angeles Kings", primary: "#010101", tertiary: "#A2AAAD" },
+  { name: "Minnesota Wild", primary: "#0E4431", tertiary: "#AC1A2E" },
+  { name: "Montreal Canadiens", primary: "#A6192E", tertiary: "#001E62" },
+  { name: "Nashville Predators", primary: "#FFB81C", tertiary: "#041E42" },
+  { name: "New Jersey Devils", primary: "#CC0000", tertiary: "#000000" },
+  { name: "New York Islanders", primary: "#003087", tertiary: "#FC4C02" },
+  { name: "New York Rangers", primary: "#154B94", tertiary: "#C32032" },
+  { name: "Ottawa Senators", primary: "#010101", tertiary: "#C8102E" },
+  { name: "Philadelphia Flyers", primary: "#D24303", tertiary: "#000000" },
+  { name: "Pittsburgh Penguins", primary: "#000000", tertiary: "#FFB81C" },
+  { name: "San Jose Sharks", primary: "#00778B", tertiary: "#010101" },
+  { name: "Seattle Kraken", primary: "#001425", tertiary: "#96D8D8" },
+  { name: "St. Louis Blues", primary: "#006AC6", tertiary: "#FFB81C" },
+  { name: "Tampa Bay Lightning", primary: "#00205B", tertiary: "#00205B" },
+  { name: "Toronto Maple Leafs", primary: "#00205B", tertiary: "#00205B" },
+  { name: "Utah Mammoth", primary: "#010101", tertiary: "#7AB2E0" },
+  { name: "Vancouver Canucks", primary: "#00205B", tertiary: "#046A38" },
+  { name: "Vegas Golden Knights", primary: "#B9975B", tertiary: "#333F48" },
+  { name: "Washington Capitals", primary: "#C8102E", tertiary: "#041E42" },
+  { name: "Winnipeg Jets", primary: "#041E42", tertiary: "#004A98" }
+];
+
+// Called on load by every page using the wax-reviews-mast-table masthead
+// (waxReviews.html, lockout.html, playerSearch.html, theJunkWaxYears.html)
+// - picks one team at random and sets its colors as CSS custom
+// properties, which the masthead's gradient (styles.css) reads.
+function applyRandomMastheadTeam() {
+  const mast = document.querySelector(".wax-reviews-mast-table");
+  if (!mast) return;
+
+  const team = NHL_TEAM_COLORS[Math.floor(Math.random() * NHL_TEAM_COLORS.length)];
+  mast.style.setProperty("--team-primary", team.primary);
+  mast.style.setProperty("--team-tertiary", team.tertiary);
+}
+
 // Category + pageName specific ranges - shared by renderSetPicker() (the
 // year-picker widget) and getPageNameForYear() below (used by
 // playerSearch.js to build a working link back to a matched set's

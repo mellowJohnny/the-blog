@@ -82,6 +82,9 @@
           type: "website"
         });
 
+        // Masthead: random NHL team colors on every load - helper.js
+        applyRandomMastheadTeam();
+
         // *** If a ?q= is already in the URL (e.g. a shared link), run
         // that search immediately on load.
         const initialQuery = params.get("q");
