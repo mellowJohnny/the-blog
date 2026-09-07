@@ -169,7 +169,13 @@ knowing before touching this CSS again:
   silently stomped that div's *intended* spacing/border-bottom, since
   the shared rule's specificity beat it too. Same fix pattern: an
   `#playerSearchResults .player-search-group` override, not touching
-  the shared rule.
+  the shared rule. Recurred a third time on `displayCardSet()`'s new
+  `.set-details-grid` (see below): its child divs (`.set-details-name`/
+  `.set-details-image`/`.set-details-list`) inherited both the
+  1000px-desktop and 100%-mobile versions of the shared rule, quietly
+  overriding the grid's own `width`/`padding`/`margin`. Same fix again:
+  `#cardSetDiv .set-details-grid` / `.set-details-name` /
+  `.set-details-image` / `.set-details-list` overrides.
 - **`<table>` elements resist non-table `display` overrides
   unpredictably across browsers.** Several bugs this round traced back
   to forcing `display: flex`/`display: block` onto a `<table>`/`<tr>`
@@ -182,6 +188,29 @@ knowing before touching this CSS again:
   (`.set-footer-table-style` in `displayCardSet()`, `wax.js`), both of
   which used to be `<table>`s and are now `<div>`s for exactly this
   reason.
+- **A `rowspan`'d table cell can't be visually reordered above the rows
+  it spans, via a breakpoint or otherwise.** `displayCardSet()`'s
+  set-details box used to be a `<table>` with the set name and a
+  `rowspan`'d header-image cell sharing row 1 — on mobile this squished
+  the name into a narrow column beside the image instead of the name
+  spanning full width above it, because the mobile CSS set `tr {
+  display: block }` (stacking most rows correctly) but never `td {
+  display: block }` too, so row 1's two cells stayed `display:
+  table-cell` and kept competing for width regardless. Fixed by
+  replacing the table with CSS Grid (`.set-details-grid`, three
+  independent `grid-area`s: `.set-details-name`/`.set-details-image`/
+  `.set-details-list`) — desktop defines `grid-template-areas` as
+  `"name image" "list image"` (matching the old layout exactly),
+  mobile redefines it as `"name" "image" "list"` in one column. No
+  table semantics involved, so no rowspan fight. `cms/cmsCardSet.js`'s
+  `renderPreview()` (the `setEdit.html`/`createCardSet.html` preview
+  modal) still uses the old table-based markup independently — a
+  desktop-only CMS tool, deliberately left as-is rather than kept in
+  sync, same category of intentional duplication as the checklist-
+  parsing (`tools/checklistParser/` vs. `Lambdas/parseChecklistPdf/`)
+  and sitemap-generator (`tools/generateSitemap/` vs.
+  `scripts/helper.js`) duplications already noted elsewhere in this
+  doc.
 - **A percentage `width` plus `padding` on the same box needs
   `box-sizing: border-box`, or the padding renders as *extra* width
   rather than eating into it.** `.checklist-modal-content` (the

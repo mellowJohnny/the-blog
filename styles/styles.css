@@ -1085,6 +1085,78 @@ label sup {
   margin-bottom: 0;
 }
 
+/* Replaces the old rowspan'd <table class="set-details-table-style">
+   for the public displayCardSet() set-details box - CSS Grid instead of
+   a table, so the mobile override below can reorder name -> image ->
+   list without fighting a rowspan (see FRONTEND.md's "Mobile /
+   responsive design" section for why that doesn't work reliably).
+   cms/cmsCardSet.js's renderPreview() still uses the old table-based
+   .set-details-table-style/.header-img-cell markup for the CMS preview
+   modal - deliberately untouched, so none of this is shared with it. */
+.set-details-grid {
+  display: grid;
+  grid-template-columns: 25% 75%;
+  grid-template-areas:
+    "name image"
+    "list image";
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.set-details-name {
+  grid-area: name;
+  font-family: 'Special Elite', sans-serif;
+  font-size: 20px;
+  padding: 2px 4px;
+}
+
+.set-details-image {
+  grid-area: image;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 285px; /* matches .header-img-cell's fixed height */
+}
+
+.set-details-list {
+  grid-area: list;
+}
+
+.set-detail-row {
+  font-family: 'Special Elite', sans-serif;
+  font-size: 18px;
+  padding: 2px 4px;
+}
+
+/* #cardSetDiv sits inside .flex-container, whose bare descendant
+   selector (.flex-container div, top of file - and its mobile
+   redefinition) matches every div nested inside it at any depth,
+   including all of the above - forcing width:1000px/padding:15px
+   (desktop) or width:100%/padding:10px (mobile) onto each one
+   regardless of the grid-area layout. Same recurring bug, same fix
+   pattern as #cardSetDiv .set-footer-table-style above: ID specificity
+   beats the shared rule's class+type specificity, on both breakpoints
+   at once since this isn't itself inside a media query. */
+#cardSetDiv .set-details-grid {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+#cardSetDiv .set-details-name,
+#cardSetDiv .set-detail-row {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 2px 4px;
+}
+#cardSetDiv .set-details-image,
+#cardSetDiv .set-details-list {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
 /*************************************** Image Styles ****************************************/
 
 .table-header-img {
@@ -2432,6 +2504,22 @@ label sup {
   max-width: 320px; /* adjust as needed */
   width: 100%;
 }
+
+  /* .set-details-grid: reorder to name -> image -> list, one column.
+     No table/rowspan involved, so this is a plain grid redefinition -
+     see the base rule (near .table-header-img) for why this replaced
+     the old table markup. */
+  .set-details-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "name"
+      "image"
+      "list";
+  }
+
+  .set-details-image {
+    height: auto;
+  }
 
 
   /* .set-details-table-style gets its own tr/td display overrides above;

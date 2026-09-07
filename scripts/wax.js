@@ -211,53 +211,42 @@ function fetchPageTitle(item)
 
     // hasChecklist comes from the Cards item (set by saveChecklist the
     // first time a checklist is uploaded for this set - see
-    // Lambdas/saveChecklist/index.mjs). Only add the row - and bump the
-    // image cell's rowspan to match - when there's actually a checklist
-    // to point to. setName is passed via data-set-name rather than
-    // interpolated into the onclick string, same reason as the vote
-    // buttons below - it can contain apostrophes.
-    const detailRowCount = hasChecklist ? 8 : 7;
+    // Lambdas/saveChecklist/index.mjs). Only add the row when there's
+    // actually a checklist to point to. setName is passed via
+    // data-set-name rather than interpolated into the onclick string,
+    // same reason as the vote buttons below - it can contain apostrophes.
     const checklistRow = hasChecklist
-        ? `<tr>
-                <td><a href="#" class="checklist-view-link" data-set-name="${escapeHtml(setName)}" onclick="openChecklistModal(this); return false;">Checklist</a></td>
-            </tr>`
+        ? `<div class="set-detail-row"><a href="#" class="checklist-view-link" data-set-name="${escapeHtml(setName)}" onclick="openChecklistModal(this); return false;">Checklist</a></div>`
         : "";
 
+    // CSS Grid (.set-details-grid, styles.css), not a table - a rowspan'd
+    // table cell can't be reordered above the rows it spans via a mobile
+    // breakpoint alone (see FRONTEND.md's "Mobile / responsive design"
+    // section), so name/image/list are independent grid areas instead,
+    // letting mobile redefine grid-template-areas to stack name -> image
+    // -> list instead of desktop's name+list-beside-image layout.
     cardBody.innerHTML += `
-        <table class="set-details-table-style">
-            <tr>
-                <td style="width: 25%; font-size: 20px;">
-                    <strong>${setName}</strong>
-                </td>
-                <td rowspan="${detailRowCount}" class="header-img-cell" style="width: 75%; text-align: center;">
-                    <img src="${headerImg}${headerImgName}"
-                    class="table-header-img"
-                    fetchpriority="high"
-                    alt="Vintage hockey cards from the ${year} ${mfg} set"
-                    width="620">
-                </td>
-            </tr>
-
-            <tr>
-                <td><strong><i>Set Size:</i></strong> ${size}</td>
-            </tr>
-            <tr>
-                <td><strong><i>Inserts:</i></strong> ${subsets}</td>
-            </tr>
-            <tr>
-                <td><strong><i>Release Year:</i></strong> ${year}</td>
-            </tr>
-            <tr>
-                <td><strong><i>Formats:</i></strong> ${formats}</td>
-            </tr>
-            <tr>
-                <td><strong><i>Manufacturer:</i></strong> ${mfg}</td>
-            </tr>
-            ${checklistRow}
-            <tr>
-                <td><strong><i>Hella Rating:</i></strong> ${cleanStars}</td>
-            </tr>
-        </table>
+        <div class="set-details-grid">
+            <div class="set-details-name">
+                <strong>${setName}</strong>
+            </div>
+            <div class="set-details-image">
+                <img src="${headerImg}${headerImgName}"
+                class="table-header-img"
+                fetchpriority="high"
+                alt="Vintage hockey cards from the ${year} ${mfg} set"
+                width="620">
+            </div>
+            <div class="set-details-list">
+                <div class="set-detail-row"><strong><i>Set Size:</i></strong> ${size}</div>
+                <div class="set-detail-row"><strong><i>Inserts:</i></strong> ${subsets}</div>
+                <div class="set-detail-row"><strong><i>Release Year:</i></strong> ${year}</div>
+                <div class="set-detail-row"><strong><i>Formats:</i></strong> ${formats}</div>
+                <div class="set-detail-row"><strong><i>Manufacturer:</i></strong> ${mfg}</div>
+                ${checklistRow}
+                <div class="set-detail-row"><strong><i>Hella Rating:</i></strong> ${cleanStars}</div>
+            </div>
+        </div>
         <br>
         <table class="set-details-author">
           <tr>
