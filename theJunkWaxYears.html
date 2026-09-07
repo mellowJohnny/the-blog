@@ -1,122 +1,252 @@
-<!DOCTYPE html>
-<!-- Without this, mobile Safari renders at a wide desktop-width virtual
-     viewport and just zooms the page out to fit, so the @media
-     (max-width: 600px) rules in styles.css never trigger -->
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<!doctype html>
 
 <html lang="en-ca">
-  <title>the hella files...Hockey Junk Wax - A Brief History...</title>
   <head>
-    <meta charset="utf-8"> 
-    <meta description="The sports card hobby exploded at the tail end of the '80s and early 1990s, and the hockey card market was no exception. New market entrants, an explosion of sets, and rampant over-production. But was it all bad?">
+    <meta charset="utf-8">
+    <!-- Without this, mobile Safari renders at a wide desktop-width
+           virtual viewport and just zooms the page out to fit, so the
+           @media (max-width: 600px) rules in styles.css never trigger -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+    <link
+      rel="apple-touch-icon"
+      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
 
-    <!-- Load the Google Fonts -->
-    <link rel="stylesheet" type="text/css" href="styles/styles.css">
+    <title>the hella files...Hockey Junk Wax - A Brief History</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com"> 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
-    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Spicy+Rice&family=Caveat&family=Nunito:wght@200&display=swap&family=Special+Elite&family=Work+Sans:ital,wght@0,400;1,500&display=swap" rel="stylesheet" crossorigin="anonymous">
-  
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX" crossorigin="anonymous"></script>
-
+    <meta
+      name="description"
+      content="A firsthand look back at hockey's Junk Wax era - the overproduction boom that nearly killed the hobby, and why not every set from it deserves the &quot;junk&quot; label.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Global site tag (gtag.js) - Load Google Analytics until later -->
     <script>
-      window.addEventListener('load', (event) => {
-        // *** Dynamically display the copyright year
-        fetchCopyrightYear();
-        });
+      window.addEventListener('load', function() {
+        var g = document.createElement('script');
+        g.src = 'https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX';
+        g.async = true;
+        document.head.appendChild(g);
+      });
     </script>
-   
+
+    <style>
+        /* latin-ext */
+      @font-face {
+        font-family: 'Bebas Neue';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url(https://fonts.gstatic.com/s/bebasneue/v16/JTUSjIg69CK48gW7PXoo9WdhyyTh89ZNpQ.woff2) format('woff2');
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      /* latin */
+      @font-face {
+        font-family: 'Bebas Neue';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url(https://fonts.gstatic.com/s/bebasneue/v16/JTUSjIg69CK48gW7PXoo9WlhyyTh89Y.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+    </style>
+
+    <link
+      rel="preload"
+      href="https://fonts.gstatic.com/s/bebasneue/v16/JTUSjIg69CK48gW7PXoo9WdhyyTh89ZNpQ.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin>
+    <link
+      rel="preload"
+      href="https://fonts.gstatic.com/s/bebasneue/v16/JTUSjIg69CK48gW7PXoo9WlhyyTh89Y.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin>
+
+    <!-- Load the stylesheet - plain blocking link, deliberately not the
+           preload+swap trick (see index.html's comment - that let raw
+           unstyled HTML paint before CSS was ready, a visible flash on
+           every navigation). -->
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+
+    <!-- Google Fonts -->
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap"
+      as="style"
+      onload="this.rel='stylesheet'">
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
+    </noscript>
+
+    <!-- Load the Hella Scripts -->
+    <script src="/scripts/helper.js" defer></script>
+
     <script>
+      // Let's do a bunch of stuff on page load...
+      window.addEventListener('load', (event) => {
+        // Groups this page's nav with the junk-wax card-review section
+        // it's linked from (waxReviews.html's junkWax intro), including
+        // the Player Search link that section's NAV_MAP entry adds.
+        fetchNav("junkWax");
+
+        fetchCopyrightYear();
+
+        // Static essay, content never varies - set once here rather than
+        // fetched, same pattern as index.html/playerSearch.html.
+        const articleBody = document.querySelector(".intro")
+          .textContent.trim().replace(/\s+/g, " ").slice(0, 300);
+
+        setPageMeta({
+          title: "the hella files...Hockey Junk Wax - A Brief History",
+          description: "A firsthand look back at hockey's Junk Wax era - the overproduction boom that nearly killed the hobby, and why not every set from it deserves the \"junk\" label.",
+          image: "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp",
+          url: "https://www.mellowjohnny.cc/theJunkWaxYears.html",
+          type: "website"
+        });
+
+        setJsonLd("jsonld-article", {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "the hella files...Hockey Junk Wax - A Brief History",
+          "author": { "@type": "Person", "name": "Christian Couillard" },
+          "articleBody": articleBody
+        });
+      });
+
+      // Google Analytics
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-JMGVGK09QX');
-    </script> 
-
-    <!-- Load the hella files JS Scripts -->
-    <script src="scripts/wax.js"></script>  
-    <script src="scripts/helper.js"></script>
-  
+    </script>
   </head>
 
-<body>
-  <section>
-    <table class="mast-table">
-      <tr>
-        <td width="80%">
-          <div>
-            <header class="masthead"><a href="index.html">the hella files</a></header>
-        </td>
-        <td width="20%" >
-          <!-- Display current weather from weather.js -->
-          <section>
-          <!--  <div class="weather" id="weather">Waiting for the Weather Forecast...</div> -->
-        </td>
+  <body>
+    <section>
+      <table class="wax-reviews-mast-table">
+        <tr>
+          <td>
+            <header class="wax-reviews-masthead">
+              <a href="index.html">the hella files</a>
+            </header>
+          </td>
         </tr>
       </table>
-  </section>
-  <div>
+    </section>
+
     <nav>
-      <!-- Dynamically fetch the Nav using fetchNav() in helper.js -->
+      <!-- Hamberger menu for mobile in helper.js -->
       <div class="nav-container" id="global-nav-placeholder">
         <div class="hamburger" onclick="toggleMenu()">☰</div>
         <div id="global-nav" class="nav-links"></div>
       </div>
     </nav>
-  </div>
+    <main>
+      <section>
+        <div class="header-style">
+          <h1>junk wax curious...</h1>
+        </div>
 
-          <main>
-            <section>
-              <div class="header-style">
-                <h1>junk wax curious...</h1>
-              </div>
-              <div class="flex-container, intro">
-                <p>
-                  If you are wondering what the "Junk Wax" era is as it relates to sports card collecting, let me <i>wax</i> nostalgic for a moment...</p>
-                <p>
-                  The Junk Wax era was a dark period in the history of sport card collecting, spanning roughly from the late 80s to about 1993-94. 
-                  In terms of the hockey card market, which is all I care about, it sort of yo-yo'd in the mid 80s, then really picked up steam after 
-                  the Gretzky trade to LA before the '88-'89 season. O-Pee-Chee, the only card company (well, specifically they were a candy company) 
-                  in Canada, had hyped the trade to dealers, increased production, and then kept it going in subsequent seasons. At the time everyone 
-                  seemed to be collecting. Even McDonald's in Canada got in on the act with Hockey and Baseball sets.</p>
-                <p>
-                  And then the perfect storm arrived. In addition to O-Pee-Chee, the NHL issued new licenses to the likes of Upper Deck, Pro Set and Score,
-                  the prices for cards for the new crop of hot rookies like Roy, Lemieux, and Hull had continued to rise (fuelled in part by the Beckett price guide), 
-                  Lindros rookie fever was in full swing, further driving collectors.  And the card companies were more than happy to keep up with demand...and then some.  </p>
-                <p>
-                  In the hockey mecca of Montreal where I grew up, card shops were everywhere, there were multiple, competing cards shows every week-end 
-                  (even mid-week shows became a thing), the Beckett price guide was the hockey card pricing bible (this was pre-internet of course) with 
-                  millions of collectors looking forward to each new monthly issue to see if the cards in their set had gone up or down in value.</p>
-                <p>
-                  Some rookie cards were getting high enough in value to attract counterfeits - specifically Gretzky, Lemieux, Roy and 
-                  Brett Hull rookies.  By the time the 1991 / 1992 / 1993 seasons arrived production numbers were astronomical.  And while production numbers 
-                  were a closely guarded secret (gee, I wonder why card companies would not want you to know that <i>millions</i> of your coveted Jaromir Jagr 
-                  rookie card were printed?), some have estimated that <strong>billions</strong> of cards were produced each year, across all sports. 
-                  Top of the market indeed.</p>
-                <p>
-                  And although it was short-lived, it almost killed the hobby. Card companies like Pro Set, Score and O-Pee-Chee didn't survive. Yes, technically O-Pee-Chee is 
-                  a candy company (eventually purchased by Nestlé), but they stopped making cards after the '92-'93 season.  It also coincides 
-                  with the time I began collecting in earnest, starting with the 1991-92 Upper Deck Hockey series...</p>
-                <p>
-                  What you will find here is a review of (almost) every hockey set from that era (even McDonald's!).  And while some look back on the Junk Wax era 
-                  with distrain, it holds fond memories for me.  More importantly though, not all sets were "junk" - many have stood the test of time and have become little gems.</p>
-                <p>
-                  The sets & rookies from the era may not be helping put your kids through college, but there are still some nice, affordable sets to enjoy.  
-                  And personally I find it disappointing that as a result of the bankruptcies & consolidations, the hobby has basically collapsed into a single mega-card company - Upper Deck.  
-                  Ironically the explosion in sets which characterised the Junk Wax era also created what I think is it's biggest contribution to the hobby - the sheer amount of choice & variety of sets at the time.</p>
-              </div>
-            </section>
-            
-          </main>
+        <div class="flex-container">
+          <div class="intro">
+            <p>
+              If you are wondering what the "Junk Wax" era is as it
+              relates to sports card collecting, let me <i>wax</i>
+              nostalgic for a moment...
+            </p>
+            <p>
+              The Junk Wax era was a dark period in the history of sport
+              card collecting, spanning roughly from the late 80s to
+              about 1993-94. In terms of the hockey card market, which
+              is all I care about, it sort of yo-yo'd in the mid 80s,
+              then really picked up steam after the Gretzky trade to LA
+              before the '88-'89 season. O-Pee-Chee, the only card
+              company (well, specifically they were a candy company) in
+              Canada, had hyped the trade to dealers, increased
+              production, and then kept it going in subsequent seasons.
+              At the time everyone seemed to be collecting. Even
+              McDonald's in Canada got in on the act with Hockey and
+              Baseball sets.
+            </p>
+            <p>
+              And then the perfect storm arrived. In addition to
+              O-Pee-Chee, the NHL issued new licenses to the likes of
+              Upper Deck, Pro Set and Score, the prices for cards for
+              the new crop of hot rookies like Roy, Lemieux, and Hull
+              had continued to rise (fuelled in part by the Beckett
+              price guide), Lindros rookie fever was in full swing,
+              further driving collectors. And the card companies were
+              more than happy to keep up with demand...and then some.
+            </p>
+            <p>
+              In the hockey mecca of Montreal where I grew up, card
+              shops were everywhere, there were multiple, competing
+              cards shows every week-end (even mid-week shows became a
+              thing), the Beckett price guide was the hockey card
+              pricing bible (this was pre-internet of course) with
+              millions of collectors looking forward to each new
+              monthly issue to see if the cards in their set had gone up
+              or down in value.
+            </p>
+            <p>
+              Some rookie cards were getting high enough in value to
+              attract counterfeits - specifically Gretzky, Lemieux, Roy
+              and Brett Hull rookies. By the time the 1991 / 1992 / 1993
+              seasons arrived production numbers were astronomical. And
+              while production numbers were a closely guarded secret
+              (gee, I wonder why card companies would not want you to
+              know that <i>millions</i> of your coveted Jaromir Jagr
+              rookie card were printed?), some have estimated that
+              <strong>billions</strong> of cards were produced each
+              year, across all sports. Top of the market indeed.
+            </p>
+            <p>
+              And although it was short-lived, it almost killed the
+              hobby. Card companies like Pro Set, Score and O-Pee-Chee
+              didn't survive. Yes, technically O-Pee-Chee is a candy
+              company (eventually purchased by Nestlé), but they
+              stopped making cards after the '92-'93 season. It also
+              coincides with the time I began collecting in earnest,
+              starting with the 1991-92 Upper Deck Hockey series...
+            </p>
+            <p>
+              What you will find here is a review of (almost) every
+              hockey set from that era (even McDonald's!). And while
+              some look back on the Junk Wax era with distrain, it holds
+              fond memories for me. More importantly though, not all
+              sets were "junk" - many have stood the test of time and
+              have become little gems.
+            </p>
+            <p>
+              The sets & rookies from the era may not be helping put
+              your kids through college, but there are still some nice,
+              affordable sets to enjoy. And personally I find it
+              disappointing that as a result of the bankruptcies &
+              consolidations, the hobby has basically collapsed into a
+              single mega-card company - Upper Deck. Ironically the
+              explosion in sets which characterised the Junk Wax era
+              also created what I think is it's biggest contribution to
+              the hobby - the sheer amount of choice & variety of sets
+              at the time.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
 
-          <footer class="page-footer">
-            <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
-            <div id="copy"></div> 
-          </footer>
-      </div>
-  </section>
-
-</body>
-
+    <footer class="page-footer">
+      <div id="copy"></div>
+      <!-- Populated by fetchCopyrightYear() in helper.js -->
+    </footer>
+  </body>
 </html>
