@@ -331,7 +331,11 @@ const NAV_MAP = {
   classicWax: ["home", "junk", "mcd", "timmies", "search", "tech", "mache"],
   timmies: ["home", "classic", "junk", "mcd", "search", "tech", "mache"],
   mcd: ["home", "classic", "junk", "timmies", "search", "tech", "mache"],
-  playerSearch: ["home", "classic", "junk", "mcd", "timmies", "tech", "mache"]
+  playerSearch: ["home", "classic", "junk", "mcd", "timmies", "tech", "mache"],
+  // theJunkWaxYears.html is a static essay, not one of the junkWax/
+  // classicWax/mcd/timmies review pages itself, so - like playerSearch -
+  // nothing needs to self-exclude here; "junk" stays in the list.
+  junkWaxYears: ["home", "classic", "junk", "mcd", "timmies", "search", "tech", "mache"]
 };
 
 // Step 3: Build a dynamic table generator

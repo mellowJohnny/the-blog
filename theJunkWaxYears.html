@@ -94,12 +94,18 @@
     <script>
       // Let's do a bunch of stuff on page load...
       window.addEventListener('load', (event) => {
-        // Groups this page's nav with the junk-wax card-review section
-        // it's linked from (waxReviews.html's junkWax intro), including
-        // the Player Search link that section's NAV_MAP entry adds.
-        fetchNav("junkWax");
+        // This page isn't itself one of the review pages, so - unlike
+        // waxReviews.html's own junkWax nav - nothing self-excludes here;
+        // "90s Junk Wax" stays in the nav (see junkWaxYears in NAV_MAP).
+        fetchNav("junkWaxYears");
 
         fetchCopyrightYear();
+
+        // Set-o-matic picker: every year in the junkWax range links to
+        // the real review page. Passing no "current year" (this page
+        // isn't tied to one) means every cell renders as a link - see
+        // renderSetPicker()'s y === parseInt(year) check in helper.js.
+        renderSetPicker(null, "reg", "junkWax");
 
         // Static essay, content never varies - set once here rather than
         // fetched, same pattern as index.html/playerSearch.html.
@@ -156,6 +162,15 @@
         <div class="header-style">
           <h1>junk wax curious...</h1>
         </div>
+
+        <div class="set-o-matic-picker">the set-o-matic year picker</div>
+
+        <div class="flex-container">
+          <div id="set-picker">
+            <!-- renderSetPicker() function in helper.js -->
+          </div>
+        </div>
+        <br><br>
 
         <div class="flex-container">
           <div class="intro">
