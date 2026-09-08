@@ -877,7 +877,7 @@ label sup {
    single white stripe centered at 30% of the total width, vertical
    rather than the horizontal bands used elsewhere. */
 .wax-reviews-mast-table.masthead-two-color {
-  background-image: linear-gradient(to right,
+  background-image: linear-gradient(to bottom,
     var(--team-primary) 0%, var(--team-primary) 35%,
     #ffffff 35%, #ffffff 65%,
     var(--team-primary) 65%, var(--team-primary) 100%);
