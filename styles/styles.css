@@ -2515,6 +2515,12 @@ label sup {
     height: 90px;             /* Match the reduced masthead height */
   }
 
+  /* City/cheer corner label (applyRandomMastheadTeam(), helper.js) -
+     hidden on mobile per the site owner, not just shrunk. */
+  .masthead-team-label {
+    display: none;
+  }
+
   .set-details-table-style {
   width: 100%;
   table-layout: auto;

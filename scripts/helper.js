@@ -235,46 +235,45 @@ function getSortOrder(property,order) {
 // own white bands. A few teams (Detroit, Tampa Bay, Toronto) have the
 // same primary/tertiary value - genuinely two-color (+white) teams,
 // not a data error.
-// city: the location word(s) from each team's name, minus the nickname -
-// not parsed from `name` (some nicknames are 2 words, e.g. "Blue
-// Jackets"/"Golden Knights", so a simple last-word split doesn't work
-// for every team), and not always a literal single city for
-// state/region-branded teams (Carolina, Colorado, Florida, Minnesota,
-// New Jersey, Utah) - same location word used in their own branding.
-// Used by applyRandomMastheadTeam() below for the small corner label.
+// cheer: each team's real fan chant, confirmed with the site owner
+// (most are the standard "Let's Go [Nickname]!"/"Go [Nickname] Go!"
+// template every fanbase actually uses; a handful have a distinct,
+// more iconic version instead - e.g. Montreal's "Go Habs Go!",
+// Nashville's "Goalie, you suck!"). Used by applyRandomMastheadTeam()
+// below for the small corner label.
 const NHL_TEAM_COLORS = [
-  { name: "Anaheim Ducks", city: "Anaheim", primary: "#CF4520", tertiary: "#89734C" },
-  { name: "Boston Bruins", city: "Boston", primary: "#010101", tertiary: "#FFB81C" },
-  { name: "Buffalo Sabres", city: "Buffalo", primary: "#003087", tertiary: "#FFB81C" },
-  { name: "Calgary Flames", city: "Calgary", primary: "#C8102E", tertiary: "#F1BE48" },
-  { name: "Carolina Hurricanes", city: "Carolina", primary: "#000000", tertiary: "#CC0000" },
-  { name: "Chicago Blackhawks", city: "Chicago", primary: "#CE1126", tertiary: "#010101" },
-  { name: "Colorado Avalanche", city: "Colorado", primary: "#8A2432", tertiary: "#236093" },
-  { name: "Columbus Blue Jackets", city: "Columbus", primary: "#041E42", tertiary: "#C8102E" },
-  { name: "Dallas Stars", city: "Dallas", primary: "#00823E", tertiary: "#000000" },
-  { name: "Detroit Red Wings", city: "Detroit", primary: "#C8102E", tertiary: "#C8102E" },
-  { name: "Edmonton Oilers", city: "Edmonton", primary: "#00205B", tertiary: "#D14520" },
-  { name: "Florida Panthers", city: "Florida", primary: "#C8102E", tertiary: "#041E42" },
-  { name: "Los Angeles Kings", city: "Los Angeles", primary: "#010101", tertiary: "#A2AAAD" },
-  { name: "Minnesota Wild", city: "Minnesota", primary: "#0E4431", tertiary: "#AC1A2E" },
-  { name: "Montreal Canadiens", city: "Montreal", primary: "#A6192E", tertiary: "#001E62" },
-  { name: "Nashville Predators", city: "Nashville", primary: "#FFB81C", tertiary: "#041E42" },
-  { name: "New Jersey Devils", city: "New Jersey", primary: "#CC0000", tertiary: "#000000" },
-  { name: "New York Islanders", city: "New York", primary: "#003087", tertiary: "#FC4C02" },
-  { name: "New York Rangers", city: "New York", primary: "#154B94", tertiary: "#C32032" },
-  { name: "Ottawa Senators", city: "Ottawa", primary: "#010101", tertiary: "#C8102E" },
-  { name: "Philadelphia Flyers", city: "Philadelphia", primary: "#D24303", tertiary: "#000000" },
-  { name: "Pittsburgh Penguins", city: "Pittsburgh", primary: "#000000", tertiary: "#FFB81C" },
-  { name: "San Jose Sharks", city: "San Jose", primary: "#00778B", tertiary: "#010101" },
-  { name: "Seattle Kraken", city: "Seattle", primary: "#001425", tertiary: "#96D8D8" },
-  { name: "St. Louis Blues", city: "St. Louis", primary: "#006AC6", tertiary: "#FFB81C" },
-  { name: "Tampa Bay Lightning", city: "Tampa Bay", primary: "#00205B", tertiary: "#00205B" },
-  { name: "Toronto Maple Leafs", city: "Toronto", primary: "#00205B", tertiary: "#00205B" },
-  { name: "Utah Mammoth", city: "Utah", primary: "#010101", tertiary: "#7AB2E0" },
-  { name: "Vancouver Canucks", city: "Vancouver", primary: "#00205B", tertiary: "#046A38" },
-  { name: "Vegas Golden Knights", city: "Vegas", primary: "#B9975B", tertiary: "#333F48" },
-  { name: "Washington Capitals", city: "Washington", primary: "#C8102E", tertiary: "#041E42" },
-  { name: "Winnipeg Jets", city: "Winnipeg", primary: "#041E42", tertiary: "#004A98" }
+  { name: "Anaheim Ducks", cheer: "Let's Go Ducks!", primary: "#CF4520", tertiary: "#89734C" },
+  { name: "Boston Bruins", cheer: "Let's Go Bruins!", primary: "#010101", tertiary: "#FFB81C" },
+  { name: "Buffalo Sabres", cheer: "Let's go Buffalo!", primary: "#003087", tertiary: "#FFB81C" },
+  { name: "Calgary Flames", cheer: "Go Flames Go!", primary: "#C8102E", tertiary: "#F1BE48" },
+  { name: "Carolina Hurricanes", cheer: "Let's Go 'Canes!", primary: "#000000", tertiary: "#CC0000" },
+  { name: "Chicago Blackhawks", cheer: "Let's Go Hawks!", primary: "#CE1126", tertiary: "#010101" },
+  { name: "Colorado Avalanche", cheer: "Let's Go Avs!", primary: "#8A2432", tertiary: "#236093" },
+  { name: "Columbus Blue Jackets", cheer: "Let's Go Jackets!", primary: "#041E42", tertiary: "#C8102E" },
+  { name: "Dallas Stars", cheer: "Let's Go Stars!", primary: "#00823E", tertiary: "#000000" },
+  { name: "Detroit Red Wings", cheer: "Let's Go Red Wings!", primary: "#C8102E", tertiary: "#C8102E" },
+  { name: "Edmonton Oilers", cheer: "Let's Go Oilers!", primary: "#00205B", tertiary: "#D14520" },
+  { name: "Florida Panthers", cheer: "Go Cats Go!", primary: "#C8102E", tertiary: "#041E42" },
+  { name: "Los Angeles Kings", cheer: "Go Kings Go!", primary: "#010101", tertiary: "#A2AAAD" },
+  { name: "Minnesota Wild", cheer: "Let's Go Wild!", primary: "#0E4431", tertiary: "#AC1A2E" },
+  { name: "Montreal Canadiens", cheer: "Go Habs Go!", primary: "#A6192E", tertiary: "#001E62" },
+  { name: "Nashville Predators", cheer: "Goalie, you suck!", primary: "#FFB81C", tertiary: "#041E42" },
+  { name: "New Jersey Devils", cheer: "Let's Go Devils!", primary: "#CC0000", tertiary: "#000000" },
+  { name: "New York Islanders", cheer: "Yes!", primary: "#003087", tertiary: "#FC4C02" },
+  { name: "New York Rangers", cheer: "Let's Go Rangers!", primary: "#154B94", tertiary: "#C32032" },
+  { name: "Ottawa Senators", cheer: "Let's Go Sens!", primary: "#010101", tertiary: "#C8102E" },
+  { name: "Philadelphia Flyers", cheer: "Let's Go Flyers!", primary: "#D24303", tertiary: "#000000" },
+  { name: "Pittsburgh Penguins", cheer: "Let's Go Pens!", primary: "#000000", tertiary: "#FFB81C" },
+  { name: "San Jose Sharks", cheer: "Let's Go Shar-arks!", primary: "#00778B", tertiary: "#010101" },
+  { name: "Seattle Kraken", cheer: "Let's Go Kraken!", primary: "#001425", tertiary: "#96D8D8" },
+  { name: "St. Louis Blues", cheer: "Let's Go Blues!", primary: "#006AC6", tertiary: "#FFB81C" },
+  { name: "Tampa Bay Lightning", cheer: "Let's Go Bolts!", primary: "#00205B", tertiary: "#00205B" },
+  { name: "Toronto Maple Leafs", cheer: "Go Leafs Go!", primary: "#00205B", tertiary: "#00205B" },
+  { name: "Utah Mammoth", cheer: "Let's Go Mammoth!", primary: "#010101", tertiary: "#7AB2E0" },
+  { name: "Vancouver Canucks", cheer: "Go Canucks Go!", primary: "#00205B", tertiary: "#046A38" },
+  { name: "Vegas Golden Knights", cheer: "Let's Go Knights!", primary: "#B9975B", tertiary: "#333F48" },
+  { name: "Washington Capitals", cheer: "Let's Go Caps!", primary: "#C8102E", tertiary: "#041E42" },
+  { name: "Winnipeg Jets", cheer: "Let's Go Jets!", primary: "#041E42", tertiary: "#004A98" }
 ];
 
 // Called on load by every page using the wax-reviews-mast-table masthead
@@ -296,7 +295,7 @@ function applyRandomMastheadTeam() {
   // .masthead-two-color rule in styles.css.
   mast.classList.toggle("masthead-two-color", team.primary === team.tertiary);
 
-  // Small city-only label, bottom-right corner - lets the site owner
+  // Small cheer label, bottom-right corner - lets the site owner
   // visually confirm which team's colors are showing without needing
   // to inspect the CSS custom properties. Created once and reused
   // (there's only ever one masthead per page), rather than added
@@ -307,7 +306,7 @@ function applyRandomMastheadTeam() {
     label.className = "masthead-team-label";
     mast.appendChild(label);
   }
-  label.textContent = team.city;
+  label.textContent = team.cheer;
 }
 
 // Category + pageName specific ranges - shared by renderSetPicker() (the
