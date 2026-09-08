@@ -2522,7 +2522,7 @@ label sup {
    ============================ */
 
   .wax-reviews-masthead a {
-    font-size: 46px;          /* Scales down from 128px */
+    font-size: 54px;          /* Scales down from 128px */
     height: 90px;             /* Matches reduced text size */
     padding-left: 12px;       /* Keeps left alignment tight */
     /* Vertical centering comes from the base rule's align-items:center
@@ -2531,11 +2531,17 @@ label sup {
        much more slack in its box than desktop's does */
     /* 62px (tried when bumping this up for stripe contrast) wrapped to
        two lines on a real iPhone 15 - a headless-browser check at the
-       same 393px CSS width didn't reproduce it (real Mobile Safari's
-       text measurement differs enough at the margin involved), so
-       white-space:nowrap guards against wrapping outright regardless
-       of exact device/font-rendering variance, on top of dialing the
-       size back down with real margin rather than the ~0px this had. */
+       same 393px CSS width didn't reproduce it. Likely cause: iOS
+       Safari's automatic text-inflation quirk, which specifically
+       targets text sized by auto-layout containers like a <table>/<td>
+       with no explicit width (exactly this markup) and can render text
+       larger than its specified px size - something Chromium doesn't
+       replicate, hence the gap between this test and the real device.
+       text-size-adjust:100% below disables that inflation so the
+       rendered size actually matches what's specified here. Kept
+       white-space:nowrap as a second guard regardless. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     white-space: nowrap;
     text-shadow:
       -1px -1px 0 var(--color-heading-outline),
