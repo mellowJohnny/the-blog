@@ -2482,6 +2482,17 @@ label sup {
     display: none;
   }
 
+  /* Set name heading, right under the hamburger menu - matches
+     .set-details-name's 20px (the set name shown again further down,
+     in the details box) rather than the base .header-style h1 rule's
+     28px. Scoped to the #pageHeader id, not .header-style h1 generally
+     - that class/tag pair is shared with playerSearch.html,
+     theJunkWaxYears.html, and several CMS pages, none of which should
+     be affected by a change meant for the set-review pages only. */
+  #pageHeader {
+    font-size: 20px;
+  }
+
 /* ============================
    waxReviews.html - SET-O-MATIC YEAR PICKER
    ============================ */
