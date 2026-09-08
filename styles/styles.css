@@ -2469,6 +2469,20 @@ label sup {
   }
 
 /* ============================
+   waxReviews.html - CARD INTRO
+   ============================ */
+
+  /* renderCardIntro() (wax.js) still runs on load - this just hides the
+     result, so no new responsive pattern is needed beyond the site's
+     existing single-breakpoint CSS approach. Scoped to the #card-intro
+     id (not the shared .intro class) since that class is also used for
+     the real blog intro on index.html/tech.html and the "404 - Season
+     Not Found" text on lockout.html, neither of which should be hidden. */
+  #card-intro {
+    display: none;
+  }
+
+/* ============================
    waxReviews.html - SET-O-MATIC YEAR PICKER
    ============================ */
 
