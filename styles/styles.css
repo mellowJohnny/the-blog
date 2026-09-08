@@ -2522,13 +2522,21 @@ label sup {
    ============================ */
 
   .wax-reviews-masthead a {
-    font-size: 62px;          /* Scales down from 128px */
+    font-size: 46px;          /* Scales down from 128px */
     height: 90px;             /* Matches reduced text size */
     padding-left: 12px;       /* Keeps left alignment tight */
     /* Vertical centering comes from the base rule's align-items:center
        (flexbox) - a manual padding-top here was fighting that and
        visibly skewing it off-center, since mobile's shorter text has
        much more slack in its box than desktop's does */
+    /* 62px (tried when bumping this up for stripe contrast) wrapped to
+       two lines on a real iPhone 15 - a headless-browser check at the
+       same 393px CSS width didn't reproduce it (real Mobile Safari's
+       text measurement differs enough at the margin involved), so
+       white-space:nowrap guards against wrapping outright regardless
+       of exact device/font-rendering variance, on top of dialing the
+       size back down with real margin rather than the ~0px this had. */
+    white-space: nowrap;
     text-shadow:
       -1px -1px 0 var(--color-heading-outline),
        1px -1px 0 var(--color-heading-outline),
