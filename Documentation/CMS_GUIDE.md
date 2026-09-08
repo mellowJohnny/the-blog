@@ -125,6 +125,36 @@ frontend never reads a plain `<textarea>` value for the post body, it
 always pulls fresh HTML out of the active TinyMCE instance at submit
 time.
 
+### Wrapped images in review body content
+
+Some card set reviews need a small logo/accent image floated beside
+the text (e.g. the All-Star Game logo on a McDonald's set) — hand-
+inserted directly into the TinyMCE HTML source, not through any CMS
+image-picker flow. Convention:
+
+```html
+<img class="img-wrap-left img-wrap-sm" style="width: 214px; height: 117px;" src="..." alt="..." width="214" height="117" loading="lazy">
+```
+
+- `img-wrap-left` / `img-wrap-right` — floats the image left/right with
+  matching margin (`styles.css`). Always required for a wrapped image.
+- `img-wrap-sm` / `img-wrap-md` — optional, opt-in mobile scaling:
+  `img-wrap-sm` renders the image at 50% of its own size on mobile,
+  `img-wrap-md` at 65%. Add whichever looks right for that image; omit
+  both to keep an image full-size on every breakpoint.
+- Set the inline `style="width:...px; height:...px;"` to whatever size
+  you actually want on desktop — `applyImgWrapSmSizing()` (`helper.js`)
+  reads *that* value, not the `width`/`height` HTML attributes, to
+  compute the mobile size, since some older content has the two out of
+  sync (a stale attribute left behind after the style was hand-edited).
+  Still set the `width`/`height` attributes to match, so the browser
+  reserves the right amount of layout space before the image loads.
+
+See `FRONTEND.md`'s "Mobile / responsive design" section for the
+mechanism behind this (including a real CSS specificity bug this was
+built around) and why the mobile scaling has to actually resize the
+image's box rather than just visually shrink it.
+
 ### Draft / publish workflow
 
 - Blog posts: `published` = `true` (live) / `false` (staging), chosen from a dropdown.

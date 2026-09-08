@@ -69,7 +69,7 @@ them to a crawler (or a human visitor navigating by link).
 |---|---|
 | `blogs.js` | Blog intro copy (`renderBlogIntro()`), `fetchBlogs()`/pagination/rendering for the blog stream, and the homepage weather widget (calls OpenWeatherMap directly from the browser using the visitor's geolocation). |
 | `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. |
-| `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — used by every public page) and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), hamburger menu toggle, cookie helper, and copyright-year footer. |
+| `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — used by every public page) and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), hamburger menu toggle, cookie helper, and copyright-year footer. |
 | `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise). See "Player search" below. |
 | `adminTools.js` | `cms/admin.html` support code: a growing set of self-service site-health checks (broken images, checklist-to-review linkage), each its own function calling the site's existing public read APIs directly. See `CMS_GUIDE.md`'s "Admin Tools" section. |
 | `auth.js` | Cognito OAuth2 code exchange + token refresh, gates every `/cms` page. See `AUTH.md`. |
@@ -211,6 +211,46 @@ knowing before touching this CSS again:
   and sitemap-generator (`tools/generateSitemap/` vs.
   `scripts/helper.js`) duplications already noted elsewhere in this
   doc.
+- **A higher-specificity rule elsewhere can silently neutralize a
+  lower-specificity `!important` cap, even when both use `!important`.**
+  `.img-wrap-left`/`.img-wrap-right` (small hand-inserted logo images
+  in a card set's `postBody`, e.g. the All-Star Game logo on
+  McDonald's sets — see `CMS_GUIDE.md`'s "Wrapped images in review body
+  content") carried a `max-width: 50px !important` cap that turned out
+  to have been dead code since the day it was added (2026-08-09):
+  `.set-details-author img { max-width: 100% !important; height: auto
+  !important; }` sits lower in the file and has higher specificity
+  (class+element, 0,1,1, vs. class alone, 0,1,0), so it always won —
+  these images actually rendered at whatever size the CMS content set,
+  completely unconstrained, on every breakpoint, the whole time. Same
+  root cause as the `.flex-container div` issue above (a broad selector
+  outranking a narrower one that assumed it would win), just a
+  different selector pair. Found while building real mobile scaling for
+  these images; fixed by scoping the new rules under `.set-details-author
+  img.img-wrap-sm`/`.img-wrap-md` (0,2,1) to out-specificity the 100%
+  rule. The original dead 50px cap on `.img-wrap-left`/`.img-wrap-right`
+  themselves was left in place, still inert — not removed as part of
+  this fix.
+- **`transform: scale()` shrinks an element visually but doesn't reflow
+  surrounding layout.** The first attempt at the mobile image scaling
+  above used `transform: scale(0.25)` on `.img-wrap-sm` — a true
+  "percentage of the image's own current size" shrink needing zero
+  per-image CSS values. But `transform` doesn't affect the box model:
+  the floated image's original full-size box stayed reserved, leaving
+  an unacceptable blank gap next to the now visually-tiny image, with
+  wrapped text held at arm's length from it rather than flowing in
+  close. Replaced with real `width`/`height` overrides instead:
+  `applyImgWrapSmSizing()` (`helper.js`, called from `wax.js` once each
+  set's `postBody` renders) reads each `.img-wrap-sm`/`.img-wrap-md`
+  image's actual rendered size and sets `--wrap-w`/`--wrap-h` custom
+  properties from it, so the mobile rule's `calc(var(--wrap-w) * 0.5)`
+  (`.img-wrap-sm`) / `* 0.65` (`.img-wrap-md`) resizes the real box and
+  lets text reflow tight against the smaller image. It reads the
+  inline `style` width/height specifically, not the `width`/`height`
+  attributes — older `postBody` content has cases where the two have
+  drifted out of sync (the attribute left stale after the style was
+  hand-edited), and the style is what actually determines the
+  desktop-rendered size.
 - **A percentage `width` plus `padding` on the same box needs
   `box-sizing: border-box`, or the padding renders as *extra* width
   rather than eating into it.** `.checklist-modal-content` (the
