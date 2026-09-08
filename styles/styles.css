@@ -867,7 +867,6 @@ label sup {
   background-position: center;
   color: white;
   font-family: sans-serif;
-  filter: contrast(0.92) brightness(1.03); /* Reduce contrast a bit for that vinathe look */
 }
 
 /* Genuinely two-color (+white) teams (Detroit, Tampa Bay, Toronto -
@@ -895,14 +894,6 @@ label sup {
   transform: scale(1.05);
   z-index: 0;
   pointer-events: none;
-}
-
-.wax-reviews-mast-table::after { /* Adds a tint */
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 240, 0.25); /* soft cream tint */
-  z-index: 0;
 }
 
 /* City-only label (applyRandomMastheadTeam(), helper.js) so the random
