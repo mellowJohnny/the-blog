@@ -1298,7 +1298,15 @@ label sup {
   height: auto !important;
 }
 
-
+/* Opt-in per-image mobile scaling for hand-inserted wrap images (small
+   logos/accent images with a hardcoded desktop width/height, e.g. the
+   All-Star Game logo on McDonald's sets). Add this class alongside
+   .img-wrap-left/.img-wrap-right - no per-image sizing needed, the
+   mobile rule below scales each image to a quarter of whatever size
+   it already renders at:
+     <img class="img-wrap-left img-wrap-sm" style="width: 214px; height: 117px;" ...>
+   The mobile override lives in the main mobile media query, next to
+   the other GLOBAL / SITE-WIDE rules. */
 
 .table-footer-img {
   width: 90%;
@@ -2264,6 +2272,25 @@ label sup {
 
   body {
     font-size: 16px;
+  }
+
+  /* Wrap images opted into .img-wrap-sm render at a quarter of their
+     desktop size on mobile - see the base rule near .img-wrap-left.
+     transform: scale() shrinks visually to a percentage of whatever
+     size the image already renders at, without needing to know or
+     duplicate its actual width/height. It doesn't reflow layout
+     though, so the floated box keeps reserving its full original
+     size - the transform-origin just keeps the shrunk image flush
+     with the corner the float pushes it toward, instead of floating
+     in the middle of that unused space. */
+  .img-wrap-left.img-wrap-sm {
+    transform: scale(0.25);
+    transform-origin: top left;
+  }
+
+  .img-wrap-right.img-wrap-sm {
+    transform: scale(0.25);
+    transform-origin: top right;
   }
 
   /* Flex container should not force 1000px width */
