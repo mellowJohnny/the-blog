@@ -117,6 +117,10 @@ function renderCardSetPage() {
 
   });
 
+  // Size any hand-inserted .img-wrap-sm logos in the postBody content
+  // just rendered above - helper.js
+  applyImgWrapSmSizing();
+
   renderPaginationControls();
 }
 

@@ -20,6 +20,25 @@ function stripHtmlTags(htmlString) {
 }
 
 /**
+ * Hand-inserted wrap images in a card set's postBody (e.g. a small
+ * logo floated left/right via .img-wrap-left/.img-wrap-right) opt into
+ * a quarter-size mobile rendering by adding the .img-wrap-sm class.
+ * Rather than requiring the site owner to duplicate each image's own
+ * width/height as CSS custom properties by hand, this reads them off
+ * the image's existing width/height attribute and sets --wrap-w/
+ * --wrap-h - styles.css's mobile rule does the actual quarter-size math.
+ * Call once after postBody HTML has been inserted into the DOM.
+ */
+function applyImgWrapSmSizing() {
+  document.querySelectorAll("img.img-wrap-sm").forEach(img => {
+    const w = parseFloat(img.getAttribute("width"));
+    const h = parseFloat(img.getAttribute("height"));
+    if (w) img.style.setProperty("--wrap-w", `${w}px`);
+    if (h) img.style.setProperty("--wrap-h", `${h}px`);
+  });
+}
+
+/**
  * Helper function to estimate reading time for blogs OR cardsets
  */
 
