@@ -23,7 +23,7 @@ function stripHtmlTags(htmlString) {
  * Hand-inserted wrap images in a card set's postBody (e.g. a small
  * logo floated left/right via .img-wrap-left/.img-wrap-right) opt into
  * a smaller mobile rendering by adding .img-wrap-sm (half size) or
- * .img-wrap-md (three-quarter size) - styles.css's mobile rules do the
+ * .img-wrap-md (65% size) - styles.css's mobile rules do the
  * actual math per class. Rather than requiring the site owner to
  * duplicate each image's own width/height as CSS custom properties by
  * hand, this reads them off the image and sets --wrap-w/--wrap-h.

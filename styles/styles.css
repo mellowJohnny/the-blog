@@ -1304,8 +1304,8 @@ label sup {
    alongside .img-wrap-left/.img-wrap-right - no per-image sizing
    needed to type:
      <img class="img-wrap-left img-wrap-sm" style="width: 214px; height: 117px;" ...>
-   .img-wrap-sm -> half size on mobile; .img-wrap-md -> three-quarter
-   size on mobile, for images where half is too aggressive a shrink.
+   .img-wrap-sm -> half size on mobile; .img-wrap-md -> 65% size on
+   mobile, for images where half is too aggressive a shrink.
    applyImgWrapSmSizing() (helper.js, called from wax.js once each
    set's postBody renders) reads the image's own width/height attribute
    and sets --wrap-w/--wrap-h custom properties from it. The mobile
@@ -2285,7 +2285,7 @@ label sup {
   }
 
   /* Wrap images opted into .img-wrap-sm/.img-wrap-md render at half or
-     three-quarters of their desktop size on mobile - see the base rule
+     65% of their desktop size on mobile - see the base rule
      near .img-wrap-left. --wrap-w/--wrap-h are set by
      applyImgWrapSmSizing() (helper.js) from each image's own
      width/height attribute, so this is a real box resize (text
@@ -2298,8 +2298,8 @@ label sup {
   }
 
   .set-details-author img.img-wrap-md {
-    width: calc(var(--wrap-w) * 0.75) !important;
-    height: calc(var(--wrap-h) * 0.75) !important;
+    width: calc(var(--wrap-w) * 0.65) !important;
+    height: calc(var(--wrap-h) * 0.65) !important;
   }
 
   /* Flex container should not force 1000px width */
