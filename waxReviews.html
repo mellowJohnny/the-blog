@@ -3,9 +3,7 @@
 <html lang="en-ca">
   <head>
     <meta charset="utf-8">
-    <!-- Without this, mobile Safari renders at a wide desktop-width
-           virtual viewport and just zooms the page out to fit, so the
-           @media (max-width: 600px) rules in styles.css never trigger -->
+    <!-- For mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link
       rel="icon"
@@ -34,6 +32,7 @@
     <link
       rel="preconnect"
       href="https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com">
+
     <!-- Global site tag (gtag.js) - Load Google Analytics until later -->
     <script>
       window.addEventListener('load', function() {
@@ -119,10 +118,7 @@
       }
     </script>
 
-    <!-- Load the stylesheet - plain blocking link, deliberately not the
-           preload+swap trick (see index.html's comment - that let raw
-           unstyled HTML paint before CSS was ready, a visible flash on
-           every navigation). -->
+    <!-- Load the stylesheet -->
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
     <!-- Google Fonts -->
@@ -153,8 +149,6 @@
       window.addEventListener('load', (event) => {
         // First: fetch Global Nav from helper.js
         fetchNav(pageName);
-        // Next render the page intro section - in helper.js
-        // fetchCardIntro(pageName);
         // Call the Set-O-Matic Set Picker
         renderSetPicker(year,blogCat,pageName);
         //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
@@ -213,9 +207,7 @@
         <br><br>
       </section>
 
-      <!-- Pagination controls now render inside #cardSetDiv itself
-             (see displayCardSet(), scripts/wax.js) - above the vote
-             widget - not as a separate element after it. -->
+      <!-- Pagination controls -->
       <section>
         <div class="flex-container">
           <div class="blog-entry" id="cardSetDiv"></div>
@@ -228,10 +220,7 @@
       <!-- fetchCopyrightYear() called from fetchCardSetsByYear() on page load -->
     </footer>
 
-    <!-- Checklist modal - opened by the "Checklist" link in displayCardSet()
-           (scripts/wax.js) when a set has one (Cards.hasChecklist). Shared by
-           every set on the page, not rebuilt per set - openChecklistModal()
-           fetches and fills it in on click. -->
+    <!-- Checklist modal -->
     <div id="checklistModalOverlay" class="checklist-modal-overlay">
       <div class="checklist-modal-content">
         <div class="checklist-modal-controls">
@@ -267,11 +256,7 @@
           </label>
         </div>
         <div id="checklistModalBody"></div>
-        <!-- Print-only - see @media print, styles.css. Browsers won't
-               let a page suppress their own native print header/footer
-               (title/URL/date - a "Headers and footers" checkbox in the
-               print dialog, not something CSS can turn off), so this is
-               a second, clean footer for once that's toggled off. -->
+        <!-- Print-only -->
         <div
           id="checklistModalPrintFooter"
           class="checklist-modal-print-footer"
