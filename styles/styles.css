@@ -1174,9 +1174,19 @@ label sup {
 }
 
 .set-detail-row {
-  font-family: 'Special Elite', sans-serif;
+  /* Body font (matches .set-details-author's postBody text) for the
+     actual values - Special Elite below is only for the bolded field
+     names (e.g. "Set Size:"), matching this site's older convention
+     (still visible in the #previewContainer .set-details-author td
+     strong/i rule) of field names in Special Elite, values in the
+     regular body font, not the whole row in one font. */
+  font-family: 'Source Sans 3', sans-serif;
   font-size: 18px;
   padding: 2px 4px;
+}
+
+.set-detail-row strong {
+  font-family: 'Special Elite', sans-serif;
 }
 
 /* #cardSetDiv sits inside .flex-container, whose bare descendant
