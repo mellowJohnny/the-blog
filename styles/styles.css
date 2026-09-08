@@ -975,6 +975,16 @@ label sup {
     top: 1px;
 }
 
+/* waxReviews.html only (see the .wax-set-name-header class on its
+   .header-style div) - hides the set name shown right under the
+   hamburger menu, on every breakpoint, since the set-details section
+   further down the page repeats the same name as its own heading.
+   lockout.html shares #pageHeader's id but not this class, so its own
+   (non-redundant) title is unaffected. */
+.wax-set-name-header {
+  display: none;
+}
+
 .intro {
   font-family: 'Work Sans', sans-serif;
   font-size: 18px;
@@ -2542,26 +2552,18 @@ label sup {
     display: none;
   }
 
-  /* Set name heading, right under the hamburger menu - matches
-     .set-details-name's 20px (the set name shown again further down,
-     in the details box) rather than the base .header-style h1 rule's
-     28px. Scoped to the #pageHeader id, not .header-style h1 generally
-     - that class/tag pair is shared with playerSearch.html,
-     theJunkWaxYears.html, and several CMS pages, none of which should
-     be affected by a change meant for the set-review pages only. */
+  /* Set name heading, right under the hamburger menu, sized to match
+     .set-details-name's 20px. Only actually visible on lockout.html
+     now - waxReviews.html hides this same #pageHeader element on every
+     breakpoint via .wax-set-name-header (see the base-CSS rule near
+     .header-style h1), since its set-details section repeats the name
+     as its own heading. Scoped to the #pageHeader id, not
+     .header-style h1 generally - that class/tag pair is shared with
+     playerSearch.html, theJunkWaxYears.html, and several CMS pages,
+     none of which should be affected by a change meant for the
+     set-review pages only. */
   #pageHeader {
     font-size: 20px;
-  }
-
-  /* waxReviews.html only (see the .wax-set-name-header class on its
-     .header-style div): hides the set name shown right under the
-     hamburger menu on mobile, since the set-details section right
-     below it repeats the same name as its own heading - redundant on
-     a narrow screen where both are stacked full-width. lockout.html
-     shares #pageHeader's font-size rule above but not this class, so
-     its own (non-redundant) title is unaffected. */
-  .wax-set-name-header {
-    display: none;
   }
 
 /* ============================
