@@ -24,8 +24,9 @@ function renderCardIntro(pageName) {
     `;
   } else if (pageName === "timmies") {
     introHTML = `
-      <h2>Tim Hortons Upper Deck Sets</h2>
-      <p>When McDonald's Canada shut down their association with the NHL in 2010, nearly 20 years of fast food hockey card collecting went with it. But in 2015, after a five year absence, fast food hockey card collecting was back! Tim Hortons, the bastion of blue-collar coffee shops, released their very first NHL Hockey set for the 2015-16 season. <br><br>But they didn't just mail it in - it was a modern, 100 card Upper Deck base set, complete with custom binder and loads of chase cards.  Released just after the season starts in October, it has become an annual tradition in Canada</p>
+      <h2>Tim Hortons Upper Deck Hockey</h2>
+      <p>McDonald's Canada ended their association with the NHL in 2010, ending almost 20 years of fast food hockey card collecting. That all changed in 2015 when Tim Hortons, the bastion of blue-collar coffee shops, released their very first NHL Hockey set, complete with custom binder and plenty of chase cards.
+      <br><br>Released just after the season starts in October, it has become an annual tradition in Canada</p>
     `;
   } else if (pageName === "mcd") {
     introHTML = `
