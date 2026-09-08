@@ -26,14 +26,19 @@ function stripHtmlTags(htmlString) {
  * .img-wrap-md (three-quarter size) - styles.css's mobile rules do the
  * actual math per class. Rather than requiring the site owner to
  * duplicate each image's own width/height as CSS custom properties by
- * hand, this reads them off the image's existing width/height
- * attribute and sets --wrap-w/--wrap-h.
+ * hand, this reads them off the image and sets --wrap-w/--wrap-h.
+ * Prefers the inline style width/height (the value that actually
+ * determines the desktop-rendered size) over the width/height
+ * attribute, since older postBody content has cases where the two
+ * have drifted out of sync (the attribute left stale after the style
+ * was hand-edited) - falls back to the attribute only if no inline
+ * style width/height is set.
  * Call once after postBody HTML has been inserted into the DOM.
  */
 function applyImgWrapSmSizing() {
   document.querySelectorAll("img.img-wrap-sm, img.img-wrap-md").forEach(img => {
-    const w = parseFloat(img.getAttribute("width"));
-    const h = parseFloat(img.getAttribute("height"));
+    const w = parseFloat(img.style.width) || parseFloat(img.getAttribute("width"));
+    const h = parseFloat(img.style.height) || parseFloat(img.getAttribute("height"));
     if (w) img.style.setProperty("--wrap-w", `${w}px`);
     if (h) img.style.setProperty("--wrap-h", `${h}px`);
   });
