@@ -1307,7 +1307,7 @@ label sup {
    set's postBody renders) reads the image's own width/height attribute
    and sets --wrap-w/--wrap-h custom properties from it. The mobile
    rule below (main mobile media query, GLOBAL / SITE-WIDE section)
-   then resizes the actual box to a quarter of those - a real layout
+   then resizes the actual box to half of those - a real layout
    resize, not just a visual transform, so wrapped text reflows in
    tight to the now-smaller image instead of leaving a blank gap. Also
    scoped under .set-details-author to out-specificity the rule just
@@ -2281,16 +2281,16 @@ label sup {
     font-size: 16px;
   }
 
-  /* Wrap images opted into .img-wrap-sm render at a quarter of their
-     desktop size on mobile - see the base rule near .img-wrap-left.
+  /* Wrap images opted into .img-wrap-sm render at half their desktop
+     size on mobile - see the base rule near .img-wrap-left.
      --wrap-w/--wrap-h are set by applyImgWrapSmSizing() (helper.js)
      from each image's own width/height attribute, so this is a real
      box resize (text reflows in tight) rather than a visual-only
      transform: scale(), which left the original full-size box
      reserved and an unacceptable gap next to the shrunk image. */
   .set-details-author img.img-wrap-sm {
-    width: calc(var(--wrap-w) / 4) !important;
-    height: calc(var(--wrap-h) / 4) !important;
+    width: calc(var(--wrap-w) / 2) !important;
+    height: calc(var(--wrap-h) / 2) !important;
   }
 
   /* Flex container should not force 1000px width */
