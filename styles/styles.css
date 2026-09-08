@@ -2553,6 +2553,17 @@ label sup {
     font-size: 20px;
   }
 
+  /* waxReviews.html only (see the .wax-set-name-header class on its
+     .header-style div): hides the set name shown right under the
+     hamburger menu on mobile, since the set-details section right
+     below it repeats the same name as its own heading - redundant on
+     a narrow screen where both are stacked full-width. lockout.html
+     shares #pageHeader's font-size rule above but not this class, so
+     its own (non-redundant) title is unaffected. */
+  .wax-set-name-header {
+    display: none;
+  }
+
 /* ============================
    waxReviews.html - SET-O-MATIC YEAR PICKER
    ============================ */
