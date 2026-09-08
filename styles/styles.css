@@ -2511,7 +2511,7 @@ label sup {
    ============================ */
 
   .wax-reviews-masthead a {
-    font-size: 48px;          /* Scales down from 128px */
+    font-size: 62px;          /* Scales down from 128px */
     height: 90px;             /* Matches reduced text size */
     padding-left: 12px;       /* Keeps left alignment tight */
     /* Vertical centering comes from the base rule's align-items:center
