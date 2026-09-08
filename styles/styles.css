@@ -2522,7 +2522,7 @@ label sup {
    ============================ */
 
   .wax-reviews-masthead a {
-    font-size: 54px;          /* Scales down from 128px */
+    font-size: 58px;          /* Scales down from 128px */
     height: 90px;             /* Matches reduced text size */
     padding-left: 12px;       /* Keeps left alignment tight */
     /* Vertical centering comes from the base rule's align-items:center
@@ -2543,6 +2543,21 @@ label sup {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     white-space: nowrap;
+    text-shadow:
+      -1px -1px 0 var(--color-heading-outline),
+       1px -1px 0 var(--color-heading-outline),
+      -1px  1px 0 var(--color-heading-outline),
+       1px  1px 0 var(--color-heading-outline);
+  }
+
+  /* The extra dark outline for two-color teams (Detroit/Tampa Bay/
+     Toronto - see the base .masthead-two-color rule) exists because the
+     centered white stripe there is wide enough to swallow the title's
+     near-white fill on desktop. On mobile the title is small enough,
+     and the stripe proportionally narrow enough, that the plain
+     outline above already reads fine - drop back to it instead of the
+     heavier one. */
+  .wax-reviews-mast-table.masthead-two-color .wax-reviews-masthead a {
     text-shadow:
       -1px -1px 0 var(--color-heading-outline),
        1px -1px 0 var(--color-heading-outline),
