@@ -1171,6 +1171,12 @@ label sup {
 
 .set-details-list {
   grid-area: list;
+  /* Flex column so .set-detail-row-checklist's order below can move
+     the Checklist row after Hella Rating without changing the DOM
+     order displayCardSet() (wax.js) builds - applies on both desktop
+     and mobile, same reorder either way. */
+  display: flex;
+  flex-direction: column;
 }
 
 .set-detail-row {
@@ -1187,6 +1193,14 @@ label sup {
 
 .set-detail-row strong {
   font-family: 'Special Elite', sans-serif;
+}
+
+/* order:0 (the default) for every other row keeps them in their
+   existing DOM order; giving just this one a higher order value moves
+   it after all of them, i.e. after Hella Rating - on both desktop and
+   mobile. */
+.set-detail-row-checklist {
+  order: 1;
 }
 
 /* #cardSetDiv sits inside .flex-container, whose bare descendant
@@ -2643,11 +2657,22 @@ label sup {
     height: auto;
   }
 
+  /* Breathing room between the set name and the header image below it -
+     only needed here, since on desktop the name sits above the details
+     list (in its own column), not directly above the image. Scoped
+     under #cardSetDiv for the same reason as .set-details-list below. */
+  #cardSetDiv .set-details-name {
+    margin-bottom: 10px;
+  }
+
   /* Breathing room between the image and "Set Size" - only needed here,
      since on desktop the list sits beside the image, not below it.
      Scoped under #cardSetDiv to beat that same-named rule's own
      margin:0 reset above (id+class specificity, needed regardless of
-     media-query order - see the .flex-container div note nearby). */
+     media-query order - see the .flex-container div note nearby).
+     The Checklist-after-Hella-Rating reorder (.set-detail-row-checklist)
+     is universal now (base rule, applies desktop and mobile alike) -
+     see near .set-detail-row. */
   #cardSetDiv .set-details-list {
     margin-top: 12px;
   }

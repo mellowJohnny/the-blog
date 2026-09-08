@@ -216,8 +216,12 @@ function fetchPageTitle(item)
     // actually a checklist to point to. setName is passed via
     // data-set-name rather than interpolated into the onclick string,
     // same reason as the vote buttons below - it can contain apostrophes.
+    // set-detail-row-checklist (alongside the usual set-detail-row) lets
+    // mobile CSS move this row to after Hella Rating via flexbox `order`
+    // without changing this DOM order, which desktop keeps as-is - see
+    // styles.css's #cardSetDiv .set-details-list mobile rule.
     const checklistRow = hasChecklist
-        ? `<div class="set-detail-row"><a href="#" class="checklist-view-link" data-set-name="${escapeHtml(setName)}" onclick="openChecklistModal(this); return false;">Checklist</a></div>`
+        ? `<div class="set-detail-row set-detail-row-checklist"><a href="#" class="checklist-view-link" data-set-name="${escapeHtml(setName)}" onclick="openChecklistModal(this); return false;">Checklist</a></div>`
         : "";
 
     // CSS Grid (.set-details-grid, styles.css), not a table - a rowspan'd
