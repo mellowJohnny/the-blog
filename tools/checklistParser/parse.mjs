@@ -135,6 +135,22 @@ function isAllCapsLetterCode(cardNumber) {
   return /^[A-Z]+-[A-Z]+$/.test(cardNumber) || /^[A-Z]{2,3}$/.test(cardNumber);
 }
 
+// Checklists sourced from a "Print to PDF" of a webpage (e.g.
+// tcdb.com's printable checklist view) carry a browser-injected footer
+// on every page: a date/time stamp, the page title, and the page URL.
+// pdf-parse sometimes extracts these with no separating newline/space
+// from whatever text preceded them (e.g. "5:22 PM1999-00 Upper Deck..."),
+// so this can't just be "an empty-ish line" - it has to be recognized
+// by its own distinctive shape. None of this is real checklist content:
+// left unrecognized, it doesn't match CARD_LINE_RE, so it would fall
+// into the wrapped-line merge logic below and get silently appended
+// onto whatever card was last seen - not just on the final page, but
+// at every page break in the source PDF, corrupting that card's name
+// each time. Matched and dropped entirely before that logic runs.
+function isPrintFooterArtifact(line) {
+  return /^\d{1,2}\/\d{1,2}\/\d{2,4},?\s*\d{1,2}:\d{2}\s*[AP]M/i.test(line) || /^https?:\/\//i.test(line);
+}
+
 function parseChecklistText(text) {
   const lines = text.split(/\r?\n/);
   const cards = [];
@@ -143,7 +159,7 @@ function parseChecklistText(text) {
 
   for (const rawLine of lines) {
     const line = rawLine.trim();
-    if (!line) continue;
+    if (!line || isPrintFooterArtifact(line)) continue;
 
     const match = line.match(CARD_LINE_RE);
     // A checklist card's own description commonly references a range
