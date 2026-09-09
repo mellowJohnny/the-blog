@@ -77,6 +77,14 @@ async function runPlayerSearch(rawQuery) {
 
   renderPlayerSearchMessage(`Searching for "${query}"...`);
 
+  // Same overlay+spinner pattern as smsAdmin.html's send-in-progress
+  // spinner (adminSMS.js) - the Lambda's Scan-per-request design (see
+  // LAMBDA_FUNCTIONS.md) means a search can take a couple of seconds,
+  // and the static "Searching..." text alone made it hard to tell
+  // whether anything was actually happening.
+  const overlay = document.getElementById("player-search-spinner-overlay");
+  if (overlay) overlay.style.display = "flex";
+
   try {
     const response = await fetch(`${PLAYER_SEARCH_API_URL}?q=${encodeURIComponent(query)}`);
     const data = await response.json();
@@ -90,5 +98,7 @@ async function runPlayerSearch(rawQuery) {
   } catch (err) {
     console.error("Player search failed:", err);
     renderPlayerSearchMessage("Something went wrong with that search - please try again.");
+  } finally {
+    if (overlay) overlay.style.display = "none";
   }
 }

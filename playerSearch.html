@@ -151,6 +151,15 @@
   <footer class="page-footer">
     <div id="copy"></div> <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
    </footer>
+
+  <!-- Shown/hidden by runPlayerSearch() in playerSearch.js while a
+       search is in flight - same overlay+spinner pattern as
+       smsAdmin.html's #autobus-spinner-overlay (styles.css), just
+       under player-search-specific names since this page has nothing
+       to do with the Autobus SMS tool. -->
+  <div id="player-search-spinner-overlay">
+    <div class="player-search-spinner"></div>
+  </div>
 </body>
 
 </html>
