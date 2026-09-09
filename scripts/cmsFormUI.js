@@ -25,6 +25,16 @@ function initTinyEditor(selector = '#postBody')
   });
 }
 
+// Generic "Cancel" handler for setEdit.html/blogEdit.html - warns that
+// unsaved changes will be lost (same red cmsConfirm() modal used for
+// Delete), then navigates to the given picker page only if confirmed.
+async function cmsCancelEdit(redirectTo) {
+  const ok = await cmsConfirm("Any unsaved changes will be lost. Leave this page?");
+  if (ok) {
+    window.location.href = redirectTo;
+  }
+}
+
 //************* Helper functions to change CMS Submit state *************
 
     // Change the submit button colour & text on Submit

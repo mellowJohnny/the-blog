@@ -249,9 +249,9 @@
                     <!-- 11th Row - SUBMIT BUTTON -->
                     <td colspan="2">
                       <div
-                        style="display:flex; justify-content:space-between; align-items:center;"
+                        style="display:grid; grid-template-columns: 1fr auto 1fr; align-items:center;"
                       >
-                        <div>
+                        <div style="justify-self:start;">
                           <!-- NOTE: We don't need to grab the postBody becasue the updateBlog() gets it from the tinyMCE function  -->
                           <button
                             class="input-button"
@@ -279,14 +279,23 @@
                           <button
                             class="input-button"
                             type="button"
-                            onclick="openPreview()"
+                            onclick="cmsCancelEdit('/cms/pickCardSet.html')"
                           >
-                            Preview
+                            Cancel
                           </button>
                         </div>
                         <button
+                          class="input-button"
+                          type="button"
+                          style="justify-self:center;"
+                          onclick="openPreview()"
+                        >
+                          Preview
+                        </button>
+                        <button
                           class="input-button delete-btn"
                           type="button"
+                          style="justify-self:end;"
                           onclick="deleteCardSet(
                                                 setID,
                                                 document.getElementById('setName').value,
