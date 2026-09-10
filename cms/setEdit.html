@@ -48,6 +48,7 @@
     ></script>
 
     <script src="/scripts/cmsCardSet.js"></script>
+    <script src="/scripts/cmsImageBrowser.js"></script>
     <script src="/scripts/cmsFormUI.js"></script>
     <script src="/scripts/helper.js"></script>
 
@@ -202,7 +203,14 @@
                       <input
                         type="text"
                         id="headerImgName"
-                        title="headerImgName">
+                        title="headerImgName"><br>
+                      <button
+                        class="input-button"
+                        type="button"
+                        onclick="openImageBrowser('headerImgName')"
+                      >
+                        Browse
+                      </button>
                     </td>
                   </tr>
                   <tr>
@@ -235,7 +243,14 @@
                       <input
                         type="text"
                         id="footerImgName"
-                        title="footerImgName">
+                        title="footerImgName"><br>
+                      <button
+                        class="input-button"
+                        type="button"
+                        onclick="openImageBrowser('footerImgName')"
+                      >
+                        Browse
+                      </button>
                     </td>
                   </tr>
                   <tr>
@@ -328,5 +343,80 @@
       <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
       <div id="copy"></div>
     </footer>
+
+    <!-- S3 Image Browser Modal - same markup as createCardSet.html
+         (scripts/cmsImageBrowser.js drives both, generically by
+         targetFieldId - see openImageBrowser('headerImgName'/
+         'footerImgName') above). -->
+    <div id="imageBrowserModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeImageBrowser()">&times;</span>
+
+        <h3>Select an Image</h3>
+        <h4>Or Upload A New One</h4>
+
+        <div
+          style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"
+        >
+          <!-- Styled Choose File button -->
+          <label
+            for="uploadFileInput"
+            style="
+      background-color: #256386;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      display: inline-block;
+    "
+          >
+            Choose File
+          </label>
+
+          <!-- Hidden native input -->
+          <input
+            type="file"
+            id="uploadFileInput"
+            accept="image/*"
+            style="display: none;">
+
+          <!-- Filename display -->
+          <span id="selectedFileName" style="font-size: 14px; color: #333;"
+            >No file chosen</span
+          >
+
+          <!-- Upload button -->
+          <button
+            type="button"
+            onclick="uploadNewImage()"
+            style="
+      background-color: #256386;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    "
+          >
+            Upload
+          </button>
+        </div>
+        <div id="uploadStatus" style="font-size: 13px; color: #555;"></div>
+
+        <!-- SEARCH BOX!! -->
+        <input
+          type="text"
+          id="imageSearch"
+          placeholder="Search images..."
+          oninput="filterImageList()"
+          style="width: 100%; padding: 6px; margin-top: 10px; margin-bottom: 10px; font-size: 14px; box-sizing: border-box;">
+
+        <!-- DYNAMICALLY POPULATE THE MODAL-->
+        <div id="imageList"></div>
+      </div>
+    </div>
   </body>
 </html>
