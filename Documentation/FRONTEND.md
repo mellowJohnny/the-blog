@@ -517,6 +517,18 @@ uploaded checklists, with a link to each set's review. Added
   search - submit-only, partly because the Lambda's `Scan`-per-request
   design (see `LAMBDA_FUNCTIONS.md`) makes firing it on every keystroke
   needlessly expensive.
+- **In-progress feedback**: `runPlayerSearch()` shows a full-page
+  spinner overlay (`#player-search-spinner-overlay`/
+  `.player-search-spinner`, `styles.css`) for the duration of the fetch,
+  hidden again in a `finally` so it clears on success, an empty result,
+  or an error alike - added because the `Scan`-per-request Lambda above
+  can take a couple of seconds, and the static "Searching..." text alone
+  made it hard to tell whether anything was actually happening. Same
+  overlay+spinner pattern as `smsAdmin.html`'s send-in-progress spinner
+  (`adminSMS.js`), reusing its `@keyframes autobus-spin` rotation (which
+  has nothing Autobus-specific in it) under player-search-specific
+  names rather than the shared Autobus ones, since this page has
+  nothing to do with that tool.
 - **Results**: grouped by `setName`, each group showing every matching
   card (number, player name, notes, and which insert set it's from, if
   any) under that set, ordered main-set cards first then each insert

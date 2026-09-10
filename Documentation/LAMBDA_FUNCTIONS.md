@@ -186,21 +186,27 @@ since that history predates this doc being kept current.
   `"3D-1"`, for a "3D" insert set) — an optional single hyphen *or
   space* between the prefix and the main number (e.g. `"PR-1"`,
   `"McD 1"`, `"3D-1"`), and/or a single trailing letter (e.g. `"165a"`)
-  — or be one of two no-digit exceptions: the literal `"NNO"` ("No
-  Number"), or an all-caps letters-hyphen-letters code (e.g. `"J-AM"`,
-  a jersey/memorabilia insert numbered by player initials instead of a
-  number). All of these are matched as specific exceptions rather than
-  loosening the "at least one digit" requirement generally, which is
-  what keeps the regex from matching ordinary prose lines or the set
-  title line (its year always contains a hyphen, e.g. `"1997-98"` — the
-  digits before that hyphen have no trailing letter, so they can't be
-  absorbed as a prefix, and the line correctly fails to match). The
-  letters-hyphen-letters case additionally requires the matched text be
-  ALL CAPS in the source, checked in code (`isAllCapsLetterCode()`)
-  rather than in the regex itself (which is case-insensitive
-  throughout) — otherwise it can't be told apart from an ordinary
-  Title-Case hyphenated phrase that happens to share the same shape
-  (e.g. `"Self-Titled"`).
+  — or be one of three no-digit exceptions: the literal `"NNO"` ("No
+  Number"), an all-caps letters-hyphen-letters code (e.g. `"J-AM"`, a
+  jersey/memorabilia insert numbered by player initials instead of a
+  number), or a bare all-caps 2-4 letter code with no hyphen at all
+  (e.g. `"AY"` for Alexei Yashin, `"BH"` for Brett Hull — the same
+  player-initials convention, just printed without a separating hyphen;
+  seen on high-end on-card autograph inserts, sometimes with an extra
+  insert-set-prefix letter or two glued on with no separator either,
+  e.g. `"ICDH"` for an "IC" insert set's Dominik Hasek autograph). All
+  of these are matched as specific exceptions rather than loosening the
+  "at least one digit" requirement generally, which is what keeps the
+  regex from matching ordinary prose lines or the set title line (its
+  year always contains a hyphen, e.g. `"1997-98"` — the digits before
+  that hyphen have no trailing letter, so they can't be absorbed as a
+  prefix, and the line correctly fails to match). Both letters-only
+  shapes additionally require the matched text be ALL CAPS in the
+  source, checked in code (`isAllCapsLetterCode()`) rather than in the
+  regex itself (which is case-insensitive throughout) — otherwise
+  neither can be told apart from an ordinary Title-Case word/hyphenated
+  phrase that happens to share the same shape (e.g. `"Self-Titled"`, or
+  a short word like `"Over"` wrapped onto its own continuation line).
   A line that doesn't match the `<number> <name>` pattern — or does
   match but is actually a checklist card's own range reference wrapped
   onto its own line (e.g. `"PR-1 - PR-8 CL"`, continuing an `"NNO
@@ -227,7 +233,22 @@ since that history predates this doc being kept current.
   collision is still caught before anything gets written.
   **Never writes to DynamoDB** — returns the parsed result for
   review/correction in the browser; `saveChecklist` below is the only
-  one that writes. Same parsing logic as the standalone
+  one that writes.
+  **Print-to-PDF footer artifacts are filtered out before any of the
+  above runs**: a checklist sourced from a browser "Print to PDF" of a
+  webpage (e.g. tcdb.com's printable checklist view) carries a
+  browser-injected footer on every page — a date/time stamp, the page
+  title, and the page URL. `pdf-parse` sometimes extracts these with no
+  separating newline/space from whatever text preceded them (e.g.
+  `"5:22 PM1999-00 Upper Deck..."`), so a line-emptiness check alone
+  can't catch it — it's matched by its own distinctive shape
+  (`isPrintFooterArtifact()`: a leading `M/D/YY, H:MM AM/PM` timestamp,
+  or a bare `http(s)://` URL) and dropped entirely. Left unhandled, this
+  text doesn't match the card-line pattern either, so it would fall into
+  the wrapped-line merge logic just above and get silently appended onto
+  whatever card was last seen — not just on the final page, but at every
+  page break in the source PDF, corrupting that card's name each time.
+  Same parsing logic as the standalone
   `tools/checklistParser/parse.mjs` script in this repo — kept in sync
   deliberately, see that file's own comments.
 - **Local regression testing**: real checklist source PDFs (the actual

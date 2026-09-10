@@ -252,6 +252,21 @@ then redirect to the corresponding picker page (`pickBlog.html`/
 Lambdas, `Lambdas/deleteBlogHandler/` and `Lambdas/deleteCardSetHandler/` — see
 `LAMBDA_FUNCTIONS.md`.
 
+### Cancel
+
+Both edit forms also have a plain "Cancel" button next to Update, for
+backing out of an edit without saving — added since arriving at either
+page via a direct/bookmarked link leaves no reliable browser-back
+target, and leaving silently (no warning) risked losing an in-progress
+edit by accident. `cmsCancelEdit(redirectTo)` (`scripts/cmsFormUI.js`,
+shared by both pages since it's generic to "leave this edit form," not
+specific to blog or card-set logic) shows the same red `cmsConfirm()`
+warning modal Delete uses ("Any unsaved changes will be lost. Leave
+this page?"), then navigates only if confirmed:
+`setEdit.html` → `/cms/pickCardSet.html`, `blogEdit.html` →
+`/cms/pickBlog.html` — same picker-page convention as Delete/Update
+above, not a plain browser-back.
+
 ### Redirect on success
 
 Every create/update/delete action (in `scripts/cmsBlog.js` for blog
@@ -273,9 +288,16 @@ redirect either — see "Delete" above.)
 
 ### Image picker / uploader
 
-Both create/edit forms include a "Browse" button next to image fields
-that opens a shared modal (`#imageBrowserModal`, driven entirely by
-`scripts/cmsImageBrowser.js`):
+`createCardSet.html`, `setEdit.html`, and `createBlogPost.html` each
+include a "Browse" button next to their image fields, opening a shared
+modal (`#imageBrowserModal`, driven entirely by
+`scripts/cmsImageBrowser.js`) — `setEdit.html` gained this in this
+session, ported directly from `createCardSet.html` (same script tag,
+same modal markup, same `openImageBrowser('headerImgName'/
+'footerImgName')` calls) so a set's images can be managed after
+creation too, not just at authoring time. `blogEdit.html` doesn't have
+it yet — a blog post's image can currently only be (re)picked via
+Browse when it's first created, not from its edit form:
 
 1. Lists every image currently in the S3 bucket (filtered client-side to `img/blog/` or `img/cards/` depending on which form opened it), with thumbnails, via a search box.
 2. Clicking a thumbnail fills in the target form field and closes the modal.
@@ -305,6 +327,19 @@ save as-is, producing a URL that looks valid but 404s. See
 `scripts/cmsCardSet.js`) that renders the card set exactly as it will appear
 on the live site, using the current (possibly unsaved) form values, in
 a modal — lets you check formatting before publishing. `createBlogPost.html`/`blogEdit.html` don't currently have an equivalent preview.
+Sits in the horizontal middle of the Update/Cancel/Delete button row (a
+CSS Grid `1fr auto 1fr` row, not a flex `space-between` — the latter
+doesn't truly center a middle item when the two side groups are
+different widths, which Update+Cancel vs. Delete Set are).
+
+`setEdit.html`'s Author field is a plain read-only text input (matching
+Set Name/Release Year's styling), not the dropdown `createCardSet.html`
+uses — an author is chosen once at creation and isn't meant to change
+on edit, so there's nothing to actually pick here; showing it as an
+editable-looking `<select>` with only ever one option was misleading.
+`populateCardSet()`/`updateCardSet()` (`scripts/cmsCardSet.js`) needed
+no changes for this — both already read/write it via `.value`, which
+works identically on a `<select>` or a disabled `<input>`.
 
 ### Checklist upload
 
