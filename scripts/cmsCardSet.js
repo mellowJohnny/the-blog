@@ -692,7 +692,7 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
             <td><strong>Set Size:</strong> ${size}</td>
         </tr>
         <tr>
-            <td><strong>Inserts:</strong> ${subsets}</td>
+            <td><strong>Inserts:</strong> <i>${subsets}</i></td>
         </tr>
         <tr>
             <td><strong>Release Year:</strong> ${year}</td>

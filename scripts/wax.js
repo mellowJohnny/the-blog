@@ -248,7 +248,7 @@ function fetchPageTitle(item)
             </div>
             <div class="set-details-list">
                 <div class="set-detail-row"><strong>Set Size:</strong> ${size}</div>
-                <div class="set-detail-row"><strong>Inserts:</strong> ${subsets}</div>
+                <div class="set-detail-row"><strong>Inserts:</strong> <i>${subsets}</i></div>
                 <div class="set-detail-row"><strong>Release Year:</strong> ${year}</div>
                 <div class="set-detail-row"><strong>Formats:</strong> ${formats}</div>
                 <div class="set-detail-row"><strong>Manufacturer:</strong> ${mfg}</div>
