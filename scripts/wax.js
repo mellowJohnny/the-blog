@@ -247,13 +247,13 @@ function fetchPageTitle(item)
                 width="620">
             </div>
             <div class="set-details-list">
-                <div class="set-detail-row"><strong><i>Set Size:</i></strong> ${size}</div>
-                <div class="set-detail-row"><strong><i>Inserts:</i></strong> ${subsets}</div>
-                <div class="set-detail-row"><strong><i>Release Year:</i></strong> ${year}</div>
-                <div class="set-detail-row"><strong><i>Formats:</i></strong> ${formats}</div>
-                <div class="set-detail-row"><strong><i>Manufacturer:</i></strong> ${mfg}</div>
+                <div class="set-detail-row"><strong>Set Size:</strong> ${size}</div>
+                <div class="set-detail-row"><strong>Inserts:</strong> ${subsets}</div>
+                <div class="set-detail-row"><strong>Release Year:</strong> ${year}</div>
+                <div class="set-detail-row"><strong>Formats:</strong> ${formats}</div>
+                <div class="set-detail-row"><strong>Manufacturer:</strong> ${mfg}</div>
                 ${checklistRow}
-                <div class="set-detail-row"><strong><i>Hella Rating:</i></strong> ${cleanStars}</div>
+                <div class="set-detail-row"><strong>Hella Rating:</strong> ${cleanStars}</div>
             </div>
         </div>
         <br>

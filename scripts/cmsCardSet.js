@@ -689,22 +689,22 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
             </td>
         </tr>
         <tr>
-            <td><strong><i>Set Size:</i></strong> ${size}</td>
+            <td><strong>Set Size:</strong> ${size}</td>
         </tr>
         <tr>
-            <td><strong><i>Inserts:</i></strong> ${subsets}</td>
+            <td><strong>Inserts:</strong> ${subsets}</td>
         </tr>
         <tr>
-            <td><strong><i>Release Year:</i></strong> ${year}</td>
+            <td><strong>Release Year:</strong> ${year}</td>
         </tr>
         <tr>
-            <td><strong><i>Formats:</i></strong> ${formats}</td>
+            <td><strong>Formats:</strong> ${formats}</td>
         </tr>
         <tr>
-            <td><strong><i>Manufacturer:</i></strong> ${mfg}</td>
+            <td><strong>Manufacturer:</strong> ${mfg}</td>
         </tr>
         <tr>
-            <td><strong><i>Hella Rating:</i></strong> ${cleanStars}</td>
+            <td><strong>Hella Rating:</strong> ${cleanStars}</td>
         </tr>
     </table>
     <br>
