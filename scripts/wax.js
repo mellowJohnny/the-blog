@@ -20,13 +20,13 @@ function renderCardIntro(pageName) {
   } else if (pageName === "junkWax") {
     introHTML = `
       <h2>Junk Wax Sets</h2>
-      <p>The late '80s and early '90s...Miami Vice, acid wash jeans, teal San Jose Sharks jerseys...and a hockey card explosion. Consider this: the 1989-90 season had just two licensed hockey sets - Topps in the US and O-Pee-Chee in Canada. But just a few years later there were thirteen licensed sets, ushering in the <i><a href="theJunkWaxYears.html">Junk Wax</a></i> era.<br><br> But there are some hidden gems to be found if you are willing to dig around a bit...</p>
+      <p>The late '80s and early '90s...Miami Vice, acid wash jeans, teal San Jose Sharks jerseys...and a hockey card explosion. Consider this: the 1989-90 season had just two licensed hockey sets - Topps in the US and O-Pee-Chee in Canada. But just a few years later there were thirteen licensed sets and legendary over-production, ushering in the <i><a href="theJunkWaxYears.html">Junk Wax</a></i> era. But don't let that deter you, there are some hidden gems if you are willing to dig around...</p>
     `;
   } else if (pageName === "timmies") {
     introHTML = `
       <h2>Tim Hortons Upper Deck Hockey</h2>
-      <p>McDonald's Canada ended their association with the NHL in 2010, ending almost 20 years of fast food hockey card collecting. That all changed in 2015 when Tim Hortons, the bastion of blue-collar coffee shops, released their very first NHL Hockey set, complete with custom binder and plenty of chase cards.
-      <br><br>Released just after the season starts in October, it has become an annual tradition in Canada</p>
+      <p>McDonald's Canada dropped their association with the NHL in 2010, ending almost 20 years of fast food hockey card collecting. That all changed in 2015 when Tim Hortons, the bastion of blue-collar coffee shops, released their very first NHL Hockey set, complete with custom binder and plenty of chase cards.
+      Normally released just after the season starts in October, it has become an annual tradition in Canada</p>
     `;
   } else if (pageName === "mcd") {
     introHTML = `
