@@ -239,15 +239,7 @@ function getSortOrder(property,order) {
 } // end sort function
 
 
-// -------------------------------- Set-O-Matic Year Picker --------------------------------------
-// Used to render all pickers: "Classic", "Junk Wax", "Timmies" and "McDonalds" 
-// NEW DYNAMIC version - no more enormous list of if statements
-// How this works
-// Ranges: You only define the start/end years once per category. No duplication.
-// Dynamic labels: The label 1979-80 is generated automatically by combining the year and the next year.
-// Highlighting: The selected year is shown as plain text, others as links.
-// Scalability: Adding new years is as simple as extending the range.
-// This way, instead of maintaining hundreds of lines of repetitive HTML, you only maintain the ranges. Much easier to extend and debug.
+
 
 // -------------------- Masthead team-color randomizer --------------------
 // Primary/tertiary hex per team, from Wikipedia's Module:Sports
@@ -334,6 +326,16 @@ function applyRandomMastheadTeam() {
   label.textContent = team.cheer;
 }
 
+// -------------------------------- Set-O-Matic Year Picker --------------------------------------
+// Used to render all pickers: "Classic", "Junk Wax", "Timmies" and "McDonalds" 
+// NEW DYNAMIC version - no more enormous list of if statements
+// How this works
+// Ranges: You only define the start/end years once per category. No duplication.
+// Dynamic labels: The label 1979-80 is generated automatically by combining the year and the next year.
+// Highlighting: The selected year is shown as plain text, others as links.
+// Scalability: Adding new years is as simple as extending the range.
+// This way, instead of maintaining hundreds of lines of repetitive HTML, you only maintain the ranges. Much easier to extend and debug.
+
 // Category + pageName specific ranges - shared by renderSetPicker() (the
 // year-picker widget) and getPageNameForYear() below (used by
 // playerSearch.js to build a working link back to a matched set's
@@ -345,7 +347,7 @@ const categoryRanges = {
     junkWax:    { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" }
   },
   mcd: {
-    mcd: { start: 1991, end: 2006, className: "junk-set-nav-td", pageName: "mcd" }
+    mcd: { start: 1991, end: 2007, className: "junk-set-nav-td", pageName: "mcd" }
   },
   tims: {
     timmies: { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
