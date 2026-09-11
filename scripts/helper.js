@@ -644,3 +644,38 @@ function setCookie(cookieName, cookieValue, exp) {
     let expires = "expires="+ d.toUTCString();
     document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
   }
+
+/**
+ * Click-toggle flyouts for the wlcms.html top nav dropdowns (not
+ * CSS :hover) so this behaves the same on touch and desktop. Scoped to
+ * #wlcms-top-nav only. Call once on page load.
+ */
+function initWlcmsNav() {
+  const nav = document.getElementById('wlcms-top-nav');
+  if (!nav) return;
+
+  function closeAll(except) {
+    nav.querySelectorAll('.cms-nav-item.open').forEach((item) => {
+      if (item === except) return;
+      item.classList.remove('open');
+      const btn = item.querySelector('.cms-nav-parent');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  nav.querySelectorAll('.cms-nav-parent').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const item = btn.closest('.cms-nav-item');
+      const isOpen = item.classList.contains('open');
+      closeAll();
+      item.classList.toggle('open', !isOpen);
+      btn.setAttribute('aria-expanded', String(!isOpen));
+    });
+  });
+
+  document.addEventListener('click', () => closeAll());
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAll();
+  });
+}
