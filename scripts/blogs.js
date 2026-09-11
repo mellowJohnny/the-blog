@@ -217,6 +217,7 @@ function renderBlogPage() {
 
 function renderBlogPaginationControls(start, end) {
   const controls = document.getElementById("paginationControls");
+  if (!controls) return; // index.html has no pagination controls - only ever shows one blog entry
   controls.innerHTML = "";
 
   const prevBlog = allBlogs[start - 1];

@@ -611,7 +611,7 @@ h1 {
   display: block;
   font-family: 'Source Sans 3', sans-serif;
   font-size: 18px;
-  color: var(--color-link);
+  color: var(--color-text-dark);
   padding: 10px 16px;
   white-space: nowrap;
 }
