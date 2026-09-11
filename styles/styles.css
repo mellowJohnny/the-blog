@@ -769,6 +769,7 @@ select {
 .star-rating-widget {
   display: inline-flex;
   gap: 6px;
+  margin-top: 6px;
   font-size: 28px;
   line-height: 1;
   cursor: pointer;
