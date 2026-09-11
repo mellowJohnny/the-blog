@@ -106,7 +106,13 @@ class on click (this is what drives it on touch, where hover isn't
 meaningful), and a `@media (hover: hover) and (pointer: fine)` CSS
 rule opens it on mouse hover on desktop/trackpad. On mobile each
 dropdown becomes an inline accordion instead of a floating flyout (no
-room to sit beside its parent at that width). Grouped page links:
+room to sit beside its parent at that width). Its link color
+(`.cms-nav-parent`/`.cms-nav-item-plain > a`/`.cms-nav-dropdown a`,
+`styles.css`) used to be hardcoded to `--color-text-dark`, a dark navy
+that didn't match the light blue (`--color-link`) every other `/cms`
+page's plain `.cms-top-nav` breadcrumb uses — fixed to use
+`--color-link` too, so this nav is visually consistent with the rest.
+Grouped page links:
 
 | Page | Purpose |
 |---|---|
@@ -154,6 +160,42 @@ See `FRONTEND.md`'s "Mobile / responsive design" section for the
 mechanism behind this (including a real CSS specificity bug this was
 built around) and why the mobile scaling has to actually resize the
 image's box rather than just visually shrink it.
+
+### Star Rating widget
+
+`createCardSet.html` and `setEdit.html` both use a row of five clickable
+star icons (`.star-rating-widget`/`.star-rating-icon`, `styles.css`) in
+place of what used to be a plain `<select>` (create) and a plain text
+input (edit) — two different, unpolished representations of the same
+`stars` field. Hovering a star previews the rating (reverting to
+whatever's actually locked in if you move away without clicking);
+clicking locks it in, turning that star and every one before it gold.
+
+Uses the exact same 🌟 emoji as the public "Hella Rating" display
+(`wax.js`) for the lit/selected state — emoji ignore CSS `color`, so
+rather than a second "empty star" icon, the unselected state is the
+same glyph desaturated and dimmed via `filter: grayscale(1) opacity(0.35)`
+(`.star-rating-icon`), with `filter: none` on `.selected`.
+
+The real numeric rating still lives in a plain `<input type="hidden"
+id="stars">` — every existing function that already read/wrote it via
+`document.getElementById("stars").value` (`createCardSet()`,
+`updateCardSet()`, `renderPreview()`, `populateCardSet()`) needed zero
+changes; the widget is purely a visual layer on top of that same
+contract. Two shared functions in `scripts/cmsCardSet.js` drive it:
+
+- `initStarRatingWidget(containerId, hiddenInputId)` — wires the click
+  and hover listeners, called once per page on load. On
+  `createCardSet.html` the hidden input's HTML `value="1"` (matching
+  the old dropdown's default of "One Star" if never touched) means one
+  star is already lit on a fresh create.
+- `paintStarRating(value, containerId)` — the actual paint logic
+  (toggles `.selected` on every star up to `value`). Also called by
+  `populateCardSet()` right after it sets the hidden input's value, so
+  `setEdit.html`'s widget repaints correctly once a set's real rating
+  arrives asynchronously (`initStarRatingWidget()`'s own initial paint
+  runs before that fetch resolves, so it would otherwise show whatever
+  the hidden input held at page-load time - empty on `setEdit.html`).
 
 ### Draft / publish workflow
 
