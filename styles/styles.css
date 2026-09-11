@@ -565,7 +565,7 @@ h1 {
   display: block;
   font-family: 'Source Sans 3', sans-serif;
   font-size: 24px;
-  color: var(--color-text-dark);
+  color: var(--color-link);
   background: none;
   border: none;
   margin: 0;
@@ -611,7 +611,7 @@ h1 {
   display: block;
   font-family: 'Source Sans 3', sans-serif;
   font-size: 18px;
-  color: var(--color-text-dark);
+  color: var(--color-link);
   padding: 10px 16px;
   white-space: nowrap;
 }
