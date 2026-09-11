@@ -610,7 +610,7 @@ h1 {
 .cms-nav-dropdown a {
   display: block;
   font-family: 'Source Sans 3', sans-serif;
-  font-size: 18px;
+  font-size: 20px;
   color: var(--color-text-dark);
   padding: 10px 16px;
   white-space: nowrap;
@@ -2525,7 +2525,7 @@ label sup {
   }
 
   .cms-nav-dropdown a {
-    font-size: 16px;
+    font-size: 18px;
     padding: 8px 14px;
   }
 
