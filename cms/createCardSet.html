@@ -52,6 +52,7 @@
       window.addEventListener('load', () => {
         fetchCopyrightYear();
         initTinyEditor('#postBody');
+        initStarRatingWidget();
       });
     </script>
   </head>
@@ -154,13 +155,14 @@
                 <!-- 4th Row - dropdown -->
                 <td colspan="2">
                   <label>Star Rating</label><br>
-                  <select id="stars" style="width: 200px;">
-                    <option value="1">One Star</option>
-                    <option value="2">Two Stars</option>
-                    <option value="3">Three Stars</option>
-                    <option value="4">Four Stars</option>
-                    <option value="5">Five Stars</option>
-                  </select>
+                  <div class="star-rating-widget" id="starRatingWidget">
+                    <span class="star-rating-icon" data-value="1">★</span>
+                    <span class="star-rating-icon" data-value="2">★</span>
+                    <span class="star-rating-icon" data-value="3">★</span>
+                    <span class="star-rating-icon" data-value="4">★</span>
+                    <span class="star-rating-icon" data-value="5">★</span>
+                  </div>
+                  <input type="hidden" id="stars" title="stars" value="1">
                 </td>
               </tr>
               <tr>

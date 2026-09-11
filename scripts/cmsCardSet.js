@@ -558,6 +558,46 @@ async function deleteCardSet(setID, setName, year) {
     });
 }
 
+//**************************************** Star Rating widget (createCardSet.html/setEdit.html) **********************************
+
+// Paints .selected on every star up to and including `value`, leaving
+// the hidden #stars input (read by createCardSet()/updateCardSet()/
+// renderPreview() exactly as before this widget existed) as the single
+// source of truth for the actual numeric rating.
+function paintStarRating(value, containerId = "starRatingWidget") {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const numeric = Number(value) || 0;
+  container.querySelectorAll(".star-rating-icon").forEach(icon => {
+    icon.classList.toggle("selected", Number(icon.dataset.value) <= numeric);
+  });
+}
+
+// Wires click (locks in the rating) and hover (previews it, reverting
+// to the locked-in value on mouse-out) for the star widget. Call once
+// per page on load.
+function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = "stars") {
+  const container = document.getElementById(containerId);
+  const hiddenInput = document.getElementById(hiddenInputId);
+  if (!container || !hiddenInput) return;
+
+  container.querySelectorAll(".star-rating-icon").forEach(icon => {
+    icon.addEventListener("click", () => {
+      hiddenInput.value = icon.dataset.value;
+      paintStarRating(hiddenInput.value, containerId);
+    });
+    icon.addEventListener("mouseenter", () => paintStarRating(icon.dataset.value, containerId));
+  });
+
+  container.addEventListener("mouseleave", () => paintStarRating(hiddenInput.value, containerId));
+
+  // Paint whatever the hidden input already holds at call time - "1"
+  // baked into createCardSet.html's markup (matching the old dropdown's
+  // default), or whatever populateCardSet() has set by the time this
+  // runs on setEdit.html.
+  paintStarRating(hiddenInput.value, containerId);
+}
+
 //**************************************** populateCardSet Helper Function **********************************
 
   /**
@@ -625,6 +665,11 @@ async function deleteCardSet(setID, setName, year) {
   document.getElementById("size").value = size;
   document.getElementById("subsets").value = subsets;
   document.getElementById("stars").value = stars;
+  // initStarRatingWidget() (called on page load, before this async data
+  // arrives) already painted the widget once against whatever the
+  // hidden #stars input held at that time - repaint now against the
+  // real loaded value.
+  paintStarRating(stars);
   document.getElementById("formats").value = formats;
   document.getElementById("setName").value = setName;
   document.getElementById("headerImgName").value = headerImgName;

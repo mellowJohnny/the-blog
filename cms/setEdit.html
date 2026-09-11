@@ -71,6 +71,10 @@
 
           // Load the TinyMCE WYSIWYG Editor from the global config in cmsFormUI.js
           initTinyEditor('#postBody');
+
+          // Wire up the star rating widget - repainted correctly once
+          // fetchCardSetByID()'s data arrives, via populateCardSet()
+          initStarRatingWidget();
       });
     </script>
   </head>
@@ -206,7 +210,14 @@
                     <!-- 7th Row -->
                     <td>
                       <label>Star Rating</label><br>
-                      <input type="text" id="stars" title="stars">
+                      <div class="star-rating-widget" id="starRatingWidget">
+                        <span class="star-rating-icon" data-value="1">★</span>
+                        <span class="star-rating-icon" data-value="2">★</span>
+                        <span class="star-rating-icon" data-value="3">★</span>
+                        <span class="star-rating-icon" data-value="4">★</span>
+                        <span class="star-rating-icon" data-value="5">★</span>
+                      </div>
+                      <input type="hidden" id="stars" title="stars">
                     </td>
                     <td>
                       <label>Formats</label><br>

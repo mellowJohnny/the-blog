@@ -760,6 +760,27 @@ select {
   border-radius: 2px;
 }
 
+/* Star Rating widget - createCardSet.html/setEdit.html (initStarRatingWidget()/
+   paintStarRating() in cmsCardSet.js). The real value lives in a hidden
+   #stars input right after this; these spans are purely visual. */
+.star-rating-widget {
+  display: inline-flex;
+  gap: 6px;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.star-rating-icon {
+  color: #ccc;
+  transition: color 0.1s;
+}
+
+.star-rating-icon.selected {
+  color: gold;
+}
+
 textarea {
   font-size: 24px;
   font-family: 'Consolas', Courier, monospace;
