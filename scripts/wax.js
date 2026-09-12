@@ -199,12 +199,9 @@ function fetchPageTitle(item)
     // Calculate Reading Time
     const readingStats = estimateReadingTime(postBody); // lives in helper.js
 
-    // Voting - the Cards table's key is (setName, year), so that's
-    // what identifies a set for voting. Counts come from DynamoDB
-    // (undefined until the first vote is ever cast, since the attribute
-    // doesn't exist yet). 
-    // voteKey is a DOM/localStorage-safe id derived
-    // from setName+year, since setName can contain characters (spaces, apostrophes) that aren't valid in an HTML id.
+    // Voting - keyed by setName+year (Cards table's key). voteKey
+    // sanitizes that into a DOM/localStorage-safe id, since setName can
+    // contain spaces/apostrophes. Vote counts are undefined until cast.
     const upCount = upvotes || 0;
     const downCount = downvotes || 0;
     const voteKey = `${setName}-${year}`.replace(/[^a-zA-Z0-9]+/g, "-");
@@ -214,26 +211,16 @@ function fetchPageTitle(item)
     // Reference to the div where everything goes
     let cardBody = document.getElementById("cardSetDiv");
 
-    // hasChecklist comes from the Cards item (set by saveChecklist the
-    // first time a checklist is uploaded for this set - see
-    // Lambdas/saveChecklist/index.mjs). Only add the row when there's
-    // actually a checklist to point to. setName is passed via
-    // data-set-name rather than interpolated into the onclick string,
-    // same reason as the vote buttons below - it can contain apostrophes.
-    // set-detail-row-checklist (alongside the usual set-detail-row) lets
-    // mobile CSS move this row to after Hella Rating via flexbox `order`
-    // without changing this DOM order, which desktop keeps as-is - see
-    // styles.css's #cardSetDiv .set-details-list mobile rule.
+    // hasChecklist (set by saveChecklist) gates this row. setName goes
+    // via data-set-name, not inline onclick, since it can contain
+    // apostrophes. set-detail-row-checklist lets mobile CSS reorder it.
     const checklistRow = hasChecklist
         ? `<div class="set-detail-row set-detail-row-checklist"><a href="#" class="checklist-view-link" data-set-name="${escapeHtml(setName)}" onclick="openChecklistModal(this); return false;">Checklist</a></div>`
         : "";
 
-    // CSS Grid (.set-details-grid, styles.css), not a table - a rowspan'd
-    // table cell can't be reordered above the rows it spans via a mobile
-    // breakpoint alone (see FRONTEND.md's "Mobile / responsive design"
-    // section), so name/image/list are independent grid areas instead,
-    // letting mobile redefine grid-template-areas to stack name -> image
-    // -> list instead of desktop's name+list-beside-image layout.
+    // CSS Grid, not a table - a rowspan'd cell can't reorder above the
+    // rows it spans at a mobile breakpoint. Grid areas let mobile
+    // restack name -> image -> list instead of desktop's side-by-side.
     cardBody.innerHTML += `
         <div class="set-details-grid">
             <div class="set-details-name">
@@ -314,15 +301,9 @@ function fetchPageTitle(item)
 }
 
 /**
- * Written entirely by Claude Code :-) It did a good job...
- * Casts a thumbs up/down vote on a card set review.
- * One vote per set per browser, tracked in localStorage (no auth on the
- * public site, so this is a lightweight deterrent, not tamper-proof).
- *
- * Takes the button element itself (rather than setName interpolated into
- * an inline onclick string) since setName can contain characters like
- * apostrophes (e.g. "McDonald's Hockey") that would break a quoted JS
- * string built via template literal.
+ * Casts a thumbs up/down vote, one per set per browser (localStorage,
+ * not tamper-proof - no auth on the public site). Takes the button
+ * itself, not setName inline, since it can contain apostrophes.
  */
 function castVote(btn) {
   const setName = btn.dataset.setName;
@@ -387,14 +368,9 @@ function castVote(btn) {
 
 
 /**
- * Checklist modal (waxReviews.html "Checklist" link)
- * Fetches every card for a set's setName from getChecklistBySetName
- * (both the main set and any insert sets, undifferentiated in the
- * response - see Lambdas/getChecklistBySetName/index.mjs) and renders
- * them grouped by type (main first, then each insert set by name),
- * sorted within each group by sortIndex - not by raw DynamoDB item
- * order, which doesn't sort numerically or group main-before-insert on
- * its own. See DATA_MODEL.md's Checklists table for why.
+ * Checklist modal (waxReviews.html) - fetches all cards (main + insert
+ * sets) from getChecklistBySetName, then groups by type and sorts by
+ * sortIndex, since raw DynamoDB order doesn't group/sort them properly.
  */
 
 const CHECKLIST_API_URL = "https://xbizlwvad5.execute-api.us-east-2.amazonaws.com/dev";
@@ -416,10 +392,9 @@ function openChecklistModal(link) {
   title.textContent = setName;
   body.innerHTML = "<p>Loading checklist...</p>";
   overlay.style.display = "block";
-  // Scopes the @media print rules (styles.css) to hide the rest of the
-  // page and print only the modal - without this, printing the page
-  // normally (modal closed) would print nothing at all, since those
-  // rules would otherwise apply unconditionally.
+  // Scopes the @media print rules to print only the modal - without
+  // this, printing the page normally (modal closed) would print
+  // nothing, since those rules would apply unconditionally.
   document.body.classList.add("checklist-modal-open");
   currentChecklistItems = [];
   // The checkbox is shared across every set's modal - reset it so a
@@ -433,11 +408,9 @@ function openChecklistModal(link) {
     })
     .then(items => {
       currentChecklistItems = items;
-      // Route through applyChecklistRookieFilter() rather than
-      // rendering `items` directly - the checkbox was reset to
-      // unchecked above, but a slow fetch leaves a window where the
-      // visitor can toggle it before this resolves, and rendering the
-      // raw list here would silently stomp that choice.
+      // Routes through applyChecklistRookieFilter() instead of
+      // rendering `items` directly - a slow fetch leaves a window
+      // where the visitor toggles the checkbox before this resolves.
       applyChecklistRookieFilter();
     })
     .catch(err => {
@@ -446,10 +419,9 @@ function openChecklistModal(link) {
     });
 }
 
-// "Rookies only" checkbox handler - filters the already-fetched
+// "Rookies only" handler - filters the already-fetched
 // currentChecklistItems client-side (whole-word "RC" in notes, same
-// rule playerSearch.js uses for its RC styling) and re-renders from
-// that in-memory list. No re-fetch/re-query of the Checklists table.
+// rule playerSearch.js uses) and re-renders. No re-fetch/re-query.
 function applyChecklistRookieFilter() {
   const rookieFilter = document.getElementById("checklistRookieFilter");
   const body = document.getElementById("checklistModalBody");
@@ -489,13 +461,9 @@ document.addEventListener("click", (event) => {
   }
 })();
 
-// Groups/sorts/labels a checklist's items - shared by the on-screen
-// HTML renderer (renderChecklistGroups(), below) and the PDF exporter
-// (exportChecklistPdf(), further down), so both stay in exact sync from
-// one source of truth instead of two hand-maintained implementations.
-// Returns [{ title, cards }, ...] - already ordered, sorted, and
-// labeled; title text is raw/unescaped, since HTML- vs PDF-rendering
-// each have their own escaping/encoding needs.
+// Groups/sorts/labels a checklist's items - shared by the HTML
+// renderer and the PDF exporter so both stay in sync. Returns
+// [{ title, cards }, ...]; title text is raw/unescaped either way.
 function buildChecklistGroups(items) {
   if (!items || items.length === 0) return [];
 
@@ -517,10 +485,9 @@ function buildChecklistGroups(items) {
     });
   insertGroups.forEach(group => group.sort(byGroup));
 
-  // "MEM" (memorabilia/jersey relic cards) in any card's notes within an
-  // insert set relabels the whole group "Memorabilia" instead of the
-  // generic "Insert Set" suffix - \b keeps this from matching "MEM" as
-  // a substring inside some other token.
+  // "MEM" in any card's notes relabels the whole insert group
+  // "Memorabilia" instead of "Insert Set" - \b keeps this from
+  // matching "MEM" as a substring inside some other token.
   const insertEntries = [...insertGroups.entries()].map(([name, cards]) => ({
     name,
     cards,
@@ -558,21 +525,16 @@ function renderChecklistCard(item) {
   const notes = item.notes
     ? ` <span class="checklist-modal-card-notes">${escapeHtml(item.notes)}</span>`
     : "";
-  // The checkbox is print-only (hidden on screen, shown in @media print
-  // - styles.css) - there's no on-screen "owned" state to track, it's
-  // just there so a printed checklist can be checked off with a pen,
-  // matching the source PDFs' own convention.
+  // The checkbox is print-only (hidden on screen) - there's no
+  // on-screen "owned" state, it's just there so a printed checklist
+  // can be checked off with a pen, matching the source PDFs.
   return `<div class="checklist-modal-card"><span class="checklist-modal-card-checkbox"></span><span class="checklist-modal-card-num">${escapeHtml(item.cardNumberDisplay)}</span> ${escapeHtml(item.playerName)}${notes}</div>`;
 }
 
 /**
- * "Download PDF" - a real, downloadable/shareable alternative to the
- * Print button above (window.print()), not a replacement for it. Uses
- * jsPDF + this site's own embedded fonts (see scripts/fonts/), loaded
- * lazily on first use rather than as static <script> tags, since
- * jsPDF + 3 embedded font files are ~1MB combined and most visitors
- * who open a checklist never click Download - no reason to make every
- * waxReviews.html page load pay for that.
+ * "Download PDF" - alternative to the Print button, using jsPDF +
+ * embedded fonts loaded lazily on first use (not static <script> tags),
+ * since most visitors who open a checklist never click Download.
  */
 
 let jsPdfLoadPromise = null;
@@ -643,9 +605,8 @@ function buildChecklistPdfDocument(setName, groups) {
   const doc = new jspdf.jsPDF({ unit: "pt", format: "letter" });
 
   // Fonts are registered per-instance, not globally - jsPDF's VFS/font
-  // registry lives on `this` inside addFileToVFS()/addFont(), so
-  // pre-registering against the shared jsPDF.API object (before any
-  // instance exists) doesn't carry over to instances created afterward.
+  // registry lives on `this` inside addFileToVFS()/addFont(), so it
+  // must be redone here rather than once against the shared API object.
   doc.addFileToVFS("BebasNeue-Regular.ttf", EMBEDDED_FONT_BEBAS_NEUE_NORMAL);
   doc.addFont("BebasNeue-Regular.ttf", "BebasNeue", "normal");
   doc.addFileToVFS("SourceSans3-Regular.ttf", EMBEDDED_FONT_SOURCE_SANS3_NORMAL);
@@ -663,9 +624,8 @@ function buildChecklistPdfDocument(setName, groups) {
   const lineHeight = 14;
 
   // Continuation pages (2+) reserve a short band above marginTop for
-  // the running header (set name) drawn in the per-page pass below -
-  // page 1 doesn't need this, its content already starts well below
-  // marginTop thanks to the masthead + title.
+  // the running header (set name), drawn in the per-page pass below -
+  // page 1 doesn't need it, already starting well below marginTop.
   const contentTop = marginTop + 30;
 
   // Same 2-column split .checklist-modal-cards uses on screen/print
@@ -679,11 +639,9 @@ function buildChecklistPdfDocument(setName, groups) {
 
   let y = marginTop;
 
-  // Draws `text` once per small diagonal offset in outlineColor, then
-  // once more in fillColor at the true position - a crude but
-  // effective approximation of .checklist-modal-masthead a's 4-way
-  // 1px text-shadow "outlined text" look (styles.css:1523-1527).
-  // Assumes the desired font/size is already set on `doc`.
+  // Draws `text` offset in outlineColor, then again in fillColor at
+  // the true position - approximates .checklist-modal-masthead a's
+  // 4-way 1px text-shadow outline. Assumes font/size already set.
   function drawOutlinedText(text, x, textY, outlineColor, fillColor) {
     const offset = 0.75;
     doc.setTextColor(...outlineColor);
@@ -695,10 +653,8 @@ function buildChecklistPdfDocument(setName, groups) {
   }
 
   // Masthead - matches .checklist-modal-masthead's colored bar +
-  // outlined Bebas Neue brand text (styles.css:1510-1528), not just
-  // plain text. Drawn once, top of page 1 only - same as Phase 1, and
-  // matches real print output (a static block before the column flow
-  // doesn't repeat per page in a browser print either).
+  // outlined Bebas Neue brand text, drawn once on page 1 only, same
+  // as real print output (a static block that doesn't repeat per page).
   const mastheadBarColor = [44, 82, 137]; // --color-masthead-bg
   const mastheadOutlineColor = [2, 70, 153]; // --color-heading-outline
   const mastheadTextColor = [252, 252, 245];
@@ -723,20 +679,14 @@ function buildChecklistPdfDocument(setName, groups) {
   doc.text(titleLines, marginX, y);
   y += titleLines.length * 22 + 22;
 
-  // 2-column layout matching .checklist-modal-group-title's
-  // `column-span: all` (styles.css:1544): a title always spans the
-  // full content width and breaks the column flow, so everything
-  // after it restarts filling left-column-first from that point -
-  // independent of how far the other column had previously filled.
-  // `bandTop` tracks where the *current* column pair started, so
-  // switching from column 0 to column 1 mid-group resumes at the same
-  // band rather than the top of the page.
+  // Matches .checklist-modal-group-title's `column-span: all` - a
+  // title spans full width, restarting left-column-first after it.
+  // `bandTop` tracks the current column pair's start for mid-group resumes.
   let currentColumn = 0;
   let bandTop = y;
-  // Tracks how far each column has actually been filled within the
-  // current band - a full-width title has to clear WHICHEVER column
-  // is taller, not just resume from wherever the last-drawn column
-  // (often the shorter one, if it filled last) happened to end.
+  // Tracks how far each column has filled within the current band - a
+  // full-width title must clear whichever column is taller, not just
+  // resume from wherever the last-drawn column happened to end.
   let columnBottoms = [bandTop, bandTop];
 
   function resetBand(top) {
@@ -744,11 +694,9 @@ function buildChecklistPdfDocument(setName, groups) {
     columnBottoms = [top, top];
   }
 
-  // Orphan control: a title with room for itself but only 1-2 card
-  // rows before the page/column runs out reads worse than just
-  // starting the whole section fresh on the next page - so this
-  // checks for the title *plus* a minimum row count, not just the
-  // title alone.
+  // Orphan control: a title with only 1-2 card rows before the page
+  // runs out reads worse than starting fresh next page - so this
+  // requires the title plus a minimum row count, not just the title.
   const minRowsAfterTitle = 3;
 
   function ensureRoomForTitle(titleHeight) {
@@ -800,13 +748,9 @@ function buildChecklistPdfDocument(setName, groups) {
       const wrapped = doc.splitTextToSize(fullLine, availWidth);
       return { wrapped, rowHeight: wrapped.length * lineHeight };
     });
-    // Lay the group out one band (both columns' worth of one page) at
-    // a time, balancing each band's own rows evenly between the two
-    // columns - not just the group as a whole. A large group's *last*
-    // band (its final, partial page) has exactly the same
-    // "short-ish content, empty column 1" problem a genuinely short
-    // group does, so every band gets the same balancing treatment,
-    // not just groups small enough to fit in a single one.
+    // Lays the group out one band (one page's two columns) at a time,
+    // balancing each band's rows evenly - a large group's last
+    // (partial) band has the same short-content problem a short group does.
     let start = 0;
     while (start < rows.length) {
       const availableColumnHeight = pageHeight - marginBottom - bandTop;
@@ -859,10 +803,9 @@ function buildChecklistPdfDocument(setName, groups) {
     y = Math.max(columnBottoms[0], columnBottoms[1]) + 20;
   });
 
-  // Footer (every page) + running header (every page after the first) -
-  // drawn in a pass over the finished document rather than inline
-  // during layout, since the final page count isn't known until all
-  // groups/cards have been placed.
+  // Footer (every page) + running header (page 2+) - drawn in a pass
+  // over the finished doc rather than inline during layout, since
+  // the final page count isn't known until all cards are placed.
   const totalPages = doc.internal.getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
@@ -896,10 +839,8 @@ function buildChecklistPdfDocument(setName, groups) {
 }
 
 /**
- * Pagination controls
- * This function is used to control how we paginate 
- * Uses the Global variables for "where to start" (currentPage) and "how many to display" (pageSize) 
- * Uses set name for 'next' and 'previous' hyperlinks
+ * Pagination controls - uses currentPage/pageSize globals for where to
+ * start/how many to show, and setName for next/previous links.
  */
 
 function renderPaginationControls() {

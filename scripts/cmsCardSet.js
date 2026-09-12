@@ -1,11 +1,8 @@
 
 
-/** This Script defines all the functions used by the CMS section of the site
- * to CREATE, UPDATE, and DELETE hockey card set reviews. Split out of the
- * old cms.js monolith - see scripts/cmsBlog.js for the equivalent blog-post
- * functions, and scripts/cmsImageBrowser.js / scripts/cmsFormUI.js for the
- * shared image-picker and form-UI helpers this depends on.
- */
+/** CMS create/update/delete functions for card set reviews. Split from
+ * the old cms.js monolith - see cmsBlog.js (blog posts) and
+ * cmsImageBrowser.js/cmsFormUI.js (shared image-picker/form helpers). */
 
 /**
  * ---------------------------------------------- GLOBAL MAPPING
@@ -21,22 +18,8 @@ const CARDSET_CATEGORY_LABELS = {
 //*------------------------------------------ Create New Card Set --------------------------------------*
 
   /**
-   * This is the main AWS call used to CREATE a NEW CARDS POST
-   * The createCardSet() function is called from the wlcms.html page
-   * Calls the createCardSet API exposed by AWS API Gateway
-   *
-   * @param {*} blogStatus
-   * @param {*} setName
-   * @param {*} size
-   * @param {*} subsets
-   * @param {*} stars
-   * @param {*} formats
-   * @param {*} year
-   * @param {*} postBody
-   * @param {*} mfg
-   * @param {*} headerImgName
-   * @param {*} footerImgName
-   *
+   * Creates a new card set review - called from wlcms.html, hits the
+   * createCardSet API.
    */
 
   // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
@@ -135,20 +118,8 @@ const CARDSET_CATEGORY_LABELS = {
 //*------------------------------------------------- Update Card Set ----------------------------------------------- *
 
 /**
- * This function is used to UPDATE an existing Card Set review
- * Calls the updateCardSet API which updates the matching record in DynamoDB
- *
- * @param {*} blogStatus
- * @param {*} setName
- * @param {*} size
- * @param {*} subsets
- * @param {*} stars
- * @param {*} formats
- * @param {*} year
- * @param {*} postBody
- * @param {*} mfg
- *
- **/
+ * Updates an existing card set review via the updateCardSet API.
+ */
 
 function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg)
 {
@@ -233,16 +204,10 @@ function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTag
 //* ---------------------------------------------------------------- Delete Card Set ------------------------------------------------------ *
 
 /**
- * This function is used to DELETE an existing Card Set review
- * Calls the deleteCardSet API which removes the matching record from DynamoDB
- * Confirms with the user first since this is destructive and irreversible
- * Cards table key is setName + year, so both are required (setID is
- * also sent along as a safety check the Lambda verifies before deleting)
- *
- * @param {*} setID
- * @param {*} setName
- * @param {*} year
- **/
+ * Deletes a card set review (confirmed first - irreversible). Cards'
+ * key is setName+year, both required; setID also sent as a Lambda-side
+ * safety check before deleting.
+ */
 
 async function deleteCardSet(setID, setName, year) {
   const ok = await cmsConfirm("Delete this card set? This cannot be undone.");
@@ -352,10 +317,8 @@ async function deleteCardSet(setID, setName, year) {
 //********************************* Fetch All Staged Card Sets For Update **********************************
 
 /**
- * This Function is used to fetch all records from the Card table in DynamoDB with status="staged"
- * The API limits the data returned to only the name of the card set and it's ID
- * It is used by the CMS users to allow Users to select a single set to be updated
- * Calls the getCardSets API exposed by AWS API Gateway
+ * Fetches every "staged" card set (name + ID only) so a CMS user can
+ * pick one to update - calls the getCardSets API.
  */
 
 
@@ -387,12 +350,9 @@ async function deleteCardSet(setID, setName, year) {
       return;
     }
 
-    // Staged sets created before the blogCat field existed on the create
-    // form have no blogCat value at all. Fall back to "reg" (Regular) when
-    // a manufacturer is present - the mfg dropdown only ever offers real
-    // card companies (O-Pee-Chee, Topps, Upper Deck, etc.), never "Tim
-    // Hortons"/"McDonald's" literally, so any set with a manufacturer but
-    // no blogCat predates that distinction and is a Regular set.
+    // Sets created before blogCat existed have no value - fall back to
+    // "reg" when a manufacturer is present, since the mfg dropdown only
+    // offers real card companies, never "Tim Hortons"/"McDonald's".
     stagedSets.forEach(set => {
       if (!set.blogCat && set.mfg) {
         set.blogCat = "reg";
@@ -438,14 +398,8 @@ async function deleteCardSet(setID, setName, year) {
 
 //************************************ displayCardSets Helper Function *************************************
 
-  /**
-  * Helper function Called by fetchAllCardSets() to apply HTML formatting a Card Set record
-  * Used by CMS to present Card Set names to allow for an individual set to be updated, passing the ID to setEdit.html
-  *
-  * @param {*} setID
-  * @param {*} setName
-  *
-  */
+  /** Renders one card set's name as a link to setEdit.html - called by
+   * fetchAllCardSets(). */
 
   function displayCardSets(container, setID, setName) {
   container.innerHTML += `
@@ -463,14 +417,8 @@ async function deleteCardSet(setID, setName, year) {
 
 //************************************ displayStagedCardSets Helper Function *************************************
 
-  /**
-  * Helper function Called by fetchAllStagedCardSets() to apply HTML formatting a Card Set record
-  * Used by CMS to present Card Set names to allow for an individual set to be updated, passing the ID to setEdit.html
-  *
-  * @param {*} setID
-  * @param {*} setName
-  *
-  */
+  /** Renders one staged card set's name as a link to setEdit.html -
+   * called by fetchAllStagedCardSets(). */
 
   function displayStagedCardSets(setID, setName) {
   const blogBody = document.getElementById("stagedBlogsDiv");
@@ -491,13 +439,9 @@ async function deleteCardSet(setID, setName, year) {
 //**************************** Fetch Card Set by ID - Populates the CMS Form For Update **************************
 
   /**
-   * This function fetches a single card set, given it's ID and parses out the individual fields
-   * It then calls populateCardSet() which in turn populates the HTML form on setEdit.html
-   * Calls the getCardSetByID API exposed by AWS API Gateway
-   *
-   * @param {*} id
-   *
-   **/
+   * Fetches one card set by ID (getCardSetByID API), then hands it to
+   * populateCardSet() to fill in setEdit.html's form.
+   */
 
   function fetchCardSetByID(id) {
   const urlToFetch = `https://733bwunxq6.execute-api.us-east-2.amazonaws.com/dev?setID=${id}`;
@@ -560,10 +504,9 @@ async function deleteCardSet(setID, setName, year) {
 
 //**************************************** Star Rating widget (createCardSet.html/setEdit.html) **********************************
 
-// Paints .selected on every star up to and including `value`, leaving
-// the hidden #stars input (read by createCardSet()/updateCardSet()/
-// renderPreview() exactly as before this widget existed) as the single
-// source of truth for the actual numeric rating.
+// Paints .selected on every star up to `value`, leaving the hidden
+// #stars input (read by createCardSet()/updateCardSet()/renderPreview())
+// as the single source of truth for the actual rating.
 function paintStarRating(value, containerId = "starRatingWidget") {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -591,33 +534,18 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
 
   container.addEventListener("mouseleave", () => paintStarRating(hiddenInput.value, containerId));
 
-  // Paint whatever the hidden input already holds at call time - "1"
-  // baked into createCardSet.html's markup (matching the old dropdown's
-  // default), or whatever populateCardSet() has set by the time this
-  // runs on setEdit.html.
+  // Paints whatever the hidden input already holds - "1" baked into
+  // createCardSet.html's markup, or whatever populateCardSet() set by
+  // the time this runs on setEdit.html.
   paintStarRating(hiddenInput.value, containerId);
 }
 
 //**************************************** populateCardSet Helper Function **********************************
 
   /**
-  * Helper function Called by fetchCardSetByID()
-  * Used by CMS to pre-populate each form field for a given Card Set
-  *
-  * @param {*} blogStatus
-  * @param {*} postBody
-  * @param {*} year
-  * @param {*} mfg
-  * @param {*} size
-  * @param {*} subsets
-  * @param {*} stars
-  * @param {*} formats
-  * @param {*} setName
-  * @param {*} headerImgName
-  * @param {*} footerImgName
-  */
-
-  /** This function calls the associated DIV on the Set Update form in setEdit.html and populates it with the current value */
+   * Pre-populates setEdit.html's form fields for a given card set -
+   * called by fetchCardSetByID().
+   */
   function populateCardSet(
   blogStatus,
   seoPageTitle,
@@ -665,10 +593,8 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
   document.getElementById("size").value = size;
   document.getElementById("subsets").value = subsets;
   document.getElementById("stars").value = stars;
-  // initStarRatingWidget() (called on page load, before this async data
-  // arrives) already painted the widget once against whatever the
-  // hidden #stars input held at that time - repaint now against the
-  // real loaded value.
+  // initStarRatingWidget() already painted once on page load, before
+  // this async data arrived - repaint now against the real loaded value.
   paintStarRating(stars);
   document.getElementById("formats").value = formats;
   document.getElementById("setName").value = setName;

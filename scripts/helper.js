@@ -20,20 +20,9 @@ function stripHtmlTags(htmlString) {
 }
 
 /**
- * Hand-inserted wrap images in a card set's postBody (e.g. a small
- * logo floated left/right via .img-wrap-left/.img-wrap-right) opt into
- * a smaller mobile rendering by adding .img-wrap-sm (half size) or
- * .img-wrap-md (65% size) - styles.css's mobile rules do the
- * actual math per class. Rather than requiring the site owner to
- * duplicate each image's own width/height as CSS custom properties by
- * hand, this reads them off the image and sets --wrap-w/--wrap-h.
- * Prefers the inline style width/height (the value that actually
- * determines the desktop-rendered size) over the width/height
- * attribute, since older postBody content has cases where the two
- * have drifted out of sync (the attribute left stale after the style
- * was hand-edited) - falls back to the attribute only if no inline
- * style width/height is set.
- * Call once after postBody HTML has been inserted into the DOM.
+ * .img-wrap-sm/.img-wrap-md images opt into smaller mobile sizing -
+ * reads each image's actual width/height (inline style preferred over
+ * a possibly-stale attribute) into --wrap-w/--wrap-h for styles.css.
  */
 function applyImgWrapSmSizing() {
   document.querySelectorAll("img.img-wrap-sm, img.img-wrap-md").forEach(img => {
@@ -66,15 +55,9 @@ function estimateReadingTime(htmlString) {
   };
 }
 
-// -------------------- SEO / social meta helpers --------------------
-// setPageMeta() updates (creating the tag if it doesn't exist yet)
-// <title>, meta[name=description], link[rel=canonical], the Open
-// Graph og:* meta tags, and the twitter:* meta tags, all from one
-// call. Used by every public page so title/description/canonical/OG
-// tags stay in sync instead of being hand-rolled per page - static
-// pages call it once on load, dynamic pages (waxReviews.html/
-// lockout.html's fetchPageTitle(), tech.html's renderBlogIntro()) call
-// it again each time new content arrives.
+// SEO / social meta helpers - setPageMeta() sets <title>, description,
+// canonical, OG, and twitter:* tags in one call. Static pages call it
+// once; dynamic pages re-call it whenever new content arrives.
 function setPageMeta({ title, description, image, url, type, keywords }) {
   if (title) document.title = title;
 
@@ -191,11 +174,9 @@ function getMonthName(monthNum) {
         
     }
 
-// -------------------- Helper Function for Sorting by a Property ----------------------
-// Used for both blog posts (sorted by "time") and card set reviews (sorted by "stars")
-// When "order" is "first", highest/newest value first
-// When "order" is "last", lowest/oldest value first
-// Default is highest/newest first
+// Sorting helper for blog posts ("time") and card set reviews
+// ("stars") - order "first" = highest/newest first, "last" = oldest
+// first (also the default).
 
 function getSortOrder(property,order) {
     return function(a, b) {
@@ -241,23 +222,9 @@ function getSortOrder(property,order) {
 
 
 
-// -------------------- Masthead team-color randomizer --------------------
-// Primary/tertiary hex per team, from Wikipedia's Module:Sports
-// color/ice hockey (the same data source every NHL team's own Wikipedia
-// infobox pulls its colors from) - verified current for the 2026-27
-// season (32 teams, includes the Arizona Coyotes -> Utah Hockey Club ->
-// Utah Mammoth rebrand). Feeds the .wax-reviews-mast-table masthead
-// gradient in styles.css - "secondary" (white) is omitted since it's
-// white for every team in that module and is already the gradient's
-// own white bands. A few teams (Detroit, Tampa Bay, Toronto) have the
-// same primary/tertiary value - genuinely two-color (+white) teams,
-// not a data error.
-// cheer: each team's real fan chant, confirmed with the site owner
-// (most are the standard "Let's Go [Nickname]!"/"Go [Nickname] Go!"
-// template every fanbase actually uses; a handful have a distinct,
-// more iconic version instead - e.g. Montreal's "Go Habs Go!",
-// Nashville's "Goalie, you suck!"). Used by applyRandomMastheadTeam()
-// below for the small corner label.
+// Primary/tertiary hex + real fan cheer per team (verified current for
+// 2026-27, 32 teams) - feeds the masthead gradient/label. A few teams
+// share primary/tertiary (genuinely two-color+white), not a data error.
 const NHL_TEAM_COLORS = [
   { name: "Anaheim Ducks", cheer: "Let's Go Ducks!", primary: "#CF4520", tertiary: "#89734C" },
   { name: "Boston Bruins", cheer: "Let's Go Bruins!", primary: "#010101", tertiary: "#FFB81C" },
@@ -293,8 +260,7 @@ const NHL_TEAM_COLORS = [
   { name: "Winnipeg Jets", cheer: "Let's Go Jets!", primary: "#041E42", tertiary: "#004A98" }
 ];
 
-// Called on load by every page using the wax-reviews-mast-table masthead
-// (waxReviews.html, lockout.html, playerSearch.html, theJunkWaxYears.html)
+// Called on load by every page with the wax-reviews-mast-table masthead
 // - picks one team at random and sets its colors as CSS custom
 // properties, which the masthead's gradient (styles.css) reads.
 function applyRandomMastheadTeam() {
@@ -305,18 +271,14 @@ function applyRandomMastheadTeam() {
   mast.style.setProperty("--team-primary", team.primary);
   mast.style.setProperty("--team-tertiary", team.tertiary);
 
-  // Genuinely two-color (+white) teams (Detroit, Tampa Bay, Toronto -
-  // primary === tertiary in the data above) get a simpler design
-  // instead of the 5-band stripe: a solid background in that one color
-  // with a single white stripe centered at 30% width - see the
-  // .masthead-two-color rule in styles.css.
+  // Two-color (+white) teams (primary === tertiary) get a simpler
+  // solid-background design with one centered white stripe instead of
+  // the 5-band gradient - see .masthead-two-color in styles.css.
   mast.classList.toggle("masthead-two-color", team.primary === team.tertiary);
 
-  // Small cheer label, bottom-right corner - lets the site owner
-  // visually confirm which team's colors are showing without needing
-  // to inspect the CSS custom properties. Created once and reused
-  // (there's only ever one masthead per page), rather than added
-  // statically to each of the 4 pages' markup.
+  // Small cheer label (bottom-right) lets the owner visually confirm
+  // which team is showing. Created once and reused, rather than
+  // added statically to each of the 4 pages' markup.
   let label = mast.querySelector(".masthead-team-label");
   if (!label) {
     label = document.createElement("span");
@@ -326,21 +288,13 @@ function applyRandomMastheadTeam() {
   label.textContent = team.cheer;
 }
 
-// -------------------------------- Set-O-Matic Year Picker --------------------------------------
-// Used to render all pickers: "Classic", "Junk Wax", "Timmies" and "McDonalds" 
-// NEW DYNAMIC version - no more enormous list of if statements
-// How this works
-// Ranges: You only define the start/end years once per category. No duplication.
-// Dynamic labels: The label 1979-80 is generated automatically by combining the year and the next year.
-// Highlighting: The selected year is shown as plain text, others as links.
-// Scalability: Adding new years is as simple as extending the range.
-// This way, instead of maintaining hundreds of lines of repetitive HTML, you only maintain the ranges. Much easier to extend and debug.
+// Set-O-Matic Year Picker - renders the Classic/Junk Wax/Timmies/
+// McDonald's year pickers from just a start/end range per category,
+// generating labels and link/plain-text highlighting dynamically.
 
-// Category + pageName specific ranges - shared by renderSetPicker() (the
-// year-picker widget) and getPageNameForYear() below (used by
-// playerSearch.js to build a working link back to a matched set's
-// review - Checklists/Cards items don't store pageName anywhere, it's
-// purely a UI/nav grouping concept derived from blogCat + year).
+// Category + pageName ranges - shared by renderSetPicker() and
+// getPageNameForYear() (used by playerSearch.js for a matched set's
+// link back). pageName is a UI/nav concept, not a stored field.
 const categoryRanges = {
   reg: {
     classicWax: { start: 1981, end: 1986, className: "junk-set-nav-td", pageName: "classicWax" },
@@ -412,11 +366,9 @@ function renderSetPicker(year, blogCat, pageName) {
 
 
 
-/** Helper Function to dynamically fetch ------------ TOP LEVEL NAVIGATION -----------------------
- * Refactored to use Object Maps and dynamic tables
- * Adding a new page = add one line to const NAV_MAP
- * Adding a new menu item = add one entry to const NAV_ITEMS
-*/
+/** Top-level navigation, built from Object Maps rather than hardcoded
+ * tables - add a page via NAV_MAP, a menu item via NAV_ITEMS.
+ */
 
 // Step 1: Define the navigation items as data
 const NAV_ITEMS = {
@@ -502,24 +454,9 @@ document.addEventListener("click", (event) => {
 
 // --------------- Cookie! --------------------------
 
-// cmsAlert(message) - a styled replacement for the native alert() used
-// throughout the CMS (cmsBlog.js, cmsCardSet.js, checklistUpload.js,
-// adminSMS.js). Native
-// alert()/confirm() dialogs are synchronous - they block the whole page
-// until dismissed, which every existing call site relies on for
-// "show a message, then redirect/focus" sequencing. cmsAlert() can't
-// block the same way (no JS API does that outside alert() itself), so
-// it returns a Promise that resolves on dismiss instead - callers
-// `await` it and get the same effective ordering.
-//
-// Markup is injected into the DOM lazily on first call rather than
-// living in every CMS page's HTML. Visually matches the checklist
-// modal on waxReviews.html (masthead-blue header, white box,
-// box-shadow overlay) - see styles.css's .cms-alert-* rules - for one
-// consistent "this site's modal" look between the public and CMS
-// sides.
-//
-// See cmsConfirm() below for the equivalent replacement of confirm().
+// cmsAlert(message) - styled alert() replacement used across the CMS.
+// Returns a Promise resolved on dismiss (callers `await` it) since it
+// can't block synchronously like real alert(). See cmsConfirm() below.
 function cmsAlert(message) {
   return new Promise((resolve) => {
     let overlay = document.getElementById("cmsAlertOverlay");
@@ -567,21 +504,9 @@ function cmsAlert(message) {
   });
 }
 
-// cmsConfirm(message) - a styled replacement for the native confirm()
-// used for the CMS's destructive/serious actions (delete card set,
-// delete blog post, live-mode SMS send, bulk subscriber replace).
-// Same async-Promise approach as cmsAlert() above (see its comment for
-// why), but resolves a boolean instead of nothing - true only if
-// Confirm is clicked. Styled with a red header instead of cmsAlert()'s
-// blue, to visually flag these as the more serious action - separate
-// overlay/element IDs from cmsAlert() so the two never share state.
-//
-// Escape and a backdrop click both resolve false (cancel) - the safe
-// default. Unlike cmsAlert(), Enter is deliberately NOT bound to
-// anything here - accidentally confirming a "this cannot be undone"
-// delete via a stray Enter keypress is exactly the kind of mistake
-// this modal should make harder, not easier, so confirming requires an
-// explicit click on the Confirm button.
+// cmsConfirm(message) - like cmsAlert() but for destructive actions,
+// resolving true only on an explicit Confirm click. Escape/backdrop
+// resolve false; Enter is deliberately NOT bound, unlike cmsAlert().
 function cmsConfirm(message) {
   return new Promise((resolve) => {
     let overlay = document.getElementById("cmsConfirmOverlay");
