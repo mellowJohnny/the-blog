@@ -248,13 +248,44 @@ function parseChecklistText(text) {
   return { cards, skippedDuplicates };
 }
 
+// TEMPORARY (2026-09-11) - "1990-91 Upper Deck" only, main set only. That
+// set's high/low-series print run gives almost every card 3-4 lettered
+// variants (1a/1b/1c/1d, etc.), ballooning the checklist to ~1970 rows.
+// Collapses each run of variants down to its first-seen row (550 total,
+// one per base number) and strips "VAR" out of notes (comma-separated in
+// this source, e.g. "SR, RC, VAR") while keeping every other marker (RC,
+// UER, etc.) intact. Remove this function and its call site below once
+// the checklist has been re-parsed and re-uploaded without it - see
+// Lambdas/parseChecklistPdf/index.mjs, kept in sync.
+function collapseUpperDeck9091Variants(setName, insertSetName, cards) {
+  if (setName !== "1990-91 Upper Deck" || insertSetName) return cards;
+
+  const seenBaseNumbers = new Set();
+  const collapsed = [];
+  for (const card of cards) {
+    const baseNumber = card.cardNumber.replace(/^(\d+)[a-z]$/i, "$1");
+    if (seenBaseNumbers.has(baseNumber)) continue;
+    seenBaseNumbers.add(baseNumber);
+
+    const notes = card.notes
+      .split(",")
+      .map((token) => token.trim())
+      .filter((token) => token && token.toUpperCase() !== "VAR")
+      .join(", ");
+
+    collapsed.push({ ...card, cardNumber: baseNumber, notes });
+  }
+  return collapsed;
+}
+
 const dataBuffer = fs.readFileSync(pdfPath);
 const pdfData = await pdfParse(dataBuffer);
 
 const derived = deriveSetNames(pdfPath);
 const setName = setNameOverride || derived.setName;
 const insertSetName = derived.insertSetName;
-const { cards, skippedDuplicates } = parseChecklistText(pdfData.text);
+const { cards: rawCards, skippedDuplicates } = parseChecklistText(pdfData.text);
+const cards = collapseUpperDeck9091Variants(setName, insertSetName, rawCards);
 
 if (skippedDuplicates.length > 0) {
   console.warn(`Skipped ${skippedDuplicates.length} duplicate-number line(s) (kept first occurrence):`);
