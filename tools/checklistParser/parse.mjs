@@ -248,15 +248,19 @@ function parseChecklistText(text) {
   return { cards, skippedDuplicates };
 }
 
-// TEMPORARY (2026-09-11) - "1990-91 Upper Deck" only, main set only. That
-// set's high/low-series print run gives almost every card 3-4 lettered
-// variants (1a/1b/1c/1d, etc.), ballooning the checklist to ~1970 rows.
-// Collapses each run of variants down to its first-seen row (550 total,
-// one per base number) and strips "VAR" out of notes (comma-separated in
-// this source, e.g. "SR, RC, VAR") while keeping every other marker (RC,
-// UER, etc.) intact. Remove this function and its call site below once
-// the checklist has been re-parsed and re-uploaded without it - see
-// Lambdas/parseChecklistPdf/index.mjs, kept in sync.
+// Permanent special case (added 2026-09-11) - "1990-91 Upper Deck" only,
+// main set only. That set's high/low-series print run gives almost every
+// card 3-4 lettered variants (1a/1b/1c/1d, etc.), ballooning the
+// checklist to ~1970 rows - a deliberate choice to keep this set's
+// checklist at 550 cards (one row per base number) rather than every
+// print variant. Collapses each run of variants down to its first-seen
+// row and strips "VAR" out of notes (comma-separated in this source,
+// e.g. "SR, RC, VAR") while keeping every other marker (RC, UER, etc.)
+// intact. Gated by an exact setName match plus insertSetName being empty,
+// so it can only ever affect a main-set re-upload of this one set - the
+// set's own insert set ("Superstars Holograms Stickers") and every other
+// set's checklist are untouched. See LAMBDA_FUNCTIONS.md and
+// Lambdas/parseChecklistPdf/index.mjs (kept in sync) for more.
 function collapseUpperDeck9091Variants(setName, insertSetName, cards) {
   if (setName !== "1990-91 Upper Deck" || insertSetName) return cards;
 

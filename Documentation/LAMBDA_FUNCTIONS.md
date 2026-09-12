@@ -251,6 +251,19 @@ since that history predates this doc being kept current.
   Same parsing logic as the standalone
   `tools/checklistParser/parse.mjs` script in this repo — kept in sync
   deliberately, see that file's own comments.
+- **Permanent special case — "1990-91 Upper Deck"**: this one set's
+  high/low-series print run gives almost every card 3-4 lettered
+  variants (`1a`/`1b`/`1c`/`1d`, etc.), which would otherwise balloon its
+  checklist to ~1970 rows. `collapseUpperDeck9091Variants()` (added
+  2026-09-11) collapses that down to one row per base number (550 total,
+  keeping the first-seen variant) and strips `"VAR"` out of `notes`
+  (comma-separated in this source, e.g. `"SR, RC, VAR"`) while leaving
+  every other marker (`RC`, `UER`, etc.) intact — a deliberate,
+  permanent choice, not a bug workaround. Gated by an exact `setName`
+  match plus `insertSetName` being empty, so it can only ever affect a
+  main-set re-upload of this exact set; the set's own insert set
+  (`"Superstars Holograms Stickers"`) and every other set's checklist
+  are unaffected. Mirrored in `tools/checklistParser/parse.mjs`.
 - **Local regression testing**: real checklist source PDFs (the actual
   files being uploaded, one per set/insert set) now live in `checklists/`
   at the repo root — moved there from the site owner's Desktop since
