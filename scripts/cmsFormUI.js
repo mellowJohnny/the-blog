@@ -1,11 +1,8 @@
 
 
-/** This Script defines the generic CMS form UI helpers shared by every
- * create/update page: TinyMCE setup and the submit-button state feedback.
- * Split out of the old cms.js monolith - see scripts/cmsBlog.js and
- * scripts/cmsCardSet.js for the actual blog/card-set CRUD logic that
- * used to live alongside this.
- */
+/** Generic CMS form UI helpers shared by every create/update page:
+ * TinyMCE setup and submit-button state feedback. Split from the old
+ * cms.js monolith - see cmsBlog.js/cmsCardSet.js for the CRUD logic. */
 
 /**
  * -------------------------------------------- TinyMCE GLOBAL config!

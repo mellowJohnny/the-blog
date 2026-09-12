@@ -1,13 +1,8 @@
 
 
-/** This Script defines the S3 image browser/uploader shared by the two
- * "create" CMS pages (createBlogPost.html, createCardSet.html). It's
- * genuinely two parallel families - one for card-set images
- * (img/cards/), one for blog images (img/blog/) - kept in one file
- * rather than split further since uploadNewImage() and
- * closeImageBrowser() are shared by both and would otherwise create a
- * cross-file dependency. Split out of the old cms.js monolith.
- */
+/** S3 image browser/uploader shared by createBlogPost.html,
+ * createCardSet.html, and setEdit.html - one file for both the
+ * card-set (img/cards/) and blog (img/blog/) image families. */
 
 /* ------------------------------------------------ IMAGE PICKER -------------------------------------*/
 

@@ -1,9 +1,7 @@
 /*
- * cms/uploadChecklist.html support code.
- * Flow: pick a PDF -> parseChecklistPdf() sends it to the parsing Lambda
- * and renders the result as an editable table -> the user reviews/fixes
- * rows by hand -> saveChecklist() sends the (possibly edited) rows to
- * the save Lambda, which writes them to the Checklists table.
+ * cms/uploadChecklist.html support code. Flow: pick a PDF ->
+ * parseChecklistPdf() parses it into an editable table -> user
+ * reviews/fixes rows -> saveChecklist() writes them to Checklists.
  */
 
 const PARSE_CHECKLIST_URL = "https://uurjs2v7i0.execute-api.us-east-2.amazonaws.com/dev";

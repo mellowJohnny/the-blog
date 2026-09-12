@@ -1,31 +1,14 @@
-/** adminTools.js — support code for cms/admin.html
- * A growing collection of self-service site-health checks, run entirely
- * client-side against the site's existing public read APIs - no new
- * backend endpoints, no separate crawl tooling. Each check is its own
- * function wired to its own button/results area on cms/admin.html; add
- * a new one the same way (a function here + a matching section on that
- * page) rather than growing this into one do-everything script.
- *
- * Reuses BLOG_TYPE_LABELS (scripts/cmsBlog.js), categoryRanges/escapeHtml
- * (scripts/helper.js) rather than re-deriving them - see FRONTEND.md.
- */
+/** adminTools.js - client-side site-health checks for cms/admin.html,
+ * run against existing public read APIs (no new backend). Add a new
+ * check as its own function + button/results section on that page. */
 
 const GET_BLOGS_URL = "https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev";
 const GET_CARD_SETS_BY_YEAR_URL = "https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev";
 const SEARCH_PLAYER_NAME_URL = "https://evlsyozjb0.execute-api.us-east-2.amazonaws.com/dev";
 
-/* ============================================================
-   Broken Image Check
-   ============================================================
-   Checks every image the public site actually references - blog
-   post images, card set header/footer images, and any <img> tags
-   embedded in postBody rich text (TinyMCE-authored content, e.g. an
-   inline "insert set" photo) - by loading each one client-side and
-   watching for onload/onerror, the same thing a visitor's browser
-   does. Only covers *live* content (published blogs, blogStatus "OK"
-   card sets), same as what getBlogs/getCardSetsByYear serve to the
-   public site - staged/draft content isn't included.
-*/
+/* Broken Image Check - loads every image the public site references
+   (blog/card-set images, inline postBody images) as a real <img> and
+   watches onload/onerror. Live content only, not staged/draft. */
 
 // Tech, Mach-E, SYNC Updates, Raspberry Pi, Home Page - blogType 2
 // (Hockey Cards) has no Blogs-table content, it's Cards instead - see
@@ -44,26 +27,18 @@ function extractImgUrlsFromHtml(html) {
     .filter(Boolean);
 }
 
-// A blog with no image is supposed to be marked with the literal
-// string "none" (see displayBlog() in blogs.js, which skips rendering
-// an <img> tag at all for that case - a deliberately optional field,
-// not a bug). But at least some posts instead have img set to just the
-// bare S3 folder prefix with no filename after it (e.g. ".../img/blog/")
-// - not literally "none", but functionally the same "no image was
-// provided" case. Treat both the same way: not a real image reference,
-// so not something this check should flag as broken.
+// "No image" is normally the literal string "none" (see displayBlog()
+// in blogs.js), but some posts just have the bare S3 prefix with no
+// filename - treat both as "no image", not a broken reference.
 function hasRealImageFilename(url) {
   if (!url || url === "none") return false;
   const lastSegment = url.trim().split("/").pop();
   return lastSegment.length > 0;
 }
 
-// fetchErrors collects any failed/unexpected-shape API response instead
-// of letting the whole check crash on one bad request - the site's own
-// Lambdas can return an error object instead of the expected array
-// (e.g. under DynamoDB throughput exhaustion - see ARCHITECTURE.md's
-// billing-mode note), and this check makes enough API calls in a row
-// that hitting one is a real possibility, not just theoretical.
+// fetchErrors collects any failed/unexpected-shape API response
+// instead of crashing the whole check on one bad request - a real
+// possibility given how many calls this makes (see ARCHITECTURE.md).
 async function collectBlogImageCandidates(onProgress, fetchErrors) {
   const candidates = [];
   for (const blogType of ADMIN_BLOG_TYPES) {
@@ -206,16 +181,9 @@ async function runBrokenImageCheck() {
   }
 }
 
-/* ============================================================
-   Checklist Integrity Check
-   ============================================================
-   Every Checklists item's setName is supposed to match exactly one
-   Cards item (see DATA_MODEL.md's "setName <-> Cards.setName" note) -
-   this just calls searchPlayerName's existing ?audit=1 mode, which
-   already does the real work (enumerate every distinct setName in
-   Checklists, report which have no matching Cards item). Nothing new
-   to build here beyond wiring it up to a button.
-*/
+/* Checklist Integrity Check - wires a button to searchPlayerName's
+   existing ?audit=1 mode, which finds every Checklists setName with
+   no matching Cards item (see DATA_MODEL.md). Nothing new to build. */
 
 async function runChecklistIntegrityCheck() {
   const statusEl = document.getElementById("checklistCheckStatus");

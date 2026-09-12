@@ -41,10 +41,9 @@ function renderBlogIntro(blogType) {
     introEl.innerHTML = introHTML;
   }
 
-  // tech.html only (index.html always passes "99" and sets its own
-  // static meta separately) - fixes tech.html having no meta
-  // description at all, and the same <title> duplicated across all 4
-  // of its ?blogType= variants.
+  // tech.html only (index.html always passes "99" with its own static
+  // meta) - fixes tech.html having no meta description, and the same
+  // <title> duplicated across its 4 ?blogType= variants.
   if (blogType && blogType !== "99") {
     const metaByType = {
       "1": {
@@ -141,14 +140,8 @@ function renderBlogPage() {
 // ****************************************** displayBlog Function *****************************
 
 /**
- * Function to FORMAT & DISPLAY Blogs posts
- * NOTE! We now use onerror image handling so any blog with broken images fail gracefully
- * @param {*} postBody 
- * @param {*} author 
- * @param {*} date 
- * @param {*} title 
- * @param {*} img
- * @param {*} imgCap
+ * Formats and renders one blog post. Broken images fail gracefully
+ * via onerror handling rather than a visibly broken <img>.
  */
 
    function displayBlog(postBody, author, date, title, img, imgCap) {
@@ -165,10 +158,9 @@ function renderBlogPage() {
   const readingStats = estimateReadingTime(cleanPostBody); // Lives in helper.js
 
 
-  // Structured data for this post - stripHtmlTags() lives in helper.js.
-  // Fixed id (not derived from title): only one post is ever shown at a
-  // time (blogPageSize is 1), so each pagination click replaces this
-  // same block rather than accumulating a new one alongside it.
+  // Structured data for this post (stripHtmlTags() lives in helper.js).
+  // Fixed id, not derived from title - only one post shows at a time
+  // (blogPageSize is 1), so each pagination click replaces this block.
   const jsonLdData = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",

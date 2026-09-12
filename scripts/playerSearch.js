@@ -1,13 +1,6 @@
-/** playerSearch.js — support code for playerSearch.html
- * Searches the Checklists table by player name (searchPlayerName Lambda)
- * and renders results grouped by the set(s) that player appears in, each
- * linking back to that set's review on waxReviews.html.
- *
- * pageName (needed to build the waxReviews.html link) isn't returned by
- * the Lambda - it's derived client-side from year+blogCat via
- * getPageNameForYear() in helper.js, the same lookup renderSetPicker()
- * uses for the year-picker widget.
- */
+/** playerSearch.js - searches Checklists by player name
+ * (searchPlayerName Lambda), rendering results grouped by set with a
+ * link back to each set's review on waxReviews.html. */
 
 const PLAYER_SEARCH_API_URL = "https://evlsyozjb0.execute-api.us-east-2.amazonaws.com/dev";
 
@@ -38,10 +31,9 @@ function renderPlayerSearchResults(query, results) {
 
     const cardRows = result.cards.map((card) => {
       const insertNote = card.insertSetName ? ` — ${escapeHtml(card.insertSetName)}` : "";
-      // "RC" (Rookie Card) is the most sought-after marker in the notes
-      // column - call it out visually rather than blending in with
-      // every other trailing marker (UER, LL, VAR, etc). \b keeps this
-      // from matching "RC" as a substring inside some other token.
+      // "RC" (Rookie Card) is the most sought-after marker in notes -
+      // called out visually instead of blending in with other markers
+      // (UER, LL, VAR). \b avoids matching "RC" as a substring.
       const isRookieCard = card.notes && /\bRC\b/.test(card.notes);
       const notesClass = isRookieCard ? "player-search-card-notes player-search-card-notes-rc" : "player-search-card-notes";
       const noteSpan = card.notes ? ` <span class="${notesClass}">${escapeHtml(card.notes)}</span>` : "";
@@ -77,11 +69,9 @@ async function runPlayerSearch(rawQuery) {
 
   renderPlayerSearchMessage(`Searching for "${query}"...`);
 
-  // Same overlay+spinner pattern as smsAdmin.html's send-in-progress
-  // spinner (adminSMS.js) - the Lambda's Scan-per-request design (see
-  // LAMBDA_FUNCTIONS.md) means a search can take a couple of seconds,
-  // and the static "Searching..." text alone made it hard to tell
-  // whether anything was actually happening.
+  // Same overlay+spinner pattern as smsAdmin.html (adminSMS.js) - the
+  // Lambda's Scan-per-request design (LAMBDA_FUNCTIONS.md) can take a
+  // couple seconds, and static "Searching..." text alone wasn't clear enough.
   const overlay = document.getElementById("player-search-spinner-overlay");
   if (overlay) overlay.style.display = "flex";
 

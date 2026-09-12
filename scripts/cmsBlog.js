@@ -1,11 +1,8 @@
 
 
-/** This Script defines all the functions used by the CMS section of the site
- * to CREATE, UPDATE, and DELETE blog posts. Split out of the old cms.js
- * monolith - see scripts/cmsCardSet.js for the equivalent card-set-review
- * functions, and scripts/cmsImageBrowser.js / scripts/cmsFormUI.js for the
- * shared image-picker and form-UI helpers this depends on.
- */
+/** CMS create/update/delete functions for blog posts. Split from the
+ * old cms.js monolith - see cmsCardSet.js (card sets) and
+ * cmsImageBrowser.js/cmsFormUI.js (shared image-picker/form helpers). */
 
 /**
  * ---------------------------------------------- GLOBAL MAPPING
@@ -23,17 +20,8 @@ const BLOG_TYPE_LABELS = {
 //*------------------------------------------ Create New Blog Post --------------------------------*
 
 /**
- * This is the main AWS call used to CREATE a NEW BLOG POST
- * Called from the wlcms.html page
- * Calls the createBlogPost API exposed by AWS API Gateway
- *
- * @param {*} blogStatus
- * @param {*} title
- * @param {*} author
- * @param {*} postBody
- * @param {*} blogType
- * @param {*} imgName
- * @param {*} imgCap
+ * Creates a new blog post - called from wlcms.html, hits the
+ * createBlogPost API.
  */
 
 // NOTE: We don't pass in the postBody textarea content from the form anymore, we call the TinyMCE API to get it
@@ -105,18 +93,9 @@ const BLOG_TYPE_LABELS = {
 //* ---------------------------------------------------- Update Blog Post ----------------------------------------- *
 
 /**
- * This function is used to UPDATE an existing Blog Post
- * Calls the updateBlogPost API which updates the matching record in DynamoDB
- * NOTE: We don't pass in the postBody anymore as we fetch it via API call to TinyMCE
- *
- * @param {*} title
- * @param {*} imgName
- * @param {*} imgCap
- * @param {*} blogStatus
- * @param {*} blogType
- * @param {*} time
- * @param {*} blogID
- **/
+ * Updates an existing blog post via the updateBlogPost API. postBody
+ * comes from TinyMCE directly, not a passed-in param.
+ */
 
  function updateBlogPost(title, imgName, imgCap, published, blogType, time, blogID) {
   // Update button state
@@ -186,16 +165,10 @@ const BLOG_TYPE_LABELS = {
 //* ---------------------------------------------------------------- Delete Blog Post ----------------------------------------------------- *
 
 /**
- * This function is used to DELETE an existing Blog Post
- * Calls the deleteBlogPost API which removes the matching record from DynamoDB
- * Confirms with the user first since this is destructive and irreversible
- * Blogs table key is blogType + time, so both are required (blogID is
- * also sent along as a safety check the Lambda verifies before deleting)
- *
- * @param {*} blogID
- * @param {*} blogType
- * @param {*} time
- **/
+ * Deletes a blog post (confirmed first - irreversible). Blogs' key is
+ * blogType+time, both required; blogID also sent as a Lambda-side
+ * safety check before deleting.
+ */
 
 async function deleteBlogPost(blogID, blogType, time) {
   const ok = await cmsConfirm("Delete this blog post? This cannot be undone.");
@@ -233,12 +206,9 @@ async function deleteBlogPost(blogID, blogType, time) {
 // ******************** Get Blogs For Update API Call **********************************
 
 /**
- * This Function is used to fetch all LIVE records from the Blog table in DynamoDB
- * It is used by the CMS users to allow Users to select a single blog to be updated
- * Calls the getBlogsForUpdate API exposed by AWS API Gateway, which uses the listBlogsForUpdate() Lambda
- * Called on page load from pickBlog.html
- * FOR EVERY BLOG RETURNED it calls the displayBlogs() helper to actually write to the <div>
- * Uses the global blogType to name mapping constants
+ * Fetches all live blogs (getBlogsForUpdate API, pickBlog.html on
+ * load) so a CMS user can pick one to update - calls displayBlogs()
+ * per row, grouped by BLOG_TYPE_LABELS.
  */
 
 function getBlogsForUpdate() {
@@ -291,13 +261,9 @@ function getBlogsForUpdate() {
 //*********************************** Get STAGED Blogs For Update API Call **********************************
 
 /**
- * This Function is used to fetch all STAGED records from the Blog table in DynamoDB
- * The API limits the data returned to only the name of the blog and its blogID
- * It is used by the CMS users to allow Users to select a single blog to be updated
- * Calls the getStagedBlogsForUpdate API exposed by AWS API Gateway
- * Called on page load from pickBlog.html
- * FOR EVERY BLOG RETURNED it calls the displayStagedBlogs() helper to actually write to the <div>
- * Uses the global blogType to name mapping constants
+ * Fetches all staged blogs (name + ID only) so a CMS user can pick
+ * one to update - calls displayStagedBlogs() per row, grouped by
+ * BLOG_TYPE_LABELS.
  */
 
   function getStagedBlogsForUpdate() {
@@ -349,14 +315,8 @@ function getBlogsForUpdate() {
 
 //****************************** displayBlogs Helper Function ***************************
 
-/**
-* Helper function Called by fetchAllCardSets() to apply HTML formatting a Blog record
-* Used by CMS to present Blog titles to allow for an individual blog to be updated, passing the blogID to blogEdit.html
-*
-* @param {*} title
-* @param {*} blogID
-*
-*/
+/** Renders one blog's title as a link to blogEdit.html - called by
+ * getBlogsForUpdate(). */
 
 function displayBlogs(title, blogID, blogType) {
 
@@ -379,14 +339,8 @@ function displayBlogs(title, blogID, blogType) {
 
 //******************************* displayStagedBlogs Helper Function ************************************
 
-/**
-* Helper function Called by getStagedBlogsForUpdate() to apply HTML formatting a Blog record
-* Used by CMS to present Blog titles to allow for an individual blog to be updated, passing the blogID to blogEdit.html
-*
-* @param {*} title
-* @param {*} blogID
-*
-*/
+/** Renders one staged blog's title as a link to blogEdit.html -
+ * called by getStagedBlogsForUpdate(). */
 
 function displayStagedBlogs(title, blogID, blogType) {
 
@@ -411,13 +365,9 @@ function displayStagedBlogs(title, blogID, blogType) {
 //******************************* Fetch Blog by ID - Populates the CMS Form For Update **************************
 
 /**
- * This function fetches a single blog, given it's ID and parses out the individual fields
- * It the calls populateBlog() which in turn populates the HTML form on blogEdit.html
- * Calls the getBlogByID API exposed by AWS API Gateway
- *
- * @param {*} id
- *
- **/
+ * Fetches one blog by ID (getBlogByID API), then hands it to
+ * populateBlog() to fill in blogEdit.html's form.
+ */
 function fetchBlogByID(id) {
 
   if (!id) {
@@ -452,21 +402,11 @@ function fetchBlogByID(id) {
 
 //********************************** populateBlog Helper Function *********************************
 
-  /**
-  * Helper function Called by fetchBlogByID()
-  * Used by CMS to pre-populate each form field for a given Card Set
-  *
-  * @param {*} postBody
-  * @param {*} published
-  * @param {*} blogType
-  * @param {*} time
-  * @param {*} title
-  */
-
-  /** This function calls the associated DIV on the Set Update form and populates it with the current value
-   * The Lambda now returns a marshalled Javascript Object, not a JSON object, so we can immediately access
-   * the properties using dot notation. No more looping over the array, looking for "body", and the accessing the JSON
-  */
+/**
+ * Pre-populates blogEdit.html's form fields for a given blog - called
+ * by fetchBlogByID(). Lambda returns a plain object, so fields are
+ * read via dot notation directly, no JSON parsing needed.
+ */
   function populateBlog(blog) {
 
   // Populate TinyMCE
