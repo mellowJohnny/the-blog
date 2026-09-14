@@ -843,6 +843,13 @@ function buildChecklistPdfDocument(setName, groups) {
  * start/how many to show, and setName for next/previous links.
  */
 
+// Strips a leading "YYYY" or "YYYY-YY" release year off a set name -
+// e.g. "1991-92 Pinnacle" -> "Pinnacle". Used only for the mobile
+// pagination label (styles.css swaps it in via .pagination-setname-short).
+function stripYearFromSetName(setName) {
+  return setName.replace(/^\d{4}(-\d{2,4})?\s+/, "");
+}
+
 function renderPaginationControls() {
   const totalPages = Math.ceil(allCardSets.length / pageSize);
   const controls = document.getElementById("paginationControls");
@@ -861,8 +868,12 @@ function renderPaginationControls() {
   const prevSet = allCardSets[start - 1];
   const nextSet = allCardSets[end + 1];
 
-  const prevLabel = prevSet ? `← Back To: ${prevSet.setName}` : "← Previous";
-  const nextLabel = nextSet ? `Next Up: ${nextSet.setName} →` : "Next →";
+  const prevLabel = prevSet
+    ? `← Back To: <span class="pagination-setname-full">${prevSet.setName}</span><span class="pagination-setname-short">${stripYearFromSetName(prevSet.setName)}</span>`
+    : "← Previous";
+  const nextLabel = nextSet
+    ? `Next Up: <span class="pagination-setname-full">${nextSet.setName}</span><span class="pagination-setname-short">${stripYearFromSetName(nextSet.setName)}</span> →`
+    : "Next →";
 
   const prevLink = currentPage === 1 ? "" : `
     <a
