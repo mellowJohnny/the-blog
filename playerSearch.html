@@ -85,6 +85,9 @@
         // Masthead: random NHL team colors on every load - helper.js
         applyRandomMastheadTeam();
 
+        // Type-ahead dropdown - playerSearch.js
+        initPlayerSearchTypeahead();
+
         // *** If a ?q= is already in the URL (e.g. a shared link), run
         // that search immediately on load.
         const initialQuery = params.get("q");
@@ -134,7 +137,10 @@
           <div id="player-search-form">
             <form onsubmit="event.preventDefault(); runPlayerSearch(document.getElementById('playerSearchInput').value);">
               <label for="playerSearchInput">Player name</label><br>
-              <input type="text" id="playerSearchInput" placeholder="e.g. Gretzky" autocomplete="off"><br>
+              <div class="player-search-input-wrap">
+                <input type="text" id="playerSearchInput" placeholder="e.g. Gretzky" autocomplete="off">
+                <ul id="playerSearchSuggestions" class="player-search-suggestions" role="listbox"></ul>
+              </div><br>
               <button type="submit" class="input-button">Search</button>
             </form>
           </div>

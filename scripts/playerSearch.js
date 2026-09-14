@@ -4,6 +4,129 @@
 
 const PLAYER_SEARCH_API_URL = "https://evlsyozjb0.execute-api.us-east-2.amazonaws.com/dev";
 
+// Type-ahead: fetches the full distinct-player-name list exactly once
+// (searchPlayerName's ?namesOnly=1 mode) and caches the promise, so
+// every keystroke after the first filters this in-memory list instead
+// of re-Scanning the Checklists table - see that Lambda's own comment.
+let playerNameIndexPromise = null;
+function loadPlayerNameIndex() {
+  if (!playerNameIndexPromise) {
+    playerNameIndexPromise = fetch(`${PLAYER_SEARCH_API_URL}?namesOnly=1`)
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`)))
+      .then((data) => data.playerNames || [])
+      .catch((err) => {
+        console.log("Player name index fetch failed:", err);
+        playerNameIndexPromise = null; // allow a retry on the next keystroke
+        return [];
+      });
+  }
+  return playerNameIndexPromise;
+}
+
+let currentSuggestions = [];
+let activeSuggestionIndex = -1;
+
+function renderSuggestions(matches) {
+  const list = document.getElementById("playerSearchSuggestions");
+  currentSuggestions = matches;
+  activeSuggestionIndex = -1;
+
+  if (matches.length === 0) {
+    list.style.display = "none";
+    list.innerHTML = "";
+    return;
+  }
+
+  list.innerHTML = matches.map((name, i) =>
+    `<li class="player-search-suggestion" role="option" id="player-search-suggestion-${i}">${escapeHtml(name)}</li>`
+  ).join("");
+  list.style.display = "block";
+}
+
+function hideSuggestions() {
+  const list = document.getElementById("playerSearchSuggestions");
+  list.style.display = "none";
+  list.innerHTML = "";
+  currentSuggestions = [];
+  activeSuggestionIndex = -1;
+}
+
+function selectSuggestion(name) {
+  document.getElementById("playerSearchInput").value = name;
+  hideSuggestions();
+  runPlayerSearch(name);
+}
+
+// Highlights suggestion `activeSuggestionIndex + delta` (wrapping),
+// used by the ArrowUp/ArrowDown keydown handling in
+// initPlayerSearchTypeahead() below.
+function moveSuggestionActive(delta) {
+  if (currentSuggestions.length === 0) return;
+  activeSuggestionIndex = (activeSuggestionIndex + delta + currentSuggestions.length) % currentSuggestions.length;
+  document.querySelectorAll(".player-search-suggestion").forEach((el, i) => {
+    el.classList.toggle("active", i === activeSuggestionIndex);
+  });
+  document.getElementById(`player-search-suggestion-${activeSuggestionIndex}`)?.scrollIntoView({ block: "nearest" });
+}
+
+async function onPlayerSearchInputChanged() {
+  const input = document.getElementById("playerSearchInput");
+  const query = input.value.trim().toLowerCase();
+
+  if (query.length < 2) {
+    hideSuggestions();
+    return;
+  }
+
+  const names = await loadPlayerNameIndex();
+  // The input may have changed (or emptied) while the very first
+  // index fetch was still in flight - don't render a stale result.
+  if (input.value.trim().toLowerCase() !== query) return;
+
+  const matches = names.filter((name) => name.toLowerCase().includes(query)).slice(0, 8);
+  renderSuggestions(matches);
+}
+
+// Wires the type-ahead dropdown to #playerSearchInput. Call once on
+// page load.
+function initPlayerSearchTypeahead() {
+  const input = document.getElementById("playerSearchInput");
+  const list = document.getElementById("playerSearchSuggestions");
+  if (!input || !list) return;
+
+  input.addEventListener("input", onPlayerSearchInputChanged);
+
+  input.addEventListener("keydown", (e) => {
+    if (list.style.display === "none") return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      moveSuggestionActive(1);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      moveSuggestionActive(-1);
+    } else if (e.key === "Enter") {
+      if (activeSuggestionIndex >= 0) {
+        e.preventDefault();
+        selectSuggestion(currentSuggestions[activeSuggestionIndex]);
+      }
+      // else: let the form's own submit handler run the typed query
+    } else if (e.key === "Escape") {
+      hideSuggestions();
+    }
+  });
+
+  list.addEventListener("click", (e) => {
+    const li = e.target.closest(".player-search-suggestion");
+    if (li) selectSuggestion(li.textContent);
+  });
+
+  document.addEventListener("click", (e) => {
+    if (list.style.display !== "none" && !input.contains(e.target) && !list.contains(e.target)) {
+      hideSuggestions();
+    }
+  });
+}
+
 function renderPlayerSearchMessage(message) {
   const container = document.getElementById("playerSearchResults");
   container.innerHTML = `<p class="player-search-message">${escapeHtml(message)}</p>`;
