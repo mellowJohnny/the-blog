@@ -2073,10 +2073,18 @@ label sup {
   max-width: 450px;
 }
 
-.player-search-input-wrap {
+/* #player-search-form prefix (id specificity) beats the shared
+   .flex-container div descendant selector, which otherwise also
+   matches this nested div and pushes the actual input box 20px right
+   of the label/button/intro text with its 15px padding + 5px margin -
+   same recurring gotcha as #playerSearchResults .player-search-group
+   above. */
+#player-search-form .player-search-input-wrap {
   position: relative;
   width: 100%;
   max-width: 450px;
+  padding: 0;
+  margin: 0;
 }
 
 .player-search-suggestions {
