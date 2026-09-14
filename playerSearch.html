@@ -85,8 +85,12 @@
         // Masthead: random NHL team colors on every load - helper.js
         applyRandomMastheadTeam();
 
-        // Type-ahead dropdown - playerSearch.js
+        // Type-ahead dropdown - playerSearch.js. Prefetch the player
+        // name index immediately (rather than waiting for the first
+        // keystroke) so suggestions feel instant once the visitor
+        // starts typing.
         initPlayerSearchTypeahead();
+        loadPlayerNameIndex();
 
         // *** If a ?q= is already in the URL (e.g. a shared link), run
         // that search immediately on load.

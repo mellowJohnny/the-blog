@@ -4,21 +4,57 @@
 
 const PLAYER_SEARCH_API_URL = "https://evlsyozjb0.execute-api.us-east-2.amazonaws.com/dev";
 
-// Type-ahead: fetches the full distinct-player-name list exactly once
-// (searchPlayerName's ?namesOnly=1 mode) and caches the promise, so
-// every keystroke after the first filters this in-memory list instead
-// of re-Scanning the Checklists table - see that Lambda's own comment.
+// Type-ahead: the full distinct-player-name list (searchPlayerName's
+// ?namesOnly=1 mode). Persisted in localStorage (30min TTL, matching
+// that endpoint's own Cache-Control) so a fresh page load reads from
+// cache instead of re-fetching - only a cold/expired cache ever hits
+// the network. Within a single page load, the promise itself is also
+// cached, so calling this from both the page's `load` prefetch and the
+// first keystroke never double-fetches - they share the one in-flight
+// (or already-resolved) promise.
+const PLAYER_NAME_INDEX_STORAGE_KEY = "playerNameIndexCache";
+const PLAYER_NAME_INDEX_TTL_MS = 30 * 60 * 1000;
 let playerNameIndexPromise = null;
+
+function readCachedPlayerNameIndex() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(PLAYER_NAME_INDEX_STORAGE_KEY) || "null");
+    if (cached && Array.isArray(cached.names) && Date.now() - cached.fetchedAt < PLAYER_NAME_INDEX_TTL_MS) {
+      return cached.names;
+    }
+  } catch {
+    // Corrupt/unreadable cache - fall through to a real fetch
+  }
+  return null;
+}
+
+function writeCachedPlayerNameIndex(names) {
+  try {
+    localStorage.setItem(PLAYER_NAME_INDEX_STORAGE_KEY, JSON.stringify({ names, fetchedAt: Date.now() }));
+  } catch {
+    // Storage full/unavailable (e.g. private browsing) - not fatal
+  }
+}
+
 function loadPlayerNameIndex() {
   if (!playerNameIndexPromise) {
-    playerNameIndexPromise = fetch(`${PLAYER_SEARCH_API_URL}?namesOnly=1`)
-      .then((response) => response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`)))
-      .then((data) => data.playerNames || [])
-      .catch((err) => {
-        console.log("Player name index fetch failed:", err);
-        playerNameIndexPromise = null; // allow a retry on the next keystroke
-        return [];
-      });
+    const cached = readCachedPlayerNameIndex();
+    if (cached) {
+      playerNameIndexPromise = Promise.resolve(cached);
+    } else {
+      playerNameIndexPromise = fetch(`${PLAYER_SEARCH_API_URL}?namesOnly=1`)
+        .then((response) => response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`)))
+        .then((data) => data.playerNames || [])
+        .then((names) => {
+          writeCachedPlayerNameIndex(names);
+          return names;
+        })
+        .catch((err) => {
+          console.log("Player name index fetch failed:", err);
+          playerNameIndexPromise = null; // allow a retry on the next call
+          return [];
+        });
+    }
   }
   return playerNameIndexPromise;
 }
