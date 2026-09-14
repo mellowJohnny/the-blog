@@ -2046,6 +2046,24 @@ label sup {
    it. Scoped under #player-search-form rather than editing the shared
    rule, same pattern as other .flex-container-related fixes - see
    FRONTEND.md's Mobile / responsive design gotchas. */
+/* Tighter than the shared .flex-container div's 15px/5px padding+margin
+   and the browser's default <p> margins - this page's intro is a short
+   two-line blurb, not a big content block, so the generic spacing left
+   too much air above/below it. */
+#player-search-intro {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+#player-search-intro p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+#player-search-form {
+  padding-top: 8px;
+}
+
 #player-search-form form {
   padding-left: 0;
 }
