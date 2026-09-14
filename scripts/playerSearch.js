@@ -105,6 +105,21 @@ function moveSuggestionActive(delta) {
   document.getElementById(`player-search-suggestion-${activeSuggestionIndex}`)?.scrollIntoView({ block: "nearest" });
 }
 
+// Ranks a matched player name for relevance to `query` (lower is
+// better) - otherwise names.filter().slice(8) would just take the
+// first 8 alphabetically, burying an exact player like "Wayne Gretzky"
+// under multi-player combo cards ("Brett Hull / Wayne Gretzky") that
+// happen to sort earlier but are a weaker match.
+function rankPlayerNameMatch(nameLower, query) {
+  if (nameLower === query) return 0;
+
+  const words = nameLower.split(/[^a-z0-9]+/);
+  if (words.includes(query)) return 1;
+  if (nameLower.startsWith(query)) return 2;
+  if (words.some((word) => word.startsWith(query))) return 3;
+  return 4;
+}
+
 async function onPlayerSearchInputChanged() {
   const input = document.getElementById("playerSearchInput");
   const query = input.value.trim().toLowerCase();
@@ -119,7 +134,18 @@ async function onPlayerSearchInputChanged() {
   // index fetch was still in flight - don't render a stale result.
   if (input.value.trim().toLowerCase() !== query) return;
 
-  const matches = names.filter((name) => name.toLowerCase().includes(query)).slice(0, 8);
+  // Rank first, then shorter/closer matches within the same rank (a
+  // plain "Wayne Gretzky" over a longer combo card mentioning him).
+  const matches = names
+    .filter((name) => name.toLowerCase().includes(query))
+    .sort((a, b) => {
+      const rankDiff = rankPlayerNameMatch(a.toLowerCase(), query) - rankPlayerNameMatch(b.toLowerCase(), query);
+      if (rankDiff !== 0) return rankDiff;
+      if (a.length !== b.length) return a.length - b.length;
+      return a.localeCompare(b);
+    })
+    .slice(0, 8);
+
   renderSuggestions(matches);
 }
 
