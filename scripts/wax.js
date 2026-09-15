@@ -598,9 +598,9 @@ function exportChecklistPdf() {
     });
 }
 
-// v1: single-column layout with jsPDF's own automatic page breaks,
-// rather than reproducing the on-screen/print view's 2-column CSS -
-// far less layout math, at the cost of more pages for a big checklist.
+// v2: a real 2-column layout matching the on-screen/print view, with
+// column-balancing per band - see the column-span comment below.
+// (v1 was single-column with jsPDF's own automatic page breaks.)
 function buildChecklistPdfDocument(setName, groups) {
   const doc = new jspdf.jsPDF({ unit: "pt", format: "letter" });
 
