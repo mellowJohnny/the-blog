@@ -13,6 +13,89 @@ gotchas encountered doing that pass (missing viewport meta tags, a
 descendant-selector CSS trap, table display-role quirks) before
 changing layout CSS on these pages.
 
+## HTML conventions for `/cms` pages
+
+All 10 pages under `/cms` were brought into a consistent structure on
+2026-09-03 (script placement, `<head>` element order, dead code). This
+is the convention to follow for any new `/cms` page or edit to an
+existing one. **This is scoped to `/cms` specifically** — the public
+pages at the repo root (`index.html`, `waxReviews.html`, etc.) have
+their own established head structure (SEO meta tags, Core Web Vitals
+image preload, `lang="en-ca"`) that wasn't part of this pass and
+shouldn't be forced to match.
+
+**`<head>` element order** (see any current `/cms/*.html` file as a
+reference, e.g. `cms/admin.html`):
+
+1. `<script src="/scripts/auth.js"></script>` — first, so the
+   Cognito-gate redirect fires as early as possible.
+2. `<meta charset="utf-8">`
+3. `<meta name="robots" content="noindex, nofollow">`
+4. `<title>` — inside `<head>`, not floated between `<html>` and
+   `<head>` (that pattern existed on 9 of the 10 pages pre-cleanup;
+   it's invalid HTML even though browsers tolerate it).
+5. Favicon block — exactly one, using the `favicon2` set only:
+   ```html
+   <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+   <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+   <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+   ```
+   Don't also add the older plain `favicon.ico`/`favicon.png` pair —
+   every page used to carry both, which the cleanup pass removed as a
+   duplicate.
+6. `<link rel="stylesheet" href="/styles/styles.css">`
+7. The Google Fonts preconnect/preload/noscript block (copy verbatim
+   from any current page — it's identical across all 10).
+8. Page-specific `<script>` tags, in this order: any external library
+   (e.g. TinyMCE), then this site's own `<script src="/scripts/...">`
+   tags, then any inline `<script>` block. All of it lives inside
+   `<head>` — none of these 10 pages should have a `<script>` tag
+   after `</head>` or at the bottom of `<body>` anymore (`smsAdmin.html`
+   and `wlcms.html` both used to do this before the cleanup).
+
+An inline script that touches the DOM (e.g. `wlcms.html`'s nav
+dropdown toggle) still needs to run *after* the DOM is parsed even
+though it now lives in `<head>` — wrap it in
+`window.addEventListener('load', () => { ... })`, the same pattern
+already used for `fetchCopyrightYear()` on every page.
+
+**Other conventions**:
+
+- `<html lang="en">` on every page (not `en-ca` — that's specific to
+  the public pages).
+- Void elements (`<meta>`, `<link>`, `<br>`, `<img>`, `<input>`) are
+  not self-closed — no trailing `/>`. `smsAdmin.html` was the one
+  holdout using XHTML-style self-closing tags; it's been normalized to
+  match the other 9.
+- The masthead table cell (`<td><div><header class="masthead">...`)
+  needs an explicit closing `</div>` before `</td>`. Every page was
+  missing this — browsers silently recover, but it broke tooling (see
+  below) and is worth getting right in any new page copied from an
+  existing one.
+- No dead `<script src="...">` tags for scripts the page doesn't
+  actually call into, no commented-out markup left in place "just in
+  case," no `id="..."` attributes with no CSS rule or JS reference
+  pointing at them.
+
+**Formatting**: indentation and whitespace are normalized with
+Prettier (`npx prettier@3 --html-whitespace-sensitivity css
+--tab-width 2 --embedded-language-formatting off <file>` — the last
+flag matters, since Prettier's default HTML formatter reformats
+JavaScript *inside* `onclick`/`onload` attribute values, which is out
+of scope for an HTML whitespace pass). Prettier's HTML parser is
+stricter than a browser and will hard-error on things browsers
+silently auto-correct (an unclosed `<div>`, a stray closing tag with
+no matching open tag) — that's a feature, not a nuisance: it's how the
+masthead `<div>` bug above and several stray closing tags were found
+across these files. If Prettier errors on a `/cms` page, don't work
+around it — the underlying markup is genuinely broken and should be
+fixed the same way. Note Prettier self-closes void elements by
+default (`<meta ... />`); post-process its output to strip the
+trailing `/` to match the no-self-closing convention above, e.g.:
+```
+sed -E 's#<(meta|link|br|img|input|hr)([^>]*)\s*/>#<\1\2>#g'
+```
+
 ## cardStack — blog & card set authoring
 
 Entry point: `cms/wlcms.html` — its centered nav is grouped into three
@@ -23,7 +106,13 @@ class on click (this is what drives it on touch, where hover isn't
 meaningful), and a `@media (hover: hover) and (pointer: fine)` CSS
 rule opens it on mouse hover on desktop/trackpad. On mobile each
 dropdown becomes an inline accordion instead of a floating flyout (no
-room to sit beside its parent at that width). Grouped page links:
+room to sit beside its parent at that width). Its link color
+(`.cms-nav-parent`/`.cms-nav-item-plain > a`/`.cms-nav-dropdown a`,
+`styles.css`) used to be hardcoded to `--color-text-dark`, a dark navy
+that didn't match the light blue (`--color-link`) every other `/cms`
+page's plain `.cms-top-nav` breadcrumb uses — fixed to use
+`--color-link` too, so this nav is visually consistent with the rest.
+Grouped page links:
 
 | Page | Purpose |
 |---|---|
@@ -37,10 +126,76 @@ room to sit beside its parent at that width). Grouped page links:
 | `cms/admin.html` | Self-service site-health checks (broken images, checklist-to-review linkage) — see "Admin Tools" below. |
 
 All create/edit forms use a hosted **TinyMCE** WYSIWYG editor
-(`initTinyEditor()` in `scripts/cms.js`) for the body text — the
+(`initTinyEditor()` in `scripts/cmsFormUI.js`) for the body text — the
 frontend never reads a plain `<textarea>` value for the post body, it
 always pulls fresh HTML out of the active TinyMCE instance at submit
 time.
+
+### Wrapped images in review body content
+
+Some card set reviews need a small logo/accent image floated beside
+the text (e.g. the All-Star Game logo on a McDonald's set) — hand-
+inserted directly into the TinyMCE HTML source, not through any CMS
+image-picker flow. Convention:
+
+```html
+<img class="img-wrap-left img-wrap-sm" style="width: 214px; height: 117px;" src="..." alt="..." width="214" height="117" loading="lazy">
+```
+
+- `img-wrap-left` / `img-wrap-right` — floats the image left/right with
+  matching margin (`styles.css`). Always required for a wrapped image.
+- `img-wrap-sm` / `img-wrap-md` — optional, opt-in mobile scaling:
+  `img-wrap-sm` renders the image at 50% of its own size on mobile,
+  `img-wrap-md` at 65%. Add whichever looks right for that image; omit
+  both to keep an image full-size on every breakpoint.
+- Set the inline `style="width:...px; height:...px;"` to whatever size
+  you actually want on desktop — `applyImgWrapSmSizing()` (`helper.js`)
+  reads *that* value, not the `width`/`height` HTML attributes, to
+  compute the mobile size, since some older content has the two out of
+  sync (a stale attribute left behind after the style was hand-edited).
+  Still set the `width`/`height` attributes to match, so the browser
+  reserves the right amount of layout space before the image loads.
+
+See `FRONTEND.md`'s "Mobile / responsive design" section for the
+mechanism behind this (including a real CSS specificity bug this was
+built around) and why the mobile scaling has to actually resize the
+image's box rather than just visually shrink it.
+
+### Star Rating widget
+
+`createCardSet.html` and `setEdit.html` both use a row of five clickable
+star icons (`.star-rating-widget`/`.star-rating-icon`, `styles.css`) in
+place of what used to be a plain `<select>` (create) and a plain text
+input (edit) — two different, unpolished representations of the same
+`stars` field. Hovering a star previews the rating (reverting to
+whatever's actually locked in if you move away without clicking);
+clicking locks it in, turning that star and every one before it gold.
+
+Uses the exact same 🌟 emoji as the public "Hella Rating" display
+(`wax.js`) for the lit/selected state — emoji ignore CSS `color`, so
+rather than a second "empty star" icon, the unselected state is the
+same glyph desaturated and dimmed via `filter: grayscale(1) opacity(0.35)`
+(`.star-rating-icon`), with `filter: none` on `.selected`.
+
+The real numeric rating still lives in a plain `<input type="hidden"
+id="stars">` — every existing function that already read/wrote it via
+`document.getElementById("stars").value` (`createCardSet()`,
+`updateCardSet()`, `renderPreview()`, `populateCardSet()`) needed zero
+changes; the widget is purely a visual layer on top of that same
+contract. Two shared functions in `scripts/cmsCardSet.js` drive it:
+
+- `initStarRatingWidget(containerId, hiddenInputId)` — wires the click
+  and hover listeners, called once per page on load. On
+  `createCardSet.html` the hidden input's HTML `value="1"` (matching
+  the old dropdown's default of "One Star" if never touched) means one
+  star is already lit on a fresh create.
+- `paintStarRating(value, containerId)` — the actual paint logic
+  (toggles `.selected` on every star up to `value`). Also called by
+  `populateCardSet()` right after it sets the hidden input's value, so
+  `setEdit.html`'s widget repaints correctly once a set's real rating
+  arrives asynchronously (`initStarRatingWidget()`'s own initial paint
+  runs before that fetch resolves, so it would otherwise show whatever
+  the hidden input held at page-load time - empty on `setEdit.html`).
 
 ### Draft / publish workflow
 
@@ -49,8 +204,8 @@ time.
 
 `pickBlog.html` and `pickCardSet.html` both show live and staged items
 side-by-side in two columns, grouped under headers by blog type /
-card set category (`BLOG_TYPE_LABELS`, `CARDSET_CATEGORY_LABELS` in
-`scripts/cms.js`). `fetchAllStagedCardSets()` also falls back to
+card set category (`BLOG_TYPE_LABELS` in `scripts/cmsBlog.js`,
+`CARDSET_CATEGORY_LABELS` in `scripts/cmsCardSet.js`). `fetchAllStagedCardSets()` also falls back to
 `blogCat = "reg"` when a staged card set has a `mfg` value but no
 `blogCat` — a defensive guard against records ever created directly in
 DynamoDB rather than through `createCardSet.html`'s form (which always
@@ -62,13 +217,15 @@ on top of.
 
 Every "Submit"/"Update"/"Delete" button on these forms is
 `type="button"` with an `onclick` handler that reads field `.value`s
-directly and calls a `scripts/cms.js` function — none of them are
+directly and calls a function in `scripts/cmsBlog.js` (blog forms) or
+`scripts/cmsCardSet.js` (card set forms) — none of them are
 `type="submit"` inside a real form-submission flow. That means the
 `required` HTML attribute on a field (and the `<sup>*</sup>` marker
 next to its label, styled red/bold via the `label sup` CSS rule) is
 purely **visual** — the browser's native required-field validation
-never actually fires on click. Each `create*()` function in
-`scripts/cms.js` re-implements that check by hand (blank/whitespace
+never actually fires on click. Each `create*()` function (in
+`scripts/cmsBlog.js` or `scripts/cmsCardSet.js`, depending on the form)
+re-implements that check by hand (blank/whitespace
 check + `cmsAlert()` (see "CMS alert / confirm modals" below) + `.focus()` back to
 the offending field, or `tinymce.activeEditor.focus()` for the
 TinyMCE-backed body fields) —
@@ -80,8 +237,8 @@ straight through to the Lambda (this is exactly what caused a 500 on
 
 ### CMS alert / confirm modals
 
-Every validation/success/error message across the CMS (`cms.js`,
-`checklistUpload.js`, `adminSMS.js`) goes through `cmsAlert(message)`,
+Every validation/success/error message across the CMS (`cmsBlog.js`,
+`cmsCardSet.js`, `checklistUpload.js`, `adminSMS.js`) goes through `cmsAlert(message)`,
 and every destructive/serious-action confirmation goes through
 `cmsConfirm(message)` — both in `scripts/helper.js` (kept there rather
 than a dedicated file, in line with the site owner's preference to grow
@@ -137,9 +294,25 @@ then redirect to the corresponding picker page (`pickBlog.html`/
 Lambdas, `Lambdas/deleteBlogHandler/` and `Lambdas/deleteCardSetHandler/` — see
 `LAMBDA_FUNCTIONS.md`.
 
+### Cancel
+
+Both edit forms also have a plain "Cancel" button next to Update, for
+backing out of an edit without saving — added since arriving at either
+page via a direct/bookmarked link leaves no reliable browser-back
+target, and leaving silently (no warning) risked losing an in-progress
+edit by accident. `cmsCancelEdit(redirectTo)` (`scripts/cmsFormUI.js`,
+shared by both pages since it's generic to "leave this edit form," not
+specific to blog or card-set logic) shows the same red `cmsConfirm()`
+warning modal Delete uses ("Any unsaved changes will be lost. Leave
+this page?"), then navigates only if confirmed:
+`setEdit.html` → `/cms/pickCardSet.html`, `blogEdit.html` →
+`/cms/pickBlog.html` — same picker-page convention as Delete/Update
+above, not a plain browser-back.
+
 ### Redirect on success
 
-Every create/update/delete action in `scripts/cms.js` redirects to its
+Every create/update/delete action (in `scripts/cmsBlog.js` for blog
+posts, `scripts/cmsCardSet.js` for card sets) redirects to its
 content type's picker page on a confirmed success — "confirmed"
 meaning `response.ok` was checked (or, for `updateCardSet()`, whose
 Lambda doesn't reliably signal errors via response body shape — see
@@ -157,9 +330,16 @@ redirect either — see "Delete" above.)
 
 ### Image picker / uploader
 
-Both create/edit forms include a "Browse" button next to image fields
-that opens a shared modal (`#imageBrowserModal`, driven entirely by
-`scripts/cms.js`):
+`createCardSet.html`, `setEdit.html`, and `createBlogPost.html` each
+include a "Browse" button next to their image fields, opening a shared
+modal (`#imageBrowserModal`, driven entirely by
+`scripts/cmsImageBrowser.js`) — `setEdit.html` gained this in this
+session, ported directly from `createCardSet.html` (same script tag,
+same modal markup, same `openImageBrowser('headerImgName'/
+'footerImgName')` calls) so a set's images can be managed after
+creation too, not just at authoring time. `blogEdit.html` doesn't have
+it yet — a blog post's image can currently only be (re)picked via
+Browse when it's first created, not from its edit form:
 
 1. Lists every image currently in the S3 bucket (filtered client-side to `img/blog/` or `img/cards/` depending on which form opened it), with thumbnails, via a search box.
 2. Clicking a thumbnail fills in the target form field and closes the modal.
@@ -186,9 +366,22 @@ save as-is, producing a URL that looks valid but 404s. See
 ### Preview
 
 `setEdit.html` has a "Preview" button (`openPreview()` in
-`scripts/cms.js`) that renders the card set exactly as it will appear
+`scripts/cmsCardSet.js`) that renders the card set exactly as it will appear
 on the live site, using the current (possibly unsaved) form values, in
 a modal — lets you check formatting before publishing. `createBlogPost.html`/`blogEdit.html` don't currently have an equivalent preview.
+Sits in the horizontal middle of the Update/Cancel/Delete button row (a
+CSS Grid `1fr auto 1fr` row, not a flex `space-between` — the latter
+doesn't truly center a middle item when the two side groups are
+different widths, which Update+Cancel vs. Delete Set are).
+
+`setEdit.html`'s Author field is a plain read-only text input (matching
+Set Name/Release Year's styling), not the dropdown `createCardSet.html`
+uses — an author is chosen once at creation and isn't meant to change
+on edit, so there's nothing to actually pick here; showing it as an
+editable-looking `<select>` with only ever one option was misleading.
+`populateCardSet()`/`updateCardSet()` (`scripts/cmsCardSet.js`) needed
+no changes for this — both already read/write it via `.value`, which
+works identically on a `<select>` or a disabled `<input>`.
 
 ### Checklist upload
 
@@ -294,5 +487,75 @@ fullest first-party explanation of this tool, summarized here:
 - **GSM-Safe Mode** checkbox: auto-replaces smart-quotes/em-dashes/ellipses with plain-ASCII equivalents to keep the message in the cheaper GSM-7 encoding.
 - **Test Mode** checkbox (checked by default): sends only to the `SubscribersTest` table instead of the real `Subscribers` list — use this to sanity-check a message before going live. Unchecking it requires confirming a "LIVE MODE" warning (`cmsConfirm()` — see "CMS alert / confirm modals" above) before anything sends.
 - **Results panel**: per-recipient success/failure table plus a summary count, after a send.
-- **Bulk import** (nav link): replaces the *entire* subscriber list from an uploaded pre-processed JSON file (already in DynamoDB typed-JSON format). This is destructive — it deletes all existing subscribers first — and is described in-app as something "prepared separately once a year from the club sign-up data," i.e. an external, out-of-band process not represented anywhere in this repo.
+- **Bulk import** (nav link): replaces the *entire* subscriber list from an uploaded pre-processed JSON file (already in DynamoDB typed-JSON format). This is destructive — it deletes all existing subscribers first — and is described in-app as something "prepared separately once a year from the club sign-up data." See "Annual bulk-import data prep" below for what that prep step actually does.
 - **Add subscriber** (nav link): a small modal to add one subscriber by name + mobile number without doing a full bulk re-import.
+
+### Annual bulk-import data prep (CSV → DynamoDB JSON)
+
+The `.json` file the bulk-import modal expects (see above) isn't produced by
+anything checked into this repo — there's no script or Lambda under
+`Lambdas/` that touches the club's raw sign-up data. It's a manual,
+once-a-year step done entirely outside the codebase, immediately before
+uploading through the modal:
+
+1. The club's sign-up form is exported as a CSV. Of its columns, only two
+   are used: **"Name"** and **"Your mobile number"**.
+2. That CSV is converted to a plain JSON array of DynamoDB typed-JSON
+   objects — the exact shape `bulkSubscriberUpload` (see
+   `LAMBDA_FUNCTIONS.md`) and the upload modal expect, with no
+   `PutRequest`/table-name wrapper, just the array — via a one-off AI chat
+   prompt, not a checked-in script. The mapping it applies:
+   - **Name → `firstName`** (String): only the first whitespace-delimited
+     token of the Name column, capitalized — e.g. "jane q. smith" becomes
+     just `"Jane"`.
+   - **Your mobile number → `phoneNumber`** (String): normalized to
+     **E.164** format, prefixing `+1` for Canadian/US numbers — e.g. a raw
+     `613-555-0123` becomes `+16135550123`.
+   - Two constant String attributes are added to every record regardless of
+     the source data: **`status`** set to `"subscribed"` and **`source`**
+     set to `"web"` (the same `source: "web"` that `subscribeHandler` — see
+     `LAMBDA_FUNCTIONS.md` — sets when a subscriber is added manually
+     through the "Add subscriber" modal instead).
+   - **Duplicate `phoneNumber`s are skipped, keeping the first
+     occurrence** — the club's raw export can contain more than one
+     sign-up row for the same person/number, and this conversion step is
+     where that gets collapsed, before the file ever reaches the
+     bulk-upload endpoint.
+
+   The verbatim prompt used for this conversion (recorded here since this
+   doc is currently its only durable copy — reuse it as-is next time rather
+   than re-deriving the wording):
+
+   ```
+   I have a CSV file I need to convert to DynamoDB typed JSON for bulk
+   upload. Please extract only the "Name" and "Your mobile number"
+   columns. From the Name column, take only the first token (first
+   name), capitalise it, and map it to a String attribute called
+   firstName. Map the phone number to a String attribute called
+   phoneNumber, converting it to E.164 format (+1 for Canadian/US
+   numbers). Add two additional String attributes to every record:
+   status set to "subscribed" and source set to "web". Skip duplicate
+   phone numbers, keeping the first occurrence. Output a plain JSON
+   array of DynamoDB typed JSON objects with no wrapper or PutRequest
+   — just the array. Here is the file.
+   ```
+
+   One example record from the expected output:
+   ```json
+   [
+     {
+       "phoneNumber": { "S": "+16135550123" },
+       "firstName":   { "S": "Christian" },
+       "source":      { "S": "web" },
+       "status":      { "S": "subscribed" }
+     }
+   ]
+   ```
+3. The resulting `.json` file is what actually gets dropped into the
+   bulk-import modal described above.
+
+Belt-and-suspenders note: `bulkSubscriberUpload`'s own writes use
+`PutRequest` (see `LAMBDA_FUNCTIONS.md`), so if a duplicate `phoneNumber`
+ever slipped past the dedup step above, the later record would silently
+overwrite the earlier one (last-write-wins) rather than erroring — in
+practice this hasn't mattered, since dedup already happens before upload.

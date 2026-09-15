@@ -70,6 +70,7 @@ function buildUrls() {
   }
 
   urls.push(`${SITE_ORIGIN}/lockout.html`);
+  urls.push(`${SITE_ORIGIN}/theJunkWaxYears.html`);
 
   return urls;
 }

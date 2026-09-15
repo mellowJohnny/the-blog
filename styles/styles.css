@@ -242,6 +242,33 @@ h1 {
     to { transform: rotate(360deg); }
 }
 
+/* Progress Spinner - Player Search - same look/pattern as the Autobus
+   spinner above (including reusing its autobus-spin keyframe, which
+   has nothing Autobus-specific in it - just a rotation), just under
+   playerSearch-specific names since this page has nothing to do with
+   the Autobus SMS tool. */
+#player-search-spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.75);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.player-search-spinner {
+    width: 60px;
+    height: 60px;
+    border: 6px solid #ccc;
+    border-top-color: #333;
+    border-radius: 50%;
+    animation: autobus-spin 0.8s linear infinite;
+}
+
 /* --- Overlay --- */
 .bulk-overlay {
   position: fixed;
@@ -538,7 +565,7 @@ h1 {
   display: block;
   font-family: 'Source Sans 3', sans-serif;
   font-size: 24px;
-  color: var(--color-text-dark);
+  color: var(--color-link);
   background: none;
   border: none;
   margin: 0;
@@ -583,7 +610,7 @@ h1 {
 .cms-nav-dropdown a {
   display: block;
   font-family: 'Source Sans 3', sans-serif;
-  font-size: 18px;
+  font-size: 20px;
   color: var(--color-text-dark);
   padding: 10px 16px;
   white-space: nowrap;
@@ -639,7 +666,7 @@ h1 {
   margin: 0;
   padding: 0;
   font-family: 'Spicy Rice';
-  font-size: 20px;
+  font-size: 23px;
   color:var(--color-text-dark);
   height: auto;
 }
@@ -668,7 +695,7 @@ h1 {
 
 .set-o-matic-picker {
   font-family: 'Spicy Rice';
-  font-size: 30px;
+  font-size: 32px;
   text-align: center;
   height: 42px;
 }
@@ -731,6 +758,31 @@ select {
   display: inline-block;
   border: 1px solid var(--color-input-border);
   border-radius: 2px;
+}
+
+/* Star Rating widget - createCardSet.html/setEdit.html (initStarRatingWidget()/
+   paintStarRating() in cmsCardSet.js). The real value lives in a hidden
+   #stars input right after this; these spans are purely visual. Uses the
+   same glowing-star emoji as the public "Hella Rating" display (wax.js)
+   for the selected state - emoji ignore CSS `color`, so "empty" is the
+   same glyph desaturated/dimmed via `filter` rather than a second icon. */
+.star-rating-widget {
+  display: inline-flex;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.star-rating-icon {
+  filter: grayscale(1) opacity(0.35);
+  transition: filter 0.1s;
+}
+
+.star-rating-icon.selected {
+  filter: none;
 }
 
 textarea {
@@ -848,13 +900,38 @@ label sup {
   height: 150px;
   position: relative;
   overflow: hidden;
-  background-image: url('https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hella_habs_masthead.webp'); 
+  /* Defaults match the original hella_habs_masthead.webp (Canadiens
+     red/navy) - applyRandomMastheadTeam() (helper.js) overrides these
+     on load to a random NHL team's colors; without JS, or before it
+     runs, this renders identically to the old fixed image. */
+  --team-primary: #A6192E;
+  --team-tertiary: #001E62;
+  /* Reproduces the original image's 5-band stripe exactly (measured by
+     sampling its pixels): band proportions 0-33/33-38/38-62/62-67/67-100. */
+  background-image: linear-gradient(to bottom,
+    var(--team-primary) 0%, var(--team-primary) 33%,
+    #ffffff 33%, #ffffff 38%,
+    var(--team-tertiary) 38%, var(--team-tertiary) 62%,
+    #ffffff 62%, #ffffff 67%,
+    var(--team-primary) 67%, var(--team-primary) 100%);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
   color: white;
   font-family: sans-serif;
-  filter: contrast(0.92) brightness(1.03); /* Reduce contrast a bit for that vinathe look */
+}
+
+/* Genuinely two-color (+white) teams (Detroit, Tampa Bay, Toronto -
+   applyRandomMastheadTeam() in helper.js toggles this class on when
+   --team-primary === --team-tertiary) get a simpler design than the
+   5-band stripe above: a solid background in that one color with a
+   single white stripe centered at 30% of the total width, vertical
+   rather than the horizontal bands used elsewhere. */
+.wax-reviews-mast-table.masthead-two-color {
+  background-image: linear-gradient(to bottom,
+    var(--team-primary) 0%, var(--team-primary) 35%,
+    #ffffff 35%, #ffffff 65%,
+    var(--team-primary) 65%, var(--team-primary) 100%);
 }
 
 .wax-reviews-mast-table::before { /* Blurred noise overlay for a vintage vibe */
@@ -871,12 +948,20 @@ label sup {
   pointer-events: none;
 }
 
-.wax-reviews-mast-table::after { /* Adds a tint */
-  content: "";
+/* City-only label (applyRandomMastheadTeam(), helper.js) so the random
+   team pick can be visually verified at a glance. White-on-dark-shadow
+   rather than the masthead text's fixed blue outline, since that outline
+   is tuned for the large Bebas Neue title, not legible at this size. */
+.masthead-team-label {
   position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 240, 0.25); /* soft cream tint */
-  z-index: 0;
+  right: 8px;
+  bottom: 4px;
+  z-index: 1;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
 }
 
 
@@ -900,6 +985,25 @@ label sup {
      2px  2px 0 var(--color-heading-outline);
 }
 
+/* .masthead-two-color's centered white stripe sits directly under part
+   of the title - the near-white fill (rgb(252,252,245)) all but
+   vanishes against it, leaving only the thin 2px blue outline above to
+   define the letterforms, which isn't enough on its own. Add a larger,
+   darker outline layer behind the existing blue one (painted first,
+   per text-shadow's back-to-front list order) so the title stays
+   legible over white without changing the stripe's centered position. */
+.wax-reviews-mast-table.masthead-two-color .wax-reviews-masthead a {
+  text-shadow:
+    -2px -2px 0 var(--color-heading-outline),
+     2px -2px 0 var(--color-heading-outline),
+    -2px  2px 0 var(--color-heading-outline),
+     2px  2px 0 var(--color-heading-outline),
+    -3px -3px 0 #000000,
+     3px -3px 0 #000000,
+    -3px  3px 0 #000000,
+     3px  3px 0 #000000;
+}
+
 
 .blog-type-divider {
   margin-top: 24px;
@@ -921,6 +1025,16 @@ label sup {
     margin: 5px;
     position: relative;
     top: 1px;
+}
+
+/* waxReviews.html only (see the .wax-set-name-header class on its
+   .header-style div) - hides the set name shown right under the
+   hamburger menu, on every breakpoint, since the set-details section
+   further down the page repeats the same name as its own heading.
+   lockout.html shares #pageHeader's id but not this class, so its own
+   (non-redundant) title is unaffected. */
+.wax-set-name-header {
+  display: none;
 }
 
 .intro {
@@ -1085,6 +1199,102 @@ label sup {
   margin-bottom: 0;
 }
 
+/* Replaces the old rowspan'd <table class="set-details-table-style">
+   for the public displayCardSet() set-details box - CSS Grid instead of
+   a table, so the mobile override below can reorder name -> image ->
+   list without fighting a rowspan (see FRONTEND.md's "Mobile /
+   responsive design" section for why that doesn't work reliably).
+   cms/cmsCardSet.js's renderPreview() still uses the old table-based
+   .set-details-table-style/.header-img-cell markup for the CMS preview
+   modal - deliberately untouched, so none of this is shared with it. */
+.set-details-grid {
+  display: grid;
+  grid-template-columns: 25% 75%;
+  grid-template-areas:
+    "name image"
+    "list image";
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.set-details-name {
+  grid-area: name;
+  font-family: 'Special Elite', sans-serif;
+  font-size: 20px;
+  padding: 2px 4px;
+}
+
+.set-details-image {
+  grid-area: image;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 285px; /* matches .header-img-cell's fixed height */
+}
+
+.set-details-list {
+  grid-area: list;
+  /* Flex column so .set-detail-row-checklist's order below can move
+     the Checklist row after Hella Rating without changing the DOM
+     order displayCardSet() (wax.js) builds - applies on both desktop
+     and mobile, same reorder either way. */
+  display: flex;
+  flex-direction: column;
+}
+
+.set-detail-row {
+  /* Body font (matches .set-details-author's postBody text) for the
+     actual values - Special Elite below is only for the bolded field
+     names (e.g. "Set Size:"), matching this site's older convention
+     (still visible in the #previewContainer .set-details-author td
+     strong/i rule) of field names in Special Elite, values in the
+     regular body font, not the whole row in one font. */
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 18px;
+  padding: 2px 4px;
+}
+
+.set-detail-row strong {
+  font-family: 'Special Elite', sans-serif;
+}
+
+/* order:0 (the default) for every other row keeps them in their
+   existing DOM order; giving just this one a higher order value moves
+   it after all of them, i.e. after Hella Rating - on both desktop and
+   mobile. */
+.set-detail-row-checklist {
+  order: 1;
+}
+
+/* #cardSetDiv sits inside .flex-container, whose bare descendant
+   selector (.flex-container div, top of file - and its mobile
+   redefinition) matches every div nested inside it at any depth,
+   including all of the above - forcing width:1000px/padding:15px
+   (desktop) or width:100%/padding:10px (mobile) onto each one
+   regardless of the grid-area layout. Same recurring bug, same fix
+   pattern as #cardSetDiv .set-footer-table-style above: ID specificity
+   beats the shared rule's class+type specificity, on both breakpoints
+   at once since this isn't itself inside a media query. */
+#cardSetDiv .set-details-grid {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+#cardSetDiv .set-details-name,
+#cardSetDiv .set-detail-row {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 2px 4px;
+}
+#cardSetDiv .set-details-image,
+#cardSetDiv .set-details-list {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
 /*************************************** Image Styles ****************************************/
 
 .table-header-img {
@@ -1150,7 +1360,25 @@ label sup {
   height: auto !important;
 }
 
-
+/* Opt-in per-image mobile scaling for hand-inserted wrap images (small
+   logos/accent images with a hardcoded desktop width/height, e.g. the
+   All-Star Game logo on McDonald's sets). Add one of these classes
+   alongside .img-wrap-left/.img-wrap-right - no per-image sizing
+   needed to type:
+     <img class="img-wrap-left img-wrap-sm" style="width: 214px; height: 117px;" ...>
+   .img-wrap-sm -> half size on mobile; .img-wrap-md -> 65% size on
+   mobile, for images where half is too aggressive a shrink.
+   applyImgWrapSmSizing() (helper.js, called from wax.js once each
+   set's postBody renders) reads the image's own width/height attribute
+   and sets --wrap-w/--wrap-h custom properties from it. The mobile
+   rules below (main mobile media query, GLOBAL / SITE-WIDE section)
+   then resize the actual box off those - a real layout resize, not
+   just a visual transform, so wrapped text reflows in tight to the
+   now-smaller image instead of leaving a blank gap. Also scoped under
+   .set-details-author to out-specificity the rule just
+   above (0,2,1 vs 0,1,1), same class of clobbering that made the old
+   .img-wrap-left/.img-wrap-right max-width:50px cap below never
+   actually apply here. */
 
 .table-footer-img {
   width: 90%;
@@ -1382,6 +1610,7 @@ label sup {
    link + modal, distinct from the CMS upload/review styles above */
 .checklist-view-link {
   color: var(--color-link);
+  font-family: 'Special Elite', sans-serif;
   font-weight: 700;
   text-decoration: underline;
   cursor: pointer;
@@ -1470,6 +1699,21 @@ label sup {
 }
 
 .checklist-modal-print-btn:hover {
+  opacity: 0.85;
+}
+
+.checklist-modal-pdf-btn {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  background-color: #256386;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.checklist-modal-pdf-btn:hover {
   opacity: 0.85;
 }
 
@@ -1745,6 +1989,10 @@ label sup {
   color: #444;
 }
 
+.pagination-setname-short {
+  display: none;
+}
+
 /*************************************** Vote Widget Styles... ********************************/
 .vote-widget {
   display: flex;
@@ -1798,6 +2046,24 @@ label sup {
    it. Scoped under #player-search-form rather than editing the shared
    rule, same pattern as other .flex-container-related fixes - see
    FRONTEND.md's Mobile / responsive design gotchas. */
+/* Tighter than the shared .flex-container div's 15px/5px padding+margin
+   and the browser's default <p> margins - this page's intro is a short
+   two-line blurb, not a big content block, so the generic spacing left
+   too much air above/below it. */
+#player-search-intro {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+#player-search-intro p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+#player-search-form {
+  padding-top: 8px;
+}
+
 #player-search-form form {
   padding-left: 0;
 }
@@ -1805,6 +2071,49 @@ label sup {
 #player-search-form input[type="text"] {
   width: 100%;
   max-width: 450px;
+}
+
+/* #player-search-form prefix (id specificity) beats the shared
+   .flex-container div descendant selector, which otherwise also
+   matches this nested div and pushes the actual input box 20px right
+   of the label/button/intro text with its 15px padding + 5px margin -
+   same recurring gotcha as #playerSearchResults .player-search-group
+   above. */
+#player-search-form .player-search-input-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  padding: 0;
+  margin: 0;
+}
+
+.player-search-suggestions {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  margin: 2px 0 0 0;
+  padding: 4px 0;
+  list-style: none;
+  background-color: #fff;
+  border: 1px solid var(--color-input-border);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.player-search-suggestion {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.player-search-suggestion:hover,
+.player-search-suggestion.active {
+  background-color: var(--color-page-bg);
 }
 
 .player-search-message,
@@ -2103,6 +2412,24 @@ label sup {
     font-size: 16px;
   }
 
+  /* Wrap images opted into .img-wrap-sm/.img-wrap-md render at half or
+     65% of their desktop size on mobile - see the base rule
+     near .img-wrap-left. --wrap-w/--wrap-h are set by
+     applyImgWrapSmSizing() (helper.js) from each image's own
+     width/height attribute, so this is a real box resize (text
+     reflows in tight) rather than a visual-only transform: scale(),
+     which left the original full-size box reserved and an
+     unacceptable gap next to the shrunk image. */
+  .set-details-author img.img-wrap-sm {
+    width: calc(var(--wrap-w) / 2) !important;
+    height: calc(var(--wrap-h) / 2) !important;
+  }
+
+  .set-details-author img.img-wrap-md {
+    width: calc(var(--wrap-w) * 0.65) !important;
+    height: calc(var(--wrap-h) * 0.65) !important;
+  }
+
   /* Flex container should not force 1000px width */
   .flex-container div {
     width: 100%;
@@ -2157,6 +2484,14 @@ label sup {
 
   .pagination-page {
     font-size: 0.9rem;
+  }
+
+  .pagination-setname-full {
+    display: none;
+  }
+
+  .pagination-setname-short {
+    display: inline;
   }
 
   /* Masthead & Weather Mobile Styles (index.html only - .masthead-container
@@ -2263,7 +2598,7 @@ label sup {
   }
 
   .cms-nav-dropdown a {
-    font-size: 16px;
+    font-size: 18px;
     padding: 8px 14px;
   }
 
@@ -2330,6 +2665,34 @@ label sup {
   }
 
 /* ============================
+   waxReviews.html - CARD INTRO
+   ============================ */
+
+  /* renderCardIntro() (wax.js) still runs on load - this just hides the
+     result, so no new responsive pattern is needed beyond the site's
+     existing single-breakpoint CSS approach. Scoped to the #card-intro
+     id (not the shared .intro class) since that class is also used for
+     the real blog intro on index.html/tech.html and the "404 - Season
+     Not Found" text on lockout.html, neither of which should be hidden. */
+  #card-intro {
+    display: none;
+  }
+
+  /* Set name heading, right under the hamburger menu, sized to match
+     .set-details-name's 20px. Only actually visible on lockout.html
+     now - waxReviews.html hides this same #pageHeader element on every
+     breakpoint via .wax-set-name-header (see the base-CSS rule near
+     .header-style h1), since its set-details section repeats the name
+     as its own heading. Scoped to the #pageHeader id, not
+     .header-style h1 generally - that class/tag pair is shared with
+     playerSearch.html, theJunkWaxYears.html, and several CMS pages,
+     none of which should be affected by a change meant for the
+     set-review pages only. */
+  #pageHeader {
+    font-size: 20px;
+  }
+
+/* ============================
    waxReviews.html - SET-O-MATIC YEAR PICKER
    ============================ */
 
@@ -2358,13 +2721,42 @@ label sup {
    ============================ */
 
   .wax-reviews-masthead a {
-    font-size: 48px;          /* Scales down from 128px */
+    font-size: 56px;          /* Scales down from 128px */
     height: 90px;             /* Matches reduced text size */
     padding-left: 12px;       /* Keeps left alignment tight */
     /* Vertical centering comes from the base rule's align-items:center
        (flexbox) - a manual padding-top here was fighting that and
        visibly skewing it off-center, since mobile's shorter text has
        much more slack in its box than desktop's does */
+    /* 62px (tried when bumping this up for stripe contrast) wrapped to
+       two lines on a real iPhone 15 - a headless-browser check at the
+       same 393px CSS width didn't reproduce it. Likely cause: iOS
+       Safari's automatic text-inflation quirk, which specifically
+       targets text sized by auto-layout containers like a <table>/<td>
+       with no explicit width (exactly this markup) and can render text
+       larger than its specified px size - something Chromium doesn't
+       replicate, hence the gap between this test and the real device.
+       text-size-adjust:100% below disables that inflation so the
+       rendered size actually matches what's specified here. Kept
+       white-space:nowrap as a second guard regardless. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    white-space: nowrap;
+    text-shadow:
+      -1px -1px 0 var(--color-heading-outline),
+       1px -1px 0 var(--color-heading-outline),
+      -1px  1px 0 var(--color-heading-outline),
+       1px  1px 0 var(--color-heading-outline);
+  }
+
+  /* The extra dark outline for two-color teams (Detroit/Tampa Bay/
+     Toronto - see the base .masthead-two-color rule) exists because the
+     centered white stripe there is wide enough to swallow the title's
+     near-white fill on desktop. On mobile the title is small enough,
+     and the stripe proportionally narrow enough, that the plain
+     outline above already reads fine - drop back to it instead of the
+     heavier one. */
+  .wax-reviews-mast-table.masthead-two-color .wax-reviews-masthead a {
     text-shadow:
       -1px -1px 0 var(--color-heading-outline),
        1px -1px 0 var(--color-heading-outline),
@@ -2374,6 +2766,12 @@ label sup {
 
   .wax-reviews-mast-table {
     height: 90px;             /* Match the reduced masthead height */
+  }
+
+  /* City/cheer corner label (applyRandomMastheadTeam(), helper.js) -
+     hidden on mobile per the site owner, not just shrunk. */
+  .masthead-team-label {
+    display: none;
   }
 
   .set-details-table-style {
@@ -2417,6 +2815,42 @@ label sup {
   max-width: 320px; /* adjust as needed */
   width: 100%;
 }
+
+  /* .set-details-grid: reorder to name -> image -> list, one column.
+     No table/rowspan involved, so this is a plain grid redefinition -
+     see the base rule (near .table-header-img) for why this replaced
+     the old table markup. */
+  .set-details-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "name"
+      "image"
+      "list";
+  }
+
+  .set-details-image {
+    height: auto;
+  }
+
+  /* Breathing room between the set name and the header image below it -
+     only needed here, since on desktop the name sits above the details
+     list (in its own column), not directly above the image. Scoped
+     under #cardSetDiv for the same reason as .set-details-list below. */
+  #cardSetDiv .set-details-name {
+    margin-bottom: 10px;
+  }
+
+  /* Breathing room between the image and "Set Size" - only needed here,
+     since on desktop the list sits beside the image, not below it.
+     Scoped under #cardSetDiv to beat that same-named rule's own
+     margin:0 reset above (id+class specificity, needed regardless of
+     media-query order - see the .flex-container div note nearby).
+     The Checklist-after-Hella-Rating reorder (.set-detail-row-checklist)
+     is universal now (base rule, applies desktop and mobile alike) -
+     see near .set-detail-row. */
+  #cardSetDiv .set-details-list {
+    margin-top: 12px;
+  }
 
 
   /* .set-details-table-style gets its own tr/td display overrides above;

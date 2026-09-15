@@ -88,6 +88,31 @@ async function scanAllDistinctSetNames() {
   return [...setNames];
 }
 
+// Same full paginated Scan as the others, but collects every distinct
+// playerName instead - backs the ?namesOnly=1 type-ahead index so the
+// frontend can filter suggestions client-side without a Scan per
+// keystroke (see playerSearch.js's loadPlayerNameIndex()).
+async function scanAllDistinctPlayerNames() {
+  const names = new Set();
+  let lastEvaluatedKey;
+
+  do {
+    const result = await docClient.send(new ScanCommand({
+      TableName: CHECKLISTS_TABLE,
+      ProjectionExpression: "playerName",
+      ExclusiveStartKey: lastEvaluatedKey
+    }));
+
+    for (const item of result.Items || []) {
+      if (typeof item.playerName === "string" && item.playerName) names.add(item.playerName);
+    }
+
+    lastEvaluatedKey = result.LastEvaluatedKey;
+  } while (lastEvaluatedKey);
+
+  return [...names].sort();
+}
+
 // Cards' key is setName (partition) + year (sort) - loop in case a
 // setName ever legitimately maps to more than one Cards item, same
 // defensive pattern as saveChecklist's flagCardsHasChecklist.
@@ -113,6 +138,20 @@ const CORS_HEADERS = {
 
 export const handler = async (event) => {
   try {
+    // Type-ahead index (?namesOnly=1) - not part of the search itself.
+    // Returns every distinct playerName in Checklists once, so the
+    // frontend can filter suggestions client-side per keystroke
+    // instead of re-Scanning the table on every one. See
+    // scanAllDistinctPlayerNames() above.
+    if (event?.queryStringParameters?.namesOnly === "1") {
+      const playerNames = await scanAllDistinctPlayerNames();
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({ playerNames })
+      };
+    }
+
     // Data-integrity audit mode (?audit=1) - not part of the search
     // feature itself. Enumerates every distinct setName in Checklists
     // and reports which ones have no matching Cards item, i.e. would

@@ -1,3 +1,5 @@
+window.addEventListener("load", () => {
+
 document.getElementById("sendBtn").addEventListener("click", sendBroadcast);
 
 const textarea = document.getElementById("message");
@@ -473,3 +475,5 @@ function hideAddSubscriberFeedback() {
   addSubscriberFeedback.style.display = "none";
   addSubscriberFeedback.className = "bulk-feedback";
 }
+
+});

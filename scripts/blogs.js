@@ -13,23 +13,23 @@ function renderBlogIntro(blogType) {
 
   if (blogType === "1") {
     introHTML = `
-      <h2>the tech blog...</h2>
+      <h1>the tech blog...</h1>
       <p>Just a couple of random throughts on Technology - from AI to using an iPad for development tasks, and whatever else strikes my fancy. Oh, and that .gif of a 727 in the top corner is the Internet's <i>very first</i>, created by Steve Wilhite in 1987 while working at CompuServe. And according to Steve, it's pronounced "jif"...</p>
     `;
   } else if (blogType === "3") {
     introHTML = `
-      <h2>the mach-e blog...</h2>
+      <h1>the mach-e blog...</h1>
       <p>Thoughts and experiences with our first EV - the absolutely fabulous Ford Mustang Mach-E</p>
     `;
   } else if (blogType === "5") {
     introHTML = `
-      <h2>the Rasperry Pi Blog</h2>
+      <h1>the Rasperry Pi Blog</h1>
       <p>Thoughts and experiments with my Rasperry Pi rig. Nothing hard core, nothing ground-breaking, just a few thoughts while I play around with this remarkable little computer...</p>
     `;
   } else {
     // blogType 99 or missing → fallback
     introHTML = `
-      <h2>the blog with a purpose...</h2>
+      <h1>the blog with a purpose...</h1>
       <p>A place to write about things which interest me - late '80s and 90s hockey cards, technology, and maybe even software architecture once in a while, all while 
       testing out web technologies - AWS stuff, Javascript, React, and agentic coding tools.</p>
       <p>I'll try to be entertaining - at the very least you can expect sarcasm, spelling mistakes, and self-deprecation. So as my Dad used to say, "Take your coat off and stay a while..." </p>
@@ -39,6 +39,38 @@ function renderBlogIntro(blogType) {
   const introEl = document.getElementById("blog-intro");
   if (introEl) {
     introEl.innerHTML = introHTML;
+  }
+
+  // tech.html only (index.html always passes "99" with its own static
+  // meta) - fixes tech.html having no meta description, and the same
+  // <title> duplicated across its 4 ?blogType= variants.
+  if (blogType && blogType !== "99") {
+    const metaByType = {
+      "1": {
+        title: "the tech blog...at the hella files - AI, iPads & software",
+        description: "Random thoughts on technology - from AI to using an iPad for development tasks, plus whatever else strikes my fancy on the tech side of the hella files."
+      },
+      "3": {
+        title: "the Mach-E blog at the hella files - our first EV",
+        description: "Thoughts and experiences with our first EV, the Ford Mustang Mach-E - part of the hella files blog."
+      },
+      "5": {
+        title: "the Raspberry Pi blog...at the hella files",
+        description: "Thoughts and experiments with a Raspberry Pi rig - part of the hella files blog."
+      }
+    };
+    const meta = metaByType[blogType] || {
+      title: "the hella files...tech blog",
+      description: "Posts from the tech side of the hella files blog."
+    };
+
+    setPageMeta({
+      title: meta.title,
+      description: meta.description,
+      image: "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp",
+      url: `https://www.mellowjohnny.cc/tech.html${window.location.search}`,
+      type: "website"
+    });
   }
 }
 
@@ -108,14 +140,8 @@ function renderBlogPage() {
 // ****************************************** displayBlog Function *****************************
 
 /**
- * Function to FORMAT & DISPLAY Blogs posts
- * NOTE! We now use onerror image handling so any blog with broken images fail gracefully
- * @param {*} postBody 
- * @param {*} author 
- * @param {*} date 
- * @param {*} title 
- * @param {*} img
- * @param {*} imgCap
+ * Formats and renders one blog post. Broken images fail gracefully
+ * via onerror handling rather than a visibly broken <img>.
  */
 
    function displayBlog(postBody, author, date, title, img, imgCap) {
@@ -132,21 +158,36 @@ function renderBlogPage() {
   const readingStats = estimateReadingTime(cleanPostBody); // Lives in helper.js
 
 
+  // Structured data for this post (stripHtmlTags() lives in helper.js).
+  // Fixed id, not derived from title - only one post shows at a time
+  // (blogPageSize is 1), so each pagination click replaces this block.
+  const jsonLdData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": cleanTitle,
+    "author": { "@type": "Person", "name": cleanAuthor },
+    "datePublished": date,
+    "articleBody": stripHtmlTags(cleanPostBody).trim().slice(0, 300)
+  };
+
   // If no image was provided at all. NOTE: fixDate() lives in helper.js
   if (cleanImg === "none") {
-    blogBody.innerHTML += 
-      `<h1 class="blog-title">${cleanTitle}</h1> 
+    blogBody.innerHTML +=
+      `<h2 class="blog-title">${cleanTitle}</h2>
        <strong><i>${cleanAuthor}</i></strong><br>
-       <strong><i>${fixDate(date)}</i></strong> 
+       <strong><i>${fixDate(date)}</i></strong>
        <strong><i>${readingStats.minutes} minute read</i></strong><br>
        ${cleanPostBody}
        <hr/><br>`;
+    setJsonLd("jsonld-blogpost", jsonLdData);
     return;
   }
 
+  jsonLdData.image = cleanImg;
+
   // Otherwise include the image with an onerror handler
   blogBody.innerHTML += 
-    `<h1 class="blog-title">${cleanTitle}</h1> 
+    `<h2 class="blog-title">${cleanTitle}</h2> 
      <strong><i>${cleanAuthor}</i></strong><br>
      <strong><i>${fixDate(date)}</i></strong><br>
      <strong><i>${readingStats.minutes} minute read</i></strong><br>
@@ -157,6 +198,8 @@ function renderBlogPage() {
      <br>
      <i>${cleanImgCap}</i>
      <hr/><br>`;
+
+  setJsonLd("jsonld-blogpost", jsonLdData);
 }
 
 
@@ -166,6 +209,7 @@ function renderBlogPage() {
 
 function renderBlogPaginationControls(start, end) {
   const controls = document.getElementById("paginationControls");
+  if (!controls) return; // index.html has no pagination controls - only ever shows one blog entry
   controls.innerHTML = "";
 
   const prevBlog = allBlogs[start - 1];

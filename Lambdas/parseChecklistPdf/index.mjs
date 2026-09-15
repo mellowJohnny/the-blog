@@ -89,27 +89,50 @@ function splitNameAndNotes(remainder) {
 // (which always has a hyphen inside its year, e.g. "1997-98" - the "97"
 // before that hyphen is digits with no trailing letter, so it can't be
 // consumed as this prefix, and the overall match correctly fails).
-// "NNO" ("No Number") and the letters-hyphen-letters shape (e.g. "J-AM"
+// "NNO" ("No Number"), the letters-hyphen-letters shape (e.g. "J-AM"
 // for a jersey/memorabilia insert numbered by player initials, no digit
-// anywhere in it) are both matched as further specific exceptions
-// rather than loosening the digit requirement generally (which would
-// start matching ordinary prose lines). The letters-hyphen-letters case
-// additionally requires ALL CAPS (checked in code, not here - see
-// isBogusLetterCode) since the regex alone can't distinguish "J-AM"
-// from an ordinary Title-Case hyphenated phrase like "Self-Titled" that
-// happens to share the same shape.
-const CARD_LINE_RE = /^(NNO|[A-Za-z]+-[A-Za-z]+|(?:[A-Za-z]+|\d+[A-Za-z]+)?[-\s]?\d+[A-Za-z]?)\s+(\S.*)$/i;
+// anywhere in it), and a bare 2-4 letter shape with no hyphen (e.g.
+// "AY" for Alexei Yashin, "BH" for Brett Hull - the same player-
+// initials convention, just printed without a separating hyphen; seen
+// on high-end on-card autograph inserts - sometimes with an extra
+// set-prefix letter or two glued on with no separator either, e.g.
+// "ICDH" for an "IC" insert set's Dominik Hasek autograph) are all
+// matched as further specific exceptions rather than loosening the
+// digit requirement generally (which would start matching ordinary
+// prose lines). Both letters-only shapes additionally require ALL CAPS
+// (checked in code, not here - see isBogusLetterCode) since the regex
+// alone can't distinguish them from an ordinary Title-Case word/phrase
+// that happens to share the same shape (e.g. "Self-Titled", or a 2-4
+// letter word like "To"/"Big"/"Over" wrapped onto its own continuation
+// line).
+const CARD_LINE_RE = /^(NNO|[A-Za-z]+-[A-Za-z]+|[A-Za-z]{2,4}|(?:[A-Za-z]+|\d+[A-Za-z]+)?[-\s]?\d+[A-Za-z]?)\s+(\S.*)$/i;
 
 function isUnnumbered(cardNumber) {
   return cardNumber.toUpperCase() === "NNO";
 }
 
-// A letters-hyphen-letters card number (no digit at all) is only a
-// real card code when printed in ALL CAPS in the source - see
-// CARD_LINE_RE's comment above for why this can't just be baked into
-// the regex (which is case-insensitive throughout).
+// A letters-hyphen-letters or bare 2-4 letter card number (no digit at
+// all) is only a real card code when printed in ALL CAPS in the source
+// - see CARD_LINE_RE's comment above for why this can't just be baked
+// into the regex (which is case-insensitive throughout).
 function isAllCapsLetterCode(cardNumber) {
-  return /^[A-Z]+-[A-Z]+$/.test(cardNumber);
+  return /^[A-Z]+-[A-Z]+$/.test(cardNumber) || /^[A-Z]{2,4}$/.test(cardNumber);
+}
+
+// Checklists sourced from a "Print to PDF" of a webpage (e.g.
+// tcdb.com's printable checklist view) carry a browser-injected footer
+// on every page: a date/time stamp, the page title, and the page URL.
+// pdf-parse sometimes extracts these with no separating newline/space
+// from whatever text preceded them (e.g. "5:22 PM1999-00 Upper Deck..."),
+// so this can't just be "an empty-ish line" - it has to be recognized
+// by its own distinctive shape. None of this is real checklist content:
+// left unrecognized, it doesn't match CARD_LINE_RE, so it would fall
+// into the wrapped-line merge logic below and get silently appended
+// onto whatever card was last seen - not just on the final page, but
+// at every page break in the source PDF, corrupting that card's name
+// each time. Matched and dropped entirely before that logic runs.
+function isPrintFooterArtifact(line) {
+  return /^\d{1,2}\/\d{1,2}\/\d{2,4},?\s*\d{1,2}:\d{2}\s*[AP]M/i.test(line) || /^https?:\/\//i.test(line);
 }
 
 function parseChecklistText(text) {
@@ -120,7 +143,7 @@ function parseChecklistText(text) {
 
   for (const rawLine of lines) {
     const line = rawLine.trim();
-    if (!line) continue;
+    if (!line || isPrintFooterArtifact(line)) continue;
 
     const match = line.match(CARD_LINE_RE);
     // A checklist card's own description commonly references a range
@@ -134,10 +157,11 @@ function parseChecklistText(text) {
     // (duplicate, and therefore silently dropped) fresh card.
     const isRangeReference = match && /^-\s/.test(match[2]);
 
-    // See isAllCapsLetterCode()'s comment: a letters-hyphen-letters
-    // match (no digit, not "NNO") is only a real card number if it's
-    // printed in ALL CAPS - otherwise it's an ordinary hyphenated
-    // phrase that happened to match the same broad shape.
+    // See isAllCapsLetterCode()'s comment: a letters-hyphen-letters or
+    // bare 2-4 letter match (no digit, not "NNO") is only a real card
+    // number if it's printed in ALL CAPS - otherwise it's an ordinary
+    // word/hyphenated phrase that happened to match the same broad
+    // shape.
     const isBogusLetterCode = match && !/\d/.test(match[1]) && !isUnnumbered(match[1]) && !isAllCapsLetterCode(match[1]);
 
     if (!match || isRangeReference || isBogusLetterCode) {
@@ -228,6 +252,40 @@ function deriveSetNames(fileName) {
   };
 }
 
+// Permanent special case (added 2026-09-11) - "1990-91 Upper Deck" only,
+// main set only. That set's high/low-series print run gives almost every
+// card 3-4 lettered variants (1a/1b/1c/1d, etc.), ballooning the
+// checklist to ~1970 rows - a deliberate choice to keep this set's
+// checklist at 550 cards (one row per base number) rather than every
+// print variant. Collapses each run of variants down to its first-seen
+// row and strips "VAR" out of notes (comma-separated in this source,
+// e.g. "SR, RC, VAR") while keeping every other marker (RC, UER, etc.)
+// intact. Gated by an exact setName match plus insertSetName being empty,
+// so it can only ever affect a main-set re-upload of this one set - the
+// set's own insert set ("Superstars Holograms Stickers") and every other
+// set's checklist are untouched. See LAMBDA_FUNCTIONS.md and
+// tools/checklistParser/parse.mjs (kept in sync) for more.
+function collapseUpperDeck9091Variants(setName, insertSetName, cards) {
+  if (setName !== "1990-91 Upper Deck" || insertSetName) return cards;
+
+  const seenBaseNumbers = new Set();
+  const collapsed = [];
+  for (const card of cards) {
+    const baseNumber = card.cardNumber.replace(/^(\d+)[a-z]$/i, "$1");
+    if (seenBaseNumbers.has(baseNumber)) continue;
+    seenBaseNumbers.add(baseNumber);
+
+    const notes = card.notes
+      .split(",")
+      .map((token) => token.trim())
+      .filter((token) => token && token.toUpperCase() !== "VAR")
+      .join(", ");
+
+    collapsed.push({ ...card, cardNumber: baseNumber, notes });
+  }
+  return collapsed;
+}
+
 export const handler = async (event) => {
   try {
     const body = JSON.parse(event.body || "{}");
@@ -248,7 +306,8 @@ export const handler = async (event) => {
     const derived = deriveSetNames(fileName);
     const setName = body.setName?.trim() || derived.setName;
     const insertSetName = body.insertSetName?.trim() ?? derived.insertSetName;
-    const { cards, skippedDuplicates } = parseChecklistText(pdfData.text);
+    const { cards: rawCards, skippedDuplicates } = parseChecklistText(pdfData.text);
+    const cards = collapseUpperDeck9091Variants(setName, insertSetName, rawCards);
 
     return {
       statusCode: 200,

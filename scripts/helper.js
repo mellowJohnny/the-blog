@@ -12,13 +12,34 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
+// Strips HTML tags down to plain text - shared by estimateReadingTime()
+// below and by the meta-description/JSON-LD builders in blogs.js/wax.js,
+// which need plain text pulled from the same raw HTML postBody.
+function stripHtmlTags(htmlString) {
+  return htmlString.replace(/<[^>]*>/g, " ");
+}
+
+/**
+ * .img-wrap-sm/.img-wrap-md images opt into smaller mobile sizing -
+ * reads each image's actual width/height (inline style preferred over
+ * a possibly-stale attribute) into --wrap-w/--wrap-h for styles.css.
+ */
+function applyImgWrapSmSizing() {
+  document.querySelectorAll("img.img-wrap-sm, img.img-wrap-md").forEach(img => {
+    const w = parseFloat(img.style.width) || parseFloat(img.getAttribute("width"));
+    const h = parseFloat(img.style.height) || parseFloat(img.getAttribute("height"));
+    if (w) img.style.setProperty("--wrap-w", `${w}px`);
+    if (h) img.style.setProperty("--wrap-h", `${h}px`);
+  });
+}
+
 /**
  * Helper function to estimate reading time for blogs OR cardsets
  */
 
 function estimateReadingTime(htmlString) {
   // Strip HTML tags so we only count real words
-  const text = htmlString.replace(/<[^>]*>/g, " ");
+  const text = stripHtmlTags(htmlString);
 
   // Split on whitespace and filter out empty entries
   const words = text.trim().split(/\s+/).filter(w => w.length > 0);
@@ -32,6 +53,68 @@ function estimateReadingTime(htmlString) {
     wordCount,
     minutes
   };
+}
+
+// SEO / social meta helpers - setPageMeta() sets <title>, description,
+// canonical, OG, and twitter:* tags in one call. Static pages call it
+// once; dynamic pages re-call it whenever new content arrives.
+function setPageMeta({ title, description, image, url, type, keywords }) {
+  if (title) document.title = title;
+
+  function setMeta(selector, attr, content) {
+    let el = document.querySelector(selector);
+    if (!el) {
+      el = document.createElement("meta");
+      const [, attrName, attrValue] = selector.match(/\[(\w+)=(.+)\]/);
+      el.setAttribute(attrName, attrValue.replace(/"/g, ""));
+      document.head.appendChild(el);
+    }
+    el.setAttribute(attr, content);
+  }
+
+  if (description) {
+    setMeta('meta[name="description"]', "content", description);
+    setMeta('meta[property="og:description"]', "content", description);
+    setMeta('meta[name="twitter:description"]', "content", description);
+  }
+  if (title) {
+    setMeta('meta[property="og:title"]', "content", title);
+    setMeta('meta[name="twitter:title"]', "content", title);
+  }
+  if (image) {
+    setMeta('meta[property="og:image"]', "content", image);
+    setMeta('meta[name="twitter:image"]', "content", image);
+  }
+  if (url) {
+    setMeta('meta[property="og:url"]', "content", url);
+
+    let link = document.querySelector('link[rel="canonical"]');
+    if (!link) {
+      link = document.createElement("link");
+      link.setAttribute("rel", "canonical");
+      document.head.appendChild(link);
+    }
+    link.setAttribute("href", url);
+  }
+  setMeta('meta[property="og:type"]', "content", type || "website");
+  setMeta('meta[name="twitter:card"]', "content", "summary_large_image");
+  if (keywords) {
+    setMeta('meta[name="keywords"]', "content", keywords);
+  }
+}
+
+// setJsonLd() creates or replaces a <script type="application/ld+json">
+// block in <head>, keyed by id so a page can update its own structured
+// data as new content loads without piling up duplicate blocks.
+function setJsonLd(id, data) {
+  let script = document.getElementById(id);
+  if (!script) {
+    script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = id;
+    document.head.appendChild(script);
+  }
+  script.textContent = JSON.stringify(data);
 }
 
 
@@ -91,11 +174,9 @@ function getMonthName(monthNum) {
         
     }
 
-// -------------------- Helper Function for Sorting by a Property ----------------------
-// Used for both blog posts (sorted by "time") and card set reviews (sorted by "stars")
-// When "order" is "first", highest/newest value first
-// When "order" is "last", lowest/oldest value first
-// Default is highest/newest first
+// Sorting helper for blog posts ("time") and card set reviews
+// ("stars") - order "first" = highest/newest first, "last" = oldest
+// first (also the default).
 
 function getSortOrder(property,order) {
     return function(a, b) {
@@ -139,28 +220,88 @@ function getSortOrder(property,order) {
 } // end sort function
 
 
-// -------------------------------- Set-O-Matic Year Picker --------------------------------------
-// Used to render all pickers: "Classic", "Junk Wax", "Timmies" and "McDonalds" 
-// NEW DYNAMIC version - no more enormous list of if statements
-// How this works
-// Ranges: You only define the start/end years once per category. No duplication.
-// Dynamic labels: The label 1979-80 is generated automatically by combining the year and the next year.
-// Highlighting: The selected year is shown as plain text, others as links.
-// Scalability: Adding new years is as simple as extending the range.
-// This way, instead of maintaining hundreds of lines of repetitive HTML, you only maintain the ranges. Much easier to extend and debug.
 
-// Category + pageName specific ranges - shared by renderSetPicker() (the
-// year-picker widget) and getPageNameForYear() below (used by
-// playerSearch.js to build a working link back to a matched set's
-// review - Checklists/Cards items don't store pageName anywhere, it's
-// purely a UI/nav grouping concept derived from blogCat + year).
+
+// Primary/tertiary hex + real fan cheer per team (verified current for
+// 2026-27, 32 teams) - feeds the masthead gradient/label. A few teams
+// share primary/tertiary (genuinely two-color+white), not a data error.
+const NHL_TEAM_COLORS = [
+  { name: "Anaheim Ducks", cheer: "Let's Go Ducks!", primary: "#CF4520", tertiary: "#89734C" },
+  { name: "Boston Bruins", cheer: "Let's Go Bruins!", primary: "#010101", tertiary: "#FFB81C" },
+  { name: "Buffalo Sabres", cheer: "Let's go Buffalo!", primary: "#003087", tertiary: "#FFB81C" },
+  { name: "Calgary Flames", cheer: "Go Flames Go!", primary: "#C8102E", tertiary: "#F1BE48" },
+  { name: "Carolina Hurricanes", cheer: "Let's Go 'Canes!", primary: "#000000", tertiary: "#CC0000" },
+  { name: "Chicago Blackhawks", cheer: "Let's Go Hawks!", primary: "#CE1126", tertiary: "#010101" },
+  { name: "Colorado Avalanche", cheer: "Let's Go Avs!", primary: "#8A2432", tertiary: "#236093" },
+  { name: "Columbus Blue Jackets", cheer: "Let's Go Jackets!", primary: "#041E42", tertiary: "#C8102E" },
+  { name: "Dallas Stars", cheer: "Let's Go Stars!", primary: "#00823E", tertiary: "#000000" },
+  { name: "Detroit Red Wings", cheer: "Let's Go Red Wings!", primary: "#C8102E", tertiary: "#C8102E" },
+  { name: "Edmonton Oilers", cheer: "Let's Go Oilers!", primary: "#00205B", tertiary: "#D14520" },
+  { name: "Florida Panthers", cheer: "Go Cats Go!", primary: "#C8102E", tertiary: "#041E42" },
+  { name: "Los Angeles Kings", cheer: "Go Kings Go!", primary: "#010101", tertiary: "#A2AAAD" },
+  { name: "Minnesota Wild", cheer: "Let's Go Wild!", primary: "#0E4431", tertiary: "#AC1A2E" },
+  { name: "Montreal Canadiens", cheer: "Go Habs Go!", primary: "#A6192E", tertiary: "#001E62" },
+  { name: "Nashville Predators", cheer: "Goalie, you suck!", primary: "#FFB81C", tertiary: "#041E42" },
+  { name: "New Jersey Devils", cheer: "Let's Go Devils!", primary: "#CC0000", tertiary: "#000000" },
+  { name: "New York Islanders", cheer: "Yes!", primary: "#003087", tertiary: "#FC4C02" },
+  { name: "New York Rangers", cheer: "Let's Go Rangers!", primary: "#154B94", tertiary: "#C32032" },
+  { name: "Ottawa Senators", cheer: "Let's Go Sens!", primary: "#010101", tertiary: "#C8102E" },
+  { name: "Philadelphia Flyers", cheer: "Let's Go Flyers!", primary: "#D24303", tertiary: "#000000" },
+  { name: "Pittsburgh Penguins", cheer: "Let's Go Pens!", primary: "#000000", tertiary: "#FFB81C" },
+  { name: "San Jose Sharks", cheer: "Let's Go Shar-arks!", primary: "#00778B", tertiary: "#010101" },
+  { name: "Seattle Kraken", cheer: "Let's Go Kraken!", primary: "#001425", tertiary: "#96D8D8" },
+  { name: "St. Louis Blues", cheer: "Let's Go Blues!", primary: "#006AC6", tertiary: "#FFB81C" },
+  { name: "Tampa Bay Lightning", cheer: "Let's Go Bolts!", primary: "#00205B", tertiary: "#00205B" },
+  { name: "Toronto Maple Leafs", cheer: "Go Leafs Go!", primary: "#00205B", tertiary: "#00205B" },
+  { name: "Utah Mammoth", cheer: "Let's Go Mammoth!", primary: "#010101", tertiary: "#7AB2E0" },
+  { name: "Vancouver Canucks", cheer: "Go Canucks Go!", primary: "#00205B", tertiary: "#046A38" },
+  { name: "Vegas Golden Knights", cheer: "Let's Go Knights!", primary: "#B9975B", tertiary: "#333F48" },
+  { name: "Washington Capitals", cheer: "Let's Go Caps!", primary: "#C8102E", tertiary: "#041E42" },
+  { name: "Winnipeg Jets", cheer: "Let's Go Jets!", primary: "#041E42", tertiary: "#004A98" }
+];
+
+// Called on load by every page with the wax-reviews-mast-table masthead
+// - picks one team at random and sets its colors as CSS custom
+// properties, which the masthead's gradient (styles.css) reads.
+function applyRandomMastheadTeam() {
+  const mast = document.querySelector(".wax-reviews-mast-table");
+  if (!mast) return;
+
+  const team = NHL_TEAM_COLORS[Math.floor(Math.random() * NHL_TEAM_COLORS.length)];
+  mast.style.setProperty("--team-primary", team.primary);
+  mast.style.setProperty("--team-tertiary", team.tertiary);
+
+  // Two-color (+white) teams (primary === tertiary) get a simpler
+  // solid-background design with one centered white stripe instead of
+  // the 5-band gradient - see .masthead-two-color in styles.css.
+  mast.classList.toggle("masthead-two-color", team.primary === team.tertiary);
+
+  // Small cheer label (bottom-right) lets the owner visually confirm
+  // which team is showing. Created once and reused, rather than
+  // added statically to each of the 4 pages' markup.
+  let label = mast.querySelector(".masthead-team-label");
+  if (!label) {
+    label = document.createElement("span");
+    label.className = "masthead-team-label";
+    mast.appendChild(label);
+  }
+  label.textContent = team.cheer;
+}
+
+// Set-O-Matic Year Picker - renders the Classic/Junk Wax/Timmies/
+// McDonald's year pickers from just a start/end range per category,
+// generating labels and link/plain-text highlighting dynamically.
+
+// Category + pageName ranges - shared by renderSetPicker() and
+// getPageNameForYear() (used by playerSearch.js for a matched set's
+// link back). pageName is a UI/nav concept, not a stored field.
 const categoryRanges = {
   reg: {
     classicWax: { start: 1981, end: 1986, className: "junk-set-nav-td", pageName: "classicWax" },
     junkWax:    { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" }
   },
   mcd: {
-    mcd: { start: 1991, end: 2006, className: "junk-set-nav-td", pageName: "mcd" }
+    mcd: { start: 1991, end: 2007, className: "junk-set-nav-td", pageName: "mcd" }
   },
   tims: {
     timmies: { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
@@ -225,11 +366,9 @@ function renderSetPicker(year, blogCat, pageName) {
 
 
 
-/** Helper Function to dynamically fetch ------------ TOP LEVEL NAVIGATION -----------------------
- * Refactored to use Object Maps and dynamic tables
- * Adding a new page = add one line to const NAV_MAP
- * Adding a new menu item = add one entry to const NAV_ITEMS
-*/
+/** Top-level navigation, built from Object Maps rather than hardcoded
+ * tables - add a page via NAV_MAP, a menu item via NAV_ITEMS.
+ */
 
 // Step 1: Define the navigation items as data
 const NAV_ITEMS = {
@@ -256,7 +395,11 @@ const NAV_MAP = {
   classicWax: ["home", "junk", "mcd", "timmies", "search", "tech", "mache"],
   timmies: ["home", "classic", "junk", "mcd", "search", "tech", "mache"],
   mcd: ["home", "classic", "junk", "timmies", "search", "tech", "mache"],
-  playerSearch: ["home", "classic", "junk", "mcd", "timmies", "tech", "mache"]
+  playerSearch: ["home", "classic", "junk", "mcd", "timmies", "tech", "mache"],
+  // theJunkWaxYears.html is a static essay, not one of the junkWax/
+  // classicWax/mcd/timmies review pages itself, so - like playerSearch -
+  // nothing needs to self-exclude here; "junk" stays in the list.
+  junkWaxYears: ["home", "classic", "junk", "mcd", "timmies", "search", "tech", "mache"]
 };
 
 // Step 3: Build a dynamic table generator
@@ -311,23 +454,9 @@ document.addEventListener("click", (event) => {
 
 // --------------- Cookie! --------------------------
 
-// cmsAlert(message) - a styled replacement for the native alert() used
-// throughout the CMS (cms.js, checklistUpload.js, adminSMS.js). Native
-// alert()/confirm() dialogs are synchronous - they block the whole page
-// until dismissed, which every existing call site relies on for
-// "show a message, then redirect/focus" sequencing. cmsAlert() can't
-// block the same way (no JS API does that outside alert() itself), so
-// it returns a Promise that resolves on dismiss instead - callers
-// `await` it and get the same effective ordering.
-//
-// Markup is injected into the DOM lazily on first call rather than
-// living in every CMS page's HTML. Visually matches the checklist
-// modal on waxReviews.html (masthead-blue header, white box,
-// box-shadow overlay) - see styles.css's .cms-alert-* rules - for one
-// consistent "this site's modal" look between the public and CMS
-// sides.
-//
-// See cmsConfirm() below for the equivalent replacement of confirm().
+// cmsAlert(message) - styled alert() replacement used across the CMS.
+// Returns a Promise resolved on dismiss (callers `await` it) since it
+// can't block synchronously like real alert(). See cmsConfirm() below.
 function cmsAlert(message) {
   return new Promise((resolve) => {
     let overlay = document.getElementById("cmsAlertOverlay");
@@ -375,21 +504,9 @@ function cmsAlert(message) {
   });
 }
 
-// cmsConfirm(message) - a styled replacement for the native confirm()
-// used for the CMS's destructive/serious actions (delete card set,
-// delete blog post, live-mode SMS send, bulk subscriber replace).
-// Same async-Promise approach as cmsAlert() above (see its comment for
-// why), but resolves a boolean instead of nothing - true only if
-// Confirm is clicked. Styled with a red header instead of cmsAlert()'s
-// blue, to visually flag these as the more serious action - separate
-// overlay/element IDs from cmsAlert() so the two never share state.
-//
-// Escape and a backdrop click both resolve false (cancel) - the safe
-// default. Unlike cmsAlert(), Enter is deliberately NOT bound to
-// anything here - accidentally confirming a "this cannot be undone"
-// delete via a stray Enter keypress is exactly the kind of mistake
-// this modal should make harder, not easier, so confirming requires an
-// explicit click on the Confirm button.
+// cmsConfirm(message) - like cmsAlert() but for destructive actions,
+// resolving true only on an explicit Confirm click. Escape/backdrop
+// resolve false; Enter is deliberately NOT bound, unlike cmsAlert().
 function cmsConfirm(message) {
   return new Promise((resolve) => {
     let overlay = document.getElementById("cmsConfirmOverlay");
@@ -452,3 +569,38 @@ function setCookie(cookieName, cookieValue, exp) {
     let expires = "expires="+ d.toUTCString();
     document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
   }
+
+/**
+ * Click-toggle flyouts for the wlcms.html top nav dropdowns (not
+ * CSS :hover) so this behaves the same on touch and desktop. Scoped to
+ * #wlcms-top-nav only. Call once on page load.
+ */
+function initWlcmsNav() {
+  const nav = document.getElementById('wlcms-top-nav');
+  if (!nav) return;
+
+  function closeAll(except) {
+    nav.querySelectorAll('.cms-nav-item.open').forEach((item) => {
+      if (item === except) return;
+      item.classList.remove('open');
+      const btn = item.querySelector('.cms-nav-parent');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  nav.querySelectorAll('.cms-nav-parent').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const item = btn.closest('.cms-nav-item');
+      const isOpen = item.classList.contains('open');
+      closeAll();
+      item.classList.toggle('open', !isOpen);
+      btn.setAttribute('aria-expanded', String(!isOpen));
+    });
+  });
+
+  document.addEventListener('click', () => closeAll());
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAll();
+  });
+}

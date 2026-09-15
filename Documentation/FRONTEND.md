@@ -14,6 +14,7 @@ inline in the `<head>`.
 | `waxReviews.html` | Card set review stream — the main hockey card content. | `year`, `pageName`, `blogCat`, `sortOrder` | `wax.js`, `helper.js` |
 | `playerSearch.html` | Player search — find every set a player appears in, across all uploaded checklists, with links to each set's review. See "Player search" below. | — | `playerSearch.js`, `helper.js` |
 | `lockout.html` | Static essay about the 2004-05 NHL lockout. Special-cased redirect target — see below. | — | `helper.js` |
+| `theJunkWaxYears.html` | Static essay on hockey's "Junk Wax" era (the late-80s/early-90s overproduction boom this site's card reviews mostly cover). Linked from `waxReviews.html`'s junkWax intro copy (`renderCardIntro()`, `wax.js`). Was briefly moved into `Old HTML Pages/` by mistake and missed the site-wide HTML/CSS-conformity and SEO passes as a result — since restored and brought in line with the other pages (masthead/fonts/script-loading now match `lockout.html`'s pattern; a `<meta description="...">` typo, which meant this page never actually had a working meta description, and a broken `class="flex-container, intro"` — a stray comma silently prevented that layout class from ever applying — were also fixed). | — | `helper.js` |
 
 **No longer live**: `cards.html` (the "what is Junk Wax" essay) and `cardChecker.html` (the "Card-O-Matic" slot calculator) were both moved to `Old HTML Pages/` on 2026-08-15 — see "Orphaned / legacy files" below. `cards.html` had already been documented here as deprecated-but-still-linked before that move; this doc previously still listed both as live public pages, which was stale.
 
@@ -29,10 +30,17 @@ one year+category combination.
 ### Sitemap
 
 `sitemap.xml` (repo root, referenced from `robots.txt`) lists every
-real entry-point page — added for Algolia's hosted crawler (site
-verification tag + Experiences widget live in `index.html`). Since this
-site has no per-post/per-set permalinks (posts/reviews render as
-batches on shared query-string pages, not one URL per item), the
+real entry-point page, for search-engine crawlers (Google, Bing, etc.)
+to discover. It originally existed for Algolia's hosted crawler, back
+when Algolia powered site search — that integration (the `<meta
+name="algolia-site-verification">` tag in `index.html`, and the
+Experiences autocomplete widget before it) has since been removed
+entirely, fully superseded by the custom `playerSearch.html`/
+`searchPlayerName` search feature (see "Player search" below). The
+sitemap itself stays — it's independently useful for standard SEO
+crawling regardless of Algolia. Since this site has no per-post/per-set
+permalinks (posts/reviews render as batches on shared query-string
+pages, not one URL per item), the
 sitemap lists batch-level URLs (home, `playerSearch.html`, each
 `tech.html` `blogType`, each `waxReviews.html` year+category
 combination, `lockout.html`) rather than one entry per post — the
@@ -60,15 +68,18 @@ them to a crawler (or a human visitor navigating by link).
 | File | Responsibility |
 |---|---|
 | `blogs.js` | Blog intro copy (`renderBlogIntro()`), `fetchBlogs()`/pagination/rendering for the blog stream, and the homepage weather widget (calls OpenWeatherMap directly from the browser using the visitor's geolocation). |
-| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. |
-| `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), hamburger menu toggle, cookie helper, and copyright-year footer. |
-| `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise). See "Player search" below. |
+| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. On mobile, the prev/next set name in that label drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle") via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans the mobile breakpoint swaps between, since the full "YYYY-YY Manufacturer" label was too long for a small screen; desktop still shows the full name. |
+| `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — used by every public page) and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), hamburger menu toggle, cookie helper, and copyright-year footer. |
+| `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise); also the type-ahead dropdown (`initPlayerSearchTypeahead()`/`loadPlayerNameIndex()`/`rankPlayerNameMatch()`) that suggests player names client-side from a once-fetched, cached name index. See "Player search" below. |
 | `adminTools.js` | `cms/admin.html` support code: a growing set of self-service site-health checks (broken images, checklist-to-review linkage), each its own function calling the site's existing public read APIs directly. See `CMS_GUIDE.md`'s "Admin Tools" section. |
 | `auth.js` | Cognito OAuth2 code exchange + token refresh, gates every `/cms` page. See `AUTH.md`. |
-| `cms.js` | All CMS create/edit/list logic + the S3 image browser/upload modal + TinyMCE init. See `CMS_GUIDE.md`. |
+| `cmsBlog.js` | Blog post CRUD: `createBlogPost`, `updateBlogPost`, `deleteBlogPost`, `getBlogsForUpdate`, `getStagedBlogsForUpdate`, `displayBlogs`, `displayStagedBlogs`, `fetchBlogByID`, `populateBlog`, and the `BLOG_TYPE_LABELS` lookup object. One of 4 files split out of the former `scripts/cms.js` (1592 lines, deleted) on a by-concern basis, moved verbatim with no logic changes. See `CMS_GUIDE.md`. |
+| `cmsCardSet.js` | Card-set review CRUD: `createCardSet`, `updateCardSet`, `deleteCardSet`, `fetchAllCardSets`, `fetchAllStagedCardSets`, `displayCardSets`, `displayStagedCardSets`, `fetchCardSetByID`, `populateCardSet`, `openPreview`, `renderPreview`, `closePreview`, and the `CARDSET_CATEGORY_LABELS` lookup object. Split out of the former `cms.js` alongside `cmsBlog.js` — see that row above. Also owns the Star Rating widget shared by `createCardSet.html`/`setEdit.html`: `initStarRatingWidget()` (wires click/hover on the five star icons, called once per page on load) and `paintStarRating(value, containerId)` (the actual paint logic, also called by `populateCardSet()` once a set's real rating loads) — see `CMS_GUIDE.md`'s "Star Rating widget". |
+| `cmsImageBrowser.js` | The S3 image browser/upload modal, both families together since they share code (card-set images and blog images both use `uploadNewImage()`/`closeImageBrowser()`): `fetchImageList`, `renderImageList`, `openImageBrowser`, `filterImageList`, `openBlogImageBrowser`, `fetchBlogImageList`, `renderBlogImageList`, `filterBlogImageList`, `uploadNewImage`, `closeImageBrowser`. Split out of the former `cms.js` — see `cmsBlog.js` row above. See `CMS_GUIDE.md`. |
+| `cmsFormUI.js` | Generic CMS form UI: `initTinyEditor` (TinyMCE init) plus the submit-button state helpers (`cmsButtonSubmit`, `cmsCreateButtonReset`, `changeMeBack`, `cmsUpdateButtonReset`, `changeMeBackUpdate`). Split out of the former `cms.js` — see `cmsBlog.js` row above. `fetchCopyrightYear()`, also formerly in `cms.js`, was dropped entirely during the split rather than migrated to any of these 4 files — it was a byte-identical duplicate of the copy already in `helper.js`, and every page that used the `cms.js` copy already loaded (or gained) `helper.js`. See `CMS_GUIDE.md`. |
 | `adminSMS.js` | Autobus SMS admin page logic: character/segment counter, GSM-7 vs Unicode encoding detection, broadcast send, bulk subscriber import, add-subscriber modal. See `CMS_GUIDE.md`. |
 | `checklistUpload.js` | `cms/uploadChecklist.html` support code: the upload/parse modal (drag-and-drop, mirrors `adminSMS.js`'s bulk-import modal structure/CSS), rendering the parsed result as an editable table, and `saveChecklist()`. See `CMS_GUIDE.md`. |
-| `cardSlotCalc.js` | `computeGridSpace()` — the Card-O-Matic slot/page calculator, used only by `cardChecker.html`. Still live; excluded from the 2026-08-12 JS style audit at the site owner's request but not deprecated. |
+| `cardSlotCalc.js` | `computeGridSpace()` — the Card-O-Matic slot/page calculator, used only by `cardChecker.html`. **No longer live** — `cardChecker.html` moved to `Old HTML Pages/` on 2026-08-15 (see "Public pages" above); this row previously said "Still live," which went stale when that move happened and wasn't updated here. |
 | `quadratic.js` | **Deprecated** (2026-08-12) — `quadSolver()`, a quadratic equation solver used only by `Old HTML Pages/quad2.html`, which is itself orphaned (not linked from current nav — see "Orphaned pages" below). Excluded from future JS work. |
 | `pw.js` | **Deprecated** (2026-08-12) — `generatePassword()`, a tiny random password generator used only by `Old HTML Pages/pw.html`, itself orphaned. Excluded from future JS work. |
 | `magic8Ball.js` | **Deprecated** (2026-08-12) — console-only Magic 8-Ball toy (hardcoded question, `console.log`s the answer — no DOM interaction). Not linked from any page. Excluded from future JS work. |
@@ -158,7 +169,22 @@ knowing before touching this CSS again:
   silently stomped that div's *intended* spacing/border-bottom, since
   the shared rule's specificity beat it too. Same fix pattern: an
   `#playerSearchResults .player-search-group` override, not touching
-  the shared rule.
+  the shared rule. Recurred a third time on `displayCardSet()`'s new
+  `.set-details-grid` (see below): its child divs (`.set-details-name`/
+  `.set-details-image`/`.set-details-list`) inherited both the
+  1000px-desktop and 100%-mobile versions of the shared rule, quietly
+  overriding the grid's own `width`/`padding`/`margin`. Same fix again:
+  `#cardSetDiv .set-details-grid` / `.set-details-name` /
+  `.set-details-image` / `.set-details-list` overrides. Recurred a
+  fourth time on `playerSearch.html`'s type-ahead dropdown: the new
+  `.player-search-input-wrap` (wraps the input + suggestions list, for
+  `position: relative` positioning) is itself a `<div>` nested inside
+  `.flex-container`, so it silently inherited the shared rule's 15px
+  padding/5px margin too, pushing the actual input box 20px right of
+  the label/button/intro text above and below it - not caught until the
+  site owner noticed the misalignment visually. Same fix again:
+  `#player-search-form .player-search-input-wrap` overriding
+  `padding`/`margin` back to `0`.
 - **`<table>` elements resist non-table `display` overrides
   unpredictably across browsers.** Several bugs this round traced back
   to forcing `display: flex`/`display: block` onto a `<table>`/`<tr>`
@@ -171,6 +197,69 @@ knowing before touching this CSS again:
   (`.set-footer-table-style` in `displayCardSet()`, `wax.js`), both of
   which used to be `<table>`s and are now `<div>`s for exactly this
   reason.
+- **A `rowspan`'d table cell can't be visually reordered above the rows
+  it spans, via a breakpoint or otherwise.** `displayCardSet()`'s
+  set-details box used to be a `<table>` with the set name and a
+  `rowspan`'d header-image cell sharing row 1 — on mobile this squished
+  the name into a narrow column beside the image instead of the name
+  spanning full width above it, because the mobile CSS set `tr {
+  display: block }` (stacking most rows correctly) but never `td {
+  display: block }` too, so row 1's two cells stayed `display:
+  table-cell` and kept competing for width regardless. Fixed by
+  replacing the table with CSS Grid (`.set-details-grid`, three
+  independent `grid-area`s: `.set-details-name`/`.set-details-image`/
+  `.set-details-list`) — desktop defines `grid-template-areas` as
+  `"name image" "list image"` (matching the old layout exactly),
+  mobile redefines it as `"name" "image" "list"` in one column. No
+  table semantics involved, so no rowspan fight. `cms/cmsCardSet.js`'s
+  `renderPreview()` (the `setEdit.html`/`createCardSet.html` preview
+  modal) still uses the old table-based markup independently — a
+  desktop-only CMS tool, deliberately left as-is rather than kept in
+  sync, same category of intentional duplication as the checklist-
+  parsing (`tools/checklistParser/` vs. `Lambdas/parseChecklistPdf/`)
+  and sitemap-generator (`tools/generateSitemap/` vs.
+  `scripts/helper.js`) duplications already noted elsewhere in this
+  doc.
+- **A higher-specificity rule elsewhere can silently neutralize a
+  lower-specificity `!important` cap, even when both use `!important`.**
+  `.img-wrap-left`/`.img-wrap-right` (small hand-inserted logo images
+  in a card set's `postBody`, e.g. the All-Star Game logo on
+  McDonald's sets — see `CMS_GUIDE.md`'s "Wrapped images in review body
+  content") carried a `max-width: 50px !important` cap that turned out
+  to have been dead code since the day it was added (2026-08-09):
+  `.set-details-author img { max-width: 100% !important; height: auto
+  !important; }` sits lower in the file and has higher specificity
+  (class+element, 0,1,1, vs. class alone, 0,1,0), so it always won —
+  these images actually rendered at whatever size the CMS content set,
+  completely unconstrained, on every breakpoint, the whole time. Same
+  root cause as the `.flex-container div` issue above (a broad selector
+  outranking a narrower one that assumed it would win), just a
+  different selector pair. Found while building real mobile scaling for
+  these images; fixed by scoping the new rules under `.set-details-author
+  img.img-wrap-sm`/`.img-wrap-md` (0,2,1) to out-specificity the 100%
+  rule. The original dead 50px cap on `.img-wrap-left`/`.img-wrap-right`
+  themselves was left in place, still inert — not removed as part of
+  this fix.
+- **`transform: scale()` shrinks an element visually but doesn't reflow
+  surrounding layout.** The first attempt at the mobile image scaling
+  above used `transform: scale(0.25)` on `.img-wrap-sm` — a true
+  "percentage of the image's own current size" shrink needing zero
+  per-image CSS values. But `transform` doesn't affect the box model:
+  the floated image's original full-size box stayed reserved, leaving
+  an unacceptable blank gap next to the now visually-tiny image, with
+  wrapped text held at arm's length from it rather than flowing in
+  close. Replaced with real `width`/`height` overrides instead:
+  `applyImgWrapSmSizing()` (`helper.js`, called from `wax.js` once each
+  set's `postBody` renders) reads each `.img-wrap-sm`/`.img-wrap-md`
+  image's actual rendered size and sets `--wrap-w`/`--wrap-h` custom
+  properties from it, so the mobile rule's `calc(var(--wrap-w) * 0.5)`
+  (`.img-wrap-sm`) / `* 0.65` (`.img-wrap-md`) resizes the real box and
+  lets text reflow tight against the smaller image. It reads the
+  inline `style` width/height specifically, not the `width`/`height`
+  attributes — older `postBody` content has cases where the two have
+  drifted out of sync (the attribute left stale after the style was
+  hand-edited), and the style is what actually determines the
+  desktop-rendered size.
 - **A percentage `width` plus `padding` on the same box needs
   `box-sizing: border-box`, or the padding renders as *extra* width
   rather than eating into it.** `.checklist-modal-content` (the
@@ -214,7 +303,11 @@ It used to use the same `preload`+`onload`-swap trick the Google Fonts
 links still use (non-render-blocking, so the browser could paint HTML
 before CSS was ready), but that meant a real, visible flash of
 completely unstyled content on every navigation - worse as
-`styles.css` grew. Switched to blocking specifically to fix that; the
+`styles.css` grew, and compounded by `styles.css`'s own CDN cache
+headers: a year-long cache at the edge, but `max-age=0` for the
+browser itself, forcing a revalidation round-trip on every navigation
+before the non-blocking swap could even fire. Switched to blocking
+specifically to fix that; the
 Google Fonts links are unaffected and still use the non-blocking
 pattern deliberately (a missing/slow *font* swaps to a fallback
 gracefully, which is a much smaller visual disruption than missing all
@@ -298,12 +391,19 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
   mobile (`@media (max-width: 600px)`, matching the site's one
   breakpoint — see "Mobile / responsive design" above); cards render in
   a 3-column CSS multi-column layout (1 column under 600px).
-- **Grouping/ordering**: `renderChecklistGroups()` groups the fetched
-  items main-set cards first, then each insert set by name, and sorts
-  within each group by `sortIndex` — never by raw fetch order, since
-  the DynamoDB sort key sorts as a plain string (`"INSERT#"` sorts
-  before `"MAIN#"`, and card numbers don't sort numerically) — see
-  `DATA_MODEL.md`.
+- **Grouping/ordering**: `renderChecklistGroups(items)` groups the
+  fetched items main-set cards first, then each insert set by name, and
+  sorts within each group by `sortIndex` — never by raw fetch order,
+  since the DynamoDB sort key sorts as a plain string (`"INSERT#"`
+  sorts before `"MAIN#"`, and card numbers don't sort numerically) —
+  see `DATA_MODEL.md`. The actual grouping/sorting/labeling logic lives
+  in a pure helper, `buildChecklistGroups(items)`, extracted out of
+  `renderChecklistGroups()` when PDF export (below) was added —
+  it returns already-grouped/sorted/labeled data (`[{title, cards},
+  ...]`, "Main Set" first) with no DOM involved, and both the on-screen
+  HTML renderer and `buildChecklistPdfDocument()` call it, so the two
+  outputs share one source of truth for grouping instead of two
+  hand-maintained implementations that could drift apart.
 - **Insert set group titles carry a type suffix**: each insert set's
   heading renders as `"<name> - Insert Set"` (e.g. `"Powerhouse
   Pillars - Insert Set"`), except when any card in that group has
@@ -356,14 +456,63 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
   user-controlled "Headers and footers" checkbox in the print dialog,
   not something the page can override, so this is a second, clean
   footer shown only for the parts of the print output that need one.
-- **Known bug, deliberately not yet fixed**: `fetchPageTitle(setName)`
-  appends a new `<title>` tag on every card-set render
-  (`pageTitle.innerHTML += ...`) without clearing previous ones — paging
-  through multiple sets in the same year without a full reload
-  accumulates `<title>` tags, and the browser locks onto whichever
-  registered first (stale). The custom print footer above exists partly
-  to route around this for print purposes rather than requiring the fix
-  first; the underlying bug is still open.
+- **Download PDF**: a "⬇ Download PDF" button sits alongside Print in
+  `.checklist-modal-controls` and calls `exportChecklistPdf()` in
+  `wax.js` — a separate, additive feature, not a replacement; Print is
+  untouched. It builds the file client-side with jsPDF (cdnjs, pinned
+  to `4.2.1`) plus three small font files —
+  `scripts/fonts/bebasNeue-normal.js`, `scripts/fonts/sourceSans3-normal.js`,
+  `scripts/fonts/sourceSans3-bold.js`, each just a global base64-encoded
+  TTF string. Fonts come from Google Fonts (github.com/google/fonts):
+  Bebas Neue as-is (matching the masthead font used elsewhere on the
+  site), and Source Sans 3 — which only ships as a variable font
+  upstream — instantiated to static Regular/Bold weights via a one-time
+  `fonttools.varLib.instancer` step before being base64-embedded. All
+  four scripts (jsPDF + 3 fonts, ~1MB combined) are loaded lazily:
+  `loadJsPdf()` is a small promise-chain loader that injects `<script>`
+  tags dynamically on first click of Download PDF and caches the result
+  so a second click doesn't re-fetch, rather than static `<script>` tags
+  in the HTML — most visitors who open a checklist never click Download,
+  so it shouldn't cost anything on a normal page load.
+
+  `exportChecklistPdf()` filters `currentChecklistItems` identically to
+  the on-screen "Rookies only" checkbox before building the PDF, so a
+  download taken while the filter is on only contains the filtered
+  cards. The document itself, built by `buildChecklistPdfDocument()`,
+  matches the on-screen/print look as closely as practical, letter-sized
+  with as many pages as needed:
+  - A masthead bar on page 1 only ("THE HELLA FILES" in embedded Bebas
+    Neue on a colored bar matching the on-screen masthead's background
+    color, with a small 4-direction offset behind the text approximating
+    the on-screen text-shadow/outline effect), then the set name as a
+    title.
+  - A genuine 2-column layout, not a naive "fill column 1, then column
+    2." It replicates the real CSS multi-column behavior where a group
+    title (`column-span: all` on screen) breaks the column flow and
+    forces a restart, and it balances each page's worth of content
+    evenly by height between the two columns rather than greedily
+    filling the first column to its limit — so a short group, or the
+    last partial page of a long group, doesn't leave one column (often
+    half the page) empty beside it. This balancing was added after a
+    real bug surfaced testing against actual production checklist data:
+    an 18-card insert set on the 2024-25 Tim Hortons set rendered
+    entirely in column 1, leaving column 2 empty, before the fix.
+  - Group titles get a colored bottom border matching the on-screen
+    `.checklist-modal-group-title` underline, and won't start a section
+    unless there's room for the title plus at least 3 card rows —
+    otherwise the section starts fresh on the next page/column, avoiding
+    a lonely 1-2-row orphan.
+  - Each card row shows an unfilled checkbox square (same idea as the
+    print-only checkbox above) plus card number, player name, and notes.
+  - A running header appears on every page after the first — the set
+    name in smaller gray text with a thin rule under it — so a reader
+    can tell which set they're looking at without scrolling back to
+    page 1.
+  - A footer appears on every page: copyright text on the left, "Page X
+    of Y" on the right.
+
+  New CSS: `.checklist-modal-pdf-btn` in `styles/styles.css`, styled to
+  match the existing `.checklist-modal-print-btn`.
 
 ## Player search (`playerSearch.html`)
 
@@ -373,13 +522,52 @@ uploaded checklists, with a link to each set's review. Added
 `LAMBDA_FUNCTIONS.md`) and `scripts/playerSearch.js`.
 
 - **The form**: a single text input (`#playerSearchInput`, min 2
-  characters) submitted to `searchPlayerName?q=...`. No debounce/live
-  search - submit-only, partly because the Lambda's `Scan`-per-request
-  design (see `LAMBDA_FUNCTIONS.md`) makes firing it on every keystroke
-  needlessly expensive.
+  characters) submitted to `searchPlayerName?q=...`. An actual search
+  only ever runs on submit (Search click, or Enter with no suggestion
+  highlighted) - the Lambda's `Scan`-per-request design (see
+  `LAMBDA_FUNCTIONS.md`) makes firing it on every keystroke needlessly
+  expensive. See "Type-ahead" below for what *does* happen live, as you
+  type.
+- **Type-ahead** (added 2026-09-14): a dropdown
+  (`#playerSearchSuggestions`) suggests matching player names as you
+  type 2+ characters, without ever calling the expensive `q` mode per
+  keystroke. `loadPlayerNameIndex()` fetches the full distinct-player-
+  name list exactly once (`searchPlayerName?namesOnly=1`, see
+  `LAMBDA_FUNCTIONS.md`) - kicked off on `window load` (not lazily on
+  first keystroke, so it's usually already resolved by the time a
+  visitor finishes typing) and cached both in-memory (a shared promise,
+  so a prefetch and a keystroke racing each other never double-fetch)
+  and in `localStorage` (30min TTL, matching the endpoint's own
+  `Cache-Control`, so even a later page load skips the network call).
+  Every keystroke after that filters the cached list client-side -
+  `rankPlayerNameMatch()` ranks an exact/whole-word match (e.g.
+  "gretzky" → "Wayne **Gretzky**") above a match buried in a longer
+  multi-player card name (e.g. "Brett Hull / Wayne Gretzky"), since a
+  plain alphabetical `.slice(0, 8)` had been burying the single most
+  relevant name under less-relevant combo-card matches that happened to
+  sort earlier. ArrowUp/ArrowDown highlight a suggestion, Enter selects
+  the highlighted one (or falls through to a normal submit if none is
+  highlighted), Escape/an outside click closes the dropdown, and
+  clicking a suggestion fills the input and calls `runPlayerSearch()`
+  immediately.
+- **In-progress feedback**: `runPlayerSearch()` shows a full-page
+  spinner overlay (`#player-search-spinner-overlay`/
+  `.player-search-spinner`, `styles.css`) for the duration of the fetch,
+  hidden again in a `finally` so it clears on success, an empty result,
+  or an error alike - added because the `Scan`-per-request Lambda above
+  can take a couple of seconds, and the static "Searching..." text alone
+  made it hard to tell whether anything was actually happening. Same
+  overlay+spinner pattern as `smsAdmin.html`'s send-in-progress spinner
+  (`adminSMS.js`), reusing its `@keyframes autobus-spin` rotation (which
+  has nothing Autobus-specific in it) under player-search-specific
+  names rather than the shared Autobus ones, since this page has
+  nothing to do with that tool.
 - **Results**: grouped by `setName`, each group showing every matching
   card (number, player name, notes, and which insert set it's from, if
-  any) under that set. A group's heading is a link to that set's review
+  any) under that set, ordered main-set cards first then each insert
+  set, sorted within each group by `sortIndex` — the same ordering rule
+  `wax.js`'s checklist modal uses (see "Checklist display" above), not
+  raw fetch order. A group's heading is a link to that set's review
   on `waxReviews.html` when the API returned a `year`/`blogCat` for it
   (i.e. a matching `Cards` item exists); otherwise it's plain text - see
   `DATA_MODEL.md`'s "setName ↔ Cards.setName 1:1 assumption" note for
@@ -419,5 +607,5 @@ navigation:
 
 - `Old HTML Pages/` — `pw.html`, `quad2.html`, `signup.html`, `thanks.html`, and, as of 2026-08-15, `cards.html` and `cardChecker.html` too (moved here from the repo root — see "Public pages" above). `cardChecker.html`'s own nav bar still links to `/quad2.html` and `/junkWax.html`/`/classicWax.html` (old pre-query-string URL scheme) — these links are stale relative to the current single-page-per-category + query-string routing used elsewhere (`waxReviews.html?...`).
 - `example.html` — a generic Google reCAPTCHA demo snippet, unrelated to this site's own reCAPTCHA usage (if any) or content.
-- `styles/styles copy.css` — an apparent backup/scratch copy of the main stylesheet.
-- `Lambda Functions/newAllBlogs.html` — not reviewed in this pass; name suggests a scratch/reference HTML file that lived alongside the Lambda prototypes.
+
+(`styles/styles copy.css` and `Lambda Functions/newAllBlogs.html`, both previously listed here, no longer exist in the repo.)

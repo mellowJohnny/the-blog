@@ -15,21 +15,28 @@ entries). One flat table for all blog content, distinguished by
 
 **Key schema (confirmed against the DynamoDB console, 2026-08-14)**:
 partition key `blogType` (Number), sort key `time` (String). `blogID`
-is a regular (non-key) attribute — it's the human-facing identifier
-used by `getBlogByID`'s lookup, but `updateBlogPost()` and (the new)
-`deleteBlogPost()` both operate on `blogType`+`time` under the hood,
-which is why every blog-editing call in the CMS always carries `time`
-around alongside `blogID`, even though it's just displayed read-only
-in a disabled form field.
+is a regular (non-key) attribute on the base table — but it's not a
+full-table Scan to look one up: a `blogID-index` GSI (partition key
+`blogID` (String), no sort key) exists specifically for that, and
+`getBlogByID` was converted to `Query` it directly on 2026-09-04
+(previously it queried `blogType` and filtered the results down to the
+matching `blogID`, reading every post of that type first). `updateBlogPost()`
+and `deleteBlogPost()` still operate on `blogType`+`time` under the
+hood, though, which is why every blog-editing call in the CMS still
+carries `time` around alongside `blogID`, even though it's just
+displayed read-only in a disabled form field.
+
+**Global secondary indexes**: just the one, `blogID-index` (partition
+key `blogID`, no sort key) — see above.
 
 | Field | Type | Notes |
 |---|---|---|
-| `blogID` | String | The item's human-facing identifier — used as the lookup key by `getBlogByID` (see `API_ENDPOINTS.md`), but is *not* the DynamoDB key (see above). Early sample data (`Documentation/BlogArchive.txt`) used a millisecond timestamp string as `id`, e.g. `"1640119360299"` — `blogID` is likely the same idea, possibly renamed. |
-| `blogType` | Number | Partition key. `1`=Tech, `2`=Hockey Cards (per the `createBlogPost.html` dropdown, though card content actually goes to the `Cards` table, not `Blogs`), `3`=Mach-E, `4`=SYNC Updates, `5`=Raspberry Pi, `99`=Home Page. See `BLOG_TYPE_LABELS` in `scripts/cms.js`. |
+| `blogID` | String | The item's human-facing identifier — used as the lookup key by `getBlogByID`, which queries the `blogID-index` GSI directly (see `API_ENDPOINTS.md`), but is *not* the DynamoDB table's own primary key (see above). Early sample data (`Documentation/BlogArchive.txt`) used a millisecond timestamp string as `id`, e.g. `"1640119360299"` — `blogID` is likely the same idea, possibly renamed. |
+| `blogType` | Number | Partition key. `1`=Tech, `2`=Hockey Cards (per the `createBlogPost.html` dropdown, though card content actually goes to the `Cards` table, not `Blogs`), `3`=Mach-E, `4`=SYNC Updates, `5`=Raspberry Pi, `99`=Home Page. See `BLOG_TYPE_LABELS` in `scripts/cmsBlog.js`. |
 | `title` | String | Post title. |
 | `author` | String | Free text; CMS forms currently only offer "Christian Couillard". |
 | `postBody` | String | HTML content, authored via TinyMCE. |
-| `img` | String | Full image URL (or `"none"`, the sentinel `displayBlog()` in `blogs.js` checks for to skip rendering an `<img>` tag at all) — field is called `imgName` in the CMS form/create payload but stored/read back as `img` (see `updateBlogPost()` / `populateBlog()` in `scripts/cms.js` — this rename is a real inconsistency worth knowing about, not a mistake in this doc). `createBlogPost.html`'s image field defaults to `"none"`; some older posts instead have a bare S3 folder prefix with no filename (`.../img/blog/`) from before that default was fixed — `blogs.js` still tries to render those (so a network request briefly fails, silently caught by an `onerror` handler), functionally the same "no image" outcome, just not as clean. See CMS_GUIDE.md's "Image picker / uploader" section. |
+| `img` | String | Full image URL (or `"none"`, the sentinel `displayBlog()` in `blogs.js` checks for to skip rendering an `<img>` tag at all) — field is called `imgName` in the CMS form/create payload but stored/read back as `img` (see `updateBlogPost()` / `populateBlog()` in `scripts/cmsBlog.js` — this rename is a real inconsistency worth knowing about, not a mistake in this doc). `createBlogPost.html`'s image field defaults to `"none"`; some older posts instead have a bare S3 folder prefix with no filename (`.../img/blog/`) from before that default was fixed — `blogs.js` still tries to render those (so a network request briefly fails, silently caught by an `onerror` handler), functionally the same "no image" outcome, just not as clean. See CMS_GUIDE.md's "Image picker / uploader" section. |
 | `imgCap` | String | Image caption, rendered under the image. |
 | `time` | String (ISO 8601) | Sort key. Creation timestamp, used for sort order (`getSortOrder()` in `scripts/helper.js`) and displayed via `fixDate()`. |
 | `published` | Boolean | `true` = live, `false` = staged/draft. Drives the "live blogs" vs "staged blogs" split in `cms/pickBlog.html`. |
@@ -45,13 +52,25 @@ GSI pattern is live" question this doc used to raise): partition key
 `setName` (String), sort key `year` (Number). `setID` below is a separate,
 non-key attribute used only by the `setID-index` GSI lookup path.
 
+**Global secondary indexes** (confirmed directly from the AWS Console
+2026-09-04 — this table has 5, only 3 of which any live Lambda actually
+queries):
+
+| Index | Partition key | Sort key | Used by |
+|---|---|---|---|
+| `blogCat-year-index` | `blogCat` (String) | `year` (Number) | `Lambdas/getCardSetsByYear/` |
+| `blogStatus-year-index` | `blogStatus` (String) | `year` (Number) | `Lambdas/getCardSets/`, `Lambdas/getStagedCardSets/` |
+| `setID-index` | `setID` (String) | *(none)* | `Lambdas/getCardSetByID/` — converted from a PartiQL scan to a direct `Query` against this index on 2026-09-04, see `LAMBDA_FUNCTIONS.md` |
+| `year-blogStatus-index` | `year` (Number) | `blogStatus` (String) | none currently — no access pattern needs "by year alone" as the primary filter |
+| `year-index` | `year` (Number) | *(none)* | none currently, same reason |
+
 **Billing mode**: On-Demand, with a maximum-throughput cap set — see
 `ARCHITECTURE.md`'s billing-mode note for why (both this table and
 `Checklists` moved off Provisioned after real throttling incidents).
 
 | Field | Type | Notes |
 |---|---|---|
-| `setID` | String | Randomly generated (`Math.random().toString(36)`) in `Lambda Functions/createCardSet/createCardPost.js`; used as the lookup key by `getCardSetByID`. A `setID-index` GSI is referenced in `Lambda Functions/getCardSets/getCardSet_FUTURE.js`. |
+| `setID` | String | Randomly generated (`Math.random().toString(36)`) in `Lambdas/createCardPost/`; used as the lookup key by `getCardSetByID`, which queries the `setID-index` GSI directly (see the GSI table above). |
 | `upvotes` / `downvotes` | Number | Added for the thumbs up/down voting feature (`Lambdas/castVoteHandler/`). Not present on older items until the first vote is cast — DynamoDB creates the attribute on first `ADD`, no migration needed. |
 | `setName` | String | e.g. `"1991-92 Upper Deck Hockey"`. |
 | `year` | Number | Release year, e.g. `1991`. Drives the year-picker on `waxReviews.html` (`renderSetPicker()` in `scripts/helper.js`). |
@@ -70,24 +89,20 @@ non-key attribute used only by the `setID-index` GSI lookup path.
 | `now` / `date` | String | Passed through as `item.now` in `wax.js`'s `renderCardSetPage()` and used as the review's displayed date. |
 | `hasChecklist` | Boolean | Set by `saveChecklist` (see the `Checklists` table below) the first time a checklist is successfully uploaded for this set's exact `setName` — not present at all until then. Drives the "Checklist" link on `waxReviews.html` (`displayCardSet()` in `scripts/wax.js`), which opens a modal fetching and displaying the full checklist — see `FRONTEND.md`. Not written by any CMS create/update form directly. |
 
-### `cmsContent/` directory
+### `cmsContent/` directory (removed)
 
-`cmsContent/*.html` files (e.g. `93_94_Proset.html`) look like a static,
-file-based archive of card set review bodies — plain HTML snippets, no
-script anywhere in the repo reads them at runtime. Likely a backup/seed
-of what's now stored as `postBody` in DynamoDB, or leftover from before
-the CMS existed.
-
-`cmsContent/cardSetChecklist/*.json` (e.g. `1990-91_OPC_Prem.json`) is a
-different, more granular format — full card-by-card checklists (`set` +
-repeated `card` objects with `number`, `playerName`, `team`,
-`isRookie`, `isShortPrint`, `subset`). No page or script currently
-reads this either. Combined with `Lambda Functions/getCardSets/getCardSet_FUTURE.js`
-(a stub Lambda with a hardcoded single set/year lookup), this looks
-like the groundwork for an unfinished "full checklist per set" feature —
-since actually built, independently and differently (PDF upload rather
-than this JSON format), as the live `Checklists` table below. This
-directory itself is still unused.
+This directory no longer exists in the repo. It formerly held
+`cmsContent/*.html` files (e.g. `93_94_Proset.html`) — a static,
+file-based archive of card set review bodies, likely a backup/seed of
+what's now stored as `postBody` in DynamoDB — and
+`cmsContent/cardSetChecklist/*.json` (e.g. `1990-91_OPC_Prem.json`), a
+different, more granular format holding full card-by-card checklists
+(`set` + repeated `card` objects with `number`, `playerName`, `team`,
+`isRookie`, `isShortPrint`, `subset`). Neither was ever read by any
+live page or script; the groundwork they represented for a "full
+checklist per set" feature was since built independently and
+differently (PDF upload rather than this JSON format), as the live
+`Checklists` table below.
 
 ## `Checklists` table
 
@@ -146,7 +161,8 @@ difference and a double-space filename typo, both requiring every item
 under that stale `setName` partition to be deleted, not just one row -
 `Checklists` is one item *per card*, not one item per set, so a
 "delete the bad set" cleanup means deleting every card row sharing that
-`setName`).
+`setName`). The Checklist Integrity Check on `cms/admin.html` is a
+second entry point into this same `?audit=1` mode - see `CMS_GUIDE.md`.
 
 **Sort-key collision guard**: `parseChecklistPdf` intentionally keeps
 two entries with the same printed card number as separate cards when
