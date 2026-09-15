@@ -91,7 +91,7 @@ function renderCardSetPage() {
 
   const pageItems = allCardSets.slice(start, end);
 
-  // ⭐ THIS is where your original function is called
+  // Let's populate card set
   pageItems.forEach(item => {
     displayCardSet(
       item.postBody,
@@ -124,8 +124,9 @@ function renderCardSetPage() {
   renderPaginationControls();
 }
 
-/*************** Dynamically create & render the page title, meta tags, and
- * structured data for waxReviews.html/lockout.html, once per set as it loads ***************** */
+/* Dynamically create & render the page title, meta tags, and
+ * structured data for waxReviews.html/lockout.html, once per set as it loads 
+ */
 function fetchPageTitle(item)
 {
   const {
@@ -218,9 +219,8 @@ function fetchPageTitle(item)
         ? `<div class="set-detail-row set-detail-row-checklist"><a href="#" class="checklist-view-link" data-set-name="${escapeHtml(setName)}" onclick="openChecklistModal(this); return false;">Checklist</a></div>`
         : "";
 
-    // CSS Grid, not a table - a rowspan'd cell can't reorder above the
-    // rows it spans at a mobile breakpoint. Grid areas let mobile
-    // restack name -> image -> list instead of desktop's side-by-side.
+    // CSS Gridz: Grid areas let mobile restack name -> image -> list 
+    // instead of desktop's side-by-side.
     cardBody.innerHTML += `
         <div class="set-details-grid">
             <div class="set-details-name">
