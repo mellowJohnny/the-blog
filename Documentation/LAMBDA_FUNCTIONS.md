@@ -450,6 +450,19 @@ since that history predates this doc being kept current.
   other fully-public, read-only, no-auth GET endpoints. Fine here for
   the same reasons: no cookies/auth in play (no CSRF/session risk), and
   it returns data that's already public elsewhere.
+- **`?namesOnly=1` mode**: type-ahead index for `playerSearch.html`'s
+  search box, added 2026-09-14 — `scanAllDistinctPlayerNames()` reuses
+  the same full-`Scan` machinery (projecting just `playerName` this
+  time) to return `{ playerNames: [...] }`, every distinct name in
+  `Checklists`, deduped and sorted. This is just as expensive a `Scan`
+  as `q` mode itself — the point isn't that it's cheap, it's that the
+  frontend only ever calls it **once** (cached in `localStorage`, 30min
+  TTL matching this Lambda's own `Cache-Control`) and filters that list
+  client-side on every keystroke, instead of re-`Scan`ning per
+  keystroke the way a naive debounced type-ahead would. See
+  `FRONTEND.md`'s "Player search" section for the frontend half of this
+  (the caching, and the relevance ranking applied to the filtered
+  results).
 
 ## `Lambdas/updateCardSet/` — pre-existing, with a real incident behind it
 

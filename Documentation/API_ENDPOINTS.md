@@ -88,10 +88,11 @@ without changing that expectation first.
 ### Search players by name
 - **URL**: `https://evlsyozjb0.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
-- **Query params**: `q` (a player name or partial name, minimum 2 characters) **or** `audit=1` — mutually exclusive modes, see below.
+- **Query params**: `q` (a player name or partial name, minimum 2 characters) **or** `audit=1` **or** `namesOnly=1` — mutually exclusive modes, see below.
 - **Called from**: `scripts/playerSearch.js` (used by `playerSearch.html`)
 - **Response** (`q` mode): `{ query, results: [{ setName, year, blogCat, cards: [{ cardNumberDisplay, playerName, notes, type, insertSetName }] }] }` — grouped by set, sorted alphabetically by `setName`. `year`/`blogCat` are `null` when no matching `Cards` item was found for that `setName` (the frontend shows the set name as plain text instead of a link in that case). `{ error }` with a 400 if `q` is missing or under 2 characters.
 - **Response** (`audit=1` mode): `{ totalDistinctSetNames, linkedCount, unlinkedSetNames }` — a data-integrity check, not part of the search feature itself; enumerates every distinct `setName` in `Checklists` and reports which have no matching `Cards` item. See `DATA_MODEL.md`'s "setName ↔ Cards.setName 1:1 assumption" note.
+- **Response** (`namesOnly=1` mode): `{ playerNames: [...] }` — every distinct `playerName` in `Checklists`, deduped and sorted alphabetically. Added 2026-09-14 to back the type-ahead dropdown on `playerSearch.html`: the frontend fetches this once (cached client-side, see `FRONTEND.md`'s "Player search" section) and filters it locally per keystroke, rather than hitting `q` mode's expensive `Scan` on every keystroke.
 - **Lambda**: `Lambdas/searchPlayerName/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Full paginated `Scan` of `Checklists` (no index on `playerName`), matched case-insensitively in code, plus a per-matched-set `Query` against `Cards`. Public, no Cognito Authorizer — same trust level as "Get checklist by set name" above; `Access-Control-Allow-Origin: "*"`.
 
 ## CMS — blog authoring

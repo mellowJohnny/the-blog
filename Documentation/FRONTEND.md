@@ -68,9 +68,9 @@ them to a crawler (or a human visitor navigating by link).
 | File | Responsibility |
 |---|---|
 | `blogs.js` | Blog intro copy (`renderBlogIntro()`), `fetchBlogs()`/pagination/rendering for the blog stream, and the homepage weather widget (calls OpenWeatherMap directly from the browser using the visitor's geolocation). |
-| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. |
+| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. On mobile, the prev/next set name in that label drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle") via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans the mobile breakpoint swaps between, since the full "YYYY-YY Manufacturer" label was too long for a small screen; desktop still shows the full name. |
 | `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — used by every public page) and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), hamburger menu toggle, cookie helper, and copyright-year footer. |
-| `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise). See "Player search" below. |
+| `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise); also the type-ahead dropdown (`initPlayerSearchTypeahead()`/`loadPlayerNameIndex()`/`rankPlayerNameMatch()`) that suggests player names client-side from a once-fetched, cached name index. See "Player search" below. |
 | `adminTools.js` | `cms/admin.html` support code: a growing set of self-service site-health checks (broken images, checklist-to-review linkage), each its own function calling the site's existing public read APIs directly. See `CMS_GUIDE.md`'s "Admin Tools" section. |
 | `auth.js` | Cognito OAuth2 code exchange + token refresh, gates every `/cms` page. See `AUTH.md`. |
 | `cmsBlog.js` | Blog post CRUD: `createBlogPost`, `updateBlogPost`, `deleteBlogPost`, `getBlogsForUpdate`, `getStagedBlogsForUpdate`, `displayBlogs`, `displayStagedBlogs`, `fetchBlogByID`, `populateBlog`, and the `BLOG_TYPE_LABELS` lookup object. One of 4 files split out of the former `scripts/cms.js` (1592 lines, deleted) on a by-concern basis, moved verbatim with no logic changes. See `CMS_GUIDE.md`. |
@@ -175,7 +175,16 @@ knowing before touching this CSS again:
   1000px-desktop and 100%-mobile versions of the shared rule, quietly
   overriding the grid's own `width`/`padding`/`margin`. Same fix again:
   `#cardSetDiv .set-details-grid` / `.set-details-name` /
-  `.set-details-image` / `.set-details-list` overrides.
+  `.set-details-image` / `.set-details-list` overrides. Recurred a
+  fourth time on `playerSearch.html`'s type-ahead dropdown: the new
+  `.player-search-input-wrap` (wraps the input + suggestions list, for
+  `position: relative` positioning) is itself a `<div>` nested inside
+  `.flex-container`, so it silently inherited the shared rule's 15px
+  padding/5px margin too, pushing the actual input box 20px right of
+  the label/button/intro text above and below it - not caught until the
+  site owner noticed the misalignment visually. Same fix again:
+  `#player-search-form .player-search-input-wrap` overriding
+  `padding`/`margin` back to `0`.
 - **`<table>` elements resist non-table `display` overrides
   unpredictably across browsers.** Several bugs this round traced back
   to forcing `display: flex`/`display: block` onto a `<table>`/`<tr>`
@@ -513,10 +522,34 @@ uploaded checklists, with a link to each set's review. Added
 `LAMBDA_FUNCTIONS.md`) and `scripts/playerSearch.js`.
 
 - **The form**: a single text input (`#playerSearchInput`, min 2
-  characters) submitted to `searchPlayerName?q=...`. No debounce/live
-  search - submit-only, partly because the Lambda's `Scan`-per-request
-  design (see `LAMBDA_FUNCTIONS.md`) makes firing it on every keystroke
-  needlessly expensive.
+  characters) submitted to `searchPlayerName?q=...`. An actual search
+  only ever runs on submit (Search click, or Enter with no suggestion
+  highlighted) - the Lambda's `Scan`-per-request design (see
+  `LAMBDA_FUNCTIONS.md`) makes firing it on every keystroke needlessly
+  expensive. See "Type-ahead" below for what *does* happen live, as you
+  type.
+- **Type-ahead** (added 2026-09-14): a dropdown
+  (`#playerSearchSuggestions`) suggests matching player names as you
+  type 2+ characters, without ever calling the expensive `q` mode per
+  keystroke. `loadPlayerNameIndex()` fetches the full distinct-player-
+  name list exactly once (`searchPlayerName?namesOnly=1`, see
+  `LAMBDA_FUNCTIONS.md`) - kicked off on `window load` (not lazily on
+  first keystroke, so it's usually already resolved by the time a
+  visitor finishes typing) and cached both in-memory (a shared promise,
+  so a prefetch and a keystroke racing each other never double-fetch)
+  and in `localStorage` (30min TTL, matching the endpoint's own
+  `Cache-Control`, so even a later page load skips the network call).
+  Every keystroke after that filters the cached list client-side -
+  `rankPlayerNameMatch()` ranks an exact/whole-word match (e.g.
+  "gretzky" → "Wayne **Gretzky**") above a match buried in a longer
+  multi-player card name (e.g. "Brett Hull / Wayne Gretzky"), since a
+  plain alphabetical `.slice(0, 8)` had been burying the single most
+  relevant name under less-relevant combo-card matches that happened to
+  sort earlier. ArrowUp/ArrowDown highlight a suggestion, Enter selects
+  the highlighted one (or falls through to a normal submit if none is
+  highlighted), Escape/an outside click closes the dropdown, and
+  clicking a suggestion fills the input and calls `runPlayerSearch()`
+  immediately.
 - **In-progress feedback**: `runPlayerSearch()` shows a full-page
   spinner overlay (`#player-search-spinner-overlay`/
   `.player-search-spinner`, `styles.css`) for the duration of the fetch,

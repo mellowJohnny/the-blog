@@ -394,13 +394,34 @@ directly for a player and jump straight to every set they appear in.
   a search result actually shareable as a link.
 
 **User interactions**:
-- Submitting the form (`onsubmit`, `event.preventDefault()`) is the
-  **only** trigger for a search → `runPlayerSearch(document.getElementById('playerSearchInput').value)`
-  (`playerSearch.js`). There's deliberately no live/debounced
-  search-as-you-type here, because the backing Lambda does a full
-  `Scan` per request (see below) — a search-as-you-type UI would mean
-  firing that expensive scan on every keystroke, so the design
-  trades a slightly less snappy UX for controlling backend cost/load.
+- **Type-ahead** (added 2026-09-14): as the visitor types 2+ characters
+  into `#playerSearchInput`, a dropdown (`#playerSearchSuggestions`)
+  suggests matching player names — without hitting the expensive `q`
+  mode `Scan` per keystroke. `loadPlayerNameIndex()` fetches the full
+  distinct-player-name list exactly once per browser (`namesOnly=1`
+  mode, see below), caching it in `localStorage` (30min TTL) so even a
+  fresh page load in a later visit skips the network call entirely;
+  within a page load, an in-memory promise cache means the fetch (kicked
+  off on `window load`, not lazily on first keystroke, so it's usually
+  already resolved by the time the visitor finishes typing) is never
+  duplicated either. Every keystroke after that just filters the cached
+  list client-side via `rankPlayerNameMatch()`, which ranks an exact or
+  whole-word match (e.g. "gretzky" matching "Wayne **Gretzky**") above a
+  match buried in a longer multi-player card name (e.g. "Brett Hull /
+  Wayne Gretzky") — a plain alphabetical `.slice()` had been burying the
+  single most relevant result under less-relevant combo-card matches
+  that happened to sort earlier. Arrow keys move a highlighted
+  selection, Enter selects it (or, with nothing highlighted, falls
+  through to a normal form submit), Escape or an outside click closes
+  the dropdown, and clicking a suggestion fills the input and runs the
+  real search immediately.
+- Submitting the form (`onsubmit`, `event.preventDefault()`) →
+  `runPlayerSearch(document.getElementById('playerSearchInput').value)`
+  (`playerSearch.js`) is still the only way an actual search (`q` mode)
+  runs — type-ahead only ever suggests names, it never itself calls `q`
+  mode. That endpoint's own full `Scan` per request (see below) is
+  exactly why type-ahead was built to filter a once-fetched name list
+  client-side instead of live-querying `q` mode on every keystroke.
 - `runPlayerSearch(query)` — rejects anything under 2 characters with
   an inline message, no API call in that case (another guard against
   triggering an expensive scan for a query too short to be meaningful).
