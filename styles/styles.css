@@ -699,6 +699,17 @@ h1 {
   text-align: center;
   height: 42px;
 }
+
+/* Tighter than the shared .flex-container div's 15px padding, which
+   stacked with the browser's default <h2> top margin to leave more
+   empty space between the nav and this intro heading than needed. */
+#card-intro {
+  padding-top: 8px;
+}
+
+#card-intro h2 {
+  margin-top: 0;
+}
 /********************************** MAIN Styling Rules **************************************/
 body {
     height:100%;
