@@ -1055,6 +1055,27 @@ label sup {
   width: 950px;
 }
 
+/* Same .flex-container div padding + default heading/paragraph margin
+   stacking as #card-intro/#player-search-intro below - #blog-intro
+   (index.html/tech.html, shared) and #junkwax-intro
+   (theJunkWaxYears.html) left more empty space above their text than
+   intended for the same reason. */
+#blog-intro {
+  padding-top: 8px;
+}
+
+#blog-intro h1 {
+  margin-top: 0;
+}
+
+#junkwax-intro {
+  padding-top: 8px;
+}
+
+#junkwax-intro p:first-child {
+  margin-top: 0;
+}
+
 .blog-entry { /* USED BY ALL REVIEW PAGES */ 
     font-family: 'Source Sans 3';
     background: rgb(212, 233, 241);
