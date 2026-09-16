@@ -275,9 +275,9 @@ function renderLoudText(el, text) {
 }
 
 // Called on load by every page with the wax-reviews-mast-table masthead
-// - picks one team at random and sets its colors as CSS custom
-// properties, which the masthead's gradient (styles.css) reads.
-function applyRandomMastheadTeam() {
+// - picks one team at random, sets its colors as CSS custom properties
+// (masthead's gradient, styles.css) and renders its cheer label.
+function applyRandomMastheadStyling() {
   const mast = document.querySelector(".wax-reviews-mast-table");
   if (!mast) return;
 
