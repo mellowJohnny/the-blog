@@ -21,9 +21,10 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const SITE_ORIGIN = "https://www.mellowjohnny.cc";
-const REPO_ROOT = path.resolve(import.meta.dirname, "..", "..");
+const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 // Mirrors categoryRanges in scripts/helper.js's renderSetPicker().
 const CARD_SET_RANGES = [

@@ -21,6 +21,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 // Pinned to pdf-parse v1 (not v2 - see Lambdas/parseChecklistPdf/index.mjs
 // for the reasons: v2's native canvas dependency, and importing
 // lib/pdf-parse.js directly to dodge a bug in the package root's
@@ -300,7 +301,7 @@ const result = { setName, insertSetName, cards };
 const json = JSON.stringify(result, null, 2);
 
 const outFileName = insertSetName ? `${setName} - ${insertSetName}.json` : `${setName}.json`;
-const repoRoot = path.resolve(import.meta.dirname, "..", "..");
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const defaultOutPath = path.join(repoRoot, "checklists", outFileName);
 const finalOutPath = outPath || defaultOutPath;
 
