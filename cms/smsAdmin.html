@@ -146,14 +146,14 @@
           <h2 class="bulk-modal-title">Bulk Import Subscribers</h2>
 
           <p class="bulk-modal-instructions">
-            Select a pre-processed DynamoDB JSON file to import. Each record
-            must already be in DynamoDB typed JSON format with
-            <code>phoneNumber</code> as the partition key.
+            Select the club sign-up CSV export. Only the "Name" and
+            "Your mobile number" columns are used - every other column
+            is ignored.
           </p>
 
           <div class="bulk-drop-zone" id="bulkDropZone">
             <span
-              >Drop JSON file here or
+              >Drop CSV file here or
               <label for="bulkFileInput" class="bulk-file-label"
                 >browse</label
               ></span
@@ -161,7 +161,7 @@
             <input
               type="file"
               id="bulkFileInput"
-              accept=".json"
+              accept=".csv"
               style="display:none;">
             <p id="bulkFileName" class="bulk-file-name"></p>
           </div>
@@ -257,17 +257,18 @@
             <h3 class="help-section-title">Bulk Import Subscribers</h3>
             <p>
               Click <strong>bulk import...</strong> in the navigation to load a
-              new subscriber list. The file must be a pre-processed JSON file in
-              the correct format — this is prepared separately once a year from
-              the club sign-up data.
+              new subscriber list. Select the club sign-up CSV export directly
+              — only the "Name" and "Your mobile number" columns are read, so
+              no pre-processing is needed first.
             </p>
             <p>
-              Once you select or drop a file, the number of records is shown for
-              review. Clicking <strong>Upload</strong> will permanently delete
-              all existing subscribers and replace them with the new list. You
-              will be asked to confirm before anything is deleted. A summary
-              showing how many records were removed and how many were imported
-              is displayed on completion.
+              Once you select or drop a file, an approximate record count is
+              shown for review. Clicking <strong>Upload</strong> will
+              permanently delete all existing subscribers and replace them
+              with the new list. You will be asked to confirm before anything
+              is deleted. A summary showing how many records were removed and
+              imported is displayed on completion, along with any rows that
+              were skipped (e.g. a missing name or an unusable phone number).
             </p>
 
             <h3 class="help-section-title">A Note on Segments &amp; Cost</h3>

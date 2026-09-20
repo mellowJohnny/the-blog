@@ -253,9 +253,9 @@ so.
 ### Bulk import subscribers
 - **URL**: `https://05b6ofo7i1.execute-api.us-east-2.amazonaws.com/prod/subscribers/bulk-upload`
 - **Method**: POST
-- **Body**: a JSON array of subscriber records, already in DynamoDB typed-JSON format (`{ phoneNumber: { S: "..." }, ... }`), per the in-app help text in `cms/smsAdmin.html`.
+- **Body**: `{ csvContent: "<raw CSV text>" }` — the raw club sign-up CSV export, sent as-is (no client-side parsing or pre-processing, and no base64 encoding since CSV is plain text). The Lambda extracts the `Name`/`Your mobile number` columns itself — see `LAMBDA_FUNCTIONS.md`.
 - **Called from**: `uploadBtn` click handler in `scripts/adminSMS.js`
-- **Response**: `{ deletedCount, importedCount }` on success. **Destructive**: this call deletes *all* existing subscribers before importing the new list (confirmed with the user via `cmsConfirm()` first — see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section).
+- **Response**: `{ deletedCount, importedCount, skippedRows }` on success (200) — `skippedRows` is `[{ row, reason }]` for any CSV row skipped (missing name, unnormalizable phone number, or a duplicate phone number within the file), empty array if none. A structurally bad file (missing required headers, no data rows) returns 400 with `{ message, skippedRows }` and imports nothing. **Destructive**: a successful call deletes *all* existing subscribers before importing the new list (confirmed with the user via `cmsConfirm()` first — see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section) — but the whole CSV is parsed and validated *before* anything is deleted, so a bad file never leaves the table empty.
 - **Lambda**: `Lambdas/bulkSubscriberUpload/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Which table it truncates/imports into is set via `process.env.TABLE_NAME`, not hardcoded to `Subscribers`/`SubscribersTest` in the source — check the Lambda's environment config in the Console to confirm which one it currently targets.
 
 ### Add a single subscriber
