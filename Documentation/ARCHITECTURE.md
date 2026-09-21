@@ -33,14 +33,14 @@ Browser (static HTML/CSS/JS, no framework)
 
 ## Hosting & deployment
 
-Confirmed: the static site is deployed via **AWS Amplify Hosting**,
+The static site is deployed via **AWS Amplify Hosting**,
 connected directly to this repo's git history — no `amplify.yml` or
-other build config is checked in here, so Amplify is presumably using
+other build config is checked in here, so Amplify is using
 its default/zero-config static-site build settings (there's no build
 step to run anyway; it's plain HTML/CSS/JS with no bundler).
 
 - **Trigger**: any push to the tracked branch (this repo shows `main` as that branch).
-- **Process**: Amplify picks up the commit, runs its build (a no-op / asset-copy step given there's no framework here), and deploys straight to production — there's no staging environment or manual promotion step described anywhere in this repo.
+- **Process**: Amplify picks up the commit, runs its build (a no-op / asset-copy step given there's no framework here), and deploys straight to production — there's no staging environment or manual promotion step.
 - **Notification**: Amplify emails on build completion (success or failure) — this is currently the only build/deploy signal; there's no CI status check, PR gate, or Slack/webhook integration in play.
 - **Practical implication**: pushing to `main` ships to the live site. There's no separate preview/staging branch — the `published`/`blogStatus` draft flags in DynamoDB (see `DATA_MODEL.md`) are what stand in for a staging environment at the *content* level, but not at the *code* level. A broken commit to `main` goes live as soon as Amplify's build finishes.
 
