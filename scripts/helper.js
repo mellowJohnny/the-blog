@@ -260,10 +260,24 @@ const NHL_TEAM_COLORS = [
   { name: "Winnipeg Jets", cheer: "Let's Go Jets!", primary: "#041E42", tertiary: "#004A98" }
 ];
 
+// Renders text as one <span class="loud-char"> per character so
+// styles.css's staggered pop-in animation (animation-delay set per
+// span here) can play each letter in sequence.
+function renderLoudText(el, text) {
+  el.textContent = "";
+  text.split("").forEach((ch, i) => {
+    const span = document.createElement("span");
+    span.className = "loud-char";
+    span.style.animationDelay = `${i * 40}ms`;
+    span.innerHTML = ch === " " ? "&nbsp;" : ch;
+    el.appendChild(span);
+  });
+}
+
 // Called on load by every page with the wax-reviews-mast-table masthead
-// - picks one team at random and sets its colors as CSS custom
-// properties, which the masthead's gradient (styles.css) reads.
-function applyRandomMastheadTeam() {
+// - picks one team at random, sets its colors as CSS custom properties
+// (masthead's gradient, styles.css) and renders its cheer label.
+function applyRandomMastheadStyling() {
   const mast = document.querySelector(".wax-reviews-mast-table");
   if (!mast) return;
 
@@ -285,7 +299,7 @@ function applyRandomMastheadTeam() {
     label.className = "masthead-team-label";
     mast.appendChild(label);
   }
-  label.textContent = team.cheer;
+  renderLoudText(label, team.cheer);
 }
 
 // Set-O-Matic Year Picker - renders the Classic/Junk Wax/Timmies/

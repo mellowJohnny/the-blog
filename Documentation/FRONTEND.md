@@ -337,6 +337,8 @@ issues in the mobile section above — don't hand-tune spacing to
 "assist" a centering mechanism that's already doing the job; the two
 values drift out of sync differently at each screen size.
 
+**Random team colors + cheer label + pop-in animation**: `applyRandomMastheadStyling()` (`helper.js`) runs on load on all 4 pages using this masthead (`waxReviews.html`, `lockout.html`, `playerSearch.html`, `theJunkWaxYears.html`) — picks one of 32 NHL teams at random from `NHL_TEAM_COLORS`, sets `--team-primary`/`--team-tertiary` CSS custom properties that drive `.wax-reviews-mast-table`'s gradient (a simpler solid+stripe design via `.masthead-two-color` for genuinely two-color teams), and creates/reuses a `.masthead-team-label` span in the bottom-right corner showing that team's cheer text (e.g. "Go Canucks Go!") so the random pick is visually verifiable. That label's text is rendered via `renderLoudText()`, which wraps each character in its own `.loud-char` span with a staggered `animation-delay` — `styles.css`'s `loudPopIn` keyframes then pop/rotate each letter in on a delay, purely because a CSS `animation` on an element plays automatically the moment that element exists in the DOM (no JS trigger needed, since the label is fully torn down and rebuilt on every load rather than reused in place). `prefers-reduced-motion: reduce` skips the animation and shows the finished text immediately.
+
 ## Voting feature (waxReviews.html)
 
 Each card set review ends with a thumbs up/down widget (`castVote()`

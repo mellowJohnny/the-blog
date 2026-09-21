@@ -209,7 +209,8 @@ const helpLink     = document.getElementById("helpLink");
 const helpCloseBtn = document.getElementById("helpCloseBtn");
 
 
-let parsedItems = null;
+let csvContent = null;
+let previewRowCount = 0;
 
 // --- Open / close modal ---
 navLink.addEventListener("click", (e) => {
@@ -244,7 +245,8 @@ function closeModal() {
 }
 
 function resetModal() {
-  parsedItems = null;
+  csvContent = null;
+  previewRowCount = 0;
   fileInput.value = "";
   fileNameEl.textContent = "";
   uploadBtn.disabled = true;
@@ -281,14 +283,14 @@ dropZone.addEventListener("drop", (e) => {
   if (file) handleFile(file);
 });
 
-// --- Parse and validate the JSON file ---
+// --- Read the CSV file (the Lambda does the real parsing/validation) ---
 function handleFile(file) {
   hideFeedback();
-  parsedItems = null;
+  csvContent = null;
   uploadBtn.disabled = true;
 
-  if (!file.name.endsWith(".json")) {
-    showFeedback("Please select a .json file.", "error");
+  if (!file.name.endsWith(".csv")) {
+    showFeedback("Please select a .csv file.", "error");
     return;
   }
 
@@ -296,28 +298,28 @@ function handleFile(file) {
 
   const reader = new FileReader();
   reader.onload = (e) => {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (!Array.isArray(data) || data.length === 0) {
-        showFeedback("Invalid format: file must contain a non-empty JSON array.", "error");
-        return;
-      }
-      parsedItems = data;
-      uploadBtn.disabled = false;
-      showFeedback(`${data.length} record(s) ready to import.`, "success");
-    } catch {
-      showFeedback("Could not parse JSON. Please check the file and try again.", "error");
+    const text = e.target.result;
+    // Rough line count for the preview only - a field with an embedded
+    // newline can make this approximate; the Lambda is the real parser.
+    const rowCount = text.split(/\r\n|\n/).filter((line) => line.trim() !== "").length - 1;
+    if (rowCount < 1) {
+      showFeedback("File appears to have no data rows.", "error");
+      return;
     }
+    csvContent = text;
+    previewRowCount = rowCount;
+    uploadBtn.disabled = false;
+    showFeedback(`~${rowCount} record(s) ready to import.`, "success");
   };
   reader.readAsText(file);
 }
 
 // --- Upload ---
 uploadBtn.addEventListener("click", async () => {
-  if (!parsedItems) return;
+  if (!csvContent) return;
 
   const ok = await cmsConfirm(
-    `⚠️ This will delete ALL existing subscribers and replace them with ${parsedItems.length} new record(s).\n\nAre you sure you want to proceed?`
+    `⚠️ This will delete ALL existing subscribers and replace them with ~${previewRowCount} new record(s).\n\nAre you sure you want to proceed?`
   );
   if (!ok) return;
 
@@ -335,18 +337,27 @@ try {
         "Content-Type": "application/json",
         "Authorization": token
       },
-      body: JSON.stringify(parsedItems),
+      body: JSON.stringify({ csvContent }),
     });
 
     const json = await res.json();
 
     if (res.ok) {
-        showFeedback(`✓ Deleted ${json.deletedCount} existing subscriber(s) and imported ${json.importedCount} new one(s).`, "success");
+        let msg = `✓ Deleted ${json.deletedCount} existing subscriber(s) and imported ${json.importedCount} new one(s).`;
+        if (json.skippedRows && json.skippedRows.length > 0) {
+          const details = json.skippedRows.map((r) => `row ${r.row}: ${r.reason}`).join("; ");
+          msg += ` ${json.skippedRows.length} row(s) skipped - ${details}`;
+        }
+        showFeedback(msg, "success");
         uploadBtn.style.display = "none";
         cancelBtn.style.display = "none";
         closeBtn.style.display = "inline-block";
     } else {
-      showFeedback(`Upload failed: ${json.message || "Unknown error."}`, "error");
+      let msg = `Upload failed: ${json.message || "Unknown error."}`;
+      if (json.skippedRows && json.skippedRows.length > 0) {
+        msg += ` (${json.skippedRows.length} row(s) also had issues)`;
+      }
+      showFeedback(msg, "error");
       uploadBtn.disabled = false;
     }
   } catch (err) {

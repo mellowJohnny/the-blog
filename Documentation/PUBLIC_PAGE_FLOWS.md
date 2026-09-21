@@ -14,7 +14,7 @@ serves it and the DynamoDB table/index it actually reads or writes.
 2004-05 NHL lockout, themed to match `waxReviews.html`) with no
 meaningful JS of its own.
 
-## `index.html`
+## Home Page - `index.html`
 
 This is the site's front door — its whole job on load is to assemble
 three independent pieces of chrome/content around the static HTML
@@ -112,7 +112,7 @@ each other):
   Hosted UI login URL (`rel="nofollow"`) — no JS involved, this is how
   `/cms` access begins for a logged-out visitor.
 
-## `tech.html`
+## Tech Blogs - `tech.html`
 
 This page exists to reuse `index.html`'s exact "blog stream" machinery
 for a specific category instead of the home-page mix — it's the same
@@ -182,7 +182,7 @@ pagination scroll behavior (which now targets `#blog-intro` instead, in
 both `nextBlogPage()`/`prevBlogPage()` here and their `waxReviews.html`
 counterparts `nextPage()`/`prevPage()`).
 
-## `waxReviews.html`
+## Card Set Reviews - `waxReviews.html`
 
 This is the card-set-review equivalent of the blog pages above, but
 its job on load is a bit bigger: it has to build both the top nav *and*
@@ -366,7 +366,7 @@ season) and, if matched, immediately redirects to `lockout.html?...`
 with the same params before any of the rest of the page's scripts run
 — see `FRONTEND.md`.
 
-## `playerSearch.html`
+## Player Search Page - `playerSearch.html`
 
 This page exists as a cross-set alternative to browsing by year: rather
 than picking a year/category and paging through, a visitor can search

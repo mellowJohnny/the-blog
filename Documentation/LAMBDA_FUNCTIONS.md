@@ -73,7 +73,7 @@ since that history predates this doc being kept current.
   }
   ```
   `error` is always present in each result entry — an empty string on `SUCCESS`, the caught Twilio error's `message` (or `"Unknown error"` as a fallback) on `FAILED`. An empty subscriber list (zero `status = "subscribed"` items in the target table) still returns `200` with `{ results: [], mode }`, not an error.
-- **Related**: bulk subscriber import (`Lambdas/bulkSubscriberUpload/`) and single-subscriber add (`Lambdas/subscribeHandler/`) are separate Lambdas — see the table below. Inbound SMS replies (STOP/START/HELP) are handled by a completely different, previously-undocumented Lambda — see `Lambdas/inboundSMSHandler/` below.
+- **Related**: bulk subscriber import (`Lambdas/bulkSubscriberUpload/`) and single-subscriber add (`Lambdas/subscribeHandler/`) are separate Lambdas — see their own sections below. Inbound SMS replies (STOP/START/HELP) are handled by a completely different, previously-undocumented Lambda — see `Lambdas/inboundSMSHandler/` below.
 
 ## `Lambdas/castVoteHandler/` — hand-built in this repo
 
@@ -589,6 +589,68 @@ since that history predates this doc being kept current.
   same restricted-origin convention as `sendAlertHandler` and the other
   CMS-auth-gated POST endpoints.
 
+## `Lambdas/bulkSubscriberUpload/` — real, live, backs the CMS "bulk import" modal
+
+- **File**: `Lambdas/bulkSubscriberUpload/index.mjs`. No real dependency
+  (`package.json`: `dependencies: {}`) — inline-paste deployable, not
+  zipped, even after gaining its own hand-rolled CSV parser (see below).
+- **What it does**: backs the "bulk import" modal on `cms/smsAdmin.html`
+  — a full truncate-and-reimport of the target table (`process.env.TABLE_NAME`),
+  as opposed to `subscribeHandler`'s single-add flow above. Takes
+  `{ csvContent: "<raw CSV text>" }` — the club sign-up CSV export sent
+  directly, with no client-side pre-processing (previously this
+  required manually converting the CSV into DynamoDB typed-JSON outside
+  the system before uploading — removed 2026-09-19).
+- **CSV parsing**: a minimal hand-rolled RFC-4180-ish parser
+  (`parseCsv()`) handles quoted fields, commas/newlines embedded inside
+  quotes, and `""` as an escaped quote — no `csv-parse` (or similar)
+  dependency added, specifically to avoid pushing this Lambda into the
+  zip-deploy tier (`sendAlertHandler`/`parseChecklistPdf`) for what's a
+  small, bounded parsing job. Only the `Name` and `Your mobile number`
+  columns are used (matched in the header row, trimmed and
+  case-insensitively); every other column is ignored. Missing either
+  required header is a `400` before any row or table access.
+- **Phone normalization**: reuses `normalizePhoneNumber()` byte-for-byte
+  from `Lambdas/subscribeHandler/index.mjs` (see above) — same three-pattern
+  E.164 normalization, copied rather than shared since each Lambda
+  deploys independently.
+- **Per-row validation, whole file first**: `buildSubscriberItems()`
+  parses and validates every row *before* `truncateTable()` is ever
+  called — a structurally bad file (no valid rows at all) returns a
+  `400` with nothing deleted. A row with a missing name, an
+  unnormalizable phone number, or a phone number duplicated elsewhere
+  in the same file (DynamoDB's `BatchWriteItem` rejects a duplicate key
+  within one request — same class of collision `saveChecklist` guards
+  against for `Checklists`) is skipped rather than failing the whole
+  import, and reported back in `skippedRows: [{ row, reason }]` (`row`
+  is the 1-based line number, header counted as row 1, matching what a
+  spreadsheet would show). Fully blank lines are silently ignored, not
+  reported as skipped.
+- **Item shape written per surviving row** — identical to
+  `subscribeHandler`'s record shape, including `status: "subscribed"`
+  (required so `sendAlertHandler`'s scan picks these subscribers up —
+  anything else would silently exclude them from every future
+  broadcast) and `source: "web"` (same provenance value as a single
+  CMS-admin add, since bulk import is also admin-initiated):
+  ```json
+  {
+    "phoneNumber":    { "S": "+19055550123" },
+    "firstName":      { "S": "Christian Reid" },
+    "status":         { "S": "subscribed" },
+    "source":         { "S": "web" },
+    "optInTimestamp": { "N": "1234567890000" }
+  }
+  ```
+- **Truncate/write mechanics unchanged**: `truncateTable()` (paginated
+  `Scan` + chunked `BatchWriteItem` deletes) and `batchWriteWithRetry()`
+  (25-item chunks, exponential-backoff retry on `UnprocessedItems`) are
+  the same logic as before this change — only how the incoming request
+  gets turned into DynamoDB items was rewritten.
+- **Auth**: Cognito Authorizer required, same as every other
+  cardStack/Autobus write endpoint — see `AUTH.md`.
+- **CORS**: `Access-Control-Allow-Origin: https://www.mellowjohnny.cc`,
+  same restricted-origin convention as `subscribeHandler`/`sendAlertHandler`.
+
 ## `Lambdas/inboundSMSHandler/` — real, live, previously completely undocumented
 
 - **File**: `Lambdas/inboundSMSHandler/index.mjs`. Discovered 2026-08-15 while
@@ -740,7 +802,6 @@ section title:
 | `Lambdas/getCardSetsByYear/` | Get card sets by year | Queries the `blogCat-year-index` GSI. Returns `Cache-Control: public, max-age=1800`; its own comment says "CloudFront cache" but no CloudFront actually sits in front of it (see `API_ENDPOINTS.md`'s caching note) — today this header is browser-only. |
 | `Lambdas/cmsImageUploader/` | Get S3 upload URL (presigned PUT) | `getSignedUrl()` for a `PutObjectCommand`, 300s expiry, sets `CacheControl: public, max-age=31536000, immutable` on the eventual S3 object. |
 | `Lambdas/cmsImagePicker/` | List images in the bucket | `ListObjectsV2Command` on the whole bucket, no prefix filter server-side (filtering happens client-side in `cmsImageBrowser.js`). |
-| `Lambdas/bulkSubscriberUpload/` | Bulk import subscribers | Truncates the target table (`process.env.TABLE_NAME` — not hardcoded to `Subscribers`/`SubscribersTest`, so which one it hits depends on this Lambda's environment config) via paginated `Scan` + chunked `BatchWriteItem` deletes, then bulk-imports the new list the same way, with exponential-backoff retry on unprocessed items. |
 
 ## `Lambda Functions/` — separate legacy/prototype code, still not confirmed current
 
