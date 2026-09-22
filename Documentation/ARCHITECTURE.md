@@ -45,9 +45,14 @@ step to run anyway; it's plain HTML/CSS/JS with no bundler).
 - **Practical implication**: pushing to `main` ships to the live site. There's no separate preview/staging branch — the `published`/`blogStatus` draft flags in DynamoDB (see `DATA_MODEL.md`) are what stand in for a staging environment at the *content* level, but not at the *code* level. A broken commit to `main` goes live as soon as Amplify's build finishes.
 
 This is separate from Lambda deployment, which is manual per-function
-(see `LAMBDA_FUNCTIONS.md` — `sendAlertHandler` is redeployed by
-uploading a `.zip` through the Lambda console, and the other Lambdas
-are edited directly in the Console with no source control at all).
+and not automated by this Amplify pipeline at all (see
+`LAMBDA_FUNCTIONS.md`). Every live Lambda's source is version-controlled
+in this repo under `Lambdas/`, but the deploy mechanics differ by
+function: the 23 with no real npm dependency just need the updated
+`index.mjs` pasted into the Lambda Console's inline code editor and
+Deploy clicked, while `sendAlertHandler` (has `twilio`) and
+`parseChecklistPdf` (has `pdf-parse`) need a full `npm install` + zip +
+"Update from a .zip file" upload instead.
 
 ### Cost/abuse backstop: AWS Budgets
 
