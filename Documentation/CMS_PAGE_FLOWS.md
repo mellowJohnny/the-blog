@@ -677,26 +677,35 @@ than running as bare top-level code.
   of outcome.
 - "...bulk import" nav link → opens the bulk-import modal
   (`resetModal()`) — this exists for the once-a-year task of loading a
-  fresh subscriber list from the club's sign-up data (see
-  `CMS_GUIDE.md`'s bulk-import prep process).
-- Selecting/dropping a `.json` file → `handleFile()` — validates the
-  extension, reads it as text, `JSON.parse`s it, requires a non-empty
-  array; on success enables the Upload button and shows the record
-  count (inline modal feedback, not `cmsAlert`).
+  fresh subscriber list from the club's sign-up data. As of 2026-09-19
+  this uploads the club sign-up form's raw CSV export directly, with
+  the Lambda doing all the parsing/mapping — see `CMS_GUIDE.md`'s
+  "Bulk-import data prep — no longer needed" section for what this
+  replaced.
+- Selecting/dropping a `.csv` file → `handleFile()` — validates the
+  extension and reads it as raw text only, with no client-side parsing
+  or validation (the Lambda is the sole parser); on success enables the
+  Upload button and shows an approximate record count (inline modal
+  feedback, not `cmsAlert`).
 - "Upload" button (inside the bulk-import modal) → `await
   cmsConfirm("⚠️ This will delete ALL existing subscribers...")` first,
   since this is a full-replace operation, not an additive import. If
   confirmed, calls **Bulk import subscribers**, fronted by the
   `bulkSubscriberUpload` Lambda (`Lambdas/bulkSubscriberUpload/`),
-  with the Authorization header, body = the raw parsed JSON array
-  (already in DynamoDB typed-JSON format per the modal's own
-  instructions). Which table it truncates and reimports into is set
-  via the Lambda's `TABLE_NAME` environment variable rather than
-  hardcoded in its source — worth checking the Console if it's ever
-  unclear whether a bulk import will hit `Subscribers` or
-  `SubscribersTest`. On success: shows `deletedCount`/`importedCount`,
-  swaps the Upload/Cancel buttons for a Close button. On error: shows
-  the message inline, re-enables Upload.
+  with the Authorization header, body `{ csvContent }` — the raw CSV
+  text. The Lambda parses/validates the whole file, mapping only the
+  "Name"/"Your mobile number" columns and normalizing the phone number
+  to E.164, before truncating and reimporting — see
+  `LAMBDA_FUNCTIONS.md`'s `bulkSubscriberUpload` section for the full
+  mechanism, including how a row with a missing name or bad phone
+  number is skipped and reported rather than blocking the import. Which
+  table it truncates and reimports into is set via the Lambda's
+  `TABLE_NAME` environment variable rather than hardcoded in its source
+  — worth checking the Console if it's ever unclear whether a bulk
+  import will hit `Subscribers` or `SubscribersTest`. On success: shows
+  `deletedCount`/`importedCount` plus any `skippedRows`, swaps the
+  Upload/Cancel buttons for a Close button. On error: shows the message
+  inline, re-enables Upload.
 - "...add subscriber" nav link → opens the add-subscriber modal and
   focuses the name field — this exists for adding one person
   mid-season, without needing a full bulk-import re-run.
