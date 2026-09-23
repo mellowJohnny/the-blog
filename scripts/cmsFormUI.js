@@ -16,13 +16,17 @@
  */
 
 function initTinyEditor(selector = '#postBody', { cardImageBlocks = false } = {}) {
-  const plugins = ['lists', 'link', 'image', 'code', 'autoresize'];
-  let toolbar = 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link image lists code | wordcount';
+  // Card set pages swap the native image button/plugin for the two
+  // custom ones above - no reason to offer both ways to insert an image.
+  // (No 'noneditable' plugin needed - it 404s on this TinyMCE 8 build/
+  // API key and isn't required anyway: a plain contenteditable="false"
+  // attribute is honoured natively by the browser, and TinyMCE's core
+  // getContent() already strips it - verified working without it.)
+  const plugins = ['lists', 'link', 'code', 'autoresize'];
+  if (!cardImageBlocks) plugins.push('image');
 
-  if (cardImageBlocks) {
-    plugins.push('noneditable');
-    toolbar += ' | insertwrapimage insertmiddleimage';
-  }
+  const imageToolbarGroup = cardImageBlocks ? 'insertwrapimage insertmiddleimage' : 'image';
+  const toolbar = `undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link ${imageToolbarGroup} lists code | wordcount`;
 
   tinymce.init({
     selector: selector,
@@ -55,13 +59,13 @@ function loadImageDimensions(url) {
  * instance. Each opens the existing S3 image browser (cmsImageBrowser.js,
  * callback mode) then a small dialog for the remaining choices, and
  * inserts the picked image as one atomic, non-editable block
- * (contenteditable="false" + mceNonEditable, via the "noneditable"
- * plugin) - stripEditorOnlyMarkup() removes both before saving.
+ * (contenteditable="false" + mceNonEditable) - stripEditorOnlyMarkup()
+ * removes both before saving.
  */
 function registerCardImageBlockButtons(editor) {
   editor.ui.registry.addButton('insertwrapimage', {
     icon: 'image',
-    tooltip: 'Insert wrap image (small floated accent)',
+    tooltip: 'Insert wrap image',
     onAction: () => {
       openImageBrowser(null, (fileName, imageUrl) => {
         loadImageDimensions(imageUrl).then((dims) => openWrapImageDialog(editor, imageUrl, dims));
@@ -71,7 +75,7 @@ function registerCardImageBlockButtons(editor) {
 
   editor.ui.registry.addButton('insertmiddleimage', {
     icon: 'image',
-    tooltip: 'Insert middle image (centered, 75% width)',
+    tooltip: 'Insert middle image',
     onAction: () => {
       openImageBrowser(null, (fileName, imageUrl) => openMiddleImageDialog(editor, imageUrl));
     }
