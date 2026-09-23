@@ -318,7 +318,7 @@ const categoryRanges = {
     mcd: { start: 1991, end: 2007, className: "junk-set-nav-td", pageName: "mcd" }
   },
   tims: {
-    timmies: { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
+    timmies: { start: 2019, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
   }
 };
 
