@@ -70,7 +70,7 @@
           fetchCopyrightYear();
 
           // Load the TinyMCE WYSIWYG Editor from the global config in cmsFormUI.js
-          initTinyEditor('#postBody');
+          initTinyEditor('#postBody', { cardImageBlocks: true });
 
           // Wire up the star rating widget - repainted correctly once
           // fetchCardSetByID()'s data arrives, via populateCardSet()

@@ -40,8 +40,10 @@ const CARDSET_CATEGORY_LABELS = {
     return;
   }
 
-  // Call the Tiny API to fetch the content from the editor...
-  const tinyBody = tinymce.activeEditor.getContent();
+  // Call the Tiny API to fetch the content from the editor... stripped
+  // of the noneditable-block markers the card-image-insert buttons add
+  // (see stripEditorOnlyMarkup(), cmsFormUI.js) - editor-only, never saved.
+  const tinyBody = stripEditorOnlyMarkup(tinymce.activeEditor.getContent());
   const tinyBodyText = tinymce.activeEditor.getContent({ format: "text" }).trim();
 
   if (!tinyBodyText) {
@@ -126,7 +128,7 @@ function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTag
   cmsButtonSubmit();
   cmsUpdateButtonReset();
 
-  const tinyBody = tinymce.activeEditor.getContent();
+  const tinyBody = stripEditorOnlyMarkup(tinymce.activeEditor.getContent());
 
   const payload = {
     blogStatus,
@@ -620,7 +622,7 @@ function openPreview() {
   const headerImg = document.getElementById("headerImgName").value;
   const footerImg = document.getElementById("footerImgName").value;
   // Get TinyMCE content
-  const cardBody = tinymce.get("postBody").getContent();
+  const cardBody = stripEditorOnlyMarkup(tinymce.get("postBody").getContent());
 
   // Call the render function
   renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,cardBody);
