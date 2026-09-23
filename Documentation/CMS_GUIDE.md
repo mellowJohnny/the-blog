@@ -131,35 +131,97 @@ frontend never reads a plain `<textarea>` value for the post body, it
 always pulls fresh HTML out of the active TinyMCE instance at submit
 time.
 
-### Wrapped images in review body content
+### Wrapped/middle images in review body content
 
-Some card set reviews need a small logo/accent image floated beside
-the text (e.g. the All-Star Game logo on a McDonald's set) — hand-
-inserted directly into the TinyMCE HTML source, not through any CMS
-image-picker flow. Convention:
+Card set reviews recurringly embed two kinds of image inside the
+review body: a small logo/accent image floated beside the text (e.g.
+the All-Star Game logo on a McDonald's set) and a larger centered image
+partway through the review. As of 2026-09-22, `createCardSet.html`/
+`setEdit.html` have two dedicated TinyMCE toolbar buttons for these —
+**Insert wrap image** and **Insert middle image**
+(`registerCardImageBlockButtons()`, `scripts/cmsFormUI.js`, wired in
+via `initTinyEditor('#postBody', { cardImageBlocks: true })`, which
+also removes TinyMCE's native image button/plugin on these two pages
+only, since there's no reason to offer both ways in). Each button opens
+the existing S3 image browser (`openImageBrowser()`,
+`scripts/cmsImageBrowser.js`, in its callback mode — see below) then a
+small dialog for the remaining choices, and inserts the picked image
+at the cursor as one atomic, non-editable block (Backspace/Delete/
+arrow keys treat it as a single unit; typing inside it isn't possible)
+rather than freeform HTML the editor could accidentally corrupt.
+
+The final saved markup is identical either way — this is purely a
+better *authoring* experience, not a new storage format. Reviews
+written before this feature (raw hand-typed `<img>` HTML) still work
+and still edit exactly as they always have; nothing retroactively
+changes when an old review is reopened.
+
+**Wrap image** (`.img-wrap-left`/`.img-wrap-right` +
+`.img-wrap-sm`/`.img-wrap-md`, `styles.css`):
 
 ```html
 <img class="img-wrap-left img-wrap-sm" style="width: 214px; height: 117px;" src="..." alt="..." width="214" height="117" loading="lazy">
 ```
 
 - `img-wrap-left` / `img-wrap-right` — floats the image left/right with
-  matching margin (`styles.css`). Always required for a wrapped image.
-- `img-wrap-sm` / `img-wrap-md` — optional, opt-in mobile scaling:
-  `img-wrap-sm` renders the image at 50% of its own size on mobile,
-  `img-wrap-md` at 65%. Add whichever looks right for that image; omit
-  both to keep an image full-size on every breakpoint.
-- Set the inline `style="width:...px; height:...px;"` to whatever size
-  you actually want on desktop — `applyImgWrapSmSizing()` (`helper.js`)
-  reads *that* value, not the `width`/`height` HTML attributes, to
-  compute the mobile size, since some older content has the two out of
-  sync (a stale attribute left behind after the style was hand-edited).
-  Still set the `width`/`height` attributes to match, so the browser
-  reserves the right amount of layout space before the image loads.
+  matching margin. Always required for a wrapped image; the toolbar
+  dialog's Float dropdown picks this (default Left).
+- `img-wrap-sm` / `img-wrap-md` — opt-in mobile scaling: `img-wrap-sm`
+  renders the image at 50% of its own size on mobile, `img-wrap-md` at
+  65%. The toolbar dialog's Mobile Scale dropdown picks this (default
+  Small) — there's no "neither" option from the dialog, unlike hand-
+  typed markup, which can omit both to stay full-size on every
+  breakpoint.
+- The inline `style="width:...px; height:...px;"` is set automatically
+  from the picked image's real pixel dimensions (a throwaway `Image()`
+  load reads `naturalWidth`/`naturalHeight` before the dialog's Insert
+  button is usable) — `applyImgWrapSmSizing()` (`helper.js`) reads
+  *that* value, not the `width`/`height` HTML attributes, to compute
+  the mobile size, since some older hand-typed content has the two out
+  of sync (a stale attribute left behind after the style was
+  hand-edited).
 
 See `FRONTEND.md`'s "Mobile / responsive design" section for the
 mechanism behind this (including a real CSS specificity bug this was
 built around) and why the mobile scaling has to actually resize the
 image's box rather than just visually shrink it.
+
+**Middle image** (`.card-middle-img`, `styles.css`) — a simpler, fixed
+75%-width centered treatment with a border/drop-shadow, no float/size
+choice needed:
+
+```html
+<img class="card-middle-img" src="..." alt="...">
+```
+
+**Why non-editable, and why it has to be stripped before saving**: the
+toolbar buttons insert `contenteditable="false"` plus an
+`mceNonEditable` class on the `<img>` so TinyMCE treats it as one
+atomic block while editing — real HTML, not a TinyMCE-only marker, so
+it would otherwise end up in the saved `postBody` and ship to the
+public site. `stripEditorOnlyMarkup()` (`scripts/cmsFormUI.js`) removes
+both; every place `scripts/cmsCardSet.js` reads TinyMCE's content
+(create, update, and the client-side Preview) routes through it.
+TinyMCE's own `getContent()` already strips `contenteditable="false"`
+and its own internal `data-mce-*` bookkeeping attributes automatically
+— `stripEditorOnlyMarkup()` only has to catch the leftover plain CSS
+class, which TinyMCE has no reason to know is meaningful.
+
+**No `noneditable` TinyMCE plugin needed**: an earlier version of this
+feature also loaded TinyMCE's `noneditable` plugin, on the assumption
+it was required for the atomic-block behavior — it isn't. That plugin
+also turned out to 404 on this site's TinyMCE Cloud build (confirmed in
+production, not just local testing), so it was removed entirely; the
+plain `contenteditable="false"` attribute is honored natively by the
+browser and by TinyMCE's core without it.
+
+`openImageBrowser(targetFieldId, onSelect)`'s callback mode
+(`scripts/cmsImageBrowser.js`) is what lets these buttons reuse the
+existing S3 picker instead of building a second one: when `onSelect` is
+provided, picking (or uploading) an image calls it with
+`(fileName, imageUrl)` instead of writing to a form field's `.value` —
+the original header/footer-image flow (`targetFieldId` only, no
+callback) is unchanged.
 
 ### Star Rating widget
 
@@ -487,75 +549,19 @@ fullest first-party explanation of this tool, summarized here:
 - **GSM-Safe Mode** checkbox: auto-replaces smart-quotes/em-dashes/ellipses with plain-ASCII equivalents to keep the message in the cheaper GSM-7 encoding.
 - **Test Mode** checkbox (checked by default): sends only to the `SubscribersTest` table instead of the real `Subscribers` list — use this to sanity-check a message before going live. Unchecking it requires confirming a "LIVE MODE" warning (`cmsConfirm()` — see "CMS alert / confirm modals" above) before anything sends.
 - **Results panel**: per-recipient success/failure table plus a summary count, after a send.
-- **Bulk import** (nav link): replaces the *entire* subscriber list from an uploaded pre-processed JSON file (already in DynamoDB typed-JSON format). This is destructive — it deletes all existing subscribers first — and is described in-app as something "prepared separately once a year from the club sign-up data." See "Annual bulk-import data prep" below for what that prep step actually does.
+- **Bulk import** (nav link): replaces the *entire* subscriber list from an uploaded CSV — the club sign-up form's own export, uploaded directly, no pre-processing step (removed 2026-09-19; see below for what this replaced). This is destructive — it deletes all existing subscribers first, only once the whole file has been parsed and validated. Only the "Name" and "Your mobile number" columns are read; a row with a missing name or an unusable phone number is skipped and reported back rather than blocking the whole import. See `LAMBDA_FUNCTIONS.md`'s `bulkSubscriberUpload` section for the full parsing/validation mechanism.
 - **Add subscriber** (nav link): a small modal to add one subscriber by name + mobile number without doing a full bulk re-import.
 
-### Annual bulk-import data prep (CSV → DynamoDB JSON)
+### Bulk-import data prep — no longer needed (removed 2026-09-19)
 
-The `.json` file the bulk-import modal expects (see above) isn't produced by
-anything checked into this repo — there's no script or Lambda under
-`Lambdas/` that touches the club's raw sign-up data. It's a manual,
-once-a-year step done entirely outside the codebase, immediately before
-uploading through the modal:
-
-1. The club's sign-up form is exported as a CSV. Of its columns, only two
-   are used: **"Name"** and **"Your mobile number"**.
-2. That CSV is converted to a plain JSON array of DynamoDB typed-JSON
-   objects — the exact shape `bulkSubscriberUpload` (see
-   `LAMBDA_FUNCTIONS.md`) and the upload modal expect, with no
-   `PutRequest`/table-name wrapper, just the array — via a one-off AI chat
-   prompt, not a checked-in script. The mapping it applies:
-   - **Name → `firstName`** (String): only the first whitespace-delimited
-     token of the Name column, capitalized — e.g. "jane q. smith" becomes
-     just `"Jane"`.
-   - **Your mobile number → `phoneNumber`** (String): normalized to
-     **E.164** format, prefixing `+1` for Canadian/US numbers — e.g. a raw
-     `613-555-0123` becomes `+16135550123`.
-   - Two constant String attributes are added to every record regardless of
-     the source data: **`status`** set to `"subscribed"` and **`source`**
-     set to `"web"` (the same `source: "web"` that `subscribeHandler` — see
-     `LAMBDA_FUNCTIONS.md` — sets when a subscriber is added manually
-     through the "Add subscriber" modal instead).
-   - **Duplicate `phoneNumber`s are skipped, keeping the first
-     occurrence** — the club's raw export can contain more than one
-     sign-up row for the same person/number, and this conversion step is
-     where that gets collapsed, before the file ever reaches the
-     bulk-upload endpoint.
-
-   The verbatim prompt used for this conversion (recorded here since this
-   doc is currently its only durable copy — reuse it as-is next time rather
-   than re-deriving the wording):
-
-   ```
-   I have a CSV file I need to convert to DynamoDB typed JSON for bulk
-   upload. Please extract only the "Name" and "Your mobile number"
-   columns. From the Name column, take only the first token (first
-   name), capitalise it, and map it to a String attribute called
-   firstName. Map the phone number to a String attribute called
-   phoneNumber, converting it to E.164 format (+1 for Canadian/US
-   numbers). Add two additional String attributes to every record:
-   status set to "subscribed" and source set to "web". Skip duplicate
-   phone numbers, keeping the first occurrence. Output a plain JSON
-   array of DynamoDB typed JSON objects with no wrapper or PutRequest
-   — just the array. Here is the file.
-   ```
-
-   One example record from the expected output:
-   ```json
-   [
-     {
-       "phoneNumber": { "S": "+16135550123" },
-       "firstName":   { "S": "Christian" },
-       "source":      { "S": "web" },
-       "status":      { "S": "subscribed" }
-     }
-   ]
-   ```
-3. The resulting `.json` file is what actually gets dropped into the
-   bulk-import modal described above.
-
-Belt-and-suspenders note: `bulkSubscriberUpload`'s own writes use
-`PutRequest` (see `LAMBDA_FUNCTIONS.md`), so if a duplicate `phoneNumber`
-ever slipped past the dedup step above, the later record would silently
-overwrite the earlier one (last-write-wins) rather than erroring — in
-practice this hasn't mattered, since dedup already happens before upload.
+Until 2026-09-19, the bulk-import modal expected a pre-processed
+DynamoDB typed-JSON file, produced by a manual, once-a-year step done
+entirely outside the codebase: export the club sign-up form as a CSV,
+then convert it to JSON via a one-off AI chat prompt (extract the
+`Name`/`Your mobile number` columns, normalize the phone number to
+E.164, dedupe, etc.) before uploading. `bulkSubscriberUpload` (see
+`LAMBDA_FUNCTIONS.md`) now does all of that itself — the modal accepts
+the raw CSV export directly, and that external prep step doesn't exist
+anymore. Documented here only so this section isn't mistaken for a gap
+if referenced from an old note; the real mechanism lives entirely in
+`LAMBDA_FUNCTIONS.md` now.

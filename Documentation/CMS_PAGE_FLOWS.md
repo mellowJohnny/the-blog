@@ -154,9 +154,12 @@ checklist modal functions) are referenced anywhere in this page's
 markup or inline scripts; it's loaded here for no apparent reason.
 
 **On `window load`**: `fetchCopyrightYear()`, then
-`initTinyEditor('#postBody')` — same as `createBlogPost.html`, same
-reasoning (get the rich-text editor ready before the author starts
-typing).
+`initTinyEditor('#postBody', { cardImageBlocks: true })` — unlike
+`createBlogPost.html`'s plain call, this swaps TinyMCE's native image
+button/plugin for two custom ones (see below) that insert this site's
+recurring wrap/middle review images as structured blocks instead of
+hand-typed HTML — see `CMS_GUIDE.md`'s "Wrapped/middle images in
+review body content".
 
 **User interactions**:
 - "Browse" buttons next to Header/Footer Image Name →
@@ -173,6 +176,18 @@ typing).
 - Image search box (`oninput="filterImageList()"`) — correctly wired
   on this page, since `openImageBrowser()` is what actually populated
   the state `filterImageList()` reads.
+- **Insert wrap image / Insert middle image** — the two TinyMCE toolbar
+  buttons `initTinyEditor`'s `cardImageBlocks` flag adds
+  (`registerCardImageBlockButtons()`, `cmsFormUI.js`). Each opens the
+  same `openImageBrowser()` picker as the Browse buttons above, but in
+  its callback mode (`openImageBrowser(null, onSelect)`) rather than
+  writing to a form field — the picked image goes into a small TinyMCE
+  dialog instead (Float/Mobile Scale/Alt Text for the wrap image; just
+  Alt Text for the middle image, since `.card-middle-img` has no
+  float/size choice), then gets inserted at the cursor as one atomic,
+  non-editable block. See `CMS_GUIDE.md` for the full mechanism,
+  including why this needed `stripEditorOnlyMarkup()` before every
+  save/preview.
 - "Upload" button → `uploadNewImage()` (`cmsImageBrowser.js`) — same
   function and same `cmsImageUploader` Lambda as `createBlogPost.html`'s
   upload; here `_imageBrowserTargetFieldId` is the one set, so it
@@ -385,8 +400,13 @@ marked `selected`, and fills every other field directly (`setName` and
 `year` are populated but `disabled`/`readonly` in the HTML, since
 they're the table's actual key and changing them here would mean
 editing the wrong item or orphaning the current one). Also runs
-`fetchCopyrightYear()` (`helper.js`) and `initTinyEditor('#postBody')`
-(`cmsFormUI.js`).
+`fetchCopyrightYear()` (`helper.js`) and
+`initTinyEditor('#postBody', { cardImageBlocks: true })`
+(`cmsFormUI.js`) — same wrap/middle-image toolbar buttons as
+`createCardSet.html`, so a reopened review with old hand-typed wrap/
+middle images edits them as plain `<img>` tags (only newly-inserted
+images get the new atomic-block behavior) while new inserts use the
+guided flow.
 
 **User interactions**:
 - "Browse" buttons (Header/Footer Image Name) → same
@@ -394,12 +414,15 @@ editing the wrong item or orphaning the current one). Also runs
   `uploadNewImage()` flow, same `cmsImagePicker`/`cmsImageUploader`
   Lambdas, as `createCardSet.html` (`cmsImageBrowser.js`), writing a
   bare filename into the target field.
+- **Insert wrap image / Insert middle image** — same toolbar buttons
+  and flow as `createCardSet.html` above.
 - "Update Post" button → `updateCardSet(blogStatus, seoPageTitle,
   seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets,
   stars, formats, year, headerImgName, footerImgName, mfg)`
   (`cmsCardSet.js`) — no client-side validation, same reasoning as
   `updateBlogPost()` (pre-populated from a valid record). Sets the
-  submit button state, reads `tinymce.activeEditor.getContent()`, then
+  submit button state, reads
+  `stripEditorOnlyMarkup(tinymce.activeEditor.getContent())`, then
   calls **Update card set**, fronted by the `updateCardSet` Lambda
   (`Lambdas/updateCardSet/`) — this Lambda's response shape isn't
   reliable (plain string / `{message}` / `{body}`, itself either a JSON
@@ -412,8 +435,11 @@ editing the wrong item or orphaning the current one). Also runs
 - "Preview" button exists so an editor can see roughly how the review
   will look on the live site before actually saving it →
   `openPreview()` (`cmsCardSet.js`) — reads the current (possibly
-  unsaved) form field values plus `tinymce.get("postBody").getContent()`,
-  and calls `renderPreview(...)` (internal to `cmsCardSet.js`), which
+  unsaved) form field values plus
+  `stripEditorOnlyMarkup(tinymce.get("postBody").getContent())` (the
+  strip matters here too, not just on save, since a freshly-inserted
+  wrap/middle image is still marked non-editable at preview time), and
+  calls `renderPreview(...)` (internal to `cmsCardSet.js`), which
   builds the same kind of set-details table `displayCardSet()` renders
   on the live site, into `#previewContainer`, then shows
   `#previewModal`. **Purely client-side — no API call**, since the
