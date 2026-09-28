@@ -1293,7 +1293,16 @@ label sup {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 285px; /* matches .header-img-cell's fixed height */
+  /* min-height, not height: this cell spans both grid rows, so letting
+     it stretch keeps the image centred against the whole left column
+     even when a Checklist row makes that column taller than 285px. */
+  min-height: 285px;
+}
+
+/* The base rule's 8px top margin would push the image below true
+   centre here; the grid cell handles its spacing instead. */
+.set-details-image .table-header-img {
+  margin-top: 0;
 }
 
 .set-details-list {
@@ -1343,7 +1352,9 @@ label sup {
   width: auto;
   max-width: none;
   margin: 0;
-  padding: 0;
+  /* Top padding lives here rather than on .set-details-grid because this
+     rule's ID specificity would otherwise zero it out. */
+  padding: 24px 0 0 0;
 }
 #cardSetDiv .set-details-name,
 #cardSetDiv .set-detail-row {
@@ -2893,8 +2904,10 @@ label sup {
       "list";
   }
 
+  /* Cancels the base rule's min-height: stacked here, so there's no
+     left-hand column for the image to be centred against. */
   .set-details-image {
-    height: auto;
+    min-height: 0;
   }
 
   /* Breathing room between the set name and the header image below it -
