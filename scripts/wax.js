@@ -188,18 +188,6 @@ function fetchPageTitle(item)
    function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date,upvotes,downvotes,hasChecklist)
    {
 
-    // Convert stars to a number
-    const numStars = parseInt(stars);
-
-    // Generate star emojis
-    let cleanStars = "";
-    for (let i = 0; i < numStars; i++) {
-        cleanStars += "&#127775; ";
-    }
-
-    // Calculate Reading Time
-    const readingStats = estimateReadingTime(postBody); // lives in helper.js
-
     // Voting - keyed by setName+year (Cards table's key). voteKey
     // sanitizes that into a DOM/localStorage-safe id, since setName can
     // contain spaces/apostrophes. Vote counts are undefined until cast.
@@ -212,63 +200,14 @@ function fetchPageTitle(item)
     // Reference to the div where everything goes
     let cardBody = document.getElementById("cardSetDiv");
 
-    // hasChecklist (set by saveChecklist) gates this row. setName goes
-    // via data-set-name, not inline onclick, since it can contain
-    // apostrophes. set-detail-row-checklist lets mobile CSS reorder it.
-    const checklistRow = hasChecklist
-        ? `<div class="set-detail-row set-detail-row-checklist"><a href="#" class="checklist-view-link" data-set-name="${escapeHtml(setName)}" onclick="openChecklistModal(this); return false;">Checklist</a></div>`
-        : "";
-
-    // CSS Gridz: Grid areas let mobile restack name -> image -> list 
-    // instead of desktop's side-by-side.
-    cardBody.innerHTML += `
-        <div class="set-details-grid">
-            <div class="set-details-name">
-                <strong>${setName}</strong>
-            </div>
-            <div class="set-details-image">
-                <img src="${headerImg}${headerImgName}"
-                class="table-header-img"
-                fetchpriority="high"
-                alt="Vintage hockey cards from the ${year} ${mfg} set"
-                width="620">
-            </div>
-            <div class="set-details-list">
-                <div class="set-detail-row"><strong>Set Size:</strong> ${size}</div>
-                <div class="set-detail-row"><strong>Inserts:</strong> <i>${subsets}</i></div>
-                <div class="set-detail-row"><strong>Release Year:</strong> ${year}</div>
-                <div class="set-detail-row"><strong>Formats:</strong> ${formats}</div>
-                <div class="set-detail-row"><strong>Manufacturer:</strong> ${mfg}</div>
-                ${checklistRow}
-                <div class="set-detail-row"><strong>Hella Rating:</strong> ${cleanStars}</div>
-            </div>
-        </div>
-        <br>
-        <table class="set-details-author">
-          <tr>
-            <td>
-                <strong><i>${author} - ${fixDate(date)}</i></strong><br>
-                <strong><i>${readingStats.minutes} minute read</i></strong>
-            </td>
-          </tr>
-          <tr>
-            <td>${postBody}</td>
-          </tr>
-        </table>
-
-        <div class="set-footer-table-style">
-            <div style="text-align:left" class="caption">
-                <strong>and the winners are...</strong>
-            </div>
-            <div style="text-align:center">
-                <img src="${footerImg}${footerImgName}"
-                class="table-footer-img"
-                loading="lazy"
-                alt="Vintage hockey cards from the ${year} ${mfg} set"
-                width="890">
-            </div>
-        </div>
-
+    // Shared with the CMS preview modal - see buildCardSetMarkup()
+    // in helper.js. Everything below it here is live-site-only.
+    cardBody.innerHTML += buildCardSetMarkup({
+        setName, year, mfg, size, subsets, stars, formats,
+        headerImgUrl: `${headerImg}${headerImgName}`,
+        footerImgUrl: `${footerImg}${footerImgName}`,
+        author, date, postBody, hasChecklist
+    }) + `
         <br>
         <hr/>
 

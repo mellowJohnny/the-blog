@@ -69,12 +69,12 @@ them to a crawler (or a human visitor navigating by link).
 |---|---|
 | `blogs.js` | Blog intro copy (`renderBlogIntro()`), `fetchBlogs()`/pagination/rendering for the blog stream, and the homepage weather widget (calls OpenWeatherMap directly from the browser using the visitor's geolocation). |
 | `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. On mobile, the prev/next set name in that label drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle") via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans the mobile breakpoint swaps between, since the full "YYYY-YY Manufacturer" label was too long for a small screen; desktop still shows the full name. |
-| `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — used by every public page) and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped/middle images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), hamburger menu toggle, cookie helper, and copyright-year footer. |
+| `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — used by every public page) and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped/middle images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), `buildCardSetMarkup()` (the single source of truth for a card set review's HTML, shared by the live site's `displayCardSet()` and the CMS preview modal's `renderPreview()` — added 2026-09-28 to end the drift between two hand-maintained copies; see "Card set markup is shared with the CMS preview" below), hamburger menu toggle, cookie helper, and copyright-year footer. |
 | `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise); also the type-ahead dropdown (`initPlayerSearchTypeahead()`/`loadPlayerNameIndex()`/`rankPlayerNameMatch()`) that suggests player names client-side from a once-fetched, cached name index. See "Player search" below. |
 | `adminTools.js` | `cms/admin.html` support code: a growing set of self-service site-health checks (broken images, checklist-to-review linkage), each its own function calling the site's existing public read APIs directly. See `CMS_GUIDE.md`'s "Admin Tools" section. |
 | `auth.js` | Cognito OAuth2 code exchange + token refresh, gates every `/cms` page. See `AUTH.md`. |
 | `cmsBlog.js` | Blog post CRUD: `createBlogPost`, `updateBlogPost`, `deleteBlogPost`, `getBlogsForUpdate`, `getStagedBlogsForUpdate`, `displayBlogs`, `displayStagedBlogs`, `fetchBlogByID`, `populateBlog`, and the `BLOG_TYPE_LABELS` lookup object. One of 4 files split out of the former `scripts/cms.js` (1592 lines, deleted) on a by-concern basis, moved verbatim with no logic changes. See `CMS_GUIDE.md`. |
-| `cmsCardSet.js` | Card-set review CRUD: `createCardSet`, `updateCardSet`, `deleteCardSet`, `fetchAllCardSets`, `fetchAllStagedCardSets`, `displayCardSets`, `displayStagedCardSets`, `fetchCardSetByID`, `populateCardSet`, `openPreview`, `renderPreview`, `closePreview`, and the `CARDSET_CATEGORY_LABELS` lookup object. Split out of the former `cms.js` alongside `cmsBlog.js` — see that row above. Also owns the Star Rating widget shared by `createCardSet.html`/`setEdit.html`: `initStarRatingWidget()` (wires click/hover on the five star icons, called once per page on load) and `paintStarRating(value, containerId)` (the actual paint logic, also called by `populateCardSet()` once a set's real rating loads) — see `CMS_GUIDE.md`'s "Star Rating widget". |
+| `cmsCardSet.js` | Card-set review CRUD: `createCardSet`, `updateCardSet`, `deleteCardSet`, `fetchAllCardSets`, `fetchAllStagedCardSets`, `displayCardSets`, `displayStagedCardSets`, `fetchCardSetByID`, `populateCardSet`, `openPreview`, `renderPreview`, `closePreview`, and the `CARDSET_CATEGORY_LABELS` lookup object. Split out of the former `cms.js` alongside `cmsBlog.js` — see that row above. Also owns the Star Rating widget shared by `createCardSet.html`/`setEdit.html`: `initStarRatingWidget()` (wires click/hover on the five star icons, called once per page on load) and `paintStarRating(value, containerId)` (the actual paint logic, also called by `populateCardSet()` once a set's real rating loads) — see `CMS_GUIDE.md`'s "Star Rating widget". `renderPreview()` no longer carries its own copy of the review markup: it calls `buildCardSetMarkup()` in `helper.js`, the same builder the live site uses, so the preview can't drift from production — see "Card set markup is shared with the CMS preview" below. |
 | `cmsImageBrowser.js` | The S3 image browser/upload modal, both families together since they share code (card-set images and blog images both use `uploadNewImage()`/`closeImageBrowser()`): `fetchImageList`, `renderImageList`, `openImageBrowser`, `filterImageList`, `openBlogImageBrowser`, `fetchBlogImageList`, `renderBlogImageList`, `filterBlogImageList`, `uploadNewImage`, `closeImageBrowser`. Split out of the former `cms.js` — see `cmsBlog.js` row above. `openImageBrowser(targetFieldId, onSelect)` gained an optional callback mode 2026-09-22 — when provided, picking/uploading an image calls `onSelect(fileName, imageUrl)` instead of writing to a form field, which is how the card-image-insert toolbar buttons (`cmsFormUI.js`) reuse this same picker. See `CMS_GUIDE.md`. |
 | `cmsFormUI.js` | Generic CMS form UI: `initTinyEditor` (TinyMCE init) plus the submit-button state helpers (`cmsButtonSubmit`, `cmsCreateButtonReset`, `changeMeBack`, `cmsUpdateButtonReset`, `changeMeBackUpdate`). Split out of the former `cms.js` — see `cmsBlog.js` row above. `fetchCopyrightYear()`, also formerly in `cms.js`, was dropped entirely during the split rather than migrated to any of these 4 files — it was a byte-identical duplicate of the copy already in `helper.js`, and every page that used the `cms.js` copy already loaded (or gained) `helper.js`. `initTinyEditor(selector, { cardImageBlocks })` gained an options param 2026-09-22 — true only on `createCardSet.html`/`setEdit.html`, it swaps TinyMCE's native image button/plugin for two custom ones (`registerCardImageBlockButtons()`) that insert the site's wrap/middle review images as atomic, non-editable blocks; `stripEditorOnlyMarkup()` removes that editor-only markup before any save. See `CMS_GUIDE.md`'s "Wrapped/middle images in review body content". |
 | `adminSMS.js` | Autobus SMS admin page logic: character/segment counter, GSM-7 vs Unicode encoding detection, broadcast send, bulk subscriber import, add-subscriber modal. See `CMS_GUIDE.md`. |
@@ -212,14 +212,12 @@ knowing before touching this CSS again:
   `"name image" "list image"` (matching the old layout exactly),
   mobile redefines it as `"name" "image" "list"` in one column. No
   table semantics involved, so no rowspan fight. `cms/cmsCardSet.js`'s
-  `renderPreview()` (the `setEdit.html`/`createCardSet.html` preview
-  modal) still uses the old table-based markup independently — a
-  desktop-only CMS tool, deliberately left as-is rather than kept in
-  sync, same category of intentional duplication as the checklist-
-  parsing (`tools/checklistParser/` vs. `Lambdas/parseChecklistPdf/`)
-  and sitemap-generator (`tools/generateSitemap/` vs.
-  `scripts/helper.js`) duplications already noted elsewhere in this
-  doc.
+  `renderPreview()` (the `setEdit.html` preview modal) used to keep its
+  own copy of the old table-based markup, which silently drifted from
+  production several times (top padding, image alignment, a missing
+  Checklist row, a missing publish date). Both now render from one
+  builder, `buildCardSetMarkup()` in `scripts/helper.js` — see "Card
+  set markup is shared with the CMS preview" below.
 - **A higher-specificity rule elsewhere can silently neutralize a
   lower-specificity `!important` cap, even when both use `!important`.**
   `.img-wrap-left`/`.img-wrap-right` (small hand-inserted logo images
@@ -338,6 +336,50 @@ issues in the mobile section above — don't hand-tune spacing to
 values drift out of sync differently at each screen size.
 
 **Random team colors + cheer label + pop-in animation**: `applyRandomMastheadStyling()` (`helper.js`) runs on load on all 4 pages using this masthead (`waxReviews.html`, `lockout.html`, `playerSearch.html`, `theJunkWaxYears.html`) — picks one of 32 NHL teams at random from `NHL_TEAM_COLORS`, sets `--team-primary`/`--team-tertiary` CSS custom properties that drive `.wax-reviews-mast-table`'s gradient (a simpler solid+stripe design via `.masthead-two-color` for genuinely two-color teams), and creates/reuses a `.masthead-team-label` span in the bottom-right corner showing that team's cheer text (e.g. "Go Canucks Go!") so the random pick is visually verifiable. That label's text is rendered via `renderLoudText()`, which wraps each character in its own `.loud-char` span with a staggered `animation-delay` — `styles.css`'s `loudPopIn` keyframes then pop/rotate each letter in on a delay, purely because a CSS `animation` on an element plays automatically the moment that element exists in the DOM (no JS trigger needed, since the label is fully torn down and rebuilt on every load rather than reused in place). `prefers-reduced-motion: reduce` skips the animation and shows the finished text immediately.
+
+## Card set markup is shared with the CMS preview
+
+The live site (`displayCardSet()`, `wax.js`) and the CMS preview modal
+(`renderPreview()`, `cmsCardSet.js`) render a card set review from one
+builder: `buildCardSetMarkup()` in `scripts/helper.js`. `helper.js` is
+already loaded by both `waxReviews.html` and `cms/setEdit.html`, the
+same way `escapeHtml()`/`estimateReadingTime()`/`fixDate()` are shared.
+
+This replaced two hand-maintained copies of the same template. They
+drifted repeatedly — by the time they were merged the preview was
+missing the details block's top padding, top-aligning the header image
+instead of centering it against the details column, never rendering
+the Checklist row, and omitting the publish date from the author line.
+None of that was visible to the person relying on the preview to see
+what would go live.
+
+Worth knowing when changing either side:
+
+- The builder covers the set-details grid, the author/body table and
+  the footer block only. Pagination controls and the vote widget stay
+  in `displayCardSet()` — they're live-site interactions, not part of
+  what an author previews.
+- `interactive: false` (the preview) renders the Checklist link
+  without its `onclick`. `openChecklistModal()` lives in `wax.js`,
+  which `setEdit.html` doesn't load, so a live handler would throw.
+  The markup is otherwise identical, so it still looks the same.
+- Callers pass fully-built image URLs (`headerImgUrl`/`footerImgUrl`).
+  The live site concatenates the S3 prefix the API returns; the CMS
+  concatenates its own known `img/cards/` base.
+- The preview needs the set's `now` (date) and `hasChecklist` values,
+  which aren't form fields — `fetchCardSetByID()` stashes them in
+  module-level variables for `renderPreview()` to read. Note the field
+  is `now`, not `date` (see `DATA_MODEL.md` on field naming).
+- `.set-details-grid` sets `width: 100%` deliberately. Its percentage
+  column tracks shrink-wrap to content when the parent's width is
+  indefinite, which is the case inside the preview modal but not under
+  `#cardSetDiv` (where `.flex-container div` forces a fixed width).
+- The modal's typography rule is `.preview-modal`, **not**
+  `.preview-modal *`. The old blanket selector (with `!important`)
+  destroyed the real `.set-details-*` styling inside `#previewContainer`
+  and had to be undone by hand with markup-specific selectors for every
+  change — it was the mechanism behind the drift. Don't reintroduce it;
+  target the specific offending rule instead.
 
 ## Voting feature (waxReviews.html)
 
