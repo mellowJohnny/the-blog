@@ -145,13 +145,11 @@ rather than a blog post, with more fields (star rating, manufacturer,
 SEO fields, etc.) since a card set review carries more structured
 metadata than a blog post does.
 
-**What loads**: `auth.js` and the TinyMCE CDN script in `<head>`; then,
-placed just after `</head>` in this order: `cmsCardSet.js`,
-`cmsImageBrowser.js`, `cmsFormUI.js`, `wax.js`, `helper.js`. `wax.js`
-doesn't appear to back anything this page actually calls — none of its
-functions (`fetchCardSetsByYear`, `displayCardSet`, `castVote`, the
-checklist modal functions) are referenced anywhere in this page's
-markup or inline scripts; it's loaded here for no apparent reason.
+**What loads**: `auth.js` and the TinyMCE CDN script in `<head>`; then
+`cmsCardSet.js`, `cmsImageBrowser.js`, `cmsFormUI.js`, `helper.js` (in
+that order, all in `<head>`), followed by the inline `window load`
+block. `wax.js` is **not** loaded — this page never called anything in
+it.
 
 **On `window load`**: `fetchCopyrightYear()`, then
 `initTinyEditor('#postBody', { cardImageBlocks: true })` — unlike
@@ -375,8 +373,9 @@ data, let the editor change it, save/delete — plus a client-side
 Preview feature blog posts don't have (see below).
 
 **What loads**: `auth.js` and the TinyMCE CDN script in `<head>`; then
-`cmsCardSet.js`, `cmsFormUI.js`, `wax.js`, `helper.js` (in that order,
-all in `<head>`). The `setID` extraction and `window load` listener
+`cmsCardSet.js`, `cmsImageBrowser.js`, `cmsFormUI.js`, `helper.js` (in
+that order, all in `<head>`). `wax.js` is **not** loaded, which is
+why the Preview renders its Checklist link inert (see below). The `setID` extraction and `window load` listener
 are together in that same `<head>` block, after those script tags
 (unlike `blogEdit.html`'s equivalent block, which sits after
 `</head>`).
@@ -432,24 +431,36 @@ guided flow.
   genuine failure never gets shown as a false success). `await
   cmsAlert(message)` always runs; the redirect to `pickCardSet.html`
   only fires when `response.ok`.
-- "Preview" button exists so an editor can see roughly how the review
-  will look on the live site before actually saving it →
+- "Preview" button exists so an editor can see how the review will
+  look on the live site before actually saving it →
   `openPreview()` (`cmsCardSet.js`) — reads the current (possibly
   unsaved) form field values plus
   `stripEditorOnlyMarkup(tinymce.get("postBody").getContent())` (the
   strip matters here too, not just on save, since a freshly-inserted
   wrap/middle image is still marked non-editable at preview time), and
   calls `renderPreview(...)` (internal to `cmsCardSet.js`), which
-  builds the same kind of set-details table `displayCardSet()` renders
-  on the live site, into `#previewContainer`, then shows
-  `#previewModal`. **Purely client-side — no API call**, since the
-  whole point is previewing changes that haven't been saved yet. Two
-  things make this not a perfect mirror of the real page: it hardcodes
-  the S3 `img/cards/` URL prefix directly rather than reading the
-  record's actual `headerImg`/`footerImg` prefix fields, and it always
-  uses `rowspan="7"` on the header image cell — it never renders a
-  Checklist row, unlike the live `displayCardSet()`, which bumps that
-  to `8` when `hasChecklist` is true.
+  renders into `#previewContainer` via `buildCardSetMarkup()`
+  (`helper.js`) — the **same** builder the live site's
+  `displayCardSet()` uses (since 2026-09-28; before that the preview
+  kept its own table-based copy of the markup, which had drifted from
+  production — see `FRONTEND.md`'s "Card set markup is shared with the
+  CMS preview") — then shows `#previewModal`. **Purely client-side —
+  no API call**, since the whole point is previewing changes that
+  haven't been saved yet. The set-details grid, author line (now
+  including the publish date), body and footer block match the live
+  page exactly, including the Checklist row when the set has one.
+  Remaining, deliberate differences from the real page:
+  - The publish date and `hasChecklist` aren't form fields, so
+    `fetchCardSetByID()` stashes the loaded record's `now` and
+    `hasChecklist` in module-level variables (`_loadedSetDate`,
+    `_loadedSetHasChecklist`) for `renderPreview()` to read.
+  - The Checklist link renders without its `onclick`
+    (`interactive: false`), since `openChecklistModal()` lives in
+    `wax.js`, which this page doesn't load.
+  - It hardcodes the S3 `img/cards/` URL prefix rather than reading
+    the record's actual `headerImg`/`footerImg` prefix fields.
+  - Pagination controls and the vote widget aren't rendered — they're
+    live-site interactions, not review content.
 - Close preview (`×`) → `closePreview()` (`cmsCardSet.js`) — hides the
   modal and clears `#previewContainer`.
 - "Delete Set" button → `deleteCardSet(setID, setName, year)`
