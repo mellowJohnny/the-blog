@@ -55,6 +55,95 @@ function estimateReadingTime(htmlString) {
   };
 }
 
+/**
+ * Builds a card set review's markup - the single source of truth for
+ * both the live site (displayCardSet(), wax.js) and the CMS preview
+ * modal (renderPreview(), cmsCardSet.js). These were separate
+ * templates that silently drifted apart; keep it that way and they
+ * will again.
+ *
+ * Covers the set-details grid, the author/body table and the footer
+ * block only. The live site's pagination controls and vote widget are
+ * deliberately not here - they're interactive site features, not part
+ * of what an author is previewing.
+ *
+ * interactive:false (the preview) renders the Checklist link without
+ * its onclick, since openChecklistModal() lives in wax.js and
+ * setEdit.html doesn't load it. The markup is otherwise identical.
+ */
+function buildCardSetMarkup({
+  setName, year, mfg, size, subsets, stars, formats,
+  headerImgUrl, footerImgUrl,
+  author, date, postBody,
+  hasChecklist = false,
+  interactive = true
+}) {
+  let cleanStars = "";
+  for (let i = 0; i < parseInt(stars); i++) {
+    cleanStars += "&#127775; ";
+  }
+
+  const readingStats = estimateReadingTime(postBody);
+
+  // set-detail-row-checklist lets mobile CSS reorder it. setName goes
+  // via data-set-name, not inline onclick, since it can contain
+  // apostrophes.
+  const checklistRow = hasChecklist
+    ? `<div class="set-detail-row set-detail-row-checklist"><a href="#" class="checklist-view-link" data-set-name="${escapeHtml(setName)}"${interactive ? ' onclick="openChecklistModal(this); return false;"' : ''}>Checklist</a></div>`
+    : "";
+
+  // CSS Gridz: Grid areas let mobile restack name -> image -> list
+  // instead of desktop's side-by-side.
+  return `
+        <div class="set-details-grid">
+            <div class="set-details-name">
+                <strong>${setName}</strong>
+            </div>
+            <div class="set-details-image">
+                <img src="${headerImgUrl}"
+                class="table-header-img"
+                fetchpriority="high"
+                alt="Vintage hockey cards from the ${year} ${mfg} set"
+                width="620">
+            </div>
+            <div class="set-details-list">
+                <div class="set-detail-row"><strong>Set Size:</strong> ${size}</div>
+                <div class="set-detail-row"><strong>Inserts:</strong> <i>${subsets}</i></div>
+                <div class="set-detail-row"><strong>Release Year:</strong> ${year}</div>
+                <div class="set-detail-row"><strong>Formats:</strong> ${formats}</div>
+                <div class="set-detail-row"><strong>Manufacturer:</strong> ${mfg}</div>
+                ${checklistRow}
+                <div class="set-detail-row"><strong>Hella Rating:</strong> ${cleanStars}</div>
+            </div>
+        </div>
+        <br>
+        <table class="set-details-author">
+          <tr>
+            <td>
+                <strong><i>${author} - ${fixDate(date)}</i></strong><br>
+                <strong><i>${readingStats.minutes} minute read</i></strong>
+            </td>
+          </tr>
+          <tr>
+            <td>${postBody}</td>
+          </tr>
+        </table>
+
+        <div class="set-footer-table-style">
+            <div style="text-align:left" class="caption">
+                <strong>and the winners are...</strong>
+            </div>
+            <div style="text-align:center">
+                <img src="${footerImgUrl}"
+                class="table-footer-img"
+                loading="lazy"
+                alt="Vintage hockey cards from the ${year} ${mfg} set"
+                width="890">
+            </div>
+        </div>
+  `;
+}
+
 // SEO / social meta helpers - setPageMeta() sets <title>, description,
 // canonical, OG, and twitter:* tags in one call. Static pages call it
 // once; dynamic pages re-call it whenever new content arrives.
@@ -318,7 +407,7 @@ const categoryRanges = {
     mcd: { start: 1991, end: 2007, className: "junk-set-nav-td", pageName: "mcd" }
   },
   tims: {
-    timmies: { start: 2020, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
+    timmies: { start: 2019, end: 2025, className: "junk-set-nav-td", pageName: "timmies" }
   }
 };
 
@@ -389,7 +478,7 @@ const NAV_ITEMS = {
   home: { label: "Home", href: "/index.html" },
   junk: { label: "90s Junk Wax", href: "/waxReviews.html?year=1987&pageName=junkWax&blogCat=reg" },
   classic: { label: "Classic 80s Sets", href: "/waxReviews.html?year=1981&pageName=classicWax&blogCat=reg" },
-  timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2020&pageName=timmies&blogCat=tims" },
+  timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2019&pageName=timmies&blogCat=tims" },
   mcd: { label: "McDonald's Hockey", href: "/waxReviews.html?year=1991&pageName=mcd&blogCat=mcd" },
   tech: { label: "Tech", href: "/tech.html?blogType=1&pageName=tech" },
   mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3&pageName=ev" },

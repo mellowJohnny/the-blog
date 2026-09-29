@@ -40,8 +40,10 @@ const CARDSET_CATEGORY_LABELS = {
     return;
   }
 
-  // Call the Tiny API to fetch the content from the editor...
-  const tinyBody = tinymce.activeEditor.getContent();
+  // Call the Tiny API to fetch the content from the editor... stripped
+  // of the noneditable-block markers the card-image-insert buttons add
+  // (see stripEditorOnlyMarkup(), cmsFormUI.js) - editor-only, never saved.
+  const tinyBody = stripEditorOnlyMarkup(tinymce.activeEditor.getContent());
   const tinyBodyText = tinymce.activeEditor.getContent({ format: "text" }).trim();
 
   if (!tinyBodyText) {
@@ -126,7 +128,7 @@ function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTag
   cmsButtonSubmit();
   cmsUpdateButtonReset();
 
-  const tinyBody = tinymce.activeEditor.getContent();
+  const tinyBody = stripEditorOnlyMarkup(tinymce.activeEditor.getContent());
 
   const payload = {
     blogStatus,
@@ -476,6 +478,12 @@ async function deleteCardSet(setID, setName, year) {
       // Populate the form with the first (and only) card set
       const set = items[0];
 
+      // Not form fields, but the preview needs them to match the live
+      // site's rendering - see renderPreview(). The live site reads the
+      // date off `now`, not `date` (see DATA_MODEL.md on field naming).
+      _loadedSetDate = set.now;
+      _loadedSetHasChecklist = set.hasChecklist;
+
       populateCardSet(
         set.blogStatus,
         set.seoPageTitle,
@@ -606,6 +614,11 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
 //********************************************* Preview Modal Functions *********************************************
 // - Open / close the modal, and render the preview
 
+// Set by fetchCardSetByID() on setEdit.html. Stay null on
+// createCardSet.html, where the set doesn't exist yet.
+let _loadedSetDate = null;
+let _loadedSetHasChecklist = false;
+
 function openPreview() {
 
   // Let's set up the some constants to hold the current values in the form
@@ -620,7 +633,7 @@ function openPreview() {
   const headerImg = document.getElementById("headerImgName").value;
   const footerImg = document.getElementById("footerImgName").value;
   // Get TinyMCE content
-  const cardBody = tinymce.get("postBody").getContent();
+  const cardBody = stripEditorOnlyMarkup(tinymce.get("postBody").getContent());
 
   // Call the render function
   renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,cardBody);
@@ -632,80 +645,24 @@ function openPreview() {
 
 function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,body) {
 
-  // Convert stars to a number
-  const numStars = parseInt(stars);
-
-  // Generate star emojis
-  let cleanStars = "";
-  for (let i = 0; i < numStars; i++) {
-    cleanStars += "&#127775; ";
-  }
-
-  // Reading time (same helper as live site)
-  const readingStats = estimateReadingTime(body);
-
   // Write into previewContainer instead of cardSetDiv
   const container = document.getElementById("previewContainer");
 
-  container.innerHTML += `
-    <table class="set-details-table-style">
-        <tr>
-            <td style="width: 25%; font-size: 20px;">
-                <strong>${setName}</strong>
-            </td>
-            <td rowspan="7" class="header-img-cell" style="width: 75%; text-align: center;">
-                <img src="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cards/${headerImg}"
-                class="table-header-img"
-                alt="Vintage hockey cards from the ${year} ${mfg} set">
-            </td>
-        </tr>
-        <tr>
-            <td><strong>Set Size:</strong> ${size}</td>
-        </tr>
-        <tr>
-            <td><strong>Inserts:</strong> <i>${subsets}</i></td>
-        </tr>
-        <tr>
-            <td><strong>Release Year:</strong> ${year}</td>
-        </tr>
-        <tr>
-            <td><strong>Formats:</strong> ${formats}</td>
-        </tr>
-        <tr>
-            <td><strong>Manufacturer:</strong> ${mfg}</td>
-        </tr>
-        <tr>
-            <td><strong>Hella Rating:</strong> ${cleanStars}</td>
-        </tr>
-    </table>
-    <br>
-    <table class="set-details-author">
-      <tr>
-        <td>
-            <strong><i>${author}</i></strong><br>
-            <strong><i>${readingStats.minutes} minute read</i></strong>
-        </td>
-      </tr>
-      <tr>
-        <td>${body}</td>
-      </tr>
-    </table>
+  // Same builder the live site uses (helper.js), so the preview can't
+  // drift from production. interactive:false leaves the Checklist link
+  // inert - openChecklistModal() lives in wax.js, not loaded here.
+  const CARD_IMG_BASE = "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cards/";
 
-    <table class="set-footer-table-style">
-        <tr>
-            <td style="text-align:left">
-                <strong>and the winners are...</strong>
-            </td>
-        </tr>
-        <tr>
-            <td style="text-align:center">
-                <img src="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cards/${footerImg}"
-                class="table-footer-img"
-                alt="Vintage hockey cards from the ${year} ${mfg} set">
-            </td>
-        </tr>
-    </table>
-
+  container.innerHTML += buildCardSetMarkup({
+    setName, year, mfg, size, subsets, stars, formats,
+    headerImgUrl: `${CARD_IMG_BASE}${headerImg}`,
+    footerImgUrl: `${CARD_IMG_BASE}${footerImg}`,
+    author,
+    date: _loadedSetDate || Date.now(),
+    postBody: body,
+    hasChecklist: _loadedSetHasChecklist,
+    interactive: false
+  }) + `
     <br>
     <hr/>
     <br><br>

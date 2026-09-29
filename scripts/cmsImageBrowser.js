@@ -22,11 +22,11 @@ async function uploadNewImage() {
   const fileName = file.name;
 
   // Determine which picker is active
-  // Card picker sets: _imageBrowserTargetFieldId
+  // Card picker sets: _imageBrowserTargetFieldId and/or _imageBrowserCallback
   // Blog picker sets: _blogImageTargetFieldId
   let directory = null;
 
-  if (_imageBrowserTargetFieldId) {
+  if (_imageBrowserTargetFieldId || _imageBrowserCallback) {
     directory = "img/cards/";
   } else if (_blogImageTargetFieldId) {
     directory = "img/blog/";
@@ -76,7 +76,13 @@ async function uploadNewImage() {
     fetchImageList().then(files => {
       _imageBrowserFiles = files;
       renderImageList(files, _imageBrowserTargetFieldId);
-      document.getElementById(_imageBrowserTargetFieldId).value = fileName;
+      if (_imageBrowserCallback) {
+        const callback = _imageBrowserCallback;
+        _imageBrowserCallback = null;
+        callback(fileName, data.finalUrl);
+      } else {
+        document.getElementById(_imageBrowserTargetFieldId).value = fileName;
+      }
       closeImageBrowser();
     });
   } else {
@@ -160,7 +166,13 @@ function renderImageList(files, targetFieldId, filterText = "") {
       wrapper.appendChild(label);
 
       wrapper.onclick = () => {
-        document.getElementById(targetFieldId).value = fileName;
+        if (_imageBrowserCallback) {
+          const callback = _imageBrowserCallback;
+          _imageBrowserCallback = null;
+          callback(fileName, imageUrl);
+        } else {
+          document.getElementById(targetFieldId).value = fileName;
+        }
         closeImageBrowser();
       };
 
@@ -174,10 +186,15 @@ function renderImageList(files, targetFieldId, filterText = "") {
  */
 let _imageBrowserFiles = [];
 let _imageBrowserTargetFieldId = null;
+let _imageBrowserCallback = null;
 
-function openImageBrowser(targetFieldId) {
+// Card picker, generalized: pass onSelect(fileName, imageUrl) to insert
+// the picked image somewhere other than a form field's value (e.g. a
+// TinyMCE editor) instead of the default target-field behaviour.
+function openImageBrowser(targetFieldId, onSelect = null) {
   const modal = document.getElementById("imageBrowserModal");
   _imageBrowserTargetFieldId = targetFieldId;
+  _imageBrowserCallback = onSelect;
 
   fetchImageList().then(files => {
     _imageBrowserFiles = files;
@@ -196,6 +213,7 @@ function openImageBrowser(targetFieldId) {
 function closeImageBrowser() {
   const modal = document.getElementById("imageBrowserModal");
   modal.style.display = "none";
+  _imageBrowserCallback = null;
 }
 
 /**

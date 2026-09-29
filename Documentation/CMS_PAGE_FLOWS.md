@@ -145,18 +145,19 @@ rather than a blog post, with more fields (star rating, manufacturer,
 SEO fields, etc.) since a card set review carries more structured
 metadata than a blog post does.
 
-**What loads**: `auth.js` and the TinyMCE CDN script in `<head>`; then,
-placed just after `</head>` in this order: `cmsCardSet.js`,
-`cmsImageBrowser.js`, `cmsFormUI.js`, `wax.js`, `helper.js`. `wax.js`
-doesn't appear to back anything this page actually calls — none of its
-functions (`fetchCardSetsByYear`, `displayCardSet`, `castVote`, the
-checklist modal functions) are referenced anywhere in this page's
-markup or inline scripts; it's loaded here for no apparent reason.
+**What loads**: `auth.js` and the TinyMCE CDN script in `<head>`; then
+`cmsCardSet.js`, `cmsImageBrowser.js`, `cmsFormUI.js`, `helper.js` (in
+that order, all in `<head>`), followed by the inline `window load`
+block. `wax.js` is **not** loaded — this page never called anything in
+it.
 
 **On `window load`**: `fetchCopyrightYear()`, then
-`initTinyEditor('#postBody')` — same as `createBlogPost.html`, same
-reasoning (get the rich-text editor ready before the author starts
-typing).
+`initTinyEditor('#postBody', { cardImageBlocks: true })` — unlike
+`createBlogPost.html`'s plain call, this swaps TinyMCE's native image
+button/plugin for two custom ones (see below) that insert this site's
+recurring wrap/middle review images as structured blocks instead of
+hand-typed HTML — see `CMS_GUIDE.md`'s "Wrapped/middle images in
+review body content".
 
 **User interactions**:
 - "Browse" buttons next to Header/Footer Image Name →
@@ -173,6 +174,18 @@ typing).
 - Image search box (`oninput="filterImageList()"`) — correctly wired
   on this page, since `openImageBrowser()` is what actually populated
   the state `filterImageList()` reads.
+- **Insert wrap image / Insert middle image** — the two TinyMCE toolbar
+  buttons `initTinyEditor`'s `cardImageBlocks` flag adds
+  (`registerCardImageBlockButtons()`, `cmsFormUI.js`). Each opens the
+  same `openImageBrowser()` picker as the Browse buttons above, but in
+  its callback mode (`openImageBrowser(null, onSelect)`) rather than
+  writing to a form field — the picked image goes into a small TinyMCE
+  dialog instead (Float/Mobile Scale/Alt Text for the wrap image; just
+  Alt Text for the middle image, since `.card-middle-img` has no
+  float/size choice), then gets inserted at the cursor as one atomic,
+  non-editable block. See `CMS_GUIDE.md` for the full mechanism,
+  including why this needed `stripEditorOnlyMarkup()` before every
+  save/preview.
 - "Upload" button → `uploadNewImage()` (`cmsImageBrowser.js`) — same
   function and same `cmsImageUploader` Lambda as `createBlogPost.html`'s
   upload; here `_imageBrowserTargetFieldId` is the one set, so it
@@ -360,8 +373,9 @@ data, let the editor change it, save/delete — plus a client-side
 Preview feature blog posts don't have (see below).
 
 **What loads**: `auth.js` and the TinyMCE CDN script in `<head>`; then
-`cmsCardSet.js`, `cmsFormUI.js`, `wax.js`, `helper.js` (in that order,
-all in `<head>`). The `setID` extraction and `window load` listener
+`cmsCardSet.js`, `cmsImageBrowser.js`, `cmsFormUI.js`, `helper.js` (in
+that order, all in `<head>`). `wax.js` is **not** loaded, which is
+why the Preview renders its Checklist link inert (see below). The `setID` extraction and `window load` listener
 are together in that same `<head>` block, after those script tags
 (unlike `blogEdit.html`'s equivalent block, which sits after
 `</head>`).
@@ -385,8 +399,13 @@ marked `selected`, and fills every other field directly (`setName` and
 `year` are populated but `disabled`/`readonly` in the HTML, since
 they're the table's actual key and changing them here would mean
 editing the wrong item or orphaning the current one). Also runs
-`fetchCopyrightYear()` (`helper.js`) and `initTinyEditor('#postBody')`
-(`cmsFormUI.js`).
+`fetchCopyrightYear()` (`helper.js`) and
+`initTinyEditor('#postBody', { cardImageBlocks: true })`
+(`cmsFormUI.js`) — same wrap/middle-image toolbar buttons as
+`createCardSet.html`, so a reopened review with old hand-typed wrap/
+middle images edits them as plain `<img>` tags (only newly-inserted
+images get the new atomic-block behavior) while new inserts use the
+guided flow.
 
 **User interactions**:
 - "Browse" buttons (Header/Footer Image Name) → same
@@ -394,12 +413,15 @@ editing the wrong item or orphaning the current one). Also runs
   `uploadNewImage()` flow, same `cmsImagePicker`/`cmsImageUploader`
   Lambdas, as `createCardSet.html` (`cmsImageBrowser.js`), writing a
   bare filename into the target field.
+- **Insert wrap image / Insert middle image** — same toolbar buttons
+  and flow as `createCardSet.html` above.
 - "Update Post" button → `updateCardSet(blogStatus, seoPageTitle,
   seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets,
   stars, formats, year, headerImgName, footerImgName, mfg)`
   (`cmsCardSet.js`) — no client-side validation, same reasoning as
   `updateBlogPost()` (pre-populated from a valid record). Sets the
-  submit button state, reads `tinymce.activeEditor.getContent()`, then
+  submit button state, reads
+  `stripEditorOnlyMarkup(tinymce.activeEditor.getContent())`, then
   calls **Update card set**, fronted by the `updateCardSet` Lambda
   (`Lambdas/updateCardSet/`) — this Lambda's response shape isn't
   reliable (plain string / `{message}` / `{body}`, itself either a JSON
@@ -409,21 +431,36 @@ editing the wrong item or orphaning the current one). Also runs
   genuine failure never gets shown as a false success). `await
   cmsAlert(message)` always runs; the redirect to `pickCardSet.html`
   only fires when `response.ok`.
-- "Preview" button exists so an editor can see roughly how the review
-  will look on the live site before actually saving it →
+- "Preview" button exists so an editor can see how the review will
+  look on the live site before actually saving it →
   `openPreview()` (`cmsCardSet.js`) — reads the current (possibly
-  unsaved) form field values plus `tinymce.get("postBody").getContent()`,
-  and calls `renderPreview(...)` (internal to `cmsCardSet.js`), which
-  builds the same kind of set-details table `displayCardSet()` renders
-  on the live site, into `#previewContainer`, then shows
-  `#previewModal`. **Purely client-side — no API call**, since the
-  whole point is previewing changes that haven't been saved yet. Two
-  things make this not a perfect mirror of the real page: it hardcodes
-  the S3 `img/cards/` URL prefix directly rather than reading the
-  record's actual `headerImg`/`footerImg` prefix fields, and it always
-  uses `rowspan="7"` on the header image cell — it never renders a
-  Checklist row, unlike the live `displayCardSet()`, which bumps that
-  to `8` when `hasChecklist` is true.
+  unsaved) form field values plus
+  `stripEditorOnlyMarkup(tinymce.get("postBody").getContent())` (the
+  strip matters here too, not just on save, since a freshly-inserted
+  wrap/middle image is still marked non-editable at preview time), and
+  calls `renderPreview(...)` (internal to `cmsCardSet.js`), which
+  renders into `#previewContainer` via `buildCardSetMarkup()`
+  (`helper.js`) — the **same** builder the live site's
+  `displayCardSet()` uses (since 2026-09-28; before that the preview
+  kept its own table-based copy of the markup, which had drifted from
+  production — see `FRONTEND.md`'s "Card set markup is shared with the
+  CMS preview") — then shows `#previewModal`. **Purely client-side —
+  no API call**, since the whole point is previewing changes that
+  haven't been saved yet. The set-details grid, author line (now
+  including the publish date), body and footer block match the live
+  page exactly, including the Checklist row when the set has one.
+  Remaining, deliberate differences from the real page:
+  - The publish date and `hasChecklist` aren't form fields, so
+    `fetchCardSetByID()` stashes the loaded record's `now` and
+    `hasChecklist` in module-level variables (`_loadedSetDate`,
+    `_loadedSetHasChecklist`) for `renderPreview()` to read.
+  - The Checklist link renders without its `onclick`
+    (`interactive: false`), since `openChecklistModal()` lives in
+    `wax.js`, which this page doesn't load.
+  - It hardcodes the S3 `img/cards/` URL prefix rather than reading
+    the record's actual `headerImg`/`footerImg` prefix fields.
+  - Pagination controls and the vote widget aren't rendered — they're
+    live-site interactions, not review content.
 - Close preview (`×`) → `closePreview()` (`cmsCardSet.js`) — hides the
   modal and clears `#previewContainer`.
 - "Delete Set" button → `deleteCardSet(setID, setName, year)`
@@ -651,26 +688,35 @@ than running as bare top-level code.
   of outcome.
 - "...bulk import" nav link → opens the bulk-import modal
   (`resetModal()`) — this exists for the once-a-year task of loading a
-  fresh subscriber list from the club's sign-up data (see
-  `CMS_GUIDE.md`'s bulk-import prep process).
-- Selecting/dropping a `.json` file → `handleFile()` — validates the
-  extension, reads it as text, `JSON.parse`s it, requires a non-empty
-  array; on success enables the Upload button and shows the record
-  count (inline modal feedback, not `cmsAlert`).
+  fresh subscriber list from the club's sign-up data. As of 2026-09-19
+  this uploads the club sign-up form's raw CSV export directly, with
+  the Lambda doing all the parsing/mapping — see `CMS_GUIDE.md`'s
+  "Bulk-import data prep — no longer needed" section for what this
+  replaced.
+- Selecting/dropping a `.csv` file → `handleFile()` — validates the
+  extension and reads it as raw text only, with no client-side parsing
+  or validation (the Lambda is the sole parser); on success enables the
+  Upload button and shows an approximate record count (inline modal
+  feedback, not `cmsAlert`).
 - "Upload" button (inside the bulk-import modal) → `await
   cmsConfirm("⚠️ This will delete ALL existing subscribers...")` first,
   since this is a full-replace operation, not an additive import. If
   confirmed, calls **Bulk import subscribers**, fronted by the
   `bulkSubscriberUpload` Lambda (`Lambdas/bulkSubscriberUpload/`),
-  with the Authorization header, body = the raw parsed JSON array
-  (already in DynamoDB typed-JSON format per the modal's own
-  instructions). Which table it truncates and reimports into is set
-  via the Lambda's `TABLE_NAME` environment variable rather than
-  hardcoded in its source — worth checking the Console if it's ever
-  unclear whether a bulk import will hit `Subscribers` or
-  `SubscribersTest`. On success: shows `deletedCount`/`importedCount`,
-  swaps the Upload/Cancel buttons for a Close button. On error: shows
-  the message inline, re-enables Upload.
+  with the Authorization header, body `{ csvContent }` — the raw CSV
+  text. The Lambda parses/validates the whole file, mapping only the
+  "Name"/"Your mobile number" columns and normalizing the phone number
+  to E.164, before truncating and reimporting — see
+  `LAMBDA_FUNCTIONS.md`'s `bulkSubscriberUpload` section for the full
+  mechanism, including how a row with a missing name or bad phone
+  number is skipped and reported rather than blocking the import. Which
+  table it truncates and reimports into is set via the Lambda's
+  `TABLE_NAME` environment variable rather than hardcoded in its source
+  — worth checking the Console if it's ever unclear whether a bulk
+  import will hit `Subscribers` or `SubscribersTest`. On success: shows
+  `deletedCount`/`importedCount` plus any `skippedRows`, swaps the
+  Upload/Cancel buttons for a Close button. On error: shows the message
+  inline, re-enables Upload.
 - "...add subscriber" nav link → opens the add-subscriber modal and
   focuses the name field — this exists for adding one person
   mid-season, without needing a full bulk-import re-run.

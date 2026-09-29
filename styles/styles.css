@@ -11,6 +11,9 @@ messing up the layout with white borders and scoll bars
    site-identity blues (+ one pink accent) that were previously
    hand-typed the same way in many places. */
 :root {
+  /* Breathing room above a card set review's details block. Shared so
+     the live site and the CMS preview can't drift apart on it. */
+  --set-details-top-pad: 24px;
   --color-link: #3FA7D6;
   --color-text-dark: rgb(11, 62, 100);
   --color-heading-outline: rgb(2, 70, 153);
@@ -671,11 +674,6 @@ h1 {
   height: auto;
 }
 
-.header-img-cell {
-  height: 285px;      /* matches the image height */
-  vertical-align: middle;
-}
-
 
 /********************************** Set-O-Matic styling **************************************/
 #set-picker .junk-set-nav-td {
@@ -1200,9 +1198,6 @@ label sup {
   width: auto;
 }
 
-.set-details-table-style td[rowspan] {
-  padding: 4px 6px;
-}
 /* Move the set image closer to the card set details */
 .set-details-table-style td:first-child {
   max-width: 60%;
@@ -1253,11 +1248,6 @@ label sup {
   margin-bottom: 20px;
 }
 
-.set-footer-table-style td {
-  width: 100%;
-  padding: 8px;
-}
-
 /* Trim the trailing margin left by the last paragraph of the review body,
    so it doesn't read as a gap before the footer table */
 .set-details-author td > *:last-child {
@@ -1265,13 +1255,12 @@ label sup {
 }
 
 /* Replaces the old rowspan'd <table class="set-details-table-style">
-   for the public displayCardSet() set-details box - CSS Grid instead of
-   a table, so the mobile override below can reorder name -> image ->
-   list without fighting a rowspan (see FRONTEND.md's "Mobile /
-   responsive design" section for why that doesn't work reliably).
-   cms/cmsCardSet.js's renderPreview() still uses the old table-based
-   .set-details-table-style/.header-img-cell markup for the CMS preview
-   modal - deliberately untouched, so none of this is shared with it. */
+   for the set-details box - CSS Grid instead of a table, so the mobile
+   override below can reorder name -> image -> list without fighting a
+   rowspan (see FRONTEND.md's "Mobile / responsive design" section for
+   why that doesn't work reliably). Shared by the live site and the CMS
+   preview modal, which render identical markup - see
+   buildCardSetMarkup() in helper.js. */
 .set-details-grid {
   display: grid;
   grid-template-columns: 25% 75%;
@@ -1279,6 +1268,12 @@ label sup {
     "name image"
     "list image";
   font-family: 'Source Sans 3', sans-serif;
+  padding: var(--set-details-top-pad) 0 0 0;
+  /* Explicit, not auto: the percentage column tracks shrink-wrap to
+     content when the parent's width is indefinite, which is the case
+     in the CMS preview modal (but not under #cardSetDiv, where
+     .flex-container div forces a fixed width). */
+  width: 100%;
 }
 
 .set-details-name {
@@ -1293,7 +1288,16 @@ label sup {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 285px; /* matches .header-img-cell's fixed height */
+  /* min-height, not height: this cell spans both grid rows, so letting
+     it stretch keeps the image centred against the whole left column
+     even when a Checklist row makes that column taller than 285px. */
+  min-height: 285px;
+}
+
+/* The base rule's 8px top margin would push the image below true
+   centre here; the grid cell handles its spacing instead. */
+.set-details-image .table-header-img {
+  margin-top: 0;
 }
 
 .set-details-list {
@@ -1343,7 +1347,9 @@ label sup {
   width: auto;
   max-width: none;
   margin: 0;
-  padding: 0;
+  /* Restated (not inherited) because this rule has to beat
+     .flex-container div's padding:15px - see the comment above. */
+  padding: var(--set-details-top-pad) 0 0 0;
 }
 #cardSetDiv .set-details-name,
 #cardSetDiv .set-detail-row {
@@ -2341,11 +2347,12 @@ label sup {
   font-weight: 400; /* Light */
 }
 
-/* Adding this here to try and break Preview Modal from inheriting from other rule */
-/* Break all inherited typography inside the preview modal */
-.preview-modal,
-.preview-modal * {
-  font-family: 'Source Sans 3', sans-serif !important;
+/* Base typography for the modal. Deliberately NOT a `.preview-modal *`
+   blanket reset: that killed the real .set-details-* styling inside
+   #previewContainer, which then had to be re-added by hand for every
+   markup change - the mechanism behind preview/production drift. */
+.preview-modal {
+  font-family: 'Source Sans 3', sans-serif;
   font-size: 18px;
   font-weight: 400; /* Light */
   text-align: left;
@@ -2402,9 +2409,12 @@ label sup {
                                   Matches the live site, scoped only to preview
    ****************************************************************************************************/
 
-#previewContainer table.set-details-table-style,
-#previewContainer table.set-details-author,
-#previewContainer table.set-footer-table-style {
+/* #previewContainer renders the same markup as the live site (see
+   buildCardSetMarkup() in helper.js), so it inherits the real
+   .set-details-* / .table-header-img rules. Only the author table
+   needs anything here - it isn't inside .flex-container, so the
+   #cardSetDiv-scoped width resets don't reach it. */
+#previewContainer table.set-details-author {
   width: 100%;
   border-collapse: collapse;
   font-size: 18px;
@@ -2413,38 +2423,11 @@ label sup {
   font-weight: 400; /* Light */
 }
 
-/* Apply Special Elite to ALL descendants of the set-details tables */
-/* Ensure hard-coded field labels use Special Elite */
-.preview-modal #previewContainer table.set-details-table-style td strong,
-.preview-modal #previewContainer table.set-details-table-style td i {
-  font-family: 'Special Elite', sans-serif !important;
-}
-
-.preview-modal #previewContainer table.set-details-author td strong,
-.preview-modal #previewContainer table.set-details-author td i,
-.preview-modal #previewContainer table.set-footer-table-style td strong,
-.preview-modal #previewContainer table.set-footer-table-style td i {
-  font-family: 'Special Elite', sans-serif !important;
-}
-
 /* General table cell styling */
 #previewContainer td {
   padding: 2px 4px;
   font-size: 18px;
   text-align: left;
-}
-
-/* Header + footer images */
-#previewContainer img.table-header-img,
-#previewContainer img.table-footer-img {
-  max-width: 100%;
-  height: auto;
-}
-
-/* Center only the header image cell */
-#previewContainer .header-img-cell {
-  text-align: center;
-  vertical-align: top;
 }
 
 /* Caption styling */
@@ -2862,18 +2845,6 @@ label sup {
   width: auto;
 }
 
-.set-details-table-style td[rowspan] {
-  width: 1%; /* forces the column to shrink to fit the image */
-  white-space: nowrap;
-}
-
-  /* Override the desktop fixed-height cell and inline width: 75% (wax.js/cms.js) */
-  .set-details-table-style td.header-img-cell {
-    height: auto;
-    width: 100% !important;
-    text-align: center;
-  }
-
   .table-header-img {
   display: block;
   margin: 0 auto;
@@ -2893,8 +2864,10 @@ label sup {
       "list";
   }
 
+  /* Cancels the base rule's min-height: stacked here, so there's no
+     left-hand column for the image to be centred against. */
   .set-details-image {
-    height: auto;
+    min-height: 0;
   }
 
   /* Breathing room between the set name and the header image below it -
@@ -2918,31 +2891,11 @@ label sup {
   }
 
 
-  /* .set-details-table-style gets its own tr/td display overrides above;
-     .set-footer-table-style didn't, so it fell back to the generic mobile
-     `table { display: block; }` rule while its td stayed default
-     table-cell - a mismatched context that left the footer image without
-     a properly-centered containing block */
   .set-footer-table-style {
     width: 100%;
-    overflow: visible; /* the generic mobile `table{overflow-x:auto}` rule
-      turned this into a scroll container once its td overflowed below */
   }
 
-  .set-footer-table-style tr {
-    display: block;
-    width: 100%;
-  }
-
-  .set-footer-table-style td {
-    display: block;
-    width: 100%;
-    box-sizing: border-box; /* the base rule's padding:8px was pushing this
-      to 100% + 16px under the default content-box, overflowing the table */
-    text-align: center;
-  }
-
-  /* Centered via the td's text-align:center (inline-block respects that
+  /* Centered via the parent's text-align:center (inline-block respects that
      reliably) rather than width:100%+max-width+margin:auto, since that
      combination wasn't resolving correctly here */
   .table-footer-img {
