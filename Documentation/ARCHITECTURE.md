@@ -41,14 +41,14 @@ step to run anyway; it's plain HTML/CSS/JS with no bundler).
 
 - **Trigger**: any push to the tracked branch (this repo shows `main` as that branch).
 - **Process**: Amplify picks up the commit, runs its build (a no-op / asset-copy step given there's no framework here), and deploys straight to production — there's no staging environment or manual promotion step.
-- **Notification**: Amplify emails on build completion (success or failure) — this is currently the only build/deploy signal; there's no CI status check, PR gate, or Slack/webhook integration in play.
+- **Notification**: a custom email summary on build completion, sent by `Lambdas/amplifyBuildNotifier/` — an EventBridge rule on "Amplify Deployment Status Change" (filtered to `SUCCEED`/`FAILED`) invokes it, and it calls `amplify:GetJob` for the commit, duration and per-step detail before publishing plain text to an SNS email topic. It replaced Amplify's own built-in build notifications, which said only that a build finished; the failing step's log URL in particular now arrives in the email rather than having to be dug out of the Console. Setup steps and the IAM permissions it needs: `LAMBDA_FUNCTIONS.md`. Still the only build/deploy signal — there's no CI status check, PR gate, or Slack/webhook integration in play.
 - **Practical implication**: pushing to `main` ships to the live site. There's no separate preview/staging branch — the `published`/`blogStatus` draft flags in DynamoDB (see `DATA_MODEL.md`) are what stand in for a staging environment at the *content* level, but not at the *code* level. A broken commit to `main` goes live as soon as Amplify's build finishes.
 
 This is separate from Lambda deployment, which is manual per-function
 and not automated by this Amplify pipeline at all (see
 `LAMBDA_FUNCTIONS.md`). Every live Lambda's source is version-controlled
 in this repo under `Lambdas/`, but the deploy mechanics differ by
-function: the 23 with no real npm dependency just need the updated
+function: the 24 with no real npm dependency just need the updated
 `index.mjs` pasted into the Lambda Console's inline code editor and
 Deploy clicked, while `sendAlertHandler` (has `twilio`) and
 `parseChecklistPdf` (has `pdf-parse`) need a full `npm install` + zip +

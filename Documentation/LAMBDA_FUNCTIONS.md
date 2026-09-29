@@ -3,7 +3,11 @@
 **25 of the 29 Lambda functions behind this site's API Gateway
 endpoints have their source checked into this repo**, under
 `Lambdas/` (as of 2026-08-15, one directory per function, named
-exactly after its AWS Lambda function name). Most were pulled directly
+exactly after its AWS Lambda function name). `Lambdas/` holds 26
+directories, not 25: `amplifyBuildNotifier` (added 2026-09-29) sits
+behind EventBridge rather than API Gateway and isn't part of that
+count — it's the only function here no frontend code ever calls.
+Most were pulled directly
 from the live Console via `aws lambda get-function` using the
 `amplify-readonly-cli` credential (see `CLAUDE.md` — its actual IAM
 scope turned out to be broader than its name suggests: it can read
@@ -21,7 +25,7 @@ added later, for the checklist-upload feature and its front-end display —
 removed again the same day — see "Orphaned/dead Lambdas" below.
 
 Deployment is still entirely manual for every one of them, but the
-mechanics differ by function: the 23 with no real dependencies
+mechanics differ by function: the 24 with no real dependencies
 (`dependencies: {}` in `package.json`) just need the updated
 `index.mjs` pasted into the Lambda Console's inline code editor and
 Deploy clicked — no zip needed. Two need a full `npm install` + zip
@@ -44,6 +48,90 @@ directory (note the space in the name) referenced further down — it no
 longer exists in this repo (deleted 2026-08-06, unrelated to this
 session's work) but is still referenced by name in a few places below
 since that history predates this doc being kept current.
+
+## `Lambdas/amplifyBuildNotifier/` — hand-built in this repo
+
+The only Lambda here that isn't behind API Gateway and isn't called by
+any frontend code — EventBridge invokes it, and it emails the site
+owner. It replaced Amplify's built-in build notifications, which only
+said a build had finished.
+
+- **File**: `Lambdas/amplifyBuildNotifier/index.mjs` (ES module, Node.js).
+  Same manual-deploy convention as the others — paste the updated
+  `index.mjs` into the Console's inline editor and Deploy. **But see
+  the dependency caveat below before assuming that works.**
+- **Dependencies** (`package.json`): none listed. It imports
+  `@aws-sdk/client-amplify` and `@aws-sdk/client-sns`, on the same
+  assumption every other function here makes — that `@aws-sdk/*` ships
+  with the Lambda Node.js runtime. **That assumption is less safe here
+  than elsewhere.** AWS documents that the runtime includes "the AWS
+  SDK for JavaScript v3" but nowhere states whether *all* clients are
+  present or only a common subset, and it explicitly recommends
+  bundling the modules you use rather than relying on the runtime copy.
+  `client-sns` is common enough to be a safe bet; `client-amplify` is
+  not. If the first invocation fails with `Cannot find module
+  '@aws-sdk/client-amplify'`, this function joins `sendAlertHandler`
+  and `parseChecklistPdf` in needing the zip treatment: `npm install
+  @aws-sdk/client-amplify @aws-sdk/client-sns` in its directory, zip
+  code + `node_modules`, upload via Code tab → Update dropdown →
+  "Update from a .zip file". Update the counts in this doc's intro,
+  `ARCHITECTURE.md` and `CLAUDE.md` if so.
+- **Trigger**: an EventBridge rule on the `aws.amplify` source,
+  detail-type "Amplify Deployment Status Change", filtered to finished
+  builds only. The event carries just `appId`, `branchName`, `jobId`
+  and `jobStatus` — everything else in the email comes from the
+  `amplify:GetJob` call.
+- **Environment variable**: `SNS_TOPIC_ARN` — the topic to publish to.
+  Not in this repo.
+- **What it does**: calls `GetJob` for the job's summary and steps,
+  then publishes a plain-text email: branch, job number, duration,
+  short commit SHA, the commit message's first line, and a per-step
+  status/duration list. On a failure it also surfaces the failing
+  step's `logUrl`, which is the thing you actually want and would
+  otherwise have to dig out of the Amplify Console. If `GetJob` fails
+  (IAM, throttling), it logs the error and still sends a reduced email
+  from the event data alone — a build that failed *silently* is the
+  worst outcome, so the notification is never allowed to depend on the
+  enrichment call succeeding.
+
+### AWS setup (one-time, manual)
+
+None of this is provisioned by anything in this repo — there's no IaC
+here. In order:
+
+1. **SNS topic + subscription.** Create a standard SNS topic (e.g.
+   `amplify-build-notifications`) in `us-east-2`, add an Email
+   subscription, and **confirm it from the email AWS sends** — an
+   unconfirmed subscription silently delivers nothing.
+2. **Lambda.** Create the function (Node.js runtime, `us-east-2`),
+   paste in `index.mjs`, and set `SNS_TOPIC_ARN` to the topic ARN from
+   step 1.
+3. **IAM.** Add `amplify:GetJob` and `sns:Publish` to the function's
+   execution role, on top of the basic CloudWatch Logs permissions.
+   Scope `sns:Publish` to that one topic ARN.
+4. **EventBridge rule.** Create a rule with this event pattern, target
+   the Lambda, and let the console add the invoke permission:
+
+   ```json
+   {
+     "source": ["aws.amplify"],
+     "detail-type": ["Amplify Deployment Status Change"],
+     "detail": {
+       "appId": ["d20qsyoicusf3p"],
+       "jobStatus": ["SUCCEED", "FAILED"]
+     }
+   }
+   ```
+
+   The `jobStatus` filter is what keeps this to finished builds —
+   without it, every `PENDING`/`PROVISIONING`/`RUNNING` transition
+   emails too. Amplify's success status is `SUCCEED`, not `SUCCEEDED`.
+5. **Turn off Amplify's own build notifications** (Amplify Console →
+   the app → Notifications) once a real build proves this works —
+   otherwise every build sends two emails.
+
+To test without waiting for a real build, redeploy any recent commit
+from the Amplify Console; that produces a genuine `SUCCEED` event.
 
 ## `Lambdas/sendAlertHandler/` — hand-built in this repo
 
