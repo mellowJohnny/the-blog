@@ -61,21 +61,21 @@ said a build had finished.
   `index.mjs` into the Console's inline editor and Deploy. **But see
   the dependency caveat below before assuming that works.**
 - **Dependencies** (`package.json`): none listed. It imports
-  `@aws-sdk/client-amplify` and `@aws-sdk/client-sns`, on the same
-  assumption every other function here makes — that `@aws-sdk/*` ships
-  with the Lambda Node.js runtime. **That assumption is less safe here
-  than elsewhere.** AWS documents that the runtime includes "the AWS
-  SDK for JavaScript v3" but nowhere states whether *all* clients are
-  present or only a common subset, and it explicitly recommends
-  bundling the modules you use rather than relying on the runtime copy.
-  `client-sns` is common enough to be a safe bet; `client-amplify` is
-  not. If the first invocation fails with `Cannot find module
-  '@aws-sdk/client-amplify'`, this function joins `sendAlertHandler`
-  and `parseChecklistPdf` in needing the zip treatment: `npm install
+  `@aws-sdk/client-amplify` and `@aws-sdk/client-sns`, both of which
+  **are** present in the runtime — confirmed on `nodejs24.x`
+  2026-09-29, resolving from `/var/runtime/node_modules/@aws-sdk/`.
+  Worth recording because it wasn't a safe assumption going in: AWS
+  documents only that the runtime includes "the AWS SDK for JavaScript
+  v3", never whether *all* clients are present or a common subset, and
+  it recommends bundling the modules you use instead. `client-amplify`
+  is obscure enough to have been a real risk. If a future runtime
+  version ever drops it, the symptom is `Cannot find module
+  '@aws-sdk/client-amplify'` on invocation, and the fix is the zip
+  treatment `sendAlertHandler`/`parseChecklistPdf` use: `npm install
   @aws-sdk/client-amplify @aws-sdk/client-sns` in its directory, zip
   code + `node_modules`, upload via Code tab → Update dropdown →
-  "Update from a .zip file". Update the counts in this doc's intro,
-  `ARCHITECTURE.md` and `CLAUDE.md` if so.
+  "Update from a .zip file" — and update the counts in this doc's
+  intro, `ARCHITECTURE.md` and `CLAUDE.md` to match.
 - **Trigger**: an EventBridge rule on the `aws.amplify` source,
   detail-type "Amplify Deployment Status Change", filtered to finished
   builds only. The event carries just `appId`, `branchName`, `jobId`
@@ -105,12 +105,24 @@ here. In order:
    unconfirmed subscription silently delivers nothing.
 2. **Lambda.** Create the function (Node.js runtime, `us-east-2`),
    paste in `index.mjs`, and set `SNS_TOPIC_ARN` to the topic ARN from
-   step 1.
+   step 1. **Use the topic ARN, not the subscription ARN** — the
+   console shows the subscription's ARN right after you confirm, and
+   it's the same string plus a trailing `:<uuid>`. Publishing to it
+   fails with the genuinely unhelpful `InvalidParameterException:
+   Invalid parameter: Topic Name`, because SNS reads that UUID as the
+   topic name. (Hit during setup, 2026-09-29.)
 3. **IAM.** Add `amplify:GetJob` and `sns:Publish` to the function's
    execution role, on top of the basic CloudWatch Logs permissions.
    Scope `sns:Publish` to that one topic ARN.
-4. **EventBridge rule.** Create a rule with this event pattern, target
-   the Lambda, and let the console add the invoke permission:
+4. **EventBridge rule.** EventBridge Console → **Event buses** → click
+   the **default** bus → its **Rules** tab → Create rule. (Rules live
+   inside their bus in the current console, not as a top-level nav
+   item — and the "Send events" button on that page is a test harness
+   for custom events, not where rules are made. It can't test this
+   rule anyway: EventBridge reserves the `aws.` source prefix, so a
+   hand-sent `aws.amplify` event is rejected outright.) Use this event
+   pattern, target the Lambda, and let the console add the invoke
+   permission:
 
    ```json
    {
