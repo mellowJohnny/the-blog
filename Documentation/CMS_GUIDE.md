@@ -430,7 +430,14 @@ save as-is, producing a URL that looks valid but 404s. See
 `setEdit.html` has a "Preview" button (`openPreview()` in
 `scripts/cmsCardSet.js`) that renders the card set exactly as it will appear
 on the live site, using the current (possibly unsaved) form values, in
-a modal — lets you check formatting before publishing. `createBlogPost.html`/`blogEdit.html` don't currently have an equivalent preview.
+a modal — lets you check formatting before publishing. Since
+2026-09-28 "exactly" is literal: the preview and the live page both
+render from one shared builder, `buildCardSetMarkup()` in
+`scripts/helper.js`, and the modal no longer blanket-resets the
+styling of everything inside it, so the real `.set-details-*` CSS
+applies to both. Change the review markup there, not in
+`renderPreview()` or `displayCardSet()` — see `FRONTEND.md`'s "Card set
+markup is shared with the CMS preview" for the details and pitfalls. `createBlogPost.html`/`blogEdit.html` don't currently have an equivalent preview.
 Sits in the horizontal middle of the Update/Cancel/Delete button row (a
 CSS Grid `1fr auto 1fr` row, not a flex `space-between` — the latter
 doesn't truly center a middle item when the two side groups are

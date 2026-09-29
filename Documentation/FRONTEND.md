@@ -194,7 +194,8 @@ knowing before touching this CSS again:
   stop fighting the table model and use plain `<div>`s with flexbox
   instead — see the set-o-matic picker (`renderSetPicker()` in
   `helper.js`) and the footer caption/image block
-  (`.set-footer-table-style` in `displayCardSet()`, `wax.js`), both of
+  (`.set-footer-table-style` in `buildCardSetMarkup()`, `helper.js`,
+  rendered by both `displayCardSet()` and the CMS preview), both of
   which used to be `<table>`s and are now `<div>`s for exactly this
   reason.
 - **A `rowspan`'d table cell can't be visually reordered above the rows
