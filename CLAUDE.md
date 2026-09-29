@@ -12,8 +12,7 @@ playground (Lambda, DynamoDB, Amplify), and a place to use Claude Code.
 
 **Full architecture, data model, API inventory, and CMS docs live in
 `Documentation/` — start with `Documentation/README.md`.** It was
-reconstructed by reading this codebase after the original Confluence
-docs were lost, and is kept up to date; treat it as the primary
+constructed by reading this codebase and is kept up to date; treat it as the primary
 reference and this file as the short orientation on top of it.
 
 ## Commands
