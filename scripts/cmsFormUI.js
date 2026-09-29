@@ -40,19 +40,6 @@ function initTinyEditor(selector = '#postBody', { cardImageBlocks = false } = {}
   });
 }
 
-/**
- * Loads a URL into a throwaway Image() to read its natural pixel size -
- * needed for the wrap image's inline width/height (the S3 picker only
- * returns a filename/URL, not dimensions).
- */
-function loadImageDimensions(url) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
-    img.onerror = reject;
-    img.src = url;
-  });
-}
 
 /**
  * Registers the two card-review image-insert buttons on a TinyMCE
@@ -67,9 +54,7 @@ function registerCardImageBlockButtons(editor) {
     icon: 'image',
     tooltip: 'Insert wrap image',
     onAction: () => {
-      openImageBrowser(null, (fileName, imageUrl) => {
-        loadImageDimensions(imageUrl).then((dims) => openWrapImageDialog(editor, imageUrl, dims));
-      });
+      openImageBrowser(null, (fileName, imageUrl) => openWrapImageDialog(editor, imageUrl));
     }
   });
 
@@ -82,7 +67,7 @@ function registerCardImageBlockButtons(editor) {
   });
 }
 
-function openWrapImageDialog(editor, imageUrl, dims) {
+function openWrapImageDialog(editor, imageUrl) {
   editor.windowManager.open({
     title: 'Insert Wrap Image',
     body: {
@@ -107,7 +92,10 @@ function openWrapImageDialog(editor, imageUrl, dims) {
     ],
     onSubmit: (api) => {
       const data = api.getData();
-      const html = `<img class="img-wrap-${data.float} img-wrap-${data.scale} mceNonEditable" contenteditable="false" style="width: ${dims.width}px; height: ${dims.height}px;" src="${imageUrl}" alt="${escapeHtml(data.alt)}">`;
+      // 150px inline, not a CSS class: the source logos are 225x225, and
+      // every already-published image carries its own inline size that a
+      // class would override.
+      const html = `<img class="img-wrap-${data.float} img-wrap-${data.scale} mceNonEditable" contenteditable="false" style="width: 150px; height: 150px;" src="${imageUrl}" alt="${escapeHtml(data.alt)}">`;
       editor.insertContent(html);
       api.close();
     }
