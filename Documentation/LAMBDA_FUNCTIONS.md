@@ -121,7 +121,7 @@ here. In order:
    for custom events, not where rules are made. It can't test this
    rule anyway: EventBridge reserves the `aws.` source prefix, so a
    hand-sent `aws.amplify` event is rejected outright.) Use this event
-   pattern, target the Lambda, and let the console add the invoke
+   pattern and target the Lambda, letting the console sort out invoke
    permission:
 
    ```json
@@ -142,8 +142,28 @@ here. In order:
    the app → Notifications) once a real build proves this works —
    otherwise every build sends two emails.
 
-To test without waiting for a real build, redeploy any recent commit
-from the Amplify Console; that produces a genuine `SUCCEED` event.
+To test the Lambda alone, invoke it from the Console's Test tab with a
+hand-written event carrying a real recent `jobId` — that exercises the
+`GetJob` call and sends a real email. To test the whole chain, redeploy
+any recent commit from the Amplify Console; that produces a genuine
+`SUCCEED` event.
+
+### Verifying the rule actually invokes the function
+
+The rule's **Monitoring** tab is the place to look: `Invocations` vs
+`FailedInvocations`. If EventBridge matches an event but can't invoke
+the target, the function never runs, so **nothing appears in its
+CloudWatch logs** — which looks identical to the event pattern simply
+not matching. `FailedInvocations` is what distinguishes the two.
+
+Don't diagnose this from the function's resource-based policy.
+EventBridge can invoke a Lambda target either through a resource policy
+on the function or through an IAM role it assumes, and the console
+chose the role here (`Amazon_EventBridge_Invoke_Lambda_*`, visible in
+the Role column of the rule's Targets tab). So `aws lambda get-policy
+--function-name amplifyBuildNotifier` returns `ResourceNotFoundException`
+even though permissions are correct — an absent resource policy proves
+nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
 
 ## `Lambdas/sendAlertHandler/` — hand-built in this repo
 
