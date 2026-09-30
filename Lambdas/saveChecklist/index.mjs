@@ -72,6 +72,13 @@ const TABLE_NAME = "Checklists";
 const CARDS_TABLE_NAME = "Cards";
 const BATCH_SIZE = 25; // DynamoDB BatchWriteItem's hard limit
 
+// Same check parseChecklistPdf and tools/checklistParser/parse.mjs use.
+// A set can legitimately have several unnumbered cards, all printed
+// "NNO", so it isn't a unique identifier - see the sort key below.
+function isUnnumbered(cardNumber) {
+  return cardNumber.toUpperCase() === "NNO";
+}
+
 function chunk(arr, size) {
   const chunks = [];
   for (let i = 0; i < arr.length; i += size) {
@@ -201,10 +208,14 @@ export const handler = async (event) => {
     // with a clear, actionable error instead: the fix is editing the
     // Card # field for one of the conflicting rows in the review table
     // (e.g. "125" -> "125 SN250") before saving.
+    // Unnumbered cards are exempt: "NNO" is a printed marker, not an
+    // identifier, and parseChecklistPdf deliberately emits one row per
+    // unnumbered card. Their sort keys get suffixed below instead.
     const seenKeys = new Map();
     const collidingNumbers = new Set();
     for (const card of cards) {
       const cardNumberDisplay = card.cardNumber.toString().trim();
+      if (isUnnumbered(cardNumberDisplay)) continue;
       const key = `${prefix}${cardNumberDisplay}`;
       if (seenKeys.has(key)) {
         collidingNumbers.add(cardNumberDisplay);
@@ -246,7 +257,12 @@ export const handler = async (event) => {
         PutRequest: {
           Item: {
             setName,
-            cardNumber: `${prefix}${cardNumberDisplay}`,
+            // Unnumbered cards share the printed value "NNO", so the sort
+            // key gets the row index appended to keep it unique. A real
+            // card number never contains "#", so this can't collide.
+            cardNumber: isUnnumbered(cardNumberDisplay)
+              ? `${prefix}${cardNumberDisplay}#${sortIndex}`
+              : `${prefix}${cardNumberDisplay}`,
             cardNumberDisplay,
             playerName: card.playerName.toString().trim(),
             notes: card.notes?.toString().trim() || "",
@@ -302,10 +318,15 @@ export const handler = async (event) => {
 
   } catch (err) {
     console.error("Error in saveChecklist:", err);
+    // Name the error rather than returning a bare "Internal error" - every
+    // other failure here says what went wrong, and this is a Cognito-gated
+    // CMS endpoint, so there's no one to leak internals to.
     return {
       statusCode: 500,
       headers: CORS_HEADERS,
-      body: JSON.stringify({ error: "Internal error" })
+      body: JSON.stringify({
+        error: `Internal error (${err.name || "Error"}): ${err.message || "no further detail - see CloudWatch"}`
+      })
     };
   }
 };

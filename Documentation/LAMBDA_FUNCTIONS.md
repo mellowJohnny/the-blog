@@ -471,6 +471,22 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   batch write throw — the CMS review table is where the user fixes it
   (edit the Card # field on one of the conflicting rows, e.g. `"125"` →
   `"125 SN250"`).
+- **Unnumbered (`NNO`) cards are exempt from that guard**, and get a
+  suffixed sort key instead: `prefix + "NNO" + "#" + sortIndex`.
+  `"NNO"` is a printed marker, not an identifier — a set can have
+  several unnumbered cards — and `parseChecklistPdf` deliberately emits
+  one row per unnumbered card (its own dedup skips them, see its
+  section above). Until this was added, the saver rejected exactly what
+  the parser was designed to produce, and the only workaround was
+  hand-editing each `NNO` row to something artificially unique, which
+  corrupted the printed number for display. Only the sort key carries
+  the suffix; `cardNumberDisplay` stays `"NNO"`, which is what every
+  read path actually renders (`wax.js`'s checklist modal and PDF
+  export, `playerSearch.js`, `searchPlayerName`) — nothing reads the
+  raw sort key, and ordering comes from `sortIndex`. No migration was
+  needed: `getExistingSortKeys()` scopes its full-replace delete with
+  `begins_with(cardNumber, prefix)`, which matches both the old
+  unsuffixed `MAIN#NNO` and the new `MAIN#NNO#4`.
 
 ## `Lambdas/getChecklistBySetName/` — hand-built in this repo
 
