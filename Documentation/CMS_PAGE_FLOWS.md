@@ -180,10 +180,13 @@ review body content".
   same `openImageBrowser()` picker as the Browse buttons above, but in
   its callback mode (`openImageBrowser(null, onSelect)`) rather than
   writing to a form field — the picked image goes into a small TinyMCE
-  dialog instead (Float/Mobile Scale/Alt Text for the wrap image; just
+  dialog instead (Float/Logo Type/Alt Text for the wrap image; just
   Alt Text for the middle image, since `.card-middle-img` has no
   float/size choice), then gets inserted at the cursor as one atomic,
-  non-editable block. See `CMS_GUIDE.md` for the full mechanism,
+  non-editable block. The wrap image goes in at a fixed 150×150; Logo
+  Type picks the mobile shrink (Corporate Logo → `img-wrap-md`, the
+  default; All-Star Logo → `img-wrap-sm`). See `CMS_GUIDE.md` for the
+  full mechanism,
   including why this needed `stripEditorOnlyMarkup()` before every
   save/preview.
 - "Upload" button → `uploadNewImage()` (`cmsImageBrowser.js`) — same

@@ -78,24 +78,28 @@ function openWrapImageDialog(editor, imageUrl) {
           { value: 'left', text: 'Left' },
           { value: 'right', text: 'Right' }
         ] },
-        { type: 'selectbox', name: 'scale', label: 'Mobile Scale', items: [
-          { value: 'sm', text: 'Small (half size on mobile)' },
-          { value: 'md', text: 'Medium (65% on mobile)' }
+        // Named for the kind of logo rather than the shrink ratio these
+        // map to on mobile (sm = 50%, md = 65%, desktop unaffected) -
+        // the wide All-Star logos need the harder shrink, square
+        // corporate marks don't. See .img-wrap-sm/md in styles.css.
+        { type: 'selectbox', name: 'scale', label: 'Logo Type', items: [
+          { value: 'sm', text: 'All-Star Logo' },
+          { value: 'md', text: 'Corporate Logo' }
         ] },
         { type: 'input', name: 'alt', label: 'Alt Text' }
       ]
     },
-    initialData: { float: 'left', scale: 'sm', alt: '' },
+    initialData: { float: 'left', scale: 'md', alt: '' },
     buttons: [
       { type: 'cancel', text: 'Cancel' },
       { type: 'submit', text: 'Insert', primary: true }
     ],
     onSubmit: (api) => {
       const data = api.getData();
-      // 112px matches the wrap images already published on the site.
-      // Inline rather than a CSS class: each published image carries its
-      // own inline size, which a class would override.
-      const html = `<img class="img-wrap-${data.float} img-wrap-${data.scale} mceNonEditable" contenteditable="false" style="width: 112px; height: 112px;" src="${imageUrl}" alt="${escapeHtml(data.alt)}">`;
+      // 150px is the wrap-image standard (Corporate Logo + img-wrap-md
+      // gives 97.5px on mobile). Inline rather than a CSS class: each
+      // published image carries its own size, which a class would override.
+      const html = `<img class="img-wrap-${data.float} img-wrap-${data.scale} mceNonEditable" contenteditable="false" style="width: 150px; height: 150px;" src="${imageUrl}" alt="${escapeHtml(data.alt)}">`;
       editor.insertContent(html);
       api.close();
     }

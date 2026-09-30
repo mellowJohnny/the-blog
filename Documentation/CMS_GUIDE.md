@@ -160,7 +160,7 @@ changes when an old review is reopened.
 `.img-wrap-sm`/`.img-wrap-md`, `styles.css`):
 
 ```html
-<img class="img-wrap-left img-wrap-sm" style="width: 214px; height: 117px;" src="..." alt="..." width="214" height="117" loading="lazy">
+<img class="img-wrap-left img-wrap-md" style="width: 150px; height: 150px;" src="..." alt="...">
 ```
 
 - `img-wrap-left` / `img-wrap-right` — floats the image left/right with
@@ -168,18 +168,44 @@ changes when an old review is reopened.
   dialog's Float dropdown picks this (default Left).
 - `img-wrap-sm` / `img-wrap-md` — opt-in mobile scaling: `img-wrap-sm`
   renders the image at 50% of its own size on mobile, `img-wrap-md` at
-  65%. The toolbar dialog's Mobile Scale dropdown picks this (default
-  Small) — there's no "neither" option from the dialog, unlike hand-
-  typed markup, which can omit both to stay full-size on every
-  breakpoint.
-- The inline `style="width:...px; height:...px;"` is set automatically
-  from the picked image's real pixel dimensions (a throwaway `Image()`
-  load reads `naturalWidth`/`naturalHeight` before the dialog's Insert
-  button is usable) — `applyImgWrapSmSizing()` (`helper.js`) reads
-  *that* value, not the `width`/`height` HTML attributes, to compute
-  the mobile size, since some older hand-typed content has the two out
-  of sync (a stale attribute left behind after the style was
-  hand-edited).
+  65%. There's no "neither" option from the dialog, unlike hand-typed
+  markup, which can omit both to stay full-size on every breakpoint.
+- The dialog's dropdown for this is labelled **Logo Type**, and its
+  options name the *kind of logo* rather than the ratio: **All-Star
+  Logo** → `img-wrap-sm`, **Corporate Logo** → `img-wrap-md` (the
+  default). That mirrors how the two are actually used — the All-Star
+  Game logos are wide (up to 214px) and need the harder shrink, while
+  the corporate marks are square and don't. Naming them by ratio was
+  confusing in both directions: "Small"/"Medium" read as descriptions
+  of the image, and the *smaller*-sounding option was the one that
+  shrank more.
+- The inline `style="width: 150px; height: 150px;"` is a **fixed size**,
+  not derived from the image. An earlier version read the picked file's
+  `naturalWidth`/`naturalHeight` via a throwaway `Image()` load; that
+  was removed once wrap images settled on a standard size.
+  `applyImgWrapSmSizing()` (`helper.js`) reads the inline *style*, not
+  the `width`/`height` HTML attributes, to compute the mobile size —
+  older hand-typed content sometimes has the two out of sync (a stale
+  attribute left behind after the style was hand-edited).
+
+**Sizing convention for published content** (settled 2026-09-30, after
+auditing every wrap image on the site). The rule is *never upscale* —
+each image is displayed at or below its source resolution:
+
+| Group | Source | Desktop | Mobile | Class |
+| --- | --- | --- | --- | --- |
+| Tim Hortons (`timmies_retro.webp`, `Hockey_Canada.svg`) | 225×225 / vector | 150×150 | 97.5 | `img-wrap-md` |
+| McDonald's non-All-Star (`mcHockey.webp`, `Logo_Edmonton_Oilers.webp`) | 125×125 / 316×316 | 125×125 | 81.25 | `img-wrap-md` |
+| All-Star Game logos (4 `.gif`s, 1991-94) | 316×316 | 158–214, varied | 50% | `img-wrap-sm` |
+
+`mcHockey.webp` is only 125×125 natively, so it sits at 125 to render
+1:1 and stay crisp — it was previously displayed at 158, a 1.26×
+upscale that visibly softened it. Re-exporting that logo at 225×225
+would let the McDonald's sets join the 150 standard.
+
+**The button always inserts 150×150**, so a McDonald's set using
+`mcHockey.webp` needs its size hand-corrected to 125×125 after
+inserting. That's a known rough edge, not an oversight.
 
 See `FRONTEND.md`'s "Mobile / responsive design" section for the
 mechanism behind this (including a real CSS specificity bug this was
