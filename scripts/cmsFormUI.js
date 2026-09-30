@@ -92,10 +92,10 @@ function openWrapImageDialog(editor, imageUrl) {
     ],
     onSubmit: (api) => {
       const data = api.getData();
-      // 150px inline, not a CSS class: the source logos are 225x225, and
-      // every already-published image carries its own inline size that a
-      // class would override.
-      const html = `<img class="img-wrap-${data.float} img-wrap-${data.scale} mceNonEditable" contenteditable="false" style="width: 150px; height: 150px;" src="${imageUrl}" alt="${escapeHtml(data.alt)}">`;
+      // 112px matches the wrap images already published on the site.
+      // Inline rather than a CSS class: each published image carries its
+      // own inline size, which a class would override.
+      const html = `<img class="img-wrap-${data.float} img-wrap-${data.scale} mceNonEditable" contenteditable="false" style="width: 112px; height: 112px;" src="${imageUrl}" alt="${escapeHtml(data.alt)}">`;
       editor.insertContent(html);
       api.close();
     }

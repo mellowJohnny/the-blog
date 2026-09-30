@@ -487,6 +487,20 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   needed: `getExistingSortKeys()` scopes its full-replace delete with
   `begins_with(cardNumber, prefix)`, which matches both the old
   unsuffixed `MAIN#NNO` and the new `MAIN#NNO#4`.
+- **The catch-all 500 names its error.** Every anticipated failure here
+  returns its own specific message (the `400`s above, plus `502`s if the
+  delete or write passes exhaust their retries), so reaching the outer
+  `try/catch` at all means something unanticipated threw — most likely
+  an IAM gap, a `ValidationException`, or throttling. It used to return
+  a bare `"Internal error"`, which left the cause visible only in
+  CloudWatch; it now appends `err.name` and `err.message`, e.g.
+  `Internal error (AccessDeniedException): User ... is not authorized to
+  perform: dynamodb:UpdateItem on resource: table/Cards`. That's the
+  same thing the `hasChecklist` linking step already did with its own
+  error, and safe to expose here because this endpoint sits behind a
+  Cognito Authorizer. `scripts/checklistUpload.js` needed no change — it
+  already surfaced `data.error` and was faithfully displaying the
+  uninformative string the Lambda sent.
 
 ## `Lambdas/getChecklistBySetName/` — hand-built in this repo
 
