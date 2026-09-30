@@ -660,6 +660,13 @@ h1 {
    Scoped under #set-picker (id specificity) because .flex-container div
    (a bare descendant selector, see top of file) would otherwise match
    every nested div here too and force each one to width: 1000px. */
+/* Owns the gap below the year picker. Replaced a <br><br> that sat after
+   this block on all three picker pages - ID specificity beats
+   .flex-container div's margin:5px. Tune the spacing here, not in HTML. */
+#set-picker {
+  margin-bottom: 12px;
+}
+
 #set-picker .card-set-nav {
   display: flex;
   flex-wrap: wrap;
