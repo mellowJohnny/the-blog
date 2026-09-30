@@ -15,7 +15,9 @@ export const handler = async () => {
   const params = {
     TableName: "Cards",
     IndexName: "blogStatus-year-index",
-    ProjectionExpression: "setName, setID, blogCat, #yr",
+    // hasChecklist is projected for uploadChecklist.html's Set Name
+    // type-ahead, which offers only sets that have a checklist to manage.
+    ProjectionExpression: "setName, setID, blogCat, hasChecklist, #yr",
     ExpressionAttributeNames: {
       "#yr": "year"
     },

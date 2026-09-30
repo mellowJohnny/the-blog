@@ -1513,16 +1513,62 @@ label sup {
 /* "Delete a checklist" section on cms/uploadChecklist.html - one row per
    stored group (main set + each insert set), built by
    buildChecklistGroupRow() in checklistUpload.js. */
-.checklist-delete-input {
+/* ID-scoped so it beats the global input[type=text] rule (0,1,1), which
+   otherwise wins over a bare class and forces width:450px/margin:8px 0.
+   display:block + margin:0 keep the type-ahead dropdown flush below. */
+#checklistDeleteSection .checklist-delete-input {
+  display: block;
   width: 100%;
-  max-width: 500px;
+  max-width: none;
+  margin: 0;
   font-family: 'Source Sans 3', sans-serif;
   font-size: 16px;
   padding: 6px 8px;
   border: 1px solid var(--color-input-border);
   border-radius: 3px;
   box-sizing: border-box;
+}
+
+/* Anchors the dropdown's top:100% to the input. inline-block keeps the
+   Load button on the same line; the bottom margin sits here rather than
+   on the input so it can't push the dropdown off. */
+.checklist-typeahead-wrap {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  width: 100%;
+  max-width: 500px;
   margin-bottom: 10px;
+}
+
+.checklist-typeahead-suggestions {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  margin: 2px 0 0 0;
+  padding: 4px 0;
+  list-style: none;
+  background-color: #fff;
+  border: 1px solid var(--color-input-border);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.checklist-typeahead-suggestion {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 16px;
+}
+
+.checklist-typeahead-suggestion:hover,
+.checklist-typeahead-suggestion.active {
+  background-color: var(--color-page-bg);
 }
 
 .checklist-delete-row {

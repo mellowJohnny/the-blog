@@ -418,3 +418,177 @@ async function deleteChecklistGroup(button) {
     button.textContent = "Delete";
   }
 }
+
+// --- Set Name type-ahead on the delete field ---
+// Same shape as playerSearch.js's type-ahead, kept as its own copy here
+// deliberately rather than shared, so the live public Player Search page
+// isn't touched. Index = card sets that have a checklist to manage.
+
+const CARD_SETS_URL = "https://tx7romovbd.execute-api.us-east-2.amazonaws.com/dev";
+const STAGED_CARD_SETS_URL = "https://ecy21wzgkl.execute-api.us-east-2.amazonaws.com/dev";
+
+let cardSetNameIndexPromise = null;
+
+// These endpoints' response shape has drifted over time, so unwrap all
+// four forms the CMS already handles - see cmsCardSet.js.
+function unwrapCardSets(data) {
+  if (Array.isArray(data)) return data;
+  if (typeof data.body === "string") {
+    try {
+      const parsed = JSON.parse(data.body);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  if (Array.isArray(data.body)) return data.body;
+  if (Array.isArray(data.Items)) return data.Items;
+  return [];
+}
+
+async function fetchSetNamesWithChecklist(url) {
+  const token = await getAuthToken();
+  const response = await fetch(url, { headers: { "Authorization": token } });
+  if (!response.ok) throw new Error(`status ${response.status}`);
+  return unwrapCardSets(await response.json())
+    .filter((set) => set.hasChecklist && set.setName)
+    .map((set) => set.setName);
+}
+
+// Built once per page load, in memory only - unlike the public player
+// index there's no reason to persist a CMS-auth'd list to localStorage.
+// A failed fetch nulls the promise so the next keystroke can retry.
+function loadCardSetNameIndex() {
+  if (!cardSetNameIndexPromise) {
+    cardSetNameIndexPromise = Promise.allSettled([
+      fetchSetNamesWithChecklist(CARD_SETS_URL),
+      fetchSetNamesWithChecklist(STAGED_CARD_SETS_URL)
+    ]).then((results) => {
+      results.filter((r) => r.status === "rejected")
+        .forEach((r) => console.log("Card set name index fetch failed:", r.reason));
+
+      const names = results.flatMap((r) => r.status === "fulfilled" ? r.value : []);
+      if (names.length === 0) cardSetNameIndexPromise = null;
+      return [...new Set(names)].sort();
+    });
+  }
+  return cardSetNameIndexPromise;
+}
+
+let setNameSuggestions = [];
+let activeSetNameIndex = -1;
+
+// Built with createElement/textContent rather than innerHTML: set names
+// routinely contain apostrophes, the same reason buildChecklistGroupRow()
+// keeps them out of interpolated markup.
+function renderSetNameSuggestions(matches) {
+  const list = document.getElementById("checklistDeleteSuggestions");
+  setNameSuggestions = matches;
+  activeSetNameIndex = -1;
+  list.innerHTML = "";
+
+  if (matches.length === 0) {
+    list.style.display = "none";
+    return;
+  }
+
+  matches.forEach((name, i) => {
+    const li = document.createElement("li");
+    li.className = "checklist-typeahead-suggestion";
+    li.setAttribute("role", "option");
+    li.id = `checklist-set-suggestion-${i}`;
+    li.textContent = name;
+    list.appendChild(li);
+  });
+  list.style.display = "block";
+}
+
+function hideSetNameSuggestions() {
+  const list = document.getElementById("checklistDeleteSuggestions");
+  list.style.display = "none";
+  list.innerHTML = "";
+  setNameSuggestions = [];
+  activeSetNameIndex = -1;
+}
+
+function selectSetNameSuggestion(name) {
+  document.getElementById("checklistDeleteSetName").value = name;
+  hideSetNameSuggestions();
+  loadChecklistGroups();
+}
+
+function moveSetNameActive(delta) {
+  if (setNameSuggestions.length === 0) return;
+  activeSetNameIndex = (activeSetNameIndex + delta + setNameSuggestions.length) % setNameSuggestions.length;
+  document.querySelectorAll(".checklist-typeahead-suggestion").forEach((el, i) => {
+    el.classList.toggle("active", i === activeSetNameIndex);
+  });
+  document.getElementById(`checklist-set-suggestion-${activeSetNameIndex}`)?.scrollIntoView({ block: "nearest" });
+}
+
+async function onDeleteSetNameInput() {
+  const input = document.getElementById("checklistDeleteSetName");
+  const query = input.value.trim().toLowerCase();
+
+  if (query.length < 2) {
+    hideSetNameSuggestions();
+    return;
+  }
+
+  const names = await loadCardSetNameIndex();
+  // The field may have changed while the first index fetch was in
+  // flight - don't render a result for a query that's moved on.
+  if (input.value.trim().toLowerCase() !== query) return;
+
+  const matches = names
+    .filter((name) => name.toLowerCase().includes(query))
+    .sort((a, b) => {
+      const aStarts = a.toLowerCase().startsWith(query);
+      const bStarts = b.toLowerCase().startsWith(query);
+      if (aStarts !== bStarts) return aStarts ? -1 : 1;
+      return a.localeCompare(b);
+    })
+    .slice(0, 8);
+
+  renderSetNameSuggestions(matches);
+}
+
+// Its own DOMContentLoaded listener, not the modal's above: that one
+// early-returns when the import link is absent, and this shouldn't
+// depend on the modal being present.
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("checklistDeleteSetName");
+  const list = document.getElementById("checklistDeleteSuggestions");
+  if (!input || !list) return;
+
+  input.addEventListener("input", onDeleteSetNameInput);
+
+  input.addEventListener("keydown", (e) => {
+    if (list.style.display === "none") return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      moveSetNameActive(1);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      moveSetNameActive(-1);
+    } else if (e.key === "Enter") {
+      if (activeSetNameIndex >= 0) {
+        e.preventDefault();
+        selectSetNameSuggestion(setNameSuggestions[activeSetNameIndex]);
+      }
+    } else if (e.key === "Escape") {
+      hideSetNameSuggestions();
+    }
+  });
+
+  list.addEventListener("click", (e) => {
+    const li = e.target.closest(".checklist-typeahead-suggestion");
+    if (li) selectSetNameSuggestion(li.textContent);
+  });
+
+  document.addEventListener("click", (e) => {
+    if (list.style.display !== "none" && !input.contains(e.target) && !list.contains(e.target)) {
+      hideSetNameSuggestions();
+    }
+  });
+});

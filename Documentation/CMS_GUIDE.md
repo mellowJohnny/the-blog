@@ -534,6 +534,22 @@ comes from the **public** `getChecklistBySetName` endpoint, not a new
 one; no auth is needed to read, and the delete itself carries the usual
 Cognito token.
 
+The Set Name field has a **type-ahead** so the name doesn't have to be
+typed exactly. Its index is built from the two card-set endpoints the
+edit pickers already use — `getCardSets` (live) and `getStagedCardSets`
+— keeping only sets whose `hasChecklist` flag is set, so every
+suggestion has something to manage. It comes from `Cards` rather than
+`Checklists` on purpose: the point is managing the checklists of real
+card sets, and orphaned checklists (a `setName` matching no review) are
+already surfaced by the Checklist Integrity Check on `cms/admin.html`.
+The field stays free text, so a set whose flag is stale — a checklist
+that saved but whose `Cards`-linking step failed (the `Warning:` case)
+— isn't suggested but can still be typed by hand. The index is fetched
+lazily on the first keystroke and once per page load; staged sets are
+included so a checklist uploaded while its review is still staged can
+be reached. This is a separate copy of `playerSearch.js`'s type-ahead
+pattern, not a shared helper — see `FRONTEND.md`.
+
 This exists because a set's rows are partitioned into groups by the
 DynamoDB sort-key prefix (`MAIN#` or `INSERT#<insertSetName>#`), and
 `saveChecklist`'s full-replace only ever clears the *one* group it's
