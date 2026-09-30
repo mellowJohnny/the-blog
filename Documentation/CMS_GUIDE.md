@@ -523,6 +523,34 @@ create/edit form: **upload → review → save**.
    dismissed (`await cmsAlert(...)` blocks the calling function until
    then, the same effective ordering `alert()` gave for free before).
 
+### Deleting a checklist
+
+The same page has a **Delete a checklist** section below the upload
+flow. Type a Set Name, click Load, and it lists every checklist *group*
+stored for that set — the main set plus each insert set, with card
+counts — each with its own Delete button (`loadChecklistGroups()` /
+`deleteChecklistGroup()`, `scripts/checklistUpload.js`). The listing
+comes from the **public** `getChecklistBySetName` endpoint, not a new
+one; no auth is needed to read, and the delete itself carries the usual
+Cognito token.
+
+This exists because a set's rows are partitioned into groups by the
+DynamoDB sort-key prefix (`MAIN#` or `INSERT#<insertSetName>#`), and
+`saveChecklist`'s full-replace only ever clears the *one* group it's
+writing. Re-uploading under a **different `insertSetName`** therefore
+doesn't replace the old group — it writes a new one and strands the old
+rows, which then both render in the public checklist modal. Before this
+feature there was no supported way to remove them: `saveChecklist`
+rejects an empty `cards` array, so "replace with nothing" couldn't be
+expressed, and nothing else in the codebase deletes from `Checklists`.
+
+Deleting a set's **last** remaining group also clears `hasChecklist` on
+the matching `Cards` item, removing the "Checklist" link from
+`waxReviews.html` — otherwise the link would survive and open an empty
+modal. Deleting one group of several deliberately leaves the flag alone.
+See `LAMBDA_FUNCTIONS.md`'s `saveChecklist` section for the delete-mode
+request shape and why it reuses that endpoint rather than adding one.
+
 See `API_ENDPOINTS.md` → "CMS — checklist upload" for the two Lambdas'
 exact request/response shapes, and `tools/checklistParser/` for the
 standalone CLI version of the same parsing logic (used for the first

@@ -295,3 +295,126 @@ async function saveChecklist() {
       saveButton.innerHTML = "Save to DynamoDB";
     });
 }
+
+// --- Delete an existing checklist group -------------------------------
+// A set's rows are split into groups by insertSetName (the DynamoDB
+// sort-key prefix), so a group has to be picked before it can be
+// deleted. Reuses the public getChecklistBySetName read - no auth, and
+// no new endpoint needed just to list what's there.
+
+const CHECKLIST_READ_URL = "https://xbizlwvad5.execute-api.us-east-2.amazonaws.com/dev";
+
+const MAIN_SET_LABEL = "Main set";
+
+function setDeleteStatus(message) {
+  const el = document.getElementById("checklistDeleteStatus");
+  if (el) el.textContent = message;
+}
+
+async function loadChecklistGroups() {
+  const setName = document.getElementById("checklistDeleteSetName").value.trim();
+  const list = document.getElementById("checklistDeleteList");
+  list.innerHTML = "";
+
+  if (!setName) {
+    await cmsAlert("Enter the Set Name whose checklist you want to manage.");
+    document.getElementById("checklistDeleteSetName").focus();
+    return;
+  }
+
+  setDeleteStatus("Loading...");
+  try {
+    const response = await fetch(`${CHECKLIST_READ_URL}?setName=${encodeURIComponent(setName)}`);
+    if (!response.ok) throw new Error(`status ${response.status}`);
+    const data = await response.json();
+    const items = Array.isArray(data) ? data : data.Items || data.items || [];
+
+    if (items.length === 0) {
+      setDeleteStatus(`No checklist found for "${setName}". Check the spelling - it has to match exactly.`);
+      return;
+    }
+
+    // Group by insertSetName; "" is the main set.
+    const groups = new Map();
+    items.forEach((item) => {
+      const key = item.insertSetName || "";
+      groups.set(key, (groups.get(key) || 0) + 1);
+    });
+
+    setDeleteStatus(`${items.length} card(s) across ${groups.size} group(s) for "${setName}".`);
+    [...groups.keys()].sort().forEach((insertSetName) => {
+      list.appendChild(buildChecklistGroupRow(setName, insertSetName, groups.get(insertSetName)));
+    });
+  } catch (error) {
+    console.log("Load checklist groups error:", error);
+    setDeleteStatus("Could not load that set's checklist.");
+  }
+}
+
+function buildChecklistGroupRow(setName, insertSetName, count) {
+  const row = document.createElement("div");
+  row.className = "checklist-delete-row";
+
+  const label = document.createElement("span");
+  label.textContent = `${insertSetName || MAIN_SET_LABEL} - ${count} card${count === 1 ? "" : "s"}`;
+
+  // setName routinely contains apostrophes ("McDonald's ..."), so the
+  // values ride on data-* attributes rather than an interpolated
+  // onclick string - same reason wax.js's checklist link does it.
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "input-button delete-btn";
+  button.textContent = "Delete";
+  button.dataset.setName = setName;
+  button.dataset.insertSetName = insertSetName;
+  button.addEventListener("click", () => deleteChecklistGroup(button));
+
+  row.appendChild(label);
+  row.appendChild(button);
+  return row;
+}
+
+async function deleteChecklistGroup(button) {
+  const setName = button.dataset.setName;
+  const insertSetName = button.dataset.insertSetName;
+  const groupLabel = insertSetName || MAIN_SET_LABEL;
+
+  const ok = await cmsConfirm(
+    `Delete the "${groupLabel}" checklist for "${setName}"? This cannot be undone.`
+  );
+  if (!ok) return;
+
+  button.disabled = true;
+  button.textContent = "Deleting...";
+
+  try {
+    const token = await getAuthToken();
+    const response = await fetch(SAVE_CHECKLIST_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": token },
+      body: JSON.stringify({ setName, insertSetName, cards: [], confirmDelete: true })
+    });
+
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      await cmsAlert("Unexpected server response.");
+      return;
+    }
+
+    if (!response.ok) {
+      await cmsAlert(data.error || "Failed to delete the checklist.");
+      return;
+    }
+
+    await cmsAlert(data.message || "Checklist deleted.");
+    await loadChecklistGroups(); // re-read rather than assume what's left
+  } catch (error) {
+    console.log("Delete checklist error:", error);
+    await cmsAlert("Network error deleting the checklist.");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Delete";
+  }
+}

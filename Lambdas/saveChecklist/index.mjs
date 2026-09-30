@@ -140,7 +140,7 @@ async function getExistingSortKeys(setName, prefix) {
 // only ever one, since this site's setName strings already embed the
 // year (e.g. "1986-87 O-Pee-Chee Hockey"), but loop in case that ever
 // isn't true.
-async function flagCardsHasChecklist(setName) {
+async function setCardsHasChecklist(setName, value) {
   const result = await db.send(new QueryCommand({
     TableName: CARDS_TABLE_NAME,
     KeyConditionExpression: "setName = :setName",
@@ -156,12 +156,26 @@ async function flagCardsHasChecklist(setName) {
     await db.send(new UpdateCommand({
       TableName: CARDS_TABLE_NAME,
       Key: { setName: item.setName, year: item.year },
-      UpdateExpression: "SET hasChecklist = :true",
-      ExpressionAttributeValues: { ":true": true }
+      UpdateExpression: "SET hasChecklist = :value",
+      ExpressionAttributeValues: { ":value": value }
     }));
   }
 
   return items.length; // matched-item count, so the caller can tell a genuine zero-match apart from success
+}
+
+// Does this setName still have ANY checklist rows left? Used after a
+// delete to decide whether the set's "Checklist" link should disappear
+// from waxReviews.html - one group going doesn't mean the set has none.
+async function hasAnyChecklistRows(setName) {
+  const result = await db.send(new QueryCommand({
+    TableName: TABLE_NAME,
+    KeyConditionExpression: "setName = :setName",
+    ExpressionAttributeValues: { ":setName": setName },
+    ProjectionExpression: "cardNumber",
+    Limit: 1
+  }));
+  return (result.Items || []).length > 0;
 }
 
 export const handler = async (event) => {
@@ -171,11 +185,73 @@ export const handler = async (event) => {
     const insertSetName = body.insertSetName?.trim() || "";
     const cards = body.cards;
 
-    if (!setName || !Array.isArray(cards) || cards.length === 0) {
+    if (!setName) {
       return {
         statusCode: 400,
         headers: CORS_HEADERS,
-        body: JSON.stringify({ error: "setName and a non-empty cards array are required" })
+        body: JSON.stringify({ error: "setName is required" })
+      };
+    }
+
+    // Derived before the save-path guards below so the delete branch can
+    // reuse the exact same prefix expression - the two must never drift.
+    const type = insertSetName ? "insertSet" : "main";
+    const prefix = insertSetName ? `INSERT#${insertSetName}#` : "MAIN#";
+    const groupLabel = insertSetName ? `"${setName}" / insert set "${insertSetName}"` : `"${setName}" (main set)`;
+
+    // Delete mode. confirmDelete is the only way past the non-empty-cards
+    // guard below, which otherwise protects every checklist on the site
+    // from a malformed parse arriving as an empty array.
+    if (body.confirmDelete === true) {
+      const doomedSortKeys = await getExistingSortKeys(setName, prefix);
+      if (doomedSortKeys.length === 0) {
+        return {
+          statusCode: 404,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({ error: `No checklist found for ${groupLabel} - nothing was deleted.` })
+        };
+      }
+
+      const stillThere = await batchWriteAll(
+        doomedSortKeys.map((sortKey) => ({ DeleteRequest: { Key: { setName, cardNumber: sortKey } } }))
+      );
+      if (stillThere > 0) {
+        return {
+          statusCode: 502,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({
+            error: `${stillThere} of ${doomedSortKeys.length} card(s) for ${groupLabel} failed to delete after retries - the group is now partially removed. Please retry.`
+          })
+        };
+      }
+
+      // Only the set's LAST remaining group should clear the flag - a set
+      // with other groups left still needs its waxReviews.html link.
+      let clearedFlag = false;
+      if (!(await hasAnyChecklistRows(setName))) {
+        try {
+          await setCardsHasChecklist(setName, false);
+          clearedFlag = true;
+        } catch (err) {
+          console.error("Failed to clear hasChecklist on Cards item:", err);
+        }
+      }
+
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({
+          message: `Deleted ${doomedSortKeys.length} card(s) for ${groupLabel}.` +
+            (clearedFlag ? ` That was the set's last checklist, so its "Checklist" link has been removed from the live site.` : "")
+        })
+      };
+    }
+
+    if (!Array.isArray(cards) || cards.length === 0) {
+      return {
+        statusCode: 400,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({ error: "a non-empty cards array is required" })
       };
     }
 
@@ -190,10 +266,6 @@ export const handler = async (event) => {
         };
       }
     }
-
-    const type = insertSetName ? "insertSet" : "main";
-    const prefix = insertSetName ? `INSERT#${insertSetName}#` : "MAIN#";
-    const groupLabel = insertSetName ? `"${setName}" / insert set "${insertSetName}"` : `"${setName}" (main set)`;
 
     // Two cards can legitimately share a printed card number - different
     // parallels/variants of the same slot (e.g. two different serial-
@@ -297,7 +369,7 @@ export const handler = async (event) => {
     // see header comment.
     let cardsLinkWarning = null;
     try {
-      const matchedCount = await flagCardsHasChecklist(setName);
+      const matchedCount = await setCardsHasChecklist(setName, true);
       if (matchedCount === 0) {
         cardsLinkWarning = `no Cards item found with setName "${setName}" - the "Full Checklist" link won't appear on waxReviews.html until one exists with this exact setName.`;
       }

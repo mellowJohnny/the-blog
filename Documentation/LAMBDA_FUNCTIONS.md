@@ -471,6 +471,31 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   batch write throw — the CMS review table is where the user fixes it
   (edit the Card # field on one of the conflicting rows, e.g. `"125"` →
   `"125 SN250"`).
+- **Delete mode.** `POST { setName, insertSetName, cards: [],
+  confirmDelete: true }` deletes that one group instead of saving.
+  `confirmDelete === true` (strictly `true`, not merely truthy) is the
+  only way past the non-empty-`cards` guard, which otherwise protects
+  every checklist on the site from a malformed parse arriving as an
+  empty array. The branch reuses `getExistingSortKeys()` and
+  `batchWriteAll()` — the same helpers the save path's replace step uses
+  — and the `prefix` expression is now derived once, above both paths,
+  so a delete can never target a different group than a save would.
+  Returns **404** when the group has no rows (rather than reporting a
+  successful delete of nothing) and **502** if rows remain unprocessed
+  after retries, matching the save path's own delete-phase failure.
+  This deliberately bends the site's one-Lambda-per-action pattern: a
+  separate `deleteChecklist` Lambda would have meant a new API Gateway
+  REST API, IAM policy, CORS config and Cognito Authorizer, all by hand,
+  for an operation this function already had every permission to perform.
+- **`hasChecklist` is cleared only when a set's last group is deleted.**
+  After a successful delete the Lambda Querys the partition (`Limit: 1`,
+  `hasAnyChecklistRows()`); if nothing remains it sets `hasChecklist`
+  false on the matching `Cards` item, which removes the "Checklist" link
+  from `waxReviews.html`. Deleting one group of several leaves the flag
+  alone, since the set still has a checklist to show. `flagCardsHasChecklist()`
+  was generalised to `setCardsHasChecklist(setName, value)` for this —
+  before it, nothing anywhere ever set the flag back to false, so a
+  deleted checklist would have left a link opening an empty modal.
 - **Unnumbered (`NNO`) cards are exempt from that guard**, and get a
   suffixed sort key instead: `prefix + "NNO" + "#" + sortIndex`.
   `"NNO"` is a printed marker, not an identifier — a set can have
@@ -522,7 +547,9 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   `FRONTEND.md`). `Access-Control-Allow-Origin: "*"` and
   `Cache-Control: public, max-age=1800`, matching
   `getCardSetsByYear`'s exact conventions (see the caching note in
-  `API_ENDPOINTS.md`).
+  `API_ENDPOINTS.md`). Also used by the CMS: `loadChecklistGroups()` in
+  `checklistUpload.js` calls it to list a set's stored groups before one
+  is deleted — a read, so no auth needed and no new endpoint.
 - **Why a new Lambda rather than reusing `saveChecklist`**: the site
   owner initially proposed reusing `saveChecklist` to also look up a
   matching checklist, to avoid standing up a new Lambda just for a read.

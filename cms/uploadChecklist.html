@@ -226,6 +226,39 @@
                 </button>
               </div>
             </div>
+
+            <!-- Delete an existing checklist. Separate from the upload
+                 flow above: a set's rows are split into groups by insert
+                 set name, so a group has to be loaded and picked before
+                 it can be removed. -->
+            <div id="checklistDeleteSection">
+              <hr>
+              <h2>Delete a checklist</h2>
+              <p>
+                Load a set to see every checklist group stored for it (the
+                main set, plus each insert set), then remove one. Deleting
+                a set's last group also removes its Checklist link from
+                the live site.
+              </p>
+
+              <label for="checklistDeleteSetName">Set Name</label><br>
+              <input
+                type="text"
+                id="checklistDeleteSetName"
+                class="checklist-delete-input"
+                placeholder="e.g. 2025-26 Upper Deck Tim Hortons">
+
+              <button
+                type="button"
+                onclick="loadChecklistGroups()"
+                class="input-button"
+              >
+                Load
+              </button>
+
+              <p id="checklistDeleteStatus"></p>
+              <div id="checklistDeleteList"></div>
+            </div>
           </div>
         </main>
       </div>

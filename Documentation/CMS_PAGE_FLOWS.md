@@ -554,6 +554,45 @@ load on a page without the modal present.
   error: `await cmsAlert(data.error)`. A `.finally()` resets the Save
   button's label/color regardless of outcome.
 
+**Deleting a checklist** (the `#checklistDeleteSection` block, below
+the review table) exists because the full-replace semantics above are
+scoped to one *group* — so saving under a changed `insertSetName`
+writes a new group and strands the old one, with no way to reach it
+from the CMS. Before this section there was no delete path at all: the
+only `DeleteRequest` in the codebase was the one inside
+`saveChecklist`'s own replace step, and that endpoint rejects an empty
+`cards` array, making "replace with nothing" inexpressible.
+
+- Set Name input + "Load" button → `loadChecklistGroups()` — GETs
+  **Get a checklist by set name** (`getChecklistBySetName`), the same
+  *public, unauthenticated* read endpoint `waxReviews.html`'s checklist
+  modal uses. Reused deliberately rather than adding a CMS-only list
+  endpoint: enumerating groups is a read of already-public data, so it
+  needs no auth and no new Lambda. Groups the returned rows by
+  `insertSetName || MAIN_SET_LABEL` ("Main set") and renders one row per group with
+  its card count and a Delete button. A misspelled or unknown set name
+  reports "no checklist found" rather than rendering an empty list, so
+  a typo can't look like a set with nothing in it.
+- Per-group "Delete" button → `deleteChecklistGroup(button)` — reads
+  `data-set-name`/`data-insert-set-name` off the button via `dataset`
+  rather than an interpolated `onclick`, because real set names contain
+  apostrophes ("2006-07 McDonald's...") which would break the attribute
+  — the same reason `wax.js`'s checklist link and vote buttons do it.
+  Gated on `await cmsConfirm(...)`; cancelling sends no request at all.
+  On confirm, POSTs to **Save a reviewed checklist** — the same
+  `saveChecklist` endpoint — with body
+  `{setName, insertSetName, cards: [], confirmDelete: true}` and the
+  Authorization header. `confirmDelete === true` is the only way past
+  that non-empty-`cards` guard, which otherwise protects every
+  checklist on the site from a malformed parse arriving empty. The
+  Lambda clears `hasChecklist` on the `Cards` item **only** if the set
+  has no groups left, so deleting one insert set out of several leaves
+  the live "Checklist" link working — see `LAMBDA_FUNCTIONS.md`.
+  Checks `response.ok` before reporting success (unlike
+  `deleteCardSet()`/`deleteBlogPost()`, which show "deleted." even on a
+  404/500), then re-runs `loadChecklistGroups()` so the list reflects
+  what's actually in the table rather than what was just clicked.
+
 ## `cms/admin.html`
 
 A growing collection of self-service, on-demand site-health checks —

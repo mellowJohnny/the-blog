@@ -218,6 +218,15 @@ doesn't.
 - **Response**: `{ message }` on success (e.g. `"Replaced 0 existing card(s) with 264 new card(s) for \"...\" (main set)."`) — the message can also carry a `Warning:` suffix if the (non-fatal) Cards-table linking step failed or found no matching set, so the checklist itself still saved but won't show a checklist link on `waxReviews.html` yet. `{ error }` on a validation failure (400 — missing fields, or two cards sharing the same card number within this group; see `DATA_MODEL.md`'s "Sort-key collision guard") or a partial DynamoDB failure after retries (502).
 - **Lambda**: `Lambdas/saveChecklist/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Full-replace semantics, scoped to the exact group (main set, or one specific insert set) being saved — deletes every existing item in that group before writing the new set. Also flips `hasChecklist: true` on the matching `Cards` item — see `DATA_MODEL.md`.
 
+### Delete a checklist group
+- **URL**: same as "Save a reviewed checklist" above — `https://w46hwbexed.execute-api.us-east-2.amazonaws.com/dev`
+- **Method**: POST
+- **Body**: `{ setName, insertSetName, cards: [], confirmDelete: true }` — `insertSetName` empty means the main set. `confirmDelete` must be strictly `true`; it's the only way past the endpoint's non-empty-`cards` guard, so an accidental empty submit still 400s rather than deleting anything.
+- **Called from**: `deleteChecklistGroup()` in `scripts/checklistUpload.js` (the "Delete a checklist" section of `cms/uploadChecklist.html`)
+- **Response**: `{ message }` on success, naming the group and row count, plus a note when the set's last group was removed and its `hasChecklist` link cleared. `{ error }` on **404** (no rows for that group — nothing was deleted), **400** (missing `setName`), or **502** (rows still unprocessed after retries, leaving the group partially removed).
+- **Lambda**: same `Lambdas/saveChecklist/`. Reuses that function rather than adding a `deleteChecklist` endpoint: it already holds every needed permission, and a new endpoint would mean standing up an API Gateway REST API, IAM policy, CORS and Cognito Authorizer by hand. Deleting the set's **last** group also clears `hasChecklist` on the matching `Cards` item; deleting one group of several leaves it set.
+- **Listing what's deletable**: the CMS enumerates a set's groups with the **public** "Get a checklist by set name" GET below — no auth, no new endpoint — grouping the returned items by `insertSetName` client-side.
+
 ## CMS — image management (S3)
 
 ### Get S3 upload URL (presigned PUT)
