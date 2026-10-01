@@ -525,8 +525,11 @@ create/edit form: **upload → review → save**.
 
 ### Deleting a checklist
 
-The same page has a **Delete a checklist** section below the upload
-flow. Type a Set Name, click Load, and it lists every checklist *group*
+A **Delete Checklist...** button sits beside "Upload Checklist PDF..."
+and opens a modal in the same `.bulk-*` design as the upload modal (Close
+and Load in the bottom row, backdrop click closes, every open starts from
+an empty field). Type a Set Name and click Load (or press Enter), and it
+lists every checklist *group*
 stored for that set — the main set plus each insert set, with card
 counts — each with its own Delete button (`loadChecklistGroups()` /
 `deleteChecklistGroup()`, `scripts/checklistUpload.js`). The listing

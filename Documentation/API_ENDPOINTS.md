@@ -174,7 +174,7 @@ without changing that expectation first.
 ### Get all live card sets (for the edit picker)
 - **URL**: `https://tx7romovbd.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
-- **Called from**: `fetchAllCardSets()` in `scripts/cmsCardSet.js` (used by `cms/pickCardSet.html`), and `loadCardSetNameIndex()` in `scripts/checklistUpload.js` (the Set Name type-ahead on `cms/uploadChecklist.html`'s Delete-a-checklist section, which keeps only items with `hasChecklist` set).
+- **Called from**: `fetchAllCardSets()` in `scripts/cmsCardSet.js` (used by `cms/pickCardSet.html`), and `loadCardSetNameIndex()` in `scripts/checklistUpload.js` (the Set Name type-ahead on `cms/uploadChecklist.html`'s Delete Checklist modal, which keeps only items with `hasChecklist` set).
 - **Response**: tolerant of several shapes — a raw array, `{ body: "<json array>" }`, `{ body: [...] }`, or `{ Items: [...] }`.
 - **Lambda**: `Lambdas/getCardSets/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Queries the `blogStatus-year-index` GSI, `blogStatus = "OK"`, no projection (full items).
 

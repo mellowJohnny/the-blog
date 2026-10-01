@@ -2,6 +2,7 @@
  * cms/uploadChecklist.html support code. Flow: pick a PDF ->
  * parseChecklistPdf() parses it into an editable table -> user
  * reviews/fixes rows -> saveChecklist() writes them to Checklists.
+ * Also hosts the Delete Checklist modal (load a set, pick a group, remove it).
  */
 
 const PARSE_CHECKLIST_URL = "https://uurjs2v7i0.execute-api.us-east-2.amazonaws.com/dev";
@@ -564,6 +565,13 @@ document.addEventListener("DOMContentLoaded", () => {
   input.addEventListener("input", onDeleteSetNameInput);
 
   input.addEventListener("keydown", (e) => {
+    // No highlighted suggestion (or no dropdown at all): Enter loads what's typed.
+    if (e.key === "Enter" && (list.style.display === "none" || activeSetNameIndex < 0)) {
+      e.preventDefault();
+      hideSetNameSuggestions();
+      loadChecklistGroups();
+      return;
+    }
     if (list.style.display === "none") return;
     if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -590,5 +598,41 @@ document.addEventListener("DOMContentLoaded", () => {
     if (list.style.display !== "none" && !input.contains(e.target) && !list.contains(e.target)) {
       hideSetNameSuggestions();
     }
+  });
+});
+
+// --- Delete Checklist modal - same .bulk-* design/behaviour as the upload modal ---
+// Its own DOMContentLoaded listener so neither modal depends on the other
+// being on the page.
+document.addEventListener("DOMContentLoaded", () => {
+  const deleteLink = document.getElementById("checklistDeleteLink");
+  const overlay = document.getElementById("checklistDeleteOverlay");
+  if (!deleteLink || !overlay) return;
+
+  const input = document.getElementById("checklistDeleteSetName");
+
+  function resetDeleteModal() {
+    input.value = "";
+    setDeleteStatus("");
+    document.getElementById("checklistDeleteList").innerHTML = "";
+    hideSetNameSuggestions();
+  }
+
+  function closeDeleteModal() {
+    overlay.style.display = "none";
+    resetDeleteModal();
+  }
+
+  deleteLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    resetDeleteModal();
+    overlay.style.display = "flex";
+    input.focus();
+  });
+
+  document.getElementById("checklistDeleteCloseBtn").addEventListener("click", closeDeleteModal);
+  document.getElementById("checklistDeleteLoadBtn").addEventListener("click", loadChecklistGroups);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeDeleteModal();
   });
 });

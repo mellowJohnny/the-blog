@@ -1493,10 +1493,15 @@ label sup {
   padding-left: 8px;
 }
 
-#checklistImportLink {
+#checklistImportLink,
+#checklistDeleteLink {
   color: white;
   padding: 6px 14px;
   font-size: 14px;
+}
+
+#checklistDeleteLink {
+  margin-left: 8px;
 }
 
 .checklist-button-row {
@@ -1510,13 +1515,13 @@ label sup {
   background-color: var(--color-link);
 }
 
-/* "Delete a checklist" section on cms/uploadChecklist.html - one row per
-   stored group (main set + each insert set), built by
+/* Delete Checklist modal on cms/uploadChecklist.html (.bulk-* chrome) - one
+   row per stored group (main set + each insert set), built by
    buildChecklistGroupRow() in checklistUpload.js. */
 /* ID-scoped so it beats the global input[type=text] rule (0,1,1), which
    otherwise wins over a bare class and forces width:450px/margin:8px 0.
    display:block + margin:0 keep the type-ahead dropdown flush below. */
-#checklistDeleteSection .checklist-delete-input {
+#checklistDeleteOverlay .checklist-delete-input {
   display: block;
   width: 100%;
   max-width: none;
@@ -1529,15 +1534,11 @@ label sup {
   box-sizing: border-box;
 }
 
-/* Anchors the dropdown's top:100% to the input. inline-block keeps the
-   Load button on the same line; the bottom margin sits here rather than
-   on the input so it can't push the dropdown off. */
+/* Anchors the dropdown's top:100% to the input. The bottom margin sits here
+   rather than on the input so it can't push the dropdown off. */
 .checklist-typeahead-wrap {
   position: relative;
-  display: inline-block;
-  vertical-align: middle;
   width: 100%;
-  max-width: 500px;
   margin-bottom: 10px;
 }
 
@@ -1571,12 +1572,19 @@ label sup {
   background-color: var(--color-page-bg);
 }
 
+/* Real sets run to 8-12 groups: scroll the list, not the modal, so the
+   Close/Load row never leaves the screen. The type-ahead dropdown is a
+   sibling of this list, so the scroll container can't clip it. */
+#checklistDeleteList {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
 .checklist-delete-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  max-width: 500px;
   padding: 8px 0;
   border-bottom: 1px solid var(--color-input-border);
   font-family: 'Source Sans 3', sans-serif;

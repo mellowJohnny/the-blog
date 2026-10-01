@@ -554,8 +554,9 @@ load on a page without the modal present.
   error: `await cmsAlert(data.error)`. A `.finally()` resets the Save
   button's label/color regardless of outcome.
 
-**Deleting a checklist** (the `#checklistDeleteSection` block, below
-the review table) exists because the full-replace semantics above are
+**Deleting a checklist** (the "Delete Checklist..." button beside the
+upload link, which opens the `#checklistDeleteOverlay` modal) exists
+because the full-replace semantics above are
 scoped to one *group* — so saving under a changed `insertSetName`
 writes a new group and strands the old one, with no way to reach it
 from the CMS. Before this section there was no delete path at all: the
@@ -563,8 +564,9 @@ only `DeleteRequest` in the codebase was the one inside
 `saveChecklist`'s own replace step, and that endpoint rejects an empty
 `cards` array, making "replace with nothing" inexpressible.
 
+- "Delete Checklist..." link → opens the modal: resets it (clears the field, status, results and any open suggestion list) and focuses the Set Name input, so the type-ahead is usable straight away. Close, or a click on the dark backdrop, hides and resets it the same way — the same open/close behaviour as the upload modal. Escape inside the field only closes the suggestion dropdown, not the modal. The modal's results list scrolls on its own (`max-height`), so a set with many insert groups never pushes the Close/Load row off the screen.
 - Typing in the Set Name input → `onDeleteSetNameInput()` (`checklistUpload.js`) — a type-ahead, so a long punctuated name like "2006-07 McDonald's Upper Deck Ice Heroes" doesn't have to be typed exactly. On the **first** keystroke past two characters, `loadCardSetNameIndex()` builds the suggestion list by calling **Get all live card sets (for the edit picker)** (`getCardSets`) and **Get all staged (draft) card sets** (`getStagedCardSets`) in parallel, each with the Authorization header, and keeping only sets whose `hasChecklist` flag is set — so every suggestion has something to delete. The index comes from `Cards` rather than `Checklists` deliberately: this section manages the checklists of real card sets, and orphaned checklists are already surfaced by the Checklist Integrity Check on `cms/admin.html`. Staged sets are included so a checklist uploaded while its review is still staged can be reached; that is why `getStagedCardSets` now projects `hasChecklist` (see `LAMBDA_FUNCTIONS.md`). The index is cached in memory for the page load — built at most once, and not at all if the field is never touched, since most visits here are uploads. If one endpoint fails the other's names still populate the list. Picking a suggestion (click, or ArrowDown/Enter) fills the input and runs the load below; suggestions are built with `textContent`, not `innerHTML`, because set names contain apostrophes. The field stays free text, so a set whose flag is stale — a checklist that saved but whose `Cards`-linking step failed — isn't suggested but can still be typed by hand.
-- Set Name input + "Load" button → `loadChecklistGroups()` — GETs
+- "Load" button (the modal's primary action, where the upload modal has Parse), or Enter in the field with no suggestion highlighted → `loadChecklistGroups()` — GETs
   **Get a checklist by set name** (`getChecklistBySetName`), the same
   *public, unauthenticated* read endpoint `waxReviews.html`'s checklist
   modal uses. Reused deliberately rather than adding a CMS-only list
