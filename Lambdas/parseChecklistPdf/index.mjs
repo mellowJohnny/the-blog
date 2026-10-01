@@ -105,7 +105,10 @@ function splitNameAndNotes(remainder) {
 // that happens to share the same shape (e.g. "Self-Titled", or a 2-4
 // letter word like "To"/"Big"/"Over" wrapped onto its own continuation
 // line).
-const CARD_LINE_RE = /^(NNO|[A-Za-z]+-[A-Za-z]+|[A-Za-z]{2,4}|(?:[A-Za-z]+|\d+[A-Za-z]+)?[-\s]?\d+[A-Za-z]?)\s+(\S.*)$/i;
+// Also letters+digits, hyphen, digits ("GR81-1"). Digit-bearing shapes
+// go first: listed after them, the bare 2-4 letter shape would grab
+// "McD" from "McD 1" and the ALL CAPS check would then drop the line.
+const CARD_LINE_RE = /^(NNO|[A-Za-z]+\d+-\d+[A-Za-z]?|(?:[A-Za-z]+|\d+[A-Za-z]+)?[-\s]?\d+[A-Za-z]?|[A-Za-z]+-[A-Za-z]+|[A-Za-z]{2,4})\s+(\S.*)$/i;
 
 function isUnnumbered(cardNumber) {
   return cardNumber.toUpperCase() === "NNO";

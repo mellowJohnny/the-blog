@@ -199,9 +199,14 @@ function parseChecklistPdf(file, { parseBtn, cancelBtn, closeModal }) {
         return;
       }
 
+      if (!data.cards?.length) {
+        showModalFeedback("No card lines were recognised in this PDF - its card-number format may not be supported yet.", "error");
+        return;
+      }
+
       document.getElementById("checklistSetName").value = data.setName || "";
       document.getElementById("checklistInsertSetName").value = data.insertSetName || "";
-      renderChecklistTable(data.cards || []);
+      renderChecklistTable(data.cards);
       document.getElementById("checklistReviewSection").style.display = "block";
 
       let statusMsg = `Parsed ${data.cards.length} cards. Review below, then save.`;
