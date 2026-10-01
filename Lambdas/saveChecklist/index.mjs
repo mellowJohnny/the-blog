@@ -241,7 +241,7 @@ export const handler = async (event) => {
         statusCode: 200,
         headers: CORS_HEADERS,
         body: JSON.stringify({
-          message: `Deleted the ${insertSetName ? `"${insertSetName}"` : "main"} checklist set from "${setName}".` +
+          message: `Deleted the ${insertSetName ? `"${insertSetName}"` : "main"} checklist from the ${setName} set.` +
             (clearedFlag ? ` That was the set's last checklist, so its "Checklist" link has been removed from the live site.` : "")
         })
       };
