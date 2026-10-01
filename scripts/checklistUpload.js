@@ -631,7 +631,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("checklistDeleteCloseBtn").addEventListener("click", closeDeleteModal);
-  document.getElementById("checklistDeleteLoadBtn").addEventListener("click", loadChecklistGroups);
   overlay.addEventListener("click", (e) => {
     if (e.target === overlay) closeDeleteModal();
   });
