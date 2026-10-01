@@ -325,7 +325,9 @@ async function loadChecklistGroups() {
 
   setDeleteStatus("Loading...");
   try {
-    const response = await fetch(`${CHECKLIST_READ_URL}?setName=${encodeURIComponent(setName)}`);
+    // "reload" skips the endpoint's 30-min browser cache (else a re-list
+    // after a delete shows the old groups) and refreshes the cached copy.
+    const response = await fetch(`${CHECKLIST_READ_URL}?setName=${encodeURIComponent(setName)}`, { cache: "reload" });
     if (!response.ok) throw new Error(`status ${response.status}`);
     const data = await response.json();
     const items = Array.isArray(data) ? data : data.Items || data.items || [];
