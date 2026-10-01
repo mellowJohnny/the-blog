@@ -222,7 +222,7 @@ doesn't.
 - **URL**: same as "Save a reviewed checklist" above — `https://w46hwbexed.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: POST
 - **Body**: `{ setName, insertSetName, cards: [], confirmDelete: true }` — `insertSetName` empty means the main set. `confirmDelete` must be strictly `true`; it's the only way past the endpoint's non-empty-`cards` guard, so an accidental empty submit still 400s rather than deleting anything.
-- **Called from**: `deleteChecklistGroup()` in `scripts/checklistUpload.js` (the "Delete a checklist" section of `cms/uploadChecklist.html`)
+- **Called from**: `deleteChecklistGroup()` in `scripts/checklistUpload.js` (the Delete Checklist modal on `cms/uploadChecklist.html`)
 - **Response**: `{ message }` on success, naming the group and row count, plus a note when the set's last group was removed and its `hasChecklist` link cleared. `{ error }` on **404** (no rows for that group — nothing was deleted), **400** (missing `setName`), or **502** (rows still unprocessed after retries, leaving the group partially removed).
 - **Lambda**: same `Lambdas/saveChecklist/`. Reuses that function rather than adding a `deleteChecklist` endpoint: it already holds every needed permission, and a new endpoint would mean standing up an API Gateway REST API, IAM policy, CORS and Cognito Authorizer by hand. Deleting the set's **last** group also clears `hasChecklist` on the matching `Cards` item; deleting one group of several leaves it set.
 - **Listing what's deletable**: the CMS enumerates a set's groups with the **public** "Get a checklist by set name" GET below — no auth, no new endpoint — grouping the returned items by `insertSetName` client-side.

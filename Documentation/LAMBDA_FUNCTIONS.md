@@ -320,7 +320,14 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   regex from matching ordinary prose lines or the set title line (its
   year always contains a hyphen, e.g. `"1997-98"` — the digits before
   that hyphen have no trailing letter, so they can't be absorbed as a
-  prefix, and the line correctly fails to match). Both letters-only
+  prefix, and the line correctly fails to match). A letters-then-digits
+  prefix joined to the number by a hyphen (e.g. `"GR81-1"`, from a
+  "Great Career" insert set) is one more alternative of its own.
+  Alternative order matters: the digit-bearing shapes are tried before
+  the bare 2-4 letter one, or that one captures just `"McD"` out of
+  `"McD 1"`, fails the ALL CAPS check, and the whole line is dropped —
+  which is how both McDonald's Upper Deck Ice main-set PDFs came to
+  parse to 0 and 9 cards (fixed 2026-10-01). Both letters-only
   shapes additionally require the matched text be ALL CAPS in the
   source, checked in code (`isAllCapsLetterCode()`) rather than in the
   regex itself (which is case-insensitive throughout) — otherwise

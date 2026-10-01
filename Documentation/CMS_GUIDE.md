@@ -487,7 +487,10 @@ create/edit form: **upload → review → save**.
    mirrors `smsAdmin.html`'s bulk-import modal exactly — same `.bulk-*`
    CSS classes, same drag-and-drop/click-to-browse drop zone. Clicking
    "Parse" sends the PDF (base64-encoded, no S3 step — checklist PDFs
-   are small) to `parseChecklistPdf`.
+   are small) to `parseChecklistPdf`. If the parse recognises no card
+   lines at all, the modal stays open with an error rather than showing
+   an empty table — usually a card-number format the parser doesn't
+   support yet (see `LAMBDA_FUNCTIONS.md`).
 2. **Review**: on a successful parse, the modal closes and an editable
    table appears on the page — a Set Name field, an optional Insert Set
    Name field (blank for the base/main set; filled in when the PDF's
@@ -527,15 +530,19 @@ create/edit form: **upload → review → save**.
 
 A **Delete Checklist...** button sits beside "Upload Checklist PDF..."
 and opens a modal in the same `.bulk-*` design as the upload modal (Close
-and Load in the bottom row, backdrop click closes, every open starts from
-an empty field). Type a Set Name and click Load (or press Enter), and it
-lists every checklist *group*
+in the bottom row, backdrop click closes, every open starts from an empty
+field). Pick a set from the type-ahead (or type the full name and press
+Enter), and it lists every checklist *group*
 stored for that set — the main set plus each insert set, with card
 counts — each with its own Delete button (`loadChecklistGroups()` /
 `deleteChecklistGroup()`, `scripts/checklistUpload.js`). The listing
 comes from the **public** `getChecklistBySetName` endpoint, not a new
 one; no auth is needed to read, and the delete itself carries the usual
-Cognito token.
+Cognito token. Each set is read once per page load and kept in memory:
+a successful delete removes that group from the in-memory list instead
+of re-querying, because an immediate re-read can still return the rows
+just deleted. A set whose last group is deleted also drops out of the
+type-ahead.
 
 The Set Name field has a **type-ahead** so the name doesn't have to be
 typed exactly. Its index is built from the two card-set endpoints the
