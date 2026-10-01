@@ -197,7 +197,7 @@ export const handler = async (event) => {
     // reuse the exact same prefix expression - the two must never drift.
     const type = insertSetName ? "insertSet" : "main";
     const prefix = insertSetName ? `INSERT#${insertSetName}#` : "MAIN#";
-    const groupLabel = insertSetName ? `"${setName}" / insert set "${insertSetName}"` : `"${setName}" (main set)`;
+    const groupLabel = insertSetName ? `the "${insertSetName}" insert set of "${setName}"` : `the main set of "${setName}"`;
 
     // Delete mode. confirmDelete is the only way past the non-empty-cards
     // guard below, which otherwise protects every checklist on the site
@@ -241,7 +241,7 @@ export const handler = async (event) => {
         statusCode: 200,
         headers: CORS_HEADERS,
         body: JSON.stringify({
-          message: `Deleted ${doomedSortKeys.length} card(s) for ${groupLabel}.` +
+          message: `Deleted the ${insertSetName ? `"${insertSetName}"` : "main"} checklist set from "${setName}".` +
             (clearedFlag ? ` That was the set's last checklist, so its "Checklist" link has been removed from the live site.` : "")
         })
       };

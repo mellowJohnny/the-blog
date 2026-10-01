@@ -368,8 +368,7 @@ function renderChecklistGroups(setName) {
     return;
   }
 
-  const total = [...groups.values()].reduce((sum, count) => sum + count, 0);
-  setDeleteStatus(`${total} card(s) across ${groups.size} group(s) for "${setName}".`);
+  setDeleteStatus(`Found ${groups.size} Checklist${groups.size === 1 ? "" : "s"} for the ${setName} set`);
   [...groups.keys()].sort().forEach((insertSetName) => {
     list.appendChild(buildChecklistGroupRow(setName, insertSetName, groups.get(insertSetName)));
   });
