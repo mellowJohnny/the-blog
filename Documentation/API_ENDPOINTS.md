@@ -104,7 +104,7 @@ without changing that expectation first.
 - **Called from**: `createBlogPost()` in `scripts/cmsBlog.js` (used by `cms/createBlogPost.html`)
 - **Response**: `{ message }`
 - **Note**: this exact URL is the worked example in `Documentation/Creating A New Lambda.txt`, so this is likely the very first endpoint built for the site.
-- **No `Authorization` header sent** — see `AUTH.md`.
+- **Auth**: `createBlogPost()` sends the Cognito token as an `Authorization` header (via `getAuthToken()`), and the endpoint enforces it with a Cognito Authorizer, like every other cardStack create/update/delete/list endpoint — see `AUTH.md`. (This line used to say no header was sent, which stopped being true once the cardStack endpoints were put behind the authorizer.)
 - **Lambda**: `Lambdas/createBlogPost/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Generates `blogID` via `crypto.randomUUID()`; `time` (the actual DynamoDB sort key) is set server-side to `new Date().toISOString()`.
 
 ### Update blog post
@@ -174,15 +174,15 @@ without changing that expectation first.
 ### Get all live card sets (for the edit picker)
 - **URL**: `https://tx7romovbd.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
-- **Called from**: `fetchAllCardSets()` in `scripts/cmsCardSet.js` (used by `cms/pickCardSet.html`)
+- **Called from**: `fetchAllCardSets()` in `scripts/cmsCardSet.js` (used by `cms/pickCardSet.html`), and `loadCardSetNameIndex()` in `scripts/checklistUpload.js` (the Set Name type-ahead on `cms/uploadChecklist.html`'s Delete-a-checklist section, which keeps only items with `hasChecklist` set).
 - **Response**: tolerant of several shapes — a raw array, `{ body: "<json array>" }`, `{ body: [...] }`, or `{ Items: [...] }`.
 - **Lambda**: `Lambdas/getCardSets/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Queries the `blogStatus-year-index` GSI, `blogStatus = "OK"`, no projection (full items).
 
 ### Get all staged (draft) card sets
 - **URL**: `https://ecy21wzgkl.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
-- **Called from**: `fetchAllStagedCardSets()` in `scripts/cmsCardSet.js` (used by `cms/pickCardSet.html`)
-- **Response**: same tolerant unwrapping as above; items include `setID`, `setName`, `blogCat`, `year`. **Fixed 2026-08-14**: the `getStagedCardSets` Lambda's `ProjectionExpression` originally only requested `setName, setID` from the `blogStatus-year-index` GSI, so `blogCat`/`year` came back `undefined` on every item — this silently broke both category grouping (everything fell back to "Other") and sort order (`year` comparisons were `NaN`). Fixed by expanding the projection to `setName, setID, blogCat, #yr` with `year` aliased via `ExpressionAttributeNames` (`year` is a DynamoDB reserved word, can't appear unescaped in a `ProjectionExpression`). `fetchAllStagedCardSets()` in `scripts/cmsCardSet.js` also keeps a defensive fallback — a staged set with no `blogCat` but a `mfg` value is treated as `"reg"` — kept intentionally in case a record is ever created directly in DynamoDB without going through the CMS form.
+- **Called from**: `fetchAllStagedCardSets()` in `scripts/cmsCardSet.js` (used by `cms/pickCardSet.html`), and `loadCardSetNameIndex()` in `scripts/checklistUpload.js` (the Set Name type-ahead on `cms/uploadChecklist.html`, alongside the live endpoint above).
+- **Response**: same tolerant unwrapping as above; items include `setID`, `setName`, `blogCat`, `year`, `hasChecklist`. `hasChecklist` was added to the projection (2026-09-30) so the type-ahead can offer only staged sets that have a checklist; it is absent on a set that has never had one, and `pickCardSet.html` ignores it. **Fixed 2026-08-14**: the `getStagedCardSets` Lambda's `ProjectionExpression` originally only requested `setName, setID` from the `blogStatus-year-index` GSI, so `blogCat`/`year` came back `undefined` on every item — this silently broke both category grouping (everything fell back to "Other") and sort order (`year` comparisons were `NaN`). Fixed by expanding the projection to `setName, setID, blogCat, #yr` with `year` aliased via `ExpressionAttributeNames` (`year` is a DynamoDB reserved word, can't appear unescaped in a `ProjectionExpression`). `fetchAllStagedCardSets()` in `scripts/cmsCardSet.js` also keeps a defensive fallback — a staged set with no `blogCat` but a `mfg` value is treated as `"reg"` — kept intentionally in case a record is ever created directly in DynamoDB without going through the CMS form.
 - **Lambda**: `Lambdas/getStagedCardSets/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Same GSI as `Lambdas/getCardSets/`, filtered to `blogStatus = "staged"`.
 
 ### Get a single card set by ID
