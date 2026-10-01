@@ -400,10 +400,10 @@ function buildChecklistGroupRow(setName, insertSetName, count) {
 async function deleteChecklistGroup(button) {
   const setName = button.dataset.setName;
   const insertSetName = button.dataset.insertSetName;
-  const groupLabel = insertSetName || MAIN_SET_LABEL;
+  const groupLabel = insertSetName ? `"${insertSetName}"` : "main";
 
   const ok = await cmsConfirm(
-    `Delete the "${groupLabel}" checklist for "${setName}"? This cannot be undone.`
+    `Delete the ${groupLabel} checklist from the ${setName} set? This cannot be undone!`
   );
   if (!ok) return;
 
