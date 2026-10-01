@@ -2,7 +2,7 @@
  * cms/uploadChecklist.html support code. Flow: pick a PDF ->
  * parseChecklistPdf() parses it into an editable table -> user
  * reviews/fixes rows -> saveChecklist() writes them to Checklists.
- * Also hosts the Delete Checklist modal (load a set, pick a group, remove it).
+ * Also hosts the Delete Checklist modal (load a set once, pick a group, remove it).
  */
 
 const PARSE_CHECKLIST_URL = "https://uurjs2v7i0.execute-api.us-east-2.amazonaws.com/dev";
@@ -312,10 +312,13 @@ function setDeleteStatus(message) {
   if (el) el.textContent = message;
 }
 
+// setName -> Map(insertSetName -> card count). Each set is read once per
+// page load; deletes edit this copy, since a re-read can come back stale.
+const checklistGroupsBySet = new Map();
+
 async function loadChecklistGroups() {
   const setName = document.getElementById("checklistDeleteSetName").value.trim();
-  const list = document.getElementById("checklistDeleteList");
-  list.innerHTML = "";
+  document.getElementById("checklistDeleteList").innerHTML = "";
 
   if (!setName) {
     await cmsAlert("Enter the Set Name whose checklist you want to manage.");
@@ -323,10 +326,14 @@ async function loadChecklistGroups() {
     return;
   }
 
+  if (checklistGroupsBySet.has(setName)) {
+    renderChecklistGroups(setName);
+    return;
+  }
+
   setDeleteStatus("Loading...");
   try {
-    // "reload" skips the endpoint's 30-min browser cache (else a re-list
-    // after a delete shows the old groups) and refreshes the cached copy.
+    // "reload" skips the endpoint's 30-min browser cache for this one read.
     const response = await fetch(`${CHECKLIST_READ_URL}?setName=${encodeURIComponent(setName)}`, { cache: "reload" });
     if (!response.ok) throw new Error(`status ${response.status}`);
     const data = await response.json();
@@ -343,15 +350,29 @@ async function loadChecklistGroups() {
       const key = item.insertSetName || "";
       groups.set(key, (groups.get(key) || 0) + 1);
     });
-
-    setDeleteStatus(`${items.length} card(s) across ${groups.size} group(s) for "${setName}".`);
-    [...groups.keys()].sort().forEach((insertSetName) => {
-      list.appendChild(buildChecklistGroupRow(setName, insertSetName, groups.get(insertSetName)));
-    });
+    checklistGroupsBySet.set(setName, groups);
+    renderChecklistGroups(setName);
   } catch (error) {
     console.log("Load checklist groups error:", error);
     setDeleteStatus("Could not load that set's checklist.");
   }
+}
+
+function renderChecklistGroups(setName) {
+  const list = document.getElementById("checklistDeleteList");
+  const groups = checklistGroupsBySet.get(setName);
+  list.innerHTML = "";
+
+  if (groups.size === 0) {
+    setDeleteStatus(`No checklists left for "${setName}".`);
+    return;
+  }
+
+  const total = [...groups.values()].reduce((sum, count) => sum + count, 0);
+  setDeleteStatus(`${total} card(s) across ${groups.size} group(s) for "${setName}".`);
+  [...groups.keys()].sort().forEach((insertSetName) => {
+    list.appendChild(buildChecklistGroupRow(setName, insertSetName, groups.get(insertSetName)));
+  });
 }
 
 function buildChecklistGroupRow(setName, insertSetName, count) {
@@ -411,8 +432,11 @@ async function deleteChecklistGroup(button) {
       return;
     }
 
+    const groups = checklistGroupsBySet.get(setName);
+    groups.delete(insertSetName);
+    if (groups.size === 0) removeFromSetNameIndex(setName);
+    renderChecklistGroups(setName);
     await cmsAlert(data.message || "Checklist deleted.");
-    await loadChecklistGroups(); // re-read rather than assume what's left
   } catch (error) {
     console.log("Delete checklist error:", error);
     await cmsAlert("Network error deleting the checklist.");
@@ -476,6 +500,16 @@ function loadCardSetNameIndex() {
     });
   }
   return cardSetNameIndexPromise;
+}
+
+// A set whose last group was deleted has nothing left to manage, so it
+// drops out of the suggestions (only if the index has been built yet).
+function removeFromSetNameIndex(setName) {
+  if (!cardSetNameIndexPromise) return;
+  cardSetNameIndexPromise.then((names) => {
+    const i = names.indexOf(setName);
+    if (i >= 0) names.splice(i, 1);
+  });
 }
 
 let setNameSuggestions = [];
