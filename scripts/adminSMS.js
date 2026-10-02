@@ -403,6 +403,14 @@ addSubscriberLink.addEventListener("click", (e) => {
 addSubscriberCancelBtn.addEventListener("click", closeAddSubscriberModal);
 addSubscriberCloseBtn.addEventListener("click", closeAddSubscriberModal);
 
+// Add stays disabled (faded, like Parse/Upload before a file is picked)
+// until both fields have text.
+function updateAddSubscriberSaveState() {
+  addSubscriberSaveBtn.disabled = !(addFirstName.value.trim() && addPhone.value.trim());
+}
+addFirstName.addEventListener("input", updateAddSubscriberSaveState);
+addPhone.addEventListener("input", updateAddSubscriberSaveState);
+
 addSubscriberOverlay.addEventListener("click", (e) => {
   if (e.target === addSubscriberOverlay) closeAddSubscriberModal();
 });
@@ -415,7 +423,7 @@ function closeAddSubscriberModal() {
 function resetAddSubscriberModal() {
   addFirstName.value = "";
   addPhone.value = "";
-  addSubscriberSaveBtn.disabled = false;
+  updateAddSubscriberSaveState();
   addSubscriberSaveBtn.style.display = "inline-block";
   addSubscriberCancelBtn.style.display = "inline-block";
   addSubscriberCloseBtn.style.display = "none";
@@ -465,11 +473,11 @@ addSubscriberSaveBtn.addEventListener("click", async () => {
       addSubscriberCloseBtn.style.display = "inline-block";
     } else {
       showAddSubscriberFeedback(`${json.error || "Unknown error."}`, "error");
-      addSubscriberSaveBtn.disabled = false;
+      updateAddSubscriberSaveState();
     }
   } catch (err) {
     showAddSubscriberFeedback(`Network error: ${err.message}`, "error");
-    addSubscriberSaveBtn.disabled = false;
+    updateAddSubscriberSaveState();
   } finally {
     addSubscriberCancelBtn.disabled = false;
   }
