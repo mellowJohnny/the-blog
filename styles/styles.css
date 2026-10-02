@@ -26,7 +26,6 @@ messing up the layout with white borders and scoll bars
   --btn-radius: 10px;
   --btn-secondary-border: #d6d6d6;
   --btn-secondary-hover: #f2f2f2;
-  --btn-dark: #3a3a3a;
 }
 
 /* Set up the flex container */
@@ -160,7 +159,7 @@ h1 {
 .autobus-send-btn {
     display: block;
     margin: 20px auto 0 auto;
-    background-color: var(--btn-dark);
+    background-color: #256386;
     color: #fff;
 }
 
@@ -375,7 +374,7 @@ h1 {
 }
 
 .bulk-btn-upload {
-  background: var(--btn-dark);
+  background: #256386;
   color: #fff;
 }
 
@@ -1820,11 +1819,6 @@ label sup {
 .delete-btn,
 .cms-confirm-confirm-btn {
   --btn-ring: #a83232;
-}
-
-.bulk-btn-upload,
-.autobus-send-btn {
-  --btn-ring: var(--btn-dark);
 }
 
 .input-button:hover:not(:disabled),
