@@ -130,9 +130,7 @@ function buildCardSetMarkup({
         </table>
 
         <div class="set-footer-table-style">
-            <div style="text-align:left" class="caption">
-                <strong>and the winners are...</strong>
-            </div>
+            
             <div style="text-align:center">
                 <img src="${footerImgUrl}"
                 class="table-footer-img"
