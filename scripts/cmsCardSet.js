@@ -576,9 +576,6 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
   footerImgName,
   printRun
 ) {
-  // Insert postBody into TinyMCE
-  tinymce.activeEditor.selection.setContent(postBody);
-
   // Populate the blogStatus dropdown
   const statusOptions = document.getElementById("blogStatus");
 
@@ -614,6 +611,9 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
   document.getElementById("footerImgName").value = footerImgName;
   // Optional attribute - most sets don't have one, so avoid "undefined".
   document.getElementById("printRun").value = printRun || "";
+
+  // The fetch can beat tinymce.init(), so wait for the editor (cmsFormUI.js).
+  tinyEditorReady.then((editor) => editor.setContent(postBody));
 }
 
 

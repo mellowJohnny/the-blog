@@ -409,9 +409,6 @@ function fetchBlogByID(id) {
  */
   function populateBlog(blog) {
 
-  // Populate TinyMCE
-  tinymce.get("postBody").setContent(blog.postBody);
-
   // Published dropdown
   const statusOptions = document.getElementById("published");
   statusOptions.innerHTML = `
@@ -425,4 +422,7 @@ function fetchBlogByID(id) {
   document.getElementById("imgCap").value = blog.imgCap;
   document.getElementById("blogType").value = blog.blogType;
   document.getElementById("time").value = blog.time;
+
+  // The fetch can beat tinymce.init(), so wait for the editor (cmsFormUI.js).
+  tinyEditorReady.then((editor) => editor.setContent(blog.postBody));
 }

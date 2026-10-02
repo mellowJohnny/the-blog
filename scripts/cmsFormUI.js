@@ -15,6 +15,12 @@
  * registerCardImageBlockButtons() below.
  */
 
+// Resolves with the editor once tinymce.init() finishes. Edit pages fetch
+// their record in parallel, so populate code awaits this rather than
+// assuming the editor already exists.
+let resolveTinyEditorReady;
+const tinyEditorReady = new Promise((resolve) => { resolveTinyEditorReady = resolve; });
+
 function initTinyEditor(selector = '#postBody', { cardImageBlocks = false } = {}) {
   // Card set pages swap the native image button/plugin for the two
   // custom ones above - no reason to offer both ways to insert an image.
@@ -37,7 +43,7 @@ function initTinyEditor(selector = '#postBody', { cardImageBlocks = false } = {}
     min_height: 400, // The starting/minimum height
     max_height: 500, // The maximum limit before a scrollbar appears
     setup: cardImageBlocks ? registerCardImageBlockButtons : undefined
-  });
+  }).then((editors) => resolveTinyEditorReady(editors[0]));
 }
 
 
