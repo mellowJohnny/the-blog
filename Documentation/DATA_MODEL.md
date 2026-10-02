@@ -88,6 +88,7 @@ queries):
 | `seoPageTitle`, `seoMetaDesc`, `seoURLSlug`, `seoTags` | String | SEO metadata fields added to the create/edit forms; not currently read by any public page's `<head>` — likely intended for a future SEO pass. |
 | `now` / `date` | String | Passed through as `item.now` in `wax.js`'s `renderCardSetPage()` and used as the review's displayed date. |
 | `hasChecklist` | Boolean | Set by `saveChecklist` (see the `Checklists` table below) the first time a checklist is successfully uploaded for this set's exact `setName` — not present at all until then. Drives the "Checklist" link on `waxReviews.html` (`displayCardSet()` in `scripts/wax.js`), which opens a modal fetching and displaying the full checklist — see `FRONTEND.md`. Not written by any CMS create/update form directly. |
+| `printRun` | String | Optional free text, e.g. "13.4 million packs" — only some sets have one (the Tim Hortons sets). Set from the Print Run field on `cms/createCardSet.html`/`cms/setEdit.html`: `createCardPost` stores it only when non-blank, and `updateCardSet` removes it when the field is cleared. When present, `buildCardSetMarkup()` (`scripts/helper.js`) adds a "Print Run" row under Set Size on `waxReviews.html`; missing or blank means no row at all. |
 
 ### `cmsContent/` directory (removed)
 

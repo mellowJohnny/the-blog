@@ -478,6 +478,12 @@ editable-looking `<select>` with only ever one option was misleading.
 no changes for this — both already read/write it via `.value`, which
 works identically on a `<select>` or a disabled `<input>`.
 
+Both card set forms have an optional **Print Run** text field (free
+text, e.g. "13.4 million packs"). Only some sets have one, mainly the
+Tim Hortons sets, so a blank field simply means no "Print Run" row on
+the live page; clearing it on `setEdit.html` removes the stored value.
+See `DATA_MODEL.md`'s `Cards.printRun`.
+
 ### Checklist upload
 
 `cms/uploadChecklist.html` is a separate, three-step flow rather than a

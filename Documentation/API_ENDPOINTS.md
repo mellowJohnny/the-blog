@@ -150,7 +150,7 @@ without changing that expectation first.
 ### Create card set
 - **URL**: `https://05uss9ffij.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: POST
-- **Body**: `{ blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, postBody, mfg, headerImgName, footerImgName, blogCat }`
+- **Body**: `{ blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, postBody, mfg, headerImgName, footerImgName, blogCat, printRun }` — `printRun` is optional and only stored when non-blank.
 - **Called from**: `createCardSet()` in `scripts/cmsCardSet.js` (used by `cms/createCardSet.html`)
 - **Response**: `{ message }` on success; `{ error, details }` on failure (frontend reads `response.ok` to distinguish).
 - **Lambda**: `Lambdas/createCardPost/` (source in this repo — note the AWS function name doesn't match the frontend's `createCardSet()` caller name; its own header comment calls itself `createCardSet Lambda Function`, see `LAMBDA_FUNCTIONS.md`). Generates `setID` via `Math.random().toString(36)` (not a UUID). Hardcodes the S3 image URL prefix (`headerImg`/`footerImg`) server-side — worth knowing if image hosting ever moves off direct S3 URLs (a CloudFront-fronted image bucket was explored and shelved around 2026-08-15).
@@ -158,7 +158,7 @@ without changing that expectation first.
 ### Update card set
 - **URL**: `https://bb8yehibjb.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: PUT
-- **Body**: `{ blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, postBody, headerImgName, footerImgName, mfg }`
+- **Body**: `{ blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, postBody, headerImgName, footerImgName, mfg, printRun }` — `printRun` is three-way: a non-blank value is set, a blank one removes the attribute, and a body with no `printRun` key leaves it untouched (so an older cached CMS script can't wipe it).
 - **Called from**: `updateCardSet()` in `scripts/cmsCardSet.js` (used by `cms/setEdit.html`)
 - **Response**: accepted in several shapes — a plain string, `{ message }`, or `{ body }` (itself either a JSON string to parse or plain text). See `updateCardSet()` in `scripts/cmsCardSet.js` for the exact unwrapping logic.
 - **Lambda**: `Lambdas/updateCardSet/` (source in this repo — see `LAMBDA_FUNCTIONS.md` for a real incident this Lambda caused on 2026-08-15: an unrelated CloudFront cache-invalidation side effect, sharing a try/catch with the actual DynamoDB update, started throwing 500s on every save after its target distribution was deleted — fixed by removing that side effect entirely).

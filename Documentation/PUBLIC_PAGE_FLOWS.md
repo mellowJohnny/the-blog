@@ -242,10 +242,10 @@ everything the visitor can see or navigate to on this page.
   `currentPage = 1`, and calls `renderCardSetPage()`, which slices out
   one set (`pageSize` is `1` — most years have exactly one set anyway;
   see "Notable" below) and calls the big `displayCardSet(...)` render
-  function (17 positional params — `postBody`, `year`, `mfg`, `size`,
+  function (18 positional params — `postBody`, `year`, `mfg`, `size`,
   `subsets`, `stars`, `formats`, `headerImg`/`headerImgName`,
   `footerImg`/`footerImgName`, `setName`, `author`, `date`, `upvotes`,
-  `downvotes`, `hasChecklist`) plus `fetchPageTitle(item)` for each —
+  `downvotes`, `hasChecklist`, `printRun`) plus `fetchPageTitle(item)` for each —
   despite the name, this now does all of this page's per-set SEO work
   in one place, not just the title: it sets `document.title` to
   `Review: <setName>` (so the browser tab/bookmark reflect the specific

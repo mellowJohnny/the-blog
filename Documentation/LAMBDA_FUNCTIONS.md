@@ -656,7 +656,15 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
 - **What it does**: a straightforward DynamoDB `UpdateCommand` on
   `Cards`, keyed on `setName`+`year`, setting every editable field.
   Also runs a TinyMCE cleanup pass on `postBody` before saving (strips
-  empty `<p>&nbsp;</p>`-style junk TinyMCE tends to leave behind).
+  empty `<p>&nbsp;</p>`-style junk TinyMCE tends to leave behind) —
+  chiefly the pair `setEdit.html`'s old `selection.setContent()` insert
+  added around every body on load (fixed 2026-10-01, see
+  `CMS_PAGE_FLOWS.md`). Kept as a safety net, at the cost of also
+  stripping any deliberately empty paragraph. `printRun` (optional) is
+  three-way: a non-blank value is `SET`, a blank one is `REMOVE`d, and a
+  payload with no `printRun` key leaves it untouched — so a browser
+  still running an older cached `cmsCardSet.js` can't wipe a value it
+  never displayed.
 - **2026-08-15 incident, fixed**: this Lambda used to *also* fire a
   `CreateInvalidationCommand` against a CloudFront distribution
   (`E1ITD1S1KYPTFG`) after every successful save, inside the *same*
@@ -979,7 +987,7 @@ section title:
 | `Lambdas/updateBlogPost/` | Update blog post | Plain `UpdateCommand` keyed on `blogType`+`time`. |
 | `Lambdas/listBlogsForUpdate/` | Get all live blogs (for the edit picker) | **Note**: despite the doc's previous description, this does a full unfiltered `Scan` (`published = :p` where `:p = true`) with no `ProjectionExpression` — the response is full blog records under `{items: [...]}`, not just `{title, blogID, blogType}`. `API_ENDPOINTS.md` corrected 2026-08-15. |
 | `Lambdas/getStagedBlogsForUpdate/` | Get all staged (draft) blogs | Same correction as above, mirrored: full `Scan` on `published = false`, full records returned, not a narrow projection. |
-| `Lambdas/createCardPost/` | Create card set | Despite the AWS function name, this is the "create card set" Lambda (its own header comment calls itself `createCardSet Lambda Function`). Generates `setID` via `Math.random().toString(36)` (not a UUID). Hardcodes the S3 image URL prefix (`headerImg`/`footerImg`) server-side — see the CloudFront-migration discussion this repo's git history has around 2026-08-15 for why that matters if image hosting ever moves off direct S3 URLs. |
+| `Lambdas/createCardPost/` | Create card set | Despite the AWS function name, this is the "create card set" Lambda (its own header comment calls itself `createCardSet Lambda Function`). Generates `setID` via `Math.random().toString(36)` (not a UUID). Hardcodes the S3 image URL prefix (`headerImg`/`footerImg`) server-side — see the CloudFront-migration discussion this repo's git history has around 2026-08-15 for why that matters if image hosting ever moves off direct S3 URLs. Stores the optional `printRun` only when non-blank, so sets without one get no empty attribute. |
 | `Lambdas/getCardSets/` | Get all live card sets (for the edit picker) | Queries the `blogStatus-year-index` GSI, `blogStatus = "OK"`. File has old commented-out `ProjectionExpression` variants left in as history of the 2026-08-14 `getStagedCardSets` projection bug fix (see below) — this one already returns full items. |
 | `Lambdas/getStagedCardSets/` | Get all staged (draft) card sets | Same GSI, `blogStatus = "staged"`. This is the Lambda whose `ProjectionExpression` bug (only requesting `setName, setID`, silently dropping `blogCat`/`year`) was found and fixed on 2026-08-14 — see `API_ENDPOINTS.md` for the full story. The fixed projection requests `setName, setID, blogCat, year`; `year` is aliased in the expression (e.g. `#y`) since it's a DynamoDB reserved word. It also projects `hasChecklist` (added 2026-09-30) so `cms/uploadChecklist.html`'s Set Name type-ahead can offer only staged sets that have a checklist; `getCardSets` needed no change since it returns full items. |
 | `Lambdas/getCardSetByID/` | Get a single card set by ID | Converted from PartiQL (`SELECT * FROM Cards WHERE setID=?`, which forced a full-table Scan since `setID` isn't the table's key) to a `QueryCommand` against the `setID-index` GSI on 2026-09-04 — a genuine performance win, not just a style change; see `DATA_MODEL.md`'s `Cards` GSI table. |

@@ -199,7 +199,8 @@ review body content".
 - Close (`×`) → `closeImageBrowser()` (`cmsImageBrowser.js`).
 - "Submit Post" button → `createCardSet(blogStatus, seoPageTitle,
   seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets,
-  stars, formats, year, headerImgName, footerImgName, mfg, blogCat)`
+  stars, formats, year, headerImgName, footerImgName, mfg, blogCat,
+  printRun)`
   (`cmsCardSet.js`) — three separate validation checks, each its own
   `await cmsAlert(...)` + refocus + early return: `setName` non-blank,
   `year` non-blank, then the TinyMCE body non-blank, so the two fields
@@ -323,13 +324,13 @@ pulled from this page's own URL) is no longer sent to this endpoint at
 all — it's still used elsewhere on this page, for `updateBlogPost()`/
 `deleteBlogPost()`, which do need it. If `data.item` is missing, shows
 "Blog not found." in `#errorDiv` and stops; otherwise calls
-`populateBlog(blog)` (internal to `cmsBlog.js`), which sets the
-TinyMCE content via
-`tinymce.get("postBody").setContent(blog.postBody)`, rebuilds the
+`populateBlog(blog)` (internal to `cmsBlog.js`), which rebuilds the
 Published `<select>`'s two `<option>`s with whichever is currently true
 marked `selected`, and fills `title`/`imgName`/`imgCap`/`blogType`
 (disabled)/`time` (disabled) directly, so the form shows exactly the
-post's current saved state before the editor changes anything. Also
+post's current saved state before the editor changes anything. The
+body goes into TinyMCE last, via `tinyEditorReady` — see
+`setEdit.html` below for why. Also
 runs `fetchCopyrightYear()` (`helper.js`) and `initTinyEditor('#postBody')`
 (`cmsFormUI.js`) in the same listener.
 
@@ -391,17 +392,22 @@ GSI (converted from a PartiQL `WHERE setID=?` scan on 2026-09-04 — see
 `DATA_MODEL.md`), tolerantly unwraps the response the same way
 `fetchAllCardSets()` does, and takes `items[0]`. Empty result shows
 "these aren't the Droids you're looking for..." in `#errorDiv`;
-otherwise calls `populateCardSet(...)` (15 positional args, internal to
-`cmsCardSet.js`), which sets the TinyMCE body via
-`tinymce.activeEditor.selection.setContent(postBody)` — note this is
-yet a **third** distinct way this codebase inserts content into
-TinyMCE (`createCardSet.html`/`createBlogPost.html` never need to since
-they start blank; `blogEdit.html` uses `tinymce.get("postBody").setContent()`)
-— rebuilds the `blogStatus` `<select>`'s options with the correct one
+otherwise calls `populateCardSet(...)` (17 positional args, internal to
+`cmsCardSet.js`), which rebuilds the `blogStatus` `<select>`'s options with the correct one
 marked `selected`, and fills every other field directly (`setName` and
 `year` are populated but `disabled`/`readonly` in the HTML, since
 they're the table's actual key and changing them here would mean
-editing the wrong item or orphaning the current one). Also runs
+editing the wrong item or orphaning the current one), including the
+optional Print Run field (`printRun || ""`, so a set without one shows
+an empty box rather than "undefined"). The body goes into TinyMCE last,
+via `tinyEditorReady.then(editor => editor.setContent(postBody))`
+(`cmsFormUI.js`). The fetch and `initTinyEditor()` start together in
+the same `load` listener, and if the fetch finished first, touching the
+editor directly threw before any field was filled ("Houston, we've had
+a problem"). `setContent()` also replaces the whole document: the old
+`selection.setContent()` inserted at the cursor of the fresh editor's
+empty paragraph, which added a `<p>&nbsp;</p>` above and below the body
+on every load and scrolled the page down to the editor. Also runs
 `fetchCopyrightYear()` (`helper.js`) and
 `initTinyEditor('#postBody', { cardImageBlocks: true })`
 (`cmsFormUI.js`) — same wrap/middle-image toolbar buttons as
@@ -420,7 +426,7 @@ guided flow.
   and flow as `createCardSet.html` above.
 - "Update Post" button → `updateCardSet(blogStatus, seoPageTitle,
   seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets,
-  stars, formats, year, headerImgName, footerImgName, mfg)`
+  stars, formats, year, headerImgName, footerImgName, mfg, printRun)`
   (`cmsCardSet.js`) — no client-side validation, same reasoning as
   `updateBlogPost()` (pre-populated from a valid record). Sets the
   submit button state, reads
