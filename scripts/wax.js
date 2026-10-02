@@ -110,7 +110,8 @@ function renderCardSetPage() {
       item.now,
       item.upvotes,
       item.downvotes,
-      item.hasChecklist
+      item.hasChecklist,
+      item.printRun
     );
     // Populate the page title, meta tags, and structured data
     fetchPageTitle(item);
@@ -185,7 +186,7 @@ function fetchPageTitle(item)
  * Function to FORMAT & DISPLAY card sets
  */
 
-   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date,upvotes,downvotes,hasChecklist)
+   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date,upvotes,downvotes,hasChecklist,printRun)
    {
 
     // Voting - keyed by setName+year (Cards table's key). voteKey
@@ -206,7 +207,7 @@ function fetchPageTitle(item)
         setName, year, mfg, size, subsets, stars, formats,
         headerImgUrl: `${headerImg}${headerImgName}`,
         footerImgUrl: `${footerImg}${footerImgName}`,
-        author, date, postBody, hasChecklist
+        author, date, postBody, hasChecklist, printRun
     }) + `
         <br>
         <hr/>

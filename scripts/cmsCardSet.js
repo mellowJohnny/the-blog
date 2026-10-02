@@ -23,7 +23,7 @@ const CARDSET_CATEGORY_LABELS = {
    */
 
   // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
-  async function createCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, blogCat) {
+  async function createCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, blogCat, printRun) {
 
   // Basic client-side validation - setName and year are marked required in
   // the HTML, but the Submit button is type="button" (not type="submit"),
@@ -77,7 +77,8 @@ const CARDSET_CATEGORY_LABELS = {
     mfg,
     headerImgName,
     footerImgName,
-    blogCat
+    blogCat,
+    printRun
   };
 
   // make API call to cardPost endpoint with parameters and use promises to get response
@@ -123,7 +124,7 @@ const CARDSET_CATEGORY_LABELS = {
  * Updates an existing card set review via the updateCardSet API.
  */
 
-function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg)
+function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, printRun)
 {
   cmsButtonSubmit();
   cmsUpdateButtonReset();
@@ -146,7 +147,8 @@ function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTag
     postBody: tinyBody,
     headerImgName,
     footerImgName,
-    mfg
+    mfg,
+    printRun
   };
 
   getAuthToken().then(token => fetch("https://bb8yehibjb.execute-api.us-east-2.amazonaws.com/dev", {
@@ -500,7 +502,8 @@ async function deleteCardSet(setID, setName, year) {
         set.formats,
         set.setName,
         set.headerImgName,
-        set.footerImgName
+        set.footerImgName,
+        set.printRun
       );
     })
     .catch(err => {
@@ -570,7 +573,8 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
   formats,
   setName,
   headerImgName,
-  footerImgName
+  footerImgName,
+  printRun
 ) {
   // Insert postBody into TinyMCE
   tinymce.activeEditor.selection.setContent(postBody);
@@ -608,6 +612,8 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
   document.getElementById("setName").value = setName;
   document.getElementById("headerImgName").value = headerImgName;
   document.getElementById("footerImgName").value = footerImgName;
+  // Optional attribute - most sets don't have one, so avoid "undefined".
+  document.getElementById("printRun").value = printRun || "";
 }
 
 
@@ -632,18 +638,19 @@ function openPreview() {
   const setName = document.getElementById("setName").value;
   const headerImg = document.getElementById("headerImgName").value;
   const footerImg = document.getElementById("footerImgName").value;
+  const printRun = document.getElementById("printRun").value;
   // Get TinyMCE content
   const cardBody = stripEditorOnlyMarkup(tinymce.get("postBody").getContent());
 
   // Call the render function
-  renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,cardBody);
+  renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,cardBody,printRun);
 
   document.getElementById("previewModal").style.display = "block";
 
 }
 
 
-function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,body) {
+function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,body,printRun) {
 
   // Write into previewContainer instead of cardSetDiv
   const container = document.getElementById("previewContainer");
@@ -661,6 +668,7 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
     date: _loadedSetDate || Date.now(),
     postBody: body,
     hasChecklist: _loadedSetHasChecklist,
+    printRun,
     interactive: false
   }) + `
     <br>

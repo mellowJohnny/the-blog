@@ -82,6 +82,21 @@ if (payload.postBody) {
       };
     }
 
+    // printRun is optional: blank removes it, but a payload with no
+    // printRun key at all (an older cached CMS script) leaves it alone,
+    // so a stale browser can't wipe a value it never displayed.
+    let printRunClause = "";
+    const printRunValues = {};
+    if (Object.prototype.hasOwnProperty.call(payload, "printRun")) {
+      const printRun = typeof payload.printRun === "string" ? payload.printRun.trim() : "";
+      if (printRun) {
+        printRunClause = ", printRun = :pr";
+        printRunValues[":pr"] = printRun;
+      } else {
+        printRunClause = " REMOVE printRun";
+      }
+    }
+
     const command = new UpdateCommand({
       TableName: "Cards",
       Key: {
@@ -102,7 +117,7 @@ if (payload.postBody) {
             stars = :stz,
             formats = :fmt,
             headerImgName = :hi,
-            footerImgName = :fi
+            footerImgName = :fi${printRunClause}
       `,
       ExpressionAttributeValues: {
         ":bs": blogStatus,
@@ -118,7 +133,8 @@ if (payload.postBody) {
         ":stz": stars,
         ":fmt": formats,
         ":hi": headerImgName,
-        ":fi": footerImgName
+        ":fi": footerImgName,
+        ...printRunValues
       }
     });
 

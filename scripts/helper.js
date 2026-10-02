@@ -76,7 +76,8 @@ function buildCardSetMarkup({
   headerImgUrl, footerImgUrl,
   author, date, postBody,
   hasChecklist = false,
-  interactive = true
+  interactive = true,
+  printRun = ""
 }) {
   let cleanStars = "";
   for (let i = 0; i < parseInt(stars); i++) {
@@ -90,6 +91,13 @@ function buildCardSetMarkup({
   // apostrophes.
   const checklistRow = hasChecklist
     ? `<div class="set-detail-row set-detail-row-checklist"><a href="#" class="checklist-view-link" data-set-name="${escapeHtml(setName)}"${interactive ? ' onclick="openChecklistModal(this); return false;"' : ''}>Checklist</a></div>`
+    : "";
+
+  // Optional - only some sets (the Tim Hortons ones) have a print run,
+  // so the row is left out entirely when the value is missing or blank.
+  const printRunText = String(printRun ?? "").trim();
+  const printRunRow = printRunText
+    ? `<div class="set-detail-row"><strong>Print Run:</strong> ${escapeHtml(printRunText)}</div>`
     : "";
 
   // CSS Gridz: Grid areas let mobile restack name -> image -> list
@@ -108,6 +116,7 @@ function buildCardSetMarkup({
             </div>
             <div class="set-details-list">
                 <div class="set-detail-row"><strong>Set Size:</strong> ${size}</div>
+                ${printRunRow}
                 <div class="set-detail-row"><strong>Inserts:</strong> <i>${subsets}</i></div>
                 <div class="set-detail-row"><strong>Release Year:</strong> ${year}</div>
                 <div class="set-detail-row"><strong>Formats:</strong> ${formats}</div>

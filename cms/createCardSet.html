@@ -230,9 +230,13 @@
               </tr>
               <tr>
                 <!-- 10th Row -->
-                <td colspan="2">
+                <td>
                   <label>Formats</label><br>
                   <input type="text" id="formats">
+                </td>
+                <td>
+                  <label>Print Run</label><br>
+                  <input type="text" id="printRun">
                 </td>
               </tr>
               <tr>
@@ -292,7 +296,8 @@
             document.getElementById('headerImgName').value,
             document.getElementById('footerImgName').value,
             document.getElementById('mfg').value,
-            document.getElementById('blogCat').value
+            document.getElementById('blogCat').value,
+            document.getElementById('printRun').value
         )"
                   >
                     Submit Post

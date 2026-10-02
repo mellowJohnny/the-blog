@@ -55,6 +55,8 @@ export const handler = async (event) => {
     let headerImgName = payload.headerImgName;
     let footerImgName = payload.footerImgName;
     let blogCat = payload.blogCat;
+    // Optional (only some sets have one) - stored only when non-blank.
+    const printRun = typeof payload.printRun === "string" ? payload.printRun.trim() : "";
 
     // Fix the Year - needs to be converted to a Number
     let year = parseInt(payload.year);
@@ -96,7 +98,8 @@ export const handler = async (event) => {
             seoTags,
             author,
             postBody,
-            blogCat
+            blogCat,
+            ...(printRun && { printRun })
         },
         ConditionExpression: "attribute_not_exists(setName) AND attribute_not_exists(#yr)",
         ExpressionAttributeNames: {
