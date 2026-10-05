@@ -40,6 +40,9 @@ function initTinyEditor(selector = '#postBody', { cardImageBlocks = false } = {}
     toolbar: toolbar,
     width: 1000,
     browser_spellcheck: true,
+    // Right-click opens the browser's own menu (spelling suggestions)
+    // instead of TinyMCE's link/image menu - those stay on the toolbar.
+    contextmenu: false,
     min_height: 400, // The starting/minimum height
     max_height: 500, // The maximum limit before a scrollbar appears
     setup: cardImageBlocks ? registerCardImageBlockButtons : undefined
