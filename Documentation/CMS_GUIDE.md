@@ -131,6 +131,15 @@ frontend never reads a plain `<textarea>` value for the post body, it
 always pulls fresh HTML out of the active TinyMCE instance at submit
 time.
 
+**Right-click and spell check**: the shared config sets
+`contextmenu: false`, so right-clicking inside the editor opens the
+browser's own menu — including Chrome's spelling suggestions for
+underlined words (`browser_spellcheck: true` turns that underlining on).
+By default TinyMCE replaces the browser menu with its own (Link / Image
+/ Table), which hid those suggestions; TinyMCE's own spell checker is a
+paid add-on, the browser's is free. Link and image insertion are still
+on the toolbar.
+
 ### Wrapped/middle images in review body content
 
 Card set reviews recurringly embed two kinds of image inside the

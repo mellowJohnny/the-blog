@@ -338,6 +338,40 @@ values drift out of sync differently at each screen size.
 
 **Random team colors + cheer label + pop-in animation**: `applyRandomMastheadStyling()` (`helper.js`) runs on load on all 4 pages using this masthead (`waxReviews.html`, `lockout.html`, `playerSearch.html`, `theJunkWaxYears.html`) — picks one of 32 NHL teams at random from `NHL_TEAM_COLORS`, sets `--team-primary`/`--team-tertiary` CSS custom properties that drive `.wax-reviews-mast-table`'s gradient (a simpler solid+stripe design via `.masthead-two-color` for genuinely two-color teams), and creates/reuses a `.masthead-team-label` span in the bottom-right corner showing that team's cheer text (e.g. "Go Canucks Go!") so the random pick is visually verifiable. That label's text is rendered via `renderLoudText()`, which wraps each character in its own `.loud-char` span with a staggered `animation-delay` — `styles.css`'s `loudPopIn` keyframes then pop/rotate each letter in on a delay, purely because a CSS `animation` on an element plays automatically the moment that element exists in the DOM (no JS trigger needed, since the label is fully torn down and rebuilt on every load rather than reused in place). `prefers-reduced-motion: reduce` skips the animation and shows the finished text immediately.
 
+## Buttons
+
+Every site/CMS button shares one rounded style, defined once in a
+"Buttons" block in `styles/styles.css` (placed after each button's own
+rule, so it wins at equal specificity), with tokens on `:root`
+(`--btn-radius`, `--btn-secondary-border`, `--btn-secondary-hover`):
+
+- **Primary** (the default): filled, 10px corners, and a thin outer ring
+  in the button's own colour — `box-shadow: 0 0 0 1px #fff, 0 0 0 2px
+  var(--btn-ring)`. Every action button is the CMS blue (`#256386`);
+  destructive ones (`.delete-btn`, `.cms-confirm-confirm-btn`) are red
+  (`#a83232`) and set `--btn-ring` to match. Hover darkens via
+  `filter: brightness(0.92)`; keyboard focus gets an outline.
+- **Secondary**: white with a grey border and no ring — every Cancel and
+  every pure-dismiss Close. Comes from `.bulk-btn-cancel`,
+  `.cms-confirm-cancel-btn`, or the `.btn-secondary` modifier on an
+  `.input-button` (blogEdit/setEdit's Cancel).
+- **Disabled**: the same button at 45% opacity — Parse/Upload before a
+  file is picked, Add Subscriber until both fields are filled.
+- **Compact**: the checklist modal's Print/Download PDF buttons and the
+  two triggers on `cms/uploadChecklist.html` keep a smaller padding.
+
+Covered classes: `.input-button`, `.bulk-btn`, `.cms-alert-ok-btn`,
+`.cms-confirm-cancel-btn`, `.cms-confirm-confirm-btn`,
+`.checklist-modal-print-btn`, `.checklist-modal-pdf-btn`,
+`.autobus-send-btn`. **A new button class has to be added to that
+grouped selector** to pick the style up; a per-button rule should only
+set its fill colour (and `--btn-ring`), never its own radius, padding
+or hover. Inline `style=""` on a button bypasses all of this — the image
+browser's Choose File/Upload controls were converted from inline styles
+to `.input-button` for exactly that reason. Deliberately excluded: the
+👍/👎 `.vote-btn` pills, the `.cms-nav-parent` dropdown toggles, `×`
+close icons, the hamburger, and TinyMCE's own toolbar buttons.
+
 ## Card set markup is shared with the CMS preview
 
 The live site (`displayCardSet()`, `wax.js`) and the CMS preview modal

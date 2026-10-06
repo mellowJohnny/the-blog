@@ -774,9 +774,14 @@ than running as bare top-level code.
 - "...add subscriber" nav link → opens the add-subscriber modal and
   focuses the name field — this exists for adding one person
   mid-season, without needing a full bulk-import re-run.
-- "Add" button (inside that modal) → validates name and phone are both
-  non-blank via **inline feedback** (`showAddSubscriberFeedback()`) —
-  this is the one CMS form on the whole site whose validation uses
+- "Add" button (inside that modal) → starts **disabled** (faded, like
+  Parse/Upload before a file is picked) and only enables once both name
+  and phone have non-blank text — `updateAddSubscriberSaveState()` runs
+  on every keystroke in either field, on open/reset, and after a failed
+  save (so a retry is possible without retyping). Its click handler
+  still re-checks both fields via **inline feedback**
+  (`showAddSubscriberFeedback()`) as a backstop — this is the one CMS
+  form on the whole site whose validation uses
   neither `cmsAlert()` nor `cmsConfirm()`, since only the two genuinely
   destructive actions on this page (live send, bulk replace) were ever
   converted to `cmsConfirm()`. Calls **Add a single subscriber**,
