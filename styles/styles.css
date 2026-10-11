@@ -879,6 +879,10 @@ label sup {
   width: 100%;
   height: 150px;
   position: relative;
+  /* Lifted above the NHL ticker below it (waxReviews.html), which would
+     otherwise paint over this drop shadow. */
+  z-index: 1;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
   overflow: hidden;
   /* Defaults match the original hella_habs_masthead.webp (Canadiens
      red/navy) - applyRandomMastheadTeam() (helper.js) overrides these
@@ -1024,6 +1028,7 @@ label sup {
   display: flex;
   align-items: center;
   height: 40px;
+  margin-top: 6px;
   overflow: hidden;
   background-color: #1b1b1b;
   color: #f2f2f2;
