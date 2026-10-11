@@ -1017,6 +1017,116 @@ label sup {
      3px  3px 0 #000000;
 }
 
+/* NHL scores ticker (initNhlTicker(), wax.js) - dark strip under the
+   masthead. The scroller holds two identical tracks and slides -50%,
+   so the loop is seamless; duration is set in JS from the track width. */
+.nhl-ticker {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  overflow: hidden;
+  background-color: #1b1b1b;
+  color: #f2f2f2;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* display: flex above would otherwise override the hidden attribute. */
+.nhl-ticker[hidden] {
+  display: none;
+}
+
+.nhl-ticker:focus-visible {
+  outline: 2px solid var(--color-link);
+  outline-offset: -2px;
+}
+
+.nhl-ticker-scroller {
+  display: flex;
+  width: max-content;
+  animation: nhlTickerScroll 60s linear infinite;
+}
+
+/* Pause on hover/keyboard focus so a score can actually be read. */
+.nhl-ticker:hover .nhl-ticker-scroller,
+.nhl-ticker:focus-within .nhl-ticker-scroller {
+  animation-play-state: paused;
+}
+
+@keyframes nhlTickerScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.nhl-ticker-track {
+  display: flex;
+  align-items: center;
+}
+
+.nhl-ticker-label {
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-link);
+  white-space: nowrap;
+}
+
+.nhl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  white-space: nowrap;
+}
+
+.nhl-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.nhl-team img {
+  width: 18px;
+  height: 18px;
+}
+
+.nhl-abbrev {
+  font-weight: 600;
+}
+
+.nhl-score {
+  font-weight: 700;
+}
+
+.nhl-status {
+  font-size: 13px;
+  color: #b5b5b5;
+  text-transform: uppercase;
+}
+
+/* Same red as .delete-btn / rookie cards, lightened to read on dark. */
+.nhl-chip-live .nhl-status {
+  color: #ff7a7a;
+  font-weight: 700;
+}
+
+/* No marquee: a plain row the visitor can swipe/scroll instead. */
+@media (prefers-reduced-motion: reduce) {
+  .nhl-ticker {
+    overflow-x: auto;
+  }
+  .nhl-ticker-scroller {
+    animation: none;
+  }
+  .nhl-ticker-track-copy {
+    display: none;
+  }
+}
+
 
 .blog-type-divider {
   margin-top: 24px;
@@ -2908,6 +3018,21 @@ label sup {
      hidden on mobile per the site owner, not just shrunk. */
   .masthead-team-label {
     display: none;
+  }
+
+  .nhl-ticker {
+    height: 32px;
+    font-size: 13px;
+  }
+
+  .nhl-chip {
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  .nhl-team img {
+    width: 16px;
+    height: 16px;
   }
 
   .set-details-table-style {

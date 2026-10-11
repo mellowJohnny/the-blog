@@ -861,3 +861,191 @@ function prevPage() {
     document.getElementById("card-intro").scrollIntoView({ behavior: "smooth" });
   }
 }
+/**
+ * NHL scores ticker (waxReviews.html) - a scrolling strip under the
+ * masthead, fed by getNhlScores (Lambdas/getNhlScores/, a proxy for
+ * the NHL's CORS-less API). Hidden on error or when there are no games.
+ */
+
+const NHL_SCORES_API_URL = "https://kckdcdjqch.execute-api.us-east-2.amazonaws.com/dev";
+const NHL_TICKER_POLL_MS = 60000;
+const NHL_TICKER_PX_PER_SEC = 45;
+const NHL_LIVE_STATES = ["PRE", "LIVE", "CRIT"];
+const NHL_FINAL_STATES = ["FINAL", "OFF"];
+const NHL_PERIOD_LABELS = { 1: "1st", 2: "2nd", 3: "3rd" };
+
+let nhlTickerTimer = null;
+// Comma-joined game IDs currently rendered - a refresh with the same
+// games updates chips in place (no marquee jump); a new set rebuilds.
+let nhlTickerGameKey = "";
+
+function initNhlTicker() {
+  if (!NHL_SCORES_API_URL || !document.getElementById("nhlTicker")) return;
+
+  // Stop polling in a background tab; catch up as soon as it's back.
+  document.addEventListener("visibilitychange", () => {
+    clearTimeout(nhlTickerTimer);
+    if (!document.hidden && nhlTickerGameKey) refreshNhlTicker();
+  });
+  refreshNhlTicker();
+}
+
+async function refreshNhlTicker() {
+  clearTimeout(nhlTickerTimer);
+  const ticker = document.getElementById("nhlTicker");
+
+  let data;
+  try {
+    const res = await fetch(NHL_SCORES_API_URL);
+    if (!res.ok) throw new Error(`NHL scores request failed: ${res.status}`);
+    data = await res.json();
+  } catch (err) {
+    console.log("NHL ticker:", err);
+    // Keep showing the last good scores mid-game and try again later;
+    // on the very first load there's nothing to show, so stay hidden.
+    if (nhlTickerGameKey) nhlTickerTimer = setTimeout(refreshNhlTicker, NHL_TICKER_POLL_MS);
+    return;
+  }
+
+  const previous = data.previous || [];
+  const today = data.games || [];
+  const all = [...previous, ...today];
+  if (!all.length) {
+    ticker.hidden = true;
+    nhlTickerGameKey = "";
+    return;
+  }
+
+  const key = all.map((g) => g.id).join(",");
+  if (key === nhlTickerGameKey) {
+    all.forEach((game) => updateNhlGameChips(ticker, game));
+  } else {
+    renderNhlTicker(ticker, previous, today);
+    nhlTickerGameKey = key;
+  }
+  scheduleNhlTickerRefresh(today);
+}
+
+// Poll every 60s while a game is live; otherwise sleep until the next
+// scheduled puck drop. Nothing left to play today means no more polls.
+function scheduleNhlTickerRefresh(today) {
+  if (document.hidden) return;
+
+  let delay = null;
+  if (today.some((g) => NHL_LIVE_STATES.includes(g.state))) {
+    delay = NHL_TICKER_POLL_MS;
+  } else {
+    const starts = today.filter((g) => g.state === "FUT").map((g) => Date.parse(g.startTimeUTC));
+    if (starts.length) delay = Math.max(NHL_TICKER_POLL_MS, Math.min(...starts) - Date.now());
+  }
+  if (delay !== null) nhlTickerTimer = setTimeout(refreshNhlTicker, delay);
+}
+
+function renderNhlTicker(ticker, previous, today) {
+  const track = document.createElement("div");
+  track.className = "nhl-ticker-track";
+
+  if (previous.length) {
+    track.appendChild(buildNhlTickerLabel("Last night"));
+    previous.forEach((game) => track.appendChild(buildNhlGameChip(game)));
+    if (today.length) track.appendChild(buildNhlTickerLabel("Today"));
+  }
+  today.forEach((game) => track.appendChild(buildNhlGameChip(game)));
+
+  // Two identical tracks scrolled -50% loop seamlessly; the copy is
+  // hidden from screen readers so each game is only announced once.
+  const copy = track.cloneNode(true);
+  copy.classList.add("nhl-ticker-track-copy");
+  copy.setAttribute("aria-hidden", "true");
+
+  const scroller = document.createElement("div");
+  scroller.className = "nhl-ticker-scroller";
+  scroller.append(track, copy);
+  ticker.replaceChildren(scroller);
+  ticker.hidden = false;
+
+  // Same scroll speed whether there are 3 games or 16.
+  scroller.style.animationDuration = `${Math.round(track.scrollWidth / NHL_TICKER_PX_PER_SEC)}s`;
+}
+
+function buildNhlTickerLabel(text) {
+  const label = document.createElement("span");
+  label.className = "nhl-ticker-label";
+  label.textContent = text;
+  return label;
+}
+
+function buildNhlGameChip(game) {
+  const chip = document.createElement("span");
+  chip.className = "nhl-chip";
+  chip.dataset.gameId = game.id;
+  chip.append(buildNhlTeam(game.away, "away"), buildNhlTeam(game.home, "home"));
+
+  const status = document.createElement("span");
+  status.className = "nhl-status";
+  chip.appendChild(status);
+
+  fillNhlGameChip(chip, game);
+  return chip;
+}
+
+function buildNhlTeam(team, side) {
+  const wrap = document.createElement("span");
+  wrap.className = "nhl-team";
+
+  if (team.logo) {
+    const logo = document.createElement("img");
+    logo.src = team.logo;
+    logo.alt = "";
+    logo.width = 18;
+    logo.height = 18;
+    logo.loading = "lazy";
+    wrap.appendChild(logo);
+  }
+
+  const abbrev = document.createElement("span");
+  abbrev.className = "nhl-abbrev";
+  abbrev.textContent = team.abbrev;
+
+  const score = document.createElement("span");
+  score.className = "nhl-score";
+  score.dataset.side = side;
+
+  wrap.append(abbrev, score);
+  return wrap;
+}
+
+// Writes the parts of a chip that change during a game - shared by the
+// first render and every in-place refresh.
+function fillNhlGameChip(chip, game) {
+  const isFuture = ["FUT", "PRE"].includes(game.state);
+  chip.querySelector('[data-side="away"]').textContent = isFuture ? "" : game.away.score ?? "";
+  chip.querySelector('[data-side="home"]').textContent = isFuture ? "" : game.home.score ?? "";
+  chip.querySelector(".nhl-status").textContent = formatNhlGameStatus(game);
+  chip.classList.toggle("nhl-chip-live", ["LIVE", "CRIT"].includes(game.state));
+}
+
+// Both marquee copies carry the same data-game-id, so update each.
+function updateNhlGameChips(ticker, game) {
+  ticker.querySelectorAll(`[data-game-id="${game.id}"]`).forEach((chip) => fillNhlGameChip(chip, game));
+}
+
+function formatNhlGameStatus(game) {
+  if (NHL_FINAL_STATES.includes(game.state)) {
+    const extra = game.lastPeriodType && game.lastPeriodType !== "REG";
+    return extra ? `Final/${game.lastPeriodType}` : "Final";
+  }
+
+  if (["LIVE", "CRIT"].includes(game.state)) {
+    if (game.periodType === "SO") return "SO";
+    // Playoff overtime runs past one period: period 5 is 2OT, 6 is 3OT...
+    const period = game.periodType === "OT"
+      ? (game.period > 4 ? `${game.period - 3}OT` : "OT")
+      : (NHL_PERIOD_LABELS[game.period] || "");
+    const clock = (game.clock || "").replace(/^0(?=\d:)/, "");
+    return game.inIntermission ? `${period} INT` : `${period} ${clock}`.trim();
+  }
+
+  // FUT / PRE: start time in the visitor's own time zone.
+  return new Date(game.startTimeUTC).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
