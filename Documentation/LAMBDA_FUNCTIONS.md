@@ -1,10 +1,10 @@
 # Lambda Functions
 
-**26 of the 30 Lambda functions behind this site's API Gateway
+**27 of the 31 Lambda functions behind this site's API Gateway
 endpoints have their source checked into this repo**, under
 `Lambdas/` (as of 2026-08-15, one directory per function, named
-exactly after its AWS Lambda function name). `Lambdas/` holds 27
-directories, not 26: `amplifyBuildNotifier` (added 2026-09-29) sits
+exactly after its AWS Lambda function name). `Lambdas/` holds 28
+directories, not 27: `amplifyBuildNotifier` (added 2026-09-29) sits
 behind EventBridge rather than API Gateway and isn't part of that
 count — it's the only function here no frontend code ever calls.
 Most were pulled directly
@@ -12,21 +12,22 @@ from the live Console via `aws lambda get-function` using the
 `amplify-readonly-cli` credential (see `CLAUDE.md` — its actual IAM
 scope turned out to be broader than its name suggests: it can read
 full Lambda source, though not API Gateway config, and (confirmed
-2026-08-24) not DynamoDB or IAM policy introspection either). Nine
+2026-08-24) not DynamoDB or IAM policy introspection either). Ten
 were already in the repo, hand-built here rather than pulled:
 `Lambdas/sendAlertHandler/`, `Lambdas/castVoteHandler/`,
 `Lambdas/deleteBlogHandler/`, `Lambdas/deleteCardSetHandler/`, and —
 added later, for the checklist-upload feature and its front-end display —
 `Lambdas/parseChecklistPdf/`, `Lambdas/saveChecklist/`,
 `Lambdas/getChecklistBySetName/`, and — for the player-search feature —
-`Lambdas/searchPlayerName/`, and — for the NHL scores ticker —
-`Lambdas/getNhlScores/`. The remaining 4 of the 30
+`Lambdas/searchPlayerName/`, and — for the NHL scores ticker and its
+game modal — `Lambdas/getNhlScores/` and `Lambdas/getNhlGameDetails/`.
+The remaining 4 of the 31
 (`getCardIntro`, `getBlogIntro`, `fetchCardSetPreview`,
 `invalidateCache`) were pulled in the same pass, confirmed dead, and
 removed again the same day — see "Orphaned/dead Lambdas" below.
 
 Deployment is still entirely manual for every one of them, but the
-mechanics differ by function: the 25 with no real dependencies
+mechanics differ by function: the 26 with no real dependencies
 (`dependencies: {}` in `package.json`) just need the updated
 `index.mjs` pasted into the Lambda Console's inline code editor and
 Deploy clicked — no zip needed. Two need a full `npm install` + zip
@@ -686,6 +687,41 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   `502 { error }`, and the ticker stays hidden. A cold start was
   measured at ~3.4s, warm calls at 0.3–0.6s — invisible to visitors,
   since the ticker loads after the page.
+
+## `Lambdas/getNhlGameDetails/` — hand-built in this repo
+
+- **File**: `Lambdas/getNhlGameDetails/index.mjs`. No real dependency
+  — built-in `fetch` only, inline-paste deployable. Timeout **10s**,
+  `nodejs24.x` (both confirmed via `get-function`). Deployed to the
+  `prod` stage — see `API_ENDPOINTS.md`'s "Get NHL game details".
+- **What it does**: backs the game modal opened from a ticker chip on
+  `waxReviews.html` (see `FRONTEND.md`). Validates `?gameId=` (10
+  digits, else `400`), then fetches in parallel, each call capped at
+  5s:
+  - **required** — Game Center `landing` (header, scoring, shootout,
+    three stars), `right-rail` (line score, team stats) and `boxscore`
+    (goalie W/L decisions). Any failure is a `502`.
+  - **optional**, via `Promise.allSettled` — the standings for the
+    game date (team records), and NHL.com's content API for the recap
+    story and the highlights video. A failure just makes that field
+    `null`; the modal still opens.
+
+  Everything is reduced to a stable shape of our own, so an NHL field
+  rename is fixed here without touching the frontend. Full source
+  details: `NHL_API.md`'s "Game modal sources".
+- **Choices worth knowing**:
+  - A goalie's OT/shootout loss is recorded as decision `O`, not `L`,
+    so the loser lookup accepts both.
+  - Only the recap's headline, summary, photo and NHL.com link are
+    returned — the full article is NHL.com's copyrighted writing and
+    isn't republished on this site.
+  - Records come from the standings *as of the game date*, which
+    already count that game — matching what nhl.com shows.
+  - `Cache-Control` is `600` rather than `3600` for a final whose
+    recap isn't published yet, so the first visitor after the final
+    horn doesn't cache "no recap" for an hour.
+- **Timings**: cold start ~4.5s, warm 0.6–0.9s — the modal shows
+  "Loading game..." meanwhile.
 
 ## `Lambdas/updateCardSet/` — pre-existing, with a real incident behind it
 

@@ -38,7 +38,7 @@ for why); every other function uses only `@aws-sdk/*` packages,
 which ship with the Lambda Node.js runtime, so `dependencies` is
 empty. None of them is deployed via any command here — edit the code
 in this repo, then redeploy manually. **How you redeploy depends on
-whether the function has a real dependency**: the 25 with empty
+whether the function has a real dependency**: the 26 with empty
 `dependencies` just need the updated `index.mjs` pasted directly into
 the Lambda Console's inline code editor (Code tab) and Deploy clicked
 — no zip needed, since there's nothing to bundle. `sendAlertHandler`

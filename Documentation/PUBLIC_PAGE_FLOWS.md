@@ -292,6 +292,19 @@ everything the visitor can see or navigate to on this page.
 **User interactions**:
 - Hovering over (or tabbing to) the NHL scores ticker pauses its
   scroll so a score can be read — pure CSS, no JS or API call.
+- Clicking a game in the ticker (only started or finished games are
+  enabled) → `openNhlGameModal(gameId)` (`wax.js`) gives the visitor
+  the full story of that game without leaving the page. It calls **Get
+  NHL game details** (`?gameId=`), fronted by the `getNhlGameDetails`
+  Lambda (`Lambdas/getNhlGameDetails/`), which reads no DynamoDB
+  table: it combines the NHL's Game Center endpoints, the standings
+  (team records) and NHL.com's content API (recap and video) into one
+  response — see `NHL_API.md`. The result fills the score header and
+  the Summary / Box Score / Recap tabs. Clicking the Recap tab's video
+  poster → `playNhlGameVideo()` swaps in the NHL's own Brightcove
+  player; no API call of ours. ×, Escape or the backdrop →
+  `closeNhlGameModal()`, which also stops any playing video. See
+  `FRONTEND.md`'s "NHL game modal".
 - Vote buttons (👍/👎, inside `displayCardSet()`'s output) exist so a
   visitor can register an opinion on a set without any account/login —
   `castVote(this)` (`wax.js`) reads `setName`/`year`/`voteType` off the

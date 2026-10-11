@@ -103,6 +103,14 @@ without changing that expectation first.
 - **Response**: `{ date, games, previous }` — today's games, plus last night's finished games in `previous` until today's first game starts (`[]` after that). Each game is `{ id, state, startTimeUTC, period, periodType, clock, inIntermission, lastPeriodType, away: { abbrev, score, logo }, home: {...} }` — a shape of our own, not the NHL's raw one. `Cache-Control: public, max-age=30` while any game is live, `max-age=300` otherwise. On any upstream failure, `502 { error }` with `max-age=0`.
 - **Lambda**: `Lambdas/getNhlScores/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). The only endpoint on the site that reads from a third-party API rather than DynamoDB: it proxies the NHL's undocumented `api-web.nhle.com`, which sends no CORS headers — see `NHL_API.md`. Public, no Cognito Authorizer; `Access-Control-Allow-Origin: "*"`. Deployed to `dev`, like the rest of this section.
 
+### Get NHL game details
+- **URL**: `https://kx7zuay324.execute-api.us-east-2.amazonaws.com/prod`
+- **Method**: GET
+- **Query params**: `gameId` — the NHL's 10-digit game ID (e.g. `2026020075`); anything else gets `400 { error }`.
+- **Called from**: `openNhlGameModal()` in `scripts/wax.js` (the game modal opened by clicking a ticker chip on `waxReviews.html` — see `FRONTEND.md`)
+- **Response**: one game in a shape of our own — `{ id, state, startTimeUTC, gameDate, venue, gameCenterUrl, period, periodType, clock, inIntermission, lastPeriodType, away, home, linescore: { periods: [{ label, away, home }], totals }, decisions: { winner, loser } | null, teamStats: [{ label, away, home }], scoring: [{ label, goals: [{ time, team, scorer, scorerTotal, assists: [{ name, total }], strength, emptyNet, awayScore, homeScore }] }], shootout: [{ team, player, result }], threeStars: [{ star, name, team, position }], recap: { headline, summary, imageUrl, url } | null, video: { id, title, duration, thumbnailUrl } | null }`. Each team is `{ abbrev, name, record, score, sog, logo }`. `record`, `recap` and `video` are `null` when that optional source is unavailable. `Cache-Control`: `max-age=30` live, `300` upcoming, `3600` final with a recap, `600` final without one yet (so a recap posted after the game is picked up), `0` on errors. `502 { error }` if a required NHL source fails.
+- **Lambda**: `Lambdas/getNhlGameDetails/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Combines six NHL sources — see `NHL_API.md`'s "Game modal sources". Public, no Cognito Authorizer; `Access-Control-Allow-Origin: "*"`. **Deployed to `prod`**, the first non-Autobus endpoint there, per `ARCHITECTURE.md`'s "new endpoints go on `prod`" rule.
+
 ## CMS — blog authoring
 
 ### Create blog post

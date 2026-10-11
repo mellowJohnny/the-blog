@@ -14,12 +14,18 @@
 scores, schedule, stats and game pages. No API key, no sign-up, no
 rate limit has been observed. It sits behind Cloudflare.
 
-This site uses exactly one endpoint from it, `/v1/score/{date}`, for
-the scores ticker on `waxReviews.html` — via the `getNhlScores`
-Lambda, never directly from the browser (see "Behaviour that applies
-to every endpoint" for why). See `LAMBDA_FUNCTIONS.md`,
-`API_ENDPOINTS.md` ("Get NHL scores") and `FRONTEND.md` ("NHL scores
-ticker").
+This site uses it in two places on `waxReviews.html`, always through
+a Lambda, never directly from the browser (see "Behaviour that
+applies to every endpoint" for why):
+
+- the scores ticker — `/v1/score/{date}`, via `getNhlScores`
+- the game modal opened from a ticker chip — the Game Center
+  endpoints, standings, and NHL.com's separate content API and video
+  player (see "Game modal sources" below), via `getNhlGameDetails`
+
+See `LAMBDA_FUNCTIONS.md`, `API_ENDPOINTS.md` ("Get NHL scores", "Get
+NHL game details") and `FRONTEND.md` ("NHL scores ticker", "NHL game
+modal").
 
 ## Behaviour that applies to every endpoint
 
@@ -41,8 +47,8 @@ ticker").
 | **Scores** | `/v1/score/now`, `/v1/score/{YYYY-MM-DD}` | One day's games: state, both teams (abbreviation, name, logo, score, shots), period, clock, how it ended (regulation/OT/SO), goals, recap video links, plus `prevDate`/`nextDate`. | ~13 KB. **Used by this site** (`getNhlScores`). Past dates work — e.g. `2026-03-07` has OT and SO finals. |
 | **Scoreboard** | `/v1/scoreboard/now` | About ±5 days of games grouped by date. | ~130 KB — too heavy to poll. |
 | **Schedule** | `/v1/schedule/now`, `/v1/schedule/{date}`, `/v1/schedule-calendar/{date}`, `/v1/club-schedule-season/{TEAM}/{season}` | League week, which days have games, a team's full season. | Team season ~190 KB. |
-| **Game Center** | `/v1/gamecenter/{gameId}/landing`, `…/boxscore`, `…/play-by-play`, `/v1/wsc/game-story/{gameId}` | Everything about one game: scoring summary, box score, every event, recap story. | Play-by-play ~146 KB. |
-| **Standings** | `/v1/standings/now`, `/v1/standings/{date}`, `/v1/standings-season` | League table for any date, including historical; which seasons each standings format covers. | ~58 KB. |
+| **Game Center** | `/v1/gamecenter/{gameId}/landing`, `…/boxscore`, `…/right-rail`, `…/play-by-play`, `/v1/wsc/game-story/{gameId}` | Everything about one game: scoring summary, shootout, three stars, penalties, line score, team stats, per-player stats, every event, officials. | **Used by this site** (`getNhlGameDetails`: landing, right-rail, boxscore). Play-by-play ~146 KB. `game-story` has no article text, despite its name. |
+| **Standings** | `/v1/standings/now`, `/v1/standings/{date}`, `/v1/standings-season` | League table for any date, including historical; which seasons each standings format covers. | ~58 KB. **Used by this site** for team records — `{date}` already counts that day's games. |
 | **Teams and rosters** | `/v1/roster/{TEAM}/current`, `/v1/club-stats/{TEAM}/now`, `/v1/club-stats-season/{TEAM}` | Current roster, team season stats, seasons a team has stats for. | Teams by three-letter code (`TOR`). |
 | **Players** | `/v1/player/{playerId}/landing`, `/v1/player-spotlight` | Bio and career stats; a featured-players list. | NHL player IDs don't map to this site's `Checklists` player names. |
 | **Stat leaders** | `/v1/skater-stats-leaders/current`, `/v1/goalie-stats-leaders/current` | League leaders by category. | |
@@ -69,6 +75,23 @@ While live, `periodDescriptor` gives `number` and `periodType` (`REG`,
 2OT), and `clock` gives `timeRemaining` (`"12:34"`) and
 `inIntermission`. When final, `gameOutcome.lastPeriodType` says how
 it ended.
+
+## Game modal sources
+
+What the game modal (`getNhlGameDetails`) reads, all checked against
+DET @ MTL on 2026-10-10 (game `2026020075`, a 1-0 shootout):
+
+| Need | Source | Notes |
+|---|---|---|
+| Header, scoring by period, shootout attempts, three stars | `/v1/gamecenter/{id}/landing` → `summary.scoring`, `summary.shootout.events`, `summary.threeStars` | Each goal has `timeInPeriod`, `name`, `goalsToDate`, `assists[]` (with `assistsToDate`), `strength` (`ev`/`pp`/`sh`), `goalModifier` (`empty-net`), the score after it, and a `highlightClip` video ID (unused so far). Shootout `result` is `goal` or `save`. Team logos here are `_light`; a `darkLogo` field also exists. |
+| Line score and team stats | `/v1/gamecenter/{id}/right-rail` → `linescore.byPeriod`/`totals`, `teamGameStats` | Stat categories: `sog`, `faceoffWinningPctg` (0-1), `faceoffWins`, `powerPlay` ("0/4"), `powerPlayPctg`, `pim`, `hits`, `blockedShots`, `giveaways`, `takeaways`. Also `gameVideo` IDs, officials, scratches. |
+| Winning and losing goalie | `/v1/gamecenter/{id}/boxscore` → `playerByGameStats.{awayTeam,homeTeam}.goalies[].decision` | `W`, `L`, or **`O` for an OT/shootout loss** — a "loser" lookup must accept both `L` and `O`. Only used for this; the rest of the boxscore is per-player stats. |
+| Team records (W-L-OTL) | `/v1/standings/{gameDate}` → `wins`, `losses`, `otLosses` per `teamAbbrev` | Not in any Game Center response. The game date's standings already include that day's games, so a final shows the record *after* it. |
+| Recap headline, summary, photo | NHL.com content API: `https://forge-dapi.d3.nhle.com/v2/content/en-us/stories?tags.slug=gameid-{id}&context.slug=nhl` | **Sends `Access-Control-Allow-Origin: *`**, unlike `api-web`. Several stories per game (recap, preview, video reviews) — the recap is the one tagged `game-recap`. `…/stories/{slug}` has the full article as markdown with embedded `<forge-entity>` tags; this site deliberately shows only the headline and summary and links to `https://www.nhl.com/news/{slug}`. |
+| Highlights video | Same content API: `…/videos?tags.slug=gameid-{id}&context.slug=nhl` | Several videos per game; the recap has a slug ending `-recap-{id}`. `fields.brightcoveId`, `fields.brightcoveAccountId` (`6415718365001`), `fields.duration` ("00:05:06"). Not in the list right after the game ends. |
+| Video player | `https://players.brightcove.net/6415718365001/EXtG1xJ7H_default/index.html?videoId={id}` | The NHL's "Gamecenter Player". No `X-Frame-Options`, so it embeds and plays from mellowjohnny.cc. Plays an NHL pre-roll ad first. `default_default` (Brightcove's generic player) also exists on the account. |
+| Images | `media.d3.nhle.com/image/private/{formatInstructions}/…` (the `thumbnail.templateUrl` on stories and videos) | Replace `{formatInstructions}` with e.g. `t_ratio16_9-size40` (~200 KB), `-size30`, `-size50`. |
+| NHL.com game page | `https://www.nhl.com/gamecenter/{away}-vs-{home}/{yyyy}/{mm}/{dd}/{id}` | Same pattern as the scores feed's `gameCenterLink`. |
 
 ## Re-checking it
 
