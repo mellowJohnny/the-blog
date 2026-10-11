@@ -880,7 +880,8 @@ let nhlTickerTimer = null;
 let nhlTickerGameKey = "";
 
 function initNhlTicker() {
-  if (!NHL_SCORES_API_URL || !document.getElementById("nhlTicker")) return;
+  const ticker = document.getElementById("nhlTicker");
+  if (!NHL_SCORES_API_URL || !ticker) return;
 
   // Stop polling in a background tab; catch up as soon as it's back.
   document.addEventListener("visibilitychange", () => {
@@ -889,11 +890,13 @@ function initNhlTicker() {
   });
 
   // One listener for every chip, including ones added by later refreshes.
-  document.getElementById("nhlTicker").addEventListener("click", (event) => {
+  ticker.addEventListener("click", (event) => {
     const chip = event.target.closest(".nhl-chip");
     if (chip && !chip.disabled) openNhlGameModal(chip.dataset.gameId);
   });
   initNhlGameModal();
+  // Window resize or phone rotation can flip the marquee mode.
+  new ResizeObserver(() => applyNhlTickerMotion(ticker)).observe(ticker);
   refreshNhlTicker();
 }
 
@@ -971,9 +974,29 @@ function renderNhlTicker(ticker, previous, today) {
   scroller.append(track, copy);
   ticker.replaceChildren(scroller);
   ticker.hidden = false;
+  applyNhlTickerMotion(ticker);
+}
 
-  // Same scroll speed whether there are 3 games or 16.
-  scroller.style.animationDuration = `${Math.round(track.scrollWidth / NHL_TICKER_PX_PER_SEC)}s`;
+// Picks the marquee mode and sets a duration that keeps the speed the
+// same whatever the game count. Re-run when the strip's width changes.
+function applyNhlTickerMotion(ticker) {
+  const scroller = ticker.querySelector(".nhl-ticker-scroller");
+  if (!scroller) return;
+  const track = scroller.querySelector(".nhl-ticker-track:not(.nhl-ticker-track-copy)");
+
+  track.style.paddingLeft = "";
+  const contentWidth = track.scrollWidth;
+  const stripWidth = ticker.clientWidth;
+  // Two copies only loop seamlessly when each fills the strip; fewer
+  // games scroll in from the right instead (.nhl-ticker-short). Not
+  // with reduced motion, where the padding would push games off-screen.
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const isShort = contentWidth < stripWidth && !reducedMotion;
+
+  ticker.classList.toggle("nhl-ticker-short", isShort);
+  if (isShort) track.style.paddingLeft = `${stripWidth}px`;
+  const distance = isShort ? stripWidth + contentWidth : contentWidth;
+  scroller.style.animationDuration = `${Math.round(distance / NHL_TICKER_PX_PER_SEC)}s`;
 }
 
 function buildNhlTickerLabel(text) {
