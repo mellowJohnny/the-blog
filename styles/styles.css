@@ -1152,11 +1152,19 @@ label sup {
 
 /* NHL game modal (openNhlGameModal(), wax.js) - reuses the checklist
    modal's overlay/content/close classes; .nhl-game-modal narrows it. */
+/* Same type as the blog/review pages: Source Sans 3 body text in the
+   site's body colour, Work Sans for headings (like blog post titles). */
 .checklist-modal-content.nhl-game-modal {
   max-width: 900px;
-  color: #1b1b1b;
+  color: rgb(34, 38, 41);
   font-family: 'Source Sans 3', sans-serif;
   font-variant-numeric: tabular-nums;
+}
+
+.nhl-game-abbrev,
+.nhl-game-section h3,
+.nhl-recap h3 {
+  font-family: 'Work Sans', sans-serif;
 }
 
 .nhl-game-scoreline {
@@ -1244,6 +1252,8 @@ label sup {
   background: none;
   color: #444;
   font: inherit;
+  /* After the font shorthand, which would otherwise reset it. */
+  font-family: 'Work Sans', sans-serif;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -1410,6 +1420,7 @@ label sup {
   position: relative;
   display: block;
   width: 100%;
+  font: inherit;
   aspect-ratio: 16 / 9;
   padding: 0;
   border: 0;
