@@ -278,5 +278,74 @@
         ></div>
       </div>
     </div>
+
+    <!-- NHL game modal - opened from a ticker chip, filled by
+         openNhlGameModal() in wax.js -->
+    <div id="nhlGameModalOverlay" class="checklist-modal-overlay">
+      <div
+        class="checklist-modal-content nhl-game-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="NHL game details"
+      >
+        <div class="checklist-modal-controls">
+          <span class="checklist-modal-close" onclick="closeNhlGameModal()"
+            >&times;</span
+          >
+        </div>
+        <div id="nhlGameHeader" class="nhl-game-header"></div>
+        <div class="nhl-game-tabs" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            id="nhlGameTabSummary"
+            aria-controls="nhlGameSummary"
+            aria-selected="true"
+          >
+            Summary
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="nhlGameTabBoxScore"
+            aria-controls="nhlGameBoxScore"
+            aria-selected="false"
+            tabindex="-1"
+          >
+            Box Score
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="nhlGameTabRecap"
+            aria-controls="nhlGameRecap"
+            aria-selected="false"
+            tabindex="-1"
+          >
+            Recap
+          </button>
+        </div>
+        <div
+          id="nhlGameSummary"
+          class="nhl-game-panel"
+          role="tabpanel"
+          aria-labelledby="nhlGameTabSummary"
+        ></div>
+        <div
+          id="nhlGameBoxScore"
+          class="nhl-game-panel"
+          role="tabpanel"
+          aria-labelledby="nhlGameTabBoxScore"
+          hidden
+        ></div>
+        <div
+          id="nhlGameRecap"
+          class="nhl-game-panel"
+          role="tabpanel"
+          aria-labelledby="nhlGameTabRecap"
+          hidden
+        ></div>
+      </div>
+    </div>
   </body>
 </html>

@@ -887,6 +887,13 @@ function initNhlTicker() {
     clearTimeout(nhlTickerTimer);
     if (!document.hidden && nhlTickerGameKey) refreshNhlTicker();
   });
+
+  // One listener for every chip, including ones added by later refreshes.
+  document.getElementById("nhlTicker").addEventListener("click", (event) => {
+    const chip = event.target.closest(".nhl-chip");
+    if (chip && !chip.disabled) openNhlGameModal(chip.dataset.gameId);
+  });
+  initNhlGameModal();
   refreshNhlTicker();
 }
 
@@ -957,6 +964,7 @@ function renderNhlTicker(ticker, previous, today) {
   const copy = track.cloneNode(true);
   copy.classList.add("nhl-ticker-track-copy");
   copy.setAttribute("aria-hidden", "true");
+  copy.querySelectorAll(".nhl-chip").forEach((chip) => { chip.tabIndex = -1; });
 
   const scroller = document.createElement("div");
   scroller.className = "nhl-ticker-scroller";
@@ -976,7 +984,8 @@ function buildNhlTickerLabel(text) {
 }
 
 function buildNhlGameChip(game) {
-  const chip = document.createElement("span");
+  const chip = document.createElement("button");
+  chip.type = "button";
   chip.className = "nhl-chip";
   chip.dataset.gameId = game.id;
   chip.append(buildNhlTeam(game.away, "away"), buildNhlTeam(game.home, "home"));
@@ -1023,6 +1032,8 @@ function fillNhlGameChip(chip, game) {
   chip.querySelector('[data-side="home"]').textContent = isFuture ? "" : game.home.score ?? "";
   chip.querySelector(".nhl-status").textContent = formatNhlGameStatus(game);
   chip.classList.toggle("nhl-chip-live", ["LIVE", "CRIT"].includes(game.state));
+  // Nothing to show in the game modal until puck drop.
+  chip.disabled = isFuture || !NHL_GAME_API_URL;
 
   // Bold the winner of a finished game. Shootout finals need no special
   // case - the NHL credits the shootout winner with one extra goal.
@@ -1056,4 +1067,267 @@ function formatNhlGameStatus(game) {
 
   // FUT / PRE: start time in the visitor's own time zone.
   return new Date(game.startTimeUTC).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
+/**
+ * NHL game modal (waxReviews.html) - opened from a ticker chip. Score
+ * header plus Summary / Box Score / Recap tabs, fed by getNhlGameDetails
+ * (Lambdas/getNhlGameDetails/), which combines five NHL sources.
+ */
+
+const NHL_GAME_API_URL = "https://kx7zuay324.execute-api.us-east-2.amazonaws.com/prod";
+// The NHL's own Brightcove "Gamecenter Player" - same one nhl.com uses.
+const NHL_VIDEO_PLAYER_URL = "https://players.brightcove.net/6415718365001/EXtG1xJ7H_default/index.html";
+
+// Bumped on every open/close, so a slow response for a game that's
+// since been closed or replaced is ignored rather than rendered.
+let nhlGameRequestId = 0;
+
+function initNhlGameModal() {
+  const overlay = document.getElementById("nhlGameModalOverlay");
+  if (!overlay) return;
+
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) closeNhlGameModal();
+    const poster = event.target.closest(".nhl-video-poster");
+    if (poster) playNhlGameVideo(poster);
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && overlay.style.display === "block") closeNhlGameModal();
+  });
+
+  // Tabs: click to switch, arrow keys move between them.
+  const tabs = [...overlay.querySelectorAll('[role="tab"]')];
+  tabs.forEach((tab, i) => {
+    tab.addEventListener("click", () => selectNhlGameTab(tab));
+    tab.addEventListener("keydown", (event) => {
+      const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+      if (!step) return;
+      const next = tabs[(i + step + tabs.length) % tabs.length];
+      selectNhlGameTab(next);
+      next.focus();
+    });
+  });
+}
+
+function selectNhlGameTab(tab) {
+  tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]').forEach((t) => {
+    const selected = t === tab;
+    t.setAttribute("aria-selected", String(selected));
+    t.tabIndex = selected ? 0 : -1;
+    document.getElementById(t.getAttribute("aria-controls")).hidden = !selected;
+  });
+}
+
+async function openNhlGameModal(gameId) {
+  const overlay = document.getElementById("nhlGameModalOverlay");
+  const summary = document.getElementById("nhlGameSummary");
+  const requestId = ++nhlGameRequestId;
+
+  ["nhlGameHeader", "nhlGameBoxScore", "nhlGameRecap"].forEach((id) => {
+    document.getElementById(id).innerHTML = "";
+  });
+  summary.innerHTML = "<p>Loading game...</p>";
+  const firstTab = overlay.querySelector('[role="tab"]');
+  selectNhlGameTab(firstTab);
+  overlay.style.display = "block";
+  firstTab.focus();
+
+  let game;
+  try {
+    const res = await fetch(`${NHL_GAME_API_URL}?gameId=${encodeURIComponent(gameId)}`);
+    if (!res.ok) throw new Error(`NHL game request failed: ${res.status}`);
+    game = await res.json();
+  } catch (err) {
+    if (requestId !== nhlGameRequestId) return;
+    console.log("NHL game fetch failed:", err);
+    summary.innerHTML = "<p>Couldn't load this game right now - please try again.</p>";
+    return;
+  }
+  if (requestId !== nhlGameRequestId) return;
+
+  renderNhlGameHeader(game);
+  renderNhlGameSummary(game);
+  renderNhlGameBoxScore(game);
+  renderNhlGameRecap(game);
+}
+
+function closeNhlGameModal() {
+  nhlGameRequestId++;
+  document.getElementById("nhlGameModalOverlay").style.display = "none";
+  // Emptying the Recap panel removes a playing video's iframe, so its
+  // audio stops with the modal.
+  document.getElementById("nhlGameRecap").innerHTML = "";
+}
+
+function renderNhlGameHeader(game) {
+  const isFinal = NHL_FINAL_STATES.includes(game.state);
+  const extra = game.lastPeriodType && game.lastPeriodType !== "REG" ? ` (${game.lastPeriodType})` : "";
+  const status = isFinal ? `Final${extra}` : formatNhlGameStatus(game);
+  const lost = (side, other) => isFinal && game[side].score < game[other].score;
+
+  const team = (t) => `
+    <div class="nhl-game-team">
+      <img src="${escapeHtml(t.logo)}" alt="" width="72" height="48">
+      <span class="nhl-game-team-text">
+        <span class="nhl-game-abbrev">${escapeHtml(t.abbrev)}</span>
+        ${t.record ? `<span class="nhl-game-record">${escapeHtml(t.record)}</span>` : ""}
+      </span>
+    </div>`;
+  const score = (side, other) =>
+    `<span class="nhl-game-score${lost(side, other) ? " nhl-game-score-loser" : ""}">${game[side].score ?? ""}</span>`;
+  const date = new Date(game.startTimeUTC).toLocaleDateString([], { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+
+  document.getElementById("nhlGameHeader").innerHTML = `
+    <div class="nhl-game-scoreline">
+      <div class="nhl-game-side nhl-game-side-away">${team(game.away)}</div>
+      ${score("away", "home")}
+      <span class="nhl-game-status">${escapeHtml(status)}</span>
+      ${score("home", "away")}
+      <div class="nhl-game-side nhl-game-side-home">${team(game.home)}</div>
+    </div>
+    <p class="nhl-game-meta">${escapeHtml(date)}${game.venue ? ` · ${escapeHtml(game.venue)}` : ""}</p>`;
+}
+
+function renderNhlGameSummary(game) {
+  const periods = game.scoring.map((period) => `
+    <section class="nhl-game-section">
+      <h3>${escapeHtml(period.label)}</h3>
+      ${period.goals.length
+        ? period.goals.map((goal) => buildNhlGoalRow(goal, game)).join("")
+        : '<p class="nhl-game-empty">No Scoring</p>'}
+    </section>`).join("");
+
+  const shootout = game.shootout.length ? `
+    <section class="nhl-game-section">
+      <h3>Shootout</h3>
+      ${game.shootout.map((attempt) => `
+        <div class="nhl-game-row">
+          <img src="${escapeHtml(nhlTeamLogo(game, attempt.team))}" alt="${escapeHtml(attempt.team)}" width="36" height="24">
+          <span class="nhl-game-row-main">${escapeHtml(attempt.player)}</span>
+          <span class="nhl-shootout-${attempt.result === "goal" ? "goal" : "miss"}">${attempt.result === "goal" ? "✓ Goal" : "✗ No goal"}</span>
+        </div>`).join("")}
+    </section>` : "";
+
+  const stars = game.threeStars.length ? `
+    <section class="nhl-game-section">
+      <h3>Three Stars</h3>
+      ${game.threeStars.map((s) => `
+        <div class="nhl-game-row">
+          <span class="nhl-star">${"★".repeat(s.star)}</span>
+          <img src="${escapeHtml(nhlTeamLogo(game, s.team))}" alt="${escapeHtml(s.team)}" width="36" height="24">
+          <span class="nhl-game-row-main">${escapeHtml(s.name)}</span>
+          <span class="nhl-game-row-note">${escapeHtml(s.position)}</span>
+        </div>`).join("")}
+    </section>` : "";
+
+  document.getElementById("nhlGameSummary").innerHTML =
+    periods + shootout + stars || '<p class="nhl-game-empty">No scoring yet.</p>';
+}
+
+function nhlTeamLogo(game, abbrev) {
+  return abbrev === game.home.abbrev ? game.home.logo : game.away.logo;
+}
+
+function buildNhlGoalRow(goal, game) {
+  const withTotal = (name, total) => `${escapeHtml(name)}${total != null ? ` (${total})` : ""}`;
+  const assists = goal.assists.length
+    ? goal.assists.map((a) => withTotal(a.name, a.total)).join(", ")
+    : "Unassisted";
+  const badge = { pp: "PPG", sh: "SHG" }[goal.strength] || (goal.emptyNet ? "EN" : "");
+
+  return `
+    <div class="nhl-game-row nhl-goal">
+      <span class="nhl-goal-time">${escapeHtml(goal.time)}</span>
+      <img src="${escapeHtml(nhlTeamLogo(game, goal.team))}" alt="${escapeHtml(goal.team)}" width="36" height="24">
+      <div class="nhl-game-row-main">
+        <div class="nhl-goal-scorer">${withTotal(goal.scorer, goal.scorerTotal)}${badge ? ` <span class="nhl-goal-badge">${badge}</span>` : ""}</div>
+        <div class="nhl-goal-assists">${assists}</div>
+      </div>
+      <span class="nhl-game-row-note">${escapeHtml(game.away.abbrev)} ${goal.awayScore} - ${goal.homeScore} ${escapeHtml(game.home.abbrev)}</span>
+    </div>`;
+}
+
+function renderNhlGameBoxScore(game) {
+  const { periods, totals } = game.linescore;
+  if (!periods.length) {
+    document.getElementById("nhlGameBoxScore").innerHTML = '<p class="nhl-game-empty">No box score yet.</p>';
+    return;
+  }
+
+  const isFinal = NHL_FINAL_STATES.includes(game.state);
+  const row = (side) => `
+    <tr>
+      <th scope="row"><img src="${escapeHtml(game[side].logo)}" alt="" width="36" height="24"> ${escapeHtml(game[side].abbrev)}</th>
+      ${periods.map((p) => `<td>${p[side] ?? ""}</td>`).join("")}
+      <td class="nhl-linescore-total">${totals[side] ?? ""}</td>
+    </tr>`;
+  const decisions = game.decisions ? `
+    <div class="nhl-game-decisions">
+      <p><strong>W:</strong> ${escapeHtml(game.decisions.winner)}</p>
+      <p><strong>L:</strong> ${escapeHtml(game.decisions.loser)}</p>
+    </div>` : "";
+  const stats = game.teamStats.length ? `
+    <table class="nhl-team-stats">
+      <thead><tr>
+        <th scope="col">${escapeHtml(game.away.abbrev)}</th>
+        <th scope="col">Team Stats</th>
+        <th scope="col">${escapeHtml(game.home.abbrev)}</th>
+      </tr></thead>
+      <tbody>${game.teamStats.map((s) => `
+        <tr><td>${escapeHtml(String(s.away))}</td><th scope="row">${escapeHtml(s.label)}</th><td>${escapeHtml(String(s.home))}</td></tr>`).join("")}
+      </tbody>
+    </table>` : "";
+
+  document.getElementById("nhlGameBoxScore").innerHTML = `
+    <div class="nhl-linescore-box">
+      <div class="nhl-linescore-wrap">
+        <table class="nhl-linescore">
+          <thead><tr>
+            <th scope="col">${isFinal ? "Final" : escapeHtml(formatNhlGameStatus(game))}</th>
+            ${periods.map((p) => `<th scope="col">${escapeHtml(p.label)}</th>`).join("")}
+            <th scope="col">T</th>
+          </tr></thead>
+          <tbody>${row("away")}${row("home")}</tbody>
+        </table>
+      </div>
+      ${decisions}
+    </div>
+    ${stats}`;
+}
+
+// The video loads only when its poster is clicked - see playNhlGameVideo().
+function renderNhlGameRecap(game) {
+  const video = game.video ? `
+    <button type="button" class="nhl-video-poster" data-video-id="${escapeHtml(game.video.id)}" data-title="${escapeHtml(game.video.title)}">
+      ${game.video.thumbnailUrl ? `<img src="${escapeHtml(game.video.thumbnailUrl)}" alt="">` : ""}
+      <span class="nhl-video-play" aria-hidden="true">▶</span>
+      <span class="nhl-video-caption">${escapeHtml(game.video.title)}${game.video.duration ? ` · ${escapeHtml(game.video.duration)}` : ""}</span>
+    </button>` : "";
+
+  // The video poster already carries a photo, so the article's own
+  // photo only shows when there's no video.
+  const recap = game.recap ? `
+    <article class="nhl-recap">
+      ${!game.video && game.recap.imageUrl ? `<img class="nhl-recap-image" src="${escapeHtml(game.recap.imageUrl)}" alt="">` : ""}
+      <h3>${escapeHtml(game.recap.headline)}</h3>
+      <p>${escapeHtml(game.recap.summary)}</p>
+      <a href="${escapeHtml(game.recap.url)}" target="_blank" rel="noopener">Read full recap on NHL.com ↗</a>
+    </article>` : `
+    <article class="nhl-recap">
+      <p class="nhl-game-empty">Recap not posted yet.</p>
+      <a href="${escapeHtml(game.gameCenterUrl)}" target="_blank" rel="noopener">Open on NHL.com ↗</a>
+    </article>`;
+
+  document.getElementById("nhlGameRecap").innerHTML = video + recap;
+}
+
+function playNhlGameVideo(poster) {
+  const frame = document.createElement("iframe");
+  frame.className = "nhl-video-frame";
+  frame.src = `${NHL_VIDEO_PLAYER_URL}?videoId=${encodeURIComponent(poster.dataset.videoId)}&autoplay=true`;
+  frame.title = poster.dataset.title || "NHL highlights";
+  frame.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
+  frame.allowFullscreen = true;
+  poster.replaceWith(frame);
 }
