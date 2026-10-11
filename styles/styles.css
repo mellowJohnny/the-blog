@@ -1023,7 +1023,7 @@ label sup {
 .nhl-ticker {
   display: flex;
   align-items: center;
-  height: 36px;
+  height: 40px;
   overflow: hidden;
   background-color: #1b1b1b;
   color: #f2f2f2;
@@ -1086,15 +1086,18 @@ label sup {
 .nhl-team {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 2px;
 }
 
+/* NHL logos are 3:2 SVGs (960x640) with built-in padding - a square
+   box would shrink them to fit the width, so match their shape. */
 .nhl-team img {
-  width: 18px;
-  height: 18px;
+  width: 42px;
+  height: 28px;
 }
 
 .nhl-abbrev {
+  margin-right: 5px;
   font-weight: 600;
 }
 
@@ -3021,7 +3024,7 @@ label sup {
   }
 
   .nhl-ticker {
-    height: 32px;
+    height: 36px;
     font-size: 13px;
   }
 
@@ -3031,8 +3034,8 @@ label sup {
   }
 
   .nhl-team img {
-    width: 16px;
-    height: 16px;
+    width: 33px;
+    height: 22px;
   }
 
   .set-details-table-style {

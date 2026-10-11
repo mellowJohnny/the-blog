@@ -997,8 +997,8 @@ function buildNhlTeam(team, side) {
     const logo = document.createElement("img");
     logo.src = team.logo;
     logo.alt = "";
-    logo.width = 18;
-    logo.height = 18;
+    logo.width = 42;
+    logo.height = 28;
     logo.loading = "lazy";
     wrap.appendChild(logo);
   }

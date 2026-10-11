@@ -34,6 +34,7 @@ Cognito — mentioned directly in `index.html`'s meta description.
 | [CMS_PAGE_FLOWS.md](./CMS_PAGE_FLOWS.md) | Every `/cms` page traced the same way as PUBLIC_PAGE_FLOWS.md |
 | [AUTH.md](./AUTH.md) | Cognito setup and the login flow used to gate `/cms` |
 | [LAMBDA_FUNCTIONS.md](./LAMBDA_FUNCTIONS.md) | The Lambda code that *is* in this repo, and an inventory of the ones that only live in the AWS Console |
+| [NHL_API.md](./NHL_API.md) | Research reference for the NHL's free, undocumented API (`api-web.nhle.com`) behind the scores ticker — every area of functionality found, as of October 2026 |
 
 ## Pre-existing files in this folder
 

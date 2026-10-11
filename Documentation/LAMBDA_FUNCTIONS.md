@@ -1,10 +1,10 @@
 # Lambda Functions
 
-**25 of the 29 Lambda functions behind this site's API Gateway
+**26 of the 30 Lambda functions behind this site's API Gateway
 endpoints have their source checked into this repo**, under
 `Lambdas/` (as of 2026-08-15, one directory per function, named
-exactly after its AWS Lambda function name). `Lambdas/` holds 26
-directories, not 25: `amplifyBuildNotifier` (added 2026-09-29) sits
+exactly after its AWS Lambda function name). `Lambdas/` holds 27
+directories, not 26: `amplifyBuildNotifier` (added 2026-09-29) sits
 behind EventBridge rather than API Gateway and isn't part of that
 count — it's the only function here no frontend code ever calls.
 Most were pulled directly
@@ -12,20 +12,21 @@ from the live Console via `aws lambda get-function` using the
 `amplify-readonly-cli` credential (see `CLAUDE.md` — its actual IAM
 scope turned out to be broader than its name suggests: it can read
 full Lambda source, though not API Gateway config, and (confirmed
-2026-08-24) not DynamoDB or IAM policy introspection either). Eight
+2026-08-24) not DynamoDB or IAM policy introspection either). Nine
 were already in the repo, hand-built here rather than pulled:
 `Lambdas/sendAlertHandler/`, `Lambdas/castVoteHandler/`,
 `Lambdas/deleteBlogHandler/`, `Lambdas/deleteCardSetHandler/`, and —
 added later, for the checklist-upload feature and its front-end display —
 `Lambdas/parseChecklistPdf/`, `Lambdas/saveChecklist/`,
 `Lambdas/getChecklistBySetName/`, and — for the player-search feature —
-`Lambdas/searchPlayerName/`. The remaining 4 of the 29
+`Lambdas/searchPlayerName/`, and — for the NHL scores ticker —
+`Lambdas/getNhlScores/`. The remaining 4 of the 30
 (`getCardIntro`, `getBlogIntro`, `fetchCardSetPreview`,
 `invalidateCache`) were pulled in the same pass, confirmed dead, and
 removed again the same day — see "Orphaned/dead Lambdas" below.
 
 Deployment is still entirely manual for every one of them, but the
-mechanics differ by function: the 24 with no real dependencies
+mechanics differ by function: the 25 with no real dependencies
 (`dependencies: {}` in `package.json`) just need the updated
 `index.mjs` pasted into the Lambda Console's inline code editor and
 Deploy clicked — no zip needed. Two need a full `npm install` + zip
@@ -647,6 +648,44 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   `FRONTEND.md`'s "Player search" section for the frontend half of this
   (the caching, and the relevance ranking applied to the filtered
   results).
+
+## `Lambdas/getNhlScores/` — hand-built in this repo
+
+- **File**: `Lambdas/getNhlScores/index.mjs`. No real dependency —
+  inline-paste deployable, not zipped. Uses Node's built-in `fetch`,
+  not any `@aws-sdk/*` package: it's the only Lambda on the site that
+  touches no AWS service at all.
+- **Configuration**: function timeout raised from the default 3s to
+  **10s** (confirmed via `get-function`, along with `nodejs24.x`). It
+  can make two upstream calls, each capped at 5s with
+  `AbortSignal.timeout()`; at 3s a slow NHL response would time the
+  function out before its own error handling could run.
+- **What it does**: backs the scores ticker on `waxReviews.html` (see
+  `FRONTEND.md`). Public GET, no Cognito Authorizer. Fetches
+  `https://api-web.nhle.com/v1/score/now` (a `307` to today's dated
+  URL, which `fetch` follows). If no game today has started yet — or
+  there are none — it also fetches the previous day's scores and keeps
+  only the finished games as `previous`, so the ticker shows last
+  night's results rather than just a row of start times. Each game is
+  reduced to a small shape of our own by `slimGame()` (see
+  `API_ENDPOINTS.md`'s "Get NHL scores"), dropping odds, broadcasts,
+  goals and video links. Team logos are swapped from the NHL's `_light`
+  SVGs to their `_dark` twins, since the ticker strip is dark.
+- **Why a proxy at all**: the NHL API sends no CORS headers, so the
+  browser can't call it directly. The proxy also absorbs the API being
+  undocumented: if the NHL renames a field, `slimGame()` is the one
+  place to fix, and the frontend's contract doesn't change. See
+  `NHL_API.md` for the full research.
+- **Caching**: `Cache-Control: public, max-age=30` while any game is
+  `LIVE`/`CRIT`, `max-age=300` otherwise, `max-age=0` on a `502`. Like
+  every other endpoint here this is a browser-only cache — no API
+  Gateway stage cache or CloudFront — so each new visitor still invokes
+  the Lambda once. Fine at this site's traffic; the `dev` stage cache
+  is the lever if the ticker ever spreads to every page.
+- **Errors**: any upstream failure (timeout, non-2xx, network) returns
+  `502 { error }`, and the ticker stays hidden. A cold start was
+  measured at ~3.4s, warm calls at 0.3–0.6s — invisible to visitors,
+  since the ticker loads after the page.
 
 ## `Lambdas/updateCardSet/` — pre-existing, with a real incident behind it
 

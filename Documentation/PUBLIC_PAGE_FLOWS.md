@@ -201,8 +201,9 @@ plus several inline `<script>` blocks in `<head>`, in this order:
 2. A Google Core Web Vitals preload hint for that year's hero image.
 3. `DOMContentLoaded` → `renderCardIntro(pageName)`.
 4. `window load` → `fetchNav(pageName)`, `renderSetPicker(year, blogCat,
-   pageName)`, `fetchCardSetsByYear(year, sortOrder, blogCat)` (in that
-   order), plus a `gtag('config', ...)` call for Analytics.
+   pageName)`, `fetchCardSetsByYear(year, sortOrder, blogCat)`,
+   `applyRandomMastheadStyling()`, `initNhlTicker()` (in that order),
+   plus a `gtag('config', ...)` call for Analytics.
 
 **On `DOMContentLoaded`**: `renderCardIntro(pageName)` (`wax.js`) —
 static intro copy keyed by `pageName` (`classicWax`/`junkWax`/`timmies`/
@@ -210,7 +211,7 @@ static intro copy keyed by `pageName` (`classicWax`/`junkWax`/`timmies`/
 `renderBlogIntro()` on the blog pages — sets the tone for the section
 before any real content has loaded.
 
-**On `window load`**: these three calls together finish assembling
+**On `window load`**: these calls together finish assembling
 everything the visitor can see or navigate to on this page.
 - `fetchNav(pageName)` (`helper.js`) — builds the top nav bar, same
   mechanism as the blog pages, but `waxReviews.html`'s `pageName`
@@ -272,8 +273,25 @@ everything the visitor can see or navigate to on this page.
   year (most years have exactly one; only 1989-90 onward have
   multiple, once card companies started releasing several sets per
   season).
+- `applyRandomMastheadStyling()` (`helper.js`) — paints the masthead
+  in a random NHL team's colours with its cheer label. Purely
+  cosmetic, no API call — see `FRONTEND.md`'s "Typography / fonts".
+- `initNhlTicker()` (`wax.js`) adds live hockey context above the
+  reviews: it fills the scores strip under the masthead via **Get NHL
+  scores**, fronted by the `getNhlScores` Lambda
+  (`Lambdas/getNhlScores/`). That Lambda reads no DynamoDB table — it
+  calls the NHL's own undocumented API (`api-web.nhle.com`) server-side,
+  because that API sends no CORS headers and the browser can't call it
+  directly, and slims the result to a stable shape of our own (see
+  `NHL_API.md`). Independent of the review: it runs in parallel with
+  `fetchCardSetsByYear()`, and an error or an empty off-season result
+  just leaves the strip hidden. While a game is live it re-polls every
+  60s and updates scores in place — see `FRONTEND.md`'s "NHL scores
+  ticker".
 
 **User interactions**:
+- Hovering over (or tabbing to) the NHL scores ticker pauses its
+  scroll so a score can be read — pure CSS, no JS or API call.
 - Vote buttons (👍/👎, inside `displayCardSet()`'s output) exist so a
   visitor can register an opinion on a set without any account/login —
   `castVote(this)` (`wax.js`) reads `setName`/`year`/`voteType` off the

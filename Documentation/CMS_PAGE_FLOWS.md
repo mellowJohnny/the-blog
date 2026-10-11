@@ -803,4 +803,4 @@ than running as bare top-level code.
 
 **Notable**: all three endpoints this page calls are the **only** three
 endpoints on the entire site deployed to the API Gateway `prod` stage —
-every other endpoint (22 of them) is on `dev`. See `ARCHITECTURE.md`.
+every other endpoint (23 of them) is on `dev`. See `ARCHITECTURE.md`.

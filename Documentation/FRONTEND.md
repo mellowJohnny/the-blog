@@ -68,7 +68,7 @@ them to a crawler (or a human visitor navigating by link).
 | File | Responsibility |
 |---|---|
 | `blogs.js` | Blog intro copy (`renderBlogIntro()`), `fetchBlogs()`/pagination/rendering for the blog stream, and the homepage weather widget (calls OpenWeatherMap directly from the browser using the visitor's geolocation). |
-| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. On mobile, the prev/next set name in that label drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle") via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans the mobile breakpoint swaps between, since the full "YYYY-YY Manufacturer" label was too long for a small screen; desktop still shows the full name. |
+| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. On mobile, the prev/next set name in that label drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle") via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans the mobile breakpoint swaps between, since the full "YYYY-YY Manufacturer" label was too long for a small screen; desktop still shows the full name. Also the NHL scores ticker under the masthead (`initNhlTicker()` and its helpers — see "NHL scores ticker" below). |
 | `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — used by every public page) and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped/middle images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), `buildCardSetMarkup()` (the single source of truth for a card set review's HTML, shared by the live site's `displayCardSet()` and the CMS preview modal's `renderPreview()` — added 2026-09-28 to end the drift between two hand-maintained copies; see "Card set markup is shared with the CMS preview" below), hamburger menu toggle, cookie helper, and copyright-year footer. |
 | `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise); also the type-ahead dropdown (`initPlayerSearchTypeahead()`/`loadPlayerNameIndex()`/`rankPlayerNameMatch()`) that suggests player names client-side from a once-fetched, cached name index. See "Player search" below. |
 | `adminTools.js` | `cms/admin.html` support code: a growing set of self-service site-health checks (broken images, checklist-to-review linkage), each its own function calling the site's existing public read APIs directly. See `CMS_GUIDE.md`'s "Admin Tools" section. |
@@ -595,6 +595,57 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
 
   New CSS: `.checklist-modal-pdf-btn` in `styles/styles.css`, styled to
   match the existing `.checklist-modal-print-btn`.
+
+## NHL scores ticker (waxReviews.html)
+
+A dark strip between the masthead and the nav, scrolling NHL scores
+right to left: last night's finals (under a "Last night" label) until
+today's first puck drop, then today's games — start time, live period
+and clock, or final. Fed by `getNhlScores` (`Lambdas/getNhlScores/`,
+see `LAMBDA_FUNCTIONS.md`), which proxies the NHL's undocumented API —
+see `NHL_API.md` for what else that API offers. Code is in `wax.js`
+(`initNhlTicker()` and helpers), called once from `waxReviews.html`'s
+`window load` listener; `lockout.html` also loads `wax.js` but doesn't
+call it. The markup is one empty `<div id="nhlTicker" hidden>`.
+
+- **Hidden unless there's something to show**: an API error on first
+  load, or no games today or last night (the off-season), leaves the
+  strip hidden. `.nhl-ticker[hidden] { display: none; }` is required,
+  not redundant — the strip's own `display: flex` would otherwise
+  override the `hidden` attribute.
+- **Seamless marquee**: the chip track is rendered twice inside
+  `.nhl-ticker-scroller`, which CSS slides `translateX(0 → -50%)` on a
+  loop. The duration is set from the track's measured width
+  (`NHL_TICKER_PX_PER_SEC`), so the speed is the same with 3 games or
+  16. The copy is `aria-hidden` so each game is announced once. Hover
+  or keyboard focus (the strip is `tabindex="0"`) pauses it;
+  `prefers-reduced-motion` drops the animation and the copy, leaving a
+  swipeable row.
+- **Refresh**: `scheduleNhlTickerRefresh()` polls every 60s while a
+  game is `PRE`/`LIVE`/`CRIT`; otherwise it sleeps until the next
+  scheduled start time; with nothing left to play it stops. Polling
+  pauses in a background tab (`visibilitychange`) and catches up when
+  the tab returns. A refresh with the same set of games updates each
+  chip's score and status in place (matched by `data-game-id`, in both
+  copies), so the scroll never jumps; a new set of games — last night's
+  finals dropping off — rebuilds the strip. A failed refresh keeps the
+  last good scores and retries.
+- **Status text** (`formatNhlGameStatus()`): start times are converted
+  from the API's UTC to the visitor's own time zone and locale by
+  `toLocaleTimeString()` in the browser — 5:00 p.m. in Toronto is
+  2:00 p.m. in Vancouver. Live games show "2nd 12:34", "2nd INT",
+  "OT 3:10", "2OT" in the playoffs, or "SO" (in red); finals show
+  "Final", "Final/OT" or "Final/SO". "Today" is the NHL's game day, so
+  a visitor far from North America can see a "Today" game at, say,
+  6:00 a.m. their time.
+- **Built with** `textContent`/`createElement`, not `innerHTML`, so
+  nothing from the upstream API is ever parsed as HTML. Logos
+  hot-link straight from `assets.nhle.com` (images don't need CORS).
+- **Placement**: outside `.flex-container`, so the `.flex-container
+  div` descendant-selector trap (see "Mobile / responsive design")
+  doesn't apply. 40px tall with 42x28px logos (36px and 33x22px under
+  600px) — the NHL's logos are 3:2 SVGs with built-in padding, so a
+  square box would shrink them to fit its width.
 
 ## Player search (`playerSearch.html`)
 

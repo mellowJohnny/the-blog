@@ -95,6 +95,14 @@ without changing that expectation first.
 - **Response** (`namesOnly=1` mode): `{ playerNames: [...] }` — every distinct `playerName` in `Checklists`, deduped and sorted alphabetically. Added 2026-09-14 to back the type-ahead dropdown on `playerSearch.html`: the frontend fetches this once (cached client-side, see `FRONTEND.md`'s "Player search" section) and filters it locally per keystroke, rather than hitting `q` mode's expensive `Scan` on every keystroke.
 - **Lambda**: `Lambdas/searchPlayerName/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Full paginated `Scan` of `Checklists` (no index on `playerName`), matched case-insensitively in code, plus a per-matched-set `Query` against `Cards`. Public, no Cognito Authorizer — same trust level as "Get checklist by set name" above; `Access-Control-Allow-Origin: "*"`.
 
+### Get NHL scores
+- **URL**: `https://kckdcdjqch.execute-api.us-east-2.amazonaws.com/dev`
+- **Method**: GET
+- **Query params**: none
+- **Called from**: `initNhlTicker()`/`refreshNhlTicker()` in `scripts/wax.js` (the scores ticker under the masthead on `waxReviews.html` — see `FRONTEND.md`)
+- **Response**: `{ date, games, previous }` — today's games, plus last night's finished games in `previous` until today's first game starts (`[]` after that). Each game is `{ id, state, startTimeUTC, period, periodType, clock, inIntermission, lastPeriodType, away: { abbrev, score, logo }, home: {...} }` — a shape of our own, not the NHL's raw one. `Cache-Control: public, max-age=30` while any game is live, `max-age=300` otherwise. On any upstream failure, `502 { error }` with `max-age=0`.
+- **Lambda**: `Lambdas/getNhlScores/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). The only endpoint on the site that reads from a third-party API rather than DynamoDB: it proxies the NHL's undocumented `api-web.nhle.com`, which sends no CORS headers — see `NHL_API.md`. Public, no Cognito Authorizer; `Access-Control-Allow-Origin: "*"`. Deployed to `dev`, like the rest of this section.
+
 ## CMS — blog authoring
 
 ### Create blog post
