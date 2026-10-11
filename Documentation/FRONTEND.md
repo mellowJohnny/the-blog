@@ -635,7 +635,11 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
   `toLocaleTimeString()` in the browser — 5:00 p.m. in Toronto is
   2:00 p.m. in Vancouver. Live games show "2nd 12:34", "2nd INT",
   "OT 3:10", "2OT" in the playoffs, or "SO" (in red); finals show
-  "Final", "Final/OT" or "Final/SO". "Today" is the NHL's game day, so
+  "Final", "Final/OT" or "Final/SO". In a final, the winning team's
+  abbreviation and score are bold white (`.nhl-team-winner`) and the
+  loser's stay regular weight; live and upcoming games have no winner
+  marked. Shootouts need no special case — the NHL's final score
+  already credits the shootout winner with one extra goal. "Today" is the NHL's game day, so
   a visitor far from North America can see a "Today" game at, say,
   6:00 a.m. their time.
 - **Built with** `textContent`/`createElement`, not `innerHTML`, so

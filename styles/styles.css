@@ -1096,12 +1096,18 @@ label sup {
   height: 28px;
 }
 
-.nhl-abbrev {
-  margin-right: 5px;
-  font-weight: 600;
+/* Regular weight by default so a final's winner (.nhl-team-winner,
+   set in fillNhlGameChip(), wax.js) can stand out in bold white. */
+.nhl-team {
+  color: #cfcfcf;
 }
 
-.nhl-score {
+.nhl-abbrev {
+  margin-right: 5px;
+}
+
+.nhl-team-winner {
+  color: #ffffff;
   font-weight: 700;
 }
 

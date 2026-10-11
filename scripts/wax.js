@@ -1023,6 +1023,14 @@ function fillNhlGameChip(chip, game) {
   chip.querySelector('[data-side="home"]').textContent = isFuture ? "" : game.home.score ?? "";
   chip.querySelector(".nhl-status").textContent = formatNhlGameStatus(game);
   chip.classList.toggle("nhl-chip-live", ["LIVE", "CRIT"].includes(game.state));
+
+  // Bold the winner of a finished game. Shootout finals need no special
+  // case - the NHL credits the shootout winner with one extra goal.
+  const isFinal = NHL_FINAL_STATES.includes(game.state);
+  const awayWon = isFinal && game.away.score > game.home.score;
+  const homeWon = isFinal && game.home.score > game.away.score;
+  chip.querySelector('[data-side="away"]').parentElement.classList.toggle("nhl-team-winner", awayWon);
+  chip.querySelector('[data-side="home"]').parentElement.classList.toggle("nhl-team-winner", homeWon);
 }
 
 // Both marquee copies carry the same data-game-id, so update each.
