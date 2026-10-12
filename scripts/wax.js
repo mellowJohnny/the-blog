@@ -977,25 +977,22 @@ function renderNhlTicker(ticker, previous, today) {
   applyNhlTickerMotion(ticker);
 }
 
-// Picks the marquee mode and sets a duration that keeps the speed the
-// same whatever the game count. Re-run when the strip's width changes.
+// The two-copy loop is only seamless when each copy is at least as wide
+// as the strip, so each gets min-width = the strip's width: with few
+// games the next pass enters on the right just as the first game starts
+// to leave on the left. min-width (not measured padding) stays exact as
+// fonts load or scores change. Re-run when the strip's width changes.
 function applyNhlTickerMotion(ticker) {
   const scroller = ticker.querySelector(".nhl-ticker-scroller");
   if (!scroller) return;
-  const track = scroller.querySelector(".nhl-ticker-track:not(.nhl-ticker-track-copy)");
-
-  track.style.paddingLeft = "";
-  const contentWidth = track.scrollWidth;
+  const tracks = scroller.querySelectorAll(".nhl-ticker-track");
   const stripWidth = ticker.clientWidth;
-  // Two copies only loop seamlessly when each fills the strip; fewer
-  // games scroll in from the right instead (.nhl-ticker-short). Not
-  // with reduced motion, where the padding would push games off-screen.
+  // Reduced motion shows a static, swipeable row - nothing to pad.
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const isShort = contentWidth < stripWidth && !reducedMotion;
+  tracks.forEach((track) => { track.style.minWidth = reducedMotion ? "" : `${stripWidth}px`; });
 
-  ticker.classList.toggle("nhl-ticker-short", isShort);
-  if (isShort) track.style.paddingLeft = `${stripWidth}px`;
-  const distance = isShort ? stripWidth + contentWidth : contentWidth;
+  // Same scroll speed whatever the game count.
+  const distance = tracks[0].getBoundingClientRect().width;
   scroller.style.animationDuration = `${Math.round(distance / NHL_TICKER_PX_PER_SEC)}s`;
 }
 

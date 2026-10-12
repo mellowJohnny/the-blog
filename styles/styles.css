@@ -1064,22 +1064,6 @@ label sup {
   to   { transform: translateX(-50%); }
 }
 
-/* Too few games to fill the strip (applyNhlTickerMotion(), wax.js):
-   one copy, padded by the strip's width so it starts off the right
-   edge, slides its full width until the last game leaves on the left. */
-.nhl-ticker-short .nhl-ticker-scroller {
-  animation-name: nhlTickerScrollShort;
-}
-
-.nhl-ticker-short .nhl-ticker-track-copy {
-  display: none;
-}
-
-@keyframes nhlTickerScrollShort {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-100%); }
-}
-
 .nhl-ticker-track {
   display: flex;
   align-items: center;

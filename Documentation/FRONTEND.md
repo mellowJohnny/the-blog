@@ -613,26 +613,22 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
   strip hidden. `.nhl-ticker[hidden] { display: none; }` is required,
   not redundant — the strip's own `display: flex` would otherwise
   override the `hidden` attribute.
-- **Marquee, two modes** (`applyNhlTickerMotion()`, re-run by a
-  `ResizeObserver` when the strip's width changes):
-  - **Enough games to fill the strip**: the chip track is rendered
-    twice inside `.nhl-ticker-scroller`, which CSS slides
-    `translateX(0 → -50%)` on a loop — seamless, because each copy is
-    at least as wide as the strip. The copy is `aria-hidden` so each
-    game is announced once.
-  - **Too few games** (`.nhl-ticker-short`): two narrower copies would
-    put the second one mid-strip and make the loop visibly jump, so
-    the copy is hidden and the one track gets left padding equal to
-    the strip's width, then slides `-100%` of its own width — it
-    starts just off the right edge and restarts only once the last
-    game has left on the left.
-
-  The duration is set from the distance travelled
-  (`NHL_TICKER_PX_PER_SEC`), so the speed is the same in both modes and
-  at any game count. Hover or keyboard focus (the strip is
-  `tabindex="0"`) pauses it; `prefers-reduced-motion` drops the
-  animation, the copy and the short-mode padding, leaving a swipeable
-  row.
+- **Seamless marquee** (`applyNhlTickerMotion()`, re-run by a
+  `ResizeObserver` when the strip's width changes): the chip track is
+  rendered twice inside `.nhl-ticker-scroller`, which CSS slides
+  `translateX(0 → -50%)` on a loop. That loop only looks continuous if
+  each copy is at least as wide as the strip, so both copies get
+  `min-width` equal to the strip's width. With many games that changes
+  nothing; with only a few, each copy ends in empty space, and the next
+  pass enters on the right just as the first game starts to leave on
+  the left. It's `min-width` rather than padding computed from a
+  measured width because the text width changes after render (the web
+  font loading, scores updating in place), which left a measured gap
+  50px off. The copy is `aria-hidden` so each game is announced once.
+  The duration is set from a copy's width (`NHL_TICKER_PX_PER_SEC`), so
+  the speed is the same at any game count. Hover or keyboard focus (the
+  strip is `tabindex="0"`) pauses it; `prefers-reduced-motion` drops
+  the animation, the copy and the `min-width`, leaving a swipeable row.
 - **Refresh**: `scheduleNhlTickerRefresh()` polls every 60s while a
   game is `PRE`/`LIVE`/`CRIT`; otherwise it sleeps until the next
   scheduled start time; with nothing left to play it stops. Polling
