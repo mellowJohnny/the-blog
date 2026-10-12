@@ -1106,6 +1106,12 @@ label sup {
   white-space: nowrap;
 }
 
+/* Dividers separate games within a league; the logo already separates
+   leagues, so the last item in each section (game or note) has none. */
+.ticker-league > :last-child {
+  border-right: 0;
+}
+
 /* PWHL team logos are square PNGs, not the NHL's 3:2 SVGs. */
 .ticker-league[data-league="pwhl"] .nhl-team img {
   width: 28px;
