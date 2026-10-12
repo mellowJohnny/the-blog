@@ -1141,8 +1141,11 @@ label sup {
   to   { opacity: 1; }
 }
 
+/* Date / "Today" labels get the same divider as the games and the PWHL
+   notice, so each label is set off from the games that follow it. */
 .nhl-ticker-label {
   padding: 0 14px;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.06em;
