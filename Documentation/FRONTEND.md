@@ -613,14 +613,26 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
   strip hidden. `.nhl-ticker[hidden] { display: none; }` is required,
   not redundant — the strip's own `display: flex` would otherwise
   override the `hidden` attribute.
-- **Seamless marquee**: the chip track is rendered twice inside
-  `.nhl-ticker-scroller`, which CSS slides `translateX(0 → -50%)` on a
-  loop. The duration is set from the track's measured width
-  (`NHL_TICKER_PX_PER_SEC`), so the speed is the same with 3 games or
-  16. The copy is `aria-hidden` so each game is announced once. Hover
-  or keyboard focus (the strip is `tabindex="0"`) pauses it;
-  `prefers-reduced-motion` drops the animation and the copy, leaving a
-  swipeable row.
+- **Marquee, two modes** (`applyNhlTickerMotion()`, re-run by a
+  `ResizeObserver` when the strip's width changes):
+  - **Enough games to fill the strip**: the chip track is rendered
+    twice inside `.nhl-ticker-scroller`, which CSS slides
+    `translateX(0 → -50%)` on a loop — seamless, because each copy is
+    at least as wide as the strip. The copy is `aria-hidden` so each
+    game is announced once.
+  - **Too few games** (`.nhl-ticker-short`): two narrower copies would
+    put the second one mid-strip and make the loop visibly jump, so
+    the copy is hidden and the one track gets left padding equal to
+    the strip's width, then slides `-100%` of its own width — it
+    starts just off the right edge and restarts only once the last
+    game has left on the left.
+
+  The duration is set from the distance travelled
+  (`NHL_TICKER_PX_PER_SEC`), so the speed is the same in both modes and
+  at any game count. Hover or keyboard focus (the strip is
+  `tabindex="0"`) pauses it; `prefers-reduced-motion` drops the
+  animation, the copy and the short-mode padding, leaving a swipeable
+  row.
 - **Refresh**: `scheduleNhlTickerRefresh()` polls every 60s while a
   game is `PRE`/`LIVE`/`CRIT`; otherwise it sleeps until the next
   scheduled start time; with nothing left to play it stops. Polling
@@ -661,6 +673,38 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
   Chips in the scroll's duplicate copy get `tabindex="-1"`, so the
   keyboard visits each game once. One click listener on `#nhlTicker`
   covers every chip, including ones added by later refreshes.
+
+### When "Last night" drops off the ticker
+
+"Last night" is decided entirely in the Lambda. It shows last night's results **until the first of today's games starts**, then drops them.
+
+**The rule** (`Lambdas/getNhlScores/index.mjs`):
+
+1. Fetch today's games from the NHL (`/v1/score/now`).
+2. If **every** game today is still `FUT` (scheduled) or `PRE` (warm-up), or there are no games today, also fetch the previous day's games, keeping only the finished ones (`FINAL`/`OFF`).
+3. Once any of today's games is past warm-up (`LIVE`), `previous` comes back empty.
+
+**What the page does with it** (`scripts/wax.js`):
+
+- The ticker stores the list of game IDs it's showing. When the "last night" games stop arriving, that list changes, so the strip is rebuilt with only today's games and the "Last night" label goes.
+- Before puck drop, the ticker doesn't poll every minute. It sleeps until the first scheduled start time, then checks every 60s.
+
+**In practice, on a typical evening:**
+
+| Time (ET) | What the ticker shows |
+|---|---|
+| Morning to first puck drop | Last night (finals) → Today (start times) |
+| Scheduled start, e.g. 7:00 | Unchanged: games sit in `FUT`/`PRE` for warm-ups, and the real puck drop is usually a few minutes after the listed time |
+| First game goes `LIVE` | "Last night" drops on the next refresh, within about 1–5 minutes |
+| Rest of the evening | Today only, live and final |
+
+The 1–5 minute range comes from caching. Until a game is live, the Lambda's response may be cached for up to 5 minutes, so the first refresh after puck drop can still get an older copy.
+
+**Edge cases:**
+- **A day with no games:** `previous` is filled all day, so the ticker shows the previous day's results, as long as there were games that day.
+- **The day after a no-game day:** the NHL's "previous date" is the empty day, so there's no "Last night" section, just today's start times.
+- **When "today" begins:** it's the NHL's game date (`currentDate` in their response), not midnight in the visitor's time zone. I haven't observed exactly when the NHL rolls its date over (probably early morning Eastern), so a visitor late at night may still see the previous day's games as "today" for a while.
+- **Postponed games:** these stay `FUT`, so a day whose only game is postponed would keep showing "Last night" all day. That's harmless, but the code doesn't treat it specially.
 
 ## NHL game modal (waxReviews.html)
 
