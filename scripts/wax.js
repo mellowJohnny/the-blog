@@ -872,6 +872,9 @@ const PWHL_SCORES_API_URL = "https://lgk2lrxenb.execute-api.us-east-2.amazonaws.
 const NHL_TICKER_POLL_MS = 60000;
 const NHL_TICKER_PX_PER_SEC = 45;
 const TICKER_SWAP_CHECK_MS = 200;
+// After midnight Eastern, wait this long before re-fetching, so the
+// Lambdas (whose caching never crosses midnight) serve the new day.
+const TICKER_MIDNIGHT_GRACE_MS = 2 * 60 * 1000;
 const NHL_LIVE_STATES = ["PRE", "LIVE", "CRIT"];
 const NHL_FINAL_STATES = ["FINAL", "OFF"];
 const NHL_PERIOD_LABELS = { 1: "1st", 2: "2nd", 3: "3rd" };
@@ -956,22 +959,33 @@ async function refreshTickerLeague(league) {
     const section = all.length || upcoming ? buildTickerLeagueSection(league, previous, today, upcoming) : null;
     replaceTickerLeagueSection(ticker, league, section);
   }
-  scheduleNhlTickerRefresh(league, today);
+  scheduleNhlTickerRefresh(league, today, previous);
 }
 
-// Poll every 60s while a game is live; otherwise sleep until the next
-// scheduled puck drop. Nothing left to play today means no more polls.
-function scheduleNhlTickerRefresh(league, today) {
+// Poll every 60s while a game is live (including last night's, if one
+// runs past midnight); otherwise sleep until the next scheduled puck
+// drop. With nothing left to play, wake just after midnight Eastern - the
+// Lambdas' day boundary - so an open tab still rolls over to the new day.
+function scheduleNhlTickerRefresh(league, today, previous = []) {
   if (document.hidden) return;
 
-  let delay = null;
-  if (today.some((g) => NHL_LIVE_STATES.includes(g.state))) {
+  let delay;
+  if ([...today, ...previous].some((g) => NHL_LIVE_STATES.includes(g.state))) {
     delay = NHL_TICKER_POLL_MS;
   } else {
     const starts = today.filter((g) => g.state === "FUT").map((g) => Date.parse(g.startTimeUTC));
-    if (starts.length) delay = Math.max(NHL_TICKER_POLL_MS, Math.min(...starts) - Date.now());
+    delay = starts.length
+      ? Math.max(NHL_TICKER_POLL_MS, Math.min(...starts) - Date.now())
+      : msUntilEasternMidnight() + TICKER_MIDNIGHT_GRACE_MS;
   }
-  if (delay !== null) league.timer = setTimeout(() => refreshTickerLeague(league), delay);
+  league.timer = setTimeout(() => refreshTickerLeague(league), delay);
+}
+
+function msUntilEasternMidnight() {
+  const parts = new Intl.DateTimeFormat("en-GB", { timeZone: "America/Toronto", hourCycle: "h23", hour: "numeric", minute: "numeric", second: "numeric" })
+    .formatToParts(new Date())
+    .reduce((acc, p) => ({ ...acc, [p.type]: Number(p.value) }), {});
+  return (86400 - (parts.hour * 3600 + parts.minute * 60 + parts.second)) * 1000;
 }
 
 // One league's block: its logo, yesterday's games after their date, then

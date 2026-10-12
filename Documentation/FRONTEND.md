@@ -676,8 +676,11 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
   strip is `tabindex="0"`) pauses it; `prefers-reduced-motion` drops
   the animation, the copy and the `min-width`, leaving a swipeable row.
 - **Refresh**: `scheduleNhlTickerRefresh()` polls every 60s while a
-  game is `PRE`/`LIVE`/`CRIT`; otherwise it sleeps until the next
-  scheduled start time; with nothing left to play it stops. Polling
+  game is `PRE`/`LIVE`/`CRIT` — today's, or last night's if one runs
+  past midnight; otherwise it sleeps until the next scheduled start
+  time; with nothing left to play it sleeps until 2 minutes after
+  midnight Eastern, so an open tab rolls over to the new day (the
+  Lambdas never cache past midnight, so that refresh gets it). Polling
   pauses in a background tab (`visibilitychange`) and catches up when
   the tab returns. A refresh with the same set of games updates each
   chip's score and status in place (matched by `data-game-id`, in both
@@ -737,8 +740,8 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
 
 **The rule** (`Lambdas/getNhlScores/index.mjs`):
 
-1. Fetch today's games from the NHL (`/v1/score/now`).
-2. If **every** game today is still `FUT` (scheduled) or `PRE` (warm-up), or there are no games today, also fetch the previous day's games, keeping only the finished ones (`FINAL`/`OFF`).
+1. Fetch today's games from the NHL (`/v1/score/{today}`, where "today" is the calendar date in Eastern time).
+2. If **every** game today is still `FUT` (scheduled) or `PRE` (warm-up), or there are no games today, also fetch the previous game day's games, keeping the finished ones (`FINAL`/`OFF`) and any still being played.
 3. Once any of today's games is past warm-up (`LIVE`), `previous` comes back empty.
 
 **What the page does with it** (`scripts/wax.js`):
@@ -760,7 +763,8 @@ The 1–5 minute range comes from caching. Until a game is live, the Lambda's re
 **Edge cases:**
 - **A day with no games:** `previous` is filled all day, followed by the "Next game" notice and that day's games (see "Season starts" / "Next game" above).
 - **Breaks of several days:** the NHL's `prevDate` is the previous **game** day, not the calendar day — on Dec 24 and 25, 2025 it was Dec 23 — so the last results stay on the strip, dated, for the whole break, followed by "Next game Dec 27".
-- **When "today" begins:** it's the NHL's game date (`currentDate` in their response), not midnight in the visitor's time zone. I haven't observed exactly when the NHL rolls its date over (probably early morning Eastern), so a visitor late at night may still see the previous day's games as "today" for a while.
+- **When "today" begins:** at **midnight Eastern**, decided by the Lambdas — not the NHL's own `/v1/score/now`, whose `currentDate` was observed still on Sunday at 10:21 a.m. Monday (Oct 12, 2026), which left Sunday's finals labelled "Today" all morning. Both Lambdas also cap their caching at midnight, and an open tab re-fetches 2 minutes after it.
+- **A game still live at midnight:** a late West Coast start (10:00 p.m. ET) can run past midnight. It becomes "yesterday's" game mid-play but stays on the strip under yesterday's date with its live clock, and keeps the 60s polling going until it ends.
 - **Postponed games:** these stay `FUT`, so a day whose only game is postponed would keep showing "Last night" all day. That's harmless, but the code doesn't treat it specially.
 
 **The PWHL** follows the same rule, from `Lambdas/getPwhlScores/index.mjs`. The HockeyTech feed has no "current date" of its own, so "today" and "yesterday" are calendar days in `America/Toronto`. On a day with no PWHL games, the section shows yesterday's results (if any) and then "Next game {date}" — or "Season starts {date}" before the regular season's first game — with that day's games, and nothing in summer before the next schedule is published.

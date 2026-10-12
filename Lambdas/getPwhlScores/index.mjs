@@ -94,6 +94,15 @@ function leagueDate(date) {
   return new Intl.DateTimeFormat("en-CA", { timeZone: LEAGUE_TIME_ZONE }).format(date);
 }
 
+// Seconds left in the league's day - responses are never cached past
+// midnight, or a late copy would keep serving yesterday as "today".
+function secondsUntilLeagueMidnight(date) {
+  const parts = new Intl.DateTimeFormat("en-GB", { timeZone: LEAGUE_TIME_ZONE, hourCycle: "h23", hour: "numeric", minute: "numeric", second: "numeric" })
+    .formatToParts(date)
+    .reduce((acc, p) => ({ ...acc, [p.type]: Number(p.value) }), {});
+  return 86400 - (parts.hour * 3600 + parts.minute * 60 + parts.second);
+}
+
 // Previous calendar day of a YYYY-MM-DD string (noon UTC avoids DST edges).
 function dayBefore(isoDate) {
   const d = new Date(`${isoDate}T12:00:00Z`);
@@ -145,19 +154,21 @@ export const handler = async (event) => {
   try {
     // ?date=YYYY-MM-DD overrides "today" - a testing aid only.
     const override = event?.queryStringParameters?.date;
-    const today = /^\d{4}-\d{2}-\d{2}$/.test(override ?? "") ? override : leagueDate(new Date());
+    const now = new Date();
+    const today = /^\d{4}-\d{2}-\d{2}$/.test(override ?? "") ? override : leagueDate(now);
     const yesterday = dayBefore(today);
 
     const all = await fetchScorebar();
     const games = all.filter((g) => g.Date === today).map(slimGame);
 
-    // Same rule as getNhlScores: last night's results until puck drop.
+    // Same rule as getNhlScores: last night's results until puck drop -
+    // finished games plus any still live after midnight.
     let previous = [];
     if (games.every((g) => g.state === "FUT")) {
       previous = all
         .filter((g) => g.Date === yesterday)
         .map(slimGame)
-        .filter((g) => g.state === "OFF");
+        .filter((g) => g.state === "OFF" || g.state === "LIVE");
     }
 
     // Best effort: a failed lookup just means no notice, never a 502.
@@ -169,7 +180,8 @@ export const handler = async (event) => {
       });
     }
 
-    if (games.some((g) => g.state === "LIVE")) maxAge = 60;
+    if ([...games, ...previous].some((g) => g.state === "LIVE")) maxAge = 60;
+    maxAge = Math.max(1, Math.min(maxAge, secondsUntilLeagueMidnight(now)));
     responseBody = JSON.stringify({ date: today, games, previous, upcoming });
   } catch (err) {
     console.log("Error:", err);

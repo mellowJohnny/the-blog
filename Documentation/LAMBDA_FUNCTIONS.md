@@ -665,11 +665,15 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   function out before its own error handling could run.
 - **What it does**: backs the scores ticker on `waxReviews.html` (see
   `FRONTEND.md`). Public GET, no Cognito Authorizer. Fetches
-  `https://api-web.nhle.com/v1/score/now` (a `307` to today's dated
-  URL, which `fetch` follows). If no game today has started yet — or
-  there are none — it also fetches the previous day's scores and keeps
-  only the finished games as `previous`, so the ticker shows last
-  night's results rather than just a row of start times. Each game is
+  `https://api-web.nhle.com/v1/score/{date}` for **today's date in
+  Eastern time** (`easternDate()`). It used `/score/now` until Oct 12,
+  2026, when the NHL's `currentDate` was observed still on Sunday at
+  10:21 a.m. Monday — the ticker showed Sunday's finals as "Today" all
+  morning. If no game today has started yet — or there are none — it
+  also fetches the previous game day's scores and keeps the finished
+  games, plus any still live (a late start can run past midnight), as
+  `previous`, so the ticker shows last night's results rather than just
+  a row of start times. Each game is
   reduced to a small shape of our own by `slimGame()` (see
   `API_ENDPOINTS.md`'s "Get NHL scores"), dropping odds, broadcasts,
   goals and video links. Team logos are swapped from the NHL's `_light`
@@ -689,8 +693,11 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   undocumented: if the NHL renames a field, `slimGame()` is the one
   place to fix, and the frontend's contract doesn't change. See
   `NHL_API.md` for the full research.
-- **Caching**: `Cache-Control: public, max-age=30` while any game is
-  `LIVE`/`CRIT`, `max-age=300` otherwise, `max-age=0` on a `502`. Like
+- **Caching**: `Cache-Control: public, max-age=30` while any game
+  (today's or the previous day's) is `LIVE`/`CRIT`, `max-age=300`
+  otherwise, `max-age=0` on a `502` — and never past midnight Eastern
+  (`secondsUntilEasternMidnight()`), so a copy cached at 11:58 p.m.
+  can't keep serving yesterday as "today". Like
   every other endpoint here this is a browser-only cache — no API
   Gateway stage cache or CloudFront — so each new visitor still invokes
   the Lambda once. Fine at this site's traffic; the `dev` stage cache
@@ -774,7 +781,9 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   response is still `200`.
 - **Rate limiting**: a burst of about 30 calls got a client briefly
   blocked during research, so it's one main call per request and
-  `Cache-Control: max-age=900` unless a game is live (`60`).
+  `Cache-Control: max-age=900` unless a game is live (`60`) — capped,
+  like `getNhlScores`, at midnight Eastern. `previous` keeps a game
+  still live after midnight as well as finals.
 - **Unverified**: live `GameStatus` codes weren't observable in the
   off-season — anything other than 1 or 4 is treated as live. Check
   the first live game of 2026-27; the fix, if needed, is `gameState()`.

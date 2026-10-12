@@ -95,6 +95,8 @@ DET @ MTL on 2026-10-10 (game `2026020075`, a 1-0 shootout):
 
 ## Off days and season start
 
+- **Don't use `/score/now` for "today".** Its `currentDate` rolls over late: at 10:21 a.m. ET on Monday Oct 12, 2026 it still said 2026-10-11 and redirected to Sunday's scores. This site computes today's date in Eastern time and asks for `/v1/score/{date}`, which returns that day's games with the right `prevDate`/`nextDate`.
+
 - **`prevDate` / `nextDate`** on the scores feed are the previous and next **game** days, not calendar days. Through the 2025 Christmas break, Dec 24, 25 and 26 all had `prevDate` Dec 23 and `nextDate` Dec 27. `/v1/score/{nextDate}` returns that day's games in the usual shape.
 - **`/v1/schedule/{date}`** carries the season's `preSeasonStartDate`, `regularSeasonStartDate`, `regularSeasonEndDate` and `playoffEndDate`. `regularSeasonStartDate` is a real game day (Sep 29, 2026: five regular-season games, `gameType` 2).
 - **Summer:** in July–September 2027, as of October 2026, `nextDate` is null and `/v1/schedule/{date}` still reports the 2026-27 dates, because the 2027-28 schedule isn't in the API yet. How these fields change once it's published hasn't been observed.

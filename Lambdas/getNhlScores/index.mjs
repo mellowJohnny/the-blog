@@ -13,8 +13,10 @@
 //      stable shape of our own (see slimGame()).
 //
 // Returns { date, games, previous, upcoming }: today's games, plus the
-// previous game day's finished games in `previous` until today's first
-// game starts. With no games today, `upcoming` names the next game day
+// previous game day's finished (or still-live) games in `previous` until
+// today's first game starts. "Today" is the calendar day in Eastern time
+// - NOT the NHL's /score/now, whose currentDate was still the previous
+// day at 10:21 a.m. ET (observed Oct 12, 2026). With no games today, `upcoming` names the next game day
 // ("Next game") or the regular season's opener ("Season starts") with
 // all of that day's games - same shape as getPwhlScores.
 //
@@ -29,6 +31,20 @@ const LIVE_STATES = ["LIVE", "CRIT"];
 const FINAL_STATES = ["FINAL", "OFF"];
 const NOT_STARTED_STATES = ["FUT", "PRE"];
 const UPCOMING_TIMEOUT_MS = 2500;
+const DAY_TIME_ZONE = "America/Toronto";
+
+// YYYY-MM-DD and seconds-left-today for a moment, in Eastern time - the
+// ticker's day boundary for both leagues (see getPwhlScores).
+function easternDate(date) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: DAY_TIME_ZONE }).format(date);
+}
+
+function secondsUntilEasternMidnight(date) {
+  const parts = new Intl.DateTimeFormat("en-GB", { timeZone: DAY_TIME_ZONE, hourCycle: "h23", hour: "numeric", minute: "numeric", second: "numeric" })
+    .formatToParts(date)
+    .reduce((acc, p) => ({ ...acc, [p.type]: Number(p.value) }), {});
+  return 86400 - (parts.hour * 3600 + parts.minute * 60 + parts.second);
+}
 
 async function fetchJson(path, timeoutMs = UPSTREAM_TIMEOUT_MS) {
   const res = await fetch(`${NHL_API}/${path}`, { signal: AbortSignal.timeout(timeoutMs) });
@@ -91,9 +107,10 @@ export const handler = async (event) => {
   let maxAge = 300;
 
   try {
-    // ?date=YYYY-MM-DD reads that day instead of "now" - a testing aid.
+    // ?date=YYYY-MM-DD reads that day instead of today - a testing aid.
     const override = event?.queryStringParameters?.date;
-    const today = await fetchScores(/^\d{4}-\d{2}-\d{2}$/.test(override ?? "") ? override : "now");
+    const now = new Date();
+    const today = await fetchScores(/^\d{4}-\d{2}-\d{2}$/.test(override ?? "") ? override : easternDate(now));
     const games = (today.games ?? []).map(slimGame);
 
     // Before today's first puck drop (or on a day with no games), show
@@ -108,13 +125,18 @@ export const handler = async (event) => {
         return null;
       })
     ]);
+    // Finished games, plus any still being played - a late West Coast
+    // game can still be live after midnight Eastern.
     const previous = (prev?.games ?? [])
       .map(slimGame)
-      .filter((g) => FINAL_STATES.includes(g.state));
+      .filter((g) => FINAL_STATES.includes(g.state) || LIVE_STATES.includes(g.state));
 
-    if (games.some((g) => LIVE_STATES.includes(g.state))) {
+    if ([...games, ...previous].some((g) => LIVE_STATES.includes(g.state))) {
       maxAge = 30;
     }
+    // Never cache past midnight Eastern, or a copy from 11:58 p.m. would
+    // keep serving yesterday as "today".
+    maxAge = Math.max(1, Math.min(maxAge, secondsUntilEasternMidnight(now)));
 
     responseBody = JSON.stringify({ date: today.currentDate, games, previous, upcoming });
   } catch (err) {
