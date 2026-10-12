@@ -1069,6 +1069,60 @@ label sup {
   align-items: center;
 }
 
+/* One block per league (buildTickerLeagueSection(), wax.js): the league's
+   logo, then its games. Logo sizes match the width/height set in JS. */
+.ticker-league {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.ticker-league-logo {
+  flex: none;
+  margin: 0 6px 0 16px;
+}
+
+.ticker-league[data-league="nhl"] .ticker-league-logo {
+  width: 48px;
+  height: 32px;
+}
+
+/* The PWHL wordmark is one deep-purple colour that all but vanishes on
+   the dark strip, and no white version is published - render it white. */
+.ticker-league[data-league="pwhl"] .ticker-league-logo {
+  width: 85px;
+  height: 18px;
+  filter: brightness(0) invert(1);
+}
+
+/* A league with no games yesterday or today shows its next date
+   instead ("Season starts" / "Next game"), styled like game status. */
+.ticker-league-note {
+  padding: 0 16px 0 10px;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  color: #b5b5b5;
+  font-size: 13px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* PWHL team logos are square PNGs, not the NHL's 3:2 SVGs. */
+.ticker-league[data-league="pwhl"] .nhl-team img {
+  width: 28px;
+  height: 28px;
+}
+
+/* A section added while on-screen (no hidden moment available - see
+   applyTickerSectionSwap(), wax.js) fades in rather than popping. */
+.ticker-league-entering {
+  animation: tickerLeagueFadeIn 0.4s ease-out;
+}
+
+@keyframes tickerLeagueFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 .nhl-ticker-label {
   padding: 0 14px;
   font-size: 12px;
@@ -1507,6 +1561,9 @@ label sup {
   }
   .nhl-ticker-track-copy {
     display: none;
+  }
+  .ticker-league-entering {
+    animation: none;
   }
 }
 
@@ -3415,6 +3472,25 @@ label sup {
 
   .nhl-team img {
     width: 33px;
+    height: 22px;
+  }
+
+  .ticker-league-logo {
+    margin-left: 12px;
+  }
+
+  .ticker-league[data-league="nhl"] .ticker-league-logo {
+    width: 39px;
+    height: 26px;
+  }
+
+  .ticker-league[data-league="pwhl"] .ticker-league-logo {
+    width: 66px;
+    height: 14px;
+  }
+
+  .ticker-league[data-league="pwhl"] .nhl-team img {
+    width: 22px;
     height: 22px;
   }
 

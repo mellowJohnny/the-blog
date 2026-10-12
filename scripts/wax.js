@@ -868,77 +868,96 @@ function prevPage() {
  */
 
 const NHL_SCORES_API_URL = "https://kckdcdjqch.execute-api.us-east-2.amazonaws.com/dev";
+const PWHL_SCORES_API_URL = "https://lgk2lrxenb.execute-api.us-east-2.amazonaws.com/prod";
 const NHL_TICKER_POLL_MS = 60000;
 const NHL_TICKER_PX_PER_SEC = 45;
+const TICKER_SWAP_CHECK_MS = 200;
 const NHL_LIVE_STATES = ["PRE", "LIVE", "CRIT"];
 const NHL_FINAL_STATES = ["FINAL", "OFF"];
 const NHL_PERIOD_LABELS = { 1: "1st", 2: "2nd", 3: "3rd" };
 
-let nhlTickerTimer = null;
-// Comma-joined game IDs currently rendered - a refresh with the same
-// games updates chips in place (no marquee jump); a new set rebuilds.
-let nhlTickerGameKey = "";
+// Leagues in strip order, each fetched on its own so neither waits on the
+// other. gameKey (comma-joined IDs rendered), timer and swapTimer are the
+// league's own state. Logo sizes are set up front so widths never shift.
+const TICKER_LEAGUES = [
+  {
+    id: "nhl", name: "NHL", url: NHL_SCORES_API_URL, clickable: true,
+    logo: "https://assets.nhle.com/logos/nhl/svg/NHL_dark.svg", logoSize: [48, 32], teamLogoSize: [42, 28],
+    gameKey: "", timer: null, swapTimer: null
+  },
+  {
+    id: "pwhl", name: "PWHL", url: PWHL_SCORES_API_URL, clickable: false,
+    logo: "https://res.cloudinary.com/pwhl-low/image/upload/PWHL_Logo_Logotype_Ultra_Violet_cgbt5r", logoSize: [85, 18], teamLogoSize: [28, 28],
+    gameKey: "", timer: null, swapTimer: null
+  }
+];
 
 function initNhlTicker() {
   const ticker = document.getElementById("nhlTicker");
-  if (!NHL_SCORES_API_URL || !ticker) return;
+  const leagues = TICKER_LEAGUES.filter((league) => league.url);
+  if (!ticker || !leagues.length) return;
 
   // Stop polling in a background tab; catch up as soon as it's back.
   document.addEventListener("visibilitychange", () => {
-    clearTimeout(nhlTickerTimer);
-    if (!document.hidden && nhlTickerGameKey) refreshNhlTicker();
+    leagues.forEach((league) => {
+      clearTimeout(league.timer);
+      if (!document.hidden && league.gameKey) refreshTickerLeague(league);
+    });
   });
 
   // One listener for every chip, including ones added by later refreshes.
   ticker.addEventListener("click", (event) => {
     const chip = event.target.closest(".nhl-chip");
-    if (chip && !chip.disabled) openNhlGameModal(chip.dataset.gameId);
+    const section = chip?.closest(".ticker-league");
+    const league = TICKER_LEAGUES.find((l) => l.id === section?.dataset.league);
+    if (chip && !chip.disabled && league?.clickable) openNhlGameModal(chip.dataset.gameId);
   });
   initNhlGameModal();
-  // Window resize or phone rotation can flip the marquee mode.
+  // Window resize or phone rotation changes the strip's width.
   new ResizeObserver(() => applyNhlTickerMotion(ticker)).observe(ticker);
-  refreshNhlTicker();
+  leagues.forEach((league) => refreshTickerLeague(league));
 }
 
-async function refreshNhlTicker() {
-  clearTimeout(nhlTickerTimer);
+async function refreshTickerLeague(league) {
+  clearTimeout(league.timer);
   const ticker = document.getElementById("nhlTicker");
 
   let data;
   try {
-    const res = await fetch(NHL_SCORES_API_URL);
-    if (!res.ok) throw new Error(`NHL scores request failed: ${res.status}`);
+    const res = await fetch(league.url);
+    if (!res.ok) throw new Error(`${league.name} scores request failed: ${res.status}`);
     data = await res.json();
   } catch (err) {
-    console.log("NHL ticker:", err);
+    console.log(`${league.name} ticker:`, err);
     // Keep showing the last good scores mid-game and try again later;
-    // on the very first load there's nothing to show, so stay hidden.
-    if (nhlTickerGameKey) nhlTickerTimer = setTimeout(refreshNhlTicker, NHL_TICKER_POLL_MS);
+    // on the very first load there's nothing to show, so nothing renders.
+    if (league.gameKey) league.timer = setTimeout(() => refreshTickerLeague(league), NHL_TICKER_POLL_MS);
     return;
   }
 
   const previous = data.previous || [];
   const today = data.games || [];
   const all = [...previous, ...today];
-  if (!all.length) {
-    ticker.hidden = true;
-    nhlTickerGameKey = "";
-    return;
-  }
+  // No games: show the league's "Season starts" / "Next game" notice, if
+  // it sent one (PWHL only), keyed so a change still swaps in hidden.
+  const upcoming = all.length ? null : data.upcoming;
+  const key = upcoming
+    ? `upcoming:${upcoming.kind}:${upcoming.startTimeUTC}`
+    : all.map((g) => g.id).join(",");
 
-  const key = all.map((g) => g.id).join(",");
-  if (key === nhlTickerGameKey) {
-    all.forEach((game) => updateNhlGameChips(ticker, game));
+  if (key === league.gameKey) {
+    all.forEach((game) => updateNhlGameChips(ticker, league, game));
   } else {
-    renderNhlTicker(ticker, previous, today);
-    nhlTickerGameKey = key;
+    league.gameKey = key;
+    const section = all.length || upcoming ? buildTickerLeagueSection(league, previous, today, upcoming) : null;
+    replaceTickerLeagueSection(ticker, league, section);
   }
-  scheduleNhlTickerRefresh(today);
+  scheduleNhlTickerRefresh(league, today);
 }
 
 // Poll every 60s while a game is live; otherwise sleep until the next
 // scheduled puck drop. Nothing left to play today means no more polls.
-function scheduleNhlTickerRefresh(today) {
+function scheduleNhlTickerRefresh(league, today) {
   if (document.hidden) return;
 
   let delay = null;
@@ -948,33 +967,183 @@ function scheduleNhlTickerRefresh(today) {
     const starts = today.filter((g) => g.state === "FUT").map((g) => Date.parse(g.startTimeUTC));
     if (starts.length) delay = Math.max(NHL_TICKER_POLL_MS, Math.min(...starts) - Date.now());
   }
-  if (delay !== null) nhlTickerTimer = setTimeout(refreshNhlTicker, delay);
+  if (delay !== null) league.timer = setTimeout(() => refreshTickerLeague(league), delay);
 }
 
-function renderNhlTicker(ticker, previous, today) {
-  const track = document.createElement("div");
-  track.className = "nhl-ticker-track";
+// One league's block: its logo, then "Last night" / "Today" and chips -
+// or, with no games, an upcoming notice in the visitor's own time zone.
+function buildTickerLeagueSection(league, previous, today, upcoming) {
+  const section = document.createElement("div");
+  section.className = "ticker-league";
+  section.dataset.league = league.id;
+
+  const logo = document.createElement("img");
+  logo.className = "ticker-league-logo";
+  logo.src = league.logo;
+  logo.alt = league.name;
+  [logo.width, logo.height] = league.logoSize;
+  section.appendChild(logo);
+
+  if (upcoming) {
+    const note = document.createElement("span");
+    note.className = "ticker-league-note";
+    const date = new Date(upcoming.startTimeUTC).toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+    note.textContent = `${upcoming.kind === "season" ? "Season starts" : "Next game"} ${date}`;
+    section.appendChild(note);
+  }
 
   if (previous.length) {
-    track.appendChild(buildNhlTickerLabel("Last night"));
-    previous.forEach((game) => track.appendChild(buildNhlGameChip(game)));
-    if (today.length) track.appendChild(buildNhlTickerLabel("Today"));
+    section.appendChild(buildNhlTickerLabel("Last night"));
+    previous.forEach((game) => section.appendChild(buildNhlGameChip(game, league)));
+    if (today.length) section.appendChild(buildNhlTickerLabel("Today"));
   }
-  today.forEach((game) => track.appendChild(buildNhlGameChip(game)));
+  today.forEach((game) => section.appendChild(buildNhlGameChip(game, league)));
+  return section;
+}
 
-  // Two identical tracks scrolled -50% loop seamlessly; the copy is
-  // hidden from screen readers so each game is only announced once.
-  const copy = track.cloneNode(true);
-  copy.classList.add("nhl-ticker-track-copy");
-  copy.setAttribute("aria-hidden", "true");
+// Copy B of the marquee: hidden from screen readers and the tab order,
+// so each game is announced and focused once.
+function copyTickerSection(section) {
+  const copy = section.cloneNode(true);
   copy.querySelectorAll(".nhl-chip").forEach((chip) => { chip.tabIndex = -1; });
+  return copy;
+}
+
+function insertTickerSection(track, league, section) {
+  const order = TICKER_LEAGUES.map((l) => l.id);
+  const next = [...track.querySelectorAll(".ticker-league")]
+    .find((s) => order.indexOf(s.dataset.league) > order.indexOf(league.id));
+  track.insertBefore(section, next || null);
+}
+
+// The first league to arrive builds the strip: two identical tracks that
+// CSS slides -50% on a loop (copy B is aria-hidden).
+function buildTickerScroller(ticker) {
+  const track = document.createElement("div");
+  track.className = "nhl-ticker-track";
+  const copy = document.createElement("div");
+  copy.className = "nhl-ticker-track nhl-ticker-track-copy";
+  copy.setAttribute("aria-hidden", "true");
 
   const scroller = document.createElement("div");
   scroller.className = "nhl-ticker-scroller";
   scroller.append(track, copy);
   ticker.replaceChildren(scroller);
-  ticker.hidden = false;
+  return scroller;
+}
+
+// Swaps a league's section in both copies without a visible jump: waits
+// for a moment it's off-screen when one exists this pass, otherwise
+// swaps now and fades it in. See FRONTEND.md "NHL scores ticker".
+function replaceTickerLeagueSection(ticker, league, section) {
+  clearTimeout(league.swapTimer);
+  const scroller = ticker.querySelector(".nhl-ticker-scroller");
+  if (!scroller || !scroller.querySelector(".ticker-league")) {
+    if (!section) return;
+    const fresh = buildTickerScroller(ticker);
+    const [track, copy] = fresh.querySelectorAll(".nhl-ticker-track");
+    track.appendChild(section);
+    copy.appendChild(copyTickerSection(section));
+    ticker.hidden = false;
+    applyNhlTickerMotion(ticker);
+    return;
+  }
+
+  // Backstop: never wait longer than one full pass.
+  const anim = scroller.getAnimations()[0];
+  const deadline = Date.now() + (anim ? anim.effect.getComputedTiming().duration : 0);
+  const attempt = () => {
+    const safe = findHiddenSwap(ticker, league);
+    if (safe === "wait" && Date.now() < deadline) {
+      league.swapTimer = setTimeout(attempt, TICKER_SWAP_CHECK_MS);
+    } else {
+      applyTickerSectionSwap(ticker, league, section, safe === "wait" ? null : safe);
+    }
+  };
+  attempt();
+}
+
+// Where things sit, in track coordinates: x = scroll offset, w = strip
+// width, W = one copy's width, and the league's section span in copy A
+// (or its insertion point, if the league has no section yet).
+function tickerGeometry(ticker, league) {
+  const scroller = ticker.querySelector(".nhl-ticker-scroller");
+  const [track] = scroller.querySelectorAll(".nhl-ticker-track");
+  const origin = track.getBoundingClientRect().left;
+  const x = ticker.getBoundingClientRect().left - origin;
+  const w = ticker.clientWidth;
+  const W = track.getBoundingClientRect().width;
+
+  const sections = [...track.querySelectorAll(".ticker-league")];
+  const own = sections.find((s) => s.dataset.league === league.id);
+  let start;
+  let end;
+  if (own) {
+    const r = own.getBoundingClientRect();
+    [start, end] = [r.left - origin, r.right - origin];
+  } else {
+    const order = TICKER_LEAGUES.map((l) => l.id);
+    const next = sections.find((s) => order.indexOf(s.dataset.league) > order.indexOf(league.id));
+    const last = sections[sections.length - 1];
+    start = next ? next.getBoundingClientRect().left - origin : last.getBoundingClientRect().right - origin;
+    end = start;
+  }
+  return { scroller, x, w, W, start, end, width: end - start };
+}
+
+// Returns "a" (section entirely right of the view: nothing visible moves),
+// "b" (left of the view in copy A and right of it in copy B: visible
+// content shifts by the size change, which the scroll then offsets),
+// "wait" (a safe moment comes later this pass) or null (none will).
+function findHiddenSwap(ticker, league) {
+  const scroller = ticker.querySelector(".nhl-ticker-scroller");
+  const anim = scroller.getAnimations()[0];
+  if (!anim) return null;
+  const { x, w, W, start, end } = tickerGeometry(ticker, league);
+
+  const aUntil = start - w;
+  const bFrom = end;
+  const bUntil = Math.min(W, W + start - w);
+  if (x <= aUntil) return "a";
+  if (x >= bFrom && x <= bUntil) return "b";
+  // A window narrower than two checks' worth of scrolling can slip past
+  // between checks, so it doesn't count.
+  const minWindow = 2 * NHL_TICKER_PX_PER_SEC * (TICKER_SWAP_CHECK_MS / 1000);
+  const aPossible = aUntil >= minWindow;
+  const bPossible = bUntil - bFrom >= minWindow;
+  return aPossible || bPossible ? "wait" : null;
+}
+
+function applyTickerSectionSwap(ticker, league, section, safe) {
+  const before = tickerGeometry(ticker, league);
+  const anim = before.scroller.getAnimations()[0];
+  const [track, copy] = before.scroller.querySelectorAll(".nhl-ticker-track");
+
+  [[track, section], [copy, section && copyTickerSection(section)]].forEach(([t, next]) => {
+    const old = t.querySelector(`.ticker-league[data-league="${league.id}"]`);
+    if (old && next) old.replaceWith(next);
+    else if (old) old.remove();
+    else if (next) insertTickerSection(t, league, next);
+  });
+
+  if (!track.querySelector(".ticker-league")) {
+    ticker.hidden = true;
+    return;
+  }
   applyNhlTickerMotion(ticker);
+
+  if ((safe === "a" || safe === "b") && anim) {
+    const after = tickerGeometry(ticker, league);
+    const delta = after.width - before.width;
+    const x = ((safe === "b" ? before.x + delta : before.x) % after.W + after.W) % after.W;
+    // -50% of the scroller is one copy, so progress = x / W.
+    anim.currentTime = (x / after.W) * anim.effect.getComputedTiming().duration;
+  } else if (section) {
+    ticker.querySelectorAll(`.ticker-league[data-league="${league.id}"]`).forEach((s) => {
+      s.classList.add("ticker-league-entering");
+      s.addEventListener("animationend", () => s.classList.remove("ticker-league-entering"), { once: true });
+    });
+  }
 }
 
 // The two-copy loop is only seamless when each copy is at least as wide
@@ -991,9 +1160,10 @@ function applyNhlTickerMotion(ticker) {
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   tracks.forEach((track) => { track.style.minWidth = reducedMotion ? "" : `${stripWidth}px`; });
 
-  // Same scroll speed whatever the game count.
+  // Same scroll speed whatever the game count - unrounded, so a swap's
+  // position maths lands exactly.
   const distance = tracks[0].getBoundingClientRect().width;
-  scroller.style.animationDuration = `${Math.round(distance / NHL_TICKER_PX_PER_SEC)}s`;
+  scroller.style.animationDuration = `${(distance / NHL_TICKER_PX_PER_SEC).toFixed(3)}s`;
 }
 
 function buildNhlTickerLabel(text) {
@@ -1003,22 +1173,22 @@ function buildNhlTickerLabel(text) {
   return label;
 }
 
-function buildNhlGameChip(game) {
+function buildNhlGameChip(game, league) {
   const chip = document.createElement("button");
   chip.type = "button";
   chip.className = "nhl-chip";
   chip.dataset.gameId = game.id;
-  chip.append(buildNhlTeam(game.away, "away"), buildNhlTeam(game.home, "home"));
+  chip.append(buildNhlTeam(game.away, "away", league), buildNhlTeam(game.home, "home", league));
 
   const status = document.createElement("span");
   status.className = "nhl-status";
   chip.appendChild(status);
 
-  fillNhlGameChip(chip, game);
+  fillNhlGameChip(chip, game, league);
   return chip;
 }
 
-function buildNhlTeam(team, side) {
+function buildNhlTeam(team, side, league) {
   const wrap = document.createElement("span");
   wrap.className = "nhl-team";
 
@@ -1026,8 +1196,7 @@ function buildNhlTeam(team, side) {
     const logo = document.createElement("img");
     logo.src = team.logo;
     logo.alt = "";
-    logo.width = 42;
-    logo.height = 28;
+    [logo.width, logo.height] = league.teamLogoSize;
     logo.loading = "lazy";
     wrap.appendChild(logo);
   }
@@ -1046,14 +1215,15 @@ function buildNhlTeam(team, side) {
 
 // Writes the parts of a chip that change during a game - shared by the
 // first render and every in-place refresh.
-function fillNhlGameChip(chip, game) {
+function fillNhlGameChip(chip, game, league) {
   const isFuture = ["FUT", "PRE"].includes(game.state);
   chip.querySelector('[data-side="away"]').textContent = isFuture ? "" : game.away.score ?? "";
   chip.querySelector('[data-side="home"]').textContent = isFuture ? "" : game.home.score ?? "";
   chip.querySelector(".nhl-status").textContent = formatNhlGameStatus(game);
   chip.classList.toggle("nhl-chip-live", ["LIVE", "CRIT"].includes(game.state));
-  // Nothing to show in the game modal until puck drop.
-  chip.disabled = isFuture || !NHL_GAME_API_URL;
+  // Nothing to show in the game modal until puck drop; PWHL games have
+  // no modal yet (league.clickable).
+  chip.disabled = isFuture || !league.clickable || !NHL_GAME_API_URL;
 
   // Bold the winner of a finished game. Shootout finals need no special
   // case - the NHL credits the shootout winner with one extra goal.
@@ -1064,9 +1234,11 @@ function fillNhlGameChip(chip, game) {
   chip.querySelector('[data-side="home"]').parentElement.classList.toggle("nhl-team-winner", homeWon);
 }
 
-// Both marquee copies carry the same data-game-id, so update each.
-function updateNhlGameChips(ticker, game) {
-  ticker.querySelectorAll(`[data-game-id="${game.id}"]`).forEach((chip) => fillNhlGameChip(chip, game));
+// Both marquee copies carry the same data-game-id, so update each -
+// within the league's own section, since NHL and PWHL IDs can collide.
+function updateNhlGameChips(ticker, league, game) {
+  ticker.querySelectorAll(`.ticker-league[data-league="${league.id}"] [data-game-id="${game.id}"]`)
+    .forEach((chip) => fillNhlGameChip(chip, game, league));
 }
 
 function formatNhlGameStatus(game) {
