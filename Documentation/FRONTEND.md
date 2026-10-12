@@ -628,13 +628,17 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
   Oct 10 evening games), all built by the same chip code — both Lambdas
   return the same shape. NHL and PWHL game IDs can collide, so in-place
   updates are scoped to the league's section.
-- **"Season starts" / "Next game"**: a league with no games yesterday
-  or today can send an `upcoming` notice (only `getPwhlScores` does),
-  shown after its logo as "Season starts Dec 5" or "Next game Dec 26"
-  (`.ticker-league-note`), dated in the visitor's own time zone and
-  followed by **every game that day** — team logos and local start
-  times, as ordinary disabled chips. The PWHL plays a few nights a
-  week, so without this its logo would be missing most days.
+- **"Season starts" / "Next game"**: on any day with no games today,
+  each league's Lambda sends an `upcoming` notice, shown after the
+  previous game day's results (if any) as "Next game Dec 26" or, before
+  a season, "Season starts Dec 5" (`.ticker-league-note`) — dated in
+  the visitor's own time zone and followed by **every game that day**,
+  team logos and local start times, as ordinary disabled chips. So a
+  section always reads logo → results → what's next, and a league's
+  logo is on the strip whenever it has anything recent or scheduled —
+  the PWHL plays a few nights a week, the NHL has breaks (Christmas,
+  All-Star, the Olympics). In summer, before the next schedule is
+  published, there's nothing to show and the league has no section.
 - **Changing a league's section without a jump**
   (`replaceTickerLeagueSection()`): when a league's set of games
   changes — the second league arriving, "Last night" dropping off, a
@@ -709,9 +713,10 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
   `buildTickerLeagueLogo()` render a box in that colour with the logo
   as its CSS mask (`.ticker-league-logo-masked`, `role="img"` and an
   `aria-label` for screen readers). A cross-site mask needs the image
-  host to allow CORS; Cloudinary does (`*`). All
-  sizes are also set as `<img>` attributes, so widths never shift while
-  logos load — the swap's maths depends on that. A 6px gap separates
+  host to allow CORS; Cloudinary allows any origin. Every
+  logo's size is fixed up front — `<img>` width/height attributes, or
+  CSS for the masked PWHL wordmark — so widths never shift while logos
+  load; the swap's maths depends on that. A 6px gap separates
   it from the masthead, whose drop shadow needs `z-index: 1` on
   `.wax-reviews-mast-table` — otherwise the ticker, later in the page,
   paints over it. The shadow applies on all four pages sharing that
@@ -753,12 +758,12 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
 The 1–5 minute range comes from caching. Until a game is live, the Lambda's response may be cached for up to 5 minutes, so the first refresh after puck drop can still get an older copy.
 
 **Edge cases:**
-- **A day with no games:** `previous` is filled all day, so the ticker shows the previous day's results, as long as there were games that day.
-- **The day after a no-game day:** the NHL's "previous date" is the empty day, so there's no "Last night" section, just today's start times.
+- **A day with no games:** `previous` is filled all day, followed by the "Next game" notice and that day's games (see "Season starts" / "Next game" above).
+- **Breaks of several days:** the NHL's `prevDate` is the previous **game** day, not the calendar day — on Dec 24 and 25, 2025 it was Dec 23 — so the last results stay on the strip, dated, for the whole break, followed by "Next game Dec 27".
 - **When "today" begins:** it's the NHL's game date (`currentDate` in their response), not midnight in the visitor's time zone. I haven't observed exactly when the NHL rolls its date over (probably early morning Eastern), so a visitor late at night may still see the previous day's games as "today" for a while.
 - **Postponed games:** these stay `FUT`, so a day whose only game is postponed would keep showing "Last night" all day. That's harmless, but the code doesn't treat it specially.
 
-**The PWHL** follows the same rule, from `Lambdas/getPwhlScores/index.mjs`. The HockeyTech feed has no "current date" of its own, so "today" and "yesterday" are calendar days in `America/Toronto`. With no PWHL games either day, the section shows "Season starts {date}" before the regular season's first game, "Next game {date}" on in-season off days, and nothing in summer before the next schedule is published.
+**The PWHL** follows the same rule, from `Lambdas/getPwhlScores/index.mjs`. The HockeyTech feed has no "current date" of its own, so "today" and "yesterday" are calendar days in `America/Toronto`. On a day with no PWHL games, the section shows yesterday's results (if any) and then "Next game {date}" — or "Season starts {date}" before the regular season's first game — with that day's games, and nothing in summer before the next schedule is published.
 
 ## NHL game modal (waxReviews.html)
 

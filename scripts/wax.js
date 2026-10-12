@@ -942,12 +942,12 @@ async function refreshTickerLeague(league) {
   const previous = data.previous || [];
   const today = data.games || [];
   const all = [...previous, ...today];
-  // No games: show the league's "Season starts" / "Next game" notice, if
-  // it sent one (PWHL only), keyed so a change still swaps in hidden.
-  const upcoming = all.length ? null : data.upcoming;
-  const key = upcoming
-    ? `upcoming:${upcoming.kind}:${upcoming.startTimeUTC}:${(upcoming.games || []).map((g) => g.id).join(",")}`
-    : all.map((g) => g.id).join(",");
+  // No games today: show the "Season starts" / "Next game" notice and its
+  // games after any results, keyed so a change still swaps in hidden.
+  const upcoming = today.length ? null : data.upcoming;
+  const key = all.map((g) => g.id).join(",") + (upcoming
+    ? `|upcoming:${upcoming.kind}:${upcoming.startTimeUTC}:${(upcoming.games || []).map((g) => g.id).join(",")}`
+    : "");
 
   if (key === league.gameKey) {
     all.forEach((game) => updateNhlGameChips(ticker, league, game));
@@ -974,8 +974,8 @@ function scheduleNhlTickerRefresh(league, today) {
   if (delay !== null) league.timer = setTimeout(() => refreshTickerLeague(league), delay);
 }
 
-// One league's block: its logo, then yesterday's games after their date
-// and today's after "Today" - or, with no games, an upcoming notice
+// One league's block: its logo, yesterday's games after their date, then
+// today's after "Today" - or, with no games today, the upcoming notice
 // followed by that day's games. Dates are in the visitor's time zone.
 function buildTickerLeagueSection(league, previous, today, upcoming) {
   const section = document.createElement("div");
@@ -984,14 +984,6 @@ function buildTickerLeagueSection(league, previous, today, upcoming) {
 
   section.appendChild(buildTickerLeagueLogo(league));
 
-  if (upcoming) {
-    const note = document.createElement("span");
-    note.className = "ticker-league-note";
-    note.textContent = `${upcoming.kind === "season" ? "Season starts" : "Next game"} ${formatTickerDate(upcoming.startTimeUTC)}`;
-    section.appendChild(note);
-    (upcoming.games || []).forEach((game) => section.appendChild(buildNhlGameChip(game, league)));
-  }
-
   if (previous.length) {
     section.appendChild(buildNhlTickerLabel(formatTickerGroupDate(previous)));
     previous.forEach((game) => section.appendChild(buildNhlGameChip(game, league)));
@@ -999,6 +991,12 @@ function buildTickerLeagueSection(league, previous, today, upcoming) {
   if (today.length) {
     section.appendChild(buildNhlTickerLabel("Today"));
     today.forEach((game) => section.appendChild(buildNhlGameChip(game, league)));
+  } else if (upcoming) {
+    const note = document.createElement("span");
+    note.className = "ticker-league-note";
+    note.textContent = `${upcoming.kind === "season" ? "Season starts" : "Next game"} ${formatTickerDate(upcoming.startTimeUTC)}`;
+    section.appendChild(note);
+    (upcoming.games || []).forEach((game) => section.appendChild(buildNhlGameChip(game, league)));
   }
   return section;
 }

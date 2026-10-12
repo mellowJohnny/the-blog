@@ -16,8 +16,9 @@
 // Returns the same shape as getNhlScores ({ date, games, previous }),
 // so the ticker renders both leagues with one code path. Same day rule
 // too: yesterday's finals in `previous` until today's first game starts.
-// With no games either day it adds `upcoming` - the regular season's
-// first game ("Season starts") or the next game - so the PWHL logo stays.
+// With no games today it adds `upcoming` - the regular season's first
+// game ("Season starts") or the next game day, with all of that day's
+// games - so the PWHL logo always has something to lead into.
 //
 // The key is the PWHL site's public one (served in thepwhl.com's page
 // source); see PWHL_API.md. No Cognito Authorizer. Needs a 10s timeout.
@@ -54,13 +55,20 @@ async function fetchScorebar(back = 2, ahead = 2) {
 const toUTC = (iso) => new Date(iso).toISOString().replace(".000Z", "Z");
 const byStart = (a, b) => Date.parse(a.GameDateISO8601) - Date.parse(b.GameDateISO8601);
 
-// No games yesterday or today: what to announce instead, with every
-// game on that day. Before the regular season, its first GAME's date -
-// the seasons list's start_date can differ (Dec 4 vs the real Dec 5
-// opener in 2026-27). In season, the next game day (already in the
-// +/-2 window). Neither (summer): null.
+// No games today: what to announce instead, with every game on that
+// day. The next game, if it's a regular-season or playoff game (an
+// in-season break, or the playoffs while next season's schedule already
+// exists). Otherwise - preseason, or nothing scheduled - the regular
+// season's first GAME ("Season starts"); the seasons list's start_date
+// can differ (Dec 4 vs the real Dec 5 opener in 2026-27). Neither
+// (summer, before the next schedule): null.
 async function findUpcoming(window, today) {
   const seasons = (await fetchFeed({ feed: "modulekit", view: "seasons" })).Seasons ?? [];
+  const counts = (seasonId) => seasons.find((s) => s.season_id === seasonId)?.career === "1";
+
+  const future = window.filter((g) => g.Date > today).sort(byStart);
+  if (future.length && counts(future[0].SeasonID)) return upcomingDay("next", future, future[0]);
+
   const regular = seasons.find((s) => s.career === "1" && s.playoff === "0" && /regular/i.test(s.season_name));
   if (regular && regular.start_date >= today) {
     // 40 game days easily spans a preseason to reach the opener.
@@ -69,7 +77,6 @@ async function findUpcoming(window, today) {
     const [opener] = season;
     if (opener && opener.Date > today) return upcomingDay("season", season, opener);
   }
-  const future = window.filter((g) => g.Date > today && g.GameStatus === "1").sort(byStart);
   return future.length ? upcomingDay("next", future, future[0]) : null;
 }
 
@@ -155,7 +162,7 @@ export const handler = async (event) => {
 
     // Best effort: a failed lookup just means no notice, never a 502.
     let upcoming = null;
-    if (!games.length && !previous.length) {
+    if (!games.length) {
       upcoming = await findUpcoming(all, today).catch((err) => {
         console.log("Upcoming lookup failed:", err);
         return null;

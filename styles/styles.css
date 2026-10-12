@@ -1093,6 +1093,9 @@ label sup {
 .ticker-league[data-league="pwhl"] .ticker-league-logo {
   width: 85px;
   height: 18px;
+  /* The wordmark has no built-in padding (the NHL logo has ~10px), so
+     it needs more lead-in for both league breaks to look the same. */
+  margin-left: 26px;
 }
 
 /* A one-colour logo repainted in its league's logoColor (wax.js): the
@@ -1124,10 +1127,13 @@ label sup {
   border-right: 0;
 }
 
-/* PWHL team logos are square PNGs, not the NHL's 3:2 SVGs. */
+/* PWHL team logos are square PNGs, not the NHL's 3:2 SVGs - and with
+   no built-in padding, so they need a margin to sit as far from the
+   abbreviation as the NHL's do (12px visible gap on desktop). */
 .ticker-league[data-league="pwhl"] .nhl-team img {
   width: 28px;
   height: 28px;
+  margin-right: 8px;
 }
 
 /* A section added while on-screen (no hidden moment available - see
@@ -3508,11 +3514,13 @@ label sup {
   .ticker-league[data-league="pwhl"] .ticker-league-logo {
     width: 66px;
     height: 14px;
+    margin-left: 19px;
   }
 
   .ticker-league[data-league="pwhl"] .nhl-team img {
     width: 22px;
     height: 22px;
+    margin-right: 6px;
   }
 
   .nhl-game-scoreline {

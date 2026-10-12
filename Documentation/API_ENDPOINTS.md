@@ -98,9 +98,9 @@ without changing that expectation first.
 ### Get NHL scores
 - **URL**: `https://kckdcdjqch.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
-- **Query params**: none
-- **Called from**: `initNhlTicker()`/`refreshNhlTicker()` in `scripts/wax.js` (the scores ticker under the masthead on `waxReviews.html` — see `FRONTEND.md`)
-- **Response**: `{ date, games, previous }` — today's games, plus last night's finished games in `previous` until today's first game starts (`[]` after that). Each game is `{ id, state, startTimeUTC, period, periodType, clock, inIntermission, lastPeriodType, away: { abbrev, score, logo }, home: {...} }` — a shape of our own, not the NHL's raw one. `Cache-Control: public, max-age=30` while any game is live, `max-age=300` otherwise. On any upstream failure, `502 { error }` with `max-age=0`.
+- **Query params**: none in normal use. `date=YYYY-MM-DD` reads that day instead of today — a testing aid.
+- **Called from**: `refreshTickerLeague()` in `scripts/wax.js` (the NHL section of the scores ticker under the masthead on `waxReviews.html` — see `FRONTEND.md`)
+- **Response**: `{ date, games, previous, upcoming }` — today's games, plus the previous game day's finished games in `previous` until today's first game starts (`[]` after that). With no games today, `upcoming` is `{ kind: "season" | "next", startTimeUTC, games }` — the next game day, or the regular season's opener while it's still ahead — with every game that day; `null` when neither exists (summer) or the lookup fails. Each game is `{ id, state, startTimeUTC, period, periodType, clock, inIntermission, lastPeriodType, away: { abbrev, score, logo }, home: {...} }` — a shape of our own, not the NHL's raw one. `Cache-Control: public, max-age=30` while any game is live, `max-age=300` otherwise. On any upstream failure, `502 { error }` with `max-age=0`.
 - **Lambda**: `Lambdas/getNhlScores/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). The only endpoint on the site that reads from a third-party API rather than DynamoDB: it proxies the NHL's undocumented `api-web.nhle.com`, which sends no CORS headers — see `NHL_API.md`. Public, no Cognito Authorizer; `Access-Control-Allow-Origin: "*"`. Deployed to `dev`, like the rest of this section.
 
 ### Get NHL game details
@@ -116,7 +116,7 @@ without changing that expectation first.
 - **Method**: GET
 - **Query params**: none in normal use. `date=YYYY-MM-DD` overrides "today" — a testing aid; it only finds games within the feed's ±2-game-day window around the real today.
 - **Called from**: `refreshTickerLeague()` in `scripts/wax.js`, for the PWHL section of the scores ticker on `waxReviews.html` — fetched in parallel with "Get NHL scores", never waiting on it (see `FRONTEND.md`)
-- **Response**: the same shape as "Get NHL scores" — `{ date, games, previous }` with identical game fields — plus `upcoming`: `{ kind: "season" | "next", startTimeUTC, games } | null` (`games`: every game on that league date, same fields as above), sent only when there are no games yesterday or today ("Season starts" before the regular season's first game, "Next game" on in-season off days, `null` in summer). `Cache-Control`: `max-age=60` while live, `900` otherwise, `0` on errors. `502 { error }` if the feed fails — including its signature empty `200`.
+- **Response**: the same shape as "Get NHL scores" — `{ date, games, previous }` with identical game fields — plus `upcoming`: `{ kind: "season" | "next", startTimeUTC, games } | null` (`games`: every game on that league date, same fields as above), sent on any day with no games today ("Next game" for the next regular-season or playoff game, "Season starts" before the regular season's first game, `null` in summer). `Cache-Control`: `max-age=60` while live, `900` otherwise, `0` on errors. `502 { error }` if the feed fails — including its signature empty `200`.
 - **Lambda**: `Lambdas/getPwhlScores/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Proxies HockeyTech's PWHL feed, which returns an empty body to any request with an `Origin` header, so the browser can't call it — see `PWHL_API.md`. Public, no Cognito Authorizer; `Access-Control-Allow-Origin: "*"`. Deployed to `prod`.
 
 ## CMS — blog authoring

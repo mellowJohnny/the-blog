@@ -93,6 +93,12 @@ DET @ MTL on 2026-10-10 (game `2026020075`, a 1-0 shootout):
 | Images | `media.d3.nhle.com/image/private/{formatInstructions}/…` (the `thumbnail.templateUrl` on stories and videos) | Replace `{formatInstructions}` with e.g. `t_ratio16_9-size40` (~200 KB), `-size30`, `-size50`. |
 | NHL.com game page | `https://www.nhl.com/gamecenter/{away}-vs-{home}/{yyyy}/{mm}/{dd}/{id}` | Same pattern as the scores feed's `gameCenterLink`. |
 
+## Off days and season start
+
+- **`prevDate` / `nextDate`** on the scores feed are the previous and next **game** days, not calendar days. Through the 2025 Christmas break, Dec 24, 25 and 26 all had `prevDate` Dec 23 and `nextDate` Dec 27. `/v1/score/{nextDate}` returns that day's games in the usual shape.
+- **`/v1/schedule/{date}`** carries the season's `preSeasonStartDate`, `regularSeasonStartDate`, `regularSeasonEndDate` and `playoffEndDate`. `regularSeasonStartDate` is a real game day (Sep 29, 2026: five regular-season games, `gameType` 2).
+- **Summer:** in July–September 2027, as of October 2026, `nextDate` is null and `/v1/schedule/{date}` still reports the 2026-27 dates, because the 2027-28 schedule isn't in the API yet. How these fields change once it's published hasn't been observed.
+
 ## Re-checking it
 
 ```

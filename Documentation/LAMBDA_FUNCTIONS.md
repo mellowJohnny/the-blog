@@ -657,9 +657,11 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   not any `@aws-sdk/*` package: it's the only Lambda on the site that
   touches no AWS service at all.
 - **Configuration**: function timeout raised from the default 3s to
-  **10s** (confirmed via `get-function`, along with `nodejs24.x`). It
-  can make two upstream calls, each capped at 5s with
-  `AbortSignal.timeout()`; at 3s a slow NHL response would time the
+  **10s** (confirmed via `get-function`, along with `nodejs24.x`).
+  Today's scores come first (capped at 5s with `AbortSignal.timeout()`),
+  then the previous day and the `upcoming` lookup run in parallel —
+  previous capped at 5s, upcoming's own two calls at 2.5s each — so the
+  worst case stays inside 10s; at 3s a slow NHL response would time the
   function out before its own error handling could run.
 - **What it does**: backs the scores ticker on `waxReviews.html` (see
   `FRONTEND.md`). Public GET, no Cognito Authorizer. Fetches
@@ -672,6 +674,16 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   `API_ENDPOINTS.md`'s "Get NHL scores"), dropping odds, broadcasts,
   goals and video links. Team logos are swapped from the NHL's `_light`
   SVGs to their `_dark` twins, since the ticker strip is dark.
+- **`upcoming`** (no games today): `/v1/schedule/{date}` gives the
+  season's `regularSeasonStartDate` — a real game day — and if that's
+  still ahead it's "Season starts" with that day's games; otherwise the
+  score feed's own `nextDate` (the next **game** day: Dec 26 for every
+  day of the 2026 Christmas break) gives "Next game". In summer, before
+  the next season is in the API, `nextDate` is empty and the schedule
+  still reports the finished season, so `upcoming` is `null` — the
+  hand-over to the next season couldn't be observed in October 2026.
+  Best effort: a failure here gives `null`, never a `502`. `?date=`
+  reads a given day instead of `now`, for testing.
 - **Why a proxy at all**: the NHL API sends no CORS headers, so the
   browser can't call it directly. The proxy also absorbs the API being
   undocumented: if the NHL renames a field, `slimGame()` is the one
@@ -744,10 +756,14 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   browser-style `User-Agent` — a browser on this site can never call
   it. The Lambda sends a browser UA and no `Origin`, and treats an
   empty body as a failure (`502`). See `PWHL_API.md`.
-- **`upcoming`**: only when there are no games yesterday or today, it
-  makes up to two extra calls — the seasons list (to identify the
-  newest regular season) and, if that season hasn't started, the score
-  bar 40 game days ahead (to find its **first game**). The seasons
+- **`upcoming`**: on any day with no games today, it fetches the
+  seasons list. If the next game in the main window belongs to a
+  regular-season or playoff season (`career` = 1), it's "Next game" —
+  without that check, a playoff day-off would announce next season's
+  opener once that schedule exists. Otherwise (preseason or nothing
+  scheduled) it finds the newest regular season and, if it hasn't
+  started, the score bar 40 game days ahead (to find its **first
+  game**). The seasons
   list's own `start_date` isn't used for the date: for 2026-27 it says
   Dec 4, the first game is Dec 5. In season, the next game comes from
   the main call's window, no extra call. Either way it also returns
