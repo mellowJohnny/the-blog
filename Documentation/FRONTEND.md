@@ -627,8 +627,8 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
   updates are scoped to the league's section.
 - **"Season starts" / "Next game"**: a league with no games yesterday
   or today can send an `upcoming` notice (only `getPwhlScores` does),
-  shown after its logo as "Season starts Sat, Dec 5" or "Next game
-  Sat, Dec 26" (`.ticker-league-note`), dated in the visitor's own time
+  shown after its logo as "Season starts Dec 5" or "Next game Dec 26"
+  (`.ticker-league-note`), dated in the visitor's own time
   zone. The PWHL plays a few nights a week, so without this its logo
   would be missing most days.
 - **Changing a league's section without a jump**

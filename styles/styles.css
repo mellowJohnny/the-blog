@@ -1085,6 +1085,9 @@ label sup {
 .ticker-league[data-league="nhl"] .ticker-league-logo {
   width: 48px;
   height: 32px;
+  /* The NHL SVG has ~9px of transparent padding around the shield; a
+     negative margin evens the visible gap with the PWHL wordmark's. */
+  margin-right: -3px;
 }
 
 /* The PWHL wordmark is one deep-purple colour that all but vanishes on

@@ -987,7 +987,7 @@ function buildTickerLeagueSection(league, previous, today, upcoming) {
   if (upcoming) {
     const note = document.createElement("span");
     note.className = "ticker-league-note";
-    const date = new Date(upcoming.startTimeUTC).toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+    const date = new Date(upcoming.startTimeUTC).toLocaleDateString([], { month: "short", day: "numeric" });
     note.textContent = `${upcoming.kind === "season" ? "Season starts" : "Next game"} ${date}`;
     section.appendChild(note);
   }
