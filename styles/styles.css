@@ -1090,12 +1090,21 @@ label sup {
   margin-right: -3px;
 }
 
-/* The PWHL wordmark is one deep-purple colour that all but vanishes on
-   the dark strip, and no white version is published - render it white. */
 .ticker-league[data-league="pwhl"] .ticker-league-logo {
   width: 85px;
   height: 18px;
-  filter: brightness(0) invert(1);
+}
+
+/* A one-colour logo repainted in its league's logoColor (wax.js): the
+   colour fills the box, and the logo image is the mask that shapes it. */
+.ticker-league-logo-masked {
+  display: inline-block;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 /* A league with no games yesterday or today shows its next date

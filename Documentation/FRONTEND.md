@@ -702,8 +702,14 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
   600px) — the NHL's logos are 3:2 SVGs with built-in padding, so a
   square box would shrink them to fit its width. PWHL team logos are
   square PNGs (28x28, 22x22 on mobile); the league logos are 48x32
-  (NHL) and an 85x18 PWHL wordmark, whitened with `filter:
-  brightness(0) invert(1)` since only a deep-purple version exists. All
+  (NHL) and an 85x18 PWHL wordmark. The wordmark's own violet
+  (`#33058d`) is only 1.27:1 against the strip, so it's repainted in
+  the same hue at 65% lightness (`#8b53f9`, 3.86:1 — above the 3:1
+  guideline for graphics): `logoColor` in `TICKER_LEAGUES` makes
+  `buildTickerLeagueLogo()` render a box in that colour with the logo
+  as its CSS mask (`.ticker-league-logo-masked`, `role="img"` and an
+  `aria-label` for screen readers). A cross-site mask needs the image
+  host to allow CORS; Cloudinary does (`*`). All
   sizes are also set as `<img>` attributes, so widths never shift while
   logos load — the swap's maths depends on that. A 6px gap separates
   it from the masthead, whose drop shadow needs `z-index: 1` on

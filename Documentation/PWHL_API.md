@@ -29,7 +29,7 @@ ticker").
 | **Errors** | Failures come back as an empty `200`, not an error status (the community reference notes status codes are inconsistent too). Treat an empty body as a failure. |
 | **Caching** | Every response sends `no-store` — any caching has to be ours. |
 | **Formats** | `modulekit` views return plain JSON under `SiteKit`. `statviewfeed` views are wrapped in parentheses, JSONP-style (`(…)`) — strip them before parsing. |
-| **Logos** | Team logos: `https://assets.leaguestat.com/pwhl/logos/50x50/{teamId}.png` — square PNGs, fine to hot-link. League wordmark: `https://res.cloudinary.com/pwhl-low/image/upload/PWHL_Logo_Logotype_Ultra_Violet_cgbt5r`, a one-colour deep-purple (`#33058d`) SVG with no published white version; Cloudinary's colour transforms don't apply to SVGs, so this site whitens it with CSS `filter: brightness(0) invert(1)`. |
+| **Logos** | Team logos: `https://assets.leaguestat.com/pwhl/logos/50x50/{teamId}.png` — square PNGs, fine to hot-link. League wordmark: `https://res.cloudinary.com/pwhl-low/image/upload/PWHL_Logo_Logotype_Ultra_Violet_cgbt5r`, a one-colour deep-purple (`#33058d`) SVG with no published white version; Cloudinary's colour transforms don't apply to SVGs, but Cloudinary sends `Access-Control-Allow-Origin: *`, so the SVG works as a CSS mask: this site paints it in the same violet at 65% lightness (`#8b53f9`, 3.86:1 on the dark strip vs the original's 1.27:1). |
 
 ## Major areas of functionality
 

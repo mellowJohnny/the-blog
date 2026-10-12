@@ -878,7 +878,8 @@ const NHL_PERIOD_LABELS = { 1: "1st", 2: "2nd", 3: "3rd" };
 
 // Leagues in strip order, each fetched on its own so neither waits on the
 // other. gameKey (comma-joined IDs rendered), timer and swapTimer are the
-// league's own state. Logo sizes are set up front so widths never shift.
+// league's own state. Logo sizes are set up front so widths never shift;
+// logoColor repaints a one-colour logo (see buildTickerLeagueLogo()).
 const TICKER_LEAGUES = [
   {
     id: "nhl", name: "NHL", url: NHL_SCORES_API_URL, clickable: true,
@@ -888,6 +889,9 @@ const TICKER_LEAGUES = [
   {
     id: "pwhl", name: "PWHL", url: PWHL_SCORES_API_URL, clickable: false,
     logo: "https://res.cloudinary.com/pwhl-low/image/upload/PWHL_Logo_Logotype_Ultra_Violet_cgbt5r", logoSize: [85, 18], teamLogoSize: [28, 28],
+    // The wordmark's own violet (#33058d) is 1.27:1 on the dark strip;
+    // the same hue at 65% lightness is 3.86:1, above the 3:1 guideline.
+    logoColor: "#8b53f9",
     gameKey: "", timer: null, swapTimer: null
   }
 ];
@@ -978,12 +982,7 @@ function buildTickerLeagueSection(league, previous, today, upcoming) {
   section.className = "ticker-league";
   section.dataset.league = league.id;
 
-  const logo = document.createElement("img");
-  logo.className = "ticker-league-logo";
-  logo.src = league.logo;
-  logo.alt = league.name;
-  [logo.width, logo.height] = league.logoSize;
-  section.appendChild(logo);
+  section.appendChild(buildTickerLeagueLogo(league));
 
   if (upcoming) {
     const note = document.createElement("span");
@@ -1002,6 +1001,27 @@ function buildTickerLeagueSection(league, previous, today, upcoming) {
     today.forEach((game) => section.appendChild(buildNhlGameChip(game, league)));
   }
   return section;
+}
+
+// An <img>, or - for a one-colour logo with a logoColor - a box painted
+// that colour through the logo as a CSS mask (the host must allow CORS,
+// which Cloudinary does), labelled so screen readers still read it.
+function buildTickerLeagueLogo(league) {
+  if (!league.logoColor) {
+    const img = document.createElement("img");
+    img.className = "ticker-league-logo";
+    img.src = league.logo;
+    img.alt = league.name;
+    [img.width, img.height] = league.logoSize;
+    return img;
+  }
+  const logo = document.createElement("span");
+  logo.className = "ticker-league-logo ticker-league-logo-masked";
+  logo.setAttribute("role", "img");
+  logo.setAttribute("aria-label", league.name);
+  logo.style.backgroundColor = league.logoColor;
+  logo.style.webkitMaskImage = logo.style.maskImage = `url("${league.logo}")`;
+  return logo;
 }
 
 function formatTickerDate(utc) {
