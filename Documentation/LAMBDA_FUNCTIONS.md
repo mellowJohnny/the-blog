@@ -750,8 +750,12 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   bar 40 game days ahead (to find its **first game**). The seasons
   list's own `start_date` isn't used for the date: for 2026-27 it says
   Dec 4, the first game is Dec 5. In season, the next game comes from
-  the main call's window, no extra call. Best effort: if these calls
-  fail, `upcoming` is `null` and the response is still `200`.
+  the main call's window, no extra call. Either way it also returns
+  `games`: every game on that day, grouped by the feed's own `Date`
+  (league time) — two of the 2026-27 opener's three games start at
+  7:00 p.m. ET, already Dec 6 in UTC, so a UTC grouping would drop
+  them. Best effort: if these calls fail, `upcoming` is `null` and the
+  response is still `200`.
 - **Rate limiting**: a burst of about 30 calls got a client briefly
   blocked during research, so it's one main call per request and
   `Cache-Control: max-age=900` unless a game is live (`60`).

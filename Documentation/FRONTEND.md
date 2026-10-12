@@ -600,8 +600,8 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
 
 A dark strip between the masthead and the nav, scrolling NHL and PWHL
 scores right to left — each league introduced by its logo: last
-night's finals (under a "Last night" label) until today's first puck
-drop, then today's games — start time, live period and clock, or
+night's finals (under their date, e.g. "Oct 10") until today's first
+puck drop, then today's games (under "Today") — start time, live period and clock, or
 final. Fed by `getNhlScores` and `getPwhlScores` (`Lambdas/`, see
 `LAMBDA_FUNCTIONS.md`), which proxy the NHL's undocumented API and the
 PWHL's HockeyTech feed — see `NHL_API.md` and `PWHL_API.md`. Code is in
@@ -621,16 +621,20 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
   NHL never waits on the PWHL, and a league that fails or is empty just
   has no section. Each copy of the marquee holds one
   `.ticker-league[data-league]` section per league, in config order
-  (NHL first): the league's logo, then its "Last night" / "Today"
-  labels and chips, all built by the same chip code — both Lambdas
+  (NHL first): the league's logo, then last night's games after their
+  date and today's after "Today" (`.nhl-ticker-label`; the date is
+  the group's earliest start in the visitor's time zone, so it agrees
+  with the start times beside it — a Tokyo visitor sees "Oct 11" for
+  Oct 10 evening games), all built by the same chip code — both Lambdas
   return the same shape. NHL and PWHL game IDs can collide, so in-place
   updates are scoped to the league's section.
 - **"Season starts" / "Next game"**: a league with no games yesterday
   or today can send an `upcoming` notice (only `getPwhlScores` does),
   shown after its logo as "Season starts Dec 5" or "Next game Dec 26"
-  (`.ticker-league-note`), dated in the visitor's own time
-  zone. The PWHL plays a few nights a week, so without this its logo
-  would be missing most days.
+  (`.ticker-league-note`), dated in the visitor's own time zone and
+  followed by **every game that day** — team logos and local start
+  times, as ordinary disabled chips. The PWHL plays a few nights a
+  week, so without this its logo would be missing most days.
 - **Changing a league's section without a jump**
   (`replaceTickerLeagueSection()`): when a league's set of games
   changes — the second league arriving, "Last night" dropping off, a
@@ -728,7 +732,7 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
 
 **What the page does with it** (`scripts/wax.js`):
 
-- The ticker stores the list of game IDs it's showing. When the "last night" games stop arriving, that list changes, so that league's section is replaced with only today's games and the "Last night" label goes (off-screen when possible — see "Changing a league's section without a jump").
+- The ticker stores the list of game IDs it's showing. When the "last night" games stop arriving, that list changes, so that league's section is replaced with only today's games and the last-night date label goes (off-screen when possible — see "Changing a league's section without a jump").
 - Before puck drop, the ticker doesn't poll every minute. It sleeps until the first scheduled start time, then checks every 60s.
 
 **In practice, on a typical evening:**

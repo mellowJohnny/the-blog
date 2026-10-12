@@ -54,21 +54,32 @@ async function fetchScorebar(back = 2, ahead = 2) {
 const toUTC = (iso) => new Date(iso).toISOString().replace(".000Z", "Z");
 const byStart = (a, b) => Date.parse(a.GameDateISO8601) - Date.parse(b.GameDateISO8601);
 
-// No games yesterday or today: what to announce instead. Before the
-// regular season, its first GAME's date - the seasons list's start_date
-// can differ (Dec 4 vs the real Dec 5 opener in 2026-27). In season, the
-// next game (already in the +/-2 window). Neither (summer): null.
+// No games yesterday or today: what to announce instead, with every
+// game on that day. Before the regular season, its first GAME's date -
+// the seasons list's start_date can differ (Dec 4 vs the real Dec 5
+// opener in 2026-27). In season, the next game day (already in the
+// +/-2 window). Neither (summer): null.
 async function findUpcoming(window, today) {
   const seasons = (await fetchFeed({ feed: "modulekit", view: "seasons" })).Seasons ?? [];
   const regular = seasons.find((s) => s.career === "1" && s.playoff === "0" && /regular/i.test(s.season_name));
   if (regular && regular.start_date >= today) {
     // 40 game days easily spans a preseason to reach the opener.
     const ahead = await fetchScorebar(0, 40);
-    const [opener] = ahead.filter((g) => g.SeasonID === regular.season_id).sort(byStart);
-    if (opener && opener.Date > today) return { kind: "season", startTimeUTC: toUTC(opener.GameDateISO8601) };
+    const season = ahead.filter((g) => g.SeasonID === regular.season_id).sort(byStart);
+    const [opener] = season;
+    if (opener && opener.Date > today) return upcomingDay("season", season, opener);
   }
-  const [next] = window.filter((g) => g.Date > today && g.GameStatus === "1").sort(byStart);
-  return next ? { kind: "next", startTimeUTC: toUTC(next.GameDateISO8601) } : null;
+  const future = window.filter((g) => g.Date > today && g.GameStatus === "1").sort(byStart);
+  return future.length ? upcomingDay("next", future, future[0]) : null;
+}
+
+// The notice plus every game on the first game's (league) date.
+function upcomingDay(kind, sortedGames, first) {
+  return {
+    kind,
+    startTimeUTC: toUTC(first.GameDateISO8601),
+    games: sortedGames.filter((g) => g.Date === first.Date).map(slimGame)
+  };
 }
 
 // YYYY-MM-DD for a date in the league's home time zone.

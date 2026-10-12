@@ -942,7 +942,7 @@ async function refreshTickerLeague(league) {
   // it sent one (PWHL only), keyed so a change still swaps in hidden.
   const upcoming = all.length ? null : data.upcoming;
   const key = upcoming
-    ? `upcoming:${upcoming.kind}:${upcoming.startTimeUTC}`
+    ? `upcoming:${upcoming.kind}:${upcoming.startTimeUTC}:${(upcoming.games || []).map((g) => g.id).join(",")}`
     : all.map((g) => g.id).join(",");
 
   if (key === league.gameKey) {
@@ -970,8 +970,9 @@ function scheduleNhlTickerRefresh(league, today) {
   if (delay !== null) league.timer = setTimeout(() => refreshTickerLeague(league), delay);
 }
 
-// One league's block: its logo, then "Last night" / "Today" and chips -
-// or, with no games, an upcoming notice in the visitor's own time zone.
+// One league's block: its logo, then yesterday's games after their date
+// and today's after "Today" - or, with no games, an upcoming notice
+// followed by that day's games. Dates are in the visitor's time zone.
 function buildTickerLeagueSection(league, previous, today, upcoming) {
   const section = document.createElement("div");
   section.className = "ticker-league";
@@ -987,18 +988,31 @@ function buildTickerLeagueSection(league, previous, today, upcoming) {
   if (upcoming) {
     const note = document.createElement("span");
     note.className = "ticker-league-note";
-    const date = new Date(upcoming.startTimeUTC).toLocaleDateString([], { month: "short", day: "numeric" });
-    note.textContent = `${upcoming.kind === "season" ? "Season starts" : "Next game"} ${date}`;
+    note.textContent = `${upcoming.kind === "season" ? "Season starts" : "Next game"} ${formatTickerDate(upcoming.startTimeUTC)}`;
     section.appendChild(note);
+    (upcoming.games || []).forEach((game) => section.appendChild(buildNhlGameChip(game, league)));
   }
 
   if (previous.length) {
-    section.appendChild(buildNhlTickerLabel("Last night"));
+    section.appendChild(buildNhlTickerLabel(formatTickerGroupDate(previous)));
     previous.forEach((game) => section.appendChild(buildNhlGameChip(game, league)));
-    if (today.length) section.appendChild(buildNhlTickerLabel("Today"));
   }
-  today.forEach((game) => section.appendChild(buildNhlGameChip(game, league)));
+  if (today.length) {
+    section.appendChild(buildNhlTickerLabel("Today"));
+    today.forEach((game) => section.appendChild(buildNhlGameChip(game, league)));
+  }
   return section;
+}
+
+function formatTickerDate(utc) {
+  return new Date(utc).toLocaleDateString([], { month: "short", day: "numeric" });
+}
+
+// A group's label: its earliest game's date, local to the visitor - so
+// it always agrees with the local start times beside it.
+function formatTickerGroupDate(games) {
+  const first = Math.min(...games.map((g) => Date.parse(g.startTimeUTC)));
+  return formatTickerDate(first);
 }
 
 // Copy B of the marquee: hidden from screen readers and the tab order,
