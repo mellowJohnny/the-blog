@@ -1,10 +1,10 @@
 # Lambda Functions
 
-**27 of the 31 Lambda functions behind this site's API Gateway
+**28 of the 32 Lambda functions behind this site's API Gateway
 endpoints have their source checked into this repo**, under
 `Lambdas/` (as of 2026-08-15, one directory per function, named
-exactly after its AWS Lambda function name). `Lambdas/` holds 28
-directories, not 27: `amplifyBuildNotifier` (added 2026-09-29) sits
+exactly after its AWS Lambda function name). `Lambdas/` holds 29
+directories, not 28: `amplifyBuildNotifier` (added 2026-09-29) sits
 behind EventBridge rather than API Gateway and isn't part of that
 count — it's the only function here no frontend code ever calls.
 Most were pulled directly
@@ -12,22 +12,22 @@ from the live Console via `aws lambda get-function` using the
 `amplify-readonly-cli` credential (see `CLAUDE.md` — its actual IAM
 scope turned out to be broader than its name suggests: it can read
 full Lambda source, though not API Gateway config, and (confirmed
-2026-08-24) not DynamoDB or IAM policy introspection either). Ten
+2026-08-24) not DynamoDB or IAM policy introspection either). Eleven
 were already in the repo, hand-built here rather than pulled:
 `Lambdas/sendAlertHandler/`, `Lambdas/castVoteHandler/`,
 `Lambdas/deleteBlogHandler/`, `Lambdas/deleteCardSetHandler/`, and —
 added later, for the checklist-upload feature and its front-end display —
 `Lambdas/parseChecklistPdf/`, `Lambdas/saveChecklist/`,
 `Lambdas/getChecklistBySetName/`, and — for the player-search feature —
-`Lambdas/searchPlayerName/`, and — for the NHL scores ticker and its
-game modal — `Lambdas/getNhlScores/` and `Lambdas/getNhlGameDetails/`.
-The remaining 4 of the 31
+`Lambdas/searchPlayerName/`, and — for the scores ticker and its game
+modal — `Lambdas/getNhlScores/`, `Lambdas/getNhlGameDetails/` and
+`Lambdas/getPwhlScores/`. The remaining 4 of the 32
 (`getCardIntro`, `getBlogIntro`, `fetchCardSetPreview`,
 `invalidateCache`) were pulled in the same pass, confirmed dead, and
 removed again the same day — see "Orphaned/dead Lambdas" below.
 
 Deployment is still entirely manual for every one of them, but the
-mechanics differ by function: the 26 with no real dependencies
+mechanics differ by function: the 27 with no real dependencies
 (`dependencies: {}` in `package.json`) just need the updated
 `index.mjs` pasted into the Lambda Console's inline code editor and
 Deploy clicked — no zip needed. Two need a full `npm install` + zip
@@ -722,6 +722,45 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
     horn doesn't cache "no recap" for an hour.
 - **Timings**: cold start ~4.5s, warm 0.6–0.9s — the modal shows
   "Loading game..." meanwhile.
+
+## `Lambdas/getPwhlScores/` — hand-built in this repo
+
+- **File**: `Lambdas/getPwhlScores/index.mjs`. No real dependency —
+  built-in `fetch` only, inline-paste deployable. Timeout **10s**,
+  `nodejs24.x`. Deployed to the `prod` stage — see `API_ENDPOINTS.md`'s
+  "Get PWHL scores".
+- **What it does**: backs the PWHL section of the scores ticker on
+  `waxReviews.html`. Fetches HockeyTech's score bar once
+  (`numberofdaysback=2&numberofdaysahead=2` — game days, not calendar
+  days), keeps today's games and, while none has started, yesterday's
+  finals, with "today" and "yesterday" as calendar days in
+  `America/Toronto` (the feed has no "current date" of its own). Returns
+  **exactly the shape `getNhlScores` returns**, mapping HockeyTech's
+  fields onto it (`GameStatus` 1/4 → `FUT`/`OFF`; `PeriodNameShort`
+  `OTn` → period `3+n`, so "2OT" works), so the ticker needs no
+  league-specific code.
+- **Why a proxy at all**: the feed returns an **empty `200`** to any
+  request carrying an `Origin` header, and to requests without a
+  browser-style `User-Agent` — a browser on this site can never call
+  it. The Lambda sends a browser UA and no `Origin`, and treats an
+  empty body as a failure (`502`). See `PWHL_API.md`.
+- **`upcoming`**: only when there are no games yesterday or today, it
+  makes up to two extra calls — the seasons list (to identify the
+  newest regular season) and, if that season hasn't started, the score
+  bar 40 game days ahead (to find its **first game**). The seasons
+  list's own `start_date` isn't used for the date: for 2026-27 it says
+  Dec 4, the first game is Dec 5. In season, the next game comes from
+  the main call's window, no extra call. Best effort: if these calls
+  fail, `upcoming` is `null` and the response is still `200`.
+- **Rate limiting**: a burst of about 30 calls got a client briefly
+  blocked during research, so it's one main call per request and
+  `Cache-Control: max-age=900` unless a game is live (`60`).
+- **Unverified**: live `GameStatus` codes weren't observable in the
+  off-season — anything other than 1 or 4 is treated as live. Check
+  the first live game of 2026-27; the fix, if needed, is `gameState()`.
+- **The key** is the PWHL site's public one, in the code as `SITE_KEY`
+  with a comment saying where it comes from — if HockeyTech rotates
+  it, take the new one from thepwhl.com's page source.
 
 ## `Lambdas/updateCardSet/` — pre-existing, with a real incident behind it
 

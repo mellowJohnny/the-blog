@@ -802,6 +802,7 @@ than running as bare top-level code.
   backdrop, closes that modal.
 
 **Notable**: all three endpoints this page calls are deployed to the
-API Gateway `prod` stage — the only other one there is the public "Get
-NHL game details"; every remaining endpoint (23 of them) is on `dev`.
+API Gateway `prod` stage — the only others there are the public "Get
+NHL game details" and "Get PWHL scores"; every remaining endpoint (23
+of them) is on `dev`.
 See `ARCHITECTURE.md`.

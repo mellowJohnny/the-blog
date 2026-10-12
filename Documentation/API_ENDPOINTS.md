@@ -111,6 +111,14 @@ without changing that expectation first.
 - **Response**: one game in a shape of our own — `{ id, state, startTimeUTC, gameDate, venue, gameCenterUrl, period, periodType, clock, inIntermission, lastPeriodType, away, home, linescore: { periods: [{ label, away, home }], totals }, decisions: { winner, loser } | null, teamStats: [{ label, away, home }], scoring: [{ label, goals: [{ time, team, scorer, scorerTotal, assists: [{ name, total }], strength, emptyNet, awayScore, homeScore }] }], shootout: [{ team, player, result }], threeStars: [{ star, name, team, position }], recap: { headline, summary, imageUrl, url } | null, video: { id, title, duration, thumbnailUrl } | null }`. Each team is `{ abbrev, name, record, score, sog, logo }`. `record`, `recap` and `video` are `null` when that optional source is unavailable. `Cache-Control`: `max-age=30` live, `300` upcoming, `3600` final with a recap, `600` final without one yet (so a recap posted after the game is picked up), `0` on errors. `502 { error }` if a required NHL source fails.
 - **Lambda**: `Lambdas/getNhlGameDetails/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Combines six NHL sources — see `NHL_API.md`'s "Game modal sources". Public, no Cognito Authorizer; `Access-Control-Allow-Origin: "*"`. **Deployed to `prod`**, the first non-Autobus endpoint there, per `ARCHITECTURE.md`'s "new endpoints go on `prod`" rule.
 
+### Get PWHL scores
+- **URL**: `https://lgk2lrxenb.execute-api.us-east-2.amazonaws.com/prod`
+- **Method**: GET
+- **Query params**: none in normal use. `date=YYYY-MM-DD` overrides "today" — a testing aid; it only finds games within the feed's ±2-game-day window around the real today.
+- **Called from**: `refreshTickerLeague()` in `scripts/wax.js`, for the PWHL section of the scores ticker on `waxReviews.html` — fetched in parallel with "Get NHL scores", never waiting on it (see `FRONTEND.md`)
+- **Response**: the same shape as "Get NHL scores" — `{ date, games, previous }` with identical game fields — plus `upcoming`: `{ kind: "season" | "next", startTimeUTC } | null`, sent only when there are no games yesterday or today ("Season starts" before the regular season's first game, "Next game" on in-season off days, `null` in summer). `Cache-Control`: `max-age=60` while live, `900` otherwise, `0` on errors. `502 { error }` if the feed fails — including its signature empty `200`.
+- **Lambda**: `Lambdas/getPwhlScores/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Proxies HockeyTech's PWHL feed, which returns an empty body to any request with an `Origin` header, so the browser can't call it — see `PWHL_API.md`. Public, no Cognito Authorizer; `Access-Control-Allow-Origin: "*"`. Deployed to `prod`.
+
 ## CMS — blog authoring
 
 ### Create blog post

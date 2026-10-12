@@ -598,21 +598,59 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
 
 ## NHL scores ticker (waxReviews.html)
 
-A dark strip between the masthead and the nav, scrolling NHL scores
-right to left: last night's finals (under a "Last night" label) until
-today's first puck drop, then today's games — start time, live period
-and clock, or final. Fed by `getNhlScores` (`Lambdas/getNhlScores/`,
-see `LAMBDA_FUNCTIONS.md`), which proxies the NHL's undocumented API —
-see `NHL_API.md` for what else that API offers. Code is in `wax.js`
-(`initNhlTicker()` and helpers), called once from `waxReviews.html`'s
+A dark strip between the masthead and the nav, scrolling NHL and PWHL
+scores right to left — each league introduced by its logo: last
+night's finals (under a "Last night" label) until today's first puck
+drop, then today's games — start time, live period and clock, or
+final. Fed by `getNhlScores` and `getPwhlScores` (`Lambdas/`, see
+`LAMBDA_FUNCTIONS.md`), which proxy the NHL's undocumented API and the
+PWHL's HockeyTech feed — see `NHL_API.md` and `PWHL_API.md`. Code is in
+`wax.js` (`initNhlTicker()` and helpers; the `nhl-*` names predate the
+PWHL and cover both leagues), called once from `waxReviews.html`'s
 `window load` listener; `lockout.html` also loads `wax.js` but doesn't
 call it. The markup is one empty `<div id="nhlTicker" hidden>`.
 
-- **Hidden unless there's something to show**: an API error on first
-  load, or no games today or last night (the off-season), leaves the
-  strip hidden. `.nhl-ticker[hidden] { display: none; }` is required,
+- **Hidden unless there's something to show**: the strip hides only
+  when no league has anything — an API error on first load, or no
+  games and no notice from either league. `.nhl-ticker[hidden] { display: none; }` is required,
   not redundant — the strip's own `display: flex` would otherwise
   override the `hidden` attribute.
+- **Two leagues, fetched independently** (`TICKER_LEAGUES`,
+  `refreshTickerLeague()`): each league has its own endpoint, poll
+  timer and game key, and both are requested in parallel on load — the
+  NHL never waits on the PWHL, and a league that fails or is empty just
+  has no section. Each copy of the marquee holds one
+  `.ticker-league[data-league]` section per league, in config order
+  (NHL first): the league's logo, then its "Last night" / "Today"
+  labels and chips, all built by the same chip code — both Lambdas
+  return the same shape. NHL and PWHL game IDs can collide, so in-place
+  updates are scoped to the league's section.
+- **"Season starts" / "Next game"**: a league with no games yesterday
+  or today can send an `upcoming` notice (only `getPwhlScores` does),
+  shown after its logo as "Season starts Sat, Dec 5" or "Next game
+  Sat, Dec 26" (`.ticker-league-note`), dated in the visitor's own time
+  zone. The PWHL plays a few nights a week, so without this its logo
+  would be missing most days.
+- **Changing a league's section without a jump**
+  (`replaceTickerLeagueSection()`): when a league's set of games
+  changes — the second league arriving, "Last night" dropping off, a
+  notice turning into games — the swap waits for a moment it can't be
+  seen. With `x` the scroll position and `w` the strip width, it's
+  safe when the section (in copy A) is entirely right of the view —
+  nothing visible moves — or entirely left of it while its copy-B twin
+  is entirely right — then everything visible shifts by the section's
+  size change, which is cancelled by moving the animation's
+  `currentTime` by the same amount (`findHiddenSwap()`,
+  `applyTickerSectionSwap()`). The geometry also says whether a safe
+  moment can come at all this pass: if so it re-checks every 200ms (a
+  window narrower than two checks' worth of scrolling doesn't count,
+  since a check could skip it — that once made a swap wait forever),
+  with one full pass as a backstop; if not — too few games, or the
+  changing games are the ones on screen — it swaps now and fades the
+  section in (`.ticker-league-entering`). The animation duration is set
+  to the millisecond, not rounded, so the position maths lands
+  exactly. Tests measured every visible item's screen position before
+  and after each kind of swap: no movement.
 - **Seamless marquee** (`applyNhlTickerMotion()`, re-run by a
   `ResizeObserver` when the strip's width changes): the chip track is
   rendered twice inside `.nhl-ticker-scroller`, which CSS slides
@@ -636,7 +674,8 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
   the tab returns. A refresh with the same set of games updates each
   chip's score and status in place (matched by `data-game-id`, in both
   copies), so the scroll never jumps; a new set of games — last night's
-  finals dropping off — rebuilds the strip. A failed refresh keeps the
+  finals dropping off — replaces that league's section through the
+  off-screen swap above. A failed refresh keeps the
   last good scores and retries.
 - **Status text** (`formatNhlGameStatus()`): start times are converted
   from the API's UTC to the visitor's own time zone and locale by
@@ -657,7 +696,12 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
   div` descendant-selector trap (see "Mobile / responsive design")
   doesn't apply. 40px tall with 42x28px logos (36px and 33x22px under
   600px) — the NHL's logos are 3:2 SVGs with built-in padding, so a
-  square box would shrink them to fit its width. A 6px gap separates
+  square box would shrink them to fit its width. PWHL team logos are
+  square PNGs (28x28, 22x22 on mobile); the league logos are 48x32
+  (NHL) and an 85x18 PWHL wordmark, whitened with `filter:
+  brightness(0) invert(1)` since only a deep-purple version exists. All
+  sizes are also set as `<img>` attributes, so widths never shift while
+  logos load — the swap's maths depends on that. A 6px gap separates
   it from the masthead, whose drop shadow needs `z-index: 1` on
   `.wax-reviews-mast-table` — otherwise the ticker, later in the page,
   paints over it. The shadow applies on all four pages sharing that
@@ -666,6 +710,8 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
   (with a reset so it reads as ticker text) that opens the game modal
   below. Upcoming games are `disabled` until puck drop — there's
   nothing to show yet — and a refresh enables them once they start.
+  PWHL games stay disabled: there's no PWHL game modal yet
+  (`clickable: false` in `TICKER_LEAGUES`).
   Chips in the scroll's duplicate copy get `tabindex="-1"`, so the
   keyboard visits each game once. One click listener on `#nhlTicker`
   covers every chip, including ones added by later refreshes.
@@ -682,7 +728,7 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
 
 **What the page does with it** (`scripts/wax.js`):
 
-- The ticker stores the list of game IDs it's showing. When the "last night" games stop arriving, that list changes, so the strip is rebuilt with only today's games and the "Last night" label goes.
+- The ticker stores the list of game IDs it's showing. When the "last night" games stop arriving, that list changes, so that league's section is replaced with only today's games and the "Last night" label goes (off-screen when possible — see "Changing a league's section without a jump").
 - Before puck drop, the ticker doesn't poll every minute. It sleeps until the first scheduled start time, then checks every 60s.
 
 **In practice, on a typical evening:**
@@ -701,6 +747,8 @@ The 1–5 minute range comes from caching. Until a game is live, the Lambda's re
 - **The day after a no-game day:** the NHL's "previous date" is the empty day, so there's no "Last night" section, just today's start times.
 - **When "today" begins:** it's the NHL's game date (`currentDate` in their response), not midnight in the visitor's time zone. I haven't observed exactly when the NHL rolls its date over (probably early morning Eastern), so a visitor late at night may still see the previous day's games as "today" for a while.
 - **Postponed games:** these stay `FUT`, so a day whose only game is postponed would keep showing "Last night" all day. That's harmless, but the code doesn't treat it specially.
+
+**The PWHL** follows the same rule, from `Lambdas/getPwhlScores/index.mjs`. The HockeyTech feed has no "current date" of its own, so "today" and "yesterday" are calendar days in `America/Toronto`. With no PWHL games either day, the section shows "Season starts {date}" before the regular season's first game, "Next game {date}" on in-season off days, and nothing in summer before the next schedule is published.
 
 ## NHL game modal (waxReviews.html)
 

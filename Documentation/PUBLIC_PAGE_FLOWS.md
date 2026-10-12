@@ -283,11 +283,17 @@ everything the visitor can see or navigate to on this page.
   calls the NHL's own undocumented API (`api-web.nhle.com`) server-side,
   because that API sends no CORS headers and the browser can't call it
   directly, and slims the result to a stable shape of our own (see
-  `NHL_API.md`). Independent of the review: it runs in parallel with
-  `fetchCardSetsByYear()`, and an error or an empty off-season result
-  just leaves the strip hidden. While a game is live it re-polls every
-  60s and updates scores in place — see `FRONTEND.md`'s "NHL scores
-  ticker".
+  `NHL_API.md`). In parallel, and never waiting on the NHL, it calls
+  **Get PWHL scores**, fronted by the `getPwhlScores` Lambda
+  (`Lambdas/getPwhlScores/`), which proxies the PWHL's HockeyTech feed
+  (see `PWHL_API.md`) and returns the same shape — plus a "Season
+  starts" / "Next game" notice on days with no PWHL games. Whichever
+  league answers first is shown first; the other is added later
+  without a visible jump. Independent of the review: it runs in
+  parallel with `fetchCardSetsByYear()`, and a league that errors or
+  has nothing to show is simply left out (the strip hides only when
+  both are). While a game is live each league re-polls every 60s and
+  updates scores in place — see `FRONTEND.md`'s "NHL scores ticker".
 
 **User interactions**:
 - Hovering over (or tabbing to) the NHL scores ticker pauses its
