@@ -1064,6 +1064,32 @@ label sup {
   to   { transform: translateX(-50%); }
 }
 
+/* First-load entrance (startTickerEntry(), wax.js): the strip slides in from
+   the far right at scroll speed after a 100ms hold, with the loop paused at
+   its start until the strip arrives. */
+.nhl-ticker-entry {
+  display: flex;
+  width: max-content;
+}
+
+.nhl-ticker-entering {
+  animation: nhlTickerEnter var(--entry-ms) linear 100ms backwards;
+}
+
+.nhl-ticker-entering .nhl-ticker-scroller {
+  animation-play-state: paused;
+}
+
+.nhl-ticker:hover .nhl-ticker-entry,
+.nhl-ticker:focus-within .nhl-ticker-entry {
+  animation-play-state: paused;
+}
+
+@keyframes nhlTickerEnter {
+  from { transform: translateX(var(--entry-px)); }
+  to   { transform: translateX(0); }
+}
+
 .nhl-ticker-track {
   display: flex;
   align-items: center;
@@ -1583,7 +1609,8 @@ label sup {
   .nhl-ticker {
     overflow-x: auto;
   }
-  .nhl-ticker-scroller {
+  .nhl-ticker-scroller,
+  .nhl-ticker-entering {
     animation: none;
   }
   .nhl-ticker-track-copy {

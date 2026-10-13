@@ -872,6 +872,9 @@ const PWHL_SCORES_API_URL = "https://lgk2lrxenb.execute-api.us-east-2.amazonaws.
 const NHL_TICKER_POLL_MS = 60000;
 const NHL_TICKER_PX_PER_SEC = 45;
 const TICKER_SWAP_CHECK_MS = 200;
+const TICKER_NHL_FIRST_WAIT_MS = 2500;
+const TICKER_ENTRY_DELAY_MS = 100;
+let tickerEntryPlayed = false;
 // After midnight Eastern, wait this long before re-fetching, so the
 // Lambdas (whose caching never crosses midnight) serve the new day.
 const TICKER_MIDNIGHT_GRACE_MS = 2 * 60 * 1000;
@@ -922,10 +925,15 @@ function initNhlTicker() {
   initNhlGameModal();
   // Window resize or phone rotation changes the strip's width.
   new ResizeObserver(() => applyNhlTickerMotion(ticker)).observe(ticker);
-  leagues.forEach((league) => refreshTickerLeague(league));
+  // The other leagues hold their first render until the first league (the
+  // NHL) has rendered, failed or come back empty, or 2.5s pass.
+  const [first, ...rest] = leagues;
+  const firstSettled = refreshTickerLeague(first);
+  const hold = Promise.race([firstSettled, new Promise((resolve) => setTimeout(resolve, TICKER_NHL_FIRST_WAIT_MS))]);
+  rest.forEach((league) => refreshTickerLeague(league, hold));
 }
 
-async function refreshTickerLeague(league) {
+async function refreshTickerLeague(league, hold) {
   clearTimeout(league.timer);
   const ticker = document.getElementById("nhlTicker");
 
@@ -941,6 +949,7 @@ async function refreshTickerLeague(league) {
     if (league.gameKey) league.timer = setTimeout(() => refreshTickerLeague(league), NHL_TICKER_POLL_MS);
     return;
   }
+  if (hold) await hold;
 
   const previous = data.previous || [];
   const today = data.games || [];
@@ -1074,7 +1083,10 @@ function buildTickerScroller(ticker) {
   const scroller = document.createElement("div");
   scroller.className = "nhl-ticker-scroller";
   scroller.append(track, copy);
-  ticker.replaceChildren(scroller);
+  const entry = document.createElement("div");
+  entry.className = "nhl-ticker-entry";
+  entry.appendChild(scroller);
+  ticker.replaceChildren(entry);
   return scroller;
 }
 
@@ -1092,6 +1104,14 @@ function replaceTickerLeagueSection(ticker, league, section) {
     copy.appendChild(copyTickerSection(section));
     ticker.hidden = false;
     applyNhlTickerMotion(ticker);
+    startTickerEntry(ticker);
+    return;
+  }
+
+  // The loop is held at its start during the entrance, so the position
+  // maths below doesn't apply: swap now and fade the section in.
+  if (scroller.closest(".nhl-ticker-entering")) {
+    applyTickerSectionSwap(ticker, league, section, null);
     return;
   }
 
@@ -1190,6 +1210,26 @@ function applyTickerSectionSwap(ticker, league, section, safe) {
       s.addEventListener("animationend", () => s.classList.remove("ticker-league-entering"), { once: true });
     });
   }
+}
+
+// First build only: after a short hold, the strip slides in from the far
+// right at the scroll speed and the loop (paused until now) takes over
+// where it arrives, at the left edge. Skipped for reduced motion.
+function startTickerEntry(ticker) {
+  if (tickerEntryPlayed || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  tickerEntryPlayed = true;
+  const entry = ticker.querySelector(".nhl-ticker-entry");
+  const distance = ticker.clientWidth;
+  const duration = (distance / NHL_TICKER_PX_PER_SEC) * 1000;
+  entry.style.setProperty("--entry-px", `${distance}px`);
+  entry.style.setProperty("--entry-ms", `${Math.round(duration)}ms`);
+  entry.classList.add("nhl-ticker-entering");
+
+  const finish = () => entry.classList.remove("nhl-ticker-entering");
+  entry.addEventListener("animationend", (event) => { if (event.target === entry) finish(); });
+  // Backstop in case the animation never runs; a paused (hovered) one is left alone.
+  const backstop = () => (entry.getAnimations().length ? setTimeout(backstop, 1000) : finish());
+  setTimeout(backstop, TICKER_ENTRY_DELAY_MS + duration + 1000);
 }
 
 // The two-copy loop is only seamless when each copy is at least as wide
