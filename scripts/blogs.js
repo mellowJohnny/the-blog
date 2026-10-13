@@ -265,8 +265,9 @@ const openWeatherKey = '49f84d9cdb7907dfd2b02085e270372e';
 let lat = "";
 let long = "";
 
-// Get geolocation from the Browser, if available..
-if('geolocation' in navigator) {
+// Get geolocation from the Browser, if available - only on pages that
+// have the weather widget (index.html no longer does).
+if(document.getElementById("weather") && 'geolocation' in navigator) {
 
 
     /* geolocation is available */
@@ -277,7 +278,7 @@ if('geolocation' in navigator) {
 
         getWeather(lat,long);
       });
-  } else {
+  } else if (document.getElementById("weather")) {
     /* geolocation IS NOT available */
     navigator.geolocation.getCurrentPosition(pos => console.log("Position OK", pos), err => console.error("Geolocation error:", err)
 );

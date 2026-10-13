@@ -2983,6 +2983,16 @@ label sup {
   font-family: 'Work Sans', sans-serif;
 }
 
+/* index.html's banner masthead: full width, height follows the image's
+   shape, capped so a very wide monitor doesn't make it enormous. */
+.home-masthead img {
+  display: block;
+  width: 100%;
+  max-width: 1600px;
+  height: auto;
+  margin: 0 auto;
+}
+
 /* ============================================
    PREVIEW MODAL — OVERLAY + CONTENT BOX
    Completely isolated from the CMS image-picker modal
