@@ -875,6 +875,8 @@ const TICKER_SWAP_CHECK_MS = 200;
 const TICKER_NHL_FIRST_WAIT_MS = 2500;
 const TICKER_ENTRY_DELAY_MS = 100;
 let tickerEntryPlayed = false;
+const TICKER_POS_KEY = "tickerPos";
+const TICKER_POS_MAX_AGE_MS = 30 * 60 * 1000;
 // After midnight Eastern, wait this long before re-fetching, so the
 // Lambdas (whose caching never crosses midnight) serve the new day.
 const TICKER_MIDNIGHT_GRACE_MS = 2 * 60 * 1000;
@@ -906,6 +908,10 @@ function initNhlTicker() {
   const ticker = document.getElementById("nhlTicker");
   const leagues = TICKER_LEAGUES.filter((league) => league.url);
   if (!ticker || !leagues.length) return;
+
+  // Remember the scroll position so the next page in this tab resumes it.
+  window.addEventListener("pagehide", () => saveTickerPosition(ticker));
+  document.addEventListener("visibilitychange", () => { if (document.hidden) saveTickerPosition(ticker); });
 
   // Stop polling in a background tab; catch up as soon as it's back.
   document.addEventListener("visibilitychange", () => {
@@ -1104,7 +1110,8 @@ function replaceTickerLeagueSection(ticker, league, section) {
     copy.appendChild(copyTickerSection(section));
     ticker.hidden = false;
     applyNhlTickerMotion(ticker);
-    startTickerEntry(ticker);
+    if (restoreTickerPosition(ticker)) tickerEntryPlayed = true;
+    else startTickerEntry(ticker);
     return;
   }
 
@@ -1210,6 +1217,38 @@ function applyTickerSectionSwap(ticker, league, section, safe) {
       s.addEventListener("animationend", () => s.classList.remove("ticker-league-entering"), { once: true });
     });
   }
+}
+
+// Saved in px, not as a fraction: later leagues are inserted to the right
+// of the NHL, so the offset holds while the strip's width doesn't.
+// Mid-entrance there's nothing worth saving: the next page replays it.
+function saveTickerPosition(ticker) {
+  const scroller = ticker.querySelector(".nhl-ticker-scroller");
+  const anim = scroller?.getAnimations()[0];
+  try {
+    if (!anim || anim.currentTime == null || scroller.closest(".nhl-ticker-entering")) {
+      sessionStorage.removeItem(TICKER_POS_KEY);
+      return;
+    }
+    const duration = anim.effect.getComputedTiming().duration;
+    const width = scroller.querySelector(".nhl-ticker-track").getBoundingClientRect().width;
+    const x = ((anim.currentTime % duration) / duration) * width;
+    sessionStorage.setItem(TICKER_POS_KEY, JSON.stringify({ x, savedAt: Date.now() }));
+  } catch (e) { /* storage blocked: the ticker just starts fresh */ }
+}
+
+function restoreTickerPosition(ticker) {
+  const scroller = ticker.querySelector(".nhl-ticker-scroller");
+  const anim = scroller?.getAnimations()[0];
+  if (!anim) return false;
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(TICKER_POS_KEY));
+    if (!saved || Date.now() - saved.savedAt > TICKER_POS_MAX_AGE_MS) return false;
+    if (!(saved.x >= 0)) return false;
+    const width = scroller.querySelector(".nhl-ticker-track").getBoundingClientRect().width;
+    anim.currentTime = ((saved.x % width) / width) * anim.effect.getComputedTiming().duration;
+    return true;
+  } catch (e) { return false; }
 }
 
 // First build only: after a short hold, the strip slides in from the far
