@@ -608,7 +608,7 @@ function buildChecklistPdfDocument(setName, groups) {
   doc.setFont("BebasNeue", "normal");
   doc.setFontSize(mastheadFontSize);
   const mastheadBaseline = y + mastheadBarHeight / 2 + mastheadFontSize * 0.35;
-  drawOutlinedText("THE HELLA FILES", marginX + mastheadPaddingX, mastheadBaseline, mastheadOutlineColor, mastheadTextColor);
+  drawOutlinedText("JUNK WAX HOCKEY", marginX + mastheadPaddingX, mastheadBaseline, mastheadOutlineColor, mastheadTextColor);
   doc.setTextColor(0);
   y += mastheadBarHeight + 16;
 
