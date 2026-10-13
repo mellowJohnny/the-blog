@@ -24,7 +24,14 @@
     <link
       rel="preload"
       as="image"
+      href="/images/masthead-mobile.webp"
+      media="(max-width: 600px)"
+      fetchpriority="high">
+    <link
+      rel="preload"
+      as="image"
       href="/images/masthead.webp"
+      media="(min-width: 601px)"
       fetchpriority="high">
 
     <title>
@@ -90,7 +97,10 @@
   <body>
     <section>
       <header class="home-masthead">
-        <img src="/images/masthead.webp" width="2272" height="400" alt="Junk Wax Hockey">
+        <picture>
+          <source media="(max-width: 600px)" srcset="/images/masthead-mobile.webp" width="1170" height="400">
+          <img src="/images/masthead.webp" width="2272" height="400" alt="Junk Wax Hockey">
+        </picture>
       </header>
     </section>
     <nav>
