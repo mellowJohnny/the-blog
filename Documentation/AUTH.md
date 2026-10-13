@@ -13,11 +13,19 @@ From `AUTH_CONFIG` in `scripts/auth.js` (matches `Documentation/cognito.txt`):
 | User Pool ID | `us-east-2_wEdajhS7F` |
 | App Client ID | `1m22cfonep7l85th9ut1obk0pe` |
 | Cognito domain | `mellowjohnny.auth.us-east-2.amazoncognito.com` |
-| Redirect URI | `https://www.mellowjohnny.cc/cms/wlcms.html` |
+| Redirect URI | `https://www.junkwaxhockey.com/cms/wlcms.html` |
+
+Cognito matches the callback **exactly** against the URLs registered on
+the app client (scheme, `www`, path, no trailing slash) - anything else
+lands on Cognito's `redirect_mismatch` error page. `AUTH_CONFIG` and the
+app client's callback/sign-out lists moved from `www.mellowjohnny.cc` to
+`www.junkwaxhockey.com` on 2026-10-12. The Cognito domain prefix is still
+`mellowjohnny` - an Amazon-hosted prefix, not tied to the site's domain,
+so it didn't change.
 
 Login URL (also linked from the public site footer, `index.html`):
 ```
-https://mellowjohnny.auth.us-east-2.amazoncognito.com/login?response_type=code&client_id=1m22cfonep7l85th9ut1obk0pe&redirect_uri=https://www.mellowjohnny.cc/cms/wlcms.html
+https://mellowjohnny.auth.us-east-2.amazoncognito.com/login?response_type=code&client_id=1m22cfonep7l85th9ut1obk0pe&redirect_uri=https://www.junkwaxhockey.com/cms/wlcms.html
 ```
 
 ## Flow

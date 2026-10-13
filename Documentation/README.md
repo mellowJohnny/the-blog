@@ -1,4 +1,4 @@
-# mellowjohnny.cc — Documentation
+# junkwaxhockey.com — Documentation
 
 This folder replaces documentation previously kept in Confluence. It was
 reconstructed on 2026-07-16 by reading the code in this repository, since
@@ -11,21 +11,27 @@ that's called out explicitly.
 
 ## What this site is
 
-"the hella files" (mellowjohnny.cc) is Christian Couillard's personal
-site: a blog (tech, Mustang Mach-E, Raspberry Pi) plus an extensive
-hobby section reviewing vintage and "junk wax" era hockey card sets
-(O-Pee-Chee, Upper Deck, Score, McDonald's, Tim Hortons, etc). It also
-hosts a couple of small utility pages and a private CMS ("cardStack")
-used to author/edit content, plus a small SMS broadcast tool ("Autobus
-Messaging Platform") for a cycling club. The site doubles as a personal
-playground for AWS services — API Gateway, Lambda, DynamoDB, S3,
-Cognito — mentioned directly in `index.html`'s meta description.
+"the hella files" (junkwaxhockey.com) is Christian Couillard's site:
+an extensive hobby section reviewing vintage and "junk wax" era hockey
+card sets (O-Pee-Chee, Upper Deck, Score, McDonald's, Tim Hortons,
+etc) with full checklists, a player search and a live NHL/PWHL scores
+ticker. It also hosts a couple of small utility pages and a private
+CMS ("cardStack") used to author/edit content, plus a small SMS
+broadcast tool ("Autobus Messaging Platform") for a cycling club. The
+site doubles as a personal playground for AWS services — API Gateway,
+Lambda, DynamoDB, S3, Cognito.
+
+It moved from `mellowjohnny.cc` on 2026-10-12; that domain now
+redirects here (see `ARCHITECTURE.md`). The earlier personal blog
+(tech, Mustang Mach-E, Raspberry Pi) is still in the code and the
+`Blogs` table but is no longer linked from the nav, home page or
+sitemap.
 
 ## Document index
 
 | Doc | Covers |
 |---|---|
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | High-level system diagram, hosting, AWS services in play |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | High-level system diagram, hosting, domains/DNS/redirects, AWS services in play |
 | [DATA_MODEL.md](./DATA_MODEL.md) | DynamoDB tables and the fields each one holds |
 | [API_ENDPOINTS.md](./API_ENDPOINTS.md) | Every API Gateway endpoint the frontend calls — URL, method, payload, purpose |
 | [FRONTEND.md](./FRONTEND.md) | Public-facing pages and the `scripts/*.js` files behind them |
@@ -34,6 +40,7 @@ Cognito — mentioned directly in `index.html`'s meta description.
 | [CMS_PAGE_FLOWS.md](./CMS_PAGE_FLOWS.md) | Every `/cms` page traced the same way as PUBLIC_PAGE_FLOWS.md |
 | [AUTH.md](./AUTH.md) | Cognito setup and the login flow used to gate `/cms` |
 | [LAMBDA_FUNCTIONS.md](./LAMBDA_FUNCTIONS.md) | The Lambda code that *is* in this repo, and an inventory of the ones that only live in the AWS Console |
+| [AMP_SMS_PLATFORM.md](./AMP_SMS_PLATFORM.md) | The Autobus Messaging Platform (SMS broadcast tool): bulk upload, subscriber management and inbound SMS, API security, and the core Lambda/admin page/JS — a repo mirror of the "AMP SMS - Platform Core" Confluence page |
 | [PWHL_API.md](./PWHL_API.md) | Research reference for the PWHL's data feed (HockeyTech), behind the PWHL section of the scores ticker — access quirks, views and status codes, as of October 2026 |
 | [NHL_API.md](./NHL_API.md) | Research reference for the NHL's free, undocumented API (`api-web.nhle.com`) behind the scores ticker — every area of functionality found, as of October 2026 |
 

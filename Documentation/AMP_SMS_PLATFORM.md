@@ -104,7 +104,7 @@ All responses include the following headers:
 
 | Header | Value |
 | --- | --- |
-| `Access-Control-Allow-Origin` | `https://www.mellowjohnny.cc` |
+| `Access-Control-Allow-Origin` | `https://www.junkwaxhockey.com` |
 | `Access-Control-Allow-Headers` | `Content-Type, x-api-key` |
 | `Access-Control-Allow-Methods` | `POST, OPTIONS` |
 
@@ -386,7 +386,7 @@ The platform requires an annual refresh of the subscriber list to reflect curren
 | OPTIONS method | Enabled (auto-created via Enable CORS) |
 | Default 4XX gateway response | Enabled |
 | Default 5XX gateway response | Enabled |
-| `Access-Control-Allow-Origin` | `https://www.mellowjohnny.cc` |
+| `Access-Control-Allow-Origin` | `https://www.junkwaxhockey.com` |
 | `Access-Control-Allow-Headers` | `Content-Type, x-api-key` |
 | `Access-Control-Allow-Methods` | `POST, OPTIONS` |
 
@@ -533,7 +533,7 @@ All responses include:
 
 | Header | Value |
 | --- | --- |
-| `Access-Control-Allow-Origin` | `https://www.mellowjohnny.cc` |
+| `Access-Control-Allow-Origin` | `https://www.junkwaxhockey.com` |
 | `Access-Control-Allow-Headers` | `Content-Type, x-api-key` |
 | `Access-Control-Allow-Methods` | `POST, OPTIONS` |
 
@@ -708,7 +708,7 @@ A **Cognito User Pool Authorizer** was added to API Gateway and attached to all 
 | App Client ID | `1m22cfonep7l85th9ut1obk0pe` |
 | Auth flow | Authorization Code (`response_type=code`) |
 | Client secret | None |
-| Redirect URI | `https://www.mellowjohnny.cc/cms/wlcms.html` |
+| Redirect URI | `https://www.junkwaxhockey.com/cms/wlcms.html` |
 | Login URL | `https://mellowjohnny.auth.us-east-2.amazoncognito.com/login` |
 | Refresh token expiry | 30 days (Cognito default) |
 

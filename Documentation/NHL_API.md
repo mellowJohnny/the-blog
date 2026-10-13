@@ -31,7 +31,7 @@ modal").
 
 | Behaviour | Detail | What it means for this site |
 |---|---|---|
-| **No CORS** | No endpoint sends `Access-Control-Allow-Origin`, including on an `OPTIONS` preflight (checked across ~35 endpoints). | A browser `fetch()` from mellowjohnny.cc is blocked. Every use has to go through a Lambda proxy. |
+| **No CORS** | No endpoint sends `Access-Control-Allow-Origin`, including on an `OPTIONS` preflight (checked across ~35 endpoints). | A browser `fetch()` from junkwaxhockey.com is blocked. Every use has to go through a Lambda proxy. |
 | **`/now` redirects** | Most `/now` and `/current` URLs answer `307` to a dated or season-specific URL — `/v1/score/now` → `/v1/score/2026-10-11`, `/v1/roster/TOR/current` → `/v1/roster/TOR/20262027`. | Node's `fetch` follows these automatically; `curl` needs `-L`. |
 | **Short CDN cache** | `Cache-Control: max-age` of 0–14s depending on the endpoint (12s on scores). | Cache in our own layer (the Lambda's response header) rather than relying on theirs. |
 | **Season IDs** | Eight digits, start and end year: `20262027`. | `/v1/season` lists every valid one. |
@@ -89,7 +89,7 @@ DET @ MTL on 2026-10-10 (game `2026020075`, a 1-0 shootout):
 | Team records (W-L-OTL) | `/v1/standings/{gameDate}` → `wins`, `losses`, `otLosses` per `teamAbbrev` | Not in any Game Center response. The game date's standings already include that day's games, so a final shows the record *after* it. |
 | Recap headline, summary, photo | NHL.com content API: `https://forge-dapi.d3.nhle.com/v2/content/en-us/stories?tags.slug=gameid-{id}&context.slug=nhl` | **Sends `Access-Control-Allow-Origin: *`**, unlike `api-web`. Several stories per game (recap, preview, video reviews) — the recap is the one tagged `game-recap`. `…/stories/{slug}` has the full article as markdown with embedded `<forge-entity>` tags; this site deliberately shows only the headline and summary and links to `https://www.nhl.com/news/{slug}`. |
 | Highlights video | Same content API: `…/videos?tags.slug=gameid-{id}&context.slug=nhl` | Several videos per game; the recap has a slug ending `-recap-{id}`. `fields.brightcoveId`, `fields.brightcoveAccountId` (`6415718365001`), `fields.duration` ("00:05:06"). Not in the list right after the game ends. |
-| Video player | `https://players.brightcove.net/6415718365001/EXtG1xJ7H_default/index.html?videoId={id}` | The NHL's "Gamecenter Player". No `X-Frame-Options`, so it embeds and plays from mellowjohnny.cc. Plays an NHL pre-roll ad first. `default_default` (Brightcove's generic player) also exists on the account. |
+| Video player | `https://players.brightcove.net/6415718365001/EXtG1xJ7H_default/index.html?videoId={id}` | The NHL's "Gamecenter Player". No `X-Frame-Options`, so it embeds and plays from junkwaxhockey.com. Plays an NHL pre-roll ad first. `default_default` (Brightcove's generic player) also exists on the account. |
 | Images | `media.d3.nhle.com/image/private/{formatInstructions}/…` (the `thumbnail.templateUrl` on stories and videos) | Replace `{formatInstructions}` with e.g. `t_ratio16_9-size40` (~200 KB), `-size30`, `-size50`. |
 | NHL.com game page | `https://www.nhl.com/gamecenter/{away}-vs-{home}/{yyyy}/{mm}/{dd}/{id}` | Same pattern as the scores feed's `gameCenterLink`. |
 
@@ -105,7 +105,7 @@ DET @ MTL on 2026-10-10 (game `2026020075`, a 1-0 shootout):
 
 ```
 curl -sL https://api-web.nhle.com/v1/score/now | python3 -m json.tool | head -60
-curl -sI -H "Origin: https://www.mellowjohnny.cc" https://api-web.nhle.com/v1/scoreboard/now
+curl -sI -H "Origin: https://www.junkwaxhockey.com" https://api-web.nhle.com/v1/scoreboard/now
 ```
 
 The second shows the response headers — if an

@@ -172,7 +172,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
 - **File**: `Lambdas/sendAlertHandler/index.mjs` (ES module, Node.js).
 - **Deployment**: manual — the file's own header comment is explicit about this: *"NEVER change this code in the AWS Console. ONLY change in VS Code, then redeploy by uploading the new .zip file (Console → Code tab → Update dropdown → Update from a .zip file)."* A pre-built `sendAlertHandler.zip` sits alongside it in the repo — presumably the last thing actually uploaded; keep it (or regenerate it) in sync with `index.mjs` when you change the code.
 - **Dependencies** (`package.json`): `twilio` (^6.0.2), plus `@aws-sdk/client-dynamodb` used in code but not listed in `package.json` `dependencies` — likely available via the Lambda Node.js runtime's bundled AWS SDK v3 layer, but worth double-checking if a fresh `npm install` / redeploy ever fails on it.
-- **What it does**: backs the "Send broadcast" button in the Autobus Messaging Platform (`cms/smsAdmin.html`). See `API_ENDPOINTS.md` for the full request/response contract. In short: reads `message` + `mode` (`"test"`/`"live"`) from the request body, scans either `SubscribersTest` or `Subscribers` for `status = "subscribed"`, sends each one an SMS via Twilio (credentials from Lambda environment variables — not in this repo), and returns a per-recipient success/failure list. CORS is hardcoded to allow only `https://www.mellowjohnny.cc`.
+- **What it does**: backs the "Send broadcast" button in the Autobus Messaging Platform (`cms/smsAdmin.html`). See `API_ENDPOINTS.md` for the full request/response contract. In short: reads `message` + `mode` (`"test"`/`"live"`) from the request body, scans either `SubscribersTest` or `Subscribers` for `status = "subscribed"`, sends each one an SMS via Twilio (credentials from Lambda environment variables — not in this repo), and returns a per-recipient success/failure list. CORS is hardcoded to allow only `https://www.junkwaxhockey.com`.
 - **Lambda Console timeout — hard minimum, do not reset to the default**: per the Confluence "AMP SMS - Platform Core" doc (the source of this Lambda's original write-up, predating this repo's doc workflow), the configured timeout is **1 minute 3 seconds**, and that page calls this out explicitly as a *hard minimum*, not just a comfortable buffer — Twilio's own per-message send time is what requires it. Messages are sent to subscribers **sequentially, one at a time** (not in parallel — see `1.5 Key Design Decisions` on that page: this is deliberate, both to avoid overwhelming the Twilio API and to keep per-recipient result tracking accurate), so total execution time scales with subscriber-list size, and the default Lambda Console timeout (3 seconds) is nowhere close to enough. **If this timeout ever gets reset to the Console default** (e.g. by someone recreating the function, or fat-fingering the Console's General Configuration tab), broadcasts to any list bigger than a handful of subscribers will start failing partway through with a Lambda timeout, likely showing up as `FAILED` results for whichever subscribers hadn't been reached yet when the clock ran out — worth checking this value first if a broadcast to a large list ever comes back with a suspicious cluster of failures near the end of the results list.
 - **Full response shape** (per the same Confluence page, and confirmed against `index.mjs` itself): a top-level `mode` field (echoing back which table was actually used, `"live"` or `"test"`) alongside `results`, an array with one entry per subscriber in the target table with `status = "subscribed"`:
   ```json
@@ -217,7 +217,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   attribute_exists(setName)` guard returns a 404 instead of silently
   creating a garbage item for a bad/mistyped `setName`+`year` pair.
   Full request/response contract: `API_ENDPOINTS.md`. CORS is
-  hardcoded to allow only `https://www.mellowjohnny.cc`, same as
+  hardcoded to allow only `https://www.junkwaxhockey.com`, same as
   `Lambdas/sendAlertHandler/`.
 - **Frontend**: `castVote()` in `scripts/wax.js` calls it optimistically
   (UI updates immediately on click, rolls back if the request fails)
@@ -245,7 +245,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   to also match before deleting (returns 404 otherwise), as a safety
   check against a stale or mismatched `blogType`+`time` pair silently
   deleting the wrong post. CORS is hardcoded to allow only
-  `https://www.mellowjohnny.cc`, same as the other two.
+  `https://www.junkwaxhockey.com`, same as the other two.
 - **Frontend**: `deleteBlogPost()` in `scripts/cmsBlog.js` shows a
   `cmsConfirm()` dialog first (this is a destructive, irreversible
   action — no soft-delete/undo), then calls the Lambda and redirects
@@ -269,7 +269,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   also match before deleting (returns 404 otherwise), as a safety
   check against a stale or mismatched `setName`+`year` pair silently
   deleting the wrong set. CORS is hardcoded to allow only
-  `https://www.mellowjohnny.cc`, same as the others.
+  `https://www.junkwaxhockey.com`, same as the others.
 - **Frontend**: `deleteCardSet()` in `scripts/cmsCardSet.js` shows a
   `cmsConfirm()` dialog first (destructive, irreversible — no
   soft-delete/undo), then calls the Lambda and redirects to
@@ -631,7 +631,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   rest of this endpoint, so it's not a secret admin flag, just an
   unlinked one.
 - **CORS**: `Access-Control-Allow-Origin: "*"` (not restricted to
-  `https://www.mellowjohnny.cc`) — deliberately matches
+  `https://www.junkwaxhockey.com`) — deliberately matches
   `getChecklistBySetName`/`getCardSetsByYear`/`getBlogs`, the site's
   other fully-public, read-only, no-auth GET endpoints. Fine here for
   the same reasons: no cookies/auth in play (no CSRF/session risk), and
@@ -842,9 +842,10 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   (see the intro above). Confirmed the file/directory naming here
   already matches the real deployed function exactly (`index.mjs`,
   directory named `subscribeHandler`) — worth calling out because the
-  Confluence page this section's detail was backported from
-  (2026-05-30, "AMP: Subscriber Management & Inbound SMS
-  Documentation," predates this repo's doc workflow) uses stale labels
+  Confluence write-up this section's detail was backported from
+  (2026-05-30; it's now the Subscriber Management part of "AMP SMS -
+  Platform Core", mirrored in `AMP_SMS_PLATFORM.md`, and predates this
+  repo's doc workflow) uses stale labels
   in a couple of places — `subscribeHandler.mjs` as the filename, and
   `bulkUploadSubscribers.mjs` for what's actually
   `Lambdas/bulkSubscriberUpload/` in this repo — neither of which
@@ -920,7 +921,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   infrastructure needed.
 - **Auth**: Cognito Authorizer required (`POST /subscribers`), same as
   every other cardStack/Autobus write endpoint — see `AUTH.md`.
-- **CORS**: `Access-Control-Allow-Origin: https://www.mellowjohnny.cc`,
+- **CORS**: `Access-Control-Allow-Origin: https://www.junkwaxhockey.com`,
   same restricted-origin convention as `sendAlertHandler` and the other
   CMS-auth-gated POST endpoints.
 
@@ -983,7 +984,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   gets turned into DynamoDB items was rewritten.
 - **Auth**: Cognito Authorizer required, same as every other
   cardStack/Autobus write endpoint — see `AUTH.md`.
-- **CORS**: `Access-Control-Allow-Origin: https://www.mellowjohnny.cc`,
+- **CORS**: `Access-Control-Allow-Origin: https://www.junkwaxhockey.com`,
   same restricted-origin convention as `subscribeHandler`/`sendAlertHandler`.
 
 ## `Lambdas/inboundSMSHandler/` — real, live, previously completely undocumented
@@ -994,15 +995,15 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   frontend code in this repo (it can't be — see below). Confirmed
   2026-09-02 that this repo's directory/file naming (`inboundSMSHandler/index.mjs`
   — capital `SMS`, `.mjs` extension) matches the real deployed function;
-  the Confluence page this section's detail was backported from (2026-05-30,
-  "AMP: Subscriber Management & Inbound SMS Documentation") calls it
+  the Confluence write-up this section's detail was backported from (2026-05-30;
+  now the Subscriber Management part of "AMP SMS - Platform Core") calls it
   `inboundSmsHandler.js` throughout (lowercase `Sms`, `.js` extension) —
   that's a stale/informal label from before the 2026-08-15 sync, not the
   real filename; don't go looking for a `.js` file.
 - **What it does**: this is the Twilio *inbound* webhook — the URL
   configured directly in the Twilio Console as the phone number's
   "a message comes in" handler, called by Twilio itself when a
-  subscriber texts back, not called from `mellowjohnny.cc` at all.
+  subscriber texts back, not called from the site at all.
   Handles the SMS keywords that TCPA/carrier compliance requires:
   `STOP`/`STOPALL`/`UNSUBSCRIBE`/`CANCEL`/`END`/`QUIT` (sets
   `Subscribers.status = "unsubscribed"`), `START`/`YES`/`UNSTOP`
@@ -1019,7 +1020,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   short-circuits with a `400` and TwiML body `"Invalid phone number"`
   before touching DynamoDB at all.
 - **Exact TwiML reply text per keyword/case** (confirmed 2026-09-02 against
-  `index.mjs`, matches the Confluence source doc exactly): the keyword is
+  `index.mjs`, matches `AMP_SMS_PLATFORM.md` exactly): the keyword is
   matched case-insensitively (the inbound `Body` is trimmed and
   uppercased before comparison).
   | Keyword(s) | Condition | DynamoDB update | Exact reply text |
@@ -1052,7 +1053,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   `crypto.timingSafeEqual`, correctly avoiding a timing side-channel.
   Requests that fail validation get a 403 before any DynamoDB access.
 - **Twilio's own STOP/START handling can't be fully disabled — expect
-  occasional double replies**: per the Confluence source doc (section
+  occasional double replies**: per `AMP_SMS_PLATFORM.md` (Subscriber Management, section
   "2.6 Twilio Duplicate Reply Note"), Twilio's platform has its own
   built-in keyword handling for STOP/START baked in ahead of this
   webhook, and that behavior cannot be fully turned off account-side.

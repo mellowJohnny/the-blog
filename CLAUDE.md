@@ -4,11 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-"the hella files" (mellowjohnny.cc) — a personal site combining a blog
-(Tech and Mustang Mach-E) with an extensive vintage/junk-wax
-hockey card set review section, a private CMS, and a small SMS
-broadcast tool for a cycling club. It also serves as the owner's AWS
-playground (Lambda, DynamoDB, Amplify), and a place to use Claude Code.
+"the hella files" (junkwaxhockey.com; mellowjohnny.cc redirects to it) —
+a hockey card site: an extensive vintage/junk-wax set review section
+with checklists, a player search and a live NHL/PWHL scores ticker,
+plus a private CMS and a small SMS broadcast tool for a cycling club.
+The original blog (Tech and Mustang Mach-E) is still in the code and
+database but no longer linked from the nav or home page. It also
+serves as the owner's AWS playground (Lambda, DynamoDB, Amplify), and
+a place to use Claude Code.
 
 **Full architecture, data model, API inventory, and CMS docs live in
 `Documentation/` — start with `Documentation/README.md`.** It was
@@ -129,6 +132,7 @@ real data.
 
 ## Architecture, in brief
 
+- **Domains**: `www.junkwaxhockey.com` is the Amplify app (the bare domain 302s to `www`). `mellowjohnny.cc` was moved off Amplify and 301s everything to the new domain through a CloudFront Function. The origin is hardcoded where it fails quietly - Cognito callback, 8 Lambdas' CORS plus API Gateway OPTIONS, S3 CORS, TinyMCE's approved domains - see `Documentation/ARCHITECTURE.md` ("Domains, DNS and redirects") before changing it again.
 - **Frontend**: one standalone `.html` file per page at the repo root and under `/cms`, no framework. Shared logic lives in `scripts/*.js` and is wired up per-page via `<script src>` tags. Pages coordinate via URL query params (`?year=`, `?blogType=`, `?pageName=`, `?blogCat=`) rather than client-side routing. Details: `Documentation/FRONTEND.md`.
 - **Backend**: "one Lambda + one API Gateway REST API per action" — there is no shared backend app/router. Every distinct operation (get blogs, create a blog post, get a card set by ID, get an S3 upload URL, send an SMS...) has its own hardcoded API Gateway URL, called directly from whichever `scripts/*.js` file needs it. Full inventory with request/response shapes: `Documentation/API_ENDPOINTS.md`.
 - **Every live Lambda's source is version-controlled**, under `Lambdas/` — one directory per function, matching its exact AWS Lambda function name; see the `## Commands` section above for the sync/deploy workflow. Four turned out to be dead/orphaned (not called by any live frontend code) when the full inventory was pulled in on 2026-08-15, and were removed again once confirmed — see `Documentation/LAMBDA_FUNCTIONS.md` for which. A separate, older prototype directory, `Lambda Functions/` (note the space — a different thing from the no-space `Lambdas/`), no longer exists in this repo at all (deleted 2026-08-06, unrelated to the 2026-08-15 sync) — some docs still reference specific files that used to live there for historical context, even though those files are gone. Details: `Documentation/LAMBDA_FUNCTIONS.md`.

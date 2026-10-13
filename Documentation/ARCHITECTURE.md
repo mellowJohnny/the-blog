@@ -60,6 +60,57 @@ Deploy clicked, while `sendAlertHandler` (has `twilio`) and
 `parseChecklistPdf` (has `pdf-parse`) need a full `npm install` + zip +
 "Update from a .zip file" upload instead.
 
+### Domains, DNS and redirects
+
+The site's address is `https://www.junkwaxhockey.com`, served by the
+Amplify app (the bare `junkwaxhockey.com` 302s to `www` through an
+Amplify redirect rule). Both domains are registered through Route 53,
+so DNS lives in Route 53 hosted zones. Until 2026-10-12 the same app
+served `mellowjohnny.cc`.
+
+`mellowjohnny.cc` is **no longer attached to Amplify** and 301s every
+path and query string to the same URL on `www.junkwaxhockey.com`.
+Amplify can't do that itself: it applies host-based redirect rules for
+an apex domain but silently ignores them for a `www` host (even an
+exact-path rule on `www.mellowjohnny.cc` did nothing). Instead:
+
+- a CloudFront distribution (`mellowjohnny-redirect`) whose origin is
+  never reached, with a viewer-request CloudFront Function that answers
+  every request with the 301, rebuilding the URL from the request's URI
+  and query string;
+- an ACM certificate in **us-east-1** (CloudFront only reads
+  certificates from there) covering `mellowjohnny.cc` and
+  `www.mellowjohnny.cc`, validated by DNS - **its validation CNAMEs
+  must stay in the Route 53 zone or renewal fails**;
+- Route 53 alias A records for the apex and `www` pointing at that
+  distribution. If `mellowjohnny.cc` gets real content again, repoint
+  those two records and delete the distribution - Amplify isn't
+  involved.
+
+Four places hardcode the domain and fail quietly when it changes (all
+four were updated for the move):
+
+- **Cognito**: the callback must match a URL registered on the app
+  client exactly (see `AUTH.md`).
+- **CORS has two layers**: a Lambda's response
+  `Access-Control-Allow-Origin` *and* the API Gateway `OPTIONS`
+  (preflight) response must both allow the page's origin. Eight Lambdas
+  send a fixed origin, now `https://www.junkwaxhockey.com`
+  (`sendAlertHandler`, `subscribeHandler`, `bulkSubscriberUpload`,
+  `parseChecklistPdf`, `saveChecklist`, `castVoteHandler`,
+  `deleteBlogHandler`, `deleteCardSetHandler`); the other Lambdas send
+  `*`, and the routes' `OPTIONS` replies are `*`. A `curl -X OPTIONS`
+  with an `Origin` header is a safe way to check a Cognito-protected
+  route - never send anything to `/admin/send`, the SMS endpoint.
+- **S3 CORS** on `mellowjohnny.cc.files` (the browser's presigned-URL
+  uploads) lists both origins.
+- **TinyMCE**: the cloud editor's API key only works on domains
+  approved in its Tiny account - see "Third-party services" below.
+
+Amplify's CloudFront also caches pages for up to a year (`s-maxage`),
+and only a new deploy clears it - editing a redirect rule doesn't flush
+pages that were already cached.
+
 ### Cost/abuse backstop: AWS Budgets
 
 A $5/month AWS Budget alerts by email if account spend approaches that
@@ -122,7 +173,7 @@ Plain multi-page HTML site, no bundler/framework:
 
 ## Third-party services
 
-- **TinyMCE** (cloud-hosted, API key embedded in `cms/*.html`) — WYSIWYG editor used for blog post bodies and card set review bodies in the CMS.
+- **TinyMCE** (cloud-hosted, API key embedded in `cms/*.html`) — WYSIWYG editor used for blog post bodies and card set review bodies in the CMS. The key only works on domains approved in the Tiny account it came from; an unapproved domain gets a "domain is not registered" banner and a disabled editor. The current key is from an account created 2026-10-13, with `junkwaxhockey.com` and `www.junkwaxhockey.com` approved.
 - **OpenWeatherMap** — homepage weather widget (`scripts/blogs.js`); API key is hardcoded client-side (`49f84d9cdb7907dfd2b02085e270372e`) — this is visible to anyone viewing page source, worth being aware of even though OpenWeather free-tier keys are generally meant to be used this way.
 - **NHL API** (`api-web.nhle.com`, plus NHL.com's content API `forge-dapi.d3.nhle.com`) — free, undocumented, no API key. Feeds the scores ticker and the game modal on `waxReviews.html`, always through the `getNhlScores`/`getNhlGameDetails` Lambdas because `api-web` sends no CORS headers; only images (`assets.nhle.com`, `media.d3.nhle.com`) load directly in the browser. See `NHL_API.md`.
 - **HockeyTech** (`lscluster.hockeytech.com`) — the PWHL's stats provider, no public API. Feeds the PWHL section of the scores ticker, always through the `getPwhlScores` Lambda: the feed returns an empty response to any request with an `Origin` header, so browsers can't call it. Uses the PWHL site's own public key. See `PWHL_API.md`.

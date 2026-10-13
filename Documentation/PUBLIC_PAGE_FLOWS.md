@@ -80,7 +80,7 @@ each other):
   without a full reload.
 - `setPageMeta({...})` (`helper.js`, called directly in the `window
   load` handler, not from a `blogs.js` function) — sets `<title>`, the
-  meta description, canonical (`https://www.mellowjohnny.cc/`, matching
+  meta description, canonical (`https://www.junkwaxhockey.com/`, matching
   `sitemap.xml`'s root entry), and the Open Graph/Twitter Card tags,
   reusing the same static, already-good title/description this page
   always had, plus the preloaded hero image
@@ -90,9 +90,9 @@ each other):
 - `fetchCopyrightYear()` (`helper.js`) — a small, unrelated piece of
   chrome: writes `© <current year> Christian Couillard` into `#copy`.
 - `fetchNav("index")` (`helper.js`) — builds the top nav bar itself
-  (the links to the blog categories, card review sections, tech blog,
-  etc.), by looking up `NAV_MAP["index"]` (`home, classic, junk, mcd,
-  timmies, tech, mache`) and rendering it as a `<table>` into
+  (the links to the card review sections and Player Search), by looking
+  up `NAV_MAP["index"]` (`home, classic, junk, mcd, timmies, search`)
+  and rendering it as a `<table>` into
   `#global-nav`. Purely client-side — the nav structure is a hardcoded
   map in `helper.js`, not backend-driven, since the site's page/category
   set changes rarely enough that there's no value in making it dynamic.
@@ -119,6 +119,10 @@ for a specific category instead of the home-page mix — it's the same
 `blogs.js` pattern, just parameterized by whichever `blogType` the URL
 specifies (`1`=Tech, `3`=Mach-E, `4`=SYNC Updates, `5`=Raspberry Pi),
 rather than a separate page/script per category.
+
+Since the 2026-10-12 move to `junkwaxhockey.com` nothing links here:
+the nav, home page and sitemap no longer list it, so it's reachable
+only by direct URL (the posts stay in `Blogs` and in the CMS).
 
 **What loads**: `scripts/blogs.js`, `scripts/helper.js` (`defer`), plus
 inline scripts reading `blogType`/`pageName` from the query string and
@@ -147,7 +151,7 @@ the same shared function), `renderBlogIntro()` looks up a small
 and calls `setPageMeta({...})` (`helper.js`) with that title/description,
 the shared hero image as `image`, and a canonical built from
 `window.location.search` — e.g.
-`https://www.mellowjohnny.cc/tech.html?blogType=1&pageName=tech` —
+`https://www.junkwaxhockey.com/tech.html?blogType=1&pageName=tech` —
 so each of the 4 `blogType` variants in `sitemap.xml` gets its own
 accurate title/description/canonical instead of sharing one generic
 pair, which is what this page had before.
@@ -216,9 +220,9 @@ everything the visitor can see or navigate to on this page.
 - `fetchNav(pageName)` (`helper.js`) — builds the top nav bar, same
   mechanism as the blog pages, but `waxReviews.html`'s `pageName`
   values (`junkWax`, `classicWax`, `timmies`, `mcd`) each map to a
-  `NAV_MAP` entry that additionally includes `"search"` (Player
-  Search), positioned right before `"tech"` — since Player Search only
-  makes sense as a jumping-off point from a card-review context.
+  `NAV_MAP` entry (the other review sections, then `"search"` (Player
+  Search), always last — Player Search is in every `NAV_MAP` entry
+  except its own page's).
 - `renderSetPicker(year, blogCat, pageName)` (`helper.js`) — builds the
   "set-o-matic" year picker: the row letting a visitor jump directly to
   another year's review within the same category, without going back
@@ -419,7 +423,7 @@ directly for a player and jump straight to every set they appear in.
   since you're already there).
 - `setPageMeta({...})` (`helper.js`) — static, called once, reusing this
   page's already-good title/description and the shared hero image.
-  Canonical is always the bare `https://www.mellowjohnny.cc/playerSearch.html`,
+  Canonical is always the bare `https://www.junkwaxhockey.com/playerSearch.html`,
   **regardless of any `?q=`** — a deliberate choice: the search tool
   itself is what's worth indexing, not a separate page per query, which
   would just dilute relevance across effectively infinite thin
