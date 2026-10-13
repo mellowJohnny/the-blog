@@ -30,8 +30,7 @@ function renderBlogIntro(blogType) {
     // blogType 99 or missing → fallback
     introHTML = `
       <h1>welcome to the-blog...</h1>
-      <p>A place to write about things which interest me - late '80s and 90s hockey cards, technology, and maybe even software architecture once in a while, all while 
-      testing out web technologies - AWS stuff, Javascript, React, and agentic coding tools.</p>
+      <p>A place to write about late '80s and 90s hockey cards - vintage and junk wax set reviews, full set checklists, and a player search.</p>
       <p>I'll try to be entertaining - at the very least you can expect sarcasm, spelling mistakes, and self-deprecation. So as my Dad used to say, "Take your coat off and stay a while..." </p>
     `;
   }
@@ -68,7 +67,7 @@ function renderBlogIntro(blogType) {
       title: meta.title,
       description: meta.description,
       image: "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp",
-      url: `https://www.mellowjohnny.cc/tech.html${window.location.search}`,
+      url: `https://www.junkwaxhockey.com/tech.html${window.location.search}`,
       type: "website"
     });
   }

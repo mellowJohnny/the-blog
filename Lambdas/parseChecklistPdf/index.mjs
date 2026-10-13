@@ -42,7 +42,7 @@
 import pdfParse from "pdf-parse/lib/pdf-parse.js";
 
 const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "https://www.mellowjohnny.cc",
+  "Access-Control-Allow-Origin": "https://www.junkwaxhockey.com",
   "Access-Control-Allow-Headers": "Content-Type,Authorization",
   "Access-Control-Allow-Methods": "POST,OPTIONS"
 };

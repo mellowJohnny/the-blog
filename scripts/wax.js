@@ -397,7 +397,7 @@ document.addEventListener("click", (event) => {
 (() => {
   const printFooter = document.getElementById("checklistModalPrintFooter");
   if (printFooter) {
-    printFooter.textContent = `© ${new Date().getFullYear()} www.mellowjohnny.cc`;
+    printFooter.textContent = `© ${new Date().getFullYear()} www.junkwaxhockey.com`;
   }
 })();
 
@@ -770,7 +770,7 @@ function buildChecklistPdfDocument(setName, groups) {
     doc.setFont("SourceSans3", "normal");
     doc.setFontSize(8.5);
     doc.setTextColor(120);
-    doc.text(`© ${new Date().getFullYear()} www.mellowjohnny.cc`, marginX, pageHeight - 28);
+    doc.text(`© ${new Date().getFullYear()} www.junkwaxhockey.com`, marginX, pageHeight - 28);
     doc.text(`Page ${i} of ${totalPages}`, pageWidth - marginX, pageHeight - 28, { align: "right" });
     doc.setTextColor(0);
   }

@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: /cms/
 
-Sitemap: https://www.mellowjohnny.cc/sitemap.xml
+Sitemap: https://www.junkwaxhockey.com/sitemap.xml

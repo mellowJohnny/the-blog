@@ -495,21 +495,21 @@ const NAV_ITEMS = {
 // Step 2: Define which pages show which items
 // The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
-  index: ["home", "classic", "junk", "mcd", "timmies", "tech", "mache"],
-  tech: ["home", "classic", "junk", "mcd", "timmies", "mache"],
-  ev: ["home", "classic", "junk", "mcd", "timmies","tech"],
+  index: ["home", "classic", "junk", "mcd", "timmies"],
+  tech: ["home", "classic", "junk", "mcd", "timmies"],
+  ev: ["home", "classic", "junk", "mcd", "timmies"],
   // "search" (Player Search) only appears on the waxReviews.html-backed
   // pages below (junkWax, classicWax, timmies, mcd) - per the site
-  // owner, not site-wide - and always immediately before "tech".
-  junkWax: ["home", "classic", "mcd", "timmies", "search", "tech", "mache"],
-  classicWax: ["home", "junk", "mcd", "timmies", "search", "tech", "mache"],
-  timmies: ["home", "classic", "junk", "mcd", "search", "tech", "mache"],
-  mcd: ["home", "classic", "junk", "timmies", "search", "tech", "mache"],
-  playerSearch: ["home", "classic", "junk", "mcd", "timmies", "tech", "mache"],
+  // owner, not site-wide - and always last.
+  junkWax: ["home", "classic", "mcd", "timmies", "search"],
+  classicWax: ["home", "junk", "mcd", "timmies", "search"],
+  timmies: ["home", "classic", "junk", "mcd", "search"],
+  mcd: ["home", "classic", "junk", "timmies", "search"],
+  playerSearch: ["home", "classic", "junk", "mcd", "timmies"],
   // theJunkWaxYears.html is a static essay, not one of the junkWax/
   // classicWax/mcd/timmies review pages itself, so - like playerSearch -
   // nothing needs to self-exclude here; "junk" stays in the list.
-  junkWaxYears: ["home", "classic", "junk", "mcd", "timmies", "search", "tech", "mache"]
+  junkWaxYears: ["home", "classic", "junk", "mcd", "timmies", "search"]
 };
 
 // Step 3: Build a dynamic table generator

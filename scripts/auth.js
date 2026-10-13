@@ -8,11 +8,11 @@ const AUTH_CONFIG = {
   region:       'us-east-2',
   userPoolId:   'us-east-2_wEdajhS7F',
   clientId:     '1m22cfonep7l85th9ut1obk0pe',
-  redirectUri:  'https://www.mellowjohnny.cc/cms/wlcms.html',
+  redirectUri:  'https://www.junkwaxhockey.com/cms/wlcms.html',
   loginUrl:     'https://mellowjohnny.auth.us-east-2.amazoncognito.com/login' +
                 '?response_type=code' +
                 '&client_id=1m22cfonep7l85th9ut1obk0pe' +
-                '&redirect_uri=https://www.mellowjohnny.cc/cms/wlcms.html'
+                '&redirect_uri=https://www.junkwaxhockey.com/cms/wlcms.html'
 };
 
 // localStorage key helpers

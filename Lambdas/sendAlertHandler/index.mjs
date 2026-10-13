@@ -51,7 +51,7 @@ export const handler = async (event) => {
       return {
         statusCode: 200,
         headers: {
-          "Access-Control-Allow-Origin": "https://www.mellowjohnny.cc",
+          "Access-Control-Allow-Origin": "https://www.junkwaxhockey.com",
           "Access-Control-Allow-Headers": "Content-Type,x-api-key",
           "Access-Control-Allow-Methods": "POST,OPTIONS"
         },
@@ -93,7 +93,7 @@ export const handler = async (event) => {
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "https://www.mellowjohnny.cc",
+        "Access-Control-Allow-Origin": "https://www.junkwaxhockey.com",
         "Access-Control-Allow-Headers": "Content-Type,x-api-key",
         "Access-Control-Allow-Methods": "POST,OPTIONS"
       },
@@ -105,7 +105,7 @@ export const handler = async (event) => {
     return {
       statusCode: 500,
       headers: {
-        "Access-Control-Allow-Origin": "https://www.mellowjohnny.cc",
+        "Access-Control-Allow-Origin": "https://www.junkwaxhockey.com",
         "Access-Control-Allow-Headers": "Content-Type,x-api-key",
         "Access-Control-Allow-Methods": "POST,OPTIONS"
       },

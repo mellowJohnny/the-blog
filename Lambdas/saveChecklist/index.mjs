@@ -63,7 +63,7 @@ const client = new DynamoDBClient({ region: "us-east-2" });
 const db = DynamoDBDocumentClient.from(client);
 
 const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "https://www.mellowjohnny.cc",
+  "Access-Control-Allow-Origin": "https://www.junkwaxhockey.com",
   "Access-Control-Allow-Headers": "Content-Type,Authorization",
   "Access-Control-Allow-Methods": "POST,OPTIONS"
 };

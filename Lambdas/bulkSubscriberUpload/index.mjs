@@ -266,7 +266,7 @@ const response = (statusCode, body) => ({
   statusCode,
   headers: {
     "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "https://www.mellowjohnny.cc",
+    "Access-Control-Allow-Origin": "https://www.junkwaxhockey.com",
     "Access-Control-Allow-Headers": "Content-Type,x-api-key",
     "Access-Control-Allow-Methods": "POST,OPTIONS",
   },

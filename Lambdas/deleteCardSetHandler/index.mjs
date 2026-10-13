@@ -16,7 +16,7 @@ import { DynamoDBClient, DeleteItemCommand } from "@aws-sdk/client-dynamodb";
 const db = new DynamoDBClient({ region: "us-east-2" });
 
 const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "https://www.mellowjohnny.cc",
+  "Access-Control-Allow-Origin": "https://www.junkwaxhockey.com",
   "Access-Control-Allow-Headers": "Content-Type",
   "Access-Control-Allow-Methods": "DELETE,OPTIONS"
 };

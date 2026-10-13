@@ -10,8 +10,8 @@
 // each page via its own extraction config, so batch-level URLs are what
 // it actually needs to discover.
 //
-// The year ranges and blogType/pageName pairs below are deliberately
-// duplicated from scripts/helper.js's categoryRanges/NAV_ITEMS rather
+// The year ranges below are deliberately
+// duplicated from scripts/helper.js's categoryRanges rather
 // than imported (helper.js is a browser script, not a Node module) -
 // keep this in sync by hand when a new year is added there. Same
 // established pattern as tools/checklistParser/'s parsing-logic
@@ -23,7 +23,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const SITE_ORIGIN = "https://www.mellowjohnny.cc";
+const SITE_ORIGIN = "https://www.junkwaxhockey.com";
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 // Mirrors categoryRanges in scripts/helper.js's renderSetPicker().
@@ -40,28 +40,8 @@ const CARD_SET_RANGES = [
 // it's excluded here and lockout.html is listed separately below instead.
 const REDIRECTED_COMBOS = new Set(["2004|mcd"]);
 
-// Mirrors NAV_ITEMS in scripts/helper.js for the blogTypes tech.html
-// serves. blogType 1 (Tech) and 3 (Mach-E) are linked from the site's
-// own nav; 4 (SYNC Updates) and 5 (Raspberry Pi) are real, published
-// blogTypes (confirmed live via getBlogs) that currently have NO
-// crawlable link path anywhere on the site - exactly the kind of page a
-// sitemap exists to surface. Their pageName values are arbitrary slugs
-// (tech.html only uses pageName to look up a nav table that doesn't yet
-// have entries for these two types either) - the URL itself works
-// regardless.
-const TECH_BLOG_TYPES = [
-  { blogType: 1, pageName: "tech" },
-  { blogType: 3, pageName: "ev" },
-  { blogType: 4, pageName: "sync" },
-  { blogType: 5, pageName: "pi" }
-];
-
 function buildUrls() {
   const urls = [`${SITE_ORIGIN}/`, `${SITE_ORIGIN}/playerSearch.html`];
-
-  for (const { blogType, pageName } of TECH_BLOG_TYPES) {
-    urls.push(`${SITE_ORIGIN}/tech.html?blogType=${blogType}&pageName=${pageName}`);
-  }
 
   for (const { blogCat, pageName, start, end } of CARD_SET_RANGES) {
     for (let year = start; year <= end; year++) {
