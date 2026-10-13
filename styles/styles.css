@@ -2984,20 +2984,14 @@ label sup {
 }
 
 /* index.html's banner masthead, dressed as a wax pack wrapper: the image
-   plus a crinkle layer, a glossy sheen and folded corners. All CSS,
+   plus a crinkle layer and a glossy sheen. All CSS,
    no extra image. Capped width so a very wide monitor doesn't stretch it. */
 .home-masthead {
-  --fold: clamp(7px, 2.2vw, 30px); /* corner fold size; stays under the title's left margin (2.75%) */
   position: relative;
   max-width: 1600px;
   margin: 0 auto;
   overflow: hidden;
   isolation: isolate; /* keeps the blend modes inside the banner */
-  /* Cut the four corners on the diagonal; the flaps below sit on the cuts. */
-  clip-path: polygon(
-    var(--fold) 0, calc(100% - var(--fold)) 0, 100% var(--fold),
-    100% calc(100% - var(--fold)), calc(100% - var(--fold)) 100%,
-    var(--fold) 100%, 0 calc(100% - var(--fold)), 0 var(--fold));
 }
 
 .home-masthead img {
@@ -3024,20 +3018,14 @@ label sup {
   .home-masthead::before { opacity: 0.4; }
 }
 
-/* Four folded-over corners (the paper's back showing, with a soft shadow
-   cast on the print), a glossy sheen across the wrapper, and worn edges. */
+/* Gloss sheen across the wrapper, and worn edges. */
 .home-masthead::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
   box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.28);
-  background:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 130 130' preserveAspectRatio='none'><defs><linearGradient id='g' gradientUnits='userSpaceOnUse' x1='50' y1='50' x2='100' y2='100'><stop offset='0' stop-color='%23fffdf1'/><stop offset='1' stop-color='%23c9c2a4'/></linearGradient><filter id='b' x='-20%25' y='-20%25' width='150%25' height='150%25'><feGaussianBlur stdDeviation='3.2'/></filter></defs><g><polygon points='3,106 106,3 106,106' fill='%23000' opacity='0.5' filter='url(%23b)'/><polygon points='0,100 100,0 100,100' fill='url(%23g)'/><line x1='0' y1='100' x2='100' y2='0' stroke='%23ffffff' stroke-opacity='0.85' stroke-width='2'/><line x1='4' y1='100' x2='100' y2='4' stroke='%23000' stroke-opacity='0.12' stroke-width='3'/></g></svg>") top left / calc(var(--fold) * 1.3) calc(var(--fold) * 1.3) no-repeat,
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 130 130' preserveAspectRatio='none'><defs><linearGradient id='g' gradientUnits='userSpaceOnUse' x1='50' y1='50' x2='100' y2='100'><stop offset='0' stop-color='%23fffdf1'/><stop offset='1' stop-color='%23c9c2a4'/></linearGradient><filter id='b' x='-20%25' y='-20%25' width='150%25' height='150%25'><feGaussianBlur stdDeviation='3.2'/></filter></defs><g transform='translate(130,0) scale(-1,1)'><polygon points='3,106 106,3 106,106' fill='%23000' opacity='0.5' filter='url(%23b)'/><polygon points='0,100 100,0 100,100' fill='url(%23g)'/><line x1='0' y1='100' x2='100' y2='0' stroke='%23ffffff' stroke-opacity='0.85' stroke-width='2'/><line x1='4' y1='100' x2='100' y2='4' stroke='%23000' stroke-opacity='0.12' stroke-width='3'/></g></svg>") top right / calc(var(--fold) * 1.3) calc(var(--fold) * 1.3) no-repeat,
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 130 130' preserveAspectRatio='none'><defs><linearGradient id='g' gradientUnits='userSpaceOnUse' x1='50' y1='50' x2='100' y2='100'><stop offset='0' stop-color='%23fffdf1'/><stop offset='1' stop-color='%23c9c2a4'/></linearGradient><filter id='b' x='-20%25' y='-20%25' width='150%25' height='150%25'><feGaussianBlur stdDeviation='3.2'/></filter></defs><g transform='translate(130,130) scale(-1,-1)'><polygon points='3,106 106,3 106,106' fill='%23000' opacity='0.5' filter='url(%23b)'/><polygon points='0,100 100,0 100,100' fill='url(%23g)'/><line x1='0' y1='100' x2='100' y2='0' stroke='%23ffffff' stroke-opacity='0.85' stroke-width='2'/><line x1='4' y1='100' x2='100' y2='4' stroke='%23000' stroke-opacity='0.12' stroke-width='3'/></g></svg>") bottom right / calc(var(--fold) * 1.3) calc(var(--fold) * 1.3) no-repeat,
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 130 130' preserveAspectRatio='none'><defs><linearGradient id='g' gradientUnits='userSpaceOnUse' x1='50' y1='50' x2='100' y2='100'><stop offset='0' stop-color='%23fffdf1'/><stop offset='1' stop-color='%23c9c2a4'/></linearGradient><filter id='b' x='-20%25' y='-20%25' width='150%25' height='150%25'><feGaussianBlur stdDeviation='3.2'/></filter></defs><g transform='translate(0,130) scale(1,-1)'><polygon points='3,106 106,3 106,106' fill='%23000' opacity='0.5' filter='url(%23b)'/><polygon points='0,100 100,0 100,100' fill='url(%23g)'/><line x1='0' y1='100' x2='100' y2='0' stroke='%23ffffff' stroke-opacity='0.85' stroke-width='2'/><line x1='4' y1='100' x2='100' y2='4' stroke='%23000' stroke-opacity='0.12' stroke-width='3'/></g></svg>") bottom left / calc(var(--fold) * 1.3) calc(var(--fold) * 1.3) no-repeat,
-    linear-gradient(104deg, transparent 0%, rgba(255,255,255,0.26) 12%, transparent 24%, transparent 58%, rgba(255,255,255,0.15) 66%, transparent 76%);
+  background: linear-gradient(104deg, transparent 0%, rgba(255,255,255,0.26) 12%, transparent 24%, transparent 58%, rgba(255,255,255,0.15) 66%, transparent 76%);
 }
 
 /* ============================================
