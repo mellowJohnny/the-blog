@@ -936,7 +936,12 @@ function initNhlTicker() {
   const [first, ...rest] = leagues;
   const firstSettled = refreshTickerLeague(first);
   const hold = Promise.race([firstSettled, new Promise((resolve) => setTimeout(resolve, TICKER_NHL_FIRST_WAIT_MS))]);
-  rest.forEach((league) => refreshTickerLeague(league, hold));
+  const others = rest.map((league) => refreshTickerLeague(league, hold));
+  // The rail is on the page from first paint; if nothing ever fills it, drop it.
+  Promise.allSettled([firstSettled, ...others]).then(() => {
+    ticker.removeAttribute("aria-busy");
+    if (!ticker.querySelector(".ticker-league")) ticker.hidden = true;
+  });
 }
 
 async function refreshTickerLeague(league, hold) {
