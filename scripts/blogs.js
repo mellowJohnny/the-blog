@@ -174,7 +174,7 @@ function renderBlogPage() {
     blogBody.innerHTML +=
       `<h2 class="blog-title">${cleanTitle}</h2>
        <strong><i>${cleanAuthor}</i></strong><br>
-       <strong><i>${fixDate(date)}</i></strong>
+       <strong><i>${fixDate(date)}</i></strong><br>
        <strong><i>${readingStats.minutes} minute read</i></strong><br>
        ${cleanPostBody}
        <hr/><br>`;
