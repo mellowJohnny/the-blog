@@ -31,7 +31,7 @@ function renderBlogIntro(blogType) {
     introHTML = `
       <h1>welcome to junk wax hockey!</h1>
       <p>Late '80s and early '90s hockey cards - vintage and junk wax set reviews, full set checklists, and player search.</p>
-      <p>If your looking for information about vintage or junk wax hockey cards, you're in the rioght place.  So as my Dad used to say, "Take your coat off and stay a while..." </p>
+      <p>If your looking for information about vintage or junk wax hockey cards, you're in the right place.  So as my Dad used to say, "Take your coat off and stay a while..." </p>
     `;
   }
 
