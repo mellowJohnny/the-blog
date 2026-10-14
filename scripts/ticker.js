@@ -14,6 +14,9 @@ const TICKER_ENTRY_DELAY_MS = 100;
 let tickerEntryPlayed = false;
 const TICKER_POS_KEY = "tickerPos";
 const TICKER_POS_MAX_AGE_MS = 30 * 60 * 1000;
+const TICKER_DATA_KEY = "tickerData:";
+const TICKER_DATA_MAX_AGE_MS = 10 * 60 * 1000;
+let tickerPriming = false;
 // After midnight Eastern, wait this long before re-fetching, so the
 // Lambdas (whose caching never crosses midnight) serve the new day.
 const TICKER_MIDNIGHT_GRACE_MS = 2 * 60 * 1000;
@@ -68,11 +71,28 @@ function initNhlTicker() {
   initNhlGameModal();
   // Window resize or phone rotation changes the strip's width.
   new ResizeObserver(() => applyNhlTickerMotion(ticker)).observe(ticker);
-  // The other leagues hold their first render until the first league (the
-  // NHL) has rendered, failed or come back empty, or 2.5s pass.
+  // A late font swap changes the strip's width; keep the position through it.
+  document.fonts.addEventListener("loadingdone", () => refitTickerMotion(ticker));
+
+  // Coming from another page in this tab: show its last scores straight
+  // away, at the position it left off, before the fresh fetch lands.
+  let primed = false;
+  tickerPriming = true;
+  leagues.forEach((league) => {
+    const cached = readTickerCache(league);
+    if (cached) { renderTickerLeagueData(league, cached); primed = true; }
+  });
+  tickerPriming = false;
+  if (primed && ticker.querySelector(".nhl-ticker-scroller")) {
+    if (restoreTickerPosition(ticker)) tickerEntryPlayed = true;
+    else startTickerEntry(ticker);
+  }
+
+  // Without a cache, the other leagues hold their first render until the
+  // first league (the NHL) has rendered, failed or come back empty, or 2.5s pass.
   const [first, ...rest] = leagues;
   const firstSettled = refreshTickerLeague(first);
-  const hold = Promise.race([firstSettled, new Promise((resolve) => setTimeout(resolve, TICKER_NHL_FIRST_WAIT_MS))]);
+  const hold = primed ? undefined : Promise.race([firstSettled, new Promise((resolve) => setTimeout(resolve, TICKER_NHL_FIRST_WAIT_MS))]);
   const others = rest.map((league) => refreshTickerLeague(league, hold));
   // The rail is on the page from first paint; if nothing ever fills it, drop it.
   Promise.allSettled([firstSettled, ...others]).then(() => {
@@ -83,7 +103,6 @@ function initNhlTicker() {
 
 async function refreshTickerLeague(league, hold) {
   clearTimeout(league.timer);
-  const ticker = document.getElementById("nhlTicker");
 
   let data;
   try {
@@ -97,8 +116,26 @@ async function refreshTickerLeague(league, hold) {
     if (league.gameKey) league.timer = setTimeout(() => refreshTickerLeague(league), NHL_TICKER_POLL_MS);
     return;
   }
+  writeTickerCache(league, data);
   if (hold) await hold;
+  renderTickerLeagueData(league, data);
+}
 
+function writeTickerCache(league, data) {
+  try {
+    sessionStorage.setItem(TICKER_DATA_KEY + league.id, JSON.stringify({ data, savedAt: Date.now() }));
+  } catch (e) { /* storage blocked: the next page just fetches */ }
+}
+
+function readTickerCache(league) {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(TICKER_DATA_KEY + league.id));
+    return saved && Date.now() - saved.savedAt <= TICKER_DATA_MAX_AGE_MS ? saved.data : null;
+  } catch (e) { return null; }
+}
+
+function renderTickerLeagueData(league, data) {
+  const ticker = document.getElementById("nhlTicker");
   const previous = data.previous || [];
   const today = data.games || [];
   const all = [...previous, ...today];
@@ -252,14 +289,16 @@ function replaceTickerLeagueSection(ticker, league, section) {
     copy.appendChild(copyTickerSection(section));
     ticker.hidden = false;
     applyNhlTickerMotion(ticker);
-    if (restoreTickerPosition(ticker)) tickerEntryPlayed = true;
-    else startTickerEntry(ticker);
+    if (!tickerPriming) {
+      if (restoreTickerPosition(ticker)) tickerEntryPlayed = true;
+      else startTickerEntry(ticker);
+    }
     return;
   }
 
-  // The loop is held at its start during the entrance, so the position
-  // maths below doesn't apply: swap now and fade the section in.
-  if (scroller.closest(".nhl-ticker-entering")) {
+  // While priming from the cache, and during the entrance (the loop is held
+  // at its start), the position maths below doesn't apply: swap in now.
+  if (tickerPriming || scroller.closest(".nhl-ticker-entering")) {
     applyTickerSectionSwap(ticker, league, section, null);
     return;
   }
@@ -353,7 +392,7 @@ function applyTickerSectionSwap(ticker, league, section, safe) {
     const x = ((safe === "b" ? before.x + delta : before.x) % after.W + after.W) % after.W;
     // -50% of the scroller is one copy, so progress = x / W.
     anim.currentTime = (x / after.W) * anim.effect.getComputedTiming().duration;
-  } else if (section) {
+  } else if (section && !tickerPriming) {
     ticker.querySelectorAll(`.ticker-league[data-league="${league.id}"]`).forEach((s) => {
       s.classList.add("ticker-league-entering");
       s.addEventListener("animationend", () => s.classList.remove("ticker-league-entering"), { once: true });
@@ -388,7 +427,10 @@ function restoreTickerPosition(ticker) {
     if (!saved || Date.now() - saved.savedAt > TICKER_POS_MAX_AGE_MS) return false;
     if (!(saved.x >= 0)) return false;
     const width = scroller.querySelector(".nhl-ticker-track").getBoundingClientRect().width;
-    anim.currentTime = ((saved.x % width) / width) * anim.effect.getComputedTiming().duration;
+    // Carry on from where it would be now: the old page's offset plus the
+    // time spent loading this one.
+    const x = saved.x + ((Date.now() - saved.savedAt) / 1000) * NHL_TICKER_PX_PER_SEC;
+    anim.currentTime = ((x % width) / width) * anim.effect.getComputedTiming().duration;
     return true;
   } catch (e) { return false; }
 }
@@ -431,6 +473,20 @@ function applyNhlTickerMotion(ticker) {
   // position maths lands exactly.
   const distance = tracks[0].getBoundingClientRect().width;
   scroller.style.animationDuration = `${(distance / NHL_TICKER_PX_PER_SEC).toFixed(3)}s`;
+}
+
+// Re-measure after the strip's width changes (a font swap), holding the
+// same pixel offset: a new duration alone would shift the progress.
+function refitTickerMotion(ticker) {
+  const scroller = ticker.querySelector(".nhl-ticker-scroller");
+  const anim = scroller?.getAnimations()[0];
+  if (!anim || anim.currentTime == null) return;
+  const track = scroller.querySelector(".nhl-ticker-track");
+  const oldWidth = track.getBoundingClientRect().width;
+  const x = ((anim.currentTime % anim.effect.getComputedTiming().duration) / anim.effect.getComputedTiming().duration) * oldWidth;
+  applyNhlTickerMotion(ticker);
+  const width = track.getBoundingClientRect().width;
+  anim.currentTime = ((x % width) / width) * anim.effect.getComputedTiming().duration;
 }
 
 function buildNhlTickerLabel(text) {
@@ -861,3 +917,7 @@ function playNhlGameVideo(poster) {
   frame.allowFullscreen = true;
   poster.replaceWith(frame);
 }
+
+// Starts once the HTML is parsed rather than on window load (which waits for
+// every image); a page with no rail does nothing.
+document.addEventListener("DOMContentLoaded", initNhlTicker);
