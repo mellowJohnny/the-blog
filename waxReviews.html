@@ -136,6 +136,7 @@
 
     <!-- Load the Hella Scripts -->
     <script src="/scripts/wax.js" defer></script>
+    <script src="/scripts/ticker.js" defer></script>
     <script src="/scripts/helper.js" defer></script>
 
     <!-- Wait for the DOM to load, then run the Intro script -->
@@ -156,7 +157,7 @@
         fetchCardSetsByYear(year,sortOrder,blogCat);
         // Masthead: random NHL team colors on every load - helper.js
         applyRandomMastheadStyling();
-        // NHL scores ticker under the masthead - wax.js
+        // NHL scores ticker under the masthead - ticker.js
         initNhlTicker();
 
       });
@@ -182,7 +183,7 @@
       </table>
     </section>
 
-    <!-- NHL scores ticker - filled by initNhlTicker() in wax.js. Visible (empty)
+    <!-- NHL scores ticker - filled by initNhlTicker() in ticker.js. Visible (empty)
          from first paint so it doesn't pop in; hidden again if there's nothing to show. -->
     <div
       id="nhlTicker"
@@ -277,75 +278,6 @@
         <div
           id="checklistModalPrintFooter"
           class="checklist-modal-print-footer"
-        ></div>
-      </div>
-    </div>
-
-    <!-- NHL game modal - opened from a ticker chip, filled by
-         openNhlGameModal() in wax.js -->
-    <div id="nhlGameModalOverlay" class="checklist-modal-overlay">
-      <div
-        class="checklist-modal-content nhl-game-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-label="NHL game details"
-      >
-        <div class="checklist-modal-controls">
-          <span class="checklist-modal-close" onclick="closeNhlGameModal()"
-            >&times;</span
-          >
-        </div>
-        <div id="nhlGameHeader" class="nhl-game-header"></div>
-        <div class="nhl-game-tabs" role="tablist">
-          <button
-            type="button"
-            role="tab"
-            id="nhlGameTabSummary"
-            aria-controls="nhlGameSummary"
-            aria-selected="true"
-          >
-            Summary
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="nhlGameTabBoxScore"
-            aria-controls="nhlGameBoxScore"
-            aria-selected="false"
-            tabindex="-1"
-          >
-            Box Score
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="nhlGameTabRecap"
-            aria-controls="nhlGameRecap"
-            aria-selected="false"
-            tabindex="-1"
-          >
-            Recap
-          </button>
-        </div>
-        <div
-          id="nhlGameSummary"
-          class="nhl-game-panel"
-          role="tabpanel"
-          aria-labelledby="nhlGameTabSummary"
-        ></div>
-        <div
-          id="nhlGameBoxScore"
-          class="nhl-game-panel"
-          role="tabpanel"
-          aria-labelledby="nhlGameTabBoxScore"
-          hidden
-        ></div>
-        <div
-          id="nhlGameRecap"
-          class="nhl-game-panel"
-          role="tabpanel"
-          aria-labelledby="nhlGameTabRecap"
-          hidden
         ></div>
       </div>
     </div>
