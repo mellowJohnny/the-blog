@@ -3032,12 +3032,19 @@ label sup {
   font-family: 'Work Sans', sans-serif;
 }
 
-/* index.html's banner masthead. Capped width so a very wide monitor doesn't
-   stretch it. */
+/* index.html's banner masthead, edge to edge: the -8px margins cancel the
+   browser's default body margin. Past the image's own width it stops
+   growing and centres, so a very wide monitor doesn't upscale it. */
 .home-masthead {
-  max-width: 1600px;
-  margin: 0 auto;
+  margin: -8px -8px 0;
   overflow: hidden;
+}
+
+@media (min-width: 2100px) {
+  .home-masthead {
+    max-width: 2078px;
+    margin: -8px auto 0;
+  }
 }
 
 .home-masthead img {
