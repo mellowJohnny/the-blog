@@ -58,7 +58,7 @@
 - Counterfeit Patrick Roy and Brett Hull OPC cards begin to surface
 
 
-#### 1991-92 Junk Wax Era Continues with More Sets
+#### 1991-92 More Sets, More Inserts
 - Peak Junk Wax: 17 total sets, with more inserts and more production
 - Releases by company:
   - OPC: one regular set, one Premier set
@@ -69,7 +69,7 @@
 - Score, Bowman, Upper Deck Series 2, and OPC Premier also released factory sets
 - First McDonald's Upper Deck "All-Star" set released
 
-#### 1992-93 Junk Wax Era Winds Down, Pro Set out of business
+#### 1992-93 Saturation, Pro Set Bankruptcy
 - Sets dialed back to 13; this was the year of peak inserts, led by Upper Deck
 - Releases by company:
   - Upper Deck: one French, one English
@@ -78,7 +78,7 @@
   - Pro Set: one main set, one Parkhurst including a parallel "Emerald" foil set, inserted one card per pack
   - Topps: main and Stadium Club
   - Fleer: new entrant with the premium Ultra set
-- Pro Set's planned Series 2 was never released; the company declared bankruptcy the following year, and this was its final hockey set
+- Pro Set Series 2 is never released, company declares bankruptcy 
 - Marvel buys Fleer, chasing the card boom
 - OPC releases their "25th Anniversary" set, the last-ever OPC set printed in Canada, with a unique design, a reprint insert set, and re-imagined iconic rookie cards
 
@@ -88,29 +88,27 @@
 - Fleer releases a "tall boy" PowerPlay set alongside Ultra
 - Leaf released a single standard set
 - OPC and Topps each released a Premier set (both printed in the US)
-- Topps released another Stadium Club, plus the oddly named Stadium Club O-Pee-Chee set for Canada
+- Topps releases a Stadium Club set, plus the oddly named Stadium Club O-Pee-Chee set for Canada
 - Upper Deck released two sets: a main set and a Parkhurst set, after buying the rights from Pro Set
 - Pinnacle and sister brand Score had two sets each
 
-#### 1994-95 Mores Sets, but Smaller Sizes
+#### 1994-95 Mores Sets, New Names, Smaller Sizes
 - Twenty sets hit the market
-- Upper Deck expanded to seven sets across the Parkhurst, SP, Be A Player, and Upper Deck brands:
-  - Main Upper Deck set and a Be A Player set
-  - Parkhurst nostalgia: the 1956-57 "Missing Link" set, a 1964-65 "Tall Boys" set, Parkhurst SE, and a regular Parkhurst set
-- Leaf: namesake set, Leaf Limited, and Donruss
+- Upper Deck expands to seven sets across the Parkhurst, the ultra-premium SP, Be A Player, and Upper Deck brands:
+- Leaf: main set, Leaf Limited, and Donruss
 - Fleer: Ultra and Flair
 - Topps: Premier, Stadium Club, and Finest
 - Pinnacle: Select, Score, and a main Pinnacle set
 - OPC again had just a single Premier set, produced by Topps
 - NHL season shortened by the Owner's lockout
 
-#### 1995-96 Shift To Smaller Sets Continues, Focus on "Scarcity"
-- Shift to smaller sets and chase cards continued, with a staggering 24 sets
-- Topps: five sets, including Bowman (165 cards), Super Skills (90), Finest (191), Stadium Club (225), and main set (385)
-- Fleer: Metal (200), SkyBox E-Motion (200), SkyBox Impact (250), and Ultra (400)
-- Leaf: main set (330), Limited (120), Donruss (390), and Donruss Elite (110)
-- Pinnacle: five sets, including a main set, two Score sets, Select Certified (144 cards, with a Gold parallel), and Zenith (150)
-- Upper Deck: main set, Be A Player, Collector's Choice, and two Parkhurst sets, including the 150-card 1966-67 nostalgia "what-if" set (the original Parkhurst company went out of business in 1964)
+#### 1995-96 Focus on "Scarcity", more Bankruptcies
+- Shift to smaller, premium sets continues with a staggering 24 sets released
+- Five Topps sets, including Bowman (165 cards), Super Skills (90), Finest (191), Stadium Club (225), and main set (385)
+- Four Fleer sets: Metal (200), SkyBox E-Motion (200), SkyBox Impact (250), and Ultra (400)
+- Four Leaf sets: main set (330), Limited (120), Donruss (390), and Donruss Elite (110)
+- Five Pinnacle sets, including a main set, two Score sets, Select Certified (144 cards, with a Gold parallel), and Zenith (150)
+- Five Upper Deck sets: main set, Be A Player, Collector's Choice, two Parkhurst
 - Marvel files for bankruptcy, taking the Fleer / SkyBox imprints with it
 
 #### Long Term Impact
