@@ -38,7 +38,7 @@
     - At $1 a pack (when Topps / Fleer / Donruss were ¢0.45) they sold out in days
 
 
-#### 1990-91 Upper Deck And The Speculators Arrive
+#### 1990-91 Upper Deck Arrives: Full Send Junk Wax
 - NHL issues new licenses to Pro Set, Pinnacle, and Upper Deck: the hobby explodes from two sets to nine
 - All producers are allowed two hockey sets each
   - Some opt for French / English, some produce "regular" & "premium" sets
