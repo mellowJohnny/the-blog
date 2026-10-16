@@ -110,10 +110,19 @@ function syncTimelineCardHeight(card) {
   card.style.height = `${face.offsetHeight}px`;
 }
 
+// Greys the card's front once it has been opened. Page memory only, so a
+// reload starts fresh. Screen readers get the same cue as text.
+function markTimelineCardViewed(card, front) {
+  if (card.classList.contains("is-viewed")) return;
+  card.classList.add("is-viewed");
+  front.querySelector(".timeline-toggle").appendChild(timelineEl("span", "timeline-sr", " (viewed)"));
+}
+
 function setTimelineCardOpen(card, open, moveFocus = false) {
   const front = card.querySelector(".timeline-front");
   const back = card.querySelector(".timeline-back");
   card.classList.toggle("is-flipped", open);
+  if (open) markTimelineCardViewed(card, front);
   front.querySelector(".timeline-toggle").setAttribute("aria-expanded", String(open));
   front.setAttribute("aria-hidden", String(open));
   front.inert = open;

@@ -4081,6 +4081,36 @@ label sup {
   transform: rotateY(0deg);
 }
 
+/* Opened at least once: the closed front greys out as a "viewed" cue. */
+.timeline-front {
+  transition: transform 0.6s ease, background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+}
+
+.timeline-card.is-viewed .timeline-front {
+  border-color: #c5cdd5;
+  background: #eceff1;
+  color: #5d6b78;
+}
+
+.timeline-card.is-viewed .timeline-year {
+  background: #c5cdd5;
+  color: #3e4a56;
+}
+
+.timeline-card.is-viewed .timeline-toggle::after {
+  color: #8b97a3;
+}
+
+/* Text for screen readers only (the "viewed" cue). */
+.timeline-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 .timeline-toggle {
   display: flex;
   flex-wrap: wrap;
