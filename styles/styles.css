@@ -4020,9 +4020,9 @@ label sup {
 .timeline-item::after {
   content: "";
   position: absolute;
-  top: 26px;
+  top: 26.5px; /* keeps the thinner arm centred on the dot */
   width: 27px;
-  height: 4px;
+  height: 3px;
   background: var(--timeline-blue);
 }
 
