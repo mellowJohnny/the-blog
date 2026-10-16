@@ -407,8 +407,8 @@ function applyRandomMastheadStyling() {
 // link back). pageName is a UI/nav concept, not a stored field.
 const categoryRanges = {
   reg: {
-    classicWax: { start: 1981, end: 1983, className: "junk-set-nav-td", pageName: "classicWax" },
-    junkWax:    { start: 1984, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" }
+    classicWax: { start: 1981, end: 1985, className: "junk-set-nav-td", pageName: "classicWax" },
+    junkWax:    { start: 1986, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" }
   },
   mcd: {
     mcd: { start: 1991, end: 2007, className: "junk-set-nav-td", pageName: "mcd" }
