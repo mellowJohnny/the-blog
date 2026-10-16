@@ -4162,29 +4162,34 @@ label sup {
   font-weight: 700;
 }
 
-.timeline-back-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
 .timeline-back-title {
   margin: 0 0 4px;
   font-size: 16px;
   color: var(--color-text-dark);
 }
 
+/* The title row is the button: it looks like a heading, with the same
+   turn-over arrow as the front, not a labelled "Close" control. */
 .timeline-close {
-  flex: none;
-  padding: 3px 12px;
-  border: 1px solid var(--color-text-dark);
-  border-radius: 999px;
+  position: relative;
+  width: 100%;
+  padding: 0 28px 0 0;
+  border: 0;
   background: none;
-  color: var(--color-text-dark);
+  color: inherit;
   font: inherit;
-  font-size: 13px;
+  text-align: left;
   cursor: pointer;
+}
+
+.timeline-close::after {
+  content: "\21BB";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  color: var(--timeline-red);
+  font-size: 20px;
 }
 
 .timeline-list {

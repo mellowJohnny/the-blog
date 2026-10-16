@@ -82,15 +82,16 @@ function buildTimelineCard(point, index) {
   if (point.title) toggle.appendChild(timelineEl("span", "timeline-heading", point.title));
   front.appendChild(toggle);
 
-  // Back: the bullets. Clicking anywhere on it, or its button, flips it shut.
+  // Back: the bullets. Clicking anywhere on it flips it shut; the title row
+  // is the real button, for keyboard and screen-reader users.
   const back = timelineEl("div", "timeline-face timeline-back");
-  const head = timelineEl("div", "timeline-back-head");
-  head.appendChild(timelineEl("h3", "timeline-back-title", [point.year, point.title].filter(Boolean).join(" ")));
-  const close = timelineEl("button", "timeline-close", "Close");
+  const title = timelineEl("h3", "timeline-back-title");
+  const label = [point.year, point.title].filter(Boolean).join(" ");
+  const close = timelineEl("button", "timeline-close", label);
   close.type = "button";
-  close.setAttribute("aria-label", `Close ${point.year} ${point.title}`.replace(/\s+/g, " ").trim());
-  head.appendChild(close);
-  back.append(head, buildTimelineList(point.items));
+  close.setAttribute("aria-label", `Close ${label}`);
+  title.appendChild(close);
+  back.append(title, buildTimelineList(point.items));
 
   card.append(front, back);
   article.appendChild(card);
@@ -98,6 +99,9 @@ function buildTimelineCard(point, index) {
 
   toggle.addEventListener("click", () => setTimelineCardOpen(card, true, true));
   back.addEventListener("click", () => setTimelineCardOpen(card, false, true));
+  back.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setTimelineCardOpen(card, false, true);
+  });
   return article;
 }
 
