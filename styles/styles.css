@@ -3922,3 +3922,314 @@ label sup {
 
 
 
+
+/* ============================================
+   TIMELINE (scripts/timeline.js, cms/timeline.html)
+   Sits outside .flex-container on purpose, so the .flex-container div
+   descendant rule (1000px wide, 15px padding) doesn't hit its divs.
+   ============================================ */
+
+#timeline-intro {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+#timeline-intro p {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+#timelineSection {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+  box-sizing: border-box;
+  font-family: 'Work Sans', sans-serif;
+}
+
+#timelineTitle {
+  margin: 24px 0 18px;
+  text-align: center;
+  font-size: 26px;
+  color: var(--color-heading-outline);
+}
+
+.timeline-status {
+  padding: 20px;
+  text-align: center;
+}
+
+/* The single vertical line, with a dot where each card meets it. */
+.timeline-line {
+  position: relative;
+  padding: 8px 0;
+}
+
+.timeline-line::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 4px;
+  margin-left: -2px;
+  border-radius: 2px;
+  background: var(--color-masthead-bg);
+}
+
+.timeline-item {
+  position: relative;
+  width: 50%;
+  padding: 0 40px 28px 0;
+  box-sizing: border-box;
+}
+
+.timeline-item-left {
+  left: 0;
+}
+
+.timeline-item-right {
+  left: 50%;
+  padding: 0 0 28px 40px;
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  border: 4px solid var(--color-masthead-bg);
+  border-radius: 50%;
+  background: #f4d03f;
+}
+
+.timeline-item-left::before {
+  right: -10px;
+}
+
+.timeline-item-right::before {
+  left: -10px;
+}
+
+/* Short arm from the dot to the card. */
+.timeline-item::after {
+  content: "";
+  position: absolute;
+  top: 26px;
+  width: 30px;
+  height: 4px;
+  background: var(--color-masthead-bg);
+}
+
+.timeline-item-left::after {
+  right: 10px;
+}
+
+.timeline-item-right::after {
+  left: 10px;
+}
+
+/* The card is as tall as the face showing (set in JS) and flips on its
+   vertical axis: each face turns half a rotation, hiding its back. */
+.timeline-card {
+  position: relative;
+  perspective: 1400px;
+}
+
+.timeline-ready .timeline-card {
+  transition: height 0.6s ease;
+}
+
+.timeline-face {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition: transform 0.6s ease;
+}
+
+.timeline-front {
+  background: var(--color-masthead-bg);
+  color: #ffffff;
+  transform: rotateY(0deg);
+}
+
+.timeline-back {
+  padding: 16px 20px 18px;
+  background: #ffffff;
+  color: var(--color-text-dark);
+  cursor: pointer;
+  transform: rotateY(-180deg);
+}
+
+.timeline-card.is-flipped .timeline-front {
+  transform: rotateY(180deg);
+}
+
+.timeline-card.is-flipped .timeline-back {
+  transform: rotateY(0deg);
+}
+
+.timeline-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  width: 100%;
+  padding: 16px 44px 16px 20px;
+  position: relative;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.timeline-toggle::after {
+  content: "\21BB"; /* a "turn over" arrow */
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  font-size: 20px;
+  opacity: 0.75;
+}
+
+.timeline-toggle:focus-visible,
+.timeline-close:focus-visible {
+  outline: 3px solid #f4d03f;
+  outline-offset: -3px;
+}
+
+.timeline-year {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #f4d03f;
+  color: #1b1b1b;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.timeline-heading {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.timeline-back-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.timeline-back-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  color: var(--color-heading-outline);
+}
+
+.timeline-close {
+  flex: none;
+  padding: 3px 12px;
+  border: 1px solid var(--color-masthead-bg);
+  border-radius: 999px;
+  background: none;
+  color: var(--color-masthead-bg);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.timeline-list {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.timeline-list li {
+  margin: 6px 0;
+  line-height: 1.4;
+}
+
+.timeline-list .timeline-list {
+  margin-top: 6px;
+  list-style: circle;
+}
+
+@media (max-width: 600px) {
+  #timelineTitle {
+    font-size: 22px;
+  }
+
+  .timeline-line::before {
+    left: 14px;
+    margin-left: 0;
+  }
+
+  .timeline-item,
+  .timeline-item-right {
+    left: 0;
+    width: 100%;
+    padding: 0 0 22px 44px;
+  }
+
+  .timeline-item-left::before,
+  .timeline-item-right::before {
+    right: auto;
+    left: 6px;
+  }
+
+  .timeline-item-left::after,
+  .timeline-item-right::after {
+    right: auto;
+    left: 24px;
+    width: 20px;
+  }
+}
+
+/* No rotation for people who ask for less motion: a quick fade instead. */
+@media (prefers-reduced-motion: reduce) {
+  .timeline-ready .timeline-card {
+    transition: none;
+  }
+
+  .timeline-face,
+  .timeline-card.is-flipped .timeline-front,
+  .timeline-card.is-flipped .timeline-back {
+    transform: none;
+    transition: opacity 0.15s linear, visibility 0.15s linear;
+  }
+
+  .timeline-back,
+  .timeline-card.is-flipped .timeline-front {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .timeline-card.is-flipped .timeline-back {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.timeline-preview-note {
+  margin: 0;
+  padding: 6px 12px;
+  background: #f4d03f;
+  color: #1b1b1b;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  text-align: center;
+}
+
+.timeline-preview-note a {
+  color: #1b1b1b;
+}
