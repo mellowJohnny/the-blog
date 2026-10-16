@@ -3076,17 +3076,17 @@ label sup {
   background-size: auto max(100%, 190px), 300px 300px;
   background-repeat: repeat-x, repeat;
   mix-blend-mode: overlay;
-  opacity: 0.62;
+  opacity: 0.4;
 }
 
 @media (max-width: 600px) {
-  .home-masthead::before { opacity: 0.4; }
+  .home-masthead::before { opacity: 0.28; }
 }
 
 /* Gloss sheen across the wrapper, and worn edges. */
 .home-masthead::after {
   box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.28);
-  background: linear-gradient(104deg, transparent 0%, rgba(255,255,255,0.26) 12%, transparent 24%, transparent 58%, rgba(255,255,255,0.15) 66%, transparent 76%);
+  background: linear-gradient(104deg, transparent 0%, rgba(255,255,255,0.12) 12%, transparent 24%, transparent 58%, rgba(255,255,255,0.07) 66%, transparent 76%);
 }
 
 /* ============================================
