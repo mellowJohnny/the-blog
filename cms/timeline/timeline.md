@@ -47,12 +47,12 @@
   - Upper Deck: 550-card sets (one English, one French) released for the first time across two Series, with "High" Series Factory sets. First Young Guns cards. French set frenzy as the Canada-only edition reportedly had much lower print runs
   - O-Pee-Chee: 528-card "main" set, "limited" 132-card Premier set. Premier sets the hobby world on fire, further stoking speculation. Also available as a Factory set 
   - Topps: 396-card main set, "premium" 264 card Bowman set, still with gum!
-  - Score (Pinnacle): two 440 cards sets; one American, one Canadian, also in Factory Sets
+  - Score (Pinnacle): two 440 cards sets; one American, one Canadian, also in Factory Sets. Eric Lindros mania fuels Score 
 - Collecting every base set this year would have totaled 4,005 cards!
 - Upper Deck angers collectors with their "High" Series packs, contained a mix of Low and High Series cards  
 - Upper Deck and Pro Set go back to the presses for multiple print runs as demand continues  
 - Factors driving speculation:
-  - Eric Lindros mania
+  
   - First Beckett hockey price guide fuels the speculation market - Wayne Gretzky graces the first cover
   - O-Pee-Chee Premier's rumoured limited print run and frenzy around the Jagr / Roenick / Fedorov RCs
 - Counterfeit Patrick Roy and Brett Hull OPC cards begin to surface
@@ -62,9 +62,9 @@
 - Peak Junk Wax: 17 total sets, with more inserts and more production
 - Releases by company:
   - OPC: one regular set, one Premier set
-  - Topps: one regular set, Bowman, and the premium Stadium Club set
+  - Topps: one regular set, Bowman, and the premium Stadium Club set. Topps creates a full Gold foil Parallel set, inserted one per pack
   - Upper Deck: one English set, one French set and an English / Czech set of World Junior players
-  - Pinnacle: three Score sets (English, Canadian bilingual, American) and two Pinnacle sets (English and French)
+  - Pinnacle: three Score sets (English, Canadian bilingual, American) and two Pinnacle sets  (English and French)
   - Pro Set: regular, French and Platinum, plus Parkhurst in English and French
 - Score, Bowman, Upper Deck Series 2, and OPC Premier also released factory sets
 - First McDonald's Upper Deck "All-Star" set released
@@ -75,7 +75,7 @@
   - Upper Deck: one French, one English
   - OPC: main and Premier
   - Pinnacle: four sets (two Score, two Pinnacle)
-  - Pro Set: only two (main plus Parkhurst)
+  - Pro Set: one main set, one Parkhurst. Parkhurst follows Topps from last year and creates a parallel "Emerald" foil set, inserted one card per pack
   - Topps: main and Stadium Club
   - Fleer: new entrant with the premium Ultra set
 - Pro Set's planned Series 2 was never released; the company declared bankruptcy the following year, and this was its final hockey set
