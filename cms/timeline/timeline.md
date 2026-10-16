@@ -114,5 +114,7 @@
 - Marvel files for bankruptcy, taking the Fleer / SkyBox imprints with it
 
 #### Long Term Impact
-- The 2004-05 NHL lockout leads to a complete restructuring of NHL card licensing, with the NHL looking for credibility and stability: Upper Deck is granted the sole license
+- The 2004-05 NHL lockout leads to a complete restructuring of NHL card licensing, with the NHL looking for credibility and stability: Upper Deck was granted the sole license from 2004 to 2009
 - Upper Deck officially acquires Fleer / SkyBox and Parkhurst brands in 2005, and the O-Pee-Chee brand in 2006
+- Upper Deck shares the license with Panini from 2010-11 to 2013-14, and regained exclusive status beginning with the 2014-15 season
+- In 2021 it signed a long-term agreement with the NHL to become the sole physical hockey card manufacturer
