@@ -62,7 +62,7 @@
 - Peak Junk Wax: 17 total sets, with more inserts and more production
 - Releases by company:
   - OPC: one regular set, one Premier set
-  - Topps: one regular set, Bowman, and the premium Stadium Club set. Topps creates a full Gold foil Parallel set, inserted one per pack
+  - Topps: one regular set, Bowman, and the premium Stadium Club set. Regular set included a full Gold foil Parallel set, inserted one per pack
   - Upper Deck: one English set, one French set and an English / Czech set of World Junior players
   - Pinnacle: three Score sets (English, Canadian bilingual, American) and two Pinnacle sets  (English and French)
   - Pro Set: regular, French and Platinum, plus Parkhurst in English and French
@@ -75,18 +75,18 @@
   - Upper Deck: one French, one English
   - OPC: main and Premier
   - Pinnacle: four sets (two Score, two Pinnacle)
-  - Pro Set: one main set, one Parkhurst. Parkhurst follows Topps from last year and creates a parallel "Emerald" foil set, inserted one card per pack
+  - Pro Set: one main set, one Parkhurst including a parallel "Emerald" foil set, inserted one card per pack
   - Topps: main and Stadium Club
   - Fleer: new entrant with the premium Ultra set
 - Pro Set's planned Series 2 was never released; the company declared bankruptcy the following year, and this was its final hockey set
 - Marvel buys Fleer, chasing the card boom
-- OPC produced the last-ever set printed in Canada, with a unique design, a reprint insert set, and re-imagined iconic rookie cards from the past
+- OPC releases their "25th Anniversary" set, the last-ever OPC set printed in Canada, with a unique design, a reprint insert set, and re-imagined iconic rookie cards
 
 #### 1993-94 Consolidation Begins
 - Fourteen total sets
 - Donruss debuts, produced by Leaf
-- Fleer tried something different with the "tall boy" PowerPlay set alongside Ultra
-- Leaf released a standard set
+- Fleer releases a "tall boy" PowerPlay set alongside Ultra
+- Leaf released a single standard set
 - OPC and Topps each released a Premier set (both printed in the US)
 - Topps released another Stadium Club, plus the oddly named Stadium Club O-Pee-Chee set for Canada
 - Upper Deck released two sets: a main set and a Parkhurst set, after buying the rights from Pro Set
@@ -96,13 +96,13 @@
 - Twenty sets hit the market
 - Upper Deck expanded to seven sets across the Parkhurst, SP, Be A Player, and Upper Deck brands:
   - Main Upper Deck set and a Be A Player set
-  - Parkhurst nostalgia: 1956-57 "Missing Link" set (no Parkie set existed that year), 1964-65 "Tall Boys" set, Parkhurst SE, and a regular Parkhurst set
+  - Parkhurst nostalgia: the 1956-57 "Missing Link" set, a 1964-65 "Tall Boys" set, Parkhurst SE, and a regular Parkhurst set
 - Leaf: namesake set, Leaf Limited, and Donruss
 - Fleer: Ultra and Flair
 - Topps: Premier, Stadium Club, and Finest
 - Pinnacle: Select, Score, and a main Pinnacle set
 - OPC again had just a single Premier set, produced by Topps
-- NHL season shortened by a lockout
+- NHL season shortened by the Owner's lockout
 
 #### 1995-96 Shift To Smaller Sets Continues, Focus on "Scarcity"
 - Shift to smaller sets and chase cards continued, with a staggering 24 sets
