@@ -11,7 +11,7 @@
 ## What this site uses
 
 One view, the **score bar**, through the `getPwhlScores` Lambda, for
-the PWHL section of the scores ticker on `waxReviews.html` — plus the
+the PWHL section of the scores ticker on the ticker pages — plus the
 seasons list and a further look ahead in the score bar, only to find
 the "Season starts" date. See `LAMBDA_FUNCTIONS.md`,
 `API_ENDPOINTS.md` ("Get PWHL scores") and `FRONTEND.md` ("NHL scores

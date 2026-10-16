@@ -28,7 +28,7 @@ Browser (static HTML/CSS/JS, no framework)
    |
    |-- redirect ---------> Cognito Hosted UI (login, only for /cms/*)
    |
-   |-- fetch() -----------> api.openweathermap.org (homepage weather widget, client-side API key)
+   |-- fetch() -----------> api.openweathermap.org (weather widget on tech.html only, client-side API key)
    |
    |-- <img src> ---------> assets.nhle.com, media.d3.nhle.com (NHL logos, recap/video images)
    |
@@ -63,7 +63,7 @@ Deploy clicked, while `sendAlertHandler` (has `twilio`) and
 ### Domains, DNS and redirects
 
 The site's address is `https://www.junkwaxhockey.com`, served by the
-Amplify app (the bare `junkwaxhockey.com` 302s to `www` through an
+Amplify app (the bare `junkwaxhockey.com` 301s to `www` through an
 Amplify redirect rule). Both domains are registered through Route 53,
 so DNS lives in Route 53 hosted zones. Until 2026-10-12 the same app
 served `mellowjohnny.cc`.
@@ -86,6 +86,17 @@ exact-path rule on `www.mellowjohnny.cc` did nothing). Instead:
   distribution. If `mellowjohnny.cc` gets real content again, repoint
   those two records and delete the distribution - Amplify isn't
   involved.
+
+**Search engines.** The bare-domain rule (`https://junkwaxhockey.com`
+to `https://www.junkwaxhockey.com`, path and query kept) must be a
+**301**: Amplify's default was a 302, which Google treats as temporary
+and can keep the bare domain as the main address. `mellowjohnny.cc` is
+also a verified Search Console Domain property (a
+`google-site-verification` TXT record at its apex in Route 53), with a
+Change of address to `junkwaxhockey.com` submitted on 2026-10-15.
+**Keep that TXT record and the old domain's 301s for at least 180 days
+(to about 2027-04-13), ideally permanently**: Search Console re-checks
+ownership, and the redirects carry old links.
 
 Four places hardcode the domain and fail quietly when it changes (all
 four were updated for the move):
@@ -174,8 +185,8 @@ Plain multi-page HTML site, no bundler/framework:
 ## Third-party services
 
 - **TinyMCE** (cloud-hosted, API key embedded in `cms/*.html`) — WYSIWYG editor used for blog post bodies and card set review bodies in the CMS. The key only works on domains approved in the Tiny account it came from; an unapproved domain gets a "domain is not registered" banner and a disabled editor. The current key is from an account created 2026-10-13, with `junkwaxhockey.com` and `www.junkwaxhockey.com` approved.
-- **OpenWeatherMap** — homepage weather widget (`scripts/blogs.js`); API key is hardcoded client-side (`49f84d9cdb7907dfd2b02085e270372e`) — this is visible to anyone viewing page source, worth being aware of even though OpenWeather free-tier keys are generally meant to be used this way.
-- **NHL API** (`api-web.nhle.com`, plus NHL.com's content API `forge-dapi.d3.nhle.com`) — free, undocumented, no API key. Feeds the scores ticker and the game modal on `waxReviews.html`, always through the `getNhlScores`/`getNhlGameDetails` Lambdas because `api-web` sends no CORS headers; only images (`assets.nhle.com`, `media.d3.nhle.com`) load directly in the browser. See `NHL_API.md`.
+- **OpenWeatherMap** — the weather widget on `tech.html` only (`scripts/blogs.js`; the Home page no longer has one); API key is hardcoded client-side (`49f84d9cdb7907dfd2b02085e270372e`) — this is visible to anyone viewing page source, worth being aware of even though OpenWeather free-tier keys are generally meant to be used this way.
+- **NHL API** (`api-web.nhle.com`, plus NHL.com's content API `forge-dapi.d3.nhle.com`) — free, undocumented, no API key. Feeds the scores ticker and the game modal on the ticker pages (Wax Reviews, Player Search, Lockout, The Junk Wax Years), always through the `getNhlScores`/`getNhlGameDetails` Lambdas because `api-web` sends no CORS headers; only images (`assets.nhle.com`, `media.d3.nhle.com`) load directly in the browser. See `NHL_API.md`.
 - **HockeyTech** (`lscluster.hockeytech.com`) — the PWHL's stats provider, no public API. Feeds the PWHL section of the scores ticker, always through the `getPwhlScores` Lambda: the feed returns an empty response to any request with an `Origin` header, so browsers can't call it. Uses the PWHL site's own public key. See `PWHL_API.md`.
 - **Brightcove** — the NHL's own video player (`players.brightcove.net`, account `6415718365001`), embedded as an `<iframe>` in the game modal for highlights, loaded only when the visitor clicks play. Plays NHL pre-roll ads.
 - **Twilio** — outbound SMS for the Autobus Messaging Platform, called from the `sendAlertHandler` Lambda using account credentials stored as Lambda environment variables (not in this repo).

@@ -663,8 +663,8 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   previous capped at 5s, upcoming's own two calls at 2.5s each — so the
   worst case stays inside 10s; at 3s a slow NHL response would time the
   function out before its own error handling could run.
-- **What it does**: backs the scores ticker on `waxReviews.html` (see
-  `FRONTEND.md`). Public GET, no Cognito Authorizer. Fetches
+- **What it does**: backs the scores ticker on Wax Reviews, Player Search, Lockout
+  and The Junk Wax Years (see `FRONTEND.md`). Public GET, no Cognito Authorizer. Fetches
   `https://api-web.nhle.com/v1/score/{date}` for **today's date in
   Eastern time** (`easternDate()`). It used `/score/now` until Oct 12,
   2026, when the NHL's `currentDate` was observed still on Sunday at
@@ -701,7 +701,9 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   every other endpoint here this is a browser-only cache — no API
   Gateway stage cache or CloudFront — so each new visitor still invokes
   the Lambda once. Fine at this site's traffic; the `dev` stage cache
-  is the lever if the ticker ever spreads to every page.
+  is the lever now that the ticker is on four pages, since every
+  navigation between them fetches again (the browser cache absorbs
+  repeats within its `max-age`).
 - **Errors**: any upstream failure (timeout, non-2xx, network) returns
   `502 { error }`, and the ticker stays hidden. A cold start was
   measured at ~3.4s, warm calls at 0.3–0.6s — invisible to visitors,

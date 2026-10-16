@@ -9,12 +9,12 @@ inline in the `<head>`.
 
 | Page | Purpose | Key query params | Scripts used |
 |---|---|---|---|
-| `index.html` | Homepage — shows the "Home Page" blog stream (`blogType=99`), plus the weather widget. | — | `blogs.js`, `helper.js` |
-| `tech.html` | Tech / Mach-E / Raspberry Pi blog stream, filtered by `blogType`. **Not linked from the nav, home page or sitemap since the 2026-10-12 move to junkwaxhockey.com - reachable only by direct URL.** Masthead uses the same `.masthead-container` (masthead + weather widget) layout as `index.html` — it used to show a decorative gif instead and never actually rendered the weather widget (loaded `blogs.js`, which unconditionally targets `#weather`, but had no such element — silently broken). Fixed by adopting `index.html`'s markup. | `blogType`, `pageName` | `blogs.js`, `helper.js` |
-| `waxReviews.html` | Card set review stream — the main hockey card content. | `year`, `pageName`, `blogCat`, `sortOrder` | `wax.js`, `helper.js` |
-| `playerSearch.html` | Player search — find every set a player appears in, across all uploaded checklists, with links to each set's review. See "Player search" below. | — | `playerSearch.js`, `helper.js` |
-| `lockout.html` | Static essay about the 2004-05 NHL lockout. Special-cased redirect target — see below. | — | `helper.js` |
-| `theJunkWaxYears.html` | Static essay on hockey's "Junk Wax" era (the late-80s/early-90s overproduction boom this site's card reviews mostly cover). Linked from `waxReviews.html`'s junkWax intro copy (`renderCardIntro()`, `wax.js`). Was briefly moved into `Old HTML Pages/` by mistake and missed the site-wide HTML/CSS-conformity and SEO passes as a result — since restored and brought in line with the other pages (masthead/fonts/script-loading now match `lockout.html`'s pattern; a `<meta description="...">` typo, which meant this page never actually had a working meta description, and a broken `class="flex-container, intro"` — a stray comma silently prevented that layout class from ever applying — were also fixed). | — | `helper.js` |
+| `index.html` | Homepage — an edge-to-edge image banner (`.home-masthead`; its -8px margins cancel the browser's default 8px body margin, and past 2100px wide it stops at the image's own width and centres) over the "Home Page" blog stream (`blogType=99`). **No scores ticker, by design.** No weather widget any more (that now exists only on `tech.html`). | — | `blogs.js`, `helper.js` |
+| `tech.html` | Tech / Mach-E / Raspberry Pi blog stream, filtered by `blogType`. **Not linked from the nav, home page or sitemap since the 2026-10-12 move to junkwaxhockey.com - reachable only by direct URL.** Masthead uses the `.masthead-container` (masthead + weather widget) layout that `index.html` had before it got its banner — it used to show a decorative gif instead and never actually rendered the weather widget (loaded `blogs.js`, which targets `#weather`, but had no such element — silently broken). Fixed by adopting that markup. It is the only page that still has the weather widget. | `blogType`, `pageName` | `blogs.js`, `helper.js` |
+| `waxReviews.html` | Card set review stream — the main hockey card content. | `year`, `pageName`, `blogCat`, `sortOrder` | `wax.js`, `ticker.js`, `helper.js` |
+| `playerSearch.html` | Player search — find every set a player appears in, across all uploaded checklists, with links to each set's review. See "Player search" below. | — | `playerSearch.js`, `ticker.js`, `helper.js` |
+| `lockout.html` | Static essay about the 2004-05 NHL lockout. Special-cased redirect target — see below. | — | `wax.js`, `ticker.js`, `helper.js` |
+| `theJunkWaxYears.html` | Static essay on hockey's "Junk Wax" era (the late-80s/early-90s overproduction boom this site's card reviews mostly cover). Linked from `waxReviews.html`'s junkWax intro copy (`renderCardIntro()`, `wax.js`). Was briefly moved into `Old HTML Pages/` by mistake and missed the site-wide HTML/CSS-conformity and SEO passes as a result — since restored and brought in line with the other pages (masthead/fonts/script-loading now match `lockout.html`'s pattern; a `<meta description="...">` typo, which meant this page never actually had a working meta description, and a broken `class="flex-container, intro"` — a stray comma silently prevented that layout class from ever applying — were also fixed). | — | `ticker.js`, `helper.js` |
 
 **No longer live**: `cards.html` (the "what is Junk Wax" essay) and `cardChecker.html` (the "Card-O-Matic" slot calculator) were both moved to `Old HTML Pages/` on 2026-08-15 — see "Orphaned / legacy files" below. `cards.html` had already been documented here as deprecated-but-still-linked before that move; this doc previously still listed both as live public pages, which was stale.
 
@@ -65,8 +65,9 @@ unlinked from the nav and home page and reachable only by direct URL
 
 | File | Responsibility |
 |---|---|
-| `blogs.js` | Blog intro copy (`renderBlogIntro()`), `fetchBlogs()`/pagination/rendering for the blog stream, and the homepage weather widget (calls OpenWeatherMap directly from the browser using the visitor's geolocation). |
-| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. On mobile, the prev/next set name in that label drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle") via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans the mobile breakpoint swaps between, since the full "YYYY-YY Manufacturer" label was too long for a small screen; desktop still shows the full name. Also the NHL scores ticker under the masthead (`initNhlTicker()` and its helpers — see "NHL scores ticker" below) and the game modal opened from it (`openNhlGameModal()` and its render helpers — see "NHL game modal" below). |
+| `blogs.js` | Blog intro copy (`renderBlogIntro()`), `fetchBlogs()`/pagination/rendering for the blog stream, and the weather widget on `tech.html` (calls OpenWeatherMap directly from the browser using the visitor's geolocation; the bootstrap does nothing on a page with no `#weather` element, which is now the Home page). |
+| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. On mobile, the prev/next set name in that label drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle") via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans the mobile breakpoint swaps between, since the full "YYYY-YY Manufacturer" label was too long for a small screen; desktop still shows the full name. The NHL scores ticker and its game modal used to live here and moved to `ticker.js` — see below. |
+| `ticker.js` | The NHL/PWHL scores ticker under the masthead (`initNhlTicker()` and its helpers — see "NHL scores ticker" below) and the game modal opened from it (`openNhlGameModal()` and its render helpers — see "NHL game modal" below). Moved verbatim out of `wax.js` so pages that have nothing else to do with card sets (Player Search, the essays) can show the ticker. Starts itself on `DOMContentLoaded`. |
 | `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — used by every public page) and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped/middle images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), `buildCardSetMarkup()` (the single source of truth for a card set review's HTML, shared by the live site's `displayCardSet()` and the CMS preview modal's `renderPreview()` — added 2026-09-28 to end the drift between two hand-maintained copies; see "Card set markup is shared with the CMS preview" below), hamburger menu toggle, cookie helper, and copyright-year footer. |
 | `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise); also the type-ahead dropdown (`initPlayerSearchTypeahead()`/`loadPlayerNameIndex()`/`rankPlayerNameMatch()`) that suggests player names client-side from a once-fetched, cached name index. See "Player search" below. |
 | `adminTools.js` | `cms/admin.html` support code: a growing set of self-service site-health checks (broken images, checklist-to-review linkage), each its own function calling the site's existing public read APIs directly. See `CMS_GUIDE.md`'s "Admin Tools" section. |
@@ -595,7 +596,7 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
   New CSS: `.checklist-modal-pdf-btn` in `styles/styles.css`, styled to
   match the existing `.checklist-modal-print-btn`.
 
-## NHL scores ticker (waxReviews.html)
+## NHL scores ticker (Wax Reviews, Player Search, Lockout, The Junk Wax Years)
 
 A dark strip between the masthead and the nav, scrolling NHL and PWHL
 scores right to left — each league introduced by its logo: last
@@ -604,16 +605,32 @@ puck drop, then today's games (under "Today") — start time, live period and cl
 final. Fed by `getNhlScores` and `getPwhlScores` (`Lambdas/`, see
 `LAMBDA_FUNCTIONS.md`), which proxy the NHL's undocumented API and the
 PWHL's HockeyTech feed — see `NHL_API.md` and `PWHL_API.md`. Code is in
-`wax.js` (`initNhlTicker()` and helpers; the `nhl-*` names predate the
-PWHL and cover both leagues), called once from `waxReviews.html`'s
-`window load` listener; `lockout.html` also loads `wax.js` but doesn't
-call it. The markup is one empty `<div id="nhlTicker" hidden>`.
+`scripts/ticker.js` (`initNhlTicker()` and helpers; the `nhl-*` names predate the
+PWHL and cover both leagues), loaded by `waxReviews.html`,
+`playerSearch.html`, `lockout.html` and `theJunkWaxYears.html`. **The
+Home page deliberately has no ticker.** The script starts itself on
+`DOMContentLoaded` (not `window load`, which waits for every image), so
+pages don't call it. A page needs only `<script src="/scripts/ticker.js"
+defer>`, the rail markup — one `<div id="nhlTicker" class="nhl-ticker"
+role="region" aria-label="NHL scores" aria-busy="true" tabindex="0">`
+between the masthead and the `<nav>` — and a `<noscript><style>.nhl-ticker
+{ display: none; }</style></noscript>` in the head so a visitor without
+JavaScript doesn't get a permanently empty bar. The game modal's markup
+is not in the pages: `initNhlGameModal()` injects it if it isn't there.
 
-- **Hidden unless there's something to show**: the strip hides only
-  when no league has anything — an API error on first load, or no
-  games and no notice from either league. `.nhl-ticker[hidden] { display: none; }` is required,
-  not redundant — the strip's own `display: flex` would otherwise
-  override the `hidden` attribute.
+- **There from first paint, hidden only if there's nothing to show**:
+  the rail is in the static HTML (no `hidden`), so its 40px is reserved
+  before any score arrives — nothing pops in or pushes the page down. While
+  it's still empty a faint light band sweeps across it
+  (`.nhl-ticker[aria-busy="true"]:empty::after`; `:empty` ends it the
+  moment the strip is built, and `prefers-reduced-motion` turns it off).
+  Once every league's first fetch has settled, `aria-busy` is removed and
+  the rail is hidden if no league had anything — an API error on first
+  load, or no games and no notice from either league.
+  `.nhl-ticker[hidden] { display: none; }` is required, not redundant —
+  the strip's own `display: flex` would otherwise override the `hidden`
+  attribute. That collapse is the one case where the page shifts (46px,
+  with its 6px gap).
 - **Two leagues, fetched independently** (`TICKER_LEAGUES`,
   `refreshTickerLeague()`): each league has its own endpoint, poll
   timer and game key, and both are requested in parallel on load — the
@@ -674,6 +691,40 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
   the speed is the same at any game count. Hover or keyboard focus (the
   strip is `tabindex="0"`) pauses it; `prefers-reduced-motion` drops
   the animation, the copy and the `min-width`, leaving a swipeable row.
+- **NHL first**: with no cached scores, the other leagues hold their
+  first render until the NHL has rendered, failed or come back empty,
+  or 2.5s pass (`TICKER_NHL_FIRST_WAIT_MS`), so the strip opens on the NHL
+  section instead of whichever league answered first. Later refreshes
+  don't wait.
+- **Entrance** (`startTickerEntry()`): on the first build in a tab, after
+  a 100ms hold, the whole strip slides in from the far right at the
+  normal scroll speed, wrapped in `.nhl-ticker-entry` (CSS
+  `nhlTickerEnter`), with the marquee loop paused at its start until the
+  strip arrives and then taking over with no jump. A league arriving
+  mid-entrance is swapped in at once and faded in, since the position maths
+  above assumes the loop is running. Not played under
+  `prefers-reduced-motion`, and not when the strip is restored (below).
+- **Carrying on across pages**: every nav click is a full page load, so
+  the strip is rebuilt, but in a way meant to look continuous. Two
+  `sessionStorage` entries, per tab: `tickerPos` (the scroll offset in
+  pixels, saved on `pagehide` and when the tab is hidden — pixels, not a
+  fraction, because later leagues are inserted to the right of the
+  NHL so the offset holds while the strip's width doesn't — and not
+  saved mid-entrance) and `tickerData:<league>` (that league's last
+  response). On the next page `initNhlTicker()` renders the cached
+  responses straight away (priming, with no swap maths), then sets the
+  loop to the saved offset *plus* the time since it was saved at
+  `NHL_TICKER_PX_PER_SEC`, so it sits where it would have been had it
+  kept scrolling through the page load, and skips the entrance. The
+  normal fetch follows; the existing game-key comparison updates chips in
+  place or swaps changed sections without a visible jump. The position
+  is good for 30 minutes and the cached scores for 10; a new tab, or
+  anything older, starts fresh with the shimmer and the entrance. A
+  late web-font swap changes the strip's width, so
+  `refitTickerMotion()` re-measures and holds the same pixel offset.
+  Starting on `DOMContentLoaded` rather than `window load` is part of
+  this: the strip shows as soon as the HTML and CSS are ready, not
+  after the page's images.
 - **Refresh**: `scheduleNhlTickerRefresh()` polls every 60s while a
   game is `PRE`/`LIVE`/`CRIT` — today's, or last night's if one runs
   past midnight; otherwise it sleeps until the next scheduled start
@@ -743,7 +794,7 @@ call it. The markup is one empty `<div id="nhlTicker" hidden>`.
 2. If **every** game today is still `FUT` (scheduled) or `PRE` (warm-up), or there are no games today, also fetch the previous game day's games, keeping the finished ones (`FINAL`/`OFF`) and any still being played.
 3. Once any of today's games is past warm-up (`LIVE`), `previous` comes back empty.
 
-**What the page does with it** (`scripts/wax.js`):
+**What the page does with it** (`scripts/ticker.js`):
 
 - The ticker stores the list of game IDs it's showing. When the "last night" games stop arriving, that list changes, so that league's section is replaced with only today's games and the last-night date label goes (off-screen when possible — see "Changing a league's section without a jump").
 - Before puck drop, the ticker doesn't poll every minute. It sleeps until the first scheduled start time, then checks every 60s.
@@ -768,12 +819,12 @@ The 1–5 minute range comes from caching. Until a game is live, the Lambda's re
 
 **The PWHL** follows the same rule, from `Lambdas/getPwhlScores/index.mjs`. The HockeyTech feed has no "current date" of its own, so "today" and "yesterday" are calendar days in `America/Toronto`. On a day with no PWHL games, the section shows yesterday's results (if any) and then "Next game {date}" — or "Season starts {date}" before the regular season's first game — with that day's games, and nothing in summer before the next schedule is published.
 
-## NHL game modal (waxReviews.html)
+## NHL game modal (the ticker pages)
 
 Clicking a started or finished game in the ticker opens a modal modelled
 on nhl.com's game page: a score header, then three tabs — Summary, Box
 Score, Recap. Fed by `getNhlGameDetails` (`Lambdas/getNhlGameDetails/`,
-see `LAMBDA_FUNCTIONS.md`); code in `wax.js` (`openNhlGameModal()`,
+see `LAMBDA_FUNCTIONS.md`); code in `ticker.js` (`openNhlGameModal()`,
 `renderNhlGameHeader()`/`…Summary()`/`…BoxScore()`/`…Recap()`); markup
 is a static `#nhlGameModalOverlay` in `waxReviews.html`.
 

@@ -14,7 +14,7 @@
 scores, schedule, stats and game pages. No API key, no sign-up, no
 rate limit has been observed. It sits behind Cloudflare.
 
-This site uses it in two places on `waxReviews.html`, always through
+This site uses it in two places on the ticker pages, always through
 a Lambda, never directly from the browser (see "Behaviour that
 applies to every endpoint" for why):
 

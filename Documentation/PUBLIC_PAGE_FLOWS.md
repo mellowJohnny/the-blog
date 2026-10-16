@@ -12,7 +12,8 @@ duplicating the request/response contract), down to the Lambda that
 serves it and the DynamoDB table/index it actually reads or writes.
 `lockout.html` isn't covered here — it's a static essay page (the
 2004-05 NHL lockout, themed to match `waxReviews.html`) with no
-meaningful JS of its own.
+meaningful JS of its own, beyond the scores ticker it shares with the
+other hockey pages (see the Card Set Reviews flow below).
 
 ## Home Page - `index.html`
 
@@ -25,17 +26,13 @@ sequenced.
 
 **What loads**: `scripts/blogs.js`, `scripts/helper.js` (both `defer`),
 plus two inline `<script>` blocks — one registering the `window load`
-handler described below, one registering `DOMContentLoaded`. `blogs.js`
-also runs a block of **top-level code** the instant it parses (not
-gated by any event, and unrelated to the blog content itself): it asks
-the browser for the visitor's location via
-`navigator.geolocation.getCurrentPosition()`, and once it has
-coordinates, calls `getWeather(lat, long)`, which hits OpenWeatherMap
-directly from the browser (`https://api.openweathermap.org/data/2.5/weather`,
-API key hardcoded client-side) to fill in the `#weather` widget next to
-the masthead. This is a third-party call unrelated to this site's own
-backend — it isn't on the API Endpoints page and has nothing to do with
-the Lambda/DynamoDB stack the rest of this doc traces.
+handler described below, one registering `DOMContentLoaded`. The
+masthead is a plain edge-to-edge image banner. `blogs.js` still
+contains a block of top-level weather-widget code, but it does nothing
+here: it only runs when the page has a `#weather` element, which the
+Home page no longer does, so nothing asks for the visitor's location
+or calls OpenWeatherMap (see the Tech Blogs section for what that code
+does). The Home page also has no scores ticker, by design.
 
 **On `DOMContentLoaded`**: `renderBlogIntro('99')` writes a static,
 hardcoded intro paragraph — as an `<h1>` plus body copy — into
@@ -127,9 +124,18 @@ only by direct URL (the posts stay in `Blogs` and in the CMS).
 **What loads**: `scripts/blogs.js`, `scripts/helper.js` (`defer`), plus
 inline scripts reading `blogType`/`pageName` from the query string and
 registering the same `DOMContentLoaded`/`window load` handlers as
-`index.html`. The same top-level geolocation/weather code in `blogs.js`
-runs here too, since this page's masthead also has a `#weather`
-element — see `index.html`'s section above for that mechanism.
+`index.html`. This is the one page where the weather widget still
+runs: `blogs.js` has a block of **top-level code** that executes the
+instant it parses (not gated by any event, and unrelated to the blog
+content) and only does anything when the page has a `#weather`
+element. It asks the browser for the visitor's location via
+`navigator.geolocation.getCurrentPosition()`, and once it has
+coordinates, calls `getWeather(lat, long)`, which hits OpenWeatherMap
+directly from the browser (`https://api.openweathermap.org/data/2.5/weather`,
+API key hardcoded client-side) to fill in the widget next to the
+masthead. This is a third-party call unrelated to this site's own
+backend — it isn't on the API Endpoints page and has nothing to do with
+the Lambda/DynamoDB stack the rest of this doc traces.
 
 **On `DOMContentLoaded`**: `renderBlogIntro(blogType)` — same function
 as `index.html`, but this time `"1"`, `"3"`, and `"5"` each have their
@@ -196,8 +202,8 @@ year/category the URL specifies. Those three things — nav, year picker,
 review content — are independent of each other and all fire off the
 same `window load` event, same pattern as the blog pages.
 
-**What loads**: `scripts/wax.js`, `scripts/helper.js` (both `defer`),
-plus several inline `<script>` blocks in `<head>`, in this order:
+**What loads**: `scripts/wax.js`, `scripts/ticker.js`, `scripts/helper.js`
+(all `defer`), plus several inline `<script>` blocks in `<head>`, in this order:
 
 1. A lockout-year redirect check (see "Notable" below) — runs
    immediately, before any other script, since it may bail out of
@@ -206,8 +212,9 @@ plus several inline `<script>` blocks in `<head>`, in this order:
 3. `DOMContentLoaded` → `renderCardIntro(pageName)`.
 4. `window load` → `fetchNav(pageName)`, `renderSetPicker(year, blogCat,
    pageName)`, `fetchCardSetsByYear(year, sortOrder, blogCat)`,
-   `applyRandomMastheadStyling()`, `initNhlTicker()` (in that order),
-   plus a `gtag('config', ...)` call for Analytics.
+   `applyRandomMastheadStyling()` (in that order), plus a
+   `gtag('config', ...)` call for Analytics. The scores ticker isn't in
+   this list: `ticker.js` starts itself on `DOMContentLoaded`.
 
 **On `DOMContentLoaded`**: `renderCardIntro(pageName)` (`wax.js`) —
 static intro copy keyed by `pageName` (`classicWax`/`junkWax`/`timmies`/
@@ -280,30 +287,40 @@ everything the visitor can see or navigate to on this page.
 - `applyRandomMastheadStyling()` (`helper.js`) — paints the masthead
   in a random NHL team's colours with its cheer label. Purely
   cosmetic, no API call — see `FRONTEND.md`'s "Typography / fonts".
-- `initNhlTicker()` (`wax.js`) adds live hockey context above the
-  reviews: it fills the scores strip under the masthead via **Get NHL
+- `initNhlTicker()` (`ticker.js`, which starts itself on
+  `DOMContentLoaded` — no page calls it) adds live hockey context above
+  the reviews: it fills the scores strip under the masthead via **Get NHL
   scores**, fronted by the `getNhlScores` Lambda
   (`Lambdas/getNhlScores/`). That Lambda reads no DynamoDB table — it
   calls the NHL's own undocumented API (`api-web.nhle.com`) server-side,
   because that API sends no CORS headers and the browser can't call it
   directly, and slims the result to a stable shape of our own (see
-  `NHL_API.md`). In parallel, and never waiting on the NHL, it calls
+  `NHL_API.md`). In parallel — the request itself never waits on the NHL's —
+  it calls
   **Get PWHL scores**, fronted by the `getPwhlScores` Lambda
   (`Lambdas/getPwhlScores/`), which proxies the PWHL's HockeyTech feed
   (see `PWHL_API.md`) and returns the same shape — plus a "Season
-  starts" / "Next game" notice on days with no PWHL games. Whichever
-  league answers first is shown first; the other is added later
+  starts" / "Next game" notice on days with no PWHL games. The NHL
+  goes first: the PWHL's first render waits for it (up to 2.5s), so the
+  strip opens on the NHL section; a league that arrives later is added
   without a visible jump. Independent of the review: it runs in
   parallel with `fetchCardSetsByYear()`, and a league that errors or
-  has nothing to show is simply left out (the strip hides only when
-  both are). While a game is live each league re-polls every 60s and
-  updates scores in place — see `FRONTEND.md`'s "NHL scores ticker".
+  has nothing to show is simply left out. The empty rail is on the page
+  from first paint (with a faint shimmer) so nothing pops in, and it
+  hides only when both leagues have nothing. On a first visit in a tab
+  the strip slides in from the right; arriving from another page in the
+  same tab, it instead renders the last scores it cached and carries on
+  from the scroll position the previous page had, so a click doesn't
+  look like a restart. While a game is live each league re-polls every
+  60s and updates scores in place — see `FRONTEND.md`'s "NHL scores
+  ticker". The same ticker runs on Player Search, Lockout and The Junk
+  Wax Years, not on the Home page.
 
 **User interactions**:
 - Hovering over (or tabbing to) the NHL scores ticker pauses its
   scroll so a score can be read — pure CSS, no JS or API call.
 - Clicking a game in the ticker (only started or finished games are
-  enabled) → `openNhlGameModal(gameId)` (`wax.js`) gives the visitor
+  enabled) → `openNhlGameModal(gameId)` (`ticker.js`) gives the visitor
   the full story of that game without leaving the page. It calls **Get
   NHL game details** (`?gameId=`), fronted by the `getNhlGameDetails`
   Lambda (`Lambdas/getNhlGameDetails/`), which reads no DynamoDB
@@ -413,8 +430,11 @@ This page exists as a cross-set alternative to browsing by year: rather
 than picking a year/category and paging through, a visitor can search
 directly for a player and jump straight to every set they appear in.
 
-**What loads**: `scripts/playerSearch.js`, `scripts/helper.js` (both
-`defer`), plus one inline `window load` script.
+**What loads**: `scripts/playerSearch.js`, `scripts/ticker.js`,
+`scripts/helper.js` (all `defer`), plus one inline `window load`
+script. `ticker.js` starts the scores ticker under the masthead by
+itself — this page's script never calls it (see the Card Set Reviews
+flow).
 
 **On `window load`**:
 - `fetchCopyrightYear()` and `fetchNav("playerSearch")` — same
