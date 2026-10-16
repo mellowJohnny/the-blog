@@ -3940,7 +3940,7 @@ label sup {
 }
 
 #timelineSection {
-  --timeline-blue: #8ecbf0; /* rink ice: the line and the card backs */
+  --timeline-blue: #6bb7e6; /* rink ice: the line and the card backs */
   --timeline-red: #c8102e; /* NHL red: the dots */
   max-width: 1000px;
   margin: 0 auto;
@@ -4058,8 +4058,9 @@ label sup {
 }
 
 .timeline-front {
-  background: var(--color-masthead-bg);
-  color: #ffffff;
+  border: 1px solid var(--timeline-blue);
+  background: #ffffff;
+  color: var(--color-text-dark);
   transform: rotateY(0deg);
 }
 
@@ -4102,12 +4103,12 @@ label sup {
   top: 50%;
   right: 16px;
   transform: translateY(-50%);
+  color: var(--timeline-red);
   font-size: 20px;
-  opacity: 0.75;
 }
 
 .timeline-toggle:focus-visible {
-  outline: 3px solid #f4d03f;
+  outline: 3px solid var(--color-heading-outline);
   outline-offset: -3px;
 }
 
@@ -4119,8 +4120,8 @@ label sup {
 .timeline-year {
   padding: 2px 10px;
   border-radius: 999px;
-  background: #f4d03f;
-  color: #1b1b1b;
+  background: var(--timeline-red);
+  color: #ffffff;
   font-size: 13px;
   font-weight: 700;
 }
@@ -4140,16 +4141,16 @@ label sup {
 .timeline-back-title {
   margin: 0 0 4px;
   font-size: 16px;
-  color: var(--color-heading-outline);
+  color: var(--color-text-dark);
 }
 
 .timeline-close {
   flex: none;
   padding: 3px 12px;
-  border: 1px solid var(--color-masthead-bg);
+  border: 1px solid var(--color-text-dark);
   border-radius: 999px;
   background: none;
-  color: var(--color-masthead-bg);
+  color: var(--color-text-dark);
   font: inherit;
   font-size: 13px;
   cursor: pointer;
