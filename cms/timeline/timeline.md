@@ -28,21 +28,20 @@
 - Rack packs returned to mass-market stores for the first time since 1982-83: 42-card sealed cello packs including a single "Mini" card
 - Wayne Gretzky traded to Los Angeles over the summer, fueling interest in hockey south of the border
 
-#### 1989-90 End of the O-Pee-Chee / Topps Monopoly
-- Last year OPC and Topps had the market to themselves
-- OPC increased to 330 bilingual cards; standout RCs are Joe Sakic and Brian Leetch
-- Topps again released 198 cards; rumoured to have a lower print run than OPC (unverifiable urban legend)
+#### 1989-90 The End of the Monopoly
+- This was the last year O-Pee-Chee and Topps held exclusive rights to produce hockey cards in Canada and the US
+- OPC set increased to 330 bilingual cards; standout RCs are Joe Sakic and Brian Leetch
+- Topps set was 198 cards; rumoured to have a lower print run than OPC (unverifiable urban legend)
 - OPC dropped the Minis
 - Upper Deck releases their first Baseball set 
-    - Premium card stock, anti-counterfeit holograms, and foil packs that could not be tampered with
-    - Even at over double the price of Topps, Fleer, and Donruss, they sold out in days
+    - Premium card stock, anti-counterfeit holograms, and foil packs that could not be tampered
+    - At $1 a pack (when Topps / Fleer / Donruss were ¢0.45) they sold out in days
 
 
-#### 1990-91 Upper Deck Arrives and The Junk Wax Era Begins
-- The hobby explodes from two sets to nine
-- NHL issues new licenses to Pro Set, Pinnacle, and Upper Deck
+#### 1990-91 Upper Deck And The Speculators Arrive
+- NHL issues new licenses to Pro Set, Pinnacle, and Upper Deck: the hobby explodes from two sets to nine
 - All producers are allowed two hockey sets each
-  - Some do French / English, some do regular & "premium"
+  - Some opt for French / English, some produce "regular" & "premium" sets
 - Set sizes explode:
   - Pro Set: enormous 705-card set, with countless errors
   - Upper Deck: 550-card sets (one English, one French) released for the first time across two Series, with "High" Series Factory sets. First Young Guns cards. French set frenzy as the Canada-only edition reportedly had much lower print runs
