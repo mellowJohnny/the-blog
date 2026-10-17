@@ -70,7 +70,7 @@
 - First McDonald's Upper Deck "All-Star" set released
 
 #### 1992-93 Saturation, Pro Set Bankruptcy
-- Sets dialed back to 13; this was the year of peak inserts, led by Upper Deck
+- Sets dialed back to 13, but Pro Set doesn't survive
 - Releases by company:
   - Upper Deck: one French, one English
   - OPC: main and Premier
