@@ -85,7 +85,7 @@
 - Fleer joins the party late with their premium Ultra set 
 - Marvel buys Fleer, chasing the card boom
 
-#### 1993-94 Consolidation
+#### 1993-94 Industry Consolidation
 - Fourteen total sets released:
   - Two new sets from Leaf: Donruss & a Leaf main set
   - Fleer releases Ultra, and a “tall boy” PowerPlay set 
