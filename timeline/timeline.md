@@ -1,34 +1,34 @@
 ### The Junk Wax Era
 
-#### 1984-85 O-Pee-Chee & Topps
+#### 1984-85 O-Pee-Chee & Topps Sets
 - The beginning of the Junk Wax era
 - OPC: 396 bilingual cards (Canada); Topps: 165 English cards (US)
 - OPC production estimated at roughly 6 million packs, based on a contest run that year
 - Notable rookies: Steve Yzerman, Doug Gilmour, Chris Chelios
 
-#### 1985-86 O-Pee-Chee & Topps
+#### 1985-86 O-Pee-Chee & Topps Sets
 - The Mario Lemieux RC set
 - OPC down to 264 bilingual cards; Topps 165 cards plus a sticker in each pack
 - Notable OPC rookies: Lemieux, Al MacInnis, Kirk Muller
 
-#### 1986-87 O-Pee-Chee & Topps
+#### 1986-87 O-Pee-Chee & Topps Sets
 - The Patrick Roy RC set
 - OPC steady at 264 cards; Topps up slightly to 198 cards plus a sticker
 - Notable OPC rookies: Roy, Petr Klima, Wendel Clark
 
-#### 1987-88 O-Pee-Chee & Topps
+#### 1987-88 O-Pee-Chee & Topps Sets
 - OPC stayed at 264 cards; Topps continued with 198 cards and one sticker per pack
 - Notable OPC RCs: Adam Oates, Luc Robitaille, Stephane Richer, Esa Tikkanen, Rick Tocchet
 - OPC released its first "Minis" set (42 cards)
 
-#### 1988-89 O-Pee-Chee & Topps
+#### 1988-89 O-Pee-Chee & Topps Sets
 - The Brett Hull RC set
 - OPC continued at 264 cards; Topps with 198
 - OPC Minis returned (46 cards)
 - Rack packs returned to mass-market stores for the first time since 1982-83: 42-card sealed cello packs including a single "Mini" card
 - Wayne Gretzky traded to Los Angeles over the summer, fueling interest in hockey south of the border
 
-#### 1989-90 The End of the Monopoly
+#### 1989-90 The End of the Topps / OPC Monopoly
 - This was the last year O-Pee-Chee and Topps held exclusive rights to produce hockey cards in Canada and the US
 - OPC set increased to 330 bilingual cards; standout RCs are Joe Sakic and Brian Leetch
 - Topps set was 198 cards; rumoured to have a lower print run than OPC (unverifiable urban legend)
@@ -38,7 +38,7 @@
     - At $1 a pack (when Topps / Fleer / Donruss were ¢0.45) they sold out in days
 
 
-#### 1990-91 Upper Deck Arrives: Full Send Junk Wax
+#### 1990-91 Upper Deck Arrives
 - NHL issues new licenses to Pro Set, Pinnacle, and Upper Deck: the hobby explodes from two sets to nine
 - All producers are allowed two hockey sets each
   - Some opt for French / English, some produce "regular" & "premium" sets
@@ -92,7 +92,7 @@
 - Upper Deck released two sets: a main set and a Parkhurst set, after buying the rights from Pro Set
 - Pinnacle and sister brand Score had two sets each
 
-#### 1994-95 Mores Sets, New Names, Smaller Sizes
+#### 1994-95 More Sets, Smaller Sizes
 - Twenty sets hit the market
 - Upper Deck expands to seven sets across the Parkhurst, the ultra-premium SP, Be A Player, and Upper Deck brands:
 - Leaf: main set, Leaf Limited, and Donruss
