@@ -41,16 +41,16 @@
 - Pro Set, Pinnacle, and Upper Deck get NHL licenses: hobby explodes from two sets to nine
 - Companies allowed two sets each: Some opt for French / English, some produce "regular" & "premium" sets
 - Set sizes explode:
-  - Pro Set: enormous 705-card set, with countless errors
-  - Upper Deck: two 550-card sets (English & French) released across two Series
+  - Pro Set's enormous 705-card set, with countless errors
+  - Upper Deck's 550-card sets (English & French) released across two Series
     - “High” Series Factory sets
     - First Upper Deck Young Guns cards
     - French set frenzy: Canada-only edition reportedly had lower production
-  - O-Pee-Chee: 528-card "main" set, "limited" 132-card Premier set
+  - O-Pee-Chee's 528-card "main" set, and "limited" 132-card Premier set
     - Premier sets the hobby world on fire, further stoking speculation
     - Also available as a Factory set 
-  - Topps: 396-card main set, "premium" 264 card Bowman set, still with gum!
-  - Score (Pinnacle): two 440 cards sets; one American, one Canadian, also in Factory Sets
+  - Topps: 396-card main set and "premium" 264 card Bowman set, still with gum!
+  - Score's (Pinnacle) 440 cards sets; one American, one Canadian, also in Factory Sets
     - Eric Lindros mania as Score has the only official RC
 - In total 4,005 base cards were available to collect
 - Over-production:
