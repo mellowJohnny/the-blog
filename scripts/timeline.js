@@ -1,9 +1,9 @@
 /**
- * Interactive timeline (cms/timeline.html): builds one flip card per
+ * Interactive timeline (timeline.html): builds one flip card per
  * "####" point of a markdown file. See styles.css's .timeline-* rules.
  */
 
-const TIMELINE_MD_URL = "/cms/timeline/timeline.md";
+const TIMELINE_MD_URL = "/timeline/timeline.md";
 
 // "###" is the title, each "####" starts a point, "-" bullets are its
 // content and a bullet indented two spaces nests under the one above.

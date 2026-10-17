@@ -489,26 +489,30 @@ const NAV_ITEMS = {
   mcd: { label: "McDonald's Hockey", href: "/waxReviews.html?year=1991&pageName=mcd&blogCat=mcd" },
   tech: { label: "Tech", href: "/tech.html?blogType=1&pageName=tech" },
   mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3&pageName=ev" },
+  timeline: { label: "Junk Wax Timeline", href: "/timeline.html" },
   search: { label: "Player Search", href: "/playerSearch.html" }
 };
 
 // Step 2: Define which pages show which items
 // The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
-  // "search" (Player Search) is on every page except playerSearch
-  // itself (which self-excludes like the others), always last.
-  index: ["home", "classic", "junk", "mcd", "timmies", "search"],
-  tech: ["home", "classic", "junk", "mcd", "timmies", "search"],
-  ev: ["home", "classic", "junk", "mcd", "timmies", "search"],
-  junkWax: ["home", "classic", "mcd", "timmies", "search"],
-  classicWax: ["home", "junk", "mcd", "timmies", "search"],
-  timmies: ["home", "classic", "junk", "mcd", "search"],
-  mcd: ["home", "classic", "junk", "timmies", "search"],
-  playerSearch: ["home", "classic", "junk", "mcd", "timmies"],
+  // "search" (Player Search) is on every page except playerSearch itself,
+  // always last; "timeline" sits just before it, and each of those two
+  // self-excludes from its own page.
+  index: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
+  tech: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
+  ev: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
+  junkWax: ["home", "classic", "mcd", "timmies", "timeline", "search"],
+  classicWax: ["home", "junk", "mcd", "timmies", "timeline", "search"],
+  timmies: ["home", "classic", "junk", "mcd", "timeline", "search"],
+  mcd: ["home", "classic", "junk", "timmies", "timeline", "search"],
+  playerSearch: ["home", "classic", "junk", "mcd", "timmies", "timeline"],
   // theJunkWaxYears.html is a static essay, not one of the junkWax/
   // classicWax/mcd/timmies review pages itself, so - like playerSearch -
   // nothing needs to self-exclude here; "junk" stays in the list.
-  junkWaxYears: ["home", "classic", "junk", "mcd", "timmies", "search"]
+  junkWaxYears: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
+  // timeline.html leaves out its own link, like playerSearch does.
+  timeline: ["home", "classic", "junk", "mcd", "timmies", "search"]
 };
 
 // Step 3: Build a dynamic table generator

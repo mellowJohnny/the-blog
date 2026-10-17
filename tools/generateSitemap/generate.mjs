@@ -52,6 +52,7 @@ function buildUrls() {
 
   urls.push(`${SITE_ORIGIN}/lockout.html`);
   urls.push(`${SITE_ORIGIN}/theJunkWaxYears.html`);
+  urls.push(`${SITE_ORIGIN}/timeline.html`);
 
   return urls;
 }
