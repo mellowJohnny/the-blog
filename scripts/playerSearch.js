@@ -212,7 +212,7 @@ function renderPlayerSearchResults(query, results) {
 
     const setHeading = href
       ? `<a href="${escapeHtml(href)}">${escapeHtml(result.setName)}</a>`
-      : `${escapeHtml(result.setName)} <span class="player-search-no-review">(review not linked yet)</span>`;
+      : `${escapeHtml(result.setName)} <span class="player-search-no-review">(set not reviewed)</span>`;
 
     const cardRows = result.cards.map((card) => {
       const insertNote = card.insertSetName ? ` — ${escapeHtml(card.insertSetName)}` : "";
@@ -227,7 +227,7 @@ function renderPlayerSearchResults(query, results) {
 
     return `
       <div class="player-search-group">
-        <h3 class="player-search-set-name">Set: ${setHeading}</h3>
+        <h3 class="player-search-set-name"> ${setHeading}</h3>
         <ul class="player-search-card-list">${cardRows}</ul>
       </div>
     `;
