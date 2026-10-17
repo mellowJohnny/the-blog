@@ -82,7 +82,7 @@
 - Pro Set Series 1 ships, plus a Parkhurst set with its parallel "Emerald" foil insert set
   - Pro Set Series 2 never released, company declares bankruptcy
 - Topps releases main and Stadium Club sets 
-- Fleer: new entrant with the premium Ultra set 
+- Fleer joins the party late with their premium Ultra set 
 - Marvel buys Fleer, chasing the card boom
 
 #### 1993-94 Consolidation
