@@ -74,36 +74,35 @@
 - First McDonald's Upper Deck "All-Star" set released
 
 #### 1992-93 Saturation, Pro Set Bankruptcy
-- Sets reduced 13, but Pro Set doesn't survive
+- Only 13 sets produced; Pro Set doesn't survive
 - Upper Deck releases one French and one English set
-- OPC released a main and an over-produced Premier set
+- OPC releases a main and an over-produced Premier set
   - The “25th Anniversary” is the last-ever OPC set printed in Canada, with a unique design, still wrapped in wax paper, but no gum
-- Pinnacle: four sets (two Score, two Pinnacle)
-- Pro Set Series 1 of the main set, one Parkhurst including a parallel "Emerald" foil set
-- Topps: main and Stadium Club
+- Pinnacle produces four sets (two Score, two Pinnacle)
+- Pro Set Series 1 ships, plus a Parkhurst set with its parallel "Emerald" foil insert set
   - Pro Set Series 2 never released, company declares bankruptcy
+- Topps releases main and Stadium Club sets 
 - Fleer: new entrant with the premium Ultra set 
 - Marvel buys Fleer, chasing the card boom
 
-#### 1993-94 Consolidation Begins
-- Fourteen total sets were released:
+#### 1993-94 Consolidation
+- Fourteen total sets released:
   - Two new sets from Leaf: Donruss & a Leaf main set
   - Fleer releases Ultra, and a “tall boy” PowerPlay set 
-  - OPC and Topps only release premium sets:
-    - Both release a Premier set 
-    - Topps releases a Stadium Club set in the US
+  - Topps only release premium sets:
+    - US and Canadian Premier set which feature a gold foil parallel insert set
+    - Stadium Club in the US
     - Stadium Club O-Pee-Chee set released for Canada
   - Upper Deck releases two sets: a main set and a Parkhurst set, after buying the rights from Pro Set
   - Pinnacle and sister brand Score had two sets each
 
 #### 1994-95 More Sets, Smaller Sizes
 - Twenty sets hit the market this year:
-  - Upper Deck expands to seven sets across the Parkhurst, the ultra-premium SP, Be A Player, and Upper Deck brands:
-  - Leaf: main set, Leaf Limited, and Donruss
+  - Upper Deck expands to seven sets across the Parkhurst, ultra-premium SP, Be A Player, and Upper Deck brands
+  - Leaf: main, Leaf Limited, and Donruss sets
   - Fleer: Ultra and Flair
-  - Topps: Premier, Stadium Club, and Finest
+  - Topps: Premier, Stadium Club, Finest, O-Pee-Chee Premier in Canada
   - Pinnacle: Select, Score, and a main Pinnacle set
-  - OPC again had just a single Premier set, produced by Topps
  - NHL season shortened by the Owner’s lockout
 
 #### 1995-96 Focus on "Scarcity", more Bankruptcies
@@ -112,7 +111,7 @@
   - Four Fleer sets: Metal (200), SkyBox E-Motion (200), SkyBox Impact (250), and Ultra (400)
   - Four Leaf sets: main set (330), Limited (120), Donruss (390), and Donruss Elite (110)
   - Five Pinnacle sets, including a main set, two Score sets, Select Certified (144 cards, with a Gold parallel), and Zenith (150)
-  - Five Upper Deck sets: main set, Be A Player, Collector’s Choice, two Parkhurst
+  - Five Upper Deck sets: main, Be A Player, Collector’s Choice, two Parkhurst
 - Marvel files for bankruptcy, taking the Fleer & SkyBox imprints with it
 
 #### Long Term Impact
