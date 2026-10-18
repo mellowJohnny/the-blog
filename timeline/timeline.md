@@ -1,27 +1,27 @@
 ### The Junk Wax Era
 
-#### 1984-85 O-Pee-Chee & Topps Sets
+#### 1984-85 O-Pee-Chee & Topps
 - The beginning of the Junk Wax era
 - OPC: 396 bilingual cards (Canada); Topps: 165 English cards (US)
 - OPC production estimated at roughly 6 million packs, based on a contest run that year
 - Notable rookies: Steve Yzerman, Doug Gilmour, Chris Chelios
 
-#### 1985-86 O-Pee-Chee & Topps Sets
+#### 1985-86 O-Pee-Chee & Topps
 - The Mario Lemieux RC set
 - OPC down to 264 bilingual cards; Topps 165 cards plus a sticker in each pack
 - Notable OPC rookies: Lemieux, Al MacInnis, Kirk Muller
 
-#### 1986-87 O-Pee-Chee & Topps Sets
+#### 1986-87 O-Pee-Chee & Topps
 - The Patrick Roy RC set
 - OPC steady at 264 cards; Topps up slightly to 198 cards plus a sticker
 - Notable OPC rookies: Roy, Petr Klima, Wendel Clark
 
-#### 1987-88 O-Pee-Chee & Topps Sets
+#### 1987-88 O-Pee-Chee & Topps
 - OPC stayed at 264 cards; Topps continued with 198 cards and one sticker per pack
 - Notable OPC RCs: Adam Oates, Luc Robitaille, Stéphane Richer, Esa Tikkanen, Rick Tocchet
 - OPC released its first “Minis” set (42 cards)
 
-#### 1988-89 O-Pee-Chee & Topps Sets
+#### 1988-89 O-Pee-Chee & Topps
 - The Brett Hull RC set
 - OPC continued at 264 cards, Minis set; Topps with 198
 - Rack packs returned to mass-market retailers: 42-card sealed cello packs including a “Mini” card
