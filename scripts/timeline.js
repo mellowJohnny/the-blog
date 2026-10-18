@@ -6,11 +6,12 @@
 const TIMELINE_MD_URL = "/timeline/timeline.md";
 
 // "###" is the title, each "####" starts a point, "-" bullets are its
-// content and a bullet indented two spaces nests under the one above.
+// content, and each two spaces of indent nests a bullet one level deeper,
+// under the nearest bullet above it that is shallower.
 function parseTimelineMarkdown(text) {
   const model = { title: "", points: [] };
   let point = null;
-  let parent = null;
+  let stack = [];
 
   text.split(/\r?\n/).forEach((raw) => {
     const line = raw.replace(/\s+$/, "");
@@ -19,7 +20,7 @@ function parseTimelineMarkdown(text) {
     if (line.startsWith("#### ")) {
       point = buildTimelinePoint(line.slice(5).trim());
       model.points.push(point);
-      parent = null;
+      stack = [];
       return;
     }
     if (line.startsWith("### ")) {
@@ -27,15 +28,14 @@ function parseTimelineMarkdown(text) {
       return;
     }
 
-    const bullet = line.match(/^(\s*)[-*]\s+(.*)$/);
+    const bullet = line.replace(/\t/g, "  ").match(/^(\s*)[-*]\s+(.*)$/);
     if (!bullet || !point) return;
     const item = { text: bullet[2].trim(), children: [] };
-    if (bullet[1].length >= 2 && parent) {
-      parent.children.push(item);
-    } else {
-      point.items.push(item);
-      parent = item;
-    }
+    const level = Math.floor(bullet[1].length / 2);
+    while (stack.length && stack[stack.length - 1].level >= level) stack.pop();
+    const siblings = stack.length ? stack[stack.length - 1].item.children : point.items;
+    siblings.push(item);
+    stack.push({ level, item });
   });
 
   return model;
