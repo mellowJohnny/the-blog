@@ -39,26 +39,22 @@
 
 #### 1990-91 Upper Deck Arrives
 - Pro Set, Pinnacle, and Upper Deck get NHL licences: hobby explodes from two sets to nine
-- Companies allowed two sets each: Some opt for French / English, some produce “regular” & “premium” sets
+- Companies are allowed two sets each
 - Set sizes explode:
   - Pro Set’s enormous 705-card set, with countless errors
   - Upper Deck’s 550-card sets (English & French) released across two Series
-    - “High” Series factory sets
     - First Upper Deck Young Guns cards
-    - French set frenzy: Canada-only edition reportedly had lower production
-  - O-Pee-Chee’s 528-card “main” set, and “limited” 132-card Premier set
-    - Premier sets the hobby world on fire, further stoking speculation
-    - Also available as a factory set 
-  - Topps: 396-card main set and “premium” 264-card Bowman set, still with gum!
-  - Score’s (Pinnacle) 440-card sets; one American, one Canadian, also in factory sets
-    - Eric Lindros mania as Score has the only official RC
-- In total 4,005 base cards were available to collect
-- Overproduction:
+    - Lower production creates French set frenzy
+  - O-Pee-Chee’s “limited” 132-card Premier sets the hobby world on fire, further stoking speculation
+  - Topps resurrects Bowman as a “premium” 264-card set
+  - Score releases a 440-card set one American, one Canadian, plus factory sets
+    - Eric Lindros mania as only Score has his RC
+- "Print as much as you want" Overproduction:
   - Upper Deck “High” Series packs contained a mix of Low and High Series cards  
   - Upper Deck and Pro Set go back to the presses for multiple print runs as demand continues  
 - Factors driving speculation:
-  - First Beckett hockey price guide: Wayne Gretzky graces the first cover
-  - O-Pee-Chee Premier’s rumoured limited print run and frenzy around the Jagr / Roenick / Fedorov RCs
+  - First Beckett hockey price guide
+  - OPC Premier’s rumoured limited print run drives demand for Jagr / Roenick / Fedorov / Mogilny RCs
 - Counterfeit Patrick Roy and Brett Hull OPC cards begin to surface
 
 
