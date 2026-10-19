@@ -4284,7 +4284,7 @@ label sup {
   .timeline-card.is-flipped .timeline-front,
   .timeline-card.is-flipped .timeline-back {
     transform: none;
-    transition: opacity 0.15s linear, visibility 0.15s linear;
+    transition: opacity 0.15s linear; /* visibility flips at once, so the new face can take focus */
   }
 
   .timeline-back,

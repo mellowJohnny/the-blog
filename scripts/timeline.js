@@ -122,6 +122,15 @@ function markTimelineCardViewed(card, front) {
   front.querySelector(".timeline-toggle").appendChild(timelineEl("span", "timeline-sr", " (viewed)"));
 }
 
+// Closing a tall card leaves the page scrolled to where its bottom was, far
+// below the card. If the card's top is out of sight, scroll back up to it.
+function scrollTimelineCardIntoView(card) {
+  const top = card.getBoundingClientRect().top;
+  if (top >= 0 && top < window.innerHeight - 120) return;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({ top: window.scrollY + top - 80, behavior: reduced ? "auto" : "smooth" });
+}
+
 function setTimelineCardOpen(card, open, moveFocus = false) {
   const front = card.querySelector(".timeline-front");
   const back = card.querySelector(".timeline-back");
@@ -137,6 +146,7 @@ function setTimelineCardOpen(card, open, moveFocus = false) {
   if (!moveFocus) return;
   const target = open ? back.querySelector(".timeline-close") : front.querySelector(".timeline-toggle");
   target.focus({ preventScroll: true });
+  if (!open) scrollTimelineCardIntoView(card);
 }
 
 function renderTimeline(model, container) {
