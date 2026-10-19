@@ -3042,9 +3042,9 @@ label sup {
   isolation: isolate; /* keeps the blend modes inside the banner */
 }
 
-@media (min-width: 2100px) {
+@media (min-width: 1516px) { /* the image's 1500px plus the 16px of body margin */
   .home-masthead {
-    max-width: 2078px;
+    max-width: 1500px;
     margin: -8px auto 0;
   }
 }
@@ -3066,8 +3066,8 @@ label sup {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  -webkit-mask-image: url("/images/masthead-v8.webp");
-  mask-image: url("/images/masthead-v8.webp");
+  -webkit-mask-image: url("/images/masthead-v9.webp");
+  mask-image: url("/images/masthead-v9.webp");
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
 }
