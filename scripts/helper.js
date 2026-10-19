@@ -483,10 +483,10 @@ function renderSetPicker(year, blogCat, pageName) {
 // Step 1: Define the navigation items as data
 const NAV_ITEMS = {
   home: { label: "Home", href: "/index.html" },
-  junk: { label: "90s Junk Wax", href: "/waxReviews.html?year=1987&pageName=junkWax&blogCat=reg" },
-  classic: { label: "Classic 80s Sets", href: "/waxReviews.html?year=1981&pageName=classicWax&blogCat=reg" },
-  timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2019&pageName=timmies&blogCat=tims" },
-  mcd: { label: "McDonald's Hockey", href: "/waxReviews.html?year=1991&pageName=mcd&blogCat=mcd" },
+  junk: { label: "Junk Wax", href: "/waxReviews.html?year=1987&pageName=junkWax&blogCat=reg" },
+  classic: { label: "80s Sets", href: "/waxReviews.html?year=1981&pageName=classicWax&blogCat=reg" },
+  timmies: { label: "Tim Hortons", href: "/waxReviews.html?year=2019&pageName=timmies&blogCat=tims" },
+  mcd: { label: "McDonald's", href: "/waxReviews.html?year=1991&pageName=mcd&blogCat=mcd" },
   tech: { label: "Tech", href: "/tech.html?blogType=1&pageName=tech" },
   mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3&pageName=ev" },
   timeline: { label: "Junk Wax Timeline", href: "/timeline.html" },
