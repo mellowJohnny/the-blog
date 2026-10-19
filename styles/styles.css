@@ -4164,7 +4164,7 @@ label sup {
   top: 50%;
   right: 16px;
   transform: translateY(-50%);
-  color: var(--timeline-red);
+  color: var(--color-text-dark);
   font-size: 20px;
 }
 
@@ -4219,7 +4219,7 @@ label sup {
   top: 50%;
   right: 0;
   transform: translateY(-50%);
-  color: var(--timeline-red);
+  color: var(--color-text-dark);
   font-size: 20px;
 }
 
