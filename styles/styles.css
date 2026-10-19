@@ -3911,9 +3911,14 @@ label sup {
     display: block;
   }
 
-  /* Home page only: the nav row sits centred under the centred banner. */
+  /* Home page only: the nav row sits centred under the centred banner,
+     with tighter gaps between links so it fits within the banner's width. */
   .nav-centered .nav-table {
     margin: 0 auto;
+  }
+
+  .nav-centered .nav-td {
+    padding: 20px 12px;
   }
 }
 
