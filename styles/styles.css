@@ -3074,8 +3074,8 @@ label sup {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  -webkit-mask-image: url("/images/masthead-v15.webp");
-  mask-image: url("/images/masthead-v15.webp");
+  -webkit-mask-image: url("/images/masthead-v16.webp");
+  mask-image: url("/images/masthead-v16.webp");
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
 }
