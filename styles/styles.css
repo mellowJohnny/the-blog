@@ -3053,7 +3053,6 @@ label sup {
   display: block;
   width: 100%;
   height: auto;
-  filter: brightness(0.88) saturate(1.1); /* a touch darker and richer */
 }
 
 /* Wax-paper texture over the banner: a lit turbulence map (flat = neutral
