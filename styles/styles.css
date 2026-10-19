@@ -3055,6 +3055,15 @@ label sup {
   height: auto;
 }
 
+/* Phones: the banner is stretched taller (3.5:1 instead of its native 5.2:1)
+   so it isn't a thin strip; the lettering gets a little taller with it. */
+@media (max-width: 600px) {
+  .home-masthead img {
+    aspect-ratio: 7 / 2;
+    object-fit: fill;
+  }
+}
+
 /* Wax-paper texture over the banner: a lit turbulence map (flat = neutral
    grey, so overlay only adds creases) plus fine grain. The mask is the
    banner image itself, so the rounded corners stay clear; keep it naming
