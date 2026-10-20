@@ -451,6 +451,12 @@ h1 {
   padding: 20px;
 }
 
+/* Same dark blue as the card text; the phone/tablet menu rule below
+   (white on blue) comes later in the file and still wins there. */
+.nav-td a {
+  color: var(--color-text-dark);
+}
+
 
 .top-nav {
   font-family: 'Nunito';
