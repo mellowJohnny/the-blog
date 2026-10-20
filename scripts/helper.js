@@ -270,23 +270,32 @@ function getMonthName(monthNum) {
         
     }
 
-// Public-page footer links: the nav's own destinations (NAV_ITEMS), so the
-// two never drift, plus two pages not built yet, shown dimmed and unlinked.
-const FOOTER_LINK_IDS = ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"];
-const FOOTER_COMING_SOON = ["Browse By Set", "About"];
+// Public-page footer, one column per section. An entry with an id links to
+// that NAV_ITEMS page (label optional); one without is not built yet, so it
+// shows dimmed and unlinked. A section with no heading stands on its own.
+const FOOTER_SECTIONS = [
+  { links: [{ id: "home" }] },
+  { heading: "Reviews", links: [{ id: "classic", label: "Classic '80s" }, { id: "junk" }, { id: "mcd" }, { id: "timmies" }] },
+  { heading: "Tools", links: [{ id: "timeline" }, { id: "search" }, { label: "Browse By Set" }] },
+  { links: [{ label: "About" }] }
+];
+
+function buildFooterLink(link) {
+  if (!link.id) {
+    return `<span class="footer-link-inactive" aria-disabled="true">${escapeHtml(link.label)}</span>`;
+  }
+  const item = NAV_ITEMS[link.id];
+  return `<a href="${item.href}">${escapeHtml(link.label || item.label)}</a>`;
+}
 
 function fetchFooterLinks() {
   const footerNav = document.getElementById("footer-links");
   if (!footerNav) return;
 
-  const links = FOOTER_LINK_IDS.map(id => {
-    const item = NAV_ITEMS[id];
-    return `<a href="${item.href}">${escapeHtml(item.label)}</a>`;
-  });
-  const soon = FOOTER_COMING_SOON.map(label =>
-    `<span class="footer-link-inactive" aria-disabled="true">${label}</span>`
-  );
-  footerNav.innerHTML = links.concat(soon).join("");
+  footerNav.innerHTML = FOOTER_SECTIONS.map(section => {
+    const heading = section.heading ? `<p class="footer-heading">${section.heading}</p>` : "";
+    return `<div class="footer-col">${heading}${section.links.map(buildFooterLink).join("")}</div>`;
+  }).join("");
 }
 
 // Sorting helper for blog posts ("time") and card set reviews
