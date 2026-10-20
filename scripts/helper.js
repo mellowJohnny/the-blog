@@ -274,11 +274,10 @@ function getMonthName(monthNum) {
 // that NAV_ITEMS page (label optional); one without is not built yet, so it
 // shows dimmed and unlinked. A section with no heading stands on its own.
 const FOOTER_SECTIONS = [
-  { links: [{ id: "home" }] },
   { heading: "Major Releases", links: [{ id: "classic", label: "Classic '80s" }, { id: "junk" }] },
   { heading: "Fast Food Releases", links: [{ id: "mcd" }, { id: "timmies" }] },
   { heading: "Tools", links: [{ id: "timeline" }, { id: "search" }, { label: "Browse By Set" }] },
-  { links: [{ label: "About" }] }
+  { links: [{ id: "home" }, { label: "About" }] }
 ];
 
 function buildFooterLink(link) {
