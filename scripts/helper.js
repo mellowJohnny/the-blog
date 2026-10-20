@@ -276,7 +276,7 @@ function getMonthName(monthNum) {
 const FOOTER_SECTIONS = [
   { heading: "Major Releases", links: [{ id: "classic", label: "Classic '80s" }, { id: "junk" }] },
   { heading: "Fast Food Releases", links: [{ id: "mcd" }, { id: "timmies" }] },
-  { heading: "Tools", links: [{ id: "timeline" }, { id: "search" }, { label: "Browse By Set" }] },
+  { heading: "Tools", links: [{ id: "timeline" }, { id: "search" }, { id: "browse" }] },
   { links: [{ id: "home" }, { label: "About" }] }
 ];
 
@@ -518,7 +518,9 @@ const NAV_ITEMS = {
   tech: { label: "Tech", href: "/tech.html?blogType=1&pageName=tech" },
   mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3&pageName=ev" },
   timeline: { label: "Junk Wax Timeline", href: "/timeline.html" },
-  search: { label: "Player Search", href: "/playerSearch.html" }
+  search: { label: "Player Search", href: "/playerSearch.html" },
+  // Linked from the footer only: no NAV_MAP list shows it.
+  browse: { label: "Browse By Set", href: "/browseBySet.html" }
 };
 
 // Step 2: Define which pages show which items
@@ -541,7 +543,9 @@ const NAV_MAP = {
   // nothing needs to self-exclude here; "junk" stays in the list.
   junkWaxYears: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
   // timeline.html leaves out its own link, like playerSearch does.
-  timeline: ["home", "classic", "junk", "mcd", "timmies", "search"]
+  timeline: ["home", "classic", "junk", "mcd", "timmies", "search"],
+  // browseBySet.html isn't in the nav itself, so nothing self-excludes.
+  browseBySet: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"]
 };
 
 // Step 3: Build a dynamic table generator

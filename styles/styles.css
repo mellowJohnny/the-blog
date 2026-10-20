@@ -2182,6 +2182,73 @@ body:has(.site-footer) {
   }
 }
 
+/* Browse By Set (browseBySet.html). Plain divs outside .flex-container, whose
+   bare "div" rule would force every nested div to 1000px wide. */
+.browse-status {
+  margin: 12px 16px;
+  text-align: center;
+  font-family: 'Work Sans', sans-serif;
+}
+
+.browse-columns {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 56px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 16px 24px;
+  box-sizing: border-box;
+}
+
+.browse-col {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.browse-col-heading {
+  margin: 16px 0 4px;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 28px;
+}
+
+.browse-season-heading {
+  margin: 22px 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--color-heading-outline);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--color-heading-outline);
+}
+
+.browse-set {
+  margin: 0 0 14px;
+}
+
+.browse-set-name {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.browse-set-links {
+  display: flex;
+  gap: 18px;
+  margin-top: 2px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+@media (max-width: 600px) {
+  .browse-columns {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+}
+
 .password-style {
 	font-family: "Special Elite";
 	font-size: 16px;
