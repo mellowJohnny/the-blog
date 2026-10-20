@@ -3,7 +3,7 @@
  * season, each with a Review link and (when it has one) a Checklist link.
  */
 
-// getPublicCardSets (Lambdas/getPublicCardSets/): setName, blogCat, year, hasChecklist.
+// getPublicCardSets (Lambdas/getPublicCardSets/): setID, setName, blogCat, year, hasChecklist.
 const BROWSE_SETS_URL = "https://jlpd8ec14j.execute-api.us-east-2.amazonaws.com/prod";
 
 // The stored year is the season's first year: 1990 -> "1990-91".
@@ -28,7 +28,8 @@ function buildBrowseSetEntry(set) {
   const pageName = getPageNameForYear(set.blogCat, set.year);
   const links = [];
   if (pageName) {
-    const url = `/waxReviews.html?year=${set.year}&pageName=${pageName}&blogCat=${encodeURIComponent(set.blogCat)}`;
+    const setParam = set.setID ? `&setID=${encodeURIComponent(set.setID)}` : "";
+    const url = `/waxReviews.html?year=${set.year}&pageName=${pageName}&blogCat=${encodeURIComponent(set.blogCat)}${setParam}`;
     links.push(`<a href="${url}">Review</a>`);
   }
   if (set.hasChecklist) {

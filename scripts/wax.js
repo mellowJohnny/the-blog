@@ -40,7 +40,7 @@ function renderCardIntro(pageName) {
       }
   }// end renderCardIntro()
 
- function fetchCardSetsByYear(year, sortOrder, blogCat) {
+ function fetchCardSetsByYear(year, sortOrder, blogCat, setID) {
 
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
 
@@ -64,7 +64,9 @@ function renderCardIntro(pageName) {
 
             // Store results for pagination
             allCardSets = data;
-            currentPage = 1;
+            // A setID in the URL opens on that set; unknown or missing, the first.
+            const startIndex = setID ? allCardSets.findIndex(set => set.setID === setID) : -1;
+            currentPage = startIndex >= 0 ? startIndex + 1 : 1;
             renderCardSetPage();
         })
         .catch(err => {
@@ -75,6 +77,15 @@ function renderCardIntro(pageName) {
 
         // Dynamically display the copyright year 
         fetchCopyrightYear();
+}
+
+// Puts the shown set's setID in the address bar (replaceState, so paging adds
+// no history entries) so its canonical and share URL are its own. Multi-set years only.
+function syncSetIdInUrl(item) {
+  if (allCardSets.length < 2 || !item.setID) return;
+  const url = new URL(window.location.href);
+  url.searchParams.set("setID", item.setID);
+  history.replaceState(null, "", url);
 }
 
 /**
@@ -90,6 +101,9 @@ function renderCardSetPage() {
   const end = start + pageSize;
 
   const pageItems = allCardSets.slice(start, end);
+
+  // Before fetchPageTitle() below, which reads the URL for its canonical.
+  if (pageItems.length) syncSetIdInUrl(pageItems[0]);
 
   // Let's populate card set
   pageItems.forEach(item => {
