@@ -275,7 +275,8 @@ function getMonthName(monthNum) {
 // shows dimmed and unlinked. A section with no heading stands on its own.
 const FOOTER_SECTIONS = [
   { links: [{ id: "home" }] },
-  { heading: "Reviews", links: [{ id: "classic", label: "Classic '80s" }, { id: "junk" }, { id: "mcd" }, { id: "timmies" }] },
+  { heading: "Major Releases", links: [{ id: "classic", label: "Classic '80s" }, { id: "junk" }] },
+  { heading: "Fast Food Releases", links: [{ id: "mcd" }, { id: "timmies" }] },
   { heading: "Tools", links: [{ id: "timeline" }, { id: "search" }, { label: "Browse By Set" }] },
   { links: [{ label: "About" }] }
 ];
