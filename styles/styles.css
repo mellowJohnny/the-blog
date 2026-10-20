@@ -686,7 +686,8 @@ h1 {
 }
 
 .set-o-matic-picker {
-  font-family: 'Spicy Rice';
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
   font-size: 32px;
   text-align: center;
   height: 42px;
