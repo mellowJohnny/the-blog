@@ -86,6 +86,10 @@ each other):
   one URL here, so there's nothing per-instance to vary.
 - `fetchCopyrightYear()` (`helper.js`) — a small, unrelated piece of
   chrome: writes `© <current year> Christian Couillard` into `#copy`.
+- `fetchFooterLinks()` (`helper.js`) — fills the footer's link columns
+  from `FOOTER_SECTIONS`, reusing the same `NAV_ITEMS` addresses as the
+  nav. Every public page makes this one call, so only this page spells it
+  out; see `FRONTEND.md`'s "Site footer".
 - `fetchNav("index")` (`helper.js`) — builds the top nav bar itself
   (the links to the card review sections and Player Search), by looking
   up `NAV_MAP["index"]` (`classic, junk, mcd, timmies, timeline, search`, with no
@@ -531,9 +535,9 @@ only data source is a static file served from the same site.
 `scripts/helper.js` (all `defer`), and one inline `window load` handler.
 
 **On `window load`**, four independent pieces run:
-- `fetchNav("timeline")` and `fetchCopyrightYear()` (`helper.js`) build
-  the nav (every link but the page's own) and the footer, same as the
-  other static pages.
+- `fetchNav("timeline")`, `fetchFooterLinks()` and `fetchCopyrightYear()`
+  (`helper.js`) build the nav (every link but the page's own) and the
+  footer, same as the other static pages.
 - `initTimeline()` (`timeline.js`) is the real content. It fetches
   `/timeline/timeline.md`, `parseTimelineMarkdown()` turns the markdown
   into a model (a title plus a list of points, each with nested

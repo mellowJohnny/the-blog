@@ -70,7 +70,7 @@ unlinked from the nav and home page and reachable only by direct URL
 | `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. On mobile, the prev/next set name in that label drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle") via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans the mobile breakpoint swaps between, since the full "YYYY-YY Manufacturer" label was too long for a small screen; desktop still shows the full name. The NHL scores ticker and its game modal used to live here and moved to `ticker.js` — see below. |
 | `ticker.js` | The NHL/PWHL scores ticker under the masthead (`initNhlTicker()` and its helpers — see "NHL scores ticker" below) and the game modal opened from it (`openNhlGameModal()` and its render helpers — see "NHL game modal" below). Moved verbatim out of `wax.js` so pages that have nothing else to do with card sets (Player Search, the essays) can show the ticker. Starts itself on `DOMContentLoaded`. |
 | `timeline.js` | `timeline.html` only: fetches `/timeline/timeline.md`, parses it (`parseTimelineMarkdown()`) and builds the flip cards (`renderTimeline()`, `buildTimelineCard()`). Entry point is `initTimeline()`. See "Junk Wax timeline" below. |
-| `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — used by every public page) and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped/middle images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), `buildCardSetMarkup()` (the single source of truth for a card set review's HTML, shared by the live site's `displayCardSet()` and the CMS preview modal's `renderPreview()` — added 2026-09-28 to end the drift between two hand-maintained copies; see "Card set markup is shared with the CMS preview" below), hamburger menu toggle, cookie helper, and copyright-year footer. |
+| `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — used by every public page) and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped/middle images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), `buildCardSetMarkup()` (the single source of truth for a card set review's HTML, shared by the live site's `displayCardSet()` and the CMS preview modal's `renderPreview()` — added 2026-09-28 to end the drift between two hand-maintained copies; see "Card set markup is shared with the CMS preview" below), hamburger menu toggle, cookie helper, the copyright-year footer line (`fetchCopyrightYear()`) and the public-page footer's link columns (`FOOTER_SECTIONS`/`fetchFooterLinks()` — see "Site footer" below). |
 | `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise); also the type-ahead dropdown (`initPlayerSearchTypeahead()`/`loadPlayerNameIndex()`/`rankPlayerNameMatch()`) that suggests player names client-side from a once-fetched, cached name index. See "Player search" below. |
 | `adminTools.js` | `cms/admin.html` support code: a growing set of self-service site-health checks (broken images, checklist-to-review linkage), each its own function calling the site's existing public read APIs directly. See `CMS_GUIDE.md`'s "Admin Tools" section. |
 | `auth.js` | Cognito OAuth2 code exchange + token refresh, gates every `/cms` page. See `AUTH.md`. |
@@ -292,7 +292,7 @@ knowing before touching this CSS again:
 
 Every live page (everything above except the deprecated `cards.html`)
 loads the identical Google Fonts set via the identical `preload`+`onload`+
-`noscript` pattern: Spicy Rice, Nunito (200), Special Elite, Work Sans
+`noscript` pattern: Spicy Rice, Nunito (200/600), Special Elite, Work Sans
 (400/700), Source Sans 3 (200/400/700), Fira Code (300). A font audit
 found and fixed real bugs here — several CMS pages were silently
 missing Work Sans/Source Sans 3/Special Elite for content that actually
@@ -301,6 +301,13 @@ simultaneously loading Audiowide and Caveat, which nothing on the site
 ever uses. Keep any new page's font `<link>` block byte-for-byte
 identical to the others unless it genuinely needs a font none of them
 load.
+
+Nunito 600 is the "navigation" face: the top nav, the footer links, and the
+set-o-matic year picker (its year links and the "the set-o-matic year picker"
+heading above them) all use it, so every wayfinding element reads as one
+family. Spicy Rice stays for page-level display headings. Nunito's 600 is
+the heaviest weight loaded; a bolder one needs adding to the Google Fonts
+URL on every page.
 
 **`styles.css` itself does *not* use this preload pattern** — every
 public page loads it with a plain blocking `<link rel="stylesheet">`.
@@ -875,6 +882,49 @@ is a static `#nhlGameModalOverlay` in `waxReviews.html`.
   their rows stop stretching to full width. A long playoff line score
   scrolls inside `.nhl-linescore-wrap` instead of the page.
 
+## Site footer (public pages)
+
+Every public page ends with the same dark-blue band (the nav links' blue,
+`--color-heading-outline`): link columns, then the copyright. It uses its own
+class, `.site-footer`, because the `/cms` pages share both `.page-footer`
+and `fetchCopyrightYear()` and must not change.
+
+**Markup.** Each page has `<footer class="site-footer">` holding
+`<nav id="footer-links">` and `<div id="copy">`, and its load handler calls
+`fetchFooterLinks()` (`helper.js`). `#copy` is untouched, so the copyright
+still comes from `fetchCopyrightYear()` (on `waxReviews.html`, from
+`fetchCardSetsByYear()`).
+
+**Columns are data.** `FOOTER_SECTIONS` in `helper.js` is a list of columns,
+each with an optional `heading` and a list of links. A link with an `id` is
+looked up in `NAV_ITEMS`, so its address lives in one place and the footer
+can't drift from the nav; an optional `label` overrides the nav's wording
+(the footer says "Classic '80s", the nav "Classic 80s Sets"). A link with no
+`id` is a page that doesn't exist yet and renders as a dimmed, unlinked
+`<span aria-disabled="true">`, which keyboard users skip. Making "Browse By
+Set" or "About" real means adding the page to `NAV_ITEMS` and giving the
+entry an `id`; markup and CSS don't change. A column with no heading stands
+on its own. Unlike the nav, the footer lists every page, its own included,
+since it works as a site map.
+
+**Layout.** The footer bleeds to the window edges with negative side margins
+that cancel the body's 8px margin (the same trick as the home banner). To
+anchor short pages, `body:has(.site-footer)` becomes a column flex container
+with `min-height: 100vh` and the footer takes `margin-top: auto`. The
+`:has()` scoping is the point: a plain `body` rule would also change every
+`/cms` page. Columns wrap on narrow screens.
+
+**The hidden WLCMS link (Home only).** `index.html` keeps its login link
+inside the footer. It is hidden by giving it the footer's own blue, not the
+page background colour it used before, which would show on a dark band.
+Keyboard users still get a white focus outline. The rule is written as
+`.site-footer .footer-wlcms` because the global `a:link, a:visited` rule
+(near the top of `styles.css`) has higher specificity than a single class
+and would otherwise turn the link blue and visible.
+
+**Limitation.** The links are built by JavaScript, like the nav, so a visitor
+with JavaScript off sees only the copyright line.
+
 ## Home page banner
 
 `index.html`'s masthead is an image, `images/masthead-v18.webp`
@@ -931,6 +981,10 @@ breaking the list). A heading that starts with a season such as
   to neither. A `ResizeObserver` re-syncs it when text rewraps on a
   resize or the web font loads. Heights only animate after the first
   layout (`.timeline-ready`), so cards don't grow from zero on load.
+- A closed card's hidden face is still laid out, and a back face taller than
+  its card would stretch the page below the footer. `#timelineSection` uses
+  `overflow-y: clip` (not `hidden`, so it doesn't become a scroll container)
+  to cut that off; its bottom padding leaves room for the card shadows.
 - Opening a card marks it viewed: its front greys out and gets a hidden
   "(viewed)" for screen readers. That state lives in page memory only,
   so a reload starts fresh.
