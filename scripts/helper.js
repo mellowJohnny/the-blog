@@ -499,7 +499,8 @@ const NAV_MAP = {
   // "search" (Player Search) is on every page except playerSearch itself,
   // always last; "timeline" sits just before it, and each of those two
   // self-excludes from its own page.
-  index: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
+  // index.html is Home, so it leaves out its own "Home" link as redundant.
+  index: ["classic", "junk", "mcd", "timmies", "timeline", "search"],
   tech: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
   ev: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
   junkWax: ["home", "classic", "mcd", "timmies", "timeline", "search"],

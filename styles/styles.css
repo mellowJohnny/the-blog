@@ -3811,17 +3811,19 @@ label sup {
 } /* END MOBILE RESPONSIVE */
 
 
-/* Tablet + mobile: keep the nav collapsed into the hamburger menu. The
+/* Narrow screens: keep the nav collapsed into the hamburger menu. The
    full table nav (one <td> per NAV_ITEMS entry) doesn't have room to
-   lay out on one line below desktop widths - it shrinks each cell
-   until label text wraps mid-word instead of overflowing cleanly, so
-   this reuses the same hamburger treatment as phone widths rather than
-   building a separate cramped-but-not-wrapped layout just for tablets.
-   1400px (not 1024px) because current iPads' landscape CSS viewport
-   width ranges from ~1080px (mini) up to 1366px (12.9" Pro) - 1024px
-   was the old "classic iPad landscape" assumption and left every
-   modern iPad showing the wrapped desktop nav in landscape. */
-@media (max-width: 1400px) {
+   lay out on one line, and shrinks each cell until label text wraps
+   mid-word instead of overflowing cleanly, so this reuses the same
+   hamburger treatment as phone widths rather than building a cramped
+   layout for tablets.
+   1300px because the widest bar (seven links, 12px of padding each side
+   - see the desktop block below) is about 1261px, plus the 16px of body
+   margin. In landscape that's the 12.9" iPad Pro (1366px) and up on the
+   bar; the 11" Pro / Air (about 1180-1194px) and the mini stay on the
+   hamburger. If a label or the nav font changes, re-measure the bar and
+   move all three 1300/1301 values together. */
+@media (max-width: 1300px) {
   .nav-links {
     display: none;
     width: fit-content;
@@ -3883,7 +3885,7 @@ label sup {
    phone widths and look undersized on a much bigger tablet screen -
    scale both up. Phone (<=600px) keeps the smaller sizes from the
    block above. */
-@media (min-width: 601px) and (max-width: 1400px) {
+@media (min-width: 601px) and (max-width: 1300px) {
   .hamburger {
     font-size: 48px;
     padding: 14px;
@@ -3914,11 +3916,10 @@ label sup {
   }
 }
 
-/* Desktop only: hide the hamburger and show the normal table nav.
-   Tablets stay on the hamburger nav above (max-width: 1400px) - see
-   the comment there for why 1400px rather than the more obvious-looking
-   1024px. */
-@media (min-width: 1401px) {
+/* Wide screens: hide the hamburger and show the normal table nav.
+   Narrower screens stay on the hamburger nav above - see the comment
+   there for why 1300px. */
+@media (min-width: 1301px) {
   .hamburger {
     display: none;
   }
@@ -3934,14 +3935,15 @@ label sup {
     color: var(--color-link);
   }
 
-  /* Home page only: the nav row sits centred under the centred banner,
-     with tighter gaps between links so it fits within the banner's width. */
-  .nav-centered .nav-table {
-    margin: 0 auto;
+  /* Tight gaps between links on every page, so even the seven-link bar
+     (about 1261px) fits from 1301px up and under the home banner. */
+  .nav-td {
+    padding: 20px 12px;
   }
 
-  .nav-centered .nav-td {
-    padding: 20px 12px;
+  /* Home page only: the nav row sits centred under the centred banner. */
+  .nav-centered .nav-table {
+    margin: 0 auto;
   }
 }
 
