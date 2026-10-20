@@ -42,6 +42,18 @@ messing up the layout with white borders and scoll bars
     margin: 5px; 
   }
 
+  /* Tablets: the 1000px-wide divs (plus 30px of padding and 10px of margin)
+     are wider than the screen below about 1060px, so the review pages
+     scrolled sideways. Shrink them to fit, like the phone layout does,
+     keeping the desktop padding and margin. */
+  @media (min-width: 601px) and (max-width: 1060px) {
+    .flex-container div {
+      width: calc(100% - 10px);
+      max-width: 1030px;
+      box-sizing: border-box;
+    }
+  }
+
   a:link, a:visited {
     color: var(--color-link);
 }
