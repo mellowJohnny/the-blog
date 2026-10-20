@@ -270,6 +270,25 @@ function getMonthName(monthNum) {
         
     }
 
+// Public-page footer links: the nav's own destinations (NAV_ITEMS), so the
+// two never drift, plus two pages not built yet, shown dimmed and unlinked.
+const FOOTER_LINK_IDS = ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"];
+const FOOTER_COMING_SOON = ["Browse By Set", "About"];
+
+function fetchFooterLinks() {
+  const footerNav = document.getElementById("footer-links");
+  if (!footerNav) return;
+
+  const links = FOOTER_LINK_IDS.map(id => {
+    const item = NAV_ITEMS[id];
+    return `<a href="${item.href}">${escapeHtml(item.label)}</a>`;
+  });
+  const soon = FOOTER_COMING_SOON.map(label =>
+    `<span class="footer-link-inactive" aria-disabled="true">${label}</span>`
+  );
+  footerNav.innerHTML = links.concat(soon).join("");
+}
+
 // Sorting helper for blog posts ("time") and card set reviews
 // ("stars") - order "first" = highest/newest first, "last" = oldest
 // first (also the default).

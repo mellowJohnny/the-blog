@@ -100,6 +100,7 @@
         // This page isn't one of the review pages, so nothing self-excludes
         // from its nav except its own link (see timeline in NAV_MAP).
         fetchNav("timeline");
+        fetchFooterLinks();
 
         fetchCopyrightYear();
 
@@ -195,7 +196,9 @@
       </section>
     </main>
 
-    <footer class="page-footer">
+    <footer class="site-footer">
+      <!-- Populated by fetchFooterLinks() in helper.js -->
+      <nav id="footer-links" aria-label="Footer"></nav>
       <div id="copy"></div>
       <!-- Populated by fetchCopyrightYear() in helper.js -->
     </footer>

@@ -100,6 +100,7 @@
         // waxReviews.html's own junkWax nav - nothing self-excludes here;
         // "90s Junk Wax" stays in the nav (see junkWaxYears in NAV_MAP).
         fetchNav("junkWaxYears");
+        fetchFooterLinks();
 
         fetchCopyrightYear();
 
@@ -274,7 +275,9 @@
       </section>
     </main>
 
-    <footer class="page-footer">
+    <footer class="site-footer">
+      <!-- Populated by fetchFooterLinks() in helper.js -->
+      <nav id="footer-links" aria-label="Footer"></nav>
       <div id="copy"></div>
       <!-- Populated by fetchCopyrightYear() in helper.js -->
     </footer>

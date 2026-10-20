@@ -133,6 +133,7 @@
       window.addEventListener('load', (event) => {
         // First: fetch Global Nav from helper.js
         fetchNav(pageName);
+        fetchFooterLinks();
         // Next render the page intro section - in helper.js
         // fetchCardIntro(pageName);
         // Call the Set-O-Matic Set Picker
@@ -297,7 +298,9 @@
       </section>
     </main>
 
-    <footer class="page-footer">
+    <footer class="site-footer">
+      <!-- Populated by fetchFooterLinks() in helper.js -->
+      <nav id="footer-links" aria-label="Footer"></nav>
       <div id="copy"></div>
       <!-- Populated by fetchCopyrightYear() in helper.js -->
     </footer>

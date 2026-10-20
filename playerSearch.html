@@ -72,6 +72,7 @@
 
         // *** Fetch the Top Nav from helper.js
         fetchNav(pageName);
+        fetchFooterLinks();
 
         // Canonical always points at the bare page, ignoring any ?q= -
         // the search tool itself is what's worth indexing, not thin
@@ -170,9 +171,12 @@
       </section>
     </main>
 
-  <footer class="page-footer">
-    <div id="copy"></div> <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
-   </footer>
+  <footer class="site-footer">
+    <!-- Populated by fetchFooterLinks() in helper.js -->
+    <nav id="footer-links" aria-label="Footer"></nav>
+    <div id="copy"></div>
+    <!-- Populated by fetchCopyrightYear() in helper.js -->
+  </footer>
 
   <!-- Shown/hidden by runPlayerSearch() in playerSearch.js while a
        search is in flight - same overlay+spinner pattern as
