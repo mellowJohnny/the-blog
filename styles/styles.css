@@ -455,6 +455,7 @@ h1 {
    (white on blue) comes later in the file and still wins there. */
 .nav-td a {
   color: var(--color-heading-outline);
+  transition: color 0.15s ease;
 }
 
 
@@ -3924,6 +3925,13 @@ label sup {
 
   .nav-links {
     display: block;
+  }
+
+  /* Desktop bar: links go to the lighter site-link blue on hover or keyboard
+     focus. The phone/tablet menu (white on blue) is left alone. */
+  .nav-td a:hover,
+  .nav-td a:focus-visible {
+    color: var(--color-link);
   }
 
   /* Home page only: the nav row sits centred under the centred banner,
