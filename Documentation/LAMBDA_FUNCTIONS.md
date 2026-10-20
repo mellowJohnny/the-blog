@@ -701,7 +701,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   every other endpoint here this is a browser-only cache — no API
   Gateway stage cache or CloudFront — so each new visitor still invokes
   the Lambda once. Fine at this site's traffic; the `dev` stage cache
-  is the lever now that the ticker is on four pages, since every
+  is the lever now that the ticker is on five pages, since every
   navigation between them fetches again (the browser cache absorbs
   repeats within its `max-age`).
 - **Errors**: any upstream failure (timeout, non-2xx, network) returns

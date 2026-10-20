@@ -88,7 +88,8 @@ each other):
   chrome: writes `© <current year> Christian Couillard` into `#copy`.
 - `fetchNav("index")` (`helper.js`) — builds the top nav bar itself
   (the links to the card review sections and Player Search), by looking
-  up `NAV_MAP["index"]` (`home, classic, junk, mcd, timmies, search`)
+  up `NAV_MAP["index"]` (`classic, junk, mcd, timmies, timeline, search`, with no
+  "Home" link, since the masthead already is one)
   and rendering it as a `<table>` into
   `#global-nav`. Purely client-side — the nav structure is a hardcoded
   map in `helper.js`, not backend-driven, since the site's page/category
@@ -229,7 +230,7 @@ everything the visitor can see or navigate to on this page.
   values (`junkWax`, `classicWax`, `timmies`, `mcd`) each map to a
   `NAV_MAP` entry (the other review sections, then `"search"` (Player
   Search), always last — Player Search is in every `NAV_MAP` entry
-  except its own page's).
+  except its own page's, and "Junk Wax Timeline" sits just before it).
 - `renderSetPicker(year, blogCat, pageName)` (`helper.js`) — builds the
   "set-o-matic" year picker: the row letting a visitor jump directly to
   another year's review within the same category, without going back
@@ -313,8 +314,8 @@ everything the visitor can see or navigate to on this page.
   from the scroll position the previous page had, so a click doesn't
   look like a restart. While a game is live each league re-polls every
   60s and updates scores in place — see `FRONTEND.md`'s "NHL scores
-  ticker". The same ticker runs on Player Search, Lockout and The Junk
-  Wax Years, not on the Home page.
+  ticker". The same ticker runs on Player Search, Lockout, The Junk
+  Wax Years and the Timeline, not on the Home page.
 
 **User interactions**:
 - Hovering over (or tabbing to) the NHL scores ticker pauses its
@@ -519,3 +520,41 @@ flow).
 treatment as `waxReviews.html`/`lockout.html` (not the
 `index.html`/`tech.html` masthead, and no weather widget) — see
 `FRONTEND.md`'s "Typography / fonts" section.
+
+## Junk Wax Timeline - `timeline.html`
+
+An interactive page whose whole job is to turn one markdown file into a
+column of flip cards. There is no backend and no API Gateway call; the
+only data source is a static file served from the same site.
+
+**What loads**: `scripts/timeline.js`, `scripts/ticker.js` and
+`scripts/helper.js` (all `defer`), and one inline `window load` handler.
+
+**On `window load`**, four independent pieces run:
+- `fetchNav("timeline")` and `fetchCopyrightYear()` (`helper.js`) build
+  the nav (every link but the page's own) and the footer, same as the
+  other static pages.
+- `initTimeline()` (`timeline.js`) is the real content. It fetches
+  `/timeline/timeline.md`, `parseTimelineMarkdown()` turns the markdown
+  into a model (a title plus a list of points, each with nested
+  bullets), and `renderTimeline()` builds one card per point. Because
+  the cards are built from the file, an author edits text and never
+  touches the HTML. If the fetch fails or the file has no cards, a
+  friendly message replaces the cards instead of a blank page.
+- `setPageMeta()` and `setJsonLd()` (`helper.js`) set canonical, Open
+  Graph/Twitter tags and an Article JSON-LD block. The title and
+  description are also written in the static HTML, so crawlers that
+  don't run JavaScript still see them. The block's body text is taken
+  from the page's intro paragraph.
+- `applyRandomMastheadStyling()` (`helper.js`) paints the masthead in a
+  random NHL team's colours, as on the other Bebas-masthead pages.
+
+The scores ticker starts itself from `ticker.js` on `DOMContentLoaded`
+(see `FRONTEND.md`'s "NHL scores ticker").
+
+**User interactions**: clicking a card's front flips it
+(`setTimelineCardOpen(card, true)`); clicking anywhere on the open back,
+or pressing Escape, flips it shut. Each call also marks the card viewed,
+keeps focus on the right face and, on close, scrolls a tall card back
+into view. How the faces, heights and focus fit together is covered in
+`FRONTEND.md`'s "Junk Wax timeline" section.

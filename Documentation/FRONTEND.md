@@ -9,12 +9,13 @@ inline in the `<head>`.
 
 | Page | Purpose | Key query params | Scripts used |
 |---|---|---|---|
-| `index.html` | Homepage — an edge-to-edge image banner (`.home-masthead`; its -8px margins cancel the browser's default 8px body margin, and past 2100px wide it stops at the image's own width and centres) over the "Home Page" blog stream (`blogType=99`). **No scores ticker, by design.** No weather widget any more (that now exists only on `tech.html`). | — | `blogs.js`, `helper.js` |
+| `index.html` | Homepage — an edge-to-edge image banner (`.home-masthead`; its -8px margins cancel the browser's default 8px body margin, and past 1316px wide it stops at the image's own 1300px width and centres — see "Home page banner" below) over the "Home Page" blog stream (`blogType=99`). **No scores ticker, by design.** No weather widget any more (that now exists only on `tech.html`). | — | `blogs.js`, `helper.js` |
 | `tech.html` | Tech / Mach-E / Raspberry Pi blog stream, filtered by `blogType`. **Not linked from the nav, home page or sitemap since the 2026-10-12 move to junkwaxhockey.com - reachable only by direct URL.** Masthead uses the `.masthead-container` (masthead + weather widget) layout that `index.html` had before it got its banner — it used to show a decorative gif instead and never actually rendered the weather widget (loaded `blogs.js`, which targets `#weather`, but had no such element — silently broken). Fixed by adopting that markup. It is the only page that still has the weather widget. | `blogType`, `pageName` | `blogs.js`, `helper.js` |
 | `waxReviews.html` | Card set review stream — the main hockey card content. | `year`, `pageName`, `blogCat`, `sortOrder` | `wax.js`, `ticker.js`, `helper.js` |
 | `playerSearch.html` | Player search — find every set a player appears in, across all uploaded checklists, with links to each set's review. See "Player search" below. | — | `playerSearch.js`, `ticker.js`, `helper.js` |
 | `lockout.html` | Static essay about the 2004-05 NHL lockout. Special-cased redirect target — see below. | — | `wax.js`, `ticker.js`, `helper.js` |
 | `theJunkWaxYears.html` | Static essay on hockey's "Junk Wax" era (the late-80s/early-90s overproduction boom this site's card reviews mostly cover). Linked from `waxReviews.html`'s junkWax intro copy (`renderCardIntro()`, `wax.js`). Was briefly moved into `Old HTML Pages/` by mistake and missed the site-wide HTML/CSS-conformity and SEO passes as a result — since restored and brought in line with the other pages (masthead/fonts/script-loading now match `lockout.html`'s pattern; a `<meta description="...">` typo, which meant this page never actually had a working meta description, and a broken `class="flex-container, intro"` — a stray comma silently prevented that layout class from ever applying — were also fixed). | — | `ticker.js`, `helper.js` |
+| `timeline.html` | Interactive timeline of the Junk Wax era — one flip card per season, built in the browser from a markdown file. See "Junk Wax timeline" below. | — | `timeline.js`, `ticker.js`, `helper.js` |
 
 **No longer live**: `cards.html` (the "what is Junk Wax" essay) and `cardChecker.html` (the "Card-O-Matic" slot calculator) were both moved to `Old HTML Pages/` on 2026-08-15 — see "Orphaned / legacy files" below. `cards.html` had already been documented here as deprecated-but-still-linked before that move; this doc previously still listed both as live public pages, which was stale.
 
@@ -43,7 +44,7 @@ permalinks (posts/reviews render as batches on shared query-string
 pages, not one URL per item), the
 sitemap lists batch-level URLs (home, `playerSearch.html`, each
 `waxReviews.html` year+category combination, `lockout.html`,
-`theJunkWaxYears.html`) rather than one entry per post — the
+`theJunkWaxYears.html`, `timeline.html`) rather than one entry per post — the
 crawler extracts individual searchable records from within each page
 via its own extraction config, so per-item URLs aren't what it needs
 discovery-wise.
@@ -68,6 +69,7 @@ unlinked from the nav and home page and reachable only by direct URL
 | `blogs.js` | Blog intro copy (`renderBlogIntro()`), `fetchBlogs()`/pagination/rendering for the blog stream, and the weather widget on `tech.html` (calls OpenWeatherMap directly from the browser using the visitor's geolocation; the bootstrap does nothing on a page with no `#weather` element, which is now the Home page). |
 | `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. On mobile, the prev/next set name in that label drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle") via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans the mobile breakpoint swaps between, since the full "YYYY-YY Manufacturer" label was too long for a small screen; desktop still shows the full name. The NHL scores ticker and its game modal used to live here and moved to `ticker.js` — see below. |
 | `ticker.js` | The NHL/PWHL scores ticker under the masthead (`initNhlTicker()` and its helpers — see "NHL scores ticker" below) and the game modal opened from it (`openNhlGameModal()` and its render helpers — see "NHL game modal" below). Moved verbatim out of `wax.js` so pages that have nothing else to do with card sets (Player Search, the essays) can show the ticker. Starts itself on `DOMContentLoaded`. |
+| `timeline.js` | `timeline.html` only: fetches `/timeline/timeline.md`, parses it (`parseTimelineMarkdown()`) and builds the flip cards (`renderTimeline()`, `buildTimelineCard()`). Entry point is `initTimeline()`. See "Junk Wax timeline" below. |
 | `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — used by every public page) and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped/middle images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), `buildCardSetMarkup()` (the single source of truth for a card set review's HTML, shared by the live site's `displayCardSet()` and the CMS preview modal's `renderPreview()` — added 2026-09-28 to end the drift between two hand-maintained copies; see "Card set markup is shared with the CMS preview" below), hamburger menu toggle, cookie helper, and copyright-year footer. |
 | `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise); also the type-ahead dropdown (`initPlayerSearchTypeahead()`/`loadPlayerNameIndex()`/`rankPlayerNameMatch()`) that suggests player names client-side from a once-fetched, cached name index. See "Player search" below. |
 | `adminTools.js` | `cms/admin.html` support code: a growing set of self-service site-health checks (broken images, checklist-to-review linkage), each its own function calling the site's existing public read APIs directly. See `CMS_GUIDE.md`'s "Admin Tools" section. |
@@ -91,6 +93,7 @@ The top nav is entirely data-driven and rebuilt on every page load by
 - `NAV_ITEMS` — the master list of every possible nav link (label + href).
 - `NAV_MAP` — per-page key (e.g. `"index"`, `"tech"`, `"junkWax"`) → ordered list of which `NAV_ITEMS` to show. `tech`/`ev` pages key off `${pageName}_${blogType}` when a `blogType` is present.
 - Adding a new page to the nav means adding one `NAV_MAP` entry; adding a brand-new nav destination means adding one `NAV_ITEMS` entry.
+- A page's own list leaves out its own link, which is why every page's list differs. The Home page's list also leaves out "Home" itself, since the masthead already is the link to it; every other page keeps it. `"timeline"` sits just before `"search"` in every list except its own page's.
 - `tech` and `mache` are still defined in `NAV_ITEMS`, but no `NAV_MAP` entry lists them since the 2026-10-12 move; the `tech`/`ev` keys exist only so the still-reachable `tech.html` pages render a nav.
 
 The "set-o-matic" year picker (`renderSetPicker()`) works the same way
@@ -103,36 +106,39 @@ below for why it's `<div>`-based rather than a table.
 
 ## Mobile / responsive design
 
-The main content layout uses a single breakpoint: `@media (max-width:
-600px)` in `styles/styles.css`. There's no intermediate/tablet
-breakpoint for it — `.flex-container div` (the main content-width
-wrapper, see below) is a fixed `1000px` above 600px, so the layout
-jumps straight from "desktop, fixed width" to "mobile, fluid width"
-with nothing in between.
+The main content layout has two layers. At 600px and below, `@media
+(max-width: 600px)` in `styles/styles.css` makes `.flex-container div`
+(the main content-width wrapper, see below) fluid. Above 600px it is a
+fixed `1000px` box with 15px of padding and 5px of margin, about 1040px
+in all, which is wider than any screen under roughly 1060px. A second
+band, `@media (min-width: 601px) and (max-width: 1060px)`, covers
+tablets: it sets the width to the viewport minus the margins, capped at
+1030px, with `box-sizing: border-box`, so the padding and margin stay at
+their desktop values but fit inside the screen. The cap makes the band's
+upper end meet the desktop size exactly, so nothing jumps at 1061px.
+Without that band the review pages scrolled sideways between 601px and
+about 1060px, because `.flex-container div` applies to every nested
+div, not just the outer wrapper.
 
-The global nav is the one exception: it has its own second breakpoint,
-`@media (max-width: 1400px)`, that keeps the hamburger-menu nav
-(normally phone-only) active through tablet widths too. Below desktop
-width, the full `<table class="nav-table">` (one `<td>` per
-`NAV_ITEMS` entry, built by `fetchNav()` in `helper.js`) doesn't have
-room to lay out on one line — it shrinks each cell until label text
-wraps mid-word, which is what a tablet visitor sees without this.
-1400px, not the more obvious-looking 1024px, because current iPads'
-landscape CSS viewport width ranges from ~1080px (mini) up to 1366px
-(12.9" Pro) — 1024px only ever matched the old "classic iPad
-landscape" assumption and left every modern iPad falling through to
-the wrapped desktop nav in landscape. The matching `@media (min-width:
-1401px)` block (further down the file) is what turns the hamburger
-back off and shows the full table nav on
-genuine desktop widths.
+The global nav has its own breakpoint at 1300px. At 1300px and below
+the hamburger menu stays active (normally phone-only), and from 1301px
+the full `<table class="nav-table">` (one `<td>` per `NAV_ITEMS` entry,
+built by `fetchNav()` in `helper.js`) takes over. The table needs to
+fit on one line: below its natural width it shrinks each cell until
+label text wraps mid-word. The widest bar is seven links at about
+1261px with the tight 12px side padding on `.nav-td`, so 1301px leaves
+room, and the six-link Home bar (about 1177px) fits easily. The number
+also matters for iPads: current models' landscape CSS viewports run
+from about 1080px (mini) to 1366px (12.9" Pro), so a 1024px breakpoint,
+the old "classic iPad landscape" assumption, would leave most of them
+on a wrapped desktop nav. The `@media (min-width: 1301px)` block (further
+down the file) is what turns the hamburger back off and shows the table.
 
-Within that hamburger-nav range, a third, narrower band —
-`@media (min-width: 601px) and (max-width: 1400px)` — bumps the
-hamburger icon and open-menu sizing up (32px → 48px icon, 0.9rem →
-1.3rem menu text, more generous link padding) beyond the phone-tuned
-defaults from the block above. Phone widths (≤600px) keep the smaller
-original sizing; a tablet's screen is big enough that phone-sized
-sizing read as too small.
+Within the hamburger range, a narrower band, `@media (min-width: 601px)
+and (max-width: 1300px)`, bumps the hamburger icon and open-menu sizing
+up (32px → 48px icon, 0.9rem → 1.3rem menu text, more generous link
+padding) beyond the phone-tuned defaults. A tablet's screen is big
+enough that phone-sized controls read as too small.
 
 A round of mobile-responsiveness work (waxReviews.html, the
 CMS pages, smsAdmin.html) surfaced a few recurring gotchas worth
@@ -596,7 +602,7 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
   New CSS: `.checklist-modal-pdf-btn` in `styles/styles.css`, styled to
   match the existing `.checklist-modal-print-btn`.
 
-## NHL scores ticker (Wax Reviews, Player Search, Lockout, The Junk Wax Years)
+## NHL scores ticker (Wax Reviews, Player Search, Lockout, The Junk Wax Years, Timeline)
 
 A dark strip between the masthead and the nav, scrolling NHL and PWHL
 scores right to left — each league introduced by its logo: last
@@ -607,8 +613,8 @@ final. Fed by `getNhlScores` and `getPwhlScores` (`Lambdas/`, see
 PWHL's HockeyTech feed — see `NHL_API.md` and `PWHL_API.md`. Code is in
 `scripts/ticker.js` (`initNhlTicker()` and helpers; the `nhl-*` names predate the
 PWHL and cover both leagues), loaded by `waxReviews.html`,
-`playerSearch.html`, `lockout.html` and `theJunkWaxYears.html`. **The
-Home page deliberately has no ticker.** The script starts itself on
+`playerSearch.html`, `lockout.html`, `theJunkWaxYears.html` and
+`timeline.html`. **The Home page deliberately has no ticker.** The script starts itself on
 `DOMContentLoaded` (not `window load`, which waits for every image), so
 pages don't call it. A page needs only `<script src="/scripts/ticker.js"
 defer>`, the rail markup — one `<div id="nhlTicker" class="nhl-ticker"
@@ -868,6 +874,83 @@ is a static `#nhlGameModalOverlay` in `waxReviews.html`.
   rule is undone for `.nhl-linescore`/`.nhl-team-stats` — as blocks,
   their rows stop stretching to full width. A long playoff line score
   scrolls inside `.nhl-linescore-wrap` instead of the page.
+
+## Home page banner
+
+`index.html`'s masthead is an image, `images/masthead-v18.webp`
+(1300x250), inside a `.home-masthead` wrapper. The wrapper has three
+jobs, each done in CSS so the page needs no script:
+
+- **Edge to edge.** Its -8px margins cancel the browser's default 8px
+  body margin. From 1316px up (the image width plus those 16px) it caps
+  at 1300px and centres, so a wide monitor never upscales the artwork.
+  The nav row beneath is centred to match (`.nav-centered`, Home only).
+- **Taller on phones.** At 600px and below the image is forced to a
+  7:2 box (`object-fit: fill`) instead of its native ratio, because the
+  native strip is too thin to read on a phone.
+- **Wax-paper texture.** `::before` lays a lit turbulence map and fine
+  grain over the image with `mix-blend-mode: overlay`, and `::after`
+  adds a gloss sheen and worn edges. Both use the banner file itself as
+  a `mask-image`, so the rounded corners stay transparent. That means
+  the mask URL in `styles.css` has to name the same file as the `<img>`
+  in `index.html` (and its preload); swapping the banner means changing
+  all three together. The wrapper uses `isolation: isolate` so the blend
+  mode only affects the banner, not the page behind it.
+
+Older banner variants stay in `images/` but nothing references them.
+
+## Junk Wax timeline (`timeline.html`)
+
+A vertical timeline where each season of the Junk Wax era is a card.
+Tapping a card flips it to show that season's bullet points. The
+content lives in plain markdown (`timeline/timeline.md`), so adding or
+editing a season is a text edit, with no HTML or code change.
+
+**Why the markdown is outside `/cms/`.** The page fetches the file at
+load. `robots.txt` disallows `/cms/`, and Google obeys that for the
+files a page pulls in while rendering, so a file under `/cms/` would
+have rendered an empty timeline to the crawler. At `/timeline/` it is
+fetchable, and therefore also publicly readable, which the page needs
+anyway.
+
+**File format.** `###` is the section title, each `####` starts a card,
+and `-` bullets are its content. Every two spaces of indent nests a
+bullet one level deeper, under the nearest shallower bullet above it
+(`parseTimelineMarkdown()` keeps a stack of open levels, so a
+mis-indented bullet attaches to the closest valid parent instead of
+breaking the list). A heading that starts with a season such as
+`1984-85` has it split off as a badge; the rest becomes the card title.
+
+**How a card works.**
+- Each card has two faces, a front (a real `<button>`, since a button
+  can't hold the bullet list) and a back with the list. Cards alternate
+  left and right of a centre line on wide screens and stack on phones.
+- The card's height is set from whichever face is showing
+  (`syncTimelineCardHeight()`), because the faces are absolutely
+  positioned for the 3D flip and would otherwise leave the card sized
+  to neither. A `ResizeObserver` re-syncs it when text rewraps on a
+  resize or the web font loads. Heights only animate after the first
+  layout (`.timeline-ready`), so cards don't grow from zero on load.
+- Opening a card marks it viewed: its front greys out and gets a hidden
+  "(viewed)" for screen readers. That state lives in page memory only,
+  so a reload starts fresh.
+- Clicking anywhere on the open card closes it. The back's title row is
+  the real button, which is the keyboard and screen-reader way to close
+  it, so no separate close button is drawn. Escape also closes.
+- Focus follows the card: opening moves focus to the back's title row,
+  closing returns it to the front. A tall card leaves the page scrolled
+  far below where it began, so on close the page scrolls back up to the
+  card if its top is off screen (`scrollTimelineCardIntoView()`).
+- The hidden face is `inert` and `aria-hidden`, so only one face is ever
+  reachable by keyboard or screen reader.
+- With `prefers-reduced-motion`, the flip becomes an opacity swap. It
+  must still flip `visibility` instantly, otherwise the closing card
+  cannot take focus while its face is still fading out.
+
+**Page-level pieces.** Like the other static public pages it sets its
+title, description, canonical, share tags and an Article JSON-LD block
+(`setPageMeta()`, `setJsonLd()`), carries the scores ticker, and has a
+`<noscript>` message because the cards need JavaScript to exist at all.
 
 ## Player search (`playerSearch.html`)
 
