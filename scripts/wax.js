@@ -357,6 +357,8 @@ function openChecklistModal(link) {
   const rookieFilter = document.getElementById("checklistRookieFilter");
 
   title.textContent = setName;
+  // The plain set name, so applyChecklistRookieFilter() can add/remove " - Rookies".
+  title.dataset.setName = setName;
   body.innerHTML = "<p>Loading checklist...</p>";
   overlay.style.display = "block";
   // Scopes the @media print rules to print only the modal - without
@@ -396,6 +398,10 @@ function applyChecklistRookieFilter() {
   const items = isFiltered
     ? currentChecklistItems.filter(item => item.notes && /\bRC\b/.test(item.notes))
     : currentChecklistItems;
+
+  // Name the filter in the title so a printed or downloaded list says it's rookies only.
+  const title = document.getElementById("checklistModalTitle");
+  if (title.dataset.setName) title.textContent = title.dataset.setName + (isFiltered ? " - Rookies" : "");
 
   // renderChecklistGroups()'s own empty-state message ("No checklist
   // data found for this set") would be misleading here - a checklist
@@ -554,11 +560,14 @@ function exportChecklistPdf() {
   // rather than popping a second message on top of that.
   if (groups.length === 0) return;
 
-  const setName = document.getElementById("checklistModalTitle").textContent;
+  // The title already carries " - Rookies" when filtered; the filename builds its own.
+  const titleEl = document.getElementById("checklistModalTitle");
+  const setName = titleEl.textContent;
+  const fileBase = (titleEl.dataset.setName || setName) + (isFiltered ? " Rookies" : "");
 
   loadJsPdf()
     .then(() => {
-      buildChecklistPdfDocument(setName, groups).save(`${sanitizeFilename(setName)}-checklist.pdf`);
+      buildChecklistPdfDocument(setName, groups).save(`${sanitizeFilename(fileBase)}-checklist.pdf`);
     })
     .catch(err => {
       console.log("PDF export failed:", err);
