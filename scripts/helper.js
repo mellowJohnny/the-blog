@@ -277,7 +277,7 @@ const FOOTER_SECTIONS = [
   { heading: "Major Releases", links: [{ id: "classic", label: "Classic '80s" }, { id: "junk" }] },
   { heading: "Fast Food Releases", links: [{ id: "mcd" }, { id: "timmies" }] },
   { heading: "Tools", links: [{ id: "timeline" }, { id: "search" }, { id: "browse" }] },
-  { links: [{ id: "home" }, { label: "About" }] }
+  { links: [{ id: "home" }, { id: "about" }] }
 ];
 
 function buildFooterLink(link) {
@@ -519,8 +519,9 @@ const NAV_ITEMS = {
   mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3&pageName=ev" },
   timeline: { label: "Junk Wax Timeline", href: "/timeline.html" },
   search: { label: "Player Search", href: "/playerSearch.html" },
-  // Linked from the footer only: no NAV_MAP list shows it.
-  browse: { label: "Browse By Set", href: "/browseBySet.html" }
+  // browse and about are linked from the footer only: no NAV_MAP list shows them.
+  browse: { label: "Browse By Set", href: "/browseBySet.html" },
+  about: { label: "About", href: "/about.html" }
 };
 
 // Step 2: Define which pages show which items
@@ -545,7 +546,9 @@ const NAV_MAP = {
   // timeline.html leaves out its own link, like playerSearch does.
   timeline: ["home", "classic", "junk", "mcd", "timmies", "search"],
   // browseBySet.html isn't in the nav itself, so nothing self-excludes.
-  browseBySet: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"]
+  browseBySet: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
+  // about.html is footer-only like browseBySet, so nothing self-excludes.
+  about: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"]
 };
 
 // Step 3: Build a dynamic table generator

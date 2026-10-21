@@ -46,7 +46,8 @@ const STATIC_PAGES = [
   "/lockout.html",
   "/theJunkWaxYears.html",
   "/timeline.html",
-  "/browseBySet.html"
+  "/browseBySet.html",
+  "/about.html"
 ];
 
 async function fetchLiveSets() {
