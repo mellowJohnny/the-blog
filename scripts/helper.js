@@ -519,8 +519,8 @@ const NAV_ITEMS = {
   mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3&pageName=ev" },
   timeline: { label: "Junk Wax Timeline", href: "/timeline.html" },
   search: { label: "Player Search", href: "/playerSearch.html" },
-  // browse and about are linked from the footer only: no NAV_MAP list shows them.
-  browse: { label: "Browse By Set", href: "/browseBySet.html" },
+  // The footer shares this label. "about" is linked from the footer only.
+  browse: { label: "All Sets", href: "/browseBySet.html" },
   about: { label: "About", href: "/about.html" }
 };
 
@@ -528,27 +528,27 @@ const NAV_ITEMS = {
 // The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
   // "search" (Player Search) is on every page except playerSearch itself,
-  // always last; "timeline" sits just before it, and each of those two
-  // self-excludes from its own page.
+  // always last; "browse" (All Sets) and "timeline" sit just before it, and
+  // each of those three self-excludes from its own page.
   // index.html is Home, so it leaves out its own "Home" link as redundant.
-  index: ["classic", "junk", "mcd", "timmies", "timeline", "search"],
-  tech: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
-  ev: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
-  junkWax: ["home", "classic", "mcd", "timmies", "timeline", "search"],
-  classicWax: ["home", "junk", "mcd", "timmies", "timeline", "search"],
-  timmies: ["home", "classic", "junk", "mcd", "timeline", "search"],
-  mcd: ["home", "classic", "junk", "timmies", "timeline", "search"],
-  playerSearch: ["home", "classic", "junk", "mcd", "timmies", "timeline"],
+  index: ["classic", "junk", "mcd", "timmies", "timeline", "browse", "search"],
+  tech: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "search"],
+  ev: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "search"],
+  junkWax: ["home", "classic", "mcd", "timmies", "timeline", "browse", "search"],
+  classicWax: ["home", "junk", "mcd", "timmies", "timeline", "browse", "search"],
+  timmies: ["home", "classic", "junk", "mcd", "timeline", "browse", "search"],
+  mcd: ["home", "classic", "junk", "timmies", "timeline", "browse", "search"],
+  playerSearch: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse"],
   // theJunkWaxYears.html is a static essay, not one of the junkWax/
   // classicWax/mcd/timmies review pages itself, so - like playerSearch -
   // nothing needs to self-exclude here; "junk" stays in the list.
-  junkWaxYears: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
+  junkWaxYears: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "search"],
   // timeline.html leaves out its own link, like playerSearch does.
-  timeline: ["home", "classic", "junk", "mcd", "timmies", "search"],
-  // browseBySet.html isn't in the nav itself, so nothing self-excludes.
+  timeline: ["home", "classic", "junk", "mcd", "timmies", "browse", "search"],
+  // browseBySet.html leaves out its own "browse" link, like timeline does.
   browseBySet: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
-  // about.html is footer-only like browseBySet, so nothing self-excludes.
-  about: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"]
+  // about.html is footer-only, so nothing self-excludes.
+  about: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "search"]
 };
 
 // Step 3: Build a dynamic table generator
