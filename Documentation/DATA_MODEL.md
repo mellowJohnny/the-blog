@@ -32,7 +32,7 @@ key `blogID`, no sort key) — see above.
 | Field | Type | Notes |
 |---|---|---|
 | `blogID` | String | The item's human-facing identifier — used as the lookup key by `getBlogByID`, which queries the `blogID-index` GSI directly (see `API_ENDPOINTS.md`), but is *not* the DynamoDB table's own primary key (see above). Early sample data (`Documentation/BlogArchive.txt`) used a millisecond timestamp string as `id`, e.g. `"1640119360299"` — `blogID` is likely the same idea, possibly renamed. |
-| `blogType` | Number | Partition key. `1`=Tech, `2`=Hockey Cards (per the `createBlogPost.html` dropdown, though card content actually goes to the `Cards` table, not `Blogs`), `3`=Mach-E, `4`=SYNC Updates, `5`=Raspberry Pi, `99`=Home Page. See `BLOG_TYPE_LABELS` in `scripts/cmsBlog.js`. |
+| `blogType` | Number | Partition key. `1`=Tech, `2`=Hockey Cards (per the `createBlogPost.html` dropdown, though card content actually goes to the `Cards` table, not `Blogs`), `3`=Mach-E, `4`=SYNC Updates, `5`=Raspberry Pi, `98`=About (exactly one post, shown by `about.html`), `99`=Home Page. See `BLOG_TYPE_LABELS` in `scripts/cmsBlog.js`. |
 | `title` | String | Post title. |
 | `author` | String | Free text; CMS forms currently only offer "Christian Couillard". |
 | `postBody` | String | HTML content, authored via TinyMCE. |
@@ -70,7 +70,7 @@ queries):
 
 | Field | Type | Notes |
 |---|---|---|
-| `setID` | String | Randomly generated (`Math.random().toString(36)`) in `Lambdas/createCardPost/`; used as the lookup key by `getCardSetByID`, which queries the `setID-index` GSI directly (see the GSI table above). |
+| `setID` | String | Randomly generated (`Math.random().toString(36)`) in `Lambdas/createCardPost/`; used as the lookup key by `getCardSetByID`, which queries the `setID-index` GSI directly (see the GSI table above). It is also the public identifier in review URLs (`waxReviews.html?...&setID=`): `getCardSetsByYear` already returns it, and `getPublicCardSets` and `searchPlayerName` project it so Browse By Set and Player Search can link to one exact set. |
 | `upvotes` / `downvotes` | Number | Added for the thumbs up/down voting feature (`Lambdas/castVoteHandler/`). Not present on older items until the first vote is cast — DynamoDB creates the attribute on first `ADD`, no migration needed. |
 | `setName` | String | e.g. `"1991-92 Upper Deck Hockey"`. |
 | `year` | Number | Release year, e.g. `1991`. Drives the year-picker on `waxReviews.html` (`renderSetPicker()` in `scripts/helper.js`). |

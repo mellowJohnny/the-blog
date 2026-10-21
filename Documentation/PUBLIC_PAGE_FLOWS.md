@@ -91,8 +91,9 @@ each other):
   nav. Every public page makes this one call, so only this page spells it
   out; see `FRONTEND.md`'s "Site footer".
 - `fetchNav("index")` (`helper.js`) — builds the top nav bar itself
-  (the links to the card review sections and Player Search), by looking
-  up `NAV_MAP["index"]` (`classic, junk, mcd, timmies, timeline, search`, with no
+  (the links to the card review sections, the timeline, All Sets and
+  Player Search), by looking
+  up `NAV_MAP["index"]` (`classic, junk, mcd, timmies, timeline, browse, search`, with no
   "Home" link, since the masthead already is one)
   and rendering it as a `<table>` into
   `#global-nav`. Purely client-side — the nav structure is a hardcoded
@@ -234,7 +235,7 @@ everything the visitor can see or navigate to on this page.
   values (`junkWax`, `classicWax`, `timmies`, `mcd`) each map to a
   `NAV_MAP` entry (the other review sections, then `"search"` (Player
   Search), always last — Player Search is in every `NAV_MAP` entry
-  except its own page's, and "Junk Wax Timeline" sits just before it).
+  except its own page's, and "Junk Wax Timeline" and "All Sets" sit just before it).
 - `renderSetPicker(year, blogCat, pageName)` (`helper.js`) — builds the
   "set-o-matic" year picker: the row letting a visitor jump directly to
   another year's review within the same category, without going back
@@ -255,8 +256,11 @@ everything the visitor can see or navigate to on this page.
   `blogCat-year-index` GSI, filtered to `blogStatus = "OK"`, so a
   staged/unpublished set is never returned here even if it otherwise
   matches. Once the result is back, `fetchCardSetsByYear()` sorts it via
-  `getSortOrder("stars", ...)`, stores it in `allCardSets`, resets
-  `currentPage = 1`, and calls `renderCardSetPage()`, which slices out
+  `getSortOrder("stars", ...)`, stores it in `allCardSets`, sets
+  `currentPage` (to 1, or to the matching set's page when the URL
+  carries a `setID`, so a link can name one specific set — see
+  `FRONTEND.md`'s "Linking to one specific set"), and calls
+  `renderCardSetPage()`, which slices out
   one set (`pageSize` is `1` — most years have exactly one set anyway;
   see "Notable" below) and calls the big `displayCardSet(...)` render
   function (18 positional params — `postBody`, `year`, `mfg`, `size`,
@@ -274,8 +278,10 @@ everything the visitor can see or navigate to on this page.
   `Review: <setName>` title, a description built by stripping HTML tags
   from `postBody` via `stripHtmlTags()` (`helper.js`) and truncating to
   300 characters, the set's own `headerImg`/`headerImgName` as the
-  social-share image, and a canonical built from `window.location.href`
-  — and writes a `Product`+`Review` JSON-LD block (`name`/`image` on the
+  social-share image, and a canonical built from the set's own data by
+  `buildReviewCanonicalUrl()` (`year`, `pageName`, `blogCat`, plus
+  `setID` on multi-set years, so stray query parameters can't create
+  duplicate canonicals) — and writes a `Product`+`Review` JSON-LD block (`name`/`image` on the
   `Product`, `author`/`datePublished`/`reviewRating` — out of 5, from
   `stars` — and a stripped-text `reviewBody` on the nested `Review`) via
   `setJsonLd("jsonld-cardset", ...)`, a fixed id for the same
@@ -506,7 +512,11 @@ flow).
 - `renderPlayerSearchResults()` groups the response by `setName`. For
   each group whose entry included a `year`/`blogCat` (i.e. a matching
   `Cards` item exists), the heading is built as a link to
-  `waxReviews.html?year=...&pageName=...&blogCat=...` — `pageName`
+  `waxReviews.html?year=...&pageName=...&blogCat=...&setID=...` — the
+  `setID` (returned by the same `Cards` query that supplies
+  `year`/`blogCat`) makes the link open that exact set rather than the
+  year's top-rated one, and is simply omitted if the response doesn't
+  carry it. `pageName`
   itself isn't returned by the API, so it's derived client-side via
   `getPageNameForYear(blogCat, year)` (`helper.js`), reusing the same
   `categoryRanges` data `renderSetPicker()` uses, so the search results
@@ -562,3 +572,52 @@ or pressing Escape, flips it shut. Each call also marks the card viewed,
 keeps focus on the right face and, on close, scrolls a tall card back
 into view. How the faces, heights and focus fit together is covered in
 `FRONTEND.md`'s "Junk Wax timeline" section.
+
+## Browse By Set - `browseBySet.html`
+
+A catalogue of everything the site has reviewed: its whole job is to
+turn one small list of sets into two columns of links. It is reached
+from the nav and footer as "All Sets".
+
+**What loads**: `scripts/wax.js` (for the checklist modal only),
+`scripts/browseBySet.js` and `scripts/helper.js` (all `defer`), and one
+inline `window load` handler. No scores ticker.
+
+**On `window load`**, three independent pieces run:
+- `fetchNav("browseBySet")`, `fetchFooterLinks()` and
+  `fetchCopyrightYear()` (`helper.js`) build the nav (every link but
+  its own), the footer and the copyright, like the other pages.
+- `initBrowseBySet()` (`browseBySet.js`) is the real content. It calls
+  **Get all live sets (public)** once, fronted by the `getPublicCardSets`
+  Lambda (`Lambdas/getPublicCardSets/`), which queries the `Cards`
+  table's `blogStatus-year-index` GSI for `blogStatus = "OK"` and
+  returns only `setID`, `setName`, `blogCat`, `year` and `hasChecklist`
+  (the CMS's equivalent returns every review's body behind a login, so
+  it can't serve a public page). The sets are split by `blogCat` into
+  the Major Releases column (`reg`) and the Fast Food Sets column (`mcd`
+  and `tims`), grouped under season headings and sorted, then rendered.
+  Each entry's **Review** link is built from `getPageNameForYear()` and
+  the set's `setID`, so it opens that exact set; its title drops the
+  season because the heading above already shows it. A single click
+  listener handles the **Checklist** links (they are rebuilt on every
+  render) and calls `openChecklistModal()`, which fetches the checklist
+  through **Get checklist by set name** as it does on the review page.
+- `setPageMeta()` and `applyRandomMastheadStyling()` (`helper.js`) set
+  the share tags and paint the masthead, as elsewhere.
+
+If the endpoint is down or returns nothing, a short message replaces
+the columns.
+
+## About - `about.html`
+
+The About page is the Home page's machinery pointed at a different blog
+type: it makes the same `fetchBlogs()` call as `index.html`, with
+`'98'` instead of `'99'`. **Get all blogs of a given type**
+(`?blogType=98`) is fronted by the same `getBlogs` Lambda, which reads
+the `Blogs` table by partition key, so no backend change was needed.
+`renderBlogIntro('98')` renders only the heading "about junk wax
+hockey...", and the post below it carries the content. The page sets its
+own title, description and canonical; `renderBlogIntro()` skips its
+tech-blog metadata block for type 98, which would otherwise have pointed
+the canonical at `tech.html`. It is footer-only (not in the nav) and has
+no hidden WLCMS link.

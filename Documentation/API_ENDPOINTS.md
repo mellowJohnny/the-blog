@@ -11,6 +11,9 @@ it's a Twilio-to-us webhook, not something this frontend calls — see
 `LAMBDA_FUNCTIONS.md` for it instead.
 
 All URLs are `https://{id}.execute-api.us-east-2.amazonaws.com/{stage}`.
+The stage is `dev` for every endpoint built before October 2026; newer
+endpoints are deployed to a stage named `prod` (the first is "Get all
+live sets (public)" below).
 
 ## Public site — read APIs
 
@@ -69,6 +72,14 @@ without changing that expectation first.
 - **Response**: JSON array directly (each item has `postBody`, `year`, `mfg`, `size`, `subsets`, `stars`, `formats`, `headerImg`, `headerImgName`, `footerImg`, `footerImgName`, `setName`, `author`, `now`). `Cache-Control: public, max-age=1800` (30 min) on the success response — the Lambda's own comment says "CloudFront cache," but no CloudFront actually sits in front of this endpoint (see the caching note above), so today this is browser-only. Bumped from an original `max-age=300` to `1800` on 2026-08-14, since a published set review essentially never changes and votes are tracked via the separate `castVoteHandler` endpoint, not this one.
 - **Lambda**: `Lambdas/getCardSetsByYear/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Queries the `blogCat-year-index` GSI, filtered to `blogStatus = "OK"`.
 
+### Get all live sets (public)
+- **URL**: `https://jlpd8ec14j.execute-api.us-east-2.amazonaws.com/prod`
+- **Method**: GET
+- **Query params**: none
+- **Called from**: `initBrowseBySet()` in `scripts/browseBySet.js` (used by `browseBySet.html`, as `BROWSE_SETS_URL`), and `tools/generateSitemap/generate.mjs` (builds `sitemap.xml` from it).
+- **Response**: JSON array directly, one small object per live set: `{ setID, setName, blogCat, year, hasChecklist }` (`hasChecklist` is absent on a set that has never had a checklist). `Cache-Control: public, max-age=1800`, `Access-Control-Allow-Origin: *`.
+- **Lambda**: `Lambdas/getPublicCardSets/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Queries the `blogStatus-year-index` GSI for `blogStatus = "OK"` with a projection of just those fields, following `LastEvaluatedKey`. Public, no Cognito Authorizer. It exists because the CMS's "Get all live card sets" (below) is login-only and returns every review's full body; a public page can't use that, and calling "Get card sets by year" once per year per category would have meant about 50 requests, each carrying review bodies.
+
 ### Cast a vote on a card set
 - **URL**: `https://lo07upgip8.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: POST
@@ -90,7 +101,7 @@ without changing that expectation first.
 - **Method**: GET
 - **Query params**: `q` (a player name or partial name, minimum 2 characters) **or** `audit=1` **or** `namesOnly=1` — mutually exclusive modes, see below.
 - **Called from**: `scripts/playerSearch.js` (used by `playerSearch.html`)
-- **Response** (`q` mode): `{ query, results: [{ setName, year, blogCat, cards: [{ cardNumberDisplay, playerName, notes, type, insertSetName }] }] }` — grouped by set, sorted alphabetically by `setName`. `year`/`blogCat` are `null` when no matching `Cards` item was found for that `setName` (the frontend shows the set name as plain text instead of a link in that case). `{ error }` with a 400 if `q` is missing or under 2 characters.
+- **Response** (`q` mode): `{ query, results: [{ setName, year, blogCat, setID, cards: [{ cardNumberDisplay, playerName, notes, type, insertSetName }] }] }` — grouped by set, sorted alphabetically by `setName`. `setID` comes from the same `Cards` item as `year`/`blogCat` and lets the frontend link to that exact set (it is absent when `year`/`blogCat` are `null`). `year`/`blogCat` are `null` when no matching `Cards` item was found for that `setName` (the frontend shows the set name as plain text instead of a link in that case). `{ error }` with a 400 if `q` is missing or under 2 characters.
 - **Response** (`audit=1` mode): `{ totalDistinctSetNames, linkedCount, unlinkedSetNames }` — a data-integrity check, not part of the search feature itself; enumerates every distinct `setName` in `Checklists` and reports which have no matching `Cards` item. See `DATA_MODEL.md`'s "setName ↔ Cards.setName 1:1 assumption" note.
 - **Response** (`namesOnly=1` mode): `{ playerNames: [...] }` — every distinct `playerName` in `Checklists`, deduped and sorted alphabetically. Added 2026-09-14 to back the type-ahead dropdown on `playerSearch.html`: the frontend fetches this once (cached client-side, see `FRONTEND.md`'s "Player search" section) and filters it locally per keystroke, rather than hitting `q` mode's expensive `Scan` on every keystroke.
 - **Lambda**: `Lambdas/searchPlayerName/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Full paginated `Scan` of `Checklists` (no index on `playerName`), matched case-insensitively in code, plus a per-matched-set `Query` against `Cards`. Public, no Cognito Authorizer — same trust level as "Get checklist by set name" above; `Access-Control-Allow-Origin: "*"`.

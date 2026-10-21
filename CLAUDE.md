@@ -41,7 +41,7 @@ for why); every other function uses only `@aws-sdk/*` packages,
 which ship with the Lambda Node.js runtime, so `dependencies` is
 empty. None of them is deployed via any command here — edit the code
 in this repo, then redeploy manually. **How you redeploy depends on
-whether the function has a real dependency**: the 27 with empty
+whether the function has a real dependency**: the 28 with empty
 `dependencies` just need the updated `index.mjs` pasted directly into
 the Lambda Console's inline code editor (Code tab) and Deploy clicked
 — no zip needed, since there's nothing to bundle. `sendAlertHandler`
@@ -65,6 +65,16 @@ auto-builds and deploys on every push to `main` — there is no staging
 branch or preview environment, so a push to `main` goes live as soon
 as Amplify's build finishes. Amplify emails on build completion. See
 `Documentation/ARCHITECTURE.md` for details.
+
+**Regenerating `sitemap.xml`**: it is a generated file, built from the
+live `getPublicCardSets` endpoint (one URL per set in multi-set years,
+the bare year URL otherwise), so re-run `node
+tools/generateSitemap/generate.mjs` and commit the result whenever a
+set is added, removed or has its year changed — nothing does it
+automatically (Amplify's build runs no commands). The generator exits
+without touching the file if the endpoint is unreachable or a live set
+falls outside its year ranges. See `Documentation/FRONTEND.md`
+("Sitemap").
 
 **Checking Amplify build status from the CLI**: AWS CLI v2 is
 installed, and a read-only IAM user (`amplify-readonly-cli`) is

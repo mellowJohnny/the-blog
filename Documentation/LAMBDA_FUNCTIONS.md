@@ -1,10 +1,10 @@
 # Lambda Functions
 
-**28 of the 32 Lambda functions behind this site's API Gateway
+**29 of the 33 Lambda functions behind this site's API Gateway
 endpoints have their source checked into this repo**, under
 `Lambdas/` (as of 2026-08-15, one directory per function, named
-exactly after its AWS Lambda function name). `Lambdas/` holds 29
-directories, not 28: `amplifyBuildNotifier` (added 2026-09-29) sits
+exactly after its AWS Lambda function name). `Lambdas/` holds 30
+directories, not 29: `amplifyBuildNotifier` (added 2026-09-29) sits
 behind EventBridge rather than API Gateway and isn't part of that
 count — it's the only function here no frontend code ever calls.
 Most were pulled directly
@@ -12,7 +12,7 @@ from the live Console via `aws lambda get-function` using the
 `amplify-readonly-cli` credential (see `CLAUDE.md` — its actual IAM
 scope turned out to be broader than its name suggests: it can read
 full Lambda source, though not API Gateway config, and (confirmed
-2026-08-24) not DynamoDB or IAM policy introspection either). Eleven
+2026-08-24) not DynamoDB or IAM policy introspection either). Twelve
 were already in the repo, hand-built here rather than pulled:
 `Lambdas/sendAlertHandler/`, `Lambdas/castVoteHandler/`,
 `Lambdas/deleteBlogHandler/`, `Lambdas/deleteCardSetHandler/`, and —
@@ -21,7 +21,8 @@ added later, for the checklist-upload feature and its front-end display —
 `Lambdas/getChecklistBySetName/`, and — for the player-search feature —
 `Lambdas/searchPlayerName/`, and — for the scores ticker and its game
 modal — `Lambdas/getNhlScores/`, `Lambdas/getNhlGameDetails/` and
-`Lambdas/getPwhlScores/`. The remaining 4 of the 32
+`Lambdas/getPwhlScores/`, and — for the Browse By Set page —
+`Lambdas/getPublicCardSets/`. The remaining 4 of the 33
 (`getCardIntro`, `getBlogIntro`, `fetchCardSetPreview`,
 `invalidateCache`) were pulled in the same pass, confirmed dead, and
 removed again the same day — see "Orphaned/dead Lambdas" below.
@@ -581,6 +582,12 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   player appears in across the whole `Checklists` table, grouped by
   `setName`, each with a working link back to that set's review (via a
   `Cards` lookup — see below).
+- **Each result carries the review's `setID`.** The per-set `Cards`
+  query that supplies `year` and `blogCat` also projects `setID`, and it
+  is copied into the result, so `playerSearch.js` can link to that exact
+  set instead of the year's top-rated one (see `FRONTEND.md`'s "Linking
+  to one specific set"). A set with no matching `Cards` item has no
+  `year`, `blogCat` or `setID`, and is shown as "(set not reviewed)".
 - **Cards within a set are ordered main-before-insert, then by
   `sortIndex`** — the same field/convention `getChecklistBySetName`'s
   items carry (see `DATA_MODEL.md`'s Checklists table), not raw `Scan`
@@ -649,6 +656,42 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   `FRONTEND.md`'s "Player search" section for the frontend half of this
   (the caching, and the relevance ranking applied to the filtered
   results).
+
+## `Lambdas/getPublicCardSets/` — hand-built in this repo
+
+- **File**: `Lambdas/getPublicCardSets/index.mjs`. No real dependency —
+  inline-paste deployable, not zipped.
+- **Dependencies** (`package.json`): none listed — only uses
+  `@aws-sdk/client-dynamodb`/`@aws-sdk/lib-dynamodb`, which ship with
+  the Lambda Node.js runtime.
+- **What it does**: backs `browseBySet.html` and the sitemap generator
+  with a public list of every live card set: `setID`, `setName`,
+  `blogCat`, `year` and `hasChecklist`, nothing else.
+- **Why a new Lambda**: the CMS's `getCardSets` returns the same sets
+  but as full items (including each review's `postBody`) and sits
+  behind the Cognito Authorizer. A public page needs neither the bodies
+  nor the login, and the alternative — `getCardSetsByYear` once per
+  year per category — would have been about 50 requests per page load,
+  each returning review bodies from the `Cards` table (which has had
+  throughput-cap incidents before).
+- **Query**: `blogStatus-year-index`, `blogStatus = "OK"`, with a
+  `ProjectionExpression` of `setID, setName, blogCat, #yr, hasChecklist`
+  (`year` is a DynamoDB reserved word, hence the alias). It loops on
+  `LastEvaluatedKey` so the list can't be silently truncated at the 1 MB
+  page limit as the number of sets grows; an unpaginated read hitting
+  that limit is exactly the failure mode `listBlogsForUpdate` is
+  theoretically exposed to.
+- **Response**: JSON array, `Cache-Control: public, max-age=1800`,
+  `Access-Control-Allow-Origin: *`. A failure returns a 500 with a
+  generic message (details stay in the logs).
+- **AWS setup (manual, like every Lambda here)**: the execution role
+  needs `dynamodb:Query` on the `Cards` table and `Cards/index/*`; it is
+  exposed as a GET method on its own REST API (CORS on, no authorizer)
+  deployed to a stage named `prod`.
+- **Redeploying after a code change**: paste `index.mjs` into the
+  console's inline editor and Deploy. The projection change that added
+  `setID` was deployed this way; the page treats `setID` as optional, so
+  the code and the Lambda can be deployed in either order.
 
 ## `Lambdas/getNhlScores/` — hand-built in this repo
 
