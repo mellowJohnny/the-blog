@@ -20,7 +20,7 @@
 // with a GSI if that table gets much bigger.
 //
 // For each distinct matching setName, does a second, cheap Query
-// (partition key, not a scan) against Cards to get year/blogCat, so the
+// (partition key, not a scan) against Cards to get year/blogCat/setID, so the
 // frontend can build a working link back to that set's review on
 // waxReviews.html. pageName (the third param that URL needs) isn't
 // looked up here - it's a pure UI/nav concept derived from blogCat+year,
@@ -121,7 +121,7 @@ async function getCardsEntriesForSet(setName) {
     TableName: CARDS_TABLE,
     KeyConditionExpression: "setName = :setName",
     ExpressionAttributeValues: { ":setName": setName },
-    ProjectionExpression: "setName, #yr, blogCat",
+    ProjectionExpression: "setName, setID, #yr, blogCat",
     ExpressionAttributeNames: { "#yr": "year" }
   }));
 
@@ -232,7 +232,7 @@ export const handler = async (event) => {
         results.push({ setName, year: null, blogCat: null, cards });
       } else {
         for (const cardsItem of cardsEntries) {
-          results.push({ setName, year: cardsItem.year, blogCat: cardsItem.blogCat, cards });
+          results.push({ setName, year: cardsItem.year, blogCat: cardsItem.blogCat, setID: cardsItem.setID, cards });
         }
       }
     }

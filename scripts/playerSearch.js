@@ -206,8 +206,11 @@ function renderPlayerSearchResults(query, results) {
     const pageName = (result.year && result.blogCat)
       ? getPageNameForYear(result.blogCat, result.year)
       : null;
+    // setID opens that exact set in a multi-set year (waxReviews.html would
+    // otherwise open the top-rated one); a response without it still links.
+    const setParam = result.setID ? `&setID=${encodeURIComponent(result.setID)}` : "";
     const href = pageName
-      ? `/waxReviews.html?year=${encodeURIComponent(result.year)}&pageName=${encodeURIComponent(pageName)}&blogCat=${encodeURIComponent(result.blogCat)}`
+      ? `/waxReviews.html?year=${encodeURIComponent(result.year)}&pageName=${encodeURIComponent(pageName)}&blogCat=${encodeURIComponent(result.blogCat)}${setParam}`
       : null;
 
     const setHeading = href
