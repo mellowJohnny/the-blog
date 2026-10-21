@@ -3215,21 +3215,13 @@ body:has(.site-footer) {
   font-family: 'Work Sans', sans-serif;
 }
 
-/* index.html's banner masthead, edge to edge: the -8px margins cancel the
-   browser's default body margin. Past the image's own width it stops
-   growing and centres, so a very wide monitor doesn't upscale it. */
+/* index.html's banner masthead, edge to edge at every width: the -8px margins
+   cancel the browser's default body margin, and the image scales with the window. */
 .home-masthead {
   position: relative;
   margin: -8px -8px 0;
   overflow: hidden;
   isolation: isolate; /* keeps the blend modes inside the banner */
-}
-
-@media (min-width: 1316px) { /* the 1300px banner plus the 16px of body margin */
-  .home-masthead {
-    max-width: 1300px;
-    margin: -8px auto 0;
-  }
 }
 
 .home-masthead img {
@@ -3238,7 +3230,7 @@ body:has(.site-footer) {
   height: auto;
 }
 
-/* Phones: the banner is stretched taller (3.5:1 instead of its native 5.2:1)
+/* Phones: the banner is stretched taller (3.5:1 instead of its native 6:1)
    so it isn't a thin strip; the lettering gets a little taller with it. */
 @media (max-width: 600px) {
   .home-masthead img {
@@ -3257,8 +3249,8 @@ body:has(.site-footer) {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  -webkit-mask-image: url("/images/masthead-v18.webp");
-  mask-image: url("/images/masthead-v18.webp");
+  -webkit-mask-image: url("/images/masthead-v19.webp");
+  mask-image: url("/images/masthead-v19.webp");
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
 }
