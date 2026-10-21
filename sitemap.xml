@@ -7,43 +7,16 @@
     <loc>https://www.junkwaxhockey.com/playerSearch.html</loc>
   </url>
   <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1981&amp;pageName=classicWax&amp;blogCat=reg</loc>
+    <loc>https://www.junkwaxhockey.com/lockout.html</loc>
   </url>
   <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1982&amp;pageName=classicWax&amp;blogCat=reg</loc>
+    <loc>https://www.junkwaxhockey.com/theJunkWaxYears.html</loc>
   </url>
   <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1983&amp;pageName=classicWax&amp;blogCat=reg</loc>
+    <loc>https://www.junkwaxhockey.com/timeline.html</loc>
   </url>
   <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1984&amp;pageName=classicWax&amp;blogCat=reg</loc>
-  </url>
-  <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1985&amp;pageName=classicWax&amp;blogCat=reg</loc>
-  </url>
-  <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1986&amp;pageName=classicWax&amp;blogCat=reg</loc>
-  </url>
-  <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1987&amp;pageName=junkWax&amp;blogCat=reg</loc>
-  </url>
-  <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1988&amp;pageName=junkWax&amp;blogCat=reg</loc>
-  </url>
-  <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1989&amp;pageName=junkWax&amp;blogCat=reg</loc>
-  </url>
-  <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1990&amp;pageName=junkWax&amp;blogCat=reg</loc>
-  </url>
-  <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1991&amp;pageName=junkWax&amp;blogCat=reg</loc>
-  </url>
-  <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1992&amp;pageName=junkWax&amp;blogCat=reg</loc>
-  </url>
-  <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1993&amp;pageName=junkWax&amp;blogCat=reg</loc>
+    <loc>https://www.junkwaxhockey.com/browseBySet.html</loc>
   </url>
   <url>
     <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1991&amp;pageName=mcd&amp;blogCat=mcd</loc>
@@ -70,7 +43,10 @@
     <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1998&amp;pageName=mcd&amp;blogCat=mcd</loc>
   </url>
   <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1999&amp;pageName=mcd&amp;blogCat=mcd</loc>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1999&amp;pageName=mcd&amp;blogCat=mcd&amp;setID=loceqn9rmv</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1999&amp;pageName=mcd&amp;blogCat=mcd&amp;setID=vsa7gl58twr</loc>
   </url>
   <url>
     <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2000&amp;pageName=mcd&amp;blogCat=mcd</loc>
@@ -91,33 +67,141 @@
     <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2006&amp;pageName=mcd&amp;blogCat=mcd</loc>
   </url>
   <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2007&amp;pageName=mcd&amp;blogCat=mcd</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1981&amp;pageName=classicWax&amp;blogCat=reg</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1982&amp;pageName=classicWax&amp;blogCat=reg</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1983&amp;pageName=classicWax&amp;blogCat=reg</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1984&amp;pageName=classicWax&amp;blogCat=reg</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1985&amp;pageName=classicWax&amp;blogCat=reg</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1986&amp;pageName=classicWax&amp;blogCat=reg</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1987&amp;pageName=junkWax&amp;blogCat=reg</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1988&amp;pageName=junkWax&amp;blogCat=reg</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1989&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=23wwqdf2oz1</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1989&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=dirk6djo7bo</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1990&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=2q6zbsrnl9q</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1990&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=fho6l7a7h5q</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1990&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=y0em6o4y3qg</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1990&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=d821ru70o54</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1990&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=o39lhe7z08</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1991&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=9as61m53s07</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1991&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=pggx5xqi8lf</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1991&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=ej91w6wuqh8</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1991&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=dx26m7icacl</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1991&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=gpn8493y4r6</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1991&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=hisg8ij56if</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1991&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=pj4c2l2j97</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1991&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=gv6ihzkl9sq</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1991&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=jvffnk6kpye</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1992&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=mzvmkym00d</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1992&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=t39v4w9j6l</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1992&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=k27pvygkaij</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1992&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=uyvaoip8v3</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1992&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=qbxj3a4vcr</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1992&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=4ekiyw9rmh</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1992&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=75hwv14a7d7</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1992&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=e55ve6smzxl</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1993&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=ky8e7dkl8or</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=1993&amp;pageName=junkWax&amp;blogCat=reg&amp;setID=kj067l9ygst</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2019&amp;pageName=timmies&amp;blogCat=tims</loc>
+  </url>
+  <url>
     <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2020&amp;pageName=timmies&amp;blogCat=tims</loc>
   </url>
   <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2021&amp;pageName=timmies&amp;blogCat=tims</loc>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2021&amp;pageName=timmies&amp;blogCat=tims&amp;setID=mjbpfeqiazo</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2021&amp;pageName=timmies&amp;blogCat=tims&amp;setID=2pcrhclv64j</loc>
   </url>
   <url>
     <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2022&amp;pageName=timmies&amp;blogCat=tims</loc>
   </url>
   <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2023&amp;pageName=timmies&amp;blogCat=tims</loc>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2023&amp;pageName=timmies&amp;blogCat=tims&amp;setID=ylwbzrdcq9d</loc>
   </url>
   <url>
-    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2024&amp;pageName=timmies&amp;blogCat=tims</loc>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2023&amp;pageName=timmies&amp;blogCat=tims&amp;setID=8kpld9idn7x</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2024&amp;pageName=timmies&amp;blogCat=tims&amp;setID=e3okwod2th</loc>
+  </url>
+  <url>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2024&amp;pageName=timmies&amp;blogCat=tims&amp;setID=gt2z8m667p</loc>
   </url>
   <url>
     <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2025&amp;pageName=timmies&amp;blogCat=tims</loc>
   </url>
   <url>
-    <loc>https://www.junkwaxhockey.com/lockout.html</loc>
-  </url>
-  <url>
-    <loc>https://www.junkwaxhockey.com/theJunkWaxYears.html</loc>
-  </url>
-  <url>
-    <loc>https://www.junkwaxhockey.com/timeline.html</loc>
-  </url>
-  <url>
-    <loc>https://www.junkwaxhockey.com/browseBySet.html</loc>
+    <loc>https://www.junkwaxhockey.com/waxReviews.html?year=2026&amp;pageName=timmies&amp;blogCat=tims</loc>
   </url>
 </urlset>

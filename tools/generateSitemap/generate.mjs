@@ -1,37 +1,37 @@
 #!/usr/bin/env node
 // Generates sitemap.xml at the repo root.
 //
-// This site has no per-post/per-set permalinks - blog posts and card set
-// reviews render as batches on shared query-string pages (?year=,
-// ?blogType=, ?pageName=, ?blogCat=), not one URL per item (see
-// Documentation/FRONTEND.md). So this sitemap lists every real
-// *entry-point* page rather than every individual post/review - a hosted
-// crawler (Algolia) still extracts one searchable record per item within
-// each page via its own extraction config, so batch-level URLs are what
-// it actually needs to discover.
+// Every card set review has its own URL: waxReviews.html opens the set named
+// by ?setID=, and a year with several sets rewrites its address bar and
+// canonical to that set's URL (see scripts/wax.js). So the review entries
+// come from the live site's own data - the public getPublicCardSets endpoint
+// - and need regenerating whenever a set is added or removed:
+//   - a year with ONE set is listed as the bare year URL (that is its canonical);
+//   - a year with SEVERAL sets is listed as one ?setID= URL per set (the bare
+//     year URL canonicalises to the top-rated set, so it isn't listed).
 //
-// The year ranges below are deliberately
-// duplicated from scripts/helper.js's categoryRanges rather
-// than imported (helper.js is a browser script, not a Node module) -
-// keep this in sync by hand when a new year is added there. Same
-// established pattern as tools/checklistParser/'s parsing-logic
-// duplication from Lambdas/parseChecklistPdf/.
+// The year ranges below are only used to work out each set's pageName; they
+// are deliberately duplicated from categoryRanges in scripts/helper.js
+// (a browser script, not a Node module) - keep them in sync by hand. A live
+// set outside every range stops the run, so drift can't go unnoticed.
 //
-// Usage: node generate.mjs (writes ../../sitemap.xml, repo root)
+// Usage: node generate.mjs (writes ../../sitemap.xml, repo root). If the
+// endpoint is unreachable or the data is unusable, sitemap.xml is left alone.
 
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const SITE_ORIGIN = "https://www.junkwaxhockey.com";
+const SETS_URL = "https://jlpd8ec14j.execute-api.us-east-2.amazonaws.com/prod";
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 // Mirrors categoryRanges in scripts/helper.js's renderSetPicker().
 const CARD_SET_RANGES = [
   { blogCat: "reg", pageName: "classicWax", start: 1981, end: 1986 },
   { blogCat: "reg", pageName: "junkWax", start: 1987, end: 1993 },
-  { blogCat: "mcd", pageName: "mcd", start: 1991, end: 2006 },
-  { blogCat: "tims", pageName: "timmies", start: 2020, end: 2025 }
+  { blogCat: "mcd", pageName: "mcd", start: 1991, end: 2007 },
+  { blogCat: "tims", pageName: "timmies", start: 2019, end: 2026 }
 ];
 
 // waxReviews.html special-cases exactly this one year+category
@@ -40,21 +40,55 @@ const CARD_SET_RANGES = [
 // it's excluded here and lockout.html is listed separately below instead.
 const REDIRECTED_COMBOS = new Set(["2004|mcd"]);
 
-function buildUrls() {
-  const urls = [`${SITE_ORIGIN}/`, `${SITE_ORIGIN}/playerSearch.html`];
+const STATIC_PAGES = [
+  "/",
+  "/playerSearch.html",
+  "/lockout.html",
+  "/theJunkWaxYears.html",
+  "/timeline.html",
+  "/browseBySet.html"
+];
 
-  for (const { blogCat, pageName, start, end } of CARD_SET_RANGES) {
-    for (let year = start; year <= end; year++) {
-      if (REDIRECTED_COMBOS.has(`${year}|${blogCat}`)) continue;
-      urls.push(`${SITE_ORIGIN}/waxReviews.html?year=${year}&pageName=${pageName}&blogCat=${blogCat}`);
+async function fetchLiveSets() {
+  const res = await fetch(SETS_URL);
+  if (!res.ok) throw new Error(`${SETS_URL} answered ${res.status}`);
+  const sets = await res.json();
+  if (!Array.isArray(sets) || sets.length === 0) throw new Error("The sets endpoint returned no sets");
+  return sets;
+}
+
+function pageNameFor(set) {
+  const range = CARD_SET_RANGES.find((r) => r.blogCat === set.blogCat && set.year >= r.start && set.year <= r.end);
+  if (!range) throw new Error(`No year range covers "${set.setName}" (${set.blogCat} ${set.year}) - update CARD_SET_RANGES`);
+  return range.pageName;
+}
+
+function buildUrls(sets) {
+  const urls = STATIC_PAGES.map((page) => `${SITE_ORIGIN}${page}`);
+
+  const groups = new Map();
+  for (const set of sets) {
+    if (!set.setID || !set.setName || !Number.isFinite(set.year)) throw new Error(`Unusable set record: ${JSON.stringify(set)}`);
+    if (REDIRECTED_COMBOS.has(`${set.year}|${set.blogCat}`)) continue;
+    const key = `${set.blogCat}|${set.year}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(set);
+  }
+
+  const orderedGroups = [...groups.values()].sort((a, b) =>
+    a[0].blogCat.localeCompare(b[0].blogCat) || a[0].year - b[0].year);
+  for (const group of orderedGroups) {
+    const { blogCat, year } = group[0];
+    const base = `${SITE_ORIGIN}/waxReviews.html?year=${year}&pageName=${pageNameFor(group[0])}&blogCat=${blogCat}`;
+    if (group.length === 1) {
+      urls.push(base);
+    } else {
+      group.sort((a, b) => a.setName.localeCompare(b.setName));
+      for (const set of group) urls.push(`${base}&setID=${encodeURIComponent(set.setID)}`);
     }
   }
 
-  urls.push(`${SITE_ORIGIN}/lockout.html`);
-  urls.push(`${SITE_ORIGIN}/theJunkWaxYears.html`);
-  urls.push(`${SITE_ORIGIN}/timeline.html`);
-  urls.push(`${SITE_ORIGIN}/browseBySet.html`);
-
+  if (new Set(urls).size !== urls.length) throw new Error("Duplicate URLs generated");
   return urls;
 }
 
@@ -67,9 +101,13 @@ function buildSitemapXml(urls) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>\n`;
 }
 
-const urls = buildUrls();
-const xml = buildSitemapXml(urls);
-const outPath = path.join(REPO_ROOT, "sitemap.xml");
-
-fs.writeFileSync(outPath, xml);
-console.log(`Wrote ${urls.length} URLs to ${outPath}`);
+try {
+  const sets = await fetchLiveSets();
+  const urls = buildUrls(sets);
+  const outPath = path.join(REPO_ROOT, "sitemap.xml");
+  fs.writeFileSync(outPath, buildSitemapXml(urls));
+  console.log(`Wrote ${urls.length} URLs (${sets.length} live sets) to ${outPath}`);
+} catch (err) {
+  console.error(`sitemap.xml not changed: ${err.message}`);
+  process.exit(1);
+}

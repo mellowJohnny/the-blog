@@ -139,6 +139,19 @@ function renderCardSetPage() {
   renderPaginationControls();
 }
 
+// The clean canonical/og:url for one review, built from its own data so extra
+// query params or a different param order can't create duplicate canonicals.
+// setID only on multi-set years, matching the address bar (syncSetIdInUrl()).
+function buildReviewCanonicalUrl(item) {
+  const pageName = getPageNameForYear(item.blogCat, item.year)
+    || new URLSearchParams(window.location.search).get("pageName");
+  const params = new URLSearchParams({ year: item.year });
+  if (pageName) params.set("pageName", pageName);
+  params.set("blogCat", item.blogCat);
+  if (allCardSets.length > 1 && item.setID) params.set("setID", item.setID);
+  return `https://www.junkwaxhockey.com/waxReviews.html?${params}`;
+}
+
 /* Dynamically create & render the page title, meta tags, and
  * structured data for waxReviews.html/lockout.html, once per set as it loads 
  */
@@ -169,7 +182,7 @@ function fetchPageTitle(item)
     description: description,
     keywords: keywords,
     image: image,
-    url: window.location.href,
+    url: buildReviewCanonicalUrl(item),
     type: "website"
   });
 
