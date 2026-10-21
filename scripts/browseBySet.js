@@ -26,6 +26,8 @@ function groupBrowseSetsBySeason(sets) {
 
 function buildBrowseSetEntry(set) {
   const pageName = getPageNameForYear(set.blogCat, set.year);
+  // The season heading above already shows the year, so the title drops it;
+  // data-set-name below keeps the full name, which the checklist lookup needs.
   const links = [];
   if (pageName) {
     const setParam = set.setID ? `&setID=${encodeURIComponent(set.setID)}` : "";
@@ -37,7 +39,7 @@ function buildBrowseSetEntry(set) {
   }
   return `
     <div class="browse-set">
-      <div class="browse-set-name">${escapeHtml(set.setName)}</div>
+      <div class="browse-set-name">${escapeHtml(stripYearFromSetName(set.setName))}</div>
       <div class="browse-set-links">${links.join("")}</div>
     </div>`;
 }
