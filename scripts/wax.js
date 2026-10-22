@@ -437,6 +437,13 @@ document.addEventListener("click", (event) => {
 // Groups/sorts/labels a checklist's items - shared by the HTML
 // renderer and the PDF exporter so both stay in sync. Returns
 // [{ title, cards }, ...]; title text is raw/unescaped either way.
+// Insert groups that aren't really insert sets, so they get no " - Insert Set"
+// suffix. Keyed "<setName>|<insertSetName>"; the Tembec cards were a test run
+// that was never sold.
+const CHECKLIST_NO_SUFFIX_GROUPS = new Set([
+  "1989-90 O-Pee-Chee|Tembec Test Run - All Cards Feature White Backs"
+]);
+
 function buildChecklistGroups(items) {
   if (!items || items.length === 0) return [];
 
@@ -473,7 +480,9 @@ function buildChecklistGroups(items) {
   insertEntries.sort((a, b) => Number(a.isMemorabilia) - Number(b.isMemorabilia));
 
   insertEntries.forEach(({ name, cards, isMemorabilia }) => {
-    groups.push({ title: `${name} - ${isMemorabilia ? "Memorabilia" : "Insert Set"}`, cards });
+    const exempt = CHECKLIST_NO_SUFFIX_GROUPS.has(`${cards[0].setName}|${name}`);
+    const suffix = exempt ? "" : ` - ${isMemorabilia ? "Memorabilia" : "Insert Set"}`;
+    groups.push({ title: `${name}${suffix}`, cards });
   });
 
   return groups;
