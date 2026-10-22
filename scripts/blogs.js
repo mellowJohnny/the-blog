@@ -35,8 +35,9 @@ function renderBlogIntro(blogType) {
     // blogType 99 or missing → fallback
     introHTML = `
       <h1>welcome to junk wax hockey!</h1>
-      <p>Late '80s and early '90s hockey cards - vintage and junk wax set reviews, full set checklists, and player search.</p>
-      <p>If you're looking for information about vintage or junk wax hockey cards, you're in the right place.  So as my Dad used to say, "Take your coat off and stay a while..." </p>
+      <p>Late '80s and early '90s hockey cards - junk wax and classic set reviews, vintage McDonald's and the latest Tim Hortons set reviews, plus full set checklists, and player search.</p>
+      <p>If you're looking for full reviews and historical information about junk wax hockey cards (and some modern Timmies sets thrown in for fun), you're in the right place.</p>
+      <p>As my Dad used to say, take your coat off and stay a while...</p>
     `;
   }
 
