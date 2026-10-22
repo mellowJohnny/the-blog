@@ -55,12 +55,10 @@
     ></script>
 
     <!-- JS -->
-    <script src="/scripts/blogs.js" defer></script>
     <script src="/scripts/helper.js" defer></script>
 
     <script>
       window.addEventListener('load', () => {
-        fetchBlogs('99');
         fetchCopyrightYear();
         fetchNav("index");
         fetchFooterLinks();
@@ -80,12 +78,6 @@
       gtag('config', 'G-JMGVGK09QX');
     </script>
 
-    <!-- Wait for the DOM to load, then call the intro function -->
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-        renderBlogIntro('99');
-      });
-    </script>
   </head>
 
   <body>
@@ -104,13 +96,30 @@
     <main>
       <section>
         <div class="flex-container">
-          <div class="intro" id="blog-intro"></div>
-          <!-- Populated by renderBlogIntro() in blogs.js -->
+          <div class="intro" id="blog-intro">
+            <h1>welcome to junk wax hockey!</h1>
+            <p>Late '80s and early '90s hockey cards - junk wax and classic set reviews, vintage McDonald's and the latest Tim Hortons set reviews, plus full set checklists, and player search.</p>
+            <p>If you're looking for full reviews and historical information about junk wax hockey cards (and some modern Timmies sets thrown in for fun), you're in the right place.</p>
+            <p>As my Dad used to say, take your coat off and stay a while...</p>
+          </div>
         </div>
       </section>
       <section>
         <div class="flex-container">
-          <div class="blog-entry" id="blogsDiv"></div>
+          <!-- Static on purpose: there is only ever one Home post, so no API call.
+               Not #blogsDiv, whose 750px min-height is for late-arriving content. -->
+          <div class="blog-entry" id="home-post">
+            <h2 class="blog-title">junk wax curious?</h2>
+            <p>If you are like me and started collecting hockey cards in the late 80s and early 90s, you lived through the "Junk Wax" era, generally considered to be the years from about the '85-'86 season to about 1993-'94 depending on who you talk to. My biggest issue with the time frame is the term used to describe it - there is nothing "junk" about these sets. OK, maybe 1990-91 Pro Set was the low point, and some of the early '90s O-Pee-Chee / Topps sets are abysmal, but the Junk Wax era gets a bad rap it just doesn't deserve.</p>
+            <p>Yes, production numbers were quite high by today's standards, but think of the players included in these sets - Lemieux, Roy, Yzerman, Hull, Bourque, Messier, Jagr, Brodeur, Robitaille, Oates, Mogilny, Sundin, Roenick, Selanne, Fedorov, Bure, Sakic, Hasek, all RCs you'll find included in the Junk era. I'll put those guys up against anyone from the modern era, no problem.</p>
+            <p>And then we have the sets themselves - 1990-91 Upper Deck that made O-Pee-Chee and Topps stand up and notice, the brilliant 1990-91 O-Pee-Chee Premier set, 1991-92 Topps Stadium Club, the courageous Pro-Set Platinum set, '92-'93 Fleer Ultra, the 25th Anniversary O-Pee-Chee set, and the first Leaf Hockey set in 1993-94. And let's not forget the gimmick parallel "Gold" set Topps did...and then Parkhurst did...and then O-Pee-Chee Premier did...and then...you get the idea. Not worth much, but fun.</p>
+            <p>So while nobody really ended up buying a house or sending their kids to college by selling any of the above rookie cards, it was by no means junk, and is more than worth your time to collect, or dive back in to if you lived it the first time around. And to be honest the ease of finding these sets and RCs at relatively affordable prices makes this era a pretty cheap way to enjoy one of the most exciting 5 year periods in the hobby.</p>
+            <p>You'll also notice I have also included reviews for every year of McDonald's hockey sets - which extends past the official end of the Junk Wax years, and just for fun a bunch of modern-era Tim Hortons Upper Deck sets are here too.</p>
+            <p>I hope you enjoy the content, I hope you'll find some interesting historical facts I've tried to include for the sets, and above all I hope you enjoy the humour, sarcasm, and spelling mistakes.</p>
+            <p>Have fun!</p>
+            <hr>
+            <br>
+          </div>
         </div>
       </section>
     </main>

@@ -32,7 +32,8 @@ function renderBlogIntro(blogType) {
       <h1>about junk wax hockey...</h1>
     `;
   } else {
-    // blogType 99 or missing → fallback
+    // Missing or unrecognised type (e.g. tech.html?blogType=4) → generic fallback.
+    // index.html is static now and keeps its own copy of this text.
     introHTML = `
       <h1>welcome to junk wax hockey!</h1>
       <p>Late '80s and early '90s hockey cards - junk wax and classic set reviews, vintage McDonald's and the latest Tim Hortons set reviews, plus full set checklists, and player search.</p>
@@ -46,8 +47,8 @@ function renderBlogIntro(blogType) {
     introEl.innerHTML = introHTML;
   }
 
-  // tech.html only (index.html passes "99" and about.html "98", each with its
-  // own static meta) - fixes tech.html having no meta description, and the same
+  // tech.html only (about.html passes "98" with its own static meta; index.html
+  // no longer uses this file) - fixes tech.html having no meta description, and the same
   // <title> duplicated across its 4 ?blogType= variants.
   if (blogType && blogType !== "99" && blogType !== "98") {
     const metaByType = {
@@ -86,7 +87,7 @@ function renderBlogIntro(blogType) {
  /** 
     * This function calls an underlying AWS call used to FETCH ALL BLOG POSTS
     * AWS Lambda call - getBlogs end-point
-    * Called from the index.html page
+    * Called from the about.html and tech.html pages (index.html is static now)
   */
 
   function fetchBlogs(blogType) {
