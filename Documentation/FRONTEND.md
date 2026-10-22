@@ -9,7 +9,7 @@ inline in the `<head>`.
 
 | Page | Purpose | Key query params | Scripts used |
 |---|---|---|---|
-| `index.html` | Homepage — an edge-to-edge image banner (`.home-masthead`; its -8px margins cancel the browser's default 8px body margin, and it scales with the window at every width — see "Home page banner" below) over the "Home Page" blog stream (`blogType=99`). **No scores ticker, by design.** No weather widget any more (that now exists only on `tech.html`). | — | `blogs.js`, `helper.js` |
+| `index.html` | Homepage — an edge-to-edge image banner (`.home-masthead`; its -8px margins cancel the browser's default 8px body margin, and it scales with the window at every width — see "Home page banner" below) over static intro and post cards written straight into the HTML (see "Home page content" below). **No scores ticker, by design.** No weather widget (that exists only on `tech.html`). | — | `helper.js` |
 | `tech.html` | Tech / Mach-E / Raspberry Pi blog stream, filtered by `blogType`. **Not linked from the nav, home page or sitemap since the 2026-10-12 move to junkwaxhockey.com - reachable only by direct URL.** Masthead uses the `.masthead-container` (masthead + weather widget) layout that `index.html` had before it got its banner — it used to show a decorative gif instead and never actually rendered the weather widget (loaded `blogs.js`, which targets `#weather`, but had no such element — silently broken). Fixed by adopting that markup. It is the only page that still has the weather widget. | `blogType`, `pageName` | `blogs.js`, `helper.js` |
 | `waxReviews.html` | Card set review stream — the main hockey card content. See "Linking to one specific set" below. | `year`, `pageName`, `blogCat`, `sortOrder`, `setID` | `wax.js`, `ticker.js`, `helper.js` |
 | `playerSearch.html` | Player search — find every set a player appears in, across all uploaded checklists, with links to each set's review. See "Player search" below. | — | `playerSearch.js`, `ticker.js`, `helper.js` |
@@ -17,7 +17,7 @@ inline in the `<head>`.
 | `theJunkWaxYears.html` | Static essay on hockey's "Junk Wax" era (the late-80s/early-90s overproduction boom this site's card reviews mostly cover). Linked from `waxReviews.html`'s junkWax intro copy (`renderCardIntro()`, `wax.js`). Was briefly moved into `Old HTML Pages/` by mistake and missed the site-wide HTML/CSS-conformity and SEO passes as a result — since restored and brought in line with the other pages (masthead/fonts/script-loading now match `lockout.html`'s pattern; a `<meta description="...">` typo, which meant this page never actually had a working meta description, and a broken `class="flex-container, intro"` — a stray comma silently prevented that layout class from ever applying — were also fixed). | — | `ticker.js`, `helper.js` |
 | `timeline.html` | Interactive timeline of the Junk Wax era — one flip card per season, built in the browser from a markdown file. See "Junk Wax timeline" below. | — | `timeline.js`, `ticker.js`, `helper.js` |
 | `browseBySet.html` | Every live set in two columns (Major Releases; Fast Food Sets), grouped by season, each with Review and Checklist links. Linked from the nav and footer as "All Sets". See "Browse By Set" below. | — | `browseBySet.js`, `wax.js`, `helper.js` |
-| `about.html` | The About page: a copy of the Home page that shows the single `blogType` 98 post. Footer link only. See "About page" below. | — | `blogs.js`, `helper.js` |
+| `about.html` | The About page: the Home page's layout, but its single `blogType` 98 post is fetched, so it stays editable in the CMS. Footer link only. See "About page" below. | — | `blogs.js`, `helper.js` |
 
 **No longer live**: `cards.html` (the "what is Junk Wax" essay) and `cardChecker.html` (the "Card-O-Matic" slot calculator) were both moved to `Old HTML Pages/` on 2026-08-15 — see "Orphaned / legacy files" below. `cards.html` had already been documented here as deprecated-but-still-linked before that move; this doc previously still listed both as live public pages, which was stale.
 
@@ -71,7 +71,7 @@ track when a set last changed.
 
 | File | Responsibility |
 |---|---|
-| `blogs.js` | Blog intro copy (`renderBlogIntro()`), `fetchBlogs()`/pagination/rendering for the blog stream, and the weather widget on `tech.html` (calls OpenWeatherMap directly from the browser using the visitor's geolocation; the bootstrap does nothing on a page with no `#weather` element, which is now the Home page). |
+| `blogs.js` | Blog intro copy (`renderBlogIntro()`), `fetchBlogs()`/pagination/rendering for the blog stream, and the weather widget on `tech.html` (calls OpenWeatherMap directly from the browser using the visitor's geolocation; the bootstrap does nothing on a page with no `#weather` element). Loaded by `about.html` and `tech.html` only: the Home page is static and no longer uses it. |
 | `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. On mobile, the prev/next set name in that label drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle") via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans the mobile breakpoint swaps between, since the full "YYYY-YY Manufacturer" label was too long for a small screen; desktop still shows the full name. The NHL scores ticker and its game modal used to live here and moved to `ticker.js` — see below. |
 | `ticker.js` | The NHL/PWHL scores ticker under the masthead (`initNhlTicker()` and its helpers — see "NHL scores ticker" below) and the game modal opened from it (`openNhlGameModal()` and its render helpers — see "NHL game modal" below). Moved verbatim out of `wax.js` so pages that have nothing else to do with card sets (Player Search, the essays) can show the ticker. Starts itself on `DOMContentLoaded`. |
 | `timeline.js` | `timeline.html` only: fetches `/timeline/timeline.md`, parses it (`parseTimelineMarkdown()`) and builds the flip cards (`renderTimeline()`, `buildTimelineCard()`). Entry point is `initTimeline()`. See "Junk Wax timeline" below. |
@@ -947,10 +947,34 @@ and would otherwise turn the link blue and visible.
 **Limitation.** The links are built by JavaScript, like the nav, so a visitor
 with JavaScript off sees only the copyright line.
 
+## Home page content (`index.html`)
+
+The Home page is plain static HTML: the intro card (`#blog-intro`, the
+page's one `<h1>` plus three short paragraphs) and the post card
+(`#home-post`: an `<h2>` title and seven paragraphs, no byline) are
+written into the markup. It was built in the browser before — an intro
+from `renderBlogIntro('99')` and the single `blogType` 99 post fetched
+through `getBlogs` — which cost an API round trip, a 750px height
+placeholder and a layout shift to display text that never changes, and
+meant the text wasn't in the HTML a crawler first receives. The page now
+loads only `helper.js` (for the nav, footer links and copyright) and
+makes no request for content.
+
+Practical consequences: edit the Home wording directly in `index.html`;
+the old type-99 post still exists in the `Blogs` table but nothing reads
+it (the CMS no longer offers Home Page as a type for new posts, though
+`BLOG_TYPE_LABELS` still labels the existing post); and the post card
+deliberately is not `#blogsDiv`, whose `min-height: 750px` pre-sizes
+late-arriving content and would only add dead space here. The old
+`BlogPosting` structured-data block went with the dynamic rendering. The
+blog-stream machinery in `blogs.js` is still used by `about.html` and
+`tech.html`, and its fallback intro (the old Home welcome copy) still
+serves `tech.html?blogType=4`.
+
 ## Home page banner
 
-`index.html`'s masthead (and `about.html`'s, which is a copy of the
-Home page) is an image, `images/masthead-v19.webp` (1500x250, a 6:1
+`index.html`'s masthead (and `about.html`'s, which uses the same
+banner markup) is an image, `images/masthead-v19.webp` (1500x250, a 6:1
 strip), inside a `.home-masthead` wrapper. The wrapper has three jobs,
 each done in CSS so the page needs no script:
 
@@ -1130,17 +1154,18 @@ year, so keep them consistent in the CMS.
 
 ## About page (`about.html`)
 
-A copy of the Home page that shows the blog post(s) of `blogType` 98
-instead of 99: same banner, centred nav, footer and scripts; it differs
-only in its title/description/canonical, `fetchBlogs('98')`,
-`renderBlogIntro('98')` and `fetchNav("about")`, and it has no hidden
-WLCMS link (that stays on Home). There is expected to be exactly one
-type-98 post; it renders with the usual byline and the page paginates
-like Home if a second ever appears.
+The Home page's layout (same banner, centred nav, footer and scripts)
+showing the blog post(s) of `blogType` 98. Unlike the Home page, which
+is static, it still fetches its content: `fetchBlogs('98')` and
+`renderBlogIntro('98')`, plus `fetchNav("about")`, because the About
+post is meant to be edited through the CMS. It has its own
+title/description/canonical and no hidden WLCMS link (that stays on
+Home). There is expected to be exactly one type-98 post; it renders
+with the usual byline and the page paginates if a second ever appears.
 
 Two things in `renderBlogIntro()` (`blogs.js`) mattered. Type 98 has its
 own branch that renders just a heading, because the final `else` is the
-Home page copy. And the block that sets title, description and a
+old Home page welcome copy. And the block that sets title, description and a
 canonical for every type other than 99 (written for the tech blog, with
 a `tech.html` canonical) now skips 98 as well, otherwise About would
 have declared the tech blog as its canonical.

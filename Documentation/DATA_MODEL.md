@@ -32,7 +32,7 @@ key `blogID`, no sort key) — see above.
 | Field | Type | Notes |
 |---|---|---|
 | `blogID` | String | The item's human-facing identifier — used as the lookup key by `getBlogByID`, which queries the `blogID-index` GSI directly (see `API_ENDPOINTS.md`), but is *not* the DynamoDB table's own primary key (see above). Early sample data (`Documentation/BlogArchive.txt`) used a millisecond timestamp string as `id`, e.g. `"1640119360299"` — `blogID` is likely the same idea, possibly renamed. |
-| `blogType` | Number | Partition key. `1`=Tech, `2`=Hockey Cards (per the `createBlogPost.html` dropdown, though card content actually goes to the `Cards` table, not `Blogs`), `3`=Mach-E, `4`=SYNC Updates, `5`=Raspberry Pi, `98`=About (exactly one post, shown by `about.html`), `99`=Home Page. See `BLOG_TYPE_LABELS` in `scripts/cmsBlog.js`. |
+| `blogType` | Number | Partition key. `1`=Tech, `2`=Hockey Cards (per the `createBlogPost.html` dropdown, though card content actually goes to the `Cards` table, not `Blogs`), `3`=Mach-E, `4`=SYNC Updates, `5`=Raspberry Pi, `98`=About (exactly one post, shown by `about.html`), `99`=Home Page (no longer read — `index.html` is static HTML now, so this post is inert and the CMS no longer offers the type for new posts). See `BLOG_TYPE_LABELS` in `scripts/cmsBlog.js`. |
 | `title` | String | Post title. |
 | `author` | String | Free text; CMS forms currently only offer "Christian Couillard". |
 | `postBody` | String | HTML content, authored via TinyMCE. |

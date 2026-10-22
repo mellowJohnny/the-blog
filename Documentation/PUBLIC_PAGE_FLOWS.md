@@ -17,73 +17,40 @@ other hockey pages (see the Card Set Reviews flow below).
 
 ## Home Page - `index.html`
 
-This is the site's front door — its whole job on load is to assemble
-three independent pieces of chrome/content around the static HTML
-shell that's already there: the blog stream itself, the site-wide nav,
-and the footer. None of the three depends on the others, so all three
-fire in parallel off the same `window load` event rather than being
-sequenced.
+The site's front door is plain static HTML. Its content (the intro card
+and the single "junk wax curious?" post) is written into the page, so a
+visitor, or a crawler that doesn't run JavaScript, gets the text in the
+first response; JavaScript only assembles the chrome around it (the nav,
+the footer links and the copyright). It used to be built in the browser:
+`renderBlogIntro('99')` wrote the intro and `fetchBlogs('99')` fetched
+the one `blogType` 99 post from the `Blogs` table, sorted and paginated
+it, and wrote a `BlogPosting` JSON-LD block. Since there is only ever
+one Home post, that was an API round trip, a placeholder that reserved
+750px of height, and a layout shift, all to show text that never
+changes.
 
-**What loads**: `scripts/blogs.js`, `scripts/helper.js` (both `defer`),
-plus two inline `<script>` blocks — one registering the `window load`
-handler described below, one registering `DOMContentLoaded`. The
-masthead is a plain edge-to-edge image banner. `blogs.js` still
-contains a block of top-level weather-widget code, but it does nothing
-here: it only runs when the page has a `#weather` element, which the
-Home page no longer does, so nothing asks for the visitor's location
-or calls OpenWeatherMap (see the Tech Blogs section for what that code
-does). The Home page also has no scores ticker, by design.
+**What loads**: `scripts/helper.js` (`defer`) and one inline `window
+load` handler. `blogs.js` is not loaded. The masthead is the
+edge-to-edge image banner (see `FRONTEND.md`'s "Home page banner"). The
+Home page has no scores ticker, by design.
 
-**On `DOMContentLoaded`**: `renderBlogIntro('99')` writes a static,
-hardcoded intro paragraph — as an `<h1>` plus body copy — into
-`#blog-intro`. `blogType "99"` (the special "home page" type) doesn't
-match any of the function's type-specific branches (`"1"`/`"3"`/`"5"`),
-so it falls through to the generic "the blog with a purpose..." copy.
-This `<h1>` is the page's one true page-level heading — the individual
-post `displayBlog()` renders below it (see the `fetchBlogs()` bullet
-below) is deliberately an `<h2>`, so the page never has two competing
-`<h1>`s.
+**What is in the HTML**: the intro card (`#blog-intro`: the page's one
+`<h1>` plus three short paragraphs) and the post card (`#home-post`: an
+`<h2>` title, seven paragraphs, no byline). The post card deliberately
+is not `#blogsDiv`, whose `min-height: 750px` pre-sizes content that
+arrives late and would only leave dead space under static text. To
+change the Home wording, edit `index.html` directly. The type-99 post
+still exists in the `Blogs` table but nothing reads it any more, so
+editing it in the CMS changes nothing on the site (the CMS no longer
+offers Home Page as a type for new posts).
 
-**On `window load`** (all three fire independently, not sequenced on
-each other):
-- `fetchBlogs('99')` is the call that actually populates the page with
-  content: it pulls every blog post tagged `blogType: 99` (the ones
-  meant to show on the home page specifically, as opposed to a
-  category-specific stream like `tech.html`'s) from the `Blogs` table
-  in DynamoDB, via **Get all blogs of a given type** (`?blogType=99`),
-  fronted by the `getBlogs` Lambda (`Lambdas/getBlogs/`) — it reads via
-  a `QueryCommand` on `blogType` (the table's partition key), filtered
-  to `published = true`, and returns a plain JSON array. Once
-  the result is back, `fetchBlogs()` sorts it via
-  `getSortOrder("time", "first")` (newest first), stores it in the
-  module-level `allBlogs`, resets `currentBlogPage = 1`, then calls
-  `renderBlogPage()`, which slices out just page 1 (`blogPageSize` is
-  `1` — the site shows one post at a time, not a feed) and calls
-  `displayBlog(postBody, author, time, title, img, imgCap)` to actually
-  write it into `#blogsDiv`. `displayBlog()` skips rendering an `<img>`
-  tag entirely when `img === "none"`, and otherwise renders one with an
-  `onerror` handler that hides both the image and its caption if the
-  URL 404s — so a broken or placeholder image fails silently instead of
-  showing a broken-image icon. It also builds a `BlogPosting` JSON-LD
-  block from this same data (`headline`, `author`, `datePublished`,
-  `image` when present, and an `articleBody` excerpt built by stripping
-  HTML tags from `postBody` via `stripHtmlTags()`, `helper.js`) and
-  writes it via `setJsonLd("jsonld-blogpost", ...)` — a fixed id, since
-  only one post is ever shown at a time, so the next pagination click
-  replaces this block rather than piling up a new one. `renderBlogPage()`
-  finishes by calling `renderBlogPaginationControls()`, which builds the
-  "← previous post title" / "next post title →" links into
-  `#paginationControls`, so a visitor can step through older/newer posts
-  without a full reload.
-- `setPageMeta({...})` (`helper.js`, called directly in the `window
-  load` handler, not from a `blogs.js` function) — sets `<title>`, the
-  meta description, canonical (`https://www.junkwaxhockey.com/`, matching
+**On `window load`** (independent of each other):
+- `setPageMeta({...})` (`helper.js`) — sets `<title>`, the meta
+  description, canonical (`https://www.junkwaxhockey.com/`, matching
   `sitemap.xml`'s root entry), and the Open Graph/Twitter Card tags,
-  reusing the same static, already-good title/description this page
-  always had, plus the preloaded hero image
-  (`hellaFilesArch.webp`) as the social-share image. Static and only
-  called once — unlike `tech.html`/`waxReviews.html` below, there's only
-  one URL here, so there's nothing per-instance to vary.
+  with the preloaded hero image (`hellaFilesArch.webp`) as the
+  social-share image. Called once: there's only one URL here, so
+  there's nothing per-instance to vary.
 - `fetchCopyrightYear()` (`helper.js`) — a small, unrelated piece of
   chrome: writes `© <current year> Christian Couillard` into `#copy`.
 - `fetchFooterLinks()` (`helper.js`) — fills the footer's link columns
@@ -92,10 +59,9 @@ each other):
   out; see `FRONTEND.md`'s "Site footer".
 - `fetchNav("index")` (`helper.js`) — builds the top nav bar itself
   (the links to the card review sections, the timeline, All Sets and
-  Player Search), by looking
-  up `NAV_MAP["index"]` (`classic, junk, mcd, timmies, timeline, browse, search`, with no
-  "Home" link, since the masthead already is one)
-  and rendering it as a `<table>` into
+  Player Search), by looking up `NAV_MAP["index"]` (`classic, junk, mcd,
+  timmies, timeline, browse, search`, with no "Home" link, since the
+  masthead already is one) and rendering it as a `<table>` into
   `#global-nav`. Purely client-side — the nav structure is a hardcoded
   map in `helper.js`, not backend-driven, since the site's page/category
   set changes rarely enough that there's no value in making it dynamic.
@@ -106,22 +72,18 @@ each other):
   screens. A separate, page-independent `document` click listener in
   `helper.js` closes it again on any click outside
   `#global-nav-placeholder`.
-- Pagination links → `nextBlogPage()` / `prevBlogPage()` (`blogs.js`) —
-  advance `currentBlogPage`, re-run `renderBlogPage()`, then
-  `scrollIntoView()` back to `#blog-intro`. No new API call — these
-  just re-slice the `allBlogs` array already fetched on load, since the
-  whole type's worth of posts was pulled in one shot up front.
 - "WLCMS" footer link → a plain `<a href>` straight to the Cognito
   Hosted UI login URL (`rel="nofollow"`) — no JS involved, this is how
-  `/cms` access begins for a logged-out visitor.
+  `/cms` access begins for a logged-out visitor. It is hidden (the
+  footer's own colour) and only visible as an outline on keyboard focus.
 
 ## Tech Blogs - `tech.html`
 
-This page exists to reuse `index.html`'s exact "blog stream" machinery
-for a specific category instead of the home-page mix — it's the same
-`blogs.js` pattern, just parameterized by whichever `blogType` the URL
+This page is where the site's **blog stream** machinery runs: one
+`blogs.js` pattern, parameterized by whichever `blogType` the URL
 specifies (`1`=Tech, `3`=Mach-E, `4`=SYNC Updates, `5`=Raspberry Pi),
-rather than a separate page/script per category.
+rather than a separate page/script per category. `about.html` uses the
+same machinery for `blogType` 98; the Home page no longer does.
 
 Since the 2026-10-12 move to `junkwaxhockey.com` nothing links here:
 the nav, home page and sitemap no longer list it, so it's reachable
@@ -129,8 +91,8 @@ only by direct URL (the posts stay in `Blogs` and in the CMS).
 
 **What loads**: `scripts/blogs.js`, `scripts/helper.js` (`defer`), plus
 inline scripts reading `blogType`/`pageName` from the query string and
-registering the same `DOMContentLoaded`/`window load` handlers as
-`index.html`. This is the one page where the weather widget still
+registering a `DOMContentLoaded` and a `window load` handler. This is
+the one page where the weather widget still
 runs: `blogs.js` has a block of **top-level code** that executes the
 instant it parses (not gated by any event, and unrelated to the blog
 content) and only does anything when the page has a `#weather`
@@ -143,40 +105,63 @@ masthead. This is a third-party call unrelated to this site's own
 backend — it isn't on the API Endpoints page and has nothing to do with
 the Lambda/DynamoDB stack the rest of this doc traces.
 
-**On `DOMContentLoaded`**: `renderBlogIntro(blogType)` — same function
-as `index.html`, but this time `"1"`, `"3"`, and `"5"` each have their
-own tailored intro copy (Tech/Mach-E/Raspberry Pi respectively), each
-still rendered as the page's one `<h1>` (see `index.html`'s section
-above for why `displayBlog()`'s own heading is an `<h2>` instead).
-`blogType "4"` (SYNC Updates) has no matching branch, so it falls
-through to the same generic fallback copy `"99"` uses on `index.html` —
-worth knowing if that intro ever looks wrong specifically on the SYNC
-Updates stream.
+**On `DOMContentLoaded`**: `renderBlogIntro(blogType)` writes a static,
+hardcoded intro into `#blog-intro`: `"1"`, `"3"` and `"5"` each have
+their own tailored copy (Tech/Mach-E/Raspberry Pi), and `"98"` (About)
+just a heading. Each is rendered as an `<h1>`, the page's one true
+page-level heading — the individual post `displayBlog()` renders below
+it (see the `fetchBlogs()` bullet below) is deliberately an `<h2>`, so
+the page never has two competing `<h1>`s. `blogType "4"` (SYNC Updates)
+has no matching branch, so it falls through to the generic fallback
+copy (the old Home page welcome text, kept in `blogs.js` for this
+case) — worth knowing if that intro ever looks wrong specifically on
+the SYNC Updates stream.
 
-This is also where `tech.html` gets its title/meta description/OG tags
-— something `index.html` doesn't need this function for, since it
-already sets its own statically (see above). Whenever `blogType` isn't
-`"99"` (i.e. this is genuinely `tech.html`, not `index.html` calling
-the same shared function), `renderBlogIntro()` looks up a small
-`metaByType` map keyed by `blogType` (falling back to a generic
-"tech blog" title/description for `"4"`, which has no dedicated entry)
-and calls `setPageMeta({...})` (`helper.js`) with that title/description,
+This is also where `tech.html` gets its title/meta description/OG tags.
+For any `blogType` other than `"98"` (About, which sets its own) or
+`"99"` (no longer used), `renderBlogIntro()` looks up a small
+`metaByType` map keyed by `blogType` (falling back to a generic "tech
+blog" title/description for `"4"`, which has no dedicated entry) and
+calls `setPageMeta({...})` (`helper.js`) with that title/description,
 the shared hero image as `image`, and a canonical built from
 `window.location.search` — e.g.
 `https://www.junkwaxhockey.com/tech.html?blogType=1&pageName=tech` —
-so each of the 4 `blogType` variants in `sitemap.xml` gets its own
-accurate title/description/canonical instead of sharing one generic
-pair, which is what this page had before.
+so each of the 4 `blogType` variants gets its own accurate
+title/description/canonical instead of sharing one generic pair. Without
+the 98 exclusion, the About page would have been given a `tech.html`
+canonical.
 
 **On `window load`**:
-- `fetchBlogs(blogType)` is the content-loading call, doing exactly
-  what `index.html`'s does — same `Blogs` table, same `getBlogs` Lambda,
-  same **Get all blogs of a given type** endpoint, same pagination
-  behavior — just filtered to whichever `blogType` this page instance
-  represents instead of `99`. Same `displayBlog()` render function too,
-  so the same `BlogPosting` JSON-LD block described in `index.html`'s
-  section above is written here as well.
-- `fetchCopyrightYear()` — same as `index.html`.
+- `fetchBlogs(blogType)` is the call that actually populates the page
+  with content: it pulls every blog post of that `blogType` from the
+  `Blogs` table in DynamoDB, via **Get all blogs of a given type**
+  (`?blogType=<n>`), fronted by the `getBlogs` Lambda
+  (`Lambdas/getBlogs/`) — it reads via a `QueryCommand` on `blogType`
+  (the table's partition key), filtered to `published = true`, and
+  returns a plain JSON array. Once the result is back, `fetchBlogs()`
+  sorts it via `getSortOrder("time", "first")` (newest first; Raspberry
+  Pi is oldest first), stores it in the module-level `allBlogs`, resets
+  `currentBlogPage = 1`, then calls `renderBlogPage()`, which slices
+  out just page 1 (`blogPageSize` is `1` — the site shows one post at a
+  time, not a feed) and calls `displayBlog(postBody, author, time,
+  title, img, imgCap)` to actually write it into `#blogsDiv`.
+  `displayBlog()` skips rendering an `<img>` tag entirely when `img ===
+  "none"`, and otherwise renders one with an `onerror` handler that
+  hides both the image and its caption if the URL 404s — so a broken or
+  placeholder image fails silently instead of showing a broken-image
+  icon. It also builds a `BlogPosting` JSON-LD block from this same
+  data (`headline`, `author`, `datePublished`, `image` when present, and
+  an `articleBody` excerpt built by stripping HTML tags from `postBody`
+  via `stripHtmlTags()`, `helper.js`) and writes it via
+  `setJsonLd("jsonld-blogpost", ...)` — a fixed id, since only one post
+  is ever shown at a time, so the next pagination click replaces this
+  block rather than piling up a new one. `renderBlogPage()` finishes by
+  calling `renderBlogPaginationControls()`, which builds the "←
+  previous post title" / "next post title →" links into
+  `#paginationControls`, so a visitor can step through older/newer
+  posts without a full reload.
+- `fetchCopyrightYear()` and `fetchFooterLinks()` (`helper.js`) — the
+  copyright and the footer link columns, as on every public page.
 - `fetchNav(pageName)` — called with **only** `pageName`, no `blogType`
   argument, even though `fetchNav(pageName, blogType)` accepts a second
   parameter and its own header comment describes building a
@@ -187,9 +172,13 @@ pair, which is what this page had before.
   so the nav still builds correctly, just not via the more specific
   lookup path the function was apparently designed to support.
 
-**User interactions**: identical to `index.html` — `nextBlogPage()`/
-`prevBlogPage()` for pagination, `toggleMenu()` for the hamburger, same
-reasoning as above (re-slicing an already-fetched array, no new calls).
+**User interactions**:
+- Pagination links → `nextBlogPage()` / `prevBlogPage()` (`blogs.js`) —
+  advance `currentBlogPage`, re-run `renderBlogPage()`, then
+  `scrollIntoView()` back to `#blog-intro`. No new API call — these
+  just re-slice the `allBlogs` array already fetched on load, since the
+  whole type's worth of posts was pulled in one shot up front.
+- Hamburger icon → `toggleMenu()` (`helper.js`), as on every page.
 
 **Notable**: the page markup includes an empty `<div id="blogTop">`
 above `#blogsDiv` that no script in `blogs.js` ever reads from or
@@ -285,7 +274,7 @@ everything the visitor can see or navigate to on this page.
   `Product`, `author`/`datePublished`/`reviewRating` — out of 5, from
   `stars` — and a stripped-text `reviewBody` on the nested `Review`) via
   `setJsonLd("jsonld-cardset", ...)`, a fixed id for the same
-  one-set-at-a-time reason `index.html`'s `jsonld-blogpost` block uses.
+  one-set-at-a-time reason the Tech pages' `jsonld-blogpost` block uses.
   `fetchCardSetsByYear()` itself also calls `fetchCopyrightYear()`
   unconditionally, right after kicking off the `fetch()` — so the
   copyright year is set independent of whether the card-set fetch
@@ -610,14 +599,18 @@ the columns.
 
 ## About - `about.html`
 
-The About page is the Home page's machinery pointed at a different blog
-type: it makes the same `fetchBlogs()` call as `index.html`, with
-`'98'` instead of `'99'`. **Get all blogs of a given type**
+The About page uses the same blog-stream machinery as the Tech pages
+(see the Tech Blogs section for the full `fetchBlogs()` /
+`displayBlog()` trace), pointed at `blogType` 98: it makes the same
+`fetchBlogs()` call with `'98'`. **Get all blogs of a given type**
 (`?blogType=98`) is fronted by the same `getBlogs` Lambda, which reads
 the `Blogs` table by partition key, so no backend change was needed.
-`renderBlogIntro('98')` renders only the heading "about junk wax
-hockey...", and the post below it carries the content. The page sets its
-own title, description and canonical; `renderBlogIntro()` skips its
+Its layout is the Home page's (same banner, centred nav and footer),
+but unlike the Home page its content is still fetched, because the About
+post is meant to be edited through the CMS. `renderBlogIntro('98')`
+renders only the heading "about junk wax hockey...", and the post below
+it carries the content, with the usual byline. The page sets its own
+title, description and canonical; `renderBlogIntro()` skips its
 tech-blog metadata block for type 98, which would otherwise have pointed
 the canonical at `tech.html`. It is footer-only (not in the nav) and has
 no hidden WLCMS link.
