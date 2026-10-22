@@ -824,10 +824,14 @@ label sup {
   background-color: #c5cdd3;
 }
 
- .mast-table {
-  border-collapse: collapse;
+.cms-masthead {
+  margin: -8px -8px 0; /* cancel the body margin: edge to edge, like the home banner */
+}
+
+.cms-masthead img {
+  display: block;
   width: 100%;
-  background-color: var(--color-masthead-bg);
+  height: auto;
 }
 
 .autobus-mast-table {
@@ -835,25 +839,6 @@ label sup {
   width: 100%;
   background-color: rgb(0, 0, 0);
 }
-
-.mast-table td {
-  vertical-align: top;
-  padding: 0;
-  margin: 0;
-}
-
-.mast-table tr {
-  height: 7vw; /* matches masthead font size */
-}
-
-.mast-table img {
-  display: block;
-  height: 100%;
-  width: auto;
-  margin: 0;
-  padding: 0;
-}
-
 
 .masthead {
   font-family: 'Spicy Rice';
@@ -869,18 +854,6 @@ label sup {
   color: #000000;
   background-color: rgb(0, 0, 0);
   padding: 1px 10px 0 10px;
-}
-
-.cms-logo {
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 40px;
-  text-align: left; 
-  font-weight: 500;         
-  color: var(--color-link);
-  background-color: var(--color-masthead-bg);
-  padding: 4px 16px 4px 10px; /* add more right padding */
-  line-height: 1.2;
-  display: block;             /* ensures alignment behaves predictably */
 }
 
 .autobus-cms-logo {
@@ -3531,8 +3504,8 @@ body:has(.site-footer) {
 /* ============================
    cardStack CMS SHARED CHROME (wlcms.html, createBlogPost.html,
    createCardSet.html, blogEdit.html, setEdit.html, pickBlog.html,
-   pickCardSet.html) - also tech.html for the masthead/mast-table rules,
-   since it reuses the same masthead markup
+   pickCardSet.html) - also tech.html for the .masthead rules, since it
+   reuses that class (the CMS pages themselves now use .cms-masthead)
    ============================ */
 
   /* Set picker */
@@ -3593,25 +3566,10 @@ body:has(.site-footer) {
     padding: 8px 14px;
   }
 
-  /* cardStack CMS masthead (shared across every cms/*.html page) - a
-     real height (not auto) so height:100% on any img inside the row has
-     something to compute against; auto height makes percentage-height
-     children fall back to their native size instead. Scaled to roughly
-     match the 14vw masthead font. */
-  .mast-table tr {
-    height: 16vw;
-  }
-
   .masthead {
     font-size: 14vw;
     text-align: center;
     padding: 8px 10px 4px 10px;
-  }
-
-  /* Hide the "Content Management System" subtitle on mobile rather than
-     squeezing a fixed 40px font into a 20%-width table column */
-  .cms-logo {
-    display: none;
   }
 
 /* ============================
