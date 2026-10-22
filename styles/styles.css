@@ -2957,10 +2957,6 @@ body:has(.site-footer) {
   color: #444;
 }
 
-.pagination-setname-short {
-  display: none;
-}
-
 /*************************************** Vote Widget Styles... ********************************/
 .vote-widget {
   display: flex;
@@ -3487,14 +3483,6 @@ body:has(.site-footer) {
 
   .pagination-page {
     font-size: 0.9rem;
-  }
-
-  .pagination-setname-full {
-    display: none;
-  }
-
-  .pagination-setname-short {
-    display: inline;
   }
 
   /* Masthead & Weather Mobile Styles (index.html only - .masthead-container
