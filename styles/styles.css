@@ -4096,11 +4096,6 @@ body:has(.site-footer) {
   .nav-td {
     padding: 20px 12px;
   }
-
-  /* Home page only: the nav row sits centred under the centred banner. */
-  .nav-centered .nav-table {
-    margin: 0 auto;
-  }
 }
 
 

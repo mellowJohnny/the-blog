@@ -987,7 +987,9 @@ each done in CSS so the page needs no script:
   the file is 1500px wide; a larger source file, or a `srcset` with a
   2x version for wide windows, would sharpen it. A pixel-accurate image
   needs about the window width times the screen's pixel density. The
-  nav row beneath is centred (`.nav-centered`, Home and About).
+  nav row beneath is left-aligned like every other page's (the old
+  Home-and-About-only `.nav-centered` centring was removed once the banner
+  went edge to edge).
 - **Taller on phones.** At 600px and below the image is forced to a
   7:2 box (`object-fit: fill`) instead of its native 6:1, because the
   native strip is too thin to read on a phone.
