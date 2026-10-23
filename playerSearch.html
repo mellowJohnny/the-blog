@@ -57,6 +57,12 @@
       <style>.nhl-ticker { display: none; }</style>
     </noscript>
 
+    <!-- Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX"
+    ></script>
+
     <!-- Load the Hella Files scripts -->
     <script src="scripts/playerSearch.js" defer></script>
     <script src="/scripts/ticker.js" defer></script>
@@ -104,6 +110,11 @@
           runPlayerSearch(initialQuery);
         }
       });
+
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JMGVGK09QX');
     </script>
  </head>
 
