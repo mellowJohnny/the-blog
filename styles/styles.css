@@ -2541,7 +2541,15 @@ body:has(.site-footer) {
   margin: 0 0 16px 0;
 }
 
-.checklist-modal-rc-filter {
+.checklist-modal-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.checklist-modal-filter {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -2556,7 +2564,11 @@ body:has(.site-footer) {
   cursor: pointer;
 }
 
-.checklist-modal-rc-filter input[type="checkbox"] {
+.checklist-modal-filter[hidden] {
+  display: none;
+}
+
+.checklist-modal-filter input[type="checkbox"] {
   width: 18px;
   height: 18px;
   accent-color: #2e8b57;
@@ -2780,7 +2792,7 @@ body:has(.site-footer) {
     gap: 10px;
   }
 
-  .checklist-modal-rc-filter {
+  .checklist-modal-filters {
     align-self: flex-end;
   }
 }
@@ -2822,7 +2834,7 @@ body:has(.site-footer) {
   }
 
   .checklist-modal-controls,
-  .checklist-modal-rc-filter {
+  .checklist-modal-filters {
     display: none !important;
   }
 

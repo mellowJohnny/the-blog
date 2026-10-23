@@ -345,7 +345,7 @@ const CHECKLIST_API_URL = "https://xbizlwvad5.execute-api.us-east-2.amazonaws.co
 // escapeHtml() now lives in helper.js (shared with playerSearch.js).
 
 // Holds the current set's fetched items so the "Rookies only" checkbox
-// (applyChecklistRookieFilter()) can re-render from what's already in
+// (applyChecklistFilters()) can re-render from what's already in
 // memory instead of re-querying getChecklistBySetName on every toggle.
 let currentChecklistItems = [];
 
@@ -354,10 +354,11 @@ function openChecklistModal(link) {
   const overlay = document.getElementById("checklistModalOverlay");
   const title = document.getElementById("checklistModalTitle");
   const body = document.getElementById("checklistModalBody");
+  const insertFilter = document.getElementById("checklistInsertFilter");
   const rookieFilter = document.getElementById("checklistRookieFilter");
 
   title.textContent = setName;
-  // The plain set name, so applyChecklistRookieFilter() can add/remove " - Rookies".
+  // The plain set name, so applyChecklistFilters() can add/remove the filter suffix.
   title.dataset.setName = setName;
   body.innerHTML = "<p>Loading checklist...</p>";
   overlay.style.display = "block";
@@ -366,8 +367,9 @@ function openChecklistModal(link) {
   // nothing, since those rules would apply unconditionally.
   document.body.classList.add("checklist-modal-open");
   currentChecklistItems = [];
-  // The checkbox is shared across every set's modal - reset it so a
+  // The checkboxes are shared across every set's modal - reset them so a
   // filter left on from a previous set doesn't silently carry over.
+  if (insertFilter) insertFilter.checked = false;
   if (rookieFilter) rookieFilter.checked = false;
 
   fetch(`${CHECKLIST_API_URL}?setName=${encodeURIComponent(setName)}`)
@@ -377,10 +379,10 @@ function openChecklistModal(link) {
     })
     .then(items => {
       currentChecklistItems = items;
-      // Routes through applyChecklistRookieFilter() instead of
+      // Routes through applyChecklistFilters() instead of
       // rendering `items` directly - a slow fetch leaves a window
-      // where the visitor toggles the checkbox before this resolves.
-      applyChecklistRookieFilter();
+      // where the visitor toggles a checkbox before this resolves.
+      applyChecklistFilters();
     })
     .catch(err => {
       console.log("Checklist fetch failed:", err);
@@ -391,24 +393,53 @@ function openChecklistModal(link) {
 // "Rookies only" handler - filters the already-fetched
 // currentChecklistItems client-side (whole-word "RC" in notes, same
 // rule playerSearch.js uses) and re-renders. No re-fetch/re-query.
-function applyChecklistRookieFilter() {
+// Which of the modal's filters are on. Shared by the screen render and the
+// PDF export, so a download always matches what is showing.
+function getChecklistFilterState() {
+  const insertFilter = document.getElementById("checklistInsertFilter");
   const rookieFilter = document.getElementById("checklistRookieFilter");
-  const body = document.getElementById("checklistModalBody");
-  const isFiltered = rookieFilter && rookieFilter.checked;
-  const items = isFiltered
-    ? currentChecklistItems.filter(item => item.notes && /\bRC\b/.test(item.notes))
-    : currentChecklistItems;
+  return {
+    inserts: !!(insertFilter && insertFilter.checked),
+    rookies: !!(rookieFilter && rookieFilter.checked)
+  };
+}
 
-  // Name the filter in the title so a printed or downloaded list says it's rookies only.
+// Both filters on = the rookies that are in insert sets.
+function filterChecklistItems(items) {
+  const { inserts, rookies } = getChecklistFilterState();
+  return items
+    .filter(item => !inserts || item.type === "insertSet")
+    .filter(item => !rookies || (item.notes && /\bRC\b/.test(item.notes)));
+}
+
+// Names the filters in the title so a printed or downloaded list says it's filtered.
+function checklistFilterSuffix() {
+  const { inserts, rookies } = getChecklistFilterState();
+  return (inserts ? " - Inserts" : "") + (rookies ? " - Rookies" : "");
+}
+
+function applyChecklistFilters() {
+  const body = document.getElementById("checklistModalBody");
   const title = document.getElementById("checklistModalTitle");
-  if (title.dataset.setName) title.textContent = title.dataset.setName + (isFiltered ? " - Rookies" : "");
+  const insertLabel = document.getElementById("checklistInsertFilterLabel");
+  const { inserts, rookies } = getChecklistFilterState();
+  const items = filterChecklistItems(currentChecklistItems);
+
+  // Offer "Inserts only" only when this checklist has insert cards at all.
+  if (insertLabel) insertLabel.hidden = !currentChecklistItems.some(item => item.type === "insertSet");
+
+  if (title.dataset.setName) title.textContent = title.dataset.setName + checklistFilterSuffix();
 
   // renderChecklistGroups()'s own empty-state message ("No checklist
-  // data found for this set") would be misleading here - a checklist
-  // with zero rookies isn't the same as no checklist existing at all.
-  body.innerHTML = (isFiltered && items.length === 0)
-    ? "<p>No rookie cards found in this checklist.</p>"
-    : renderChecklistGroups(items);
+  // data found for this set") would be misleading here - a filtered
+  // list with zero cards isn't the same as no checklist existing at all.
+  if ((inserts || rookies) && items.length === 0) {
+    body.innerHTML = rookies
+      ? `<p>No rookie cards found in ${inserts ? "the insert sets" : "this checklist"}.</p>`
+      : "<p>No insert sets found in this checklist.</p>";
+    return;
+  }
+  body.innerHTML = renderChecklistGroups(items);
 }
 
 function closeChecklistModal() {
@@ -554,25 +585,21 @@ function sanitizeFilename(name) {
 }
 
 function exportChecklistPdf() {
-  // Mirrors applyChecklistRookieFilter()'s own filtering exactly, so a
-  // download taken while "Rookies only" is checked matches what's
-  // actually on screen rather than always exporting the full checklist.
-  const rookieFilter = document.getElementById("checklistRookieFilter");
-  const isFiltered = rookieFilter && rookieFilter.checked;
-  const items = isFiltered
-    ? currentChecklistItems.filter(item => item.notes && /\bRC\b/.test(item.notes))
-    : currentChecklistItems;
+  // Same filtering as the screen (filterChecklistItems), so a download
+  // taken while a filter is on matches what's actually showing rather
+  // than always exporting the full checklist.
+  const items = filterChecklistItems(currentChecklistItems);
 
   const groups = buildChecklistGroups(items);
-  // Nothing to export - the modal body already says so ("No rookie
-  // cards found in this checklist"), so the button is a silent no-op
-  // rather than popping a second message on top of that.
+  // Nothing to export - the modal body already says so, so the button
+  // is a silent no-op rather than popping a second message on top.
   if (groups.length === 0) return;
 
-  // The title already carries " - Rookies" when filtered; the filename builds its own.
+  // The title already carries the filter suffix; the filename builds its own.
   const titleEl = document.getElementById("checklistModalTitle");
   const setName = titleEl.textContent;
-  const fileBase = (titleEl.dataset.setName || setName) + (isFiltered ? " Rookies" : "");
+  const { inserts, rookies } = getChecklistFilterState();
+  const fileBase = (titleEl.dataset.setName || setName) + (inserts ? " Inserts" : "") + (rookies ? " Rookies" : "");
 
   loadJsPdf()
     .then(() => {
