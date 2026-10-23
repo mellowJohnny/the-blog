@@ -2196,6 +2196,11 @@ body:has(.site-footer) {
 }
 
 .browse-set {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 18px;
+  row-gap: 2px;
   margin: 0 0 14px;
 }
 
@@ -2208,7 +2213,6 @@ body:has(.site-footer) {
 .browse-set-links {
   display: flex;
   gap: 18px;
-  margin-top: 2px;
   font-family: 'Nunito', sans-serif;
   font-weight: 600;
   font-size: 16px;
