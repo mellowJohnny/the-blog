@@ -519,8 +519,9 @@ load on a page without the modal present.
   **never writes to DynamoDB itself** — it's purely parse-and-return,
   which is exactly why the review step below exists: a bad parse can
   be corrected in the browser before anything is actually saved. On
-  success: fills `#checklistSetName`/`#checklistInsertSetName` from the
-  response, calls `renderChecklistTable(cards)` — which builds one
+  success: fills `#checklistSetName`/`#checklistInsertSetName` (labelled
+  "Insert / Extended Set Name") from the response, clears the
+  `#checklistExtendedSet` checkbox, calls `renderChecklistTable(cards)` — which builds one
   editable `<tr>` per card via `buildChecklistRow()` (Card #/Player
   Name/Notes text inputs plus a per-row delete button, each value
   escaped via this file's own narrower `escapeAttr()`, not the shared
@@ -543,7 +544,9 @@ load on a page without the modal present.
   button to a "Saving..." state, then calls **Save a reviewed
   checklist**, fronted by the `saveChecklist` Lambda
   (`Lambdas/saveChecklist/`), with the Authorization header, body
-  `{setName, insertSetName, cards}`. This Lambda uses full-replace
+  `{setName, insertSetName, extended, cards}` (`extended` is the state of the
+  "Extended Set" checkbox; ticking it without a name is caught client-side
+  with an alert). This Lambda uses full-replace
   semantics scoped to the exact group being saved (main set, or one
   specific insert set) — it deletes every existing `Checklists` item in
   that group before writing the new set, so re-uploading a corrected
@@ -579,7 +582,7 @@ only `DeleteRequest` in the codebase was the one inside
   endpoint: enumerating groups is a read of already-public data, so it
   needs no auth and no new Lambda. Groups the returned rows by
   `insertSetName || MAIN_SET_LABEL` ("Main set") and renders one row per group with
-  its card count and a Delete button, under a status line reading "Found N Checklists for the <set> set" (N counts every group, the main set included). The groups are kept in memory per set (`checklistGroupsBySet`), so picking the same set again later in the page's life — even after closing and reopening the modal — re-renders from memory with no second request. That one GET passes `cache: "reload"`: the endpoint sends `Cache-Control: max-age=1800` for the public page, and the browser would otherwise answer from a copy up to 30 minutes old. A misspelled or unknown set name
+  its card count (an Extended Set's row is marked "(extended set)", from its items' `type`) and a Delete button, under a status line reading "Found N Checklists for the <set> set" (N counts every group, the main set included). The groups are kept in memory per set (`checklistGroupsBySet`), so picking the same set again later in the page's life — even after closing and reopening the modal — re-renders from memory with no second request. That one GET passes `cache: "reload"`: the endpoint sends `Cache-Control: max-age=1800` for the public page, and the browser would otherwise answer from a copy up to 30 minutes old. A misspelled or unknown set name
   reports "no checklist found" rather than rendering an empty list, so
   a typo can't look like a set with nothing in it.
 - Per-group "Delete" button → `deleteChecklistGroup(button)` — reads

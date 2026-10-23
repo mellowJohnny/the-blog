@@ -511,6 +511,12 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
   HTML renderer and `buildChecklistPdfDocument()` call it, so the two
   outputs share one source of truth for grouping instead of two
   hand-maintained implementations that could drift apart.
+- **Extended Set groups**: items with `type === "extendedSet"` (a
+  mail-away or box set that belongs with the main set, ticked in the CMS
+  upload page) form their own groups titled `"Extended Set - <name>"`,
+  placed right after "Main Set" and before every insert group (several
+  sort alphabetically), with no Insert Set/Memorabilia suffix logic.
+  They are not inserts, so "Inserts only" hides them.
 - **Insert set group titles carry a type suffix**: each insert set's
   heading renders as `"<name> - Insert Set"` (e.g. `"Powerhouse
   Pillars - Insert Set"`), except when any card in that group has
@@ -568,9 +574,12 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
   `...-Inserts-Rookies-checklist.pdf`.
 - **Groups that are not insert sets**: `CHECKLIST_NO_SUFFIX_GROUPS` in
   `wax.js` lists `"<setName>|<insertSetName>"` keys whose group title
-  skips the " - Insert Set" suffix. The only entry is the 1989-90
-  O-Pee-Chee Tembec test run (132 cards that were never sold), which
-  still counts as an insert group for the "Inserts only" filter.
+  skips the " - Insert Set" suffix. The Tembec test run in 1989-90
+  O-Pee-Chee (132 cards that were never sold) stays there on purpose and
+  still counts as an insert group for the "Inserts only" filter. An entry
+  for 1991-92 Score's Rookie and Traded Factory Set remains only until
+  that group is re-saved as an Extended Set (the mechanism above), and
+  should then be deleted.
 - **Print**: a "🖨 Print" button in the modal calls `window.print()`.
   The masthead inside the modal (`.checklist-modal-masthead`) mirrors
   `waxReviews.html`'s real masthead treatment (scaled-down Bebas Neue)

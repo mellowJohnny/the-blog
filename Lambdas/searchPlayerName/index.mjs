@@ -214,9 +214,11 @@ export const handler = async (event) => {
     // "NNO") that doesn't sort numerically. Same convention
     // getChecklistBySetName's items already carry sortIndex for - see
     // DATA_MODEL.md's Checklists table.
+    // Main, then Extended Set, then insert sets (matches the checklist modal).
+    const TYPE_RANK = { main: 0, extendedSet: 1, insertSet: 2 };
     for (const cards of bySetName.values()) {
       cards.sort((a, b) => {
-        if (a.type !== b.type) return a.type === "insertSet" ? 1 : -1;
+        if (a.type !== b.type) return (TYPE_RANK[a.type] ?? 0) - (TYPE_RANK[b.type] ?? 0);
         if (a.insertSetName !== b.insertSetName) return a.insertSetName.localeCompare(b.insertSetName);
         return a.sortIndex - b.sortIndex;
       });

@@ -206,6 +206,7 @@ function parseChecklistPdf(file, { parseBtn, cancelBtn, closeModal }) {
 
       document.getElementById("checklistSetName").value = data.setName || "";
       document.getElementById("checklistInsertSetName").value = data.insertSetName || "";
+      document.getElementById("checklistExtendedSet").checked = false;
       renderChecklistTable(data.cards);
       document.getElementById("checklistReviewSection").style.display = "block";
 
@@ -250,6 +251,13 @@ async function saveChecklist() {
   }
 
   const insertSetName = document.getElementById("checklistInsertSetName").value.trim();
+  const extended = document.getElementById("checklistExtendedSet").checked;
+
+  if (extended && !insertSetName) {
+    await cmsAlert("An Extended Set needs a name - enter it in the Insert / Extended Set Name field.");
+    document.getElementById("checklistInsertSetName").focus();
+    return;
+  }
 
   const cards = collectChecklistRows();
   if (cards.length === 0) {
@@ -272,7 +280,7 @@ async function saveChecklist() {
       fetch(SAVE_CHECKLIST_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": token },
-        body: JSON.stringify({ setName, insertSetName, cards })
+        body: JSON.stringify({ setName, insertSetName, extended, cards })
       })
     )
     .then(async (response) => {
@@ -317,7 +325,7 @@ function setDeleteStatus(message) {
   if (el) el.textContent = message;
 }
 
-// setName -> Map(insertSetName -> card count). Each set is read once per
+// setName -> Map(insertSetName -> { count, extended }). Each set is read once per
 // page load; deletes edit this copy, since a re-read can come back stale.
 const checklistGroupsBySet = new Map();
 
@@ -353,7 +361,9 @@ async function loadChecklistGroups() {
     const groups = new Map();
     items.forEach((item) => {
       const key = item.insertSetName || "";
-      groups.set(key, (groups.get(key) || 0) + 1);
+      const group = groups.get(key) || { count: 0, extended: item.type === "extendedSet" };
+      group.count += 1;
+      groups.set(key, group);
     });
     checklistGroupsBySet.set(setName, groups);
     renderChecklistGroups(setName);
@@ -379,12 +389,13 @@ function renderChecklistGroups(setName) {
   });
 }
 
-function buildChecklistGroupRow(setName, insertSetName, count) {
+function buildChecklistGroupRow(setName, insertSetName, { count, extended }) {
   const row = document.createElement("div");
   row.className = "checklist-delete-row";
 
   const label = document.createElement("span");
-  label.textContent = `${insertSetName || MAIN_SET_LABEL} - ${count} card${count === 1 ? "" : "s"}`;
+  const kind = extended ? " (extended set)" : "";
+  label.textContent = `${insertSetName || MAIN_SET_LABEL}${kind} - ${count} card${count === 1 ? "" : "s"}`;
 
   // setName routinely contains apostrophes ("McDonald's ..."), so the
   // values ride on data-* attributes rather than an interpolated

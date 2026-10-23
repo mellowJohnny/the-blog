@@ -508,9 +508,12 @@ create/edit form: **upload → review → save**.
    an empty table — usually a card-number format the parser doesn't
    support yet (see `LAMBDA_FUNCTIONS.md`).
 2. **Review**: on a successful parse, the modal closes and an editable
-   table appears on the page — a Set Name field, an optional Insert Set
-   Name field (blank for the base/main set; filled in when the PDF's
-   filename indicated one — see `LAMBDA_FUNCTIONS.md`), and one table
+   table appears on the page — a Set Name field, an optional Insert /
+   Extended Set Name field (blank for the base/main set; filled in when
+   the PDF's filename indicated one — see `LAMBDA_FUNCTIONS.md`), an
+   "Extended Set" checkbox (tick it for a mail-away or box set that
+   belongs with the main set rather than being an insert; it needs a
+   name, and it is cleared on every new parse), and one table
    row per card (`Card #` / `Player Name` / `Notes`), each cell a plain
    text input, with a delete button per row and an "+ Add Row" button.
    Nothing has been saved yet; this step exists because parsing
@@ -521,7 +524,7 @@ create/edit form: **upload → review → save**.
    (including any hand-edits) and sends it to `saveChecklist`, which
    fully replaces that group's rows in the `Checklists` table (see
    `DATA_MODEL.md`) — the main set, or the one specific insert set named
-   in the Insert Set Name field, not merging and not touching the
+   in the Insert / Extended Set Name field, not merging and not touching the
    table's other groups for that same base set. It also flips a
    `hasChecklist` flag on the matching `Cards` item, which is what makes
    the "Checklist" link appear on `waxReviews.html` (see

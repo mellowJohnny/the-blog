@@ -429,7 +429,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   the Lambda Node.js runtime.
 - **What it does**: backs `cms/uploadChecklist.html`'s save step, after
   the parsed result has been reviewed/corrected in the browser. Takes
-  `{ setName, insertSetName, cards }` and writes it to the `Checklists`
+  `{ setName, insertSetName, extended, cards }` and writes it to the `Checklists`
   table (see `DATA_MODEL.md`) — but as a **full replace, scoped to the
   exact group** (main set, or this one specific insert set), not a
   merge and not the whole `setName` partition: it first `Query`s
@@ -446,7 +446,12 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   (from throttling) are retried a few times with backoff on both the
   delete and write passes. Each written item also gets `type`,
   `insertSetName`, `cardNumberDisplay`, and `sortIndex` — see
-  `DATA_MODEL.md` for what each is for.
+  `DATA_MODEL.md` for what each is for. `type` is `"main"` with no name,
+  otherwise `"insertSet"`, or `"extendedSet"` when the body has
+  `extended: true` (an Extended Set: a mail-away or box set that belongs
+  with the main set). Both kinds use the same `INSERT#<name>#` prefix, so
+  a group is identified by its name alone and re-saving an insert group
+  as extended replaces its rows in place.
 - **`hasChecklist` linking (non-critical, but surfaced)**: after a
   successful save, it `Query`s the `Cards` table by the same `setName`
   (Cards' own partition key) and sets `hasChecklist: true` on the
@@ -585,8 +590,8 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   set instead of the year's top-rated one (see `FRONTEND.md`'s "Linking
   to one specific set"). A set with no matching `Cards` item has no
   `year`, `blogCat` or `setID`, and is shown as "(set not reviewed)".
-- **Cards within a set are ordered main-before-insert, then by
-  `sortIndex`** — the same field/convention `getChecklistBySetName`'s
+- **Cards within a set are ordered main, then extended set, then insert
+  sets, then by `sortIndex`** — the same field/convention `getChecklistBySetName`'s
   items carry (see `DATA_MODEL.md`'s Checklists table), not raw `Scan`
   order and not a sort on `cardNumberDisplay` itself, which is a display
   string ("T-20", "NNO") that doesn't sort numerically. An earlier

@@ -370,7 +370,9 @@ everything the visitor can see or navigate to on this page.
   fetch**, since the whole checklist was already pulled in one shot when
   the modal opened; this is purely an in-memory re-render for
   responsiveness. `renderChecklistGroups()` itself groups main-set
-  cards first, then each insert set (sorted within every group by
+  cards first, then each Extended Set (titled `"Extended Set - <name>"`;
+  a mail-away or box set that belongs with the main set, never hit by
+  "Inserts only"), then each insert set (sorted within every group by
   `sortIndex`), labels each insert-set group `"<name> - Insert Set"` or
   `"<name> - Memorabilia"` (the latter when any card in that group has
   `"MEM"` in its notes), and always renders every Insert Set group
