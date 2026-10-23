@@ -46,11 +46,8 @@ prose — either because they're hand-built/heavily modified in this
 session, or because pulling in their source revealed something
 notable — (2) a compact table of the remaining "plain CRUD" functions,
 and (3) the four dead ones, removed again after being briefly checked
-in. There's also a separate, older `Lambda Functions/` prototype
-directory (note the space in the name) referenced further down — it no
-longer exists in this repo (deleted 2026-08-06, unrelated to this
-session's work) but is still referenced by name in a few places below
-since that history predates this doc being kept current.
+in. An older prototype directory, `Lambda Functions/` (with a space),
+was deleted from the repo on 2026-08-06 and is no longer documented.
 
 ## `Lambdas/amplifyBuildNotifier/` — hand-built in this repo
 
@@ -1183,22 +1180,3 @@ section title:
 | `Lambdas/getCardSetsByYear/` | Get card sets by year | Queries the `blogCat-year-index` GSI. Returns `Cache-Control: public, max-age=1800`; its own comment says "CloudFront cache" but no CloudFront actually sits in front of it (see `API_ENDPOINTS.md`'s caching note) — today this header is browser-only. |
 | `Lambdas/cmsImageUploader/` | Get S3 upload URL (presigned PUT) | `getSignedUrl()` for a `PutObjectCommand`, 300s expiry, sets `CacheControl: public, max-age=31536000, immutable` on the eventual S3 object. |
 | `Lambdas/cmsImagePicker/` | List images in the bucket | `ListObjectsV2Command` on the whole bucket, no prefix filter server-side (filtering happens client-side in `cmsImageBrowser.js`). |
-
-## `Lambda Functions/` — separate legacy/prototype code, still not confirmed current
-
-These look like early iterations built while following
-`Documentation/Creating A New Lambda.txt`, checked into a differently-
-named directory (`Lambda Functions/`, with a space) before the
-2026-08-15 sync above. **Now that the real, currently-deployed source
-for every live Lambda is checked in elsewhere in this repo (see
-above), this section is much less urgent to reconcile** — but the
-files themselves haven't been re-verified against the real ones, so
-the mismatches below are left as originally documented:
-
-- **`Lambda Functions/getBlogs/getBlogs.js`**: scans the entire `Blogs` table (`documentClient.scan()`) and returns everything, no filtering — despite the file's own header comment claiming it "fetches blog posts filtered using type param." Also contains a second, unreachable, dead `params` block below the first `return` referencing a table called `"blogTable"` that appears nowhere else in the codebase — looks like an abandoned edit.
-- **`getTechBlogs/getTechBlogs.js`**: near-identical to a variant of `getBlogs.js` but hardcodes `blogType: 1` (tech) via `query()` rather than accepting it as a parameter — i.e., not reusable for the other blog types, which the live `getBlogs` endpoint clearly now supports via a `blogType` query param (see `API_ENDPOINTS.md`).
-- **`Lambda Functions/createBlogPost/createBlogPost.js`**: writes to table `Blogs` with fields `blogType, time, title, author, postBody` — notably missing `published`, `img`, `imgCap`, `blogID`, all of which the current CMS create form sends and the edit/list flows depend on (see `DATA_MODEL.md`). This file is almost certainly stale relative to the real `Lambdas/createBlogPost/index.mjs` now checked in.
-- **`Lambda Functions/createCardSet/createCardPost.js`**: writes to table `Cards` with fields `setName, setID, size, subsets, mfg, year, headerImg, footerImg, status, postBody` — missing `stars`, `formats`, `blogCat`, `author`, the SEO fields, and `blogStatus` (uses `status` instead), all of which the current CMS create form sends (see `DATA_MODEL.md`). Also generates `setID` via `Math.random().toString(36)` — fine for low collision risk at this scale, but worth knowing it's not a UUID. (The real, currently-deployed version of this Lambda is `Lambdas/createCardPost/index.mjs`, checked in above — also generates `setID` the same way, so that detail at least held up.)
-- **`Lambda Functions/getCardSets/getCardSets.js`**: queries a `status-year-index` GSI on `Cards`, filtering to `status = "OK"` — the real deployed `Lambdas/getCardSets/index.mjs` uses `blogStatus-year-index` and `blogStatus = "OK"` instead, confirming this prototype's field/index names are stale.
-- **`Lambda Functions/getCardSets/getCardSets_v2.js`**: queries `Cards` by a **hardcoded** `setName`/`year` (`"1988-89 O-Pee-Chee Hockey"` / `1989`) — clearly a copy-pasted-and-half-edited debugging/scratch version, not something that could serve real traffic as-is.
-- **`Lambda Functions/getCardSets/getCardSet_FUTURE.js`**: queries a `setID-index` GSI on `Cards` by a **hardcoded** `setID` — this prototype had the right idea. **Resolved 2026-09-04**: the `setID-index` GSI is real and live (confirmed via the AWS Console), and the deployed `Lambdas/getCardSetByID/index.mjs` — which had been using PartiQL instead, not querying the GSI at all — was rewritten to query it directly. See `DATA_MODEL.md`'s `Cards` GSI table.

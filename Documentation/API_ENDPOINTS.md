@@ -11,9 +11,10 @@ it's a Twilio-to-us webhook, not something this frontend calls — see
 `LAMBDA_FUNCTIONS.md` for it instead.
 
 All URLs are `https://{id}.execute-api.us-east-2.amazonaws.com/{stage}`.
-The stage is `dev` for every endpoint built before October 2026; newer
-endpoints are deployed to a stage named `prod` (the first is "Get all
-live sets (public)" below).
+The stage is `dev` for the older endpoints; newer ones (the Autobus SMS
+endpoints, the NHL/PWHL ticker endpoints and "Get all live sets
+(public)") are deployed to a stage named `prod`. Each entry below names
+its stage in its URL.
 
 ## Public site — read APIs
 

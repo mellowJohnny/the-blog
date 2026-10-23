@@ -390,9 +390,6 @@ function openChecklistModal(link) {
     });
 }
 
-// "Rookies only" handler - filters the already-fetched
-// currentChecklistItems client-side (whole-word "RC" in notes, same
-// rule playerSearch.js uses) and re-renders. No re-fetch/re-query.
 // Which of the modal's filters are on. Shared by the screen render and the
 // PDF export, so a download always matches what is showing.
 function getChecklistFilterState() {

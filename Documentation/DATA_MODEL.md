@@ -2,7 +2,7 @@
 
 None of this was read directly from the DynamoDB console — it's
 reverse-engineered from the fields the frontend sends/reads and from
-the query/scan code in `Lambda Functions/`. Field types are best
+the query/scan code in `Lambdas/`. Field types are best
 guesses. Verify against the actual table definitions when you get
 console access back.
 
@@ -40,8 +40,6 @@ key `blogID`, no sort key) — see above.
 | `imgCap` | String | Image caption, rendered under the image. |
 | `time` | String (ISO 8601) | Sort key. Creation timestamp, used for sort order (`getSortOrder()` in `scripts/helper.js`) and displayed via `fixDate()`. |
 | `published` | Boolean | `true` = live, `false` = staged/draft. Drives the "live blogs" vs "staged blogs" split in `cms/pickBlog.html`. |
-
-The two oldest prototype Lambdas in the repo (`Lambda Functions/getBlogs/getBlogs.js` and its sibling `getTechBlogs.js`) query this table with `KeyConditionExpression` on `blogType` alone — consistent with `blogType` being the confirmed partition key above (a partition-key-only query is normal; it just doesn't narrow to a single item without also supplying the sort key). Treat those two files as historical prototypes regardless — they predate the current CMS's `blogID`-based lookups.
 
 ## `Cards` table
 

@@ -361,7 +361,7 @@ issues in the mobile section above — don't hand-tune spacing to
 "assist" a centering mechanism that's already doing the job; the two
 values drift out of sync differently at each screen size.
 
-**Random team colors + cheer label + pop-in animation**: `applyRandomMastheadStyling()` (`helper.js`) runs on load on all 4 pages using this masthead (`waxReviews.html`, `lockout.html`, `playerSearch.html`, `theJunkWaxYears.html`) — picks one of 32 NHL teams at random from `NHL_TEAM_COLORS`, sets `--team-primary`/`--team-tertiary` CSS custom properties that drive `.wax-reviews-mast-table`'s gradient (a simpler solid+stripe design via `.masthead-two-color` for genuinely two-color teams), and creates/reuses a `.masthead-team-label` span in the bottom-right corner showing that team's cheer text (e.g. "Go Canucks Go!") so the random pick is visually verifiable. That label's text is rendered via `renderLoudText()`, which wraps each character in its own `.loud-char` span with a staggered `animation-delay` — `styles.css`'s `loudPopIn` keyframes then pop/rotate each letter in on a delay, purely because a CSS `animation` on an element plays automatically the moment that element exists in the DOM (no JS trigger needed, since the label is fully torn down and rebuilt on every load rather than reused in place). `prefers-reduced-motion: reduce` skips the animation and shows the finished text immediately.
+**Random team colors + cheer label + pop-in animation**: `applyRandomMastheadStyling()` (`helper.js`) runs on load on all 6 pages using this masthead (`waxReviews.html`, `lockout.html`, `playerSearch.html`, `theJunkWaxYears.html`, `timeline.html`, `browseBySet.html`) — picks one of 32 NHL teams at random from `NHL_TEAM_COLORS`, sets `--team-primary`/`--team-tertiary` CSS custom properties that drive `.wax-reviews-mast-table`'s gradient (a simpler solid+stripe design via `.masthead-two-color` for genuinely two-color teams), and creates/reuses a `.masthead-team-label` span in the bottom-right corner showing that team's cheer text (e.g. "Go Canucks Go!") so the random pick is visually verifiable. That label's text is rendered via `renderLoudText()`, which wraps each character in its own `.loud-char` span with a staggered `animation-delay` — `styles.css`'s `loudPopIn` keyframes then pop/rotate each letter in on a delay, purely because a CSS `animation` on an element plays automatically the moment that element exists in the DOM (no JS trigger needed, since the label is fully torn down and rebuilt on every load rather than reused in place). `prefers-reduced-motion: reduce` skips the animation and shows the finished text immediately.
 
 ## Buttons
 
@@ -523,37 +523,54 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
   fetched items — a stable sort (`Array#sort` is stable in modern JS)
   on the `isMemorabilia` flag reorders the two categories as a block
   without disturbing either category's own internal order.
-- **"Rookies only" filter**: a badge-style checkbox on the same row as
-  the set-name title, right-justified (`.checklist-modal-rc-filter`).
-  Filters client-side only — `openChecklistModal()` caches the fetched
-  items in a module-level `currentChecklistItems`, and toggling the
-  checkbox calls `applyChecklistRookieFilter()`, which filters that
-  cached array (`\bRC\b` whole-word match on `notes`, the same rule
-  `playerSearch.js` uses for its own RC styling) and re-renders via
-  `renderChecklistGroups()` — no re-fetch of `getChecklistBySetName`.
-  Group headers disappear on their own when a filtered group has zero
-  cards, since they're derived from the same filtered array. The
-  checkbox resets to unchecked on every `openChecklistModal()` call so
-  a filter left on from a previous set doesn't carry over, and a fetch
-  that resolves after the checkbox has already been toggled is routed
-  through `applyChecklistRookieFilter()` too (not rendered raw), so a
-  slow response can't silently stomp the visitor's choice. Lives inside
-  `.checklist-modal-title-row`, not `.checklist-modal-controls`, so it's
-  explicitly added to the `@media print` hide rule alongside Print/Close
-  rather than inheriting it for free.
+- **Checklist filters ("Inserts only" and "Rookies only")**: two
+  badge-style checkboxes (`.checklist-modal-filter`, wrapped in
+  `.checklist-modal-filters`) on the same row as the set-name title,
+  right-justified. Filters client-side only — `openChecklistModal()`
+  caches the fetched items in a module-level `currentChecklistItems`,
+  and toggling either checkbox calls `applyChecklistFilters()`, which
+  runs the cached array through `filterChecklistItems()` and re-renders
+  via `renderChecklistGroups()` — no re-fetch of
+  `getChecklistBySetName`. "Inserts only" keeps `type === "insertSet"`
+  cards; "Rookies only" is a `\bRC\b` whole-word match on `notes`
+  (the same rule `playerSearch.js` uses for its own RC styling). With
+  both on, the result is the rookies inside insert sets. The state is
+  read in one place, `getChecklistFilterState()`, shared by the screen
+  render and `exportChecklistPdf()` so a download always matches what
+  is showing. "Inserts only" is hidden (`hidden` attribute, with a
+  `[hidden]` rule in `styles.css` because the pill's `display: flex`
+  would otherwise override it) when the loaded checklist has no insert
+  cards, which is 13 of the 62 sets. Group headers disappear on their
+  own when a filtered group has zero cards, since they're derived from
+  the same filtered array, and a filter that matches nothing shows its
+  own message rather than the "no checklist data" one. Both checkboxes
+  reset to unchecked on every `openChecklistModal()` call, and a fetch
+  that resolves after a checkbox has already been toggled is routed
+  through `applyChecklistFilters()` too (not rendered raw), so a slow
+  response can't silently stomp the visitor's choice. The wrapper lives
+  inside `.checklist-modal-title-row`, not `.checklist-modal-controls`,
+  so it's explicitly added to the `@media print` hide rule alongside
+  Print/Close rather than inheriting it for free.
 - **Escaping**: all rendered checklist text goes through the shared
   `escapeHtml()` in `helper.js` (distinct from `checklistUpload.js`'s
   narrower `escapeAttr()`, used only for CMS review-table attribute
   values).
-- **Rookies title suffix**: when "Rookies only" is on, the modal title
-  gains " - Rookies" (e.g. "1990-91 O-Pee-Chee Premier - Rookies"), so a
+- **Filter title suffix**: when a filter is on, the modal title gains
+  " - Inserts", " - Rookies" or " - Inserts - Rookies" (e.g. "1990-91
+  O-Pee-Chee Premier - Rookies"), from `checklistFilterSuffix()`, so a
   printed or downloaded list says it is filtered. `openChecklistModal()`
   stores the plain set name in the title element's `data-set-name`, and
-  `applyChecklistRookieFilter()` rewrites the title from it on every
-  toggle, which also makes the suffix disappear again when unticked or
-  when another set is opened. Print prints the modal title, and the PDF
+  `applyChecklistFilters()` rewrites the title from it on every toggle,
+  which also makes the suffix disappear again when unticked or when
+  another set is opened. Print prints the modal title, and the PDF
   export reads it for its header; the PDF filename is built separately
-  from `data-set-name` so it comes out as `...-Rookies-checklist.pdf`.
+  from `data-set-name` so it comes out as e.g.
+  `...-Inserts-Rookies-checklist.pdf`.
+- **Groups that are not insert sets**: `CHECKLIST_NO_SUFFIX_GROUPS` in
+  `wax.js` lists `"<setName>|<insertSetName>"` keys whose group title
+  skips the " - Insert Set" suffix. The only entry is the 1989-90
+  O-Pee-Chee Tembec test run (132 cards that were never sold), which
+  still counts as an insert group for the "Inserts only" filter.
 - **Print**: a "🖨 Print" button in the modal calls `window.print()`.
   The masthead inside the modal (`.checklist-modal-masthead`) mirrors
   `waxReviews.html`'s real masthead treatment (scaled-down Bebas Neue)
@@ -591,8 +608,8 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
   in the HTML — most visitors who open a checklist never click Download,
   so it shouldn't cost anything on a normal page load.
 
-  `exportChecklistPdf()` filters `currentChecklistItems` identically to
-  the on-screen "Rookies only" checkbox before building the PDF, so a
+  `exportChecklistPdf()` filters `currentChecklistItems` through the same
+  `filterChecklistItems()` as the on-screen checkboxes before building the PDF, so a
   download taken while the filter is on only contains the filtered
   cards. The document itself, built by `buildChecklistPdfDocument()`,
   matches the on-screen/print look as closely as practical, letter-sized

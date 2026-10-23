@@ -426,7 +426,7 @@ This document covers the two Lambdas responsible for subscriber management and i
 
 ---
 
-## 1. Add Subscriber Lambda (`subscribeHandler.mjs`)
+## 1. Add Subscriber Lambda (`Lambdas/subscribeHandler/index.mjs`)
 
 ### 1.1 Overview
 
@@ -539,7 +539,7 @@ All responses include:
 
 ---
 
-## 2. Inbound SMS Webhook Lambda (`inboundSmsHandler.js`)
+## 2. Inbound SMS Webhook Lambda (`Lambdas/inboundSMSHandler/index.mjs`)
 
 ### 2.1 Overview
 
@@ -668,7 +668,7 @@ All subscriber records include a `source` field indicating how the subscriber wa
 | --- | --- | --- |
 | `web` | Bulk import Lambda | Annual CSV import |
 | `web` | `subscribeHandler` Lambda | Single subscriber add via admin frontend |
-| `mobile` | `inboundSmsHandler` Lambda | Subscriber replied START or STOP via SMS |
+| `mobile` | `inboundSMSHandler` Lambda | Subscriber replied START or STOP via SMS |
 
 This provides a clear audit trail of subscriber origin and opt-in/opt-out channel directly in DynamoDB without requiring any additional reporting infrastructure.
 
@@ -681,9 +681,9 @@ All subscriber management endpoints live under the same API as the broadcast end
 | Method | Resource | Lambda | Authorizer |
 | --- | --- | --- | --- |
 | POST | `/admin/send` | `index.mjs` (broadcast) | CognitoAuthorizer |
-| POST | `/subscribers` | `subscribeHandler.mjs` | CognitoAuthorizer |
+| POST | `/subscribers` | `subscribeHandler` | CognitoAuthorizer |
 | POST | `/subscribers/bulk-upload` | `bulkUploadSubscribers.mjs` | CognitoAuthorizer |
-| POST | `/twilio/inbound` (or equivalent) | `inboundSmsHandler.js` | None (public) |
+| POST | `/twilio/inbound` (or equivalent) | `inboundSMSHandler` | None (public) |
 
 ---
 
@@ -828,6 +828,6 @@ A **"help..."** link was added to the CMS navigation bar. Clicking it opens a mo
 | `bulkUploadSubscribers.mjs` | Lambda | New — bulk import with truncate-then-write logic |
 | `auth.js` | JavaScript | New — Cognito token exchange and session management |
 | `adminSMS.js` | JavaScript | Updated — bulk import logic, auth token headers, help modal, message template |
-| `autobusSMS.html` | HTML | Updated — bulk import modal, help modal, nav links |
+| `smsAdmin.html` | HTML | Updated — bulk import modal, help modal, nav links |
 | `styles.css` | CSS | Updated — bulk import and help modal styles |
 | All `/cms` HTML pages | HTML | Updated — `auth.js` script tag added to `<head>` |

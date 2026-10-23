@@ -353,19 +353,20 @@ everything the visitor can see or navigate to on this page.
 - "Checklist" link (only rendered when `hasChecklist` is true) exists
   because not every set has had its full card-by-card checklist
   uploaded yet — `openChecklistModal(this)` (`wax.js`) reads `setName`
-  off `data-set-name`, shows `#checklistModalOverlay`, resets the
-  "Rookies only" checkbox, then calls **Get checklist by set name**,
+  off `data-set-name`, shows `#checklistModalOverlay`, resets both
+  filter checkboxes, then calls **Get checklist by set name**,
   fronted by the `getChecklistBySetName` Lambda
   (`Lambdas/getChecklistBySetName/`), which does a `Query` (not a full
   `Scan`) against the `Checklists` table's partition key for an exact
   `setName` match. On success, the raw items are stored in the
-  module-level `currentChecklistItems` and `applyChecklistRookieFilter()`
+  module-level `currentChecklistItems` and `applyChecklistFilters()`
   is called to actually render them (see below) rather than rendering
   the raw response directly.
-- "Rookies only" checkbox (inside the modal) → `applyChecklistRookieFilter()`
-  (`wax.js`, `onchange`) — filters the already-fetched
-  `currentChecklistItems` client-side (`\bRC\b` whole-word match on
-  `notes`) and re-renders via `renderChecklistGroups()` — **no new
+- "Inserts only" and "Rookies only" checkboxes (inside the modal) →
+  `applyChecklistFilters()` (`wax.js`, `onchange`) — filters the
+  already-fetched `currentChecklistItems` client-side (insert-set cards;
+  `\bRC\b` whole-word match on `notes`; both on = rookies within insert
+  sets; "Inserts only" is hidden for sets with no insert cards) and re-renders via `renderChecklistGroups()` — **no new
   fetch**, since the whole checklist was already pulled in one shot when
   the modal opened; this is purely an in-memory re-render for
   responsiveness. `renderChecklistGroups()` itself groups main-set
@@ -386,9 +387,10 @@ everything the visitor can see or navigate to on this page.
   not a replacement; Print is untouched) exists for the same
   physical-reference use case, but as a file someone can keep or share
   rather than only print immediately → `exportChecklistPdf()`
-  (`wax.js`). It filters `currentChecklistItems` the same way the
-  "Rookies only" checkbox does before building the file, so a download
-  taken with the filter on only contains the filtered cards. The PDF is
+  (`wax.js`). It filters `currentChecklistItems` through the same
+  `filterChecklistItems()` as the on-screen checkboxes before building
+  the file, so a download taken with a filter on only contains the
+  filtered cards. The PDF is
   built entirely client-side via jsPDF (cdnjs, pinned to `4.2.1`) plus
   3 small embedded font files (`scripts/fonts/bebasNeue-normal.js`,
   `scripts/fonts/sourceSans3-normal.js`,

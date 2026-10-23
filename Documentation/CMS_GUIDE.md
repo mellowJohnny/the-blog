@@ -67,11 +67,12 @@ already used for `fetchCopyrightYear()` on every page.
   not self-closed — no trailing `/>`. `smsAdmin.html` was the one
   holdout using XHTML-style self-closing tags; it's been normalized to
   match the other 9.
-- The masthead table cell (`<td><div><header class="masthead">...`)
-  needs an explicit closing `</div>` before `</td>`. Every page was
-  missing this — browsers silently recover, but it broke tooling (see
-  below) and is worth getting right in any new page copied from an
-  existing one.
+- Nine of the ten pages open with `<header class="cms-masthead">`
+  holding a single full-width `images/cms-masthead.webp` (1500x300,
+  edge to edge like the public Home banner; `.cms-masthead` in
+  `styles.css` cancels the body margin). `smsAdmin.html` keeps its own
+  separate Autobus masthead table. The CMS is only used at desktop
+  widths, so the banner has no narrow-screen handling.
 - No dead `<script src="...">` tags for scripts the page doesn't
   actually call into, no commented-out markup left in place "just in
   case," no `id="..."` attributes with no CSS rule or JS reference
@@ -85,8 +86,8 @@ JavaScript *inside* `onclick`/`onload` attribute values, which is out
 of scope for an HTML whitespace pass). Prettier's HTML parser is
 stricter than a browser and will hard-error on things browsers
 silently auto-correct (an unclosed `<div>`, a stray closing tag with
-no matching open tag) — that's a feature, not a nuisance: it's how the
-masthead `<div>` bug above and several stray closing tags were found
+no matching open tag) — that's a feature, not a nuisance: it's how an
+unclosed masthead `<div>` and several stray closing tags were found
 across these files. If Prettier errors on a `/cms` page, don't work
 around it — the underlying markup is genuinely broken and should be
 fixed the same way. Note Prettier self-closes void elements by
