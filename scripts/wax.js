@@ -466,10 +466,11 @@ document.addEventListener("click", (event) => {
 // renderer and the PDF exporter so both stay in sync. Returns
 // [{ title, cards }, ...]; title text is raw/unescaped either way.
 // Insert groups that aren't really insert sets, so they get no " - Insert Set"
-// suffix. Keyed "<setName>|<insertSetName>"; the Tembec cards were a test run
-// that was never sold.
+// suffix. Keyed "<setName>|<insertSetName>": the never-sold Tembec test run,
+// and the Rookie and Traded factory set (a complete set of its own).
 const CHECKLIST_NO_SUFFIX_GROUPS = new Set([
-  "1989-90 O-Pee-Chee|Tembec Test Run - All Cards Feature White Backs"
+  "1989-90 O-Pee-Chee|Tembec Test Run - All Cards Feature White Backs",
+  "1991-92 Score|Rookie and Traded Factory Set"
 ]);
 
 function buildChecklistGroups(items) {
