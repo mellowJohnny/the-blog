@@ -552,8 +552,8 @@ and opens a modal in the same `.bulk-*` design as the upload modal (Close
 in the bottom row, backdrop click closes, every open starts from an empty
 field). Pick a set from the type-ahead (or type the full name and press
 Enter), and it lists every checklist *group*
-stored for that set — the main set plus each insert set, with card
-counts — each with its own Delete button (`loadChecklistGroups()` /
+stored for that set — the main set plus each insert or extended set, with card
+counts (an extended set's row is marked "(extended set)") — each with its own Delete button (`loadChecklistGroups()` /
 `deleteChecklistGroup()`, `scripts/checklistUpload.js`). The listing
 comes from the **public** `getChecklistBySetName` endpoint, not a new
 one; no auth is needed to read, and the delete itself carries the usual

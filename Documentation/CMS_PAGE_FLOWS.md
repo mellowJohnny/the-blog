@@ -537,9 +537,10 @@ load on a page without the modal present.
   at this point; deleting a row here is just discarding a mistaken
   parse result, not destroying real data.
 - "Save to DynamoDB" button is the call that actually commits the
-  reviewed checklist → `saveChecklist()` (`async`) — three sequential
+  reviewed checklist → `saveChecklist()` (`async`) — sequential
   validations, each `await cmsAlert(...)` + early return: Set Name
-  non-blank, `collectChecklistRows()` yields at least one row, every
+  non-blank, the Extended Set box not ticked without a name,
+  `collectChecklistRows()` yields at least one row, every
   collected row has both a Card # and a Player Name. Sets the Save
   button to a "Saving..." state, then calls **Save a reviewed
   checklist**, fronted by the `saveChecklist` Lambda
