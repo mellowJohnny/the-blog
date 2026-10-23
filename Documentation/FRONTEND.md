@@ -1173,7 +1173,7 @@ year, so keep them consistent in the CMS.
 
 ## About page (`about.html`)
 
-The Home page's layout (same banner, centred nav, footer and scripts)
+The Home page's layout (same banner, nav, footer and scripts)
 showing the blog post(s) of `blogType` 98. Unlike the Home page, which
 is static, it still fetches its content: `fetchBlogs('98')` and
 `renderBlogIntro('98')`, plus `fetchNav("about")`, because the About

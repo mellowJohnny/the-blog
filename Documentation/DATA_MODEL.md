@@ -78,9 +78,9 @@ queries):
 | `stars` | Number (1-5) | "Hella Rating" — rendered as star emoji, sortable via `getSortOrder()` (`scripts/helper.js`; consolidated from the formerly-separate `cardSetSorter()` on 2026-08-12). |
 | `formats` | String | e.g. "Wax, Rack, Cello". |
 | `blogCat` | String | `"reg"` (regular O-Pee-Chee/junk-wax sets), `"tims"` (Tim Hortons), `"mcd"` (McDonald's). Drives which nav/year-picker range applies (`renderSetPicker()`, `categoryRanges` in `scripts/helper.js`). |
-| `blogStatus` / `status` | String | `"OK"` = live, `"staged"` = draft. Note the field is named `status` in the older prototype Lambdas (`getCardSets.js`, which queries a `status-year-index` GSI) but `blogStatus` in the current CMS create/update forms — likely the same field, renamed at some point; confirm which name the live table actually uses. |
+| `blogStatus` | String | `"OK"` = live, `"staged"` = draft. Every live Lambda reads and writes it as `blogStatus` (`createCardPost`, `updateCardSet`, and the three that query the `blogStatus-year-index` GSI). The name `status` belonged to a prototype Lambda that has since been deleted. |
 | `postBody` | String | HTML review content, authored via TinyMCE. |
-| `headerImg` / `headerImgName` | String | Header image. The create-Lambda prototype (`createCardPost.js`) only ever writes the bucket *prefix* (`.../img/cards/`) into `headerImg`/`footerImg`, while the current CMS form collects a filename into `headerImgName`/`footerImgName` and the frontend concatenates prefix + filename at render time (`displayCardSet()` in `scripts/wax.js`) — another sign the live Lambda has evolved past this prototype. |
+| `headerImg` / `headerImgName` | String | Header image. `createCardPost` writes the fixed bucket *prefix* (`.../img/cards/`) into `headerImg`/`footerImg` server-side, and the filename the CMS form collects goes into `headerImgName`/`footerImgName`; the frontend concatenates prefix + filename at render time (`displayCardSet()` in `scripts/wax.js`). |
 | `footerImg` / `footerImgName` | String | Footer/"winners" image, same pattern as above. |
 | `author` | String | |
 | `seoPageTitle`, `seoMetaDesc`, `seoURLSlug`, `seoTags` | String | SEO metadata fields added to the create/edit forms; not currently read by any public page's `<head>` — likely intended for a future SEO pass. |

@@ -607,7 +607,7 @@ The About page uses the same blog-stream machinery as the Tech pages
 `fetchBlogs()` call with `'98'`. **Get all blogs of a given type**
 (`?blogType=98`) is fronted by the same `getBlogs` Lambda, which reads
 the `Blogs` table by partition key, so no backend change was needed.
-Its layout is the Home page's (same banner, centred nav and footer),
+Its layout is the Home page's (same banner, nav and footer),
 but unlike the Home page its content is still fetched, because the About
 post is meant to be edited through the CMS. `renderBlogIntro('98')`
 renders only the heading "about junk wax hockey...", and the post below

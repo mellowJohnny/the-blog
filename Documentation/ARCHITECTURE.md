@@ -169,7 +169,7 @@ elsewhere. Practically, that means:
 
 Plain multi-page HTML site, no bundler/framework:
 
-- Every page is a standalone `.html` file at the repo root (`index.html`, `tech.html`, `waxReviews.html`, `playerSearch.html`, `lockout.html`) or under `/cms`. `cards.html` and `cardChecker.html` were both archived to `Old HTML Pages/` on 2026-08-15 — no longer live pages, see `FRONTEND.md`.
+- Every page is a standalone `.html` file at the repo root (`index.html`, `about.html`, `tech.html`, `waxReviews.html`, `browseBySet.html`, `playerSearch.html`, `lockout.html`, `theJunkWaxYears.html`, `timeline.html`) or under `/cms`. `cards.html` and `cardChecker.html` were both archived to `Old HTML Pages/` on 2026-08-15 — no longer live pages, see `FRONTEND.md`.
 - Shared behaviour lives in `/scripts/*.js`, included per-page via `<script src>` tags — see `FRONTEND.md` for which script does what.
 - Styling is a single `styles/styles.css`.
 - Pages read query-string parameters (`?year=`, `?blogType=`, `?pageName=`, `?blogCat=`) to decide what content to fetch and how to render the nav — see `FRONTEND.md`.
