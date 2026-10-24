@@ -2197,14 +2197,15 @@ body:has(.site-footer) {
 
 .browse-set {
   display: flex;
-  flex-wrap: wrap;
   align-items: baseline;
-  column-gap: 18px;
-  row-gap: 2px;
+  column-gap: 14px;
   margin: 0 0 14px;
 }
 
+/* A name too long for the column wraps; the links never leave its first line. */
 .browse-set-name {
+  flex: 0 1 auto;
+  min-width: 0;
   font-family: 'Source Sans 3', sans-serif;
   font-size: 20px;
   font-weight: 700;
@@ -2212,7 +2213,9 @@ body:has(.site-footer) {
 
 .browse-set-links {
   display: flex;
-  gap: 18px;
+  flex: none;
+  gap: 14px;
+  white-space: nowrap;
   font-family: 'Nunito', sans-serif;
   font-weight: 600;
   font-size: 16px;
