@@ -45,13 +45,11 @@
   - Upper Deck’s 550-card sets (English & French) released across two Series
     - First Upper Deck Young Guns cards
     - Lower production creates French set frenzy
-  - O-Pee-Chee’s “limited” 132-card Premier sets the hobby world on fire, further stoking speculation
-  - Topps resurrects Bowman as a “premium” 264-card set
   - Score releases a 440-card set one American, one Canadian, plus factory sets
     - Eric Lindros mania as only Score has his RC
-- "Print as much as you want" Overproduction:
-  - Upper Deck “High” Series packs contained a mix of Low and High Series cards  
-  - Upper Deck and Pro Set go back to the presses for multiple print runs as demand continues  
+- O-Pee-Chee’s “limited” 132-card Premier sets the hobby world on fire, further stoking speculation
+- Topps resurrects Bowman as a “premium” 264-card set
+- Overproduction: Upper Deck and Pro Set go back to the presses for multiple print runs as demand continues  
 - Factors driving speculation:
   - First Beckett hockey price guide
   - OPC Premier’s rumoured limited print run drives demand for Jagr / Roenick / Fedorov / Mogilny RCs
