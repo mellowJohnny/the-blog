@@ -484,20 +484,6 @@ function buildChecklistGroups(items) {
     groups.push({ title: "Main Set", cards: mainCards });
   }
 
-  // Extended Sets (mail-away / box sets that belong with the main set) come
-  // right after it, ahead of the insert sets, and are never insert-filtered.
-  const extendedGroups = new Map();
-  items
-    .filter(item => item.type === "extendedSet")
-    .forEach(item => {
-      const name = item.insertSetName || "Extended Set";
-      if (!extendedGroups.has(name)) extendedGroups.set(name, []);
-      extendedGroups.get(name).push(item);
-    });
-  [...extendedGroups.keys()].sort().forEach(name => {
-    groups.push({ title: `Extended Set - ${name}`, cards: extendedGroups.get(name).sort(byGroup) });
-  });
-
   const insertGroups = new Map();
   items
     .filter(item => item.type === "insertSet")
@@ -526,6 +512,20 @@ function buildChecklistGroups(items) {
     const exempt = CHECKLIST_NO_SUFFIX_GROUPS.has(`${cards[0].setName}|${name}`);
     const suffix = exempt ? "" : ` - ${isMemorabilia ? "Memorabilia" : "Insert Set"}`;
     groups.push({ title: `${name}${suffix}`, cards });
+  });
+
+  // Extended Sets (mail-away / box sets that belong with the main set) come
+  // last, after the insert sets, and are never insert-filtered.
+  const extendedGroups = new Map();
+  items
+    .filter(item => item.type === "extendedSet")
+    .forEach(item => {
+      const name = item.insertSetName || "Extended Set";
+      if (!extendedGroups.has(name)) extendedGroups.set(name, []);
+      extendedGroups.get(name).push(item);
+    });
+  [...extendedGroups.keys()].sort().forEach(name => {
+    groups.push({ title: `Extended Set - ${name}`, cards: extendedGroups.get(name).sort(byGroup) });
   });
 
   return groups;
