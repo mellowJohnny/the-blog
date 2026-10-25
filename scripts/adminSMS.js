@@ -495,4 +495,107 @@ function hideAddSubscriberFeedback() {
   addSubscriberFeedback.className = "bulk-feedback";
 }
 
+// ======================================================
+// List all subscribers - read-only view of the live Subscribers table
+// ======================================================
+const LIST_SUBSCRIBERS_API = "https://05b6ofo7i1.execute-api.us-east-2.amazonaws.com/prod/subscribers/list";
+
+const listSubscribersOverlay  = document.getElementById("listSubscribersOverlay");
+const listSubscribersLink     = document.getElementById("listSubscribersLink");
+const listSubscribersCloseBtn = document.getElementById("listSubscribersCloseBtn");
+const listSubscribersSummary  = document.getElementById("listSubscribersSummary");
+const listSubscribersFeedback = document.getElementById("listSubscribersFeedback");
+const listSubscribersBody     = document.getElementById("listSubscribersBody");
+
+// A reopen before the last response arrives must not paint the old one.
+let listSubscribersRequestId = 0;
+
+listSubscribersLink.addEventListener("click", (e) => {
+  e.preventDefault();
+  openListSubscribersModal();
+});
+listSubscribersCloseBtn.addEventListener("click", closeListSubscribersModal);
+listSubscribersOverlay.addEventListener("click", (e) => {
+  if (e.target === listSubscribersOverlay) closeListSubscribersModal();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && listSubscribersOverlay.style.display !== "none") closeListSubscribersModal();
+});
+
+function closeListSubscribersModal() {
+  listSubscribersRequestId++;
+  listSubscribersOverlay.style.display = "none";
+}
+
+// +1 numbers read as (416) 555-1234; anything else is shown as stored.
+function formatSubscriberPhone(phoneNumber) {
+  const match = /^\+1(\d{3})(\d{3})(\d{4})$/.exec(phoneNumber);
+  return match ? `(${match[1]}) ${match[2]}-${match[3]}` : phoneNumber;
+}
+
+function showListSubscribersFeedback(msg, type) {
+  listSubscribersFeedback.textContent = msg;
+  listSubscribersFeedback.className = `bulk-feedback ${type}`;
+  listSubscribersFeedback.style.display = "block";
+}
+
+async function openListSubscribersModal() {
+  const requestId = ++listSubscribersRequestId;
+  listSubscribersBody.replaceChildren();
+  listSubscribersSummary.textContent = "";
+  showListSubscribersFeedback("Loading...", "success");
+  listSubscribersOverlay.style.display = "flex";
+
+  try {
+    const token = await getAuthToken();
+    const res = await fetch(LIST_SUBSCRIBERS_API, {
+      method: "GET",
+      headers: { "Authorization": token }
+    });
+    const json = await res.json();
+    if (requestId !== listSubscribersRequestId) return;
+
+    if (!res.ok || !Array.isArray(json.subscribers)) {
+      showListSubscribersFeedback(json.error || "Could not load the subscriber list.", "error");
+      return;
+    }
+    renderSubscriberList(json.subscribers);
+  } catch (err) {
+    if (requestId !== listSubscribersRequestId) return;
+    showListSubscribersFeedback(`Network error: ${err.message}`, "error");
+  }
+}
+
+function renderSubscriberList(subscribers) {
+  listSubscribersFeedback.style.display = "none";
+
+  if (subscribers.length === 0) {
+    showListSubscribersFeedback("There are no subscribers yet.", "success");
+    return;
+  }
+
+  const count = (status) => subscribers.filter((s) => s.status === status).length;
+  const subscribed = count("subscribed");
+  const unsubscribed = count("unsubscribed");
+  const other = subscribers.length - subscribed - unsubscribed;
+  listSubscribersSummary.textContent =
+    `${subscribers.length} subscriber${subscribers.length === 1 ? "" : "s"}: ` +
+    `${subscribed} subscribed, ${unsubscribed} unsubscribed` + (other ? `, ${other} other` : "");
+
+  const rows = subscribers.map((s) => {
+    const row = document.createElement("tr");
+    const status = document.createElement("span");
+    status.textContent = s.status || "unknown";
+    status.className = `list-subscribers-status ${s.status === "subscribed" ? "subscribed" : s.status === "unsubscribed" ? "unsubscribed" : ""}`;
+
+    [s.firstName || "(no name)", formatSubscriberPhone(s.phoneNumber), status].forEach((value) => {
+      const cell = document.createElement("td");
+      cell.append(value);
+      row.appendChild(cell);
+    });
+    return row;
+  });
+  listSubscribersBody.replaceChildren(...rows);
+}
+
 });

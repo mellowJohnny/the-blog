@@ -79,6 +79,9 @@
                 <a href="#" id="addSubscriberLink">...add subscriber</a>
               </td>
               <td class="cms-nav-td">
+                <a href="#" id="listSubscribersLink">...list all subscribers</a>
+              </td>
+              <td class="cms-nav-td">
                 <a href="#" id="helpLink">...user guide</a>
               </td>
             </tr>
@@ -337,6 +340,40 @@
               class="bulk-btn bulk-btn-cancel"
               style="display:none;"
             >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- List All Subscribers Modal -->
+      <div id="listSubscribersOverlay" class="bulk-overlay" style="display:none;">
+        <div class="bulk-modal list-subscribers-modal">
+          <h2 class="bulk-modal-title">All Subscribers</h2>
+
+          <p id="listSubscribersSummary" class="bulk-modal-instructions"></p>
+
+          <div
+            id="listSubscribersFeedback"
+            class="bulk-feedback"
+            style="display:none;"
+          ></div>
+
+          <div class="list-subscribers-scroll">
+            <table class="list-subscribers-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="listSubscribersBody"></tbody>
+            </table>
+          </div>
+
+          <div class="bulk-modal-actions">
+            <button id="listSubscribersCloseBtn" class="bulk-btn bulk-btn-cancel">
               Close
             </button>
           </div>
