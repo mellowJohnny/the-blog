@@ -6,6 +6,56 @@ This document describes the three core files that make up the Autobus Messaging 
 
 ---
 
+## Subscriber lifecycle — how the whole cycle works
+
+This section ties the pieces below together: how a rider gets on the list at the start of the season, what an opt-out does, how they come back, and who decides what. Read it first; the numbered sections after it are the detail.
+
+### Who decides what
+
+There are two separate lists, and only one of them is the authority.
+
+| | Twilio | Our DynamoDB tables (`Subscribers`, `SubscribersTest`) |
+| --- | --- | --- |
+| What it is | The **authority on opt-outs**. Twilio keeps its own opt-out list for the club's sending number (a Canadian local number) and checks it every time we ask it to send. | **Our own list of who we ask Twilio to text.** Twilio never sees these tables. |
+| What it controls | Whether a text is actually delivered. | Whether we ask at all. |
+| What changes it | The rider texting a keyword (STOP, START...) to the club number. | The season's bulk import, "add subscriber", the inbound-text Lambda, and the broadcast Lambda when Twilio refuses a number. |
+
+**Twilio always has the final say.** We only make requests; Twilio decides whether to send. Our `status` field is a best-effort mirror of Twilio's opt-out list, kept in step by code so staff never have to manage it. If the two ever disagree, Twilio wins and our table is corrected automatically (step 5 below).
+
+### The cycle, step by step
+
+1. **Season start: the list is uploaded once.** Riders sign up through the club's sign-up form. Its CSV export (the "Name" and "Your mobile number" columns) is loaded with **"...bulk import"**. The import **replaces the whole `Subscribers` table**: it deletes every existing record (including anyone added by hand and anyone who had unsubscribed), then writes one record per CSV row, all with `status: "subscribed"` and `source: "web"`. Nothing is sent to Twilio: Twilio only learns of a number when we first text it or it first texts us. Uploading the list effectively **opts every number in**. The import is meant to happen once per season; a second import would wipe the table again.
+2. **The first text of the year.** The club's first message of the year welcomes all riders. It is each rider's **opportunity to opt out**, and they can opt out at any later point too.
+3. **Opting out.** A rider texts STOP (or another Twilio opt-out word) to the club's number. Two things happen independently:
+   - **Twilio** blocks that number from receiving texts from the club's number, and sends its own automatic confirmation.
+   - Twilio also forwards the text to our webhook, **`inboundSMSHandler`**, which marks the rider's record `unsubscribed` (stamping `unsubTimestamp`, `source: "mobile"`) and replies "You have been unsubscribed. Reply START to resubscribe." Some riders therefore see two replies; this is a known, accepted limitation (see 2.6 in Subscriber Management).
+   - The opt-out words are Twilio's full default list: **STOP, STOPALL, UNSUBSCRIBE, CANCEL, END, QUIT, REVOKE, OPTOUT**. Only a single word counts: Twilio does not recognise phrases such as "opt out" or "stop please". (REVOKE and OPTOUT were added to our handler on 2026-10-27, after Twilio added them in April 2025.)
+   - **An opt-out only affects the live `Subscribers` table, never `SubscribersTest`.** The inbound handler has the table name `Subscribers` fixed in the code.
+4. **After an opt-out, nothing is needed on our side.** The broadcast Lambda only asks Twilio to text records whose `status` is `subscribed`, so an unsubscribed rider is skipped. Staff never manage opt-outs by hand.
+5. **If the two lists disagree, the system corrects itself (added 2026-10-27).** A rider can be `subscribed` in our table but blocked at Twilio: for example a record edited by hand, an opt-out word the handler didn't recognise, or a number that was reassigned to someone new. The broadcast then asks Twilio, and Twilio refuses with **error 21610** ("attempt to send to unsubscribed recipient"). The broadcast Lambda catches that and marks the record `unsubscribed` (`source: "twilio"`) in the table the send used. The results row shows **FAILED, "Opted out with Twilio (21610) - marked unsubscribed"** once; the next broadcast no longer tries that number. This needs `dynamodb:UpdateItem` on both tables for the Lambda's role; if it is missing, the broadcast still works and the row says "could not mark unsubscribed".
+6. **Re-subscribing.** The rider texts **START** (YES and UNSTOP also work). Twilio lifts its block, so texts are delivered again, and `inboundSMSHandler` flips their record back to `subscribed` (stamping `optInTimestamp`, `source: "mobile"`). Again this changes only the live table. Setting a record back to `subscribed` by hand does **not** override Twilio: if the rider hasn't texted START, Twilio keeps refusing (and step 5 marks the record `unsubscribed` again). This was verified with a live test on 2026-10-27.
+7. **People who aren't on the list.** A number with **no record** that texts START gets "This is a private communication channel for Autobus Cycling Club members only. If you are a member please contact a Ride Leader to be added." and nothing is written. This keeps the list limited to members: otherwise anyone who found the number could join. A Ride Leader adds them with **"...add subscriber"**, which creates the record as `subscribed` straight away; the rider does not need to text anything afterwards. The same applies to a record that was **deleted** in DynamoDB: it cannot be restored by texting START, and has to be re-added. To take someone off the list, mark them `unsubscribed` instead of deleting the record, and they can still rejoin by texting START.
+8. **Seeing who is on the list.** **"...list all subscribers"** opens a read-only list of the live `Subscribers` table: name, phone number and status (`subscribed` / `unsubscribed`). The status is our mirror, not Twilio's opt-out list.
+
+### Behaviour that looks odd but is expected
+
+- **`SUCCESS` in the results means Twilio accepted the request**, not that the text was delivered. Delivery status lives in Twilio's message logs.
+- **Opt-outs and the test list.** A rider who texts STOP is not removed from `SubscribersTest`. A test recipient who texts STOP stays `subscribed` in the test table until the next Test Mode broadcast, where Twilio refuses the number and the broadcast marks that test record `unsubscribed`. Texting START does not flip a test record back: set it to `subscribed` by hand in the DynamoDB console.
+- **Twilio's opt-out is per sending number.** If the club's sending number ever changes, riders who opted out of the old number are not blocked on the new one, and would be texted again without a fresh opt-out.
+- **A bulk import mid-season wipes everything**, including unsubscribed and hand-added records, and marks every row `subscribed`. Twilio would still refuse anyone who had opted out (they would be marked again by step 5), but hand-added riders would have to be re-added.
+
+### Quick reference
+
+| What you see | What it means |
+| --- | --- |
+| A row in the results: FAILED, "Opted out with Twilio (21610)..." | The rider opted out with Twilio. It is now marked `unsubscribed` automatically; no action needed. |
+| A rider texts START and gets the "private communication channel" reply | They have no record. Add them with "...add subscriber". |
+| A rider is `subscribed` here but never receives texts | Twilio is blocking them (they opted out). They must text START. |
+| A test recipient still shows `subscribed` after texting STOP | Opt-outs only change the live table. The next Test Mode send marks it. |
+| "...list all subscribers" shows `unsubscribed` | Our mirror of an opt-out. The rider can text START at any time to come back. |
+
+---
+
 ## 1. SMS Broadcast Lambda (`index.mjs`)
 
 ### 1.1 Overview
@@ -38,6 +88,7 @@ The broadcast Lambda (sendAlertHandler) is the backend engine of the platform. I
 | Permission | Purpose |
 | --- | --- |
 | `dynamodb:Scan` | Read subscriber records from the active table |
+| `dynamodb:UpdateItem` | Mark a number `unsubscribed` when Twilio refuses it with error 21610 (added 2026-10-27; needed on both `Subscribers` and `SubscribersTest`). Without it the broadcast still runs; the results row says the number "could not" be marked. |
 
 ---
 
@@ -62,7 +113,7 @@ The Lambda accepts a JSON body with two fields:
 
 3. Scans the selected table for all records where `status = "subscribed"`
 4. Sends an SMS via Twilio to each subscriber's `phoneNumber`
-5. Records a `SUCCESS` or `FAILED` result for each recipient
+5. Records a `SUCCESS` or `FAILED` result for each recipient. `SUCCESS` means Twilio accepted the request, not that the text was delivered. If Twilio refuses the number with **error 21610** (the recipient opted out), the row is `FAILED` with the error "Opted out with Twilio (21610) - marked unsubscribed", and the record is set to `unsubscribed` in the table this send used (see "Subscriber lifecycle", step 5)
 6. Returns the full results array to the frontend
 
 **Response format:**
@@ -95,6 +146,7 @@ The Lambda accepts a JSON body with two fields:
 - **Per-recipient error handling** — each SMS send is wrapped in its own try/catch. A failure for one recipient does not stop the rest of the broadcast; it is recorded as `FAILED` and processing continues.
 - **Separate test table** — `SubscribersTest` is a dedicated DynamoDB table for test subscribers, keeping test sends completely isolated from the live subscriber list.
 - **Messages sent sequentially** — the Lambda sends one SMS at a time (not in parallel) to avoid overwhelming the Twilio API and to ensure accurate per-recipient result tracking.
+- **Twilio is the authority on opt-outs (2026-10-27)** — our table is only the list of who we ask Twilio to text; Twilio checks its own opt-out list at send time. When it refuses a number with error 21610, the Lambda corrects our table (marks the record `unsubscribed`, `source = twilio`) so the next broadcast skips it. The marking is best effort and can never stop a broadcast, and nothing it logs contains a phone number.
 
 ---
 
@@ -141,6 +193,8 @@ The main admin interface for the Autobus Messaging Platform. Provides the messag
 | --- | --- |
 | `back to cms...` | Returns to the main CMS dashboard (`/cms/wlcms.html`) |
 | `bulk import...` | Opens the Bulk Import modal |
+| `add subscriber...` | Opens the Add Subscriber modal (see Subscriber Management) |
+| `list all subscribers...` | Opens a read-only list of every record in the live `Subscribers` table: name, phone number and status (`subscribed` / `unsubscribed`). Fetched fresh on every open from `GET /subscribers/list` (Cognito-protected, `Lambdas/listSubscribers/`). Sorted by name, with a count summary. The status is our mirror of who we ask Twilio to text, not Twilio's own opt-out list. |
 | `user guide...` | Opens the User Guide modal |
 
 ---
@@ -182,6 +236,7 @@ A plain-language reference modal accessible from the navigation bar. Covers:
 - Test Mode vs Live Mode
 - Reading the SMS stats bar
 - Using the bulk import feature
+- **Opt-Outs & Re-subscribing** (added 2026-10-27, right after the bulk import section): once the season's list is uploaded every number counts as opted in; the first welcome text of the year is each rider's chance to opt out, and they can opt out at any later point; nothing needs doing on our side, the code marks the record `unsubscribed` and texting START flips it back; after the first blast the users manage the list. The **Test Mode** section also notes that STOP and START change only the live subscriber list, never the test list.
 - A note on SMS segments and Twilio costs
 
 ---
@@ -218,6 +273,8 @@ All client-side logic for the SMS admin page. Handles message composition, broad
 | `updateSmsStats()` | Calculates and displays character count, encoding, and segment count |
 | `sendBroadcast()` | Handles the full send flow including auth, confirmation, API call, and results rendering |
 | Bulk import | File selection, drag-and-drop, validation, upload, and modal state management |
+| Add subscriber | Modal open/close, field validation, `POST /subscribers` |
+| List all subscribers | `openListSubscribersModal()` fetches `GET /subscribers/list` with the auth token on every open and `renderSubscriberList()` draws the table with `textContent` (names can't inject markup); Close, Escape and backdrop click dismiss it; a request counter ignores a response that arrives after the modal was closed or reopened |
 | Help modal | Open, close, and overlay-click handling |
 
 ---
@@ -288,6 +345,8 @@ const BULK_IMPORT_API = 'https://05b6ofo7i1.execute-api.us-east-2.amazonaws.com/
 | --- | --- | --- | --- |
 | `/admin/send` | POST | Send SMS broadcast | Cognito JWT required |
 | `/subscribers/bulk-upload` | POST | Truncate and import subscriber list | Cognito JWT required |
+| `/subscribers` | POST | Add one subscriber | Cognito JWT required |
+| `/subscribers/list` | GET | List every record in the live `Subscribers` table | Cognito JWT required |
 
 ---
 
@@ -576,11 +635,13 @@ Handles inbound SMS messages from Twilio subscribers. Processes STOP, START, and
 
 | Keyword(s) | Action | DynamoDB Update | TwiML Response |
 | --- | --- | --- | --- |
-| `STOP`, `STOPALL`, `UNSUBSCRIBE`, `CANCEL`, `END`, `QUIT` | Unsubscribe | `status = unsubscribed`, `unsubTimestamp`, `source = mobile` | "You have been unsubscribed. Reply START to resubscribe." |
+| `STOP`, `STOPALL`, `UNSUBSCRIBE`, `CANCEL`, `END`, `QUIT`, `REVOKE`, `OPTOUT` | Unsubscribe | `status = unsubscribed`, `unsubTimestamp`, `source = mobile` | "You have been unsubscribed. Reply START to resubscribe." |
 | `START`, `YES`, `UNSTOP` (existing subscriber) | Resubscribe | `status = subscribed`, `optInTimestamp`, `source = mobile` | "You are now subscribed again." |
 | `START`, `YES`, `UNSTOP` (unknown number) | Reject | No DynamoDB update | Private channel message (see below) |
 | `HELP` | Info | No DynamoDB update | "Reply START to subscribe, STOP to unsubscribe." |
 | Any other | Unknown | No DynamoDB update | "Command not recognized. Reply HELP for options." |
+
+The unsubscribe words are Twilio's full default opt-out list; `REVOKE` and `OPTOUT` were added to this handler on 2026-10-27 (Twilio added them in April 2025). Matching is exact: the text is trimmed and upper-cased, and only a single word counts, as on Twilio's side. **Every read and write here is on the live `Subscribers` table only; a STOP or START text never changes `SubscribersTest`.** The Twilio-side opt-out is separate and automatic: see "Subscriber lifecycle" at the top of this page.
 
 **Private channel rejection message (unknown START):**
 
@@ -682,7 +743,8 @@ All subscriber management endpoints live under the same API as the broadcast end
 | --- | --- | --- | --- |
 | POST | `/admin/send` | `index.mjs` (broadcast) | CognitoAuthorizer |
 | POST | `/subscribers` | `subscribeHandler` | CognitoAuthorizer |
-| POST | `/subscribers/bulk-upload` | `bulkUploadSubscribers.mjs` | CognitoAuthorizer |
+| POST | `/subscribers/bulk-upload` | `bulkSubscriberUpload` | CognitoAuthorizer |
+| GET | `/subscribers/list` | `listSubscribers` | CognitoAuthorizer |
 | POST | `/twilio/inbound` (or equivalent) | `inboundSMSHandler` | None (public) |
 
 ---

@@ -282,7 +282,7 @@ doesn't.
 
 ## Autobus Messaging Platform (SMS)
 
-All three of these send an `Authorization` header carrying the raw
+All four of these send an `Authorization` header carrying the raw
 Cognito ID token from `getAuthToken()` (`scripts/auth.js`) — see
 `AUTH.md`. These are also the only endpoints on the whole site that do
 so.
@@ -292,7 +292,7 @@ so.
 - **Method**: POST
 - **Body**: `{ message, mode }` — `mode` is `"test"` or `"live"`. Per Confluence's "AMP SMS - Platform Core" page (the pre-repo doc for this Lambda), if `mode` is missing or anything other than `"live"` the Lambda defaults to `"test"` — a deliberate safeguard against an accidental live send, not just the frontend's Test Mode checkbox default.
 - **Called from**: `sendBroadcast()` in `scripts/adminSMS.js` (used by `cms/smsAdmin.html`)
-- **Response**: `{ results: [{ phone, firstName, status: "SUCCESS"|"FAILED", error }], mode }`
+- **Response**: `{ results: [{ phone, firstName, status: "SUCCESS"|"FAILED", error }], mode }`. `SUCCESS` means Twilio accepted the request, not that the text was delivered (delivery status lives in Twilio's own logs). When Twilio refuses a number because the recipient opted out (error 21610), that row is `FAILED` with `error` = `"Opted out with Twilio (21610) - marked unsubscribed"`, and the Lambda also sets that number's `status` to `unsubscribed` in the table the send used, so the next broadcast skips it (see `LAMBDA_FUNCTIONS.md`).
 - **Lambda**: `Lambdas/sendAlertHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Per the same Confluence page: `mode: "live"` scans `Subscribers`, `mode: "test"` scans `SubscribersTest`, and either way only records where `status = "subscribed"` are included. Sends are sequential (one SMS at a time, not parallel) with each send wrapped in its own try/catch, so one recipient's failure is recorded as `FAILED` in the `results` array without aborting the rest of the broadcast. The Lambda's configured timeout is 1 minute 3 seconds specifically to allow for Twilio's per-message send time across the whole batch.
 
 ### Bulk import subscribers
@@ -300,7 +300,7 @@ so.
 - **Method**: POST
 - **Body**: `{ csvContent: "<raw CSV text>" }` — the raw club sign-up CSV export, sent as-is (no client-side parsing or pre-processing, and no base64 encoding since CSV is plain text). The Lambda extracts the `Name`/`Your mobile number` columns itself — see `LAMBDA_FUNCTIONS.md`.
 - **Called from**: `uploadBtn` click handler in `scripts/adminSMS.js`
-- **Response**: `{ deletedCount, importedCount, skippedRows }` on success (200) — `skippedRows` is `[{ row, reason }]` for any CSV row skipped (missing name, unnormalizable phone number, or a duplicate phone number within the file), empty array if none. A structurally bad file (missing required headers, no data rows) returns 400 with `{ message, skippedRows }` and imports nothing. **Destructive**: a successful call deletes *all* existing subscribers before importing the new list (confirmed with the user via `cmsConfirm()` first — see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section) — but the whole CSV is parsed and validated *before* anything is deleted, so a bad file never leaves the table empty.
+- **Response**: `{ deletedCount, importedCount, skippedRows }` on success (200) — `skippedRows` is `[{ row, reason }]` for any CSV row skipped (missing name, unnormalizable phone number, or a duplicate phone number within the file), empty array if none. A structurally bad file (missing required headers, no data rows) returns 400 with `{ message, skippedRows }` and imports nothing. **Destructive**: a successful call deletes *all* existing subscribers before importing the new list (confirmed with the user via `cmsConfirm()` first — see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section) — but the whole CSV is parsed and validated *before* anything is deleted, so a bad file never leaves the table empty. Every imported row is written as `status: "subscribed"`, and the deleted records include anyone added by hand and anyone who had unsubscribed. The import does not touch Twilio, so a number that had texted STOP stays blocked by Twilio (a later broadcast gets error 21610 for it, and the broadcast Lambda re-marks it `unsubscribed`). The list is meant to be uploaded once per season, so in practice the import is the season's opt-in event: see `AMP_SMS_PLATFORM.md`'s "Subscriber lifecycle".
 - **Lambda**: `Lambdas/bulkSubscriberUpload/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Which table it truncates/imports into is set via `process.env.TABLE_NAME`, not hardcoded to `Subscribers`/`SubscribersTest` in the source — check the Lambda's environment config in the Console to confirm which one it currently targets.
 
 ### Add a single subscriber
@@ -311,10 +311,18 @@ so.
 - **Response**: 2xx on success; `{ error }` on failure (e.g. duplicate phone number, per the in-app copy). Per the same Confluence page's response-codes table, the exact shapes are: `200` → `{ ok: true, message, phoneNumber, firstName }`; `400` → `{ ok: false, error }`, either for a missing/invalid phone number or for a missing name (`error: "A name is required"`); `409` → `{ ok: false, error: "This phone number is already subscribed" }` on duplicate; `500` → `{ ok: false, error: "Internal server error" }` on unexpected failure.
 - **Lambda**: `Lambdas/subscribeHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). `ConditionExpression: attribute_not_exists(phoneNumber)` (409 on duplicate); sets `source: "web"` on the new record. Per Confluence, the full DynamoDB item written is `{ phoneNumber, firstName, status: "subscribed", source: "web", optInTimestamp }` — `firstName` here stores the full name as entered (the field is named `firstName` only for schema consistency with the bulk-import path, per that page's design-decisions note).
 
+### List all subscribers
+- **URL**: `https://05b6ofo7i1.execute-api.us-east-2.amazonaws.com/prod/subscribers/list` (same API as the two subscriber endpoints above; `prod` stage)
+- **Method**: GET
+- **Called from**: `openListSubscribersModal()` in `scripts/adminSMS.js` (the "...list all subscribers" link on `cms/smsAdmin.html`); fetched fresh on every open
+- **Response**: `{ ok: true, total, subscribers: [{ firstName, phoneNumber, status }] }`, sorted case-insensitively by name; `status` is `"subscribed"` or `"unsubscribed"`. `500 { ok: false, error: "Internal server error" }` on failure. No caching header.
+- **Auth**: Cognito Authorizer (`401` without a token). It returns phone numbers, so the authorizer is not optional.
+- **Lambda**: `Lambdas/listSubscribers/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Read-only `Scan` of the live `Subscribers` table only (never `SubscribersTest`), following `LastEvaluatedKey`. The `status` shown is our own record of who we ask Twilio to text, not Twilio's opt-out list.
+
 ### Inbound SMS webhook (not called from this frontend)
 - **URL**: not confirmed — see the note below.
 - **Method**: POST (Twilio's webhook convention)
 - **Called from**: nothing in this repo. This is the Twilio-to-us direction: the URL is configured directly in the Twilio Console as the phone number's inbound-message webhook, and Twilio calls it when a subscriber texts the number back. Discovered 2026-08-15 via the full Lambda inventory sync, not via the usual "grep frontend `fetch()` calls" method this whole document was built with — which is also why the URL isn't confirmed here; this codebase's AWS access covers Lambda source but not API Gateway config.
 - **Body**: Twilio's standard inbound-SMS webhook form-encoded payload (`From`, `Body`, etc.), validated via `X-Twilio-Signature`.
 - **Response**: TwiML XML, not JSON.
-- **Lambda**: `Lambdas/inboundSMSHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Handles `STOP`/`START`/`HELP` and related keywords for SMS opt-out/opt-in compliance.
+- **Lambda**: `Lambdas/inboundSMSHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Handles `STOP`/`START`/`HELP` and related keywords for SMS opt-out/opt-in compliance (the opt-out words are Twilio's full default list, including `REVOKE` and `OPTOUT`). It only ever reads and writes the live **`Subscribers`** table: a STOP or START text never changes `SubscribersTest`.

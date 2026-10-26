@@ -1,10 +1,10 @@
 # Lambda Functions
 
-**29 of the 33 Lambda functions behind this site's API Gateway
+**30 of the 34 Lambda functions behind this site's API Gateway
 endpoints have their source checked into this repo**, under
 `Lambdas/` (as of 2026-08-15, one directory per function, named
-exactly after its AWS Lambda function name). `Lambdas/` holds 30
-directories, not 29: `amplifyBuildNotifier` (added 2026-09-29) sits
+exactly after its AWS Lambda function name). `Lambdas/` holds 31
+directories, not 30: `amplifyBuildNotifier` (added 2026-09-29) sits
 behind EventBridge rather than API Gateway and isn't part of that
 count — it's the only function here no frontend code ever calls.
 Most were pulled directly
@@ -12,7 +12,7 @@ from the live Console via `aws lambda get-function` using the
 `amplify-readonly-cli` credential (see `CLAUDE.md` — its actual IAM
 scope turned out to be broader than its name suggests: it can read
 full Lambda source, though not API Gateway config, and (confirmed
-2026-08-24) not DynamoDB or IAM policy introspection either). Twelve
+2026-08-24) not DynamoDB or IAM policy introspection either). Thirteen
 were already in the repo, hand-built here rather than pulled:
 `Lambdas/sendAlertHandler/`, `Lambdas/castVoteHandler/`,
 `Lambdas/deleteBlogHandler/`, `Lambdas/deleteCardSetHandler/`, and —
@@ -22,13 +22,14 @@ added later, for the checklist-upload feature and its front-end display —
 `Lambdas/searchPlayerName/`, and — for the scores ticker and its game
 modal — `Lambdas/getNhlScores/`, `Lambdas/getNhlGameDetails/` and
 `Lambdas/getPwhlScores/`, and — for the Browse By Set page —
-`Lambdas/getPublicCardSets/`. The remaining 4 of the 33
+`Lambdas/getPublicCardSets/`, and — for the SMS admin's subscriber
+list — `Lambdas/listSubscribers/`. The remaining 4 of the 34
 (`getCardIntro`, `getBlogIntro`, `fetchCardSetPreview`,
 `invalidateCache`) were pulled in the same pass, confirmed dead, and
 removed again the same day — see "Orphaned/dead Lambdas" below.
 
 Deployment is still entirely manual for every one of them, but the
-mechanics differ by function: the 27 with no real dependencies
+mechanics differ by function: the 29 with no real dependencies
 (`dependencies: {}` in `package.json`) just need the updated
 `index.mjs` pasted into the Lambda Console's inline code editor and
 Deploy clicked — no zip needed. Two need a full `npm install` + zip
@@ -192,7 +193,8 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
     "mode": "live"
   }
   ```
-  `error` is always present in each result entry — an empty string on `SUCCESS`, the caught Twilio error's `message` (or `"Unknown error"` as a fallback) on `FAILED`. An empty subscriber list (zero `status = "subscribed"` items in the target table) still returns `200` with `{ results: [], mode }`, not an error.
+  `error` is always present in each result entry — an empty string on `SUCCESS`, the caught Twilio error's `message` (or `"Unknown error"` as a fallback) on `FAILED`, except for Twilio error 21610, whose `error` text is fixed (next bullet). An empty subscriber list (zero `status = "subscribed"` items in the target table) still returns `200` with `{ results: [], mode }`, not an error.
+- **A Twilio opt-out refusal marks the subscriber `unsubscribed` (added 2026-10-27)**: Twilio, not our table, is the authority on who can be texted — it keeps its own opt-out list per sender number and checks it at send time, and it never learns about our `Subscribers` table. So the two can drift (for example a STOP-type word our inbound handler didn't recognise, or a record set back to `subscribed` by hand). When Twilio refuses a send with error **21610** ("attempt to send to unsubscribed recipient": the person replied STOP or another opt-out word, or the number was reassigned), the per-recipient `catch` calls `markUnsubscribed()`: an `UpdateItem` on the table **that send used** (`Subscribers` live, `SubscribersTest` test) setting `status = "unsubscribed"`, `unsubTimestamp` and `source = "twilio"` (so it can be told apart from `web` and `mobile`), guarded by `attribute_exists(phoneNumber) AND #s = :sub` so it never creates a record or overwrites a status that changed since the scan. The result row stays `FAILED` with `error` = `"Opted out with Twilio (21610) - marked unsubscribed"` (or `"... could not mark unsubscribed"` if the update failed). The marking is best effort: a failure (for example the role lacking `dynamodb:UpdateItem`) never stops the broadcast, and the log line carries only the error name, never a phone number. Because the record is now `unsubscribed`, the next broadcast no longer tries it. Other failures (an invalid number, a network error) never mark anyone. **Requires** `dynamodb:UpdateItem` on both tables on the Lambda's role (`sendAlertHandler-role-bjqsow9p`) in addition to `Scan`. Verified with a live test on 2026-10-27: the first send was refused and the number marked, the second send made no attempt at it, a record hand-reset to `subscribed` was refused and marked again (Twilio still blocked it), and texting START restored delivery. The deploy is the zip route (the `twilio` dependency).
 - **Related**: bulk subscriber import (`Lambdas/bulkSubscriberUpload/`) and single-subscriber add (`Lambdas/subscribeHandler/`) are separate Lambdas — see their own sections below. Inbound SMS replies (STOP/START/HELP) are handled by a completely different, previously-undocumented Lambda — see `Lambdas/inboundSMSHandler/` below.
 
 ## `Lambdas/castVoteHandler/` — hand-built in this repo
@@ -1052,8 +1054,12 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   "a message comes in" handler, called by Twilio itself when a
   subscriber texts back, not called from the site at all.
   Handles the SMS keywords that TCPA/carrier compliance requires:
-  `STOP`/`STOPALL`/`UNSUBSCRIBE`/`CANCEL`/`END`/`QUIT` (sets
-  `Subscribers.status = "unsubscribed"`), `START`/`YES`/`UNSTOP`
+  `STOP`/`STOPALL`/`UNSUBSCRIBE`/`CANCEL`/`END`/`QUIT`/`REVOKE`/`OPTOUT`
+  (sets `Subscribers.status = "unsubscribed"`; this is Twilio's full
+  default opt-out list — `REVOKE` and `OPTOUT` were added to the handler
+  2026-10-27, after Twilio added them to its own list in April 2025; before that a
+  text of either word left the record `subscribed` while Twilio blocked
+  the number, so broadcasts to it failed with error 21610), `START`/`YES`/`UNSTOP`
   (resubscribes an *existing* subscriber only — a stranger texting
   START to the number gets a "private channel, contact a Ride Leader"
   message rather than being silently added), and `HELP`. Responds with
@@ -1072,7 +1078,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   uppercased before comparison).
   | Keyword(s) | Condition | DynamoDB update | Exact reply text |
   |---|---|---|---|
-  | `STOP`, `STOPALL`, `UNSUBSCRIBE`, `CANCEL`, `END`, `QUIT` | — | `#s` → `"unsubscribed"`, `unsubTimestamp` set, `#src` → `"mobile"` | `"You have been unsubscribed. Reply START to resubscribe."` |
+  | `STOP`, `STOPALL`, `UNSUBSCRIBE`, `CANCEL`, `END`, `QUIT`, `REVOKE`, `OPTOUT` | — | `#s` → `"unsubscribed"`, `unsubTimestamp` set, `#src` → `"mobile"` | `"You have been unsubscribed. Reply START to resubscribe."` |
   | `START`, `YES`, `UNSTOP` | phone number **found** in `Subscribers` | `#s` → `"subscribed"`, `optInTimestamp` set, `#src` → `"mobile"` | `"You are now subscribed again."` |
   | `START`, `YES`, `UNSTOP` | phone number **not found** in `Subscribers` (a stranger texting in) | none — no write at all | `"This is a private communication channel for Autobus Cycling Club members only. If you are a member please contact a Ride Leader to be added."` |
   | `HELP` | — | none | `"Reply START to subscribe, STOP to unsubscribe."` |
@@ -1094,6 +1100,13 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   — `unsubTimestamp` on the STOP path, `optInTimestamp` on the START
   path — with `#s`/`#src` resolved via the aliases and the actual
   values passed through `ExpressionAttributeValues`.
+- **Only the live table**: the table name is hardcoded to `"Subscribers"`
+  in every branch, so a STOP or START text never changes
+  `SubscribersTest`. A test recipient who texts STOP therefore stays
+  `subscribed` in the test table until the next Test Mode broadcast,
+  where Twilio refuses it (error 21610) and `sendAlertHandler` marks it
+  (see that section). Likewise, texting START doesn't re-subscribe a test
+  record: set it back by hand in the DynamoDB console.
 - **Security**: validates the inbound request's `X-Twilio-Signature`
   header via HMAC-SHA1 against `process.env.TWILIO_AUTH_TOKEN` (env
   var, not hardcoded — no secret in the source) using
@@ -1119,6 +1132,32 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   `fetch()` calls like every other entry in `API_ENDPOINTS.md`. Worth
   adding the real URL to `API_ENDPOINTS.md` next time you're in the
   API Gateway console.
+
+## `Lambdas/listSubscribers/` — hand-built in this repo
+
+- **File**: `Lambdas/listSubscribers/index.mjs` (added 2026-10-25). No real
+  dependency (`dependencies: {}`), so deploy by pasting `index.mjs` into
+  the Console's inline code editor; the role needs `dynamodb:Scan` on
+  `Subscribers`.
+- **What it does**: backs the "...list all subscribers" modal on the SMS
+  admin page (`cms/smsAdmin.html`, `scripts/adminSMS.js`). A read-only
+  `Scan` of the **live `Subscribers` table only**, following
+  `LastEvaluatedKey` so a table over 1 MB isn't silently truncated, with a
+  `ProjectionExpression` of `phoneNumber, firstName, #s` (`status` is a
+  DynamoDB reserved word, so it is aliased). Returns
+  `{ ok: true, total, subscribers: [{ firstName, phoneNumber, status }] }`
+  sorted case-insensitively by name (the phone number breaks ties; a
+  record with no name sorts first and the page shows it as "(no name)"). On any
+  error it returns `500 { ok: false, error: "Internal server error" }`.
+- **Auth and exposure**: it returns phone numbers, so its API Gateway route
+  (`GET /subscribers/list` on the same API as `subscribeHandler`, stage
+  `prod`) sits behind the Cognito Authorizer; an unauthenticated request
+  gets `401`. The table name is fixed in the code and never read from the
+  request. CORS allows only `https://www.junkwaxhockey.com`
+  (`GET,OPTIONS`). No `Cache-Control` header: the list has to be current.
+- **Meaning of `status`**: it is *our* mirror of who we ask Twilio to text,
+  not Twilio's own opt-out list. See `AMP_SMS_PLATFORM.md`'s "Subscriber
+  lifecycle" for how the two stay in step.
 
 ## Orphaned/dead Lambdas — removed from this repo
 

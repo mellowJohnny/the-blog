@@ -725,8 +725,8 @@ attaches `sendBtn`'s click handler to `sendBroadcast`, wires
 `updateSmsStats()` to the textarea's `input` event and the GSM-Safe
 Mode checkbox's `change` event and calls it once immediately to
 initialize the counter, and separately wires up the open/close/
-drag-and-drop handlers for all three modals (bulk import, help, add
-subscriber) — all of this setup work has to happen after the DOM
+drag-and-drop handlers for all four modals (bulk import, help, add
+subscriber, list all subscribers) — all of this setup work has to happen after the DOM
 exists, which is exactly why it's gated behind `window load` rather
 than running as bare top-level code.
 
@@ -822,13 +822,32 @@ than running as bare top-level code.
   rather than silently overwriting an existing subscriber. On success:
   shows a confirmation, swaps Save/Cancel for Close. On error (e.g.
   that 409 duplicate case): shows `json.error` inline.
+- "...list all subscribers" nav link → `openListSubscribersModal()`
+  (`adminSMS.js`) exists because there was no way to see who is on the
+  list. It opens the modal at once with a "Loading..." line, then calls
+  **List all subscribers**, fronted by the `listSubscribers` Lambda
+  (`Lambdas/listSubscribers/`), with the Authorization header (a
+  Cognito Authorizer protects the route: it returns phone numbers).
+  The Lambda scans the live `Subscribers` table only and returns every
+  record; `renderSubscriberList()` builds the rows with `textContent`,
+  not HTML strings, so a name can't inject markup, and writes the
+  summary ("5 subscribers: 3 subscribed, 1 unsubscribed"). A record with
+  no name shows "(no name)", a number that isn't `+1` and ten digits is
+  shown as stored, and a status other than the two known values gets a
+  neutral badge. It fetches fresh on every open (no cache); a counter,
+  bumped on every open and close, makes a response that arrives after
+  the modal was closed or reopened get ignored. Empty list, HTTP error
+  and network failure each show their own message instead of a blank
+  table. Close, Escape and a backdrop click all dismiss it. The `status`
+  shown is our own mirror of who we ask Twilio to text, not Twilio's
+  opt-out list. No write happens from this modal.
 - "...user guide" nav link → opens the help modal — static in-page
   content, no API call.
 - Every modal's Cancel/Close button, or a click on its own dark
   backdrop, closes that modal.
 
-**Notable**: all three endpoints this page calls are deployed to the
-API Gateway `prod` stage — the only others there are the public "Get
-NHL game details" and "Get PWHL scores"; every remaining endpoint (23
-of them) is on `dev`.
+**Notable**: all four endpoints this page calls are deployed to the
+API Gateway `prod` stage — the only others there are the public "Get all
+live sets", "Get NHL game details" and "Get PWHL scores"; every remaining
+endpoint (25 of them) is on `dev`.
 See `ARCHITECTURE.md`.

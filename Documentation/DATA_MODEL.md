@@ -185,11 +185,33 @@ Back the Autobus SMS Messaging Platform (`cms/smsAdmin.html`).
 |---|---|---|
 | `phoneNumber` | String | Partition key (per `cms/smsAdmin.html`'s bulk-import instructions: "each record must already be in DynamoDB typed JSON format with `phoneNumber` as the partition key"). E.164 format. |
 | `firstName` | String | |
-| `status` | String | `sendAlertHandler`'s broadcast Lambda filters on `status = "subscribed"`. **Confirmed 2026-08-15** (via `Lambdas/inboundSMSHandler/`, the Twilio inbound-reply webhook — see `LAMBDA_FUNCTIONS.md`): the other value is `"unsubscribed"`, set when a subscriber texts STOP (also stamps `unsubTimestamp`); resubscribing via START sets it back to `"subscribed"` and stamps `optInTimestamp`. Both keyword-triggered writes set `source: "mobile"`; `Lambdas/subscribeHandler/`'s single-add endpoint instead sets `source: "web"` when a subscriber signs up through the site. |
+| `status` | String | `sendAlertHandler`'s broadcast Lambda filters on `status = "subscribed"`. **Confirmed 2026-08-15** (via `Lambdas/inboundSMSHandler/`, the Twilio inbound-reply webhook — see `LAMBDA_FUNCTIONS.md`): the other value is `"unsubscribed"`, set when a subscriber texts STOP (also stamps `unsubTimestamp`); resubscribing via START sets it back to `"subscribed"` and stamps `optInTimestamp`. Both keyword-triggered writes set `source: "mobile"`; `Lambdas/subscribeHandler/`'s single-add endpoint instead sets `source: "web"` when a subscriber signs up through the site, and so does the bulk import (every imported row is `subscribed`). A third writer, added 2026-10-27, is `sendAlertHandler`: when Twilio refuses a number with error 21610 (the recipient opted out with Twilio), it sets `status = "unsubscribed"`, stamps `unsubTimestamp` and sets `source: "twilio"`. |
+
+`status` is **our own record of who we ask Twilio to text**, not the
+source of truth on consent. Twilio keeps its own opt-out list per sending
+number and checks it at send time; it never learns about these tables.
+Twilio's list wins: a number can be `subscribed` here and still be
+refused. `AMP_SMS_PLATFORM.md`'s "Subscriber lifecycle" walks through the
+whole cycle.
 
 `Subscribers` is the live/production list; `SubscribersTest` is a
 parallel table used when "Test Mode" is checked in the SMS admin tool,
-so test broadcasts never reach real members.
+so test broadcasts never reach real members. **Opting out only affects
+`Subscribers`, never `SubscribersTest`:** the inbound-text Lambda
+(`inboundSMSHandler`) has the table name `Subscribers` hardcoded, so a
+STOP or START text changes only the live list. A test recipient who
+texts STOP stays `subscribed` in `SubscribersTest` until the next Test
+Mode broadcast, where Twilio refuses the number and `sendAlertHandler`
+marks that test record `unsubscribed`; texting START afterwards doesn't
+flip a test record back, so set it to `subscribed` by hand in the
+DynamoDB console.
+
+A record that is **deleted** (rather than marked `unsubscribed`) can't be
+brought back by texting START: the START handler only updates a number
+that already has a record, and replies "private communication channel"
+to strangers. A deleted subscriber has to be re-added with the SMS
+admin's "add subscriber" (or a new bulk import). To take someone off the
+list, set `status` to `unsubscribed` instead of deleting the item.
 
 ## `BlogIntro` / `CardIntro` tables — dead, backing orphaned Lambdas
 
