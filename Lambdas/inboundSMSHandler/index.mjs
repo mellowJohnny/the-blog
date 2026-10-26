@@ -118,7 +118,8 @@ export const handler = async (event) => {
     }
 
 // 4) STOP → unsubscribe
-      if (["STOP", "STOPALL", "UNSUBSCRIBE", "CANCEL", "END", "QUIT"].includes(keyword)) {
+      // Twilio's default opt-out words (REVOKE and OPTOUT were added April 2025).
+      if (["STOP", "STOPALL", "UNSUBSCRIBE", "CANCEL", "END", "QUIT", "REVOKE", "OPTOUT"].includes(keyword)) {
         await db.send(
           new UpdateItemCommand({
             TableName: "Subscribers",
