@@ -43,12 +43,12 @@ const CARDSET_CATEGORY_LABELS = {
   // Call the Tiny API to fetch the content from the editor... stripped
   // of the noneditable-block markers the card-image-insert buttons add
   // (see stripEditorOnlyMarkup(), cmsFormUI.js) - editor-only, never saved.
-  const tinyBody = stripEditorOnlyMarkup(tinymce.activeEditor.getContent());
-  const tinyBodyText = tinymce.activeEditor.getContent({ format: "text" }).trim();
+  const tinyBody = stripEditorOnlyMarkup(tinymce.get("postBody").getContent());
+  const tinyBodyText = tinymce.get("postBody").getContent({ format: "text" }).trim();
 
   if (!tinyBodyText) {
     await cmsAlert("Set Review Text is required.");
-    tinymce.activeEditor.focus();
+    tinymce.get("postBody").focus();
     return;
   }
 
@@ -129,7 +129,7 @@ function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTag
   cmsButtonSubmit();
   cmsUpdateButtonReset();
 
-  const tinyBody = stripEditorOnlyMarkup(tinymce.activeEditor.getContent());
+  const tinyBody = stripEditorOnlyMarkup(tinymce.get("postBody").getContent());
 
   const payload = {
     blogStatus,
@@ -646,7 +646,36 @@ function openPreview() {
   renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,cardBody,printRun);
 
   document.getElementById("previewModal").style.display = "block";
+  startPreviewEditor();
+}
 
+
+// The review text in the preview is editable in place (an inline TinyMCE
+// on its table cell). Edits flow back to the main editor when the preview
+// closes, so #postBody stays the one source of truth that Update saves.
+let _previewEditor = null;
+let _previewInitialContent = "";
+
+function startPreviewEditor() {
+  const bodyCell = document.querySelector("#previewContainer table.set-details-author tr:last-child td");
+  if (!bodyCell) return;
+
+  // TinyMCE won't go inline on a table cell, only a block element, so the
+  // cell's contents get a layout-neutral wrapper (the shared markup builder is untouched).
+  const editable = document.createElement("div");
+  editable.id = "previewBody";
+  editable.append(...bodyCell.childNodes);
+  bodyCell.appendChild(editable);
+
+  initPreviewEditor(editable, { uiContainer: "#previewModal", toolbarContainer: "#previewToolbar" }).then((editor) => {
+    // The modal may have been closed before TinyMCE finished starting.
+    if (document.getElementById("previewModal").style.display !== "block") {
+      editor.remove();
+      return;
+    }
+    _previewEditor = editor;
+    _previewInitialContent = editor.getContent();
+  });
 }
 
 
@@ -678,7 +707,30 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
 }
 
 function closePreview() {
+  const editor = _previewEditor;
+  _previewEditor = null;
+
+  if (editor) {
+    const edited = editor.getContent();
+    if (edited !== _previewInitialContent) {
+      // One undo step: Ctrl+Z in the main editor reverts the whole session.
+      // add() first: the page loads the text without an undo level, so undo
+      // would otherwise land on a blank editor.
+      const main = tinymce.get("postBody");
+      main.undoManager.add();
+      main.undoManager.transact(() => main.setContent(stripEditorOnlyMarkup(edited)));
+    }
+    editor.remove();
+  }
+
   document.getElementById("previewModal").style.display = "none";
   document.getElementById("previewContainer").innerHTML = ""; // Clear the modal
-
 }
+
+// Escape closes the preview, unless it is closing one of TinyMCE's own menus or dialogs.
+document.addEventListener("keydown", (e) => {
+  const modal = document.getElementById("previewModal");
+  if (e.key !== "Escape" || !modal || modal.style.display !== "block") return;
+  if (document.querySelector(".tox-menu, .tox-dialog, .tox-pop")) return;
+  closePreview();
+});

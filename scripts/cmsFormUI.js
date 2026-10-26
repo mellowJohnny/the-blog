@@ -50,6 +50,27 @@ function initTinyEditor(selector = '#postBody', { cardImageBlocks = false } = {}
 }
 
 
+// Inline editor for the Preview modal's review text (cmsCardSet.js).
+// Text-only on purpose: the image picker and HTML-source dialog stay in the
+// main editor. The toolbar docks in the modal and menus open inside it, or
+// they would land behind the modal (z-index 9999).
+function initPreviewEditor(target, { uiContainer, toolbarContainer }) {
+  return tinymce.init({
+    target,
+    inline: true,
+    fixed_toolbar_container: toolbarContainer,
+    toolbar_persist: true,
+    plugins: ['lists', 'link'],
+    toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link',
+    menubar: false,
+    ui_container: uiContainer,
+    object_resizing: false,
+    browser_spellcheck: true,
+    contextmenu: false
+  }).then((editors) => editors[0]);
+}
+
+
 /**
  * Registers the two card-review image-insert buttons on a TinyMCE
  * instance. Each opens the existing S3 image browser (cmsImageBrowser.js,

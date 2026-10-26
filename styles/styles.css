@@ -3426,6 +3426,29 @@ body:has(.site-footer) {
   text-align: left;
 }
 
+/* The review text is editable in place; the outline shows where, and
+   disappears when not hovered/focused so the preview still looks like the site. */
+.preview-hint {
+  margin: 0 0 8px;
+  font-size: 15px;
+  color: #555;
+}
+
+/* Docked formatting bar for the in-place editor; stays visible while scrolling */
+.preview-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+#previewBody:hover {
+  outline: 1px dashed #256386;
+}
+
+#previewBody.mce-edit-focus {
+  outline: 1px solid #256386;
+}
+
 /* Caption styling */
 .preview-modal #previewContainer p.caption {
   font-family: "Special Elite" !important;
