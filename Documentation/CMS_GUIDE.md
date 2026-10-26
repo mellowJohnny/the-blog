@@ -474,7 +474,29 @@ styling of everything inside it, so the real `.set-details-*` CSS
 applies to both. Change the review markup there, not in
 `renderPreview()` or `displayCardSet()` — see `FRONTEND.md`'s "Card set
 markup is shared with the CMS preview" for the details and pitfalls. `createBlogPost.html`/`blogEdit.html` don't currently have an equivalent preview.
-Sits in the horizontal middle of the Update/Cancel/Delete button row (a
+
+**Editing in place.** The review text inside the preview is editable:
+click it and a formatting bar docked at the top of the modal handles
+undo/redo, the Styles menu (headings and blocks), bold, italic,
+alignment, bullet/numbered lists and links. It is an inline TinyMCE
+editor (`initPreviewEditor()` in `cmsFormUI.js`, started by
+`startPreviewEditor()` in `cmsCardSet.js`) on the review body, which is
+wrapped in a `div#previewBody` at runtime because TinyMCE can't edit a
+table cell. Edits are copied into the main `#postBody` editor when the
+preview closes (× or Escape), so Update saves them as normal; the copy
+is one undo step in the main editor. Only the review text is editable
+(everything else comes from the form fields), and the preview editor
+has no image or HTML-source buttons — those stay in the main editor.
+Three details matter: the toolbar is docked with `fixed_toolbar_container`
+and its menus open inside the modal via `ui_container`, since TinyMCE's
+floating UI otherwise lands behind the modal (`z-index: 9999`);
+`undoManager.add()` runs before the copy-back, because the page loads the
+review text without an undo level and Ctrl+Z would otherwise land on a
+blank editor; and `createCardSet()`/`updateCardSet()` read the editor with
+`tinymce.get("postBody")`, not `tinymce.activeEditor`, which means
+"last focused" and could be the preview's editor.
+
+The Preview button sits in the horizontal middle of the Update/Cancel/Delete button row (a
 CSS Grid `1fr auto 1fr` row, not a flex `space-between` — the latter
 doesn't truly center a middle item when the two side groups are
 different widths, which Update+Cancel vs. Delete Set are).

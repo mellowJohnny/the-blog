@@ -453,7 +453,9 @@ guided flow.
   `displayCardSet()` uses (since 2026-09-28; before that the preview
   kept its own table-based copy of the markup, which had drifted from
   production — see `FRONTEND.md`'s "Card set markup is shared with the
-  CMS preview") — then shows `#previewModal`. **Purely client-side —
+  CMS preview") — then shows `#previewModal` and calls
+  `startPreviewEditor()`, which makes the review text editable in place
+  (see the next bullet). **Purely client-side —
   no API call**, since the whole point is previewing changes that
   haven't been saved yet. The set-details grid, author line (now
   including the publish date), body and footer block match the live
@@ -470,8 +472,28 @@ guided flow.
     the record's actual `headerImg`/`footerImg` prefix fields.
   - Pagination controls and the vote widget aren't rendered — they're
     live-site interactions, not review content.
-- Close preview (`×`) → `closePreview()` (`cmsCardSet.js`) — hides the
-  modal and clears `#previewContainer`.
+- Clicking the review text in the preview → edit it in place, with a
+  formatting bar docked at the top of the modal. `startPreviewEditor()`
+  (`cmsCardSet.js`) wraps the review cell's contents in `div#previewBody`
+  (TinyMCE can only go inline on a block element, not a table cell) and
+  starts `initPreviewEditor()` (`cmsFormUI.js`) on it: an inline TinyMCE
+  with a text-only toolbar (undo/redo, Styles, bold, italic, alignment,
+  lists, link; no image or source-code buttons, which stay in the main
+  editor). Its toolbar is docked in `#previewToolbar`
+  (`fixed_toolbar_container`) and its menus open inside the modal
+  (`ui_container`), because TinyMCE's floating UI would otherwise render
+  behind the modal. Only the review text is editable; the rest of the
+  preview is built from form fields. No API call.
+- Close preview (`×`, or Escape when no TinyMCE menu or dialog is open)
+  → `closePreview()` (`cmsCardSet.js`) — if the preview editor's content
+  changed, copies it into the main `#postBody` editor as one undo step
+  (`undoManager.add()` first snapshots the pre-preview text, because the
+  page loads the review without an undo level), removes the preview
+  editor, hides the modal and clears `#previewContainer`. Update then
+  saves the main editor as usual. `createCardSet()`/`updateCardSet()` read
+  that editor with `tinymce.get("postBody")` rather than
+  `tinymce.activeEditor`, which means "last focused" and could now be the
+  preview's editor.
 - "Delete Set" button → `deleteCardSet(setID, setName, year)`
   (`cmsCardSet.js`) — `await cmsConfirm("Delete this card set? This
   cannot be undone.")` first. If confirmed, calls **Delete card set**,
