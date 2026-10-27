@@ -3431,6 +3431,8 @@ body:has(.site-footer) {
 .preview-hint {
   margin: 0 0 8px;
   font-size: 15px;
+  font-weight: bold;
+  text-align: center;
   color: #555;
 }
 
