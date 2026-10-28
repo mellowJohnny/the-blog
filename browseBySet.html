@@ -82,11 +82,13 @@
       <link
         rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200;600&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
+      <style>.nhl-ticker { display: none; }</style>
     </noscript>
 
     <!-- Load the Hella Scripts (wax.js is here for the checklist modal) -->
     <script src="/scripts/wax.js" defer></script>
     <script src="/scripts/browseBySet.js" defer></script>
+    <script src="/scripts/ticker.js" defer></script>
     <script src="/scripts/helper.js" defer></script>
 
     <script>
@@ -131,6 +133,17 @@
         </tr>
       </table>
     </section>
+
+    <!-- NHL scores ticker - filled by initNhlTicker() in ticker.js. Visible (empty)
+         from first paint so it doesn't pop in; hidden again if there's nothing to show. -->
+    <div
+      id="nhlTicker"
+      class="nhl-ticker"
+      role="region"
+      aria-label="NHL scores"
+      aria-busy="true"
+      tabindex="0"
+    ></div>
 
     <nav>
       <!-- Hamberger menu for mobile in helper.js -->
