@@ -62,30 +62,42 @@ async function scanAllMatchingCards(queryLower) {
 }
 
 // Same full paginated Scan as scanAllMatchingCards, but collects every
-// distinct setName instead of filtering by player - backs ?audit=1
-// below, a data-integrity check for the 1:1 Checklists<->Cards
-// assumption every search result link depends on: every setName in
-// Checklists should resolve to exactly one Cards item, or a search
-// result shows up unlinked (see DATA_MODEL.md's Checklists table).
-async function scanAllDistinctSetNames() {
-  const setNames = new Set();
+// setName and its checklist groups (main/insert/extended, with card
+// counts) instead of filtering by player - backs ?audit=1 below, a
+// data-integrity check for the 1:1 Checklists<->Cards assumption every
+// search result link depends on: every setName in Checklists should
+// resolve to exactly one Cards item, or a search result shows up
+// unlinked (see DATA_MODEL.md's Checklists table).
+// Returns Map(setName -> Map(insertSetName -> { type, count })), "" = main.
+async function scanAllChecklistGroups() {
+  const sets = new Map();
   let lastEvaluatedKey;
 
   do {
     const result = await docClient.send(new ScanCommand({
       TableName: CHECKLISTS_TABLE,
-      ProjectionExpression: "setName",
+      ProjectionExpression: "setName, insertSetName, #t",
+      ExpressionAttributeNames: { "#t": "type" },
       ExclusiveStartKey: lastEvaluatedKey
     }));
 
     for (const item of result.Items || []) {
-      if (item.setName) setNames.add(item.setName);
+      if (!item.setName) continue;
+      const insertSetName = item.insertSetName || "";
+      const groups = sets.get(item.setName) || new Map();
+      const group = groups.get(insertSetName) || {
+        type: item.type || (insertSetName ? "insertSet" : "main"),
+        count: 0
+      };
+      group.count += 1;
+      groups.set(insertSetName, group);
+      sets.set(item.setName, groups);
     }
 
     lastEvaluatedKey = result.LastEvaluatedKey;
   } while (lastEvaluatedKey);
 
-  return [...setNames];
+  return sets;
 }
 
 // Same full paginated Scan as the others, but collects every distinct
@@ -156,9 +168,11 @@ export const handler = async (event) => {
     // feature itself. Enumerates every distinct setName in Checklists
     // and reports which ones have no matching Cards item, i.e. would
     // show up in search results with no working review link. See
-    // scanAllDistinctSetNames() above.
+    // scanAllChecklistGroups() above. "orphans" lists each checklist
+    // (one group of a set) of those unlinked sets, for the admin delete list.
     if (event?.queryStringParameters?.audit === "1") {
-      const setNames = await scanAllDistinctSetNames();
+      const sets = await scanAllChecklistGroups();
+      const setNames = [...sets.keys()];
       const unlinkedSetNames = [];
 
       for (const setName of setNames) {
@@ -168,13 +182,21 @@ export const handler = async (event) => {
 
       unlinkedSetNames.sort();
 
+      // One entry per checklist, set name then group ("" = main sorts first).
+      const orphans = unlinkedSetNames.flatMap((setName) =>
+        [...sets.get(setName)]
+          .map(([insertSetName, { type, count }]) => ({ setName, insertSetName, type, count }))
+          .sort((a, b) => a.insertSetName.localeCompare(b.insertSetName))
+      );
+
       return {
         statusCode: 200,
         headers: CORS_HEADERS,
         body: JSON.stringify({
           totalDistinctSetNames: setNames.length,
           linkedCount: setNames.length - unlinkedSetNames.length,
-          unlinkedSetNames
+          unlinkedSetNames,
+          orphans
         })
       };
     }

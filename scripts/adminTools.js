@@ -5,6 +5,7 @@
 const GET_BLOGS_URL = "https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev";
 const GET_CARD_SETS_BY_YEAR_URL = "https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev";
 const SEARCH_PLAYER_NAME_URL = "https://evlsyozjb0.execute-api.us-east-2.amazonaws.com/dev";
+const SAVE_CHECKLIST_URL = "https://w46hwbexed.execute-api.us-east-2.amazonaws.com/dev";
 
 /* Broken Image Check - loads every image the public site references
    (blog/card-set images, inline postBody images) as a real <img> and
@@ -182,8 +183,62 @@ async function runBrokenImageCheck() {
 }
 
 /* Checklist Integrity Check - wires a button to searchPlayerName's
-   existing ?audit=1 mode, which finds every Checklists setName with
-   no matching Cards item (see DATA_MODEL.md). Nothing new to build. */
+   ?audit=1 mode, which finds every Checklists setName with no matching
+   Cards item (see DATA_MODEL.md). Its "orphans" list has one entry per
+   orphaned checklist (a set's main set, insert set or extended set),
+   each of which can be ticked and deleted on its own. */
+
+let checklistOrphans = [];
+
+// Checklist title as the Upload Checklist page words it: "<set> - <insert set>".
+function orphanLabel({ setName, insertSetName, type, count }) {
+  const group = insertSetName || "Main set";
+  const kind = type === "extendedSet" ? " (extended set)" : "";
+  return `${setName} - ${group}${kind} (${count} card${count === 1 ? "" : "s"})`;
+}
+
+function buildOrphanRow(orphan) {
+  const label = document.createElement("label");
+  label.className = "admin-orphan-row";
+  const box = document.createElement("input");
+  box.type = "checkbox";
+  box.dataset.setName = orphan.setName;
+  box.dataset.insertSetName = orphan.insertSetName;
+  box.addEventListener("change", updateChecklistDeleteBtn);
+  label.append(box, " ", orphanLabel(orphan));
+  return label;
+}
+
+function updateChecklistDeleteBtn() {
+  const deleteBtn = document.getElementById("checklistDeleteSelectedBtn");
+  if (!deleteBtn) return;
+  const anyTicked = document.querySelector("#checklistCheckResults input[type=checkbox]:checked");
+  deleteBtn.disabled = !anyTicked;
+}
+
+function renderChecklistOrphans() {
+  const statusEl = document.getElementById("checklistCheckStatus");
+  const resultsEl = document.getElementById("checklistCheckResults");
+  resultsEl.innerHTML = "";
+
+  if (checklistOrphans.length === 0) {
+    statusEl.textContent = "Done — no orphaned checklists.";
+    return;
+  }
+
+  const count = checklistOrphans.length;
+  statusEl.textContent = `Done — ${count} orphaned checklist${count === 1 ? "" : "s"} (no matching Cards review):`;
+  checklistOrphans.forEach((orphan) => resultsEl.appendChild(buildOrphanRow(orphan)));
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.type = "button";
+  deleteBtn.id = "checklistDeleteSelectedBtn";
+  deleteBtn.className = "input-button delete-btn";
+  deleteBtn.textContent = "Delete";
+  deleteBtn.disabled = true;
+  deleteBtn.addEventListener("click", deleteSelectedChecklists);
+  resultsEl.appendChild(deleteBtn);
+}
 
 async function runChecklistIntegrityCheck() {
   const statusEl = document.getElementById("checklistCheckStatus");
@@ -195,7 +250,8 @@ async function runChecklistIntegrityCheck() {
   statusEl.textContent = "Running audit...";
 
   try {
-    const res = await fetch(`${SEARCH_PLAYER_NAME_URL}?audit=1`);
+    // "reload" skips the endpoint's 30-min browser cache, so a re-run after a delete is fresh.
+    const res = await fetch(`${SEARCH_PLAYER_NAME_URL}?audit=1`, { cache: "reload" });
     const data = await res.json();
 
     if (!res.ok) {
@@ -203,22 +259,87 @@ async function runChecklistIntegrityCheck() {
       return;
     }
 
-    const { totalDistinctSetNames, unlinkedSetNames } = data;
+    const { totalDistinctSetNames, unlinkedSetNames, orphans } = data;
 
     if (unlinkedSetNames.length === 0) {
       statusEl.textContent = `Done — all ${totalDistinctSetNames} uploaded checklist(s) are correctly linked to a Cards review.`;
       return;
     }
 
-    statusEl.textContent = `Done — ${unlinkedSetNames.length} of ${totalDistinctSetNames} checklist(s) have no matching Cards review:`;
-    resultsEl.innerHTML = `
-      <ul class="admin-results-list">
-        ${unlinkedSetNames.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}
-      </ul>
-    `;
+    // Older searchPlayerName without "orphans": show the names, nothing to delete.
+    if (!Array.isArray(orphans)) {
+      statusEl.textContent = `Done — ${unlinkedSetNames.length} of ${totalDistinctSetNames} checklist(s) have no matching Cards review:`;
+      resultsEl.innerHTML = `
+        <ul class="admin-results-list">
+          ${unlinkedSetNames.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}
+        </ul>
+      `;
+      return;
+    }
+
+    checklistOrphans = orphans;
+    renderChecklistOrphans();
   } catch (err) {
     statusEl.textContent = `Error: ${err.message}`;
   } finally {
     btn.disabled = false;
   }
+}
+
+// Same delete call as deleteChecklistGroup() in checklistUpload.js: one
+// group per request, Cognito-authorized. Returns an error string or "".
+async function deleteChecklistGroupRequest(setName, insertSetName) {
+  try {
+    const token = await getAuthToken();
+    const response = await fetch(SAVE_CHECKLIST_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": token },
+      body: JSON.stringify({ setName, insertSetName, cards: [], confirmDelete: true })
+    });
+    if (response.ok) return "";
+    const data = await response.json().catch(() => ({}));
+    return data.error || `status ${response.status}`;
+  } catch (err) {
+    return err.message;
+  }
+}
+
+async function deleteSelectedChecklists() {
+  const statusEl = document.getElementById("checklistCheckStatus");
+  const checkBtn = document.getElementById("checklistCheckBtn");
+  const deleteBtn = document.getElementById("checklistDeleteSelectedBtn");
+
+  // Only the ticked checklists: each row is matched on its own set + group names.
+  const ticked = [...document.querySelectorAll("#checklistCheckResults input[type=checkbox]:checked")]
+    .map((box) => ({ setName: box.dataset.setName, insertSetName: box.dataset.insertSetName }));
+  const picked = checklistOrphans.filter((orphan) =>
+    ticked.some((t) => t.setName === orphan.setName && t.insertSetName === orphan.insertSetName));
+  if (picked.length === 0) return;
+
+  const cardTotal = picked.reduce((sum, o) => sum + o.count, 0);
+  const ok = await cmsConfirm(
+    `Delete ${picked.length} checklist${picked.length === 1 ? "" : "s"} (${cardTotal} cards): ${picked.map((o) => `"${orphanLabel(o)}"`).join("; ")}? This cannot be undone!`
+  );
+  if (!ok) return;
+
+  checkBtn.disabled = true;
+  deleteBtn.disabled = true;
+  const deleted = [];
+  const failed = [];
+
+  for (const [i, orphan] of picked.entries()) {
+    statusEl.textContent = `Deleting ${i + 1} of ${picked.length}...`;
+    const error = await deleteChecklistGroupRequest(orphan.setName, orphan.insertSetName);
+    if (error) failed.push(`${orphanLabel(orphan)} (${error})`);
+    else deleted.push(orphan);
+  }
+
+  checklistOrphans = checklistOrphans.filter((orphan) => !deleted.includes(orphan));
+  renderChecklistOrphans();
+  checkBtn.disabled = false;
+
+  const summary = `Deleted ${deleted.length} checklist${deleted.length === 1 ? "" : "s"}.`;
+  await cmsAlert(failed.length
+    ? `${summary} ${failed.length} failed and ${failed.length === 1 ? "is" : "are"} still listed, safe to retry: ${failed.join("; ")}`
+    : summary);
 }
