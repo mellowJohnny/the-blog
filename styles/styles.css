@@ -3990,6 +3990,14 @@ body:has(.site-footer) {
     width: 100%;
   }
 
+  /* Review-body image from the CMS: the desktop 75% shrinks it below the
+     header and footer images on a phone, so fill the column instead.
+     border-box keeps the 2px border inside that width. */
+  .card-middle-img {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
   /* Centered via the parent's text-align:center (inline-block respects that
      reliably) rather than width:100%+max-width+margin:auto, since that
      combination wasn't resolving correctly here */
