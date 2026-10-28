@@ -425,6 +425,13 @@ function applyChecklistFilters() {
   // Offer "Inserts only" only when this checklist has insert cards at all.
   if (insertLabel) insertLabel.hidden = !currentChecklistItems.some(item => item.type === "insertSet");
 
+  // Offer "Rookies only" only when the main set has an RC card.
+  const rookieLabel = document.getElementById("checklistRookieFilterLabel");
+  if (rookieLabel) {
+    rookieLabel.hidden = !currentChecklistItems.some(item =>
+      item.type !== "insertSet" && item.type !== "extendedSet" && /\bRC\b/.test(item.notes || ""));
+  }
+
   if (title.dataset.setName) title.textContent = title.dataset.setName + checklistFilterSuffix();
 
   // renderChecklistGroups()'s own empty-state message ("No checklist
