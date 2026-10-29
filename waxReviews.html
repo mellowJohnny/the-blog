@@ -151,11 +151,14 @@
     <script src="/scripts/ticker.js" defer></script>
     <script src="/scripts/helper.js" defer></script>
 
-    <!-- Wait for the DOM to load, then run the Intro script -->
+    <!-- Wait for the DOM, then run the Intro script and start the set fetch right
+         away - not on window load, which also waits on fonts, analytics and the ticker -->
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-      renderCardIntro(pageName);
-        });
+        renderCardIntro(pageName);
+        //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
+        fetchCardSetsByYear(year,sortOrder,blogCat,params.get("setID"));
+      });
     </script>
 
     <script>
@@ -166,8 +169,6 @@
         fetchFooterLinks();
         // Call the Set-O-Matic Set Picker
         renderSetPicker(year,blogCat,pageName);
-        //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
-        fetchCardSetsByYear(year,sortOrder,blogCat,params.get("setID"));
         // Masthead: random NHL team colors on every load - helper.js
         applyRandomMastheadStyling();
       });

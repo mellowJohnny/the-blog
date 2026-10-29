@@ -3260,6 +3260,18 @@ body:has(.site-footer) {
   color: #555;
 }
 
+/* Multi-line SEO fields (description, keywords): same look as the text inputs
+   above them, not the 24px monospace postBody textarea. */
+.seo-textarea {
+  width: 450px;
+  height: auto;
+  margin: 8px 0;
+  padding: 6px 10px;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  resize: vertical;
+}
+
 /* Small "Generate" button beside a CMS SEO field, and its length counter. */
 .seo-generate-btn {
   margin-left: 8px;

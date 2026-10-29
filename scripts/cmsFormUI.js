@@ -315,6 +315,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const input = document.getElementById(id);
     if (input) input.addEventListener("input", updateSeoCharCounts);
   });
+  // The multi-line boxes are for room, not line breaks: Enter must not add one to a meta tag.
+  ["seoMetaDesc", "seoTags"].forEach((id) => {
+    const box = document.getElementById(id);
+    if (box) box.addEventListener("keydown", (event) => { if (event.key === "Enter") event.preventDefault(); });
+  });
 });
 
 // Middle images are shots of the set's cards, so alt can start from the set.

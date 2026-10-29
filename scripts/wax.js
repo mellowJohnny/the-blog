@@ -40,12 +40,21 @@ function renderCardIntro(pageName) {
       }
   }// end renderCardIntro()
 
+ // One retry after a pause: a single dropped or throttled request (a non-OK
+ // reply counts) shouldn't leave a visitor or a crawler with an error page.
+ function fetchJsonWithRetry(url) {
+    const attempt = () => fetch(url).then(response => {
+        if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+        return response.json();
+    });
+    return attempt().catch(() => new Promise(resolve => setTimeout(resolve, 1500)).then(attempt));
+ }
+
  function fetchCardSetsByYear(year, sortOrder, blogCat, setID) {
 
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
 
-    fetch(urlToFetch)
-        .then(response => response.json())
+    fetchJsonWithRetry(urlToFetch)
         .then(data => {
 
             // Lambda returns an array, not { Items: [...] }
