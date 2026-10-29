@@ -3269,7 +3269,8 @@ body:has(.site-footer) {
   padding: 6px 10px;
   font-family: Arial, sans-serif;
   font-size: 16px;
-  resize: vertical;
+  resize: none;
+  overflow: hidden;
 }
 
 /* Small "Generate" button beside a CMS SEO field, and its length counter. */

@@ -299,8 +299,20 @@ function generateSeoDescription() { return fillSeoField("seoMetaDesc", buildSeoD
 function generateSeoKeywords() { return fillSeoField("seoTags", buildSeoKeywords); }
 function generateSeoSlug() { return fillSeoField("seoURLSlug", buildSeoSlug); }
 
-// "58 / 65": the length against the most a search result shows.
+// Grows or shrinks a textarea to exactly fit its text (borders included). A
+// hidden box measures 0, so it keeps its CSS height until it can be measured.
+function autosizeTextarea(box) {
+  box.style.height = "auto";
+  if (box.scrollHeight) box.style.height = `${box.scrollHeight + box.offsetHeight - box.clientHeight}px`;
+}
+
+// "58 / 65": the length against the most a search result shows. Also refits
+// the two multi-line boxes, since every programmatic fill comes through here.
 function updateSeoCharCounts() {
+  ["seoMetaDesc", "seoTags"].forEach((id) => {
+    const box = document.getElementById(id);
+    if (box) autosizeTextarea(box);
+  });
   [["seoPageTitle", 65], ["seoMetaDesc", 160]].forEach(([id, max]) => {
     const input = document.getElementById(id);
     const counter = document.getElementById(`${id}Count`);
@@ -323,10 +335,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!box) return;
     box.addEventListener("keydown", (event) => { if (event.key === "Enter") event.preventDefault(); });
     box.addEventListener("input", () => {
-      if (!/[\r\n]/.test(box.value)) return;
-      const caret = box.value.slice(0, box.selectionStart).replace(lineBreaks, " ").length;
-      box.value = box.value.replace(lineBreaks, " ");
-      box.setSelectionRange(caret, caret);
+      if (/[\r\n]/.test(box.value)) {
+        const caret = box.value.slice(0, box.selectionStart).replace(lineBreaks, " ").length;
+        box.value = box.value.replace(lineBreaks, " ");
+        box.setSelectionRange(caret, caret);
+      }
       updateSeoCharCounts();
     });
   });
