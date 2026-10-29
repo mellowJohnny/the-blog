@@ -71,7 +71,10 @@ live `getPublicCardSets` endpoint (one URL per set in multi-set years,
 the bare year URL otherwise), so re-run `node
 tools/generateSitemap/generate.mjs` and commit the result whenever a
 set is added, removed or has its year changed — nothing does it
-automatically (Amplify's build runs no commands). The generator exits
+automatically (Amplify's build runs no commands). Every URL gets a
+`<lastmod>`: a review's `updatedAt` (else its publish date), a static
+page's last git commit date, so run it after committing page changes and
+in a checkout with history. The generator exits
 without touching the file if the endpoint is unreachable or a live set
 falls outside its year ranges. See `Documentation/FRONTEND.md`
 ("Sitemap").

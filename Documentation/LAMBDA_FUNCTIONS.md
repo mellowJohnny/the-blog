@@ -633,7 +633,19 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   feature itself — reuses the same full-`Scan` machinery to enumerate
   every distinct `setName` in `Checklists` and report which ones have no
   matching `Cards` item at all (`{ totalDistinctSetNames, linkedCount,
-  unlinkedSetNames }`). Added 2026-08-24 specifically to verify the
+  unlinkedSetNames, orphans }`). `scanAllChecklistGroups()` does the
+  scan (projecting `setName`, `insertSetName` and `type`) and returns,
+  per set, each checklist group with its type and card count; a legacy
+  item with no `type` or `insertSetName` is classed `main`, or
+  `insertSet` when it has an insert name. `orphans` is the flat list of
+  those groups for just the unlinked sets: `{ setName, insertSetName,
+  type, count }` per **checklist**, sorted by set name then group name
+  with the main set (`insertSetName` of `""`) first. It exists so the
+  admin page can list, tick and delete individual orphaned checklists
+  (see `CMS_GUIDE.md`); the three older fields are unchanged, so
+  `playerSearch.html`'s own audit entry point is unaffected. One Query
+  per distinct `setName` against `Cards` decides "linked", since a
+  checklist's `setName` is its only link to a review. Added 2026-08-24 specifically to verify the
   assumed 1:1 `Checklists`↔`Cards` relationship holds across every
   already-uploaded checklist, not just whichever ones a given search
   happens to touch — see `DATA_MODEL.md` for what it found and how the
@@ -670,7 +682,9 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   the Lambda Node.js runtime.
 - **What it does**: backs `browseBySet.html` and the sitemap generator
   with a public list of every live card set: `setID`, `setName`,
-  `blogCat`, `year` and `hasChecklist`, nothing else.
+  `blogCat`, `year` and `hasChecklist`, plus `now` (publish date) and
+  `updatedAt` (last CMS save) for the sitemap's `<lastmod>`, nothing
+  else.
 - **Why a new Lambda**: the CMS's `getCardSets` returns the same sets
   but as full items (including each review's `postBody`) and sits
   behind the Cognito Authorizer. A public page needs neither the bodies
@@ -679,8 +693,9 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   each returning review bodies from the `Cards` table (which has had
   throughput-cap incidents before).
 - **Query**: `blogStatus-year-index`, `blogStatus = "OK"`, with a
-  `ProjectionExpression` of `setID, setName, blogCat, #yr, hasChecklist`
-  (`year` is a DynamoDB reserved word, hence the alias). It loops on
+  `ProjectionExpression` of `setID, setName, blogCat, #yr, hasChecklist,
+  #now, updatedAt` (`year` is a DynamoDB reserved word, hence the
+  alias, and `now` is aliased too to be safe). It loops on
   `LastEvaluatedKey` so the list can't be silently truncated at the 1 MB
   page limit as the number of sets grows; an unpaginated read hitting
   that limit is exactly the failure mode `listBlogsForUpdate` is
@@ -846,7 +861,12 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   Lambda (see `API_ENDPOINTS.md`) — backs `updateCardSet()` in
   `scripts/cmsCardSet.js`, used by `cms/setEdit.html`.
 - **What it does**: a straightforward DynamoDB `UpdateCommand` on
-  `Cards`, keyed on `setName`+`year`, setting every editable field.
+  `Cards`, keyed on `setName`+`year`, setting every editable field and
+  stamping `updatedAt` with the current time (ISO) on every save — the
+  only "last edited" date the data has, which the sitemap generator
+  publishes as the review's `<lastmod>` (see `DATA_MODEL.md`; the create
+  Lambda writes no `updatedAt`, so a never-edited set falls back to its
+  publish date `now`).
   Also runs a TinyMCE cleanup pass on `postBody` before saving (strips
   empty `<p>&nbsp;</p>`-style junk TinyMCE tends to leave behind) —
   chiefly the pair `setEdit.html`'s old `selection.setContent()` insert

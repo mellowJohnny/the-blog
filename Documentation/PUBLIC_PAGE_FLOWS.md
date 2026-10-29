@@ -13,7 +13,9 @@ serves it and the DynamoDB table/index it actually reads or writes.
 `lockout.html` isn't covered here — it's a static essay page (the
 2004-05 NHL lockout, themed to match `waxReviews.html`) with no
 meaningful JS of its own, beyond the scores ticker it shares with the
-other hockey pages (see the Card Set Reviews flow below).
+other hockey pages (see the Card Set Reviews flow below) and the
+breadcrumb that `renderBreadcrumbs()` fills. Its title, description, H1
+and share tags are written in the HTML.
 
 ## Home Page - `index.html`
 
@@ -44,13 +46,16 @@ still exists in the `Blogs` table but nothing reads it any more, so
 editing it in the CMS changes nothing on the site (the CMS no longer
 offers Home Page as a type for new posts).
 
+**In the HTML itself**: `<title>`, the meta description, the canonical
+(`https://www.junkwaxhockey.com/`, matching `sitemap.xml`'s root entry)
+and the Open Graph/Twitter Card tags, with `hellaFilesArch.webp` as the
+social-share image. They are static, not set by a script, because
+Facebook, Discord, Reddit and X read only the raw HTML and don't run
+JavaScript; the page used to call `setPageMeta()` for the same values,
+which gave search engines the tags but shared links no preview card.
+See `FRONTEND.md`'s "SEO and social tags".
+
 **On `window load`** (independent of each other):
-- `setPageMeta({...})` (`helper.js`) — sets `<title>`, the meta
-  description, canonical (`https://www.junkwaxhockey.com/`, matching
-  `sitemap.xml`'s root entry), and the Open Graph/Twitter Card tags,
-  with the preloaded hero image (`hellaFilesArch.webp`) as the
-  social-share image. Called once: there's only one URL here, so
-  there's nothing per-instance to vary.
 - `fetchCopyrightYear()` (`helper.js`) — a small, unrelated piece of
   chrome: writes `© <current year> Christian Couillard` into `#copy`.
 - `fetchFooterLinks()` (`helper.js`) — fills the footer's link columns
@@ -194,8 +199,10 @@ its job on load is a bit bigger: it has to build both the top nav *and*
 a second, page-specific navigation element (the "set-o-matic" year
 picker), then load the actual review content for whichever
 year/category the URL specifies. Those three things — nav, year picker,
-review content — are independent of each other and all fire off the
-same `window load` event, same pattern as the blog pages.
+review content — are independent of each other. Nav and year picker
+fire off `window load`, same pattern as the blog pages; the review
+content starts earlier, on `DOMContentLoaded`, so its request doesn't
+wait for fonts, analytics and the ticker (see "Notable" below).
 
 **What loads**: `scripts/wax.js`, `scripts/ticker.js`, `scripts/helper.js`
 (all `defer`), plus several inline `<script>` blocks in `<head>`, in this order:
@@ -204,21 +211,32 @@ same `window load` event, same pattern as the blog pages.
    immediately, before any other script, since it may bail out of
    rendering this page entirely.
 2. A Google Core Web Vitals preload hint for that year's hero image.
-3. `DOMContentLoaded` → `renderCardIntro(pageName)`.
-4. `window load` → `fetchNav(pageName)`, `renderSetPicker(year, blogCat,
-   pageName)`, `fetchCardSetsByYear(year, sortOrder, blogCat)`,
+3. `DOMContentLoaded` → `renderCardIntro(pageName)`, then
+   `fetchCardSetsByYear(year, sortOrder, blogCat, setID)`.
+4. `window load` → `fetchNav(pageName)`, `fetchFooterLinks()`,
+   `renderSetPicker(year, blogCat, pageName)`,
    `applyRandomMastheadStyling()` (in that order), plus a
    `gtag('config', ...)` call for Analytics. The scores ticker isn't in
    this list: `ticker.js` starts itself on `DOMContentLoaded`.
+
+The raw HTML also holds generic Open Graph and Twitter tags (and no
+canonical), so a link shared to Facebook, Discord, Reddit or X, none of
+which run JavaScript, still gets a branded card; `fetchPageTitle()`
+below overwrites them per set for Google. See `FRONTEND.md`'s "SEO and
+social tags".
 
 **On `DOMContentLoaded`**: `renderCardIntro(pageName)` (`wax.js`) —
 static intro copy keyed by `pageName` (`classicWax`/`junkWax`/`timmies`/
 `mcd`), written into `#card-intro`. Same purely-cosmetic role as
 `renderBlogIntro()` on the blog pages — sets the tone for the section
-before any real content has loaded.
+before any real content has loaded. `fetchCardSetsByYear()` (described
+below) is started here too and not on `window load`: one indexed copy of
+a review page held the fetch's error text instead of the review, so the
+request now begins as early as possible, and `fetchJsonWithRetry()`
+retries it once.
 
 **On `window load`**: these calls together finish assembling
-everything the visitor can see or navigate to on this page.
+everything else the visitor can see or navigate to on this page.
 - `fetchNav(pageName)` (`helper.js`) — builds the top nav bar, same
   mechanism as the blog pages, but `waxReviews.html`'s `pageName`
   values (`junkWax`, `classicWax`, `timmies`, `mcd`) each map to a
@@ -236,8 +254,14 @@ everything the visitor can see or navigate to on this page.
   client-side, no API call — like the main nav, the set of valid years
   per category is a hardcoded map, not something that needs a backend
   round-trip to determine.
-- `fetchCardSetsByYear(year, sortOrder, blogCat)` (`wax.js`) is the
-  call that actually loads the review itself: it's the main function
+- `fetchCardSetsByYear(year, sortOrder, blogCat, setID)` (`wax.js`,
+  started on `DOMContentLoaded`, listed here with the other page pieces)
+  is the call that actually loads the review itself. Its request goes
+  through `fetchJsonWithRetry()`: one retry after 1.5 seconds, with a
+  non-OK reply such as a throttled 429 counted as a failure, so a
+  single dropped request doesn't leave an error message (or, for a
+  429, a misleading "coming soon" message) in the page a crawler
+  indexes; two failures show the "Ah, Houston" text. It's the main function
   that pulls in every card set matching this year and category from
   the `Cards` table in DynamoDB, via **Get card sets by year**
   (`?year=<y>&blogCat=<c>`), which is fronted by the `getCardSetsByYear`
@@ -258,15 +282,18 @@ everything the visitor can see or navigate to on this page.
   `downvotes`, `hasChecklist`, `printRun`) plus `fetchPageTitle(item)` for each —
   despite the name, this now does all of this page's per-set SEO work
   in one place, not just the title: it sets `document.title` to
-  `Review: <setName>` (so the browser tab/bookmark reflect the specific
-  set, not a generic page title), writes that same set name into the
+  the set's CMS SEO title (`seoPageTitle`), or `<setName> Hockey Card
+  Set Review | Junk Wax Hockey` when that field is empty (so the browser
+  tab/bookmark reflect the specific set, not a generic page title),
+  writes the set name into the
   previously-empty `<h1 id="pageHeader">` (this element used to have a
   stale comment claiming `displayCardSet()` populated it — nothing
   actually did, on either `waxReviews.html` or `lockout.html`, until
-  this fix), calls `setPageMeta({...})` (`helper.js`) with a
-  `Review: <setName>` title, a description built by stripping HTML tags
-  from `postBody` via `stripHtmlTags()` (`helper.js`) and truncating to
-  300 characters, the set's own `headerImg`/`headerImgName` as the
+  this fix), calls `setPageMeta({...})` (`helper.js`) with that title, the
+  set's CMS description (`seoMetaDesc`) or, when empty, the review text
+  with HTML stripped by `stripHtmlTags()` and cut at a word boundary
+  near 155 characters by `truncateAtWord()` (both `helper.js`), the
+  set's own `headerImg`/`headerImgName` as the
   social-share image, and a canonical built from the set's own data by
   `buildReviewCanonicalUrl()` (`year`, `pageName`, `blogCat`, plus
   `setID` on multi-set years, so stray query parameters can't create
@@ -275,6 +302,10 @@ everything the visitor can see or navigate to on this page.
   `stars` — and a stripped-text `reviewBody` on the nested `Review`) via
   `setJsonLd("jsonld-cardset", ...)`, a fixed id for the same
   one-set-at-a-time reason the Tech pages' `jsonld-blogpost` block uses.
+  It also calls `renderBreadcrumbs()` (`helper.js`), which fills the
+  `#breadcrumbs` nav above the page (Home, the set's navigation
+  category, the set) and writes a matching `BreadcrumbList` block
+  (`jsonld-breadcrumbs`), replaced the same way on each pagination click.
   `fetchCardSetsByYear()` itself also calls `fetchCopyrightYear()`
   unconditionally, right after kicking off the `fetch()` — so the
   copyright year is set independent of whether the card-set fetch
@@ -313,8 +344,8 @@ everything the visitor can see or navigate to on this page.
   from the scroll position the previous page had, so a click doesn't
   look like a restart. While a game is live each league re-polls every
   60s and updates scores in place — see `FRONTEND.md`'s "NHL scores
-  ticker". The same ticker runs on Player Search, Lockout, The Junk
-  Wax Years and the Timeline, not on the Home page.
+  ticker". The same ticker runs on Player Search, Browse By Set,
+  Lockout, The Junk Wax Years and the Timeline, not on the Home page.
 
 **User interactions**:
 - Hovering over (or tabbing to) the NHL scores ticker pauses its
@@ -366,7 +397,10 @@ everything the visitor can see or navigate to on this page.
   `applyChecklistFilters()` (`wax.js`, `onchange`) — filters the
   already-fetched `currentChecklistItems` client-side (insert-set cards;
   `\bRC\b` whole-word match on `notes`; both on = rookies within insert
-  sets; "Inserts only" is hidden for sets with no insert cards) and re-renders via `renderChecklistGroups()` — **no new
+  sets; "Inserts only" is hidden for sets with no insert cards, and
+  "Rookies only" is hidden unless the *main* set has at least one `RC`
+  card, since the filter would otherwise only empty the list) and
+  re-renders via `renderChecklistGroups()` — **no new
   fetch**, since the whole checklist was already pulled in one shot when
   the modal opened; this is purely an in-memory re-render for
   responsiveness. `renderChecklistGroups()` itself groups main-set
@@ -445,8 +479,10 @@ flow).
   mechanism as every other page. `"playerSearch"`'s own `NAV_MAP` entry
   deliberately does **not** include `"search"` itself (no self-link,
   since you're already there).
-- `setPageMeta({...})` (`helper.js`) — static, called once, reusing this
-  page's already-good title/description and the shared hero image.
+- The page's title, description and share tags are static in the HTML
+  (this page used to call `setPageMeta()` for them), reusing this page's
+  title/description and the shared hero image, so a shared link gets a
+  preview card from crawlers that don't run JavaScript.
   Canonical is always the bare `https://www.junkwaxhockey.com/playerSearch.html`,
   **regardless of any `?q=`** — a deliberate choice: the search tool
   itself is what's worth indexing, not a separate page per query, which
@@ -548,11 +584,10 @@ only data source is a static file served from the same site.
   the cards are built from the file, an author edits text and never
   touches the HTML. If the fetch fails or the file has no cards, a
   friendly message replaces the cards instead of a blank page.
-- `setPageMeta()` and `setJsonLd()` (`helper.js`) set canonical, Open
-  Graph/Twitter tags and an Article JSON-LD block. The title and
-  description are also written in the static HTML, so crawlers that
-  don't run JavaScript still see them. The block's body text is taken
-  from the page's intro paragraph.
+- `setJsonLd()` (`helper.js`) writes an Article JSON-LD block, its body
+  text taken from the page's intro paragraph. The title, description,
+  canonical and Open Graph/Twitter tags are static in the HTML, so
+  crawlers that don't run JavaScript still see them.
 - `applyRandomMastheadStyling()` (`helper.js`) paints the masthead in a
   random NHL team's colours, as on the other Bebas-masthead pages.
 
@@ -574,7 +609,8 @@ from the nav and footer as "All Sets".
 
 **What loads**: `scripts/wax.js` (for the checklist modal only),
 `scripts/browseBySet.js` and `scripts/helper.js` (all `defer`), and one
-inline `window load` handler. No scores ticker.
+inline `window load` handler. `scripts/ticker.js` is loaded too and
+starts the scores ticker by itself.
 
 **On `window load`**, three independent pieces run:
 - `fetchNav("browseBySet")`, `fetchFooterLinks()` and
@@ -585,8 +621,9 @@ inline `window load` handler. No scores ticker.
   Lambda (`Lambdas/getPublicCardSets/`), which queries the `Cards`
   table's `blogStatus-year-index` GSI for `blogStatus = "OK"` and
   returns only `setID`, `setName`, `blogCat`, `year` and `hasChecklist`
-  (the CMS's equivalent returns every review's body behind a login, so
-  it can't serve a public page). The sets are split by `blogCat` into
+  (plus `now` and `updatedAt`, which this page ignores and the sitemap
+  generator uses; the CMS's equivalent returns every review's body
+  behind a login, so it can't serve a public page). The sets are split by `blogCat` into
   the Major Releases column (`reg`) and the Fast Food Sets column (`mcd`
   and `tims`), grouped under season headings and sorted, then rendered.
   Each entry's **Review** link is built from `getPageNameForYear()` and
@@ -595,8 +632,13 @@ inline `window load` handler. No scores ticker.
   listener handles the **Checklist** links (they are rebuilt on every
   render) and calls `openChecklistModal()`, which fetches the checklist
   through **Get checklist by set name** as it does on the review page.
-- `setPageMeta()` and `applyRandomMastheadStyling()` (`helper.js`) set
-  the share tags and paint the masthead, as elsewhere.
+  Once the columns are rendered, `setBrowseItemListJsonLd()` writes an
+  `ItemList` JSON-LD block of the same sets and review URLs (built by
+  the same `browseReviewUrl()`), so the machine-readable list always
+  matches the visible links.
+- `applyRandomMastheadStyling()` (`helper.js`) paints the masthead, as
+  elsewhere. The title, description and share tags are static in the
+  HTML.
 
 If the endpoint is down or returns nothing, a short message replaces
 the columns.
@@ -611,10 +653,11 @@ The About page uses the same blog-stream machinery as the Tech pages
 the `Blogs` table by partition key, so no backend change was needed.
 Its layout is the Home page's (same banner, nav and footer),
 but unlike the Home page its content is still fetched, because the About
-post is meant to be edited through the CMS. `renderBlogIntro('98')`
-renders only the heading "about junk wax hockey...", and the post below
-it carries the content, with the usual byline. The page sets its own
-title, description and canonical; `renderBlogIntro()` skips its
-tech-blog metadata block for type 98, which would otherwise have pointed
-the canonical at `tech.html`. It is footer-only (not in the nav) and has
-no hidden WLCMS link.
+post is meant to be edited through the CMS. The heading "about junk wax
+hockey..." is written into the HTML (a script used to inject it with
+`renderBlogIntro('98')`, which left the raw HTML with no H1; that call
+and its branch are gone), and the post below it carries the content,
+with the usual byline. The title, description, canonical and share tags
+are static in the HTML too, so the page never inherits the tech-blog
+metadata `renderBlogIntro()` writes for the Tech pages. It is
+footer-only (not in the nav) and has no hidden WLCMS link.

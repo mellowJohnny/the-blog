@@ -185,10 +185,34 @@ review body content".
   float/size choice), then gets inserted at the cursor as one atomic,
   non-editable block. The wrap image goes in at a fixed 150×150; Logo
   Type picks the mobile shrink (Corporate Logo → `img-wrap-md`, the
-  default; All-Star Logo → `img-wrap-sm`). See `CMS_GUIDE.md` for the
+  default; All-Star Logo → `img-wrap-sm`). The middle image's Alt Text
+  starts as "Vintage hockey cards from the <year> <maker> set"
+  (`middleImageAltDefault()`, editable; the wrap dialog stays blank
+  because a logo isn't "hockey cards"), and on Insert the dialog reads
+  the picked image's real size (`imageNaturalSize()`) and writes
+  `width` and `height` on the tag, so the live page can reserve its
+  space before it loads. See `CMS_GUIDE.md` for the
   full mechanism,
   including why this needed `stripEditorOnlyMarkup()` before every
   save/preview.
+- **SEO fields and their Generate buttons.** SEO Title, SEO Meta
+  Description, SEO Friendly URL and SEO Keywords each have a small
+  **Generate** button (`generateSeoTitle()`, `generateSeoDescription()`,
+  `generateSeoSlug()`, `generateSeoKeywords()`, `cmsFormUI.js`) that
+  fills the field from this form's own values (set name, maker, year,
+  size, inserts, rating, and the first sentence of the review) with
+  deterministic templates, not AI, so it never states anything the form
+  can't back up. They exist because the live page puts these fields
+  straight into the title, description and keywords it serves (see
+  `FRONTEND.md`'s "SEO and social tags"), and hand-written values had
+  come out thin. A button needs the Set Name first (`cmsAlert()`
+  otherwise) and, if the field already holds different text, asks
+  through `cmsConfirm()` before replacing it. Title and description show
+  a live length counter (`updateSeoCharCounts()`, against 65 and 160
+  characters, red when over). Description and keywords are
+  auto-sizing textareas (`autosizeTextarea()`): they grow to fit,
+  Enter does nothing, and a pasted line break becomes a space, since a
+  meta tag must not contain one.
 - "Upload" button → `uploadNewImage()` (`cmsImageBrowser.js`) — same
   function and same `cmsImageUploader` Lambda as `createBlogPost.html`'s
   upload; here `_imageBrowserTargetFieldId` is the one set, so it
@@ -399,9 +423,20 @@ marked `selected`, and fills every other field directly (`setName` and
 they're the table's actual key and changing them here would mean
 editing the wrong item or orphaning the current one), including the
 optional Print Run field (`printRun || ""`, so a set without one shows
-an empty box rather than "undefined"). The body goes into TinyMCE last,
-via `tinyEditorReady.then(editor => editor.setContent(postBody))`
-(`cmsFormUI.js`). The fetch and `initTinyEditor()` start together in
+an empty box rather than "undefined"); it also calls
+`updateSeoCharCounts()` so the SEO length counters and the two
+auto-sizing textareas fit the loaded text. The body goes into TinyMCE
+last, via `tinyEditorReady.then(editor => { editor.setContent(postBody);
+fillMiddleImageSizes(editor); })` (`cmsFormUI.js`). `fillMiddleImageSizes()`
+exists because middle images saved before the Insert dialog recorded a
+size have no `width`/`height`, which makes the live page jump as they
+load: for each `.card-middle-img` missing either, it loads the picture,
+reads its real size and sets both (a width already present is kept and
+the height made proportional). It runs under the editor's undo manager's
+`ignore()`, so Ctrl+Z can't strip it again, and it changes only the
+open editor: nothing is saved until you click **Update Post**, so a set
+needs one open-and-update to be fixed. Images that already have both
+attributes, wrap logos and unreachable URLs are left alone. The fetch and `initTinyEditor()` start together in
 the same `load` listener, and if the fetch finished first, touching the
 editor directly threw before any field was filled ("Houston, we've had
 a problem"). `setContent()` also replaces the whole document: the old
@@ -424,15 +459,22 @@ guided flow.
   bare filename into the target field.
 - **Insert wrap image / Insert middle image** — same toolbar buttons
   and flow as `createCardSet.html` above.
+- **SEO Generate buttons, length counters and textareas** — identical
+  to `createCardSet.html` above (the functions live in `cmsFormUI.js`
+  and read the form by element id, so both pages share them). Here the
+  Set Name and Release Year boxes are read-only but still have values,
+  so the generators work as soon as the set loads.
 - "Update Post" button → `updateCardSet(blogStatus, seoPageTitle,
   seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets,
   stars, formats, year, headerImgName, footerImgName, mfg, printRun)`
   (`cmsCardSet.js`) — no client-side validation, same reasoning as
   `updateBlogPost()` (pre-populated from a valid record). Sets the
   submit button state, reads
-  `stripEditorOnlyMarkup(tinymce.activeEditor.getContent())`, then
+  `stripEditorOnlyMarkup(tinymce.get("postBody").getContent())`, then
   calls **Update card set**, fronted by the `updateCardSet` Lambda
-  (`Lambdas/updateCardSet/`) — this Lambda's response shape isn't
+  (`Lambdas/updateCardSet/`), which also stamps the item's `updatedAt`
+  with the current time on every save — the date the sitemap generator
+  publishes as the review's `<lastmod>` — and whose response shape isn't
   reliable (plain string / `{message}` / `{body}`, itself either a JSON
   string or plain text), so the handler tolerantly unwraps all of them
   into a single `message`, defaulting to `"Update complete."` **only**
@@ -636,7 +678,7 @@ only `DeleteRequest` in the codebase was the one inside
 A growing collection of self-service, on-demand site-health checks —
 distinct from every other CMS page in that nothing here runs
 automatically on load; each check only runs when its own button is
-clicked, since both are relatively expensive (see below) and there's
+clicked, since each is relatively expensive (see below) and there's
 no value in running them on every page visit.
 
 **What loads**: `auth.js` and an inline `window load` listener
@@ -648,8 +690,11 @@ loaded because `adminTools.js` internally references the global
 `cms.js` and now lives in `cmsBlog.js`. A non-obvious cross-file
 dependency, not a direct function call from this page.
 
-**No automatic API calls on load** — both checks below only run when
-their button is clicked.
+**No automatic API calls on load** — the three checks below only run
+when their button is clicked. `adminTools.js` also leans on two globals
+from other files: `getAuthToken()` (`auth.js`) for the orphaned-checklist
+delete, and `cmsConfirm()`/`cmsAlert()` (`helper.js`) for its warning and
+result dialogs.
 
 **User interactions**:
 - "Run Check" (Broken Image Check) exists to catch images that 404 on
@@ -668,12 +713,14 @@ their button is clicked.
      real filename (not the literal `"none"` sentinel, and not a bare
      S3 prefix with no filename after it — see `DATA_MODEL.md`), plus
      any `<img src>` found inside `postBody` via `DOMParser`.
-  2. `collectCardSetImageCandidates()` loops every `blogCat`/`pageName`/
+  2. `collectCardSetImageCandidates()` gets every live set from
+     `fetchAllCardSets()`, which loops every `blogCat`/`pageName`/
      year combination in `categoryRanges` (`helper.js`, skipping the
      `2004|mcd` lockout-redirect combo) and calls **Get card sets by
      year** once per year (the same `getCardSetsByYear` Lambda
      `PUBLIC_PAGE_FLOWS.md` traces for `waxReviews.html`) — same
-     defensive `fetchErrors` handling. For every set: `headerImg +
+     defensive `fetchErrors` handling. The Image Alt & Size Check below
+     shares `fetchAllCardSets()` rather than repeating that loop. For every set: `headerImg +
      headerImgName` and `footerImg + footerImgName` (when present) plus
      any inline `postBody` images are candidates.
   3. Candidates are deduplicated by URL (many sets/posts can share the
@@ -688,17 +735,49 @@ their button is clicked.
   This single check makes by far the most total API calls of anything
   on the site — potentially dozens in one run, which is exactly why
   it's gated behind a manual button rather than running automatically.
+- "Run Check" (Image Alt & Size Check) exists because the images inside
+  a review's body are typed in by hand through the editor: they can be
+  saved with no alt text (an accessibility and image-search loss) or
+  with no `width`/`height` (the page jumps as the picture loads)
+  → `runImageAltCheck()` (`adminTools.js`, `async`) — gets every live
+  set from `fetchAllCardSets()`, parses each `postBody` with
+  `DOMParser` and runs every `<img>` through `auditInlineImage()`, which
+  flags: an empty `<img>` tag with no `src`, missing alt text, alt text
+  that looks like a filename, a missing `width` or `height` (an
+  attribute or an inline style counts), and a non-WebP file. Results
+  are a table of set, image filename and problem. Header and footer
+  images aren't checked: `buildCardSetMarkup()` writes their markup. A
+  GIF or SVG logo is flagged as "not WebP" by design and is usually fine.
 - "Run Check" (Checklist Integrity Check) exists to catch checklists
-  uploaded under a `setName` that doesn't exactly match any real
-  `Cards` review — a typo at upload time silently breaks the
-  `waxReviews.html` "Checklist" link with no obvious symptom otherwise
+  whose `setName` matches no `Cards` review — the `setName` is the only
+  link between the two tables, and nothing enforces it, so a typo, a
+  renamed review or a deleted review silently leaves an **orphaned
+  checklist** (it still feeds Player Search, but its `waxReviews.html`
+  "Checklist" link can never appear)
   → `runChecklistIntegrityCheck()` (`adminTools.js`, `async`) — calls
   **Search players by name** in its `audit=1` mode (the same
   `searchPlayerName` Lambda `PUBLIC_PAGE_FLOWS.md` traces for
   `playerSearch.html`, repurposed here for a data-integrity check
-  rather than an actual name search), then reports `unlinkedSetNames`
-  (every uploaded checklist with no matching `Cards` item) or a clean
-  "all linked" message.
+  rather than an actual name search) with `cache: "reload"` so a re-run
+  after a delete isn't served from the endpoint's 30-minute cache. The
+  response's `orphans` list has one entry per orphaned **checklist**
+  (a set's main set, insert set or extended set), each with its set
+  name, group name, type and card count. A staged review counts as a
+  parent, so only a set with no `Cards` item at all is orphaned. The
+  page shows one checkbox row per checklist, e.g. "1990-91 Topps - Team
+  Scoring Leaders (21 cards)", and a **Delete** button that stays
+  disabled until something is ticked. Delete asks through `cmsConfirm()`
+  (the red "cannot be undone" modal, naming every checklist and the
+  total card count), then calls **Save checklist** with `confirmDelete`
+  once per ticked checklist, sequentially, each with the Cognito token
+  from `getAuthToken()` — the same request `uploadChecklist.html`'s
+  Delete modal makes. A checklist that deletes disappears from the list;
+  one that fails stays listed, the rest still run, and a final
+  `cmsAlert()` reports the counts and the failures (retrying is safe).
+  Only the ticked checklists are touched: a delete matches that group's
+  sort-key prefix (`INSERT#<name>#` or `MAIN#`) and nothing else. If
+  the Lambda predates `orphans`, the page falls back to a plain list of
+  set names with no checkboxes.
 
 ## `cms/smsAdmin.html`
 

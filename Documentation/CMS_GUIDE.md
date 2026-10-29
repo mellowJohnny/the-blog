@@ -124,7 +124,7 @@ Grouped page links:
 | `cms/blogEdit.html` | Edit form for a single blog post, reached via `?blogID=&blogType=`. |
 | `cms/setEdit.html` | Edit form for a single card set, reached via `?setID=`. |
 | `cms/uploadChecklist.html` | Upload a card set checklist PDF, review/correct the parsed result, save to the `Checklists` table — see "Checklist upload" below. |
-| `cms/admin.html` | Self-service site-health checks (broken images, checklist-to-review linkage) — see "Admin Tools" below. |
+| `cms/admin.html` | Self-service site-health checks (broken images, review-image alt text and size, orphaned checklists) — see "Admin Tools" below. |
 
 All create/edit forms use a hosted **TinyMCE** WYSIWYG editor
 (`initTinyEditor()` in `scripts/cmsFormUI.js`) for the body text — the
@@ -222,13 +222,41 @@ mechanism behind this (including a real CSS specificity bug this was
 built around) and why the mobile scaling has to actually resize the
 image's box rather than just visually shrink it.
 
-**Middle image** (`.card-middle-img`, `styles.css`) — a simpler, fixed
-75%-width centered treatment with a border/drop-shadow, no float/size
-choice needed:
+**Middle image** (`.card-middle-img`, `styles.css`) — a simpler,
+centered treatment with a border/drop-shadow and no float/size choice:
+75% of the text column on desktop, and 100% of it on phones. The
+desktop 75% compounded on a phone, where the column is already narrow,
+and left the image (268px of a 354px column) visibly smaller than the
+header and footer images; the phone rule fixes that.
 
 ```html
-<img class="card-middle-img" src="..." alt="...">
+<img class="card-middle-img" src="..." width="750" height="278" alt="...">
 ```
+
+- **Alt Text starts filled in.** The Insert Middle Image dialog opens
+  with "Vintage hockey cards from the <year> <maker> set"
+  (`middleImageAltDefault()`, from the form's Release Year and
+  Manufacturer), the same wording the header and footer images use, so
+  an image isn't saved with no alt just because the box was left blank.
+  Edit it to say what the picture shows. The wrap-image (logo) dialog is
+  deliberately not prefilled: a logo isn't "hockey cards".
+- **`width` and `height` are recorded on insert.** The dialog loads the
+  picked image (`imageNaturalSize()`) and writes its real pixel size.
+  The CSS still scales the image by the column width and keeps its
+  proportions (`.set-details-author img` sets `height: auto`); the
+  attributes exist so the browser knows the image's shape before it
+  loads and reserves the space, instead of the text jumping down when
+  the picture arrives (layout shift, which search engines measure).
+- **Older middle images are filled in as a set is opened.** Images
+  saved before this have no size. When `setEdit.html` loads a set,
+  `fillMiddleImageSizes()` finds each `.card-middle-img` missing a
+  `width` or `height`, reads the real size and sets both (a width that
+  is already there is kept and the height made proportional). It
+  changes only the editor, not the saved set: click **Update Post** to
+  keep it. It is not an undo step, and it leaves images that already
+  have both attributes, wrap logos and unreachable images alone. The
+  admin page's Image Alt & Size Check lists which sets still need the
+  update.
 
 **Why non-editable, and why it has to be stripped before saving**: the
 toolbar buttons insert `contenteditable="false"` plus an
@@ -259,6 +287,56 @@ provided, picking (or uploading) an image calls it with
 the original header/footer-image flow (`targetFieldId` only, no
 callback) is unchanged.
 
+### SEO fields and their Generate buttons
+
+A card set has four SEO fields on `createCardSet.html`/`setEdit.html`:
+**SEO Title** (`seoPageTitle`), **SEO Meta Description** (`seoMetaDesc`),
+**SEO Friendly URL** (`seoURLSlug`) and **SEO Keywords** (`seoTags`).
+The live review page uses the title, description and keywords directly
+in its `<title>`, meta tags and social previews (`FRONTEND.md`'s "SEO
+and social tags"); only when a field is empty does the page fall back
+to a generic version built in code. Hand-written values had come out
+thin ("1987-88 O-Pee-Chee Hockey", "A comprehensive review of the
+1987-88 O-Pee-Chee Hockey set"), so each field has a small **Generate**
+button (`generateSeoTitle()`, `generateSeoDescription()`,
+`generateSeoSlug()`, `generateSeoKeywords()` in `scripts/cmsFormUI.js`).
+
+The generators are deterministic templates, not AI, and use only what
+is already in the form, so they can't claim anything the form doesn't
+back up:
+
+- **Title**: `<set> Card Set Review | Junk Wax Hockey`, with the maker
+  inserted after the season when the set name lacks it ("1991-92
+  Stadium Club" plus Topps gives "1991-92 Topps Stadium Club Hockey")
+  and "Hockey" added when missing. Over 65 characters, the brand suffix
+  is dropped.
+- **Meta description**: a base sentence ("<set> card set review.") then
+  each of these only if it still fits in 160 characters: the size and
+  the inserts, the rating, and the first sentence of the review's
+  first paragraph (a paragraph with no sentence end contributes
+  nothing, rather than running into the next one).
+- **Keywords**: the set label, "<season> hockey cards", the maker,
+  "<set name> checklist", "junk wax hockey", then the insert names;
+  deduplicated, at most 12.
+- **URL slug**: the set name lowercased, apostrophes removed, other
+  symbols turned into hyphens. Nothing reads it yet: the live site's
+  review URLs still use query strings (`?year=&pageName=&blogCat=&setID=`),
+  so the field is stored for a possible move to clean URLs.
+
+A button needs the Set Name first (it says so through `cmsAlert()`
+otherwise) and, when the field already holds different text, asks
+through `cmsConfirm()` before replacing it. Title and description show
+a live count against 65 and 160 characters, turning red when over.
+Description and keywords are auto-sizing textareas
+(`autosizeTextarea()`, refit on typing and after every generate or
+load): they grow to fit and never scroll. Enter is blocked in them and
+a pasted line break becomes a single space, since a meta tag must not
+contain one.
+
+Existing sets keep their saved text until you open one, click the
+buttons and update it. Saving also stamps the set's `updatedAt`, which
+becomes its sitemap `<lastmod>`.
+
 ### Star Rating widget
 
 `createCardSet.html` and `setEdit.html` both use a row of five clickable
@@ -269,8 +347,8 @@ input (edit) — two different, unpolished representations of the same
 whatever's actually locked in if you move away without clicking);
 clicking locks it in, turning that star and every one before it gold.
 
-Uses the exact same 🌟 emoji as the public "Hella Rating" display
-(`wax.js`) for the lit/selected state — emoji ignore CSS `color`, so
+Uses the exact same 🌟 emoji as the public "Rating" display
+(`helper.js`) for the lit/selected state — emoji ignore CSS `color`, so
 rather than a second "empty star" icon, the unselected state is the
 same glyph desaturated and dimmed via `filter: grayscale(1) opacity(0.35)`
 (`.star-rating-icon`), with `filter: none` on `.selected`.
@@ -592,7 +670,10 @@ edit pickers already use — `getCardSets` (live) and `getStagedCardSets`
 suggestion has something to manage. It comes from `Cards` rather than
 `Checklists` on purpose: the point is managing the checklists of real
 card sets, and orphaned checklists (a `setName` matching no review) are
-already surfaced by the Checklist Integrity Check on `cms/admin.html`.
+already surfaced by the Checklist Integrity Check on `cms/admin.html`,
+which can also delete them (see "Admin Tools" below): that is the
+second route to the same `saveChecklist` delete, for checklists that
+this modal's type-ahead can't suggest.
 The field stays free text, so a set whose flag is stale — a checklist
 that saved but whose `Cards`-linking step failed (the `Warning:` case)
 — isn't suggested but can still be typed by hand. The index is fetched
@@ -636,12 +717,14 @@ section for that half of the feature.
 checks, run entirely client-side by `scripts/adminTools.js` against the
 site's existing public read APIs — no new backend endpoints, no auth
 needed for the checks themselves (they're just page-gated like every
-other `/cms` page). Each check is its own card on the page: a short
+other `/cms` page). The one exception is the orphaned-checklist Delete,
+which writes: it sends the Cognito token to `saveChecklist`, like the
+Upload Checklist page. Each check is its own card on the page: a short
 description, a "Run Check" button, a status line, and a results area.
 Adding a new one means adding a function to `adminTools.js` and a
 matching card here — not growing this into one do-everything script.
 
-Two checks exist today:
+Three checks exist today:
 
 - **Broken Image Check**: loads every image the *live* public site
   references — blog post `img` fields, card set `headerImgName`/
@@ -658,9 +741,42 @@ Two checks exist today:
   to, and any individual page fetch that failed outright (e.g. from
   DynamoDB throughput exhaustion — see `ARCHITECTURE.md`'s billing-mode
   note) is reported separately rather than aborting the whole check.
-- **Checklist Integrity Check**: a thin UI wrapper around
-  `searchPlayerName`'s `?audit=1` mode (see `LAMBDA_FUNCTIONS.md`) —
-  reports any uploaded checklist with no matching `Cards` review.
+- **Image Alt & Size Check**: looks only at the images *inside* each
+  live review's body (the ones the editor's Insert buttons add) and
+  flags an empty `<img>` with no `src`, missing alt text, alt text that
+  looks like a filename, a missing `width` or `height` (an attribute or
+  an inline style counts) and a non-WebP file. It exists because those
+  images are typed in by hand, so nothing else guarantees them an alt
+  (image search and accessibility) or a size (without one the page
+  jumps as the picture loads). Header and footer images are skipped:
+  `buildCardSetMarkup()` writes their markup. A GIF or SVG logo shows as
+  "not WebP" by design and is normally fine. Shares `fetchAllCardSets()`
+  with the Broken Image Check, so it makes one `getCardSetsByYear` call
+  per year (about 40) and takes about a minute.
+- **Checklist Integrity Check**: finds **orphaned checklists** and lets
+  you delete them. A checklist's `setName` is the only link between the
+  `Checklists` and `Cards` tables (effectively a foreign key, though
+  DynamoDB doesn't enforce it), so a typo, a renamed review or a deleted
+  review leaves checklist rows whose `setName` matches no review: they
+  still feed Player Search but can never show a "Checklist" link. The
+  check is a UI over `searchPlayerName`'s `?audit=1` mode (see
+  `LAMBDA_FUNCTIONS.md`), which looks each stored `setName` up in
+  `Cards` (staged reviews count as a parent, so only a set with no
+  `Cards` item at all is orphaned) and returns an `orphans` list with
+  one entry per **checklist** — a set's main set, an insert set or an
+  extended set — not one per set. The page shows a checkbox row for
+  each ("1990-91 Topps - Team Scoring Leaders (21 cards)") and a
+  **Delete** button, disabled until something is ticked. It asks
+  through the red `cmsConfirm()` modal naming everything it will
+  remove ("This cannot be undone!"), then deletes only the ticked
+  checklists, one `saveChecklist` delete per checklist with the usual
+  Cognito token. A failure leaves that checklist listed, the others still
+  go, and the closing alert reports both. Check each row before
+  ticking: an unlinked checklist is sometimes deliberate (it lets
+  Player Search show players from a set that has no review yet), and
+  deleting it removes those players from search too. Nothing is
+  pre-ticked. The audit request skips the browser cache so a re-run
+  after a delete shows current data.
 
 ## Autobus Messaging Platform — `cms/smsAdmin.html`
 

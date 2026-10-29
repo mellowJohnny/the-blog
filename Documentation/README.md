@@ -34,7 +34,7 @@ sitemap.
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | High-level system diagram, hosting, domains/DNS/redirects, AWS services in play |
 | [DATA_MODEL.md](./DATA_MODEL.md) | DynamoDB tables and the fields each one holds |
 | [API_ENDPOINTS.md](./API_ENDPOINTS.md) | Every API Gateway endpoint the frontend calls — URL, method, payload, purpose |
-| [FRONTEND.md](./FRONTEND.md) | Public-facing pages and the `scripts/*.js` files behind them |
+| [FRONTEND.md](./FRONTEND.md) | Public-facing pages and the `scripts/*.js` files behind them, including how SEO and social-preview tags work |
 | [PUBLIC_PAGE_FLOWS.md](./PUBLIC_PAGE_FLOWS.md) | Public pages traced end to end — what loads, what runs on load, what each interaction calls and why |
 | [CMS_GUIDE.md](./CMS_GUIDE.md) | The `/cms` authoring tools ("cardStack") and the Autobus SMS admin tool |
 | [CMS_PAGE_FLOWS.md](./CMS_PAGE_FLOWS.md) | Every `/cms` page traced the same way as PUBLIC_PAGE_FLOWS.md |
@@ -53,7 +53,7 @@ sitemap.
 
 Run by hand with Node; neither is part of any deploy.
 
-- `tools/generateSitemap/generate.mjs` — regenerates `sitemap.xml` from the live `getPublicCardSets` data (see `FRONTEND.md`'s sitemap section). Re-run it whenever a card set is added or removed.
+- `tools/generateSitemap/generate.mjs` — regenerates `sitemap.xml` from the live `getPublicCardSets` data (see `FRONTEND.md`'s sitemap section), with a `<lastmod>` on every URL. Re-run it whenever a card set is added or removed.
 - `tools/checklistParser/parse.mjs` — parses a checklist PDF into the JSON the checklist-upload flow produces, mirroring `Lambdas/parseChecklistPdf/` (see `LAMBDA_FUNCTIONS.md` and `CMS_GUIDE.md`).
 
 ## Known gaps — worth confirming against the AWS Console

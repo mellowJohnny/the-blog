@@ -75,7 +75,7 @@ queries):
 | `mfg` | String | Manufacturer — one of O-Pee-Chee, Topps, Upper Deck, Score, Pro Set, Fleer, Leaf, Pinnacle, Pacific (per the `createCardSet.html` dropdown). |
 | `size` | String/Number | Set size, e.g. "660 cards". |
 | `subsets` | String | Free-text description of inserts/subsets. |
-| `stars` | Number (1-5) | "Hella Rating" — rendered as star emoji, sortable via `getSortOrder()` (`scripts/helper.js`; consolidated from the formerly-separate `cardSetSorter()` on 2026-08-12). |
+| `stars` | Number (1-5) | The "Rating" shown on the review page (labelled "Hella Rating" until 2026-10-29) — rendered as star emoji, sortable via `getSortOrder()` (`scripts/helper.js`; consolidated from the formerly-separate `cardSetSorter()` on 2026-08-12). |
 | `formats` | String | e.g. "Wax, Rack, Cello". |
 | `blogCat` | String | `"reg"` (regular O-Pee-Chee/junk-wax sets), `"tims"` (Tim Hortons), `"mcd"` (McDonald's). Drives which nav/year-picker range applies (`renderSetPicker()`, `categoryRanges` in `scripts/helper.js`). |
 | `blogStatus` | String | `"OK"` = live, `"staged"` = draft. Every live Lambda reads and writes it as `blogStatus` (`createCardPost`, `updateCardSet`, and the three that query the `blogStatus-year-index` GSI). The name `status` belonged to a prototype Lambda that has since been deleted. |
@@ -83,8 +83,10 @@ queries):
 | `headerImg` / `headerImgName` | String | Header image. `createCardPost` writes the fixed bucket *prefix* (`.../img/cards/`) into `headerImg`/`footerImg` server-side, and the filename the CMS form collects goes into `headerImgName`/`footerImgName`; the frontend concatenates prefix + filename at render time (`displayCardSet()` in `scripts/wax.js`). |
 | `footerImg` / `footerImgName` | String | Footer/"winners" image, same pattern as above. |
 | `author` | String | |
-| `seoPageTitle`, `seoMetaDesc`, `seoURLSlug`, `seoTags` | String | SEO metadata fields added to the create/edit forms; not currently read by any public page's `<head>` — likely intended for a future SEO pass. |
-| `now` / `date` | String | Passed through as `item.now` in `wax.js`'s `renderCardSetPage()` and used as the review's displayed date. |
+| `seoPageTitle`, `seoMetaDesc`, `seoTags` | String | SEO fields on the create/edit forms, filled by hand or with the form's **Generate** buttons (see `CMS_GUIDE.md`). `fetchPageTitle()` in `scripts/wax.js` reads `seoPageTitle` and `seoMetaDesc` for the review page's `<title>`, meta description and social tags, and `seoTags` for the keywords tag; an empty value falls back to a title/description built in code (`FRONTEND.md`, "SEO and social tags"). |
+| `seoURLSlug` | String | Stored from the create/edit form (the Generate button writes a slug of the set name) but **not read by anything on the live site**: review URLs still use query strings (`?year=&pageName=&blogCat=&setID=`). Kept for a possible move to clean URLs. |
+| `now` / `date` | String | Passed through as `item.now` in `wax.js`'s `renderCardSetPage()` and used as the review's displayed date. It is the **publish** date (ISO timestamp, written once at create time) and is never changed by an edit. |
+| `updatedAt` | String | ISO timestamp, written by `updateCardSet` on every CMS save; absent on a set not saved since it was introduced (2026-10-29). The sitemap generator publishes it as the review's `<lastmod>`, falling back to `now` when absent. Returned, with `now`, by `getPublicCardSets` (see `API_ENDPOINTS.md`). |
 | `hasChecklist` | Boolean | Set by `saveChecklist` (see the `Checklists` table below) the first time a checklist is successfully uploaded for this set's exact `setName` — not present at all until then. Drives the "Checklist" link on `waxReviews.html` (`displayCardSet()` in `scripts/wax.js`), which opens a modal fetching and displaying the full checklist — see `FRONTEND.md`. Not written by any CMS create/update form directly. |
 | `printRun` | String | Optional free text, e.g. "13.4 million packs" — only some sets have one (the Tim Hortons sets). Set from the Print Run field on `cms/createCardSet.html`/`cms/setEdit.html`: `createCardPost` stores it only when non-blank, and `updateCardSet` removes it when the field is cleared. When present, `buildCardSetMarkup()` (`scripts/helper.js`) adds a "Print Run" row under Set Size on `waxReviews.html`; missing or blank means no row at all. |
 
@@ -153,8 +155,14 @@ string-matching convention, and a typo'd or pre-fix (missing the
 trailing-"Hockey" strip) filename at upload time can silently produce a
 `Checklists` partition with no matching `Cards` item. `searchPlayerName`'s
 `?audit=1` mode is the tool for checking this across every uploaded
-checklist at once - it enumerates every distinct `setName` in
-`Checklists` and reports any with zero matching `Cards` items. Two such
+checklist at once - it enumerates every `setName` in `Checklists` and
+reports any with zero matching `Cards` items (staged reviews live in
+the same `Cards` table, so a staged review counts as a match). Put
+another way, `setName` is the foreign key from `Checklists` to `Cards`
+without any enforcement: DynamoDB has no constraint, so a checklist can
+point at nothing. The audit's `orphans` list names each such checklist
+individually (set, group, type, card count) and is what the admin page's
+delete list is built from. Two such
 mismatches were found and fixed this way on 2026-08-24 (a hyphenation
 difference and a double-space filename typo, both requiring every item
 under that stale `setName` partition to be deleted, not just one row -
