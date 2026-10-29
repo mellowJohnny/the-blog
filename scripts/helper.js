@@ -134,7 +134,7 @@ function buildCardSetMarkup({
                 <div class="set-detail-row"><strong>Formats:</strong> ${formats}</div>
                 <div class="set-detail-row"><strong>Manufacturer:</strong> ${mfg}</div>
                 ${checklistRow}
-                <div class="set-detail-row"><strong>Hella Rating:</strong> ${cleanStars}</div>
+                <div class="set-detail-row"><strong>Rating:</strong> ${cleanStars}</div>
             </div>
         </div>
         <br>

@@ -820,7 +820,7 @@ select {
 /* Star Rating widget - createCardSet.html/setEdit.html (initStarRatingWidget()/
    paintStarRating() in cmsCardSet.js). The real value lives in a hidden
    #stars input right after this; these spans are purely visual. Uses the
-   same glowing-star emoji as the public "Hella Rating" display (wax.js)
+   same glowing-star emoji as the public "Rating" display (helper.js)
    for the selected state - emoji ignore CSS `color`, so "empty" is the
    same glyph desaturated/dimmed via `filter` rather than a second icon. */
 .star-rating-widget {
@@ -1947,7 +1947,7 @@ label sup {
 .set-details-list {
   grid-area: list;
   /* Flex column so .set-detail-row-checklist's order below can move
-     the Checklist row after Hella Rating without changing the DOM
+     the Checklist row after Rating without changing the DOM
      order displayCardSet() (wax.js) builds - applies on both desktop
      and mobile, same reorder either way. */
   display: flex;
@@ -1972,7 +1972,7 @@ label sup {
 
 /* order:0 (the default) for every other row keeps them in their
    existing DOM order; giving just this one a higher order value moves
-   it after all of them, i.e. after Hella Rating - on both desktop and
+   it after all of them, i.e. after Rating - on both desktop and
    mobile. */
 .set-detail-row-checklist {
   order: 1;

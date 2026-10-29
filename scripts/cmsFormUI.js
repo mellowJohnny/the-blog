@@ -290,7 +290,7 @@ function buildSeoDescription() {
   if (!size && inserts.length) facts.push(`Inserts: ${inserts.join(", ")}.`);
 
   let text = `${seoSetLabel()} card set review.`;
-  [facts, stars ? [`Hella Rating: ${stars}/5.`] : [], firstSentence ? [firstSentence] : []].forEach((options) => {
+  [facts, stars ? [`Rating: ${stars}/5.`] : [], firstSentence ? [firstSentence] : []].forEach((options) => {
     const fit = options.find((option) => (text + " " + option).length <= 160);
     if (fit) text += " " + fit;
   });
