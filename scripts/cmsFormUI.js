@@ -315,10 +315,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const input = document.getElementById(id);
     if (input) input.addEventListener("input", updateSeoCharCounts);
   });
-  // The multi-line boxes are for room, not line breaks: Enter must not add one to a meta tag.
+  // The multi-line boxes are for room, not line breaks: Enter is blocked and a
+  // pasted break becomes a space, so a meta tag never contains one.
+  const lineBreaks = /\s*[\r\n]+\s*/g;
   ["seoMetaDesc", "seoTags"].forEach((id) => {
     const box = document.getElementById(id);
-    if (box) box.addEventListener("keydown", (event) => { if (event.key === "Enter") event.preventDefault(); });
+    if (!box) return;
+    box.addEventListener("keydown", (event) => { if (event.key === "Enter") event.preventDefault(); });
+    box.addEventListener("input", () => {
+      if (!/[\r\n]/.test(box.value)) return;
+      const caret = box.value.slice(0, box.selectionStart).replace(lineBreaks, " ").length;
+      box.value = box.value.replace(lineBreaks, " ");
+      box.setSelectionRange(caret, caret);
+      updateSeoCharCounts();
+    });
   });
 });
 
