@@ -26,11 +26,6 @@ function renderBlogIntro(blogType) {
       <h1>the Rasperry Pi Blog</h1>
       <p>Thoughts and experiments with my Rasperry Pi rig. Nothing hard core, nothing ground-breaking, just a few thoughts while I play around with this remarkable little computer...</p>
     `;
-  } else if (blogType === "98") {
-    // about.html: just a heading - the type-98 post below carries the content.
-    introHTML = `
-      <h1>about junk wax hockey...</h1>
-    `;
   } else {
     // Missing or unrecognised type (e.g. tech.html?blogType=4) → generic fallback.
     // index.html is static now and keeps its own copy of this text.
@@ -47,10 +42,10 @@ function renderBlogIntro(blogType) {
     introEl.innerHTML = introHTML;
   }
 
-  // tech.html only (about.html passes "98" with its own static meta; index.html
-  // no longer uses this file) - fixes tech.html having no meta description, and the same
+  // tech.html only (index.html and about.html are static and no longer call this) -
+  // fixes tech.html having no meta description, and the same
   // <title> duplicated across its 4 ?blogType= variants.
-  if (blogType && blogType !== "99" && blogType !== "98") {
+  if (blogType && blogType !== "99") {
     const metaByType = {
       "1": {
         title: "the tech blog...at the hella files - AI, iPads & software",

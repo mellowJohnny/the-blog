@@ -26,6 +26,18 @@
     <meta
       name="description"
       content="Focusing on the Junk Wax Era, in-depth reviews of almost every hockey card set from 1977-78 to 1994-95, including O-Pee-Chee, Upper Deck, Score, Topps, Pinnacle, McDonald's and Tim Hortons. Are any of them still worth collecting? Let's find out!">
+    <!-- Generic social preview fallback for crawlers that don't run JavaScript
+         (Facebook, Discord, Reddit, X). setPageMeta() in wax.js overwrites these
+         per set, and also adds the canonical/og:url - which can't be static here,
+         since this one file serves every review URL. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Junk Wax Hockey...vintage hockey card set reviews">
+    <meta property="og:description" content="Focusing on the Junk Wax Era, in-depth reviews of almost every hockey card set from 1977-78 to 1994-95, including O-Pee-Chee, Upper Deck, Score, Topps, Pinnacle, McDonald's and Tim Hortons. Are any of them still worth collecting? Let's find out!">
+    <meta property="og:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Junk Wax Hockey...vintage hockey card set reviews">
+    <meta name="twitter:description" content="Focusing on the Junk Wax Era, in-depth reviews of almost every hockey card set from 1977-78 to 1994-95, including O-Pee-Chee, Upper Deck, Score, Topps, Pinnacle, McDonald's and Tim Hortons. Are any of them still worth collecting? Let's find out!">
+    <meta name="twitter:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://s3.us-east-2.amazonaws.com">
@@ -200,6 +212,8 @@
       </div>
     </nav>
     <main>
+      <!-- Filled by renderBreadcrumbs() in helper.js, once the set loads -->
+      <nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb"></nav>
       <section>
         <div class="header-style wax-set-name-header">
           <h1 id="pageHeader"></h1>

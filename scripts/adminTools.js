@@ -63,8 +63,9 @@ async function collectBlogImageCandidates(onProgress, fetchErrors) {
   return candidates;
 }
 
-async function collectCardSetImageCandidates(onProgress, fetchErrors) {
-  const candidates = [];
+// Every live card set, year by year; shared by the image checks below.
+async function fetchAllCardSets(onProgress, fetchErrors) {
+  const sets = [];
   for (const blogCat in categoryRanges) {
     for (const pageName in categoryRanges[blogCat]) {
       const range = categoryRanges[blogCat][pageName];
@@ -78,19 +79,25 @@ async function collectCardSetImageCandidates(onProgress, fetchErrors) {
           fetchErrors.push(`Card sets for ${year} (${blogCat}): ${body?.error || `HTTP ${res.status}`}`);
           continue;
         }
-        for (const set of body) {
-          const label = `Set: "${set.setName}" (${year})`;
-          if (set.headerImgName) {
-            candidates.push({ label, field: "header image", url: `${set.headerImg || ""}${set.headerImgName}` });
-          }
-          if (set.footerImgName) {
-            candidates.push({ label, field: "footer image", url: `${set.footerImg || ""}${set.footerImgName}` });
-          }
-          for (const url of extractImgUrlsFromHtml(set.postBody)) {
-            candidates.push({ label, field: "inline content image", url });
-          }
-        }
+        body.forEach((set) => sets.push({ set, year }));
       }
+    }
+  }
+  return sets;
+}
+
+async function collectCardSetImageCandidates(onProgress, fetchErrors) {
+  const candidates = [];
+  for (const { set, year } of await fetchAllCardSets(onProgress, fetchErrors)) {
+    const label = `Set: "${set.setName}" (${year})`;
+    if (set.headerImgName) {
+      candidates.push({ label, field: "header image", url: `${set.headerImg || ""}${set.headerImgName}` });
+    }
+    if (set.footerImgName) {
+      candidates.push({ label, field: "footer image", url: `${set.footerImg || ""}${set.footerImgName}` });
+    }
+    for (const url of extractImgUrlsFromHtml(set.postBody)) {
+      candidates.push({ label, field: "inline content image", url });
     }
   }
   return candidates;
@@ -169,6 +176,92 @@ async function runBrokenImageCheck() {
             <tr>
               <td class="admin-results-url">${escapeHtml(b.url)}</td>
               <td>${b.usedBy.map(escapeHtml).join("<br>")}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+      ${fetchErrorsHtml}
+    `;
+  } catch (err) {
+    statusEl.textContent = `Error: ${err.message}`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/* Image Alt & Size Check - the images inside each review's body (the ones
+   the CMS editor inserts) must have real alt text and a width and height
+   (no layout shift), and should be WebP. Header/footer images are built by
+   buildCardSetMarkup() in helper.js, so they aren't looked at here. */
+
+function auditInlineImage(img) {
+  const issues = [];
+  const src = img.getAttribute("src") || "";
+  if (!src) return ["empty <img> tag (no src)"];
+
+  const alt = (img.getAttribute("alt") || "").trim();
+  if (!alt) issues.push("no alt text");
+  else if (/\.(webp|jpe?g|png|gif)$/i.test(alt) || /^(img|dsc|image)[-_ ]?\d+/i.test(alt)) issues.push("alt looks like a filename");
+
+  const style = img.getAttribute("style") || "";
+  const hasSize = (name) => img.hasAttribute(name) || new RegExp(`(^|;)\\s*${name}\\s*:`).test(style);
+  if (!hasSize("width") || !hasSize("height")) issues.push("missing width/height");
+
+  if (!/\.webp(\?|$)/i.test(src)) issues.push("not WebP");
+  return issues;
+}
+
+async function runImageAltCheck() {
+  const statusEl = document.getElementById("altCheckStatus");
+  const resultsEl = document.getElementById("altCheckResults");
+  const btn = document.getElementById("altCheckBtn");
+
+  btn.disabled = true;
+  resultsEl.innerHTML = "";
+  statusEl.textContent = "Starting...";
+
+  try {
+    const fetchErrors = [];
+    const sets = await fetchAllCardSets((msg) => { statusEl.textContent = msg; }, fetchErrors);
+    const flagged = [];
+    let imageCount = 0;
+
+    for (const { set, year } of sets) {
+      const doc = new DOMParser().parseFromString(set.postBody || "", "text/html");
+      doc.querySelectorAll("img").forEach((img) => {
+        imageCount += 1;
+        const issues = auditInlineImage(img);
+        if (issues.length) {
+          flagged.push({
+            set: `${set.setName} (${year})`,
+            image: (img.getAttribute("src") || "").split("/").pop() || "(no src)",
+            issues
+          });
+        }
+      });
+    }
+
+    const fetchErrorsHtml = fetchErrors.length > 0
+      ? `<p class="admin-status-msg">${fetchErrors.length} page fetch(es) failed and were skipped:</p>
+         <ul class="admin-results-list">${fetchErrors.map((e) => `<li>${escapeHtml(e)}</li>`).join("")}</ul>`
+      : "";
+
+    if (flagged.length === 0) {
+      statusEl.textContent = `Done — checked ${imageCount} image(s) across ${sets.length} set(s), no problems.`;
+      resultsEl.innerHTML = fetchErrorsHtml;
+      return;
+    }
+
+    statusEl.textContent = `Done — ${flagged.length} of ${imageCount} image(s) across ${sets.length} set(s) have a problem:`;
+    resultsEl.innerHTML = `
+      <table class="admin-results-table">
+        <thead><tr><th>Set</th><th>Image</th><th>Problem</th></tr></thead>
+        <tbody>
+          ${flagged.map((f) => `
+            <tr>
+              <td>${escapeHtml(f.set)}</td>
+              <td class="admin-results-url">${escapeHtml(f.image)}</td>
+              <td>${f.issues.map(escapeHtml).join("<br>")}</td>
             </tr>
           `).join("")}
         </tbody>

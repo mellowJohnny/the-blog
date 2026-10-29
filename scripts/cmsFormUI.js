@@ -146,7 +146,7 @@ function openMiddleImageDialog(editor, imageUrl) {
         { type: 'input', name: 'alt', label: 'Alt Text' }
       ]
     },
-    initialData: { alt: '' },
+    initialData: { alt: middleImageAltDefault() },
     buttons: [
       { type: 'cancel', text: 'Cancel' },
       { type: 'submit', text: 'Insert', primary: true }
@@ -207,3 +207,119 @@ async function cmsCancelEdit(redirectTo) {
         document.getElementById('cmsSubmitButton').style.backgroundColor = "#256386";
         document.getElementById('cmsSubmitButton').innerHTML = "Update Post";
     }
+
+// --- SEO "Generate" buttons (createCardSet.html / setEdit.html) ---
+// Each fills its field from the set's own form values: no AI, and nothing
+// the form can't back up. A field that already has text asks first.
+
+function seoFormValue(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : "";
+}
+
+// "1991-92 Stadium Club" + maker Topps -> "1991-92 Topps Stadium Club Hockey".
+function seoSetLabel() {
+  const setName = seoFormValue("setName");
+  const mfg = seoFormValue("mfg");
+  const match = setName.match(/^(\d{4}-\d{2})\s+(.+)$/);
+  const brandedSet = /mcdonald|tim hortons/i.test(setName);
+  let label = setName;
+  if (match && mfg && !brandedSet && !match[2].toLowerCase().includes(mfg.toLowerCase())) {
+    label = `${match[1]} ${mfg} ${match[2]}`;
+  }
+  return /hockey/i.test(label) ? label : `${label} Hockey`;
+}
+
+function seoInsertNames() {
+  return seoFormValue("subsets").split(",").map((name) => name.trim())
+    .filter((name) => name && !/^(none|n\/a)$/i.test(name));
+}
+
+function buildSeoTitle() {
+  const label = seoSetLabel();
+  const withBrand = `${label} Card Set Review | Junk Wax Hockey`;
+  return withBrand.length <= 65 ? withBrand : `${label} Card Set Review`;
+}
+
+// Base sentence, then each extra only if it still fits in 160 characters.
+function buildSeoDescription() {
+  const size = seoFormValue("size");
+  const stars = seoFormValue("stars");
+  const inserts = seoInsertNames();
+  const editor = typeof tinymce !== "undefined" ? tinymce.get("postBody") : null;
+  const firstParagraph = editor
+    ? editor.getContent({ format: "text" }).split(/\n+/).map((line) => line.trim()).find(Boolean) || ""
+    : "";
+  const firstSentence = (firstParagraph.match(/^.+?[.!?](?=\s|$)/) || [""])[0];
+
+  const facts = [];
+  if (size && inserts.length) facts.push(`${size} cards. Inserts: ${inserts.join(", ")}.`);
+  if (size) facts.push(`${size} cards.`);
+  if (!size && inserts.length) facts.push(`Inserts: ${inserts.join(", ")}.`);
+
+  let text = `${seoSetLabel()} card set review.`;
+  [facts, stars ? [`Hella Rating: ${stars}/5.`] : [], firstSentence ? [firstSentence] : []].forEach((options) => {
+    const fit = options.find((option) => (text + " " + option).length <= 160);
+    if (fit) text += " " + fit;
+  });
+  return truncateAtWord(text, 160);
+}
+
+function buildSeoKeywords() {
+  const setName = seoFormValue("setName");
+  const year = (setName.match(/^\d{4}(-\d{2})?/) || [""])[0];
+  const terms = [seoSetLabel(), year && `${year} hockey cards`, seoFormValue("mfg"),
+    setName && `${setName} checklist`, "junk wax hockey", ...seoInsertNames()];
+  const seen = new Set();
+  return terms.filter((term) => term && !seen.has(term.toLowerCase()) && seen.add(term.toLowerCase()))
+    .slice(0, 12).join(", ");
+}
+
+function buildSeoSlug() {
+  return seoFormValue("setName").toLowerCase().replace(/['’]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+async function fillSeoField(fieldId, build) {
+  if (!seoFormValue("setName")) {
+    await cmsAlert("Enter the Set Name first - the generators build from the set's own details.");
+    return;
+  }
+  const field = document.getElementById(fieldId);
+  const value = build();
+  if (field.value.trim() && field.value.trim() !== value) {
+    if (!(await cmsConfirm("Replace the current text in this field with a generated version?"))) return;
+  }
+  field.value = value;
+  updateSeoCharCounts();
+}
+
+function generateSeoTitle() { return fillSeoField("seoPageTitle", buildSeoTitle); }
+function generateSeoDescription() { return fillSeoField("seoMetaDesc", buildSeoDescription); }
+function generateSeoKeywords() { return fillSeoField("seoTags", buildSeoKeywords); }
+function generateSeoSlug() { return fillSeoField("seoURLSlug", buildSeoSlug); }
+
+// "58 / 65": the length against the most a search result shows.
+function updateSeoCharCounts() {
+  [["seoPageTitle", 65], ["seoMetaDesc", 160]].forEach(([id, max]) => {
+    const input = document.getElementById(id);
+    const counter = document.getElementById(`${id}Count`);
+    if (!input || !counter) return;
+    counter.textContent = `${input.value.length} / ${max}`;
+    counter.classList.toggle("seo-count-over", input.value.length > max);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  ["seoPageTitle", "seoMetaDesc"].forEach((id) => {
+    const input = document.getElementById(id);
+    if (input) input.addEventListener("input", updateSeoCharCounts);
+  });
+});
+
+// Middle images are shots of the set's cards, so alt can start from the set.
+function middleImageAltDefault() {
+  const year = seoFormValue("year");
+  const mfg = seoFormValue("mfg");
+  return year && mfg ? `Vintage hockey cards from the ${year} ${mfg} set` : "";
+}

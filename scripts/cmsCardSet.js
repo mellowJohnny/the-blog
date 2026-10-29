@@ -597,6 +597,7 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
   document.getElementById("seoMetaDesc").value = seoMetaDesc;
   document.getElementById("seoURLSlug").value = seoURLSlug;
   document.getElementById("seoTags").value = seoTags;
+  updateSeoCharCounts();
   document.getElementById("author").value = author;
   document.getElementById("mfg").value = mfg;
   document.getElementById("size").value = size;

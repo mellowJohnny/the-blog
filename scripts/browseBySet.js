@@ -24,16 +24,36 @@ function groupBrowseSetsBySeason(sets) {
   }));
 }
 
-function buildBrowseSetEntry(set) {
+// Site-relative review URL for a set, or null when no year range covers it.
+function browseReviewUrl(set) {
   const pageName = getPageNameForYear(set.blogCat, set.year);
+  if (!pageName) return null;
+  const setParam = set.setID ? `&setID=${encodeURIComponent(set.setID)}` : "";
+  return `/waxReviews.html?year=${set.year}&pageName=${pageName}&blogCat=${encodeURIComponent(set.blogCat)}${setParam}`;
+}
+
+// ItemList schema for the whole list, in the order the page shows it (season, then name).
+function setBrowseItemListJsonLd(sets) {
+  const listed = groupBrowseSetsBySeason(sets).flatMap((group) => group.sets)
+    .filter((set) => browseReviewUrl(set));
+  setJsonLd("jsonld-itemlist", {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": listed.map((set, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "name": set.setName,
+      "url": `${SITE_ORIGIN}${browseReviewUrl(set)}`
+    }))
+  }); // setJsonLd / SITE_ORIGIN: helper.js
+}
+
+function buildBrowseSetEntry(set) {
+  const url = browseReviewUrl(set);
   // The season heading above already shows the year, so the title drops it;
   // data-set-name below keeps the full name, which the checklist lookup needs.
   const links = [];
-  if (pageName) {
-    const setParam = set.setID ? `&setID=${encodeURIComponent(set.setID)}` : "";
-    const url = `/waxReviews.html?year=${set.year}&pageName=${pageName}&blogCat=${encodeURIComponent(set.blogCat)}${setParam}`;
-    links.push(`<a href="${url}">Review</a>`);
-  }
+  if (url) links.push(`<a href="${url}">Review</a>`);
   if (set.hasChecklist) {
     links.push(`<a href="#" class="browse-checklist-link" data-set-name="${escapeHtml(set.setName)}">Checklist</a>`);
   }
@@ -80,6 +100,7 @@ async function initBrowseBySet() {
     }
     renderBrowseColumn("browseMajor", live.filter((s) => s.blogCat === "reg"));
     renderBrowseColumn("browseFastFood", live.filter((s) => s.blogCat === "mcd" || s.blogCat === "tims"));
+    setBrowseItemListJsonLd(live);
     status.hidden = true;
   } catch (err) {
     console.log("Browse By Set:", err);

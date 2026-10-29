@@ -164,7 +164,7 @@ function fetchPageTitle(item)
 
   // Prefer the CMS-authored SEO fields when present, falling back to
   // the generic derivation for sets that don't have them set.
-  const pageTitle = (seoPageTitle && seoPageTitle.trim()) || `Review: ${setName}`;
+  const pageTitle = (seoPageTitle && seoPageTitle.trim()) || `${setName} Hockey Card Set Review | Junk Wax Hockey`;
   document.title = pageTitle;
 
   // The on-page H1 always shows the real set name, never seoPageTitle -
@@ -174,7 +174,7 @@ function fetchPageTitle(item)
 
   const image = `${headerImg}${headerImgName}`;
   const description = (seoMetaDesc && seoMetaDesc.trim())
-    || stripHtmlTags(postBody).trim().slice(0, 300); // helper.js
+    || truncateAtWord(stripHtmlTags(postBody), 155); // helper.js
   const keywords = (seoTags && seoTags.trim()) || undefined;
 
   setPageMeta({
@@ -185,6 +185,12 @@ function fetchPageTitle(item)
     url: buildReviewCanonicalUrl(item),
     type: "website"
   });
+
+  renderBreadcrumbs(
+    getPageNameForYear(item.blogCat, item.year) || new URLSearchParams(window.location.search).get("pageName"),
+    setName,
+    buildReviewCanonicalUrl(item)
+  ); // helper.js
 
   // Fixed id (not derived from setName): only one set is ever shown per
   // page at a time (pageSize is 1), so each pagination click should

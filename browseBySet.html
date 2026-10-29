@@ -22,6 +22,17 @@
     <meta
       name="description"
       content="Browse every hockey card set reviewed on Junk Wax Hockey, from classic 1980s releases to McDonald's and Tim Hortons sets, with a link to each review and checklist.">
+    <link rel="canonical" href="https://www.junkwaxhockey.com/browseBySet.html">
+    <!-- Social preview tags - static because Facebook, Discord, Reddit and X don't run JavaScript -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Junk Wax Hockey...Browse By Set - every hockey card set reviewed">
+    <meta property="og:description" content="Browse every hockey card set reviewed on Junk Wax Hockey, from classic 1980s releases to McDonald's and Tim Hortons sets, with a link to each review and checklist.">
+    <meta property="og:url" content="https://www.junkwaxhockey.com/browseBySet.html">
+    <meta property="og:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Junk Wax Hockey...Browse By Set - every hockey card set reviewed">
+    <meta name="twitter:description" content="Browse every hockey card set reviewed on Junk Wax Hockey, from classic 1980s releases to McDonald's and Tim Hortons sets, with a link to each review and checklist.">
+    <meta name="twitter:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -100,14 +111,6 @@
 
         // Fetch the live sets and build the two columns - browseBySet.js
         initBrowseBySet();
-
-        setPageMeta({
-          title: "Junk Wax Hockey...Browse By Set - every hockey card set reviewed",
-          description: "Browse every hockey card set reviewed on Junk Wax Hockey, from classic 1980s releases to McDonald's and Tim Hortons sets, with a link to each review and checklist.",
-          image: "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp",
-          url: "https://www.junkwaxhockey.com/browseBySet.html",
-          type: "website"
-        });
 
         // Masthead: random NHL team colors on every load - helper.js
         applyRandomMastheadStyling();

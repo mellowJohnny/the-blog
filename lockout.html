@@ -17,14 +17,24 @@
       rel="apple-touch-icon"
       href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
 
-    <!-- Default title -->
     <title>
-      Junk Wax Hockey...vintage hockey card set reviews
+      2004-05: The Lockout Season - no McDonald's Hockey set
     </title>
 
     <meta
       name="description"
-      content="Focusing on the Junk Wax Era, in-depth reviews of almost every hockey card set from 1977-78 to 1994-95, including O-Pee-Chee, Upper Deck, Score, Topps, Pinnacle, McDonald's and Tim Hortons. Are any of them still worth collecting? Let's find out!">
+      content="The 2004-05 NHL lockout wiped out that season's McDonald's Hockey set - the one gap in an otherwise unbroken run from 1991 to 2009.">
+    <link rel="canonical" href="https://www.junkwaxhockey.com/lockout.html">
+    <!-- Social preview tags - static because Facebook, Discord, Reddit and X don't run JavaScript -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="2004-05: The Lockout Season - no McDonald's Hockey set">
+    <meta property="og:description" content="The 2004-05 NHL lockout wiped out that season's McDonald's Hockey set - the one gap in an otherwise unbroken run from 1991 to 2009.">
+    <meta property="og:url" content="https://www.junkwaxhockey.com/lockout.html">
+    <meta property="og:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="2004-05: The Lockout Season - no McDonald's Hockey set">
+    <meta name="twitter:description" content="The 2004-05 NHL lockout wiped out that season's McDonald's Hockey set - the one gap in an otherwise unbroken run from 1991 to 2009.">
+    <meta name="twitter:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://s3.us-east-2.amazonaws.com">
@@ -138,20 +148,9 @@
         // fetchCardIntro(pageName);
         // Call the Set-O-Matic Set Picker
         renderSetPicker(year,blogCat,pageName);
+        renderBreadcrumbs("mcd", "2004-05: The Lockout Season", "https://www.junkwaxhockey.com/lockout.html");
 
         fetchCopyrightYear();
-
-        // This is a static essay, not a fetched card set - there was never
-        // a 2004-05 McDonald's set to look up (that's the whole point of
-        // this page), so unlike waxReviews.html there's no fetchPageTitle()
-        // call here to set these from real set data. Set them directly instead.
-        document.getElementById("pageHeader").textContent = "2004-05: The Lockout Season";
-        setPageMeta({
-          title: "2004-05: The Lockout Season - no McDonald's Hockey set",
-          description: "The 2004-05 NHL lockout wiped out that season's McDonald's Hockey set - the one gap in an otherwise unbroken run from 1991 to 2009.",
-          url: "https://www.junkwaxhockey.com/lockout.html",
-          type: "website"
-        });
 
         // Masthead: random NHL team colors on every load - helper.js
         applyRandomMastheadStyling();
@@ -197,11 +196,11 @@
       </div>
     </nav>
     <main>
+      <!-- Filled by renderBreadcrumbs() in helper.js -->
+      <nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb"></nav>
       <section>
         <div class="header-style">
-          <h1 id="pageHeader"></h1>
-          <!-- Set directly in the window load handler above - this is a
-               static essay, not a fetched card set. -->
+          <h1 id="pageHeader">2004-05: The Lockout Season</h1>
         </div>
 
         <div class="flex-container">

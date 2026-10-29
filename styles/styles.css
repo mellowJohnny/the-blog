@@ -3229,6 +3229,60 @@ body:has(.site-footer) {
   font-size: 15px;
 }
 
+/* Breadcrumb trail above the set-review pages (renderBreadcrumbs() in helper.js). */
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 10px 10px 0;
+  list-style: none;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 15px;
+}
+
+.breadcrumbs li + li::before {
+  content: "\203A";
+  margin-right: 6px;
+  color: #777;
+}
+
+.breadcrumbs a {
+  color: #256386;
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumbs li[aria-current] {
+  color: #555;
+}
+
+/* Small "Generate" button beside a CMS SEO field, and its length counter. */
+.seo-generate-btn {
+  margin-left: 8px;
+  padding: 1px 8px;
+  font-size: 12px;
+  background-color: #256386;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.seo-char-count {
+  margin-left: 8px;
+  font-size: 12px;
+  color: #555;
+}
+
+.seo-char-count.seo-count-over {
+  color: #a83232;
+  font-weight: bold;
+}
+
 .admin-orphan-row {
   display: block;
   padding: 8px 0;

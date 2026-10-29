@@ -14,6 +14,19 @@
 
     <meta name="description"
           content="Search by player name to find every vintage and junk wax hockey card set reviewed on Junk Wax Hockey that they appear in, with a direct link to each set's review.">
+    <!-- Canonical is always the bare page, ignoring any ?q= - the search tool
+         is what's worth indexing, not thin per-query result pages. -->
+    <link rel="canonical" href="https://www.junkwaxhockey.com/playerSearch.html">
+    <!-- Social preview tags - static because Facebook, Discord, Reddit and X don't run JavaScript -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Junk Wax Hockey...Player Search - find which vintage hockey card sets a player appears in">
+    <meta property="og:description" content="Search by player name to find every vintage and junk wax hockey card set reviewed on Junk Wax Hockey that they appear in, with a direct link to each set's review.">
+    <meta property="og:url" content="https://www.junkwaxhockey.com/playerSearch.html">
+    <meta property="og:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Junk Wax Hockey...Player Search - find which vintage hockey card sets a player appears in">
+    <meta name="twitter:description" content="Search by player name to find every vintage and junk wax hockey card set reviewed on Junk Wax Hockey that they appear in, with a direct link to each set's review.">
+    <meta name="twitter:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
 
     <!-- Self-hosted Bebas Neue for the masthead - same treatment as
          waxReviews.html/lockout.html, kept byte-for-byte identical
@@ -79,17 +92,6 @@
         // *** Fetch the Top Nav from helper.js
         fetchNav(pageName);
         fetchFooterLinks();
-
-        // Canonical always points at the bare page, ignoring any ?q= -
-        // the search tool itself is what's worth indexing, not thin
-        // per-query result pages.
-        setPageMeta({
-          title: "Junk Wax Hockey...Player Search - find which vintage hockey card sets a player appears in",
-          description: "Search by player name to find every vintage and junk wax hockey card set reviewed on Junk Wax Hockey that they appear in, with a direct link to each set's review.",
-          image: "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp",
-          url: "https://www.junkwaxhockey.com/playerSearch.html",
-          type: "website"
-        });
 
         // Masthead: random NHL team colors on every load - helper.js
         applyRandomMastheadStyling();

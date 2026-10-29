@@ -102,6 +102,25 @@
           </div>
 
           <div class="admin-tool-card">
+            <h2>Image Alt &amp; Size Check</h2>
+            <p>
+              Checks the images inside every live review for missing or filename-style alt text,
+              a missing width or height (which makes the page jump as it loads), and non-WebP files.
+              Takes about a minute.
+            </p>
+            <button
+              type="button"
+              id="altCheckBtn"
+              class="input-button"
+              onclick="runImageAltCheck()"
+            >
+              Run Check
+            </button>
+            <p id="altCheckStatus" class="admin-status-msg"></p>
+            <div id="altCheckResults"></div>
+          </div>
+
+          <div class="admin-tool-card">
             <h2>Checklist Integrity Check</h2>
             <p>
               Every live checklist should link to exactly one card set review.

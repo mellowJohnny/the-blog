@@ -125,22 +125,28 @@
                   <tr>
                     <!-- 2nd Row - two SEO fields -->
                     <td>
-                      <label>SEO Title</label><br>
+                      <label>SEO Title</label>
+                      <button type="button" class="seo-generate-btn" onclick="generateSeoTitle()">Generate</button>
+                      <span class="seo-char-count" id="seoPageTitleCount"></span><br>
                       <input type="text" id="seoPageTitle">
                     </td>
                     <td>
-                      <label>SEO Meta Description</label><br>
+                      <label>SEO Meta Description</label>
+                      <button type="button" class="seo-generate-btn" onclick="generateSeoDescription()">Generate</button>
+                      <span class="seo-char-count" id="seoMetaDescCount"></span><br>
                       <input type="text" id="seoMetaDesc">
                     </td>
                   </tr>
                   <tr>
                     <!-- 3rd Row - two SEO fields -->
                     <td>
-                      <label>SEO Friendly URL</label><br>
+                      <label>SEO Friendly URL</label>
+                      <button type="button" class="seo-generate-btn" onclick="generateSeoSlug()">Generate</button><br>
                       <input type="text" id="seoURLSlug">
                     </td>
                     <td>
-                      <label>SEO Keywords</label><br>
+                      <label>SEO Keywords</label>
+                      <button type="button" class="seo-generate-btn" onclick="generateSeoKeywords()">Generate</button><br>
                       <input type="text" id="seoTags">
                     </td>
                   </tr>

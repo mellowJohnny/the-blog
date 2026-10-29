@@ -10,6 +10,9 @@
 //   - a year with SEVERAL sets is listed as one ?setID= URL per set (the bare
 //     year URL canonicalises to the top-rated set, so it isn't listed).
 //
+// Each URL gets a <lastmod>: a review's updatedAt (else its publish date, now),
+// a static page's last git commit date. Omitted when neither is available.
+//
 // The year ranges below are only used to work out each set's pageName; they
 // are deliberately duplicated from categoryRanges in scripts/helper.js
 // (a browser script, not a Node module) - keep them in sync by hand. A live
@@ -20,6 +23,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const SITE_ORIGIN = "https://www.junkwaxhockey.com";
@@ -64,8 +68,26 @@ function pageNameFor(set) {
   return range.pageName;
 }
 
+// <lastmod> for a review: the date it was last edited (updatedAt, written by
+// updateCardSet) or, for sets never edited since, its publish date (now).
+function setLastmod(set) {
+  const stamp = set.updatedAt || set.now;
+  return stamp && /^\d{4}-\d{2}-\d{2}/.test(stamp) ? stamp.slice(0, 10) : undefined;
+}
+
+// A static page's last commit date; undefined when git has no history for it.
+function pageLastmod(page) {
+  const file = page === "/" ? "index.html" : page.slice(1);
+  try {
+    const date = execFileSync("git", ["log", "-1", "--format=%cs", "--", file], { cwd: REPO_ROOT, encoding: "utf8" }).trim();
+    return date || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function buildUrls(sets) {
-  const urls = STATIC_PAGES.map((page) => `${SITE_ORIGIN}${page}`);
+  const urls = STATIC_PAGES.map((page) => ({ loc: `${SITE_ORIGIN}${page}`, lastmod: pageLastmod(page) }));
 
   const groups = new Map();
   for (const set of sets) {
@@ -82,14 +104,14 @@ function buildUrls(sets) {
     const { blogCat, year } = group[0];
     const base = `${SITE_ORIGIN}/waxReviews.html?year=${year}&pageName=${pageNameFor(group[0])}&blogCat=${blogCat}`;
     if (group.length === 1) {
-      urls.push(base);
+      urls.push({ loc: base, lastmod: setLastmod(group[0]) });
     } else {
       group.sort((a, b) => a.setName.localeCompare(b.setName));
-      for (const set of group) urls.push(`${base}&setID=${encodeURIComponent(set.setID)}`);
+      for (const set of group) urls.push({ loc: `${base}&setID=${encodeURIComponent(set.setID)}`, lastmod: setLastmod(set) });
     }
   }
 
-  if (new Set(urls).size !== urls.length) throw new Error("Duplicate URLs generated");
+  if (new Set(urls.map((url) => url.loc)).size !== urls.length) throw new Error("Duplicate URLs generated");
   return urls;
 }
 
@@ -98,7 +120,8 @@ function escapeXml(url) {
 }
 
 function buildSitemapXml(urls) {
-  const entries = urls.map((url) => `  <url>\n    <loc>${escapeXml(url)}</loc>\n  </url>`).join("\n");
+  const entries = urls.map(({ loc, lastmod }) =>
+    `  <url>\n    <loc>${escapeXml(loc)}</loc>\n${lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : ""}  </url>`).join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>\n`;
 }
 

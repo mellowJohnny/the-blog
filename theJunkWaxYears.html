@@ -24,6 +24,17 @@
     <meta
       name="description"
       content="A firsthand look back at hockey's Junk Wax era - the overproduction boom that nearly killed the hobby, and why not every set from it deserves the &quot;junk&quot; label.">
+    <link rel="canonical" href="https://www.junkwaxhockey.com/theJunkWaxYears.html">
+    <!-- Social preview tags - static because Facebook, Discord, Reddit and X don't run JavaScript -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Junk Wax Hockey...The Junk Wax Era - A Brief History">
+    <meta property="og:description" content="A firsthand look back at hockey's Junk Wax era - the overproduction boom that nearly killed the hobby, and why not every set from it deserves the &quot;junk&quot; label.">
+    <meta property="og:url" content="https://www.junkwaxhockey.com/theJunkWaxYears.html">
+    <meta property="og:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Junk Wax Hockey...The Junk Wax Era - A Brief History">
+    <meta name="twitter:description" content="A firsthand look back at hockey's Junk Wax era - the overproduction boom that nearly killed the hobby, and why not every set from it deserves the &quot;junk&quot; label.">
+    <meta name="twitter:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Global site tag (gtag.js) - Load Google Analytics until later -->
@@ -110,18 +121,10 @@
         // renderSetPicker()'s y === parseInt(year) check in helper.js.
         renderSetPicker(null, "reg", "junkWax");
 
-        // Static essay, content never varies - set once here rather than
-        // fetched, same pattern as index.html/playerSearch.html.
+        // Static essay, content never varies - its Article schema is built
+        // once here from the page text.
         const articleBody = document.querySelector(".intro")
           .textContent.trim().replace(/\s+/g, " ").slice(0, 300);
-
-        setPageMeta({
-          title: "Junk Wax Hockey...The Junk Wax Era - A Brief History",
-          description: "A firsthand look back at hockey's Junk Wax era - the overproduction boom that nearly killed the hobby, and why not every set from it deserves the \"junk\" label.",
-          image: "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp",
-          url: "https://www.junkwaxhockey.com/theJunkWaxYears.html",
-          type: "website"
-        });
 
         setJsonLd("jsonld-article", {
           "@context": "https://schema.org",

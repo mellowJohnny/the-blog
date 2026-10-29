@@ -24,6 +24,17 @@
     <meta
       name="description"
       content="An interactive timeline of hockey's Junk Wax era, from the 1984-85 O-Pee-Chee and Topps sets to 24 sets a season in 1995-96. Flip each season to see the sets, the rookies and the print-run chaos.">
+    <link rel="canonical" href="https://www.junkwaxhockey.com/timeline.html">
+    <!-- Social preview tags - static because Facebook, Discord, Reddit and X don't run JavaScript -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Junk Wax Hockey...The Junk Wax Era Timeline - 1984 to 1996 hockey card sets, season by season">
+    <meta property="og:description" content="An interactive timeline of hockey's Junk Wax era, from the 1984-85 O-Pee-Chee and Topps sets to 24 sets a season in 1995-96. Flip each season to see the sets, the rookies and the print-run chaos.">
+    <meta property="og:url" content="https://www.junkwaxhockey.com/timeline.html">
+    <meta property="og:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Junk Wax Hockey...The Junk Wax Era Timeline - 1984 to 1996 hockey card sets, season by season">
+    <meta name="twitter:description" content="An interactive timeline of hockey's Junk Wax era, from the 1984-85 O-Pee-Chee and Topps sets to 24 sets a season in 1995-96. Flip each season to see the sets, the rookies and the print-run chaos.">
+    <meta name="twitter:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Global site tag (gtag.js) - Load Google Analytics until later -->
@@ -107,18 +118,10 @@
         // Build the timeline cards from /timeline/timeline.md - timeline.js
         initTimeline();
 
-        // Static page, content never varies - set once here rather than
-        // fetched, same pattern as theJunkWaxYears.html.
+        // Static page, content never varies - its Article schema is built
+        // once here from the page text.
         const articleBody = document.querySelector(".intro")
           .textContent.trim().replace(/\s+/g, " ").slice(0, 300);
-
-        setPageMeta({
-          title: "Junk Wax Hockey...The Junk Wax Era Timeline - 1984 to 1996 hockey card sets, season by season",
-          description: "An interactive timeline of hockey's Junk Wax era, from the 1984-85 O-Pee-Chee and Topps sets to 24 sets a season in 1995-96. Flip each season to see the sets, the rookies and the print-run chaos.",
-          image: "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp",
-          url: "https://www.junkwaxhockey.com/timeline.html",
-          type: "website"
-        });
 
         setJsonLd("jsonld-article", {
           "@context": "https://schema.org",

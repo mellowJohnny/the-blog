@@ -19,6 +19,18 @@ function stripHtmlTags(htmlString) {
   return htmlString.replace(/<[^>]*>/g, " ");
 }
 
+// Cuts plain text to at most `max` characters at a word boundary, adding
+// "..." only when something was cut. Shared by wax.js's SEO fallbacks and
+// the CMS SEO generators in cmsFormUI.js.
+function truncateAtWord(text, max) {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max - 3);
+  const lastSpace = cut.lastIndexOf(" ");
+  const base = lastSpace > max / 2 ? cut.slice(0, lastSpace) : cut;
+  return base.replace(/[\s,;:-]+$/, "") + "...";
+}
+
 /**
  * .img-wrap-sm/.img-wrap-md images opt into smaller mobile sizing -
  * reads each image's actual width/height (inline style preferred over
@@ -211,6 +223,39 @@ function setJsonLd(id, data) {
     document.head.appendChild(script);
   }
   script.textContent = JSON.stringify(data);
+}
+
+// Breadcrumbs for the set-review pages: Home > category > this page, as the
+// visible #breadcrumbs nav and matching BreadcrumbList JSON-LD. The middle
+// step is the real nav category (NAV_ITEMS) the page's pageName belongs to.
+const BREADCRUMB_CATEGORY_IDS = { classicWax: "classic", junkWax: "junk", mcd: "mcd", timmies: "timmies" };
+const SITE_ORIGIN = "https://www.junkwaxhockey.com";
+
+function renderBreadcrumbs(pageName, currentLabel, currentUrl) {
+  const nav = document.getElementById("breadcrumbs");
+  if (!nav) return;
+
+  const category = NAV_ITEMS[BREADCRUMB_CATEGORY_IDS[pageName]];
+  const trail = [{ name: NAV_ITEMS.home.label, url: "/index.html" }];
+  if (category) trail.push({ name: category.label, url: category.href });
+  trail.push({ name: currentLabel, url: currentUrl || window.location.href });
+  const absolute = (url) => (url.startsWith("http") ? url : SITE_ORIGIN + url);
+
+  const items = trail.map((step, i) => i === trail.length - 1
+    ? `<li aria-current="page">${escapeHtml(step.name)}</li>`
+    : `<li><a href="${escapeHtml(step.url)}">${escapeHtml(step.name)}</a></li>`);
+  nav.innerHTML = `<ol>${items.join("")}</ol>`;
+
+  setJsonLd("jsonld-breadcrumbs", {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": trail.map((step, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "name": step.name,
+      "item": absolute(step.url)
+    }))
+  });
 }
 
 

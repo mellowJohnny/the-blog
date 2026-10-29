@@ -20,6 +20,17 @@
     <meta
       name="description"
       content="About Junk Wax Hockey - who is behind this vintage and junk wax hockey card site, and what you'll find here.">
+    <link rel="canonical" href="https://www.junkwaxhockey.com/about.html">
+    <!-- Social preview tags - static because Facebook, Discord, Reddit and X don't run JavaScript -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Junk Wax Hockey...about this site">
+    <meta property="og:description" content="About Junk Wax Hockey - who is behind this vintage and junk wax hockey card site, and what you'll find here.">
+    <meta property="og:url" content="https://www.junkwaxhockey.com/about.html">
+    <meta property="og:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Junk Wax Hockey...about this site">
+    <meta name="twitter:description" content="About Junk Wax Hockey - who is behind this vintage and junk wax hockey card site, and what you'll find here.">
+    <meta name="twitter:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
     <!-- Google Core Web Vitals image preload -->
     <link
       rel="preload"
@@ -64,27 +75,12 @@
         fetchCopyrightYear();
         fetchNav("about");
         fetchFooterLinks();
-
-        setPageMeta({
-          title: "Junk Wax Hockey...about this site",
-          description: "About Junk Wax Hockey - who is behind this vintage and junk wax hockey card site, and what you'll find here.",
-          image: "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp",
-          url: "https://www.junkwaxhockey.com/about.html",
-          type: "website"
-        });
       });
 
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-JMGVGK09QX');
-    </script>
-
-    <!-- Wait for the DOM to load, then call the intro function -->
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-        renderBlogIntro('98');
-      });
     </script>
   </head>
 
@@ -104,8 +100,10 @@
     <main>
       <section>
         <div class="flex-container">
-          <div class="intro" id="blog-intro"></div>
-          <!-- Populated by renderBlogIntro() in blogs.js -->
+          <!-- Static so the H1 is in the raw HTML for crawlers that don't run JavaScript -->
+          <div class="intro" id="blog-intro">
+            <h1>about junk wax hockey...</h1>
+          </div>
         </div>
       </section>
       <section>
