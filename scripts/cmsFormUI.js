@@ -151,13 +151,45 @@ function openMiddleImageDialog(editor, imageUrl) {
       { type: 'cancel', text: 'Cancel' },
       { type: 'submit', text: 'Insert', primary: true }
     ],
-    onSubmit: (api) => {
+    onSubmit: async (api) => {
       const data = api.getData();
-      const html = `<img class="card-middle-img mceNonEditable" contenteditable="false" src="${imageUrl}" alt="${escapeHtml(data.alt)}">`;
+      // width/height let the browser reserve the image's space before it loads (no layout shift).
+      const size = await imageNaturalSize(imageUrl);
+      const sizeAttrs = size ? ` width="${size.width}" height="${size.height}"` : "";
+      const html = `<img class="card-middle-img mceNonEditable" contenteditable="false" src="${imageUrl}"${sizeAttrs} alt="${escapeHtml(data.alt)}">`;
       editor.insertContent(html);
       api.close();
     }
   });
+}
+
+// The image's real pixel size, or null if it can't be loaded within 10 seconds.
+function imageNaturalSize(url) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const timer = setTimeout(() => resolve(null), 10000);
+    img.onload = () => { clearTimeout(timer); resolve({ width: img.naturalWidth, height: img.naturalHeight }); };
+    img.onerror = () => { clearTimeout(timer); resolve(null); };
+    img.src = url;
+  });
+}
+
+// Middle images saved before the dialog recorded a size have none. Fill them in
+// as a set opens (a kept width gets a proportional height); Update then saves them.
+async function fillMiddleImageSizes(editor) {
+  const missing = [...editor.getBody().querySelectorAll("img.card-middle-img")]
+    .filter((img) => !img.getAttribute("width") || !img.getAttribute("height"));
+  for (const img of missing) {
+    const size = await imageNaturalSize(img.getAttribute("src"));
+    if (!size) continue;
+    const width = parseInt(img.getAttribute("width"), 10) || size.width;
+    const height = Math.round(width * size.height / size.width);
+    // ignore(): not an undo step, so Ctrl+Z can't strip it again.
+    editor.undoManager.ignore(() => {
+      editor.dom.setAttrib(img, "width", width);
+      editor.dom.setAttrib(img, "height", height);
+    });
+  }
 }
 
 // Strips the noneditable-block markers registerCardImageBlockButtons()
