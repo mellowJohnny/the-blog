@@ -322,7 +322,7 @@ function getMonthName(monthNum) {
 const FOOTER_SECTIONS = [
   { heading: "Major Releases", links: [{ id: "classic", label: "Classic '80s" }, { id: "junk" }] },
   { heading: "Fast Food Releases", links: [{ id: "mcd" }, { id: "timmies" }] },
-  { heading: "Tools", links: [{ id: "timeline" }, { id: "search" }, { id: "browse" }] },
+  { heading: "Explore", links: [{ id: "timeline" }, { id: "search" }, { id: "browse" }] },
   { links: [{ id: "home" }, { id: "about" }] }
 ];
 
@@ -555,11 +555,13 @@ function renderSetPicker(year, blogCat, pageName) {
 /** Links to the reviews. Every review has its own /reviews/<slug>/ page, but
  * the nav, year picker and Player Search know a year or setID, not a slug. They
  * render with the query-string href plus data-review-* attributes, and
- * applyReviewLinks() swaps in the slug path once the public set list loads
- * (the query link keeps working if it hasn't, or the set isn't in the list).
+ * applyReviewLinks() swaps in the slug path once the manifest loads. The
+ * manifest is written by each Amplify build alongside the pages themselves
+ * (tools/generateReviewPages), so it only lists pages that exist. The query link
+ * keeps working if it hasn't loaded, or the set isn't in it.
  */
 
-const REVIEW_LINKS_URL = "https://jlpd8ec14j.execute-api.us-east-2.amazonaws.com/prod?view=links";
+const REVIEW_LINKS_URL = "/reviews/index.json";
 
 let reviewLinksPromise;
 function loadReviewLinks() {

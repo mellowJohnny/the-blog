@@ -1,8 +1,30 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { UpdateCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { UpdateCommand, QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient({ region: "us-east-2" });
 const docClient = DynamoDBDocumentClient.from(client);
+
+// A live set's slug is its page address (/reviews/<slug>/), so two live sets
+// can't share one - the site build would refuse. Returns the name of the live
+// set (other than this one) already using the slug, or null.
+async function liveSetUsingSlug(slug, setName, year) {
+  let lastKey;
+  do {
+    const data = await docClient.send(new QueryCommand({
+      TableName: "Cards",
+      IndexName: "blogStatus-year-index",
+      KeyConditionExpression: "blogStatus = :ok",
+      ProjectionExpression: "setName, #yr, seoURLSlug",
+      ExpressionAttributeNames: { "#yr": "year" },
+      ExpressionAttributeValues: { ":ok": "OK" },
+      ExclusiveStartKey: lastKey
+    }));
+    const other = data.Items.find((item) => item.seoURLSlug === slug && !(item.setName === setName && item.year === year));
+    if (other) return other.setName;
+    lastKey = data.LastEvaluatedKey;
+  } while (lastKey);
+  return null;
+}
 
 export const handler = async (event) => {
 
@@ -93,6 +115,21 @@ if (payload.postBody) {
         },
         body: JSON.stringify({ error: "seoURLSlug is required: lowercase letters, numbers and single hyphens" })
       };
+    }
+
+    if (blogStatus === "OK") {
+      const owner = await liveSetUsingSlug(seoURLSlug.trim(), setName, parsedYear);
+      if (owner) {
+        return {
+          statusCode: 400,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Methods": "OPTIONS,PUT"
+          },
+          body: JSON.stringify({ error: `SEO Friendly URL "${seoURLSlug.trim()}" is already used by the live set "${owner}"` })
+        };
+      }
     }
 
     // printRun is optional: blank removes it, but a payload with no

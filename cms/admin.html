@@ -124,8 +124,9 @@
             <h2>Review Pages Check</h2>
             <p>
               Checks that every live review has an SEO Friendly URL and that its page under
-              /reviews/ is on the site. A missing page means the review pages need regenerating
-              (node tools/generateReviewPages/generate.mjs, then commit and push). Takes a few seconds.
+              /reviews/ is on the site. Saving a set starts a site build that creates the page
+              (about three minutes), so a missing page right after a save is normal; one that
+              stays missing means the build failed. Takes a few seconds.
             </p>
             <button
               type="button"

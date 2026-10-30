@@ -4,11 +4,33 @@
 */
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { PutCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { PutCommand, QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
 // Step 1: Create DynamoDB Document Client - provides better formatted JSON
 const client = new DynamoDBClient({ region: "us-east-2" });
 const documentClient = DynamoDBDocumentClient.from(client);
+
+// A live set's slug is its page address (/reviews/<slug>/), so two live sets
+// can't share one - the site build would refuse. Returns the name of the live
+// set (other than this one) already using the slug, or null.
+async function liveSetUsingSlug(slug, setName, year) {
+    let lastKey;
+    do {
+        const data = await documentClient.send(new QueryCommand({
+            TableName: "Cards",
+            IndexName: "blogStatus-year-index",
+            KeyConditionExpression: "blogStatus = :ok",
+            ProjectionExpression: "setName, #yr, seoURLSlug",
+            ExpressionAttributeNames: { "#yr": "year" },
+            ExpressionAttributeValues: { ":ok": "OK" },
+            ExclusiveStartKey: lastKey
+        }));
+        const other = data.Items.find((item) => item.seoURLSlug === slug && !(item.setName === setName && item.year === year));
+        if (other) return other.setName;
+        lastKey = data.LastEvaluatedKey;
+    } while (lastKey);
+    return null;
+}
 
 // Define handler function, the entry point to our code for the Lambda service
 // We receive the object that triggers the function as a parameter from the web page submit
@@ -85,6 +107,35 @@ export const handler = async (event) => {
             },
             body: JSON.stringify({ error: "seoURLSlug is required: lowercase letters, numbers and single hyphens" })
         };
+    }
+
+    if (blogStatus === "OK") {
+        let owner;
+        try {
+            owner = await liveSetUsingSlug(seoURLSlug.trim(), setName, year);
+        } catch (err) {
+            console.error("SLUG CHECK ERROR:", err);
+            return {
+                statusCode: 500,
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Headers": "Content-Type",
+                    "Access-Control-Allow-Methods": "OPTIONS,POST"
+                },
+                body: JSON.stringify({ error: "Could not check the SEO Friendly URL is unique", details: err.message })
+            };
+        }
+        if (owner) {
+            return {
+                statusCode: 400,
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Headers": "Content-Type",
+                    "Access-Control-Allow-Methods": "OPTIONS,POST"
+                },
+                body: JSON.stringify({ error: `SEO Friendly URL "${seoURLSlug.trim()}" is already used by the live set "${owner}"` })
+            };
+        }
     }
 
     // Create JSON object with parameters for DynamoDB and store in a variable
