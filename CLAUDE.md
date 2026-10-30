@@ -20,11 +20,16 @@ reference and this file as the short orientation on top of it.
 
 ## Commands
 
-There is no build step, package manager, linter, or test suite for the
-site itself — it's plain static HTML/CSS/JS with no bundler. Edit
-files directly and open them in a browser (or push to deploy — see
-below). There is nothing to `npm install` or `npm run` at the repo
-root.
+There is no package manager, linter, or test suite for the site itself —
+it's plain static HTML/CSS/JS with no bundler. Edit files directly and
+open them in a browser (or push to deploy — see below). There is nothing
+to `npm install` or `npm run` at the repo root. The one build step runs
+only in Amplify: `amplify.yml` runs `node tools/generateReviewPages/generate.mjs`,
+which writes `reviews/<slug>/index.html` (one page per live card set),
+`reviews/index.json` and `sitemap.xml` into the build output. Those three
+are gitignored and never committed, so a local checkout has no `/reviews/`
+until you run the generator yourself (optional, for a preview). Full
+explanation: `Documentation/REVIEW_PAGES.md`.
 
 The exception is the **Lambdas** — every AWS Lambda function behind
 this site's API Gateway endpoints now has its source checked into this
@@ -32,8 +37,10 @@ repo (as of 2026-08-15), one directory per function, named exactly
 after its AWS Lambda function name (e.g. `Lambdas/sendAlertHandler/`,
 `Lambdas/getBlogs/`, `Lambdas/updateCardSet/`). One function there is
 *not* API-Gateway-backed: `amplifyBuildNotifier` runs off an
-EventBridge rule and emails Amplify build results — no frontend code
-calls it. Each has its own minimal
+EventBridge rule and emails Amplify build results, and
+`cardsRebuildTrigger` runs off the `Cards` table's DynamoDB Stream and
+starts an Amplify build when a live card set changes — no frontend code
+calls either. Each has its own minimal
 `package.json` — two functions have a real dependency,
 `sendAlertHandler` (`twilio`) and `parseChecklistPdf` (`pdf-parse`,
 deliberately pinned to its v1 major — see `Documentation/LAMBDA_FUNCTIONS.md`
@@ -41,7 +48,7 @@ for why); every other function uses only `@aws-sdk/*` packages,
 which ship with the Lambda Node.js runtime, so `dependencies` is
 empty. None of them is deployed via any command here — edit the code
 in this repo, then redeploy manually. **How you redeploy depends on
-whether the function has a real dependency**: the 29 with empty
+whether the function has a real dependency**: the 30 with empty
 `dependencies` just need the updated `index.mjs` pasted directly into
 the Lambda Console's inline code editor (Code tab) and Deploy clicked
 — no zip needed, since there's nothing to bundle. `sendAlertHandler`
@@ -63,21 +70,36 @@ that file.
 **Deployment of the static site itself**: AWS Amplify Hosting
 auto-builds and deploys on every push to `main` — there is no staging
 branch or preview environment, so a push to `main` goes live as soon
-as Amplify's build finishes. Amplify emails on build completion. See
-`Documentation/ARCHITECTURE.md` for details.
+as Amplify's build finishes. Amplify emails on build completion. A save
+to a live card set in the CMS also starts a build (the `Cards` table's
+DynamoDB Stream calls the `cardsRebuildTrigger` Lambda, which calls
+`amplify:StartJob`), so new and edited sets reach the site with no push.
+See `Documentation/ARCHITECTURE.md` and `Documentation/REVIEW_PAGES.md`
+for details.
 
-**Regenerating `sitemap.xml`**: it is a generated file, built from the
-live `getPublicCardSets` endpoint (one URL per set in multi-set years,
-the bare year URL otherwise), so re-run `node
-tools/generateSitemap/generate.mjs` and commit the result whenever a
-set is added, removed or has its year changed — nothing does it
-automatically (Amplify's build runs no commands). Every URL gets a
-`<lastmod>`: a review's `updatedAt` (else its publish date), a static
-page's last git commit date, so run it after committing page changes and
-in a checkout with history. The generator exits
-without touching the file if the endpoint is unreachable or a live set
-falls outside its year ranges. See `Documentation/FRONTEND.md`
-("Sitemap").
+**Review pages, the sitemap and the link manifest are generated, not
+committed, and never run by hand**: each Amplify build runs
+`tools/generateReviewPages/generate.mjs` (via `amplify.yml`), which reads
+the live `getPublicCardSets` endpoint and writes `reviews/<slug>/index.html`
+for every live set (using `waxReviews.html` as the template, between its
+`review-head` and `review-params` marker comments — keep those markers
+intact), `reviews/index.json` (what the nav, year picker and Player Search
+read to link to `/reviews/<slug>/` pages) and `sitemap.xml` (one URL per
+set, plus the static pages, each with a `<lastmod>`). `/reviews/` and
+`/sitemap.xml` are in `.gitignore`. The generator exits without writing,
+and so fails the build (Amplify then keeps the previous deployment), if
+a live set has a missing, invalid or duplicate `seoURLSlug`, if
+`getPublicCardSets` returns no `stars`, or if it can't find
+`categoryRanges` in `scripts/helper.js` (it reads the year ranges from
+there; keep that a plain object literal ending in `};`). It runs on
+Node 16 in the build image, so it uses `node:https`, not `fetch`.
+`seoURLSlug` is a required CMS field, enforced by `seoSlugProblem()` and
+by the `createCardPost`/`updateCardSet` Lambdas (which also reject a slug
+another live set uses; their roles need `dynamodb:Query` on the
+`blogStatus-year-index` GSI). The admin page's "Review Pages Check" lists
+live sets whose page isn't deployed. See `Documentation/REVIEW_PAGES.md`
+and `Documentation/FRONTEND.md` ("Sitemap", "Linking to one specific
+set").
 
 **Checking Amplify build status from the CLI**: AWS CLI v2 is
 installed, and a read-only IAM user (`amplify-readonly-cli`) is
@@ -146,7 +168,7 @@ real data.
 ## Architecture, in brief
 
 - **Domains**: `www.junkwaxhockey.com` is the Amplify app (the bare domain 301s to `www`). `mellowjohnny.cc` was moved off Amplify and 301s everything to the new domain through a CloudFront Function. The origin is hardcoded where it fails quietly - Cognito callback, 8 Lambdas' CORS plus API Gateway OPTIONS, S3 CORS, TinyMCE's approved domains - see `Documentation/ARCHITECTURE.md` ("Domains, DNS and redirects") before changing it again.
-- **Frontend**: one standalone `.html` file per page at the repo root and under `/cms`, no framework. Shared logic lives in `scripts/*.js` and is wired up per-page via `<script src>` tags. Pages coordinate via URL query params (`?year=`, `?blogType=`, `?pageName=`, `?blogCat=`) rather than client-side routing. Details: `Documentation/FRONTEND.md`.
+- **Frontend**: one standalone `.html` file per page at the repo root and under `/cms`, no framework. Shared logic lives in `scripts/*.js` and is wired up per-page via `<script src>` tags. Pages coordinate via URL query params (`?year=`, `?blogType=`, `?pageName=`, `?blogCat=`) rather than client-side routing, except card set reviews, which each also have a generated page at `/reviews/<slug>/` with those values fixed in the HTML (the old query-string URLs still work). Details: `Documentation/FRONTEND.md`, `Documentation/REVIEW_PAGES.md`.
 - **Backend**: "one Lambda + one API Gateway REST API per action" — there is no shared backend app/router. Every distinct operation (get blogs, create a blog post, get a card set by ID, get an S3 upload URL, send an SMS...) has its own hardcoded API Gateway URL, called directly from whichever `scripts/*.js` file needs it. Full inventory with request/response shapes: `Documentation/API_ENDPOINTS.md`.
 - **Every live Lambda's source is version-controlled**, under `Lambdas/` — one directory per function, matching its exact AWS Lambda function name; see the `## Commands` section above for the sync/deploy workflow. Four turned out to be dead/orphaned (not called by any live frontend code) when the full inventory was pulled in on 2026-08-15, and were removed again once confirmed — see `Documentation/LAMBDA_FUNCTIONS.md` for which. A separate, older prototype directory, `Lambda Functions/` (note the space — a different thing from the no-space `Lambdas/`), no longer exists in this repo at all (deleted 2026-08-06, unrelated to the 2026-08-15 sync) — some docs still reference specific files that used to live there for historical context, even though those files are gone. Details: `Documentation/LAMBDA_FUNCTIONS.md`.
 - **Data**: DynamoDB tables `Blogs` (all blog post types, including the hockey-card-adjacent ones, distinguished by `blogType`), `Cards` (card set reviews, distinguished by `blogCat`; a `hasChecklist` flag drives a "Checklist" link on `waxReviews.html` once a set has one, opening a modal that fetches and displays the full checklist via `getChecklistBySetName`), `Checklists` (full card-by-card checklists per set, one item per card, uploaded via `cms/uploadChecklist.html` — see `Documentation/CMS_GUIDE.md`; searchable by player name across every set via `playerSearch.html`/`searchPlayerName`), and `Subscribers`/`SubscribersTest` (SMS opt-in list, real vs. test). `Checklists` and `Cards` both run On-Demand billing with a maximum-throughput cap (see `Documentation/ARCHITECTURE.md`) after real Provisioned-throughput exhaustion incidents — worth knowing before assuming either table can absorb an unbounded burst of requests (e.g. a script hitting a public read endpoint in a tight loop). Field-naming is inconsistent across older and newer code paths (e.g. `img` vs `imgName`, `status` vs `blogStatus`) — see `Documentation/DATA_MODEL.md` before assuming a field name. The real source checklist PDFs (one per set/insert set — the actual files uploaded via `cms/uploadChecklist.html`) live in `checklists/` at the repo root — this is the source of truth for them, not any local Desktop folder.

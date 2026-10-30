@@ -1,6 +1,8 @@
 # Frontend
 
-Plain HTML/CSS/JS, no framework, no build step, no bundler. Every page
+Plain HTML/CSS/JS, no framework, no bundler; the only build step is the
+generator that writes the per-review pages, sitemap and link manifest
+(see "Sitemap" below and `REVIEW_PAGES.md`). Every page
 loads a fixed set of `<script src>` tags and wires up behaviour with
 `window.addEventListener('load', ...)` / `DOMContentLoaded` handlers
 inline in the `<head>`.
@@ -11,7 +13,8 @@ inline in the `<head>`.
 |---|---|---|---|
 | `index.html` | Homepage — an edge-to-edge image banner (`.home-masthead`; its -8px margins cancel the browser's default 8px body margin, and it scales with the window at every width — see "Home page banner" below) over static intro and post cards written straight into the HTML (see "Home page content" below). **No scores ticker, by design.** No weather widget (that exists only on `tech.html`). Its canonical, Open Graph and Twitter tags are static in the `<head>` — see "SEO and social tags". | — | `helper.js` |
 | `tech.html` | Tech / Mach-E / Raspberry Pi blog stream, filtered by `blogType`. **Not linked from the nav, home page or sitemap since the 2026-10-12 move to junkwaxhockey.com - reachable only by direct URL.** Masthead uses the `.masthead-container` (masthead + weather widget) layout that `index.html` had before it got its banner — it used to show a decorative gif instead and never actually rendered the weather widget (loaded `blogs.js`, which targets `#weather`, but had no such element — silently broken). Fixed by adopting that markup. It is the only page that still has the weather widget. | `blogType`, `pageName` | `blogs.js`, `helper.js` |
-| `waxReviews.html` | Card set review stream — the main hockey card content. See "Linking to one specific set" below. Its title, description, canonical, Open Graph/Twitter tags, JSON-LD and breadcrumb are set per set by JavaScript, over generic fallback tags in the HTML — see "SEO and social tags". | `year`, `pageName`, `blogCat`, `sortOrder`, `setID` | `wax.js`, `ticker.js`, `helper.js` |
+| `waxReviews.html` | Card set review stream — the main hockey card content. Since 2026-10-30 it is two things: the **template** the generator copies into one page per set (`/reviews/<slug>/`, with that set's head tags and `year`/`pageName`/`blogCat`/`setID` fixed in the HTML), and the page that still serves the **old query-string URLs**, which rewrite their own address to the slug page once the set loads. See "Linking to one specific set" below and `REVIEW_PAGES.md`. The title, description, canonical, Open Graph/Twitter tags, JSON-LD and breadcrumb are written by JavaScript for every set (a generated page already has the first four in its HTML) — see "SEO and social tags". | `year`, `pageName`, `blogCat`, `sortOrder`, `setID` (all fixed in a generated page) | `wax.js`, `ticker.js`, `helper.js` |
+| `reviews/<slug>/index.html` | **Generated, not in git** (gitignored): one page per live set, written by every Amplify build from `waxReviews.html`, plus `reviews/index.json` (the link manifest). See "Sitemap" below and `REVIEW_PAGES.md`. | — | same as `waxReviews.html` |
 | `playerSearch.html` | Player search — find every set a player appears in, across all uploaded checklists, with links to each set's review. See "Player search" below. | — | `playerSearch.js`, `ticker.js`, `helper.js` |
 | `lockout.html` | Static essay about the 2004-05 NHL lockout. Special-cased redirect target — see below. Its title, description, H1 and social tags are static in the HTML (nothing sets them from JavaScript any more); the breadcrumb is filled by `renderBreadcrumbs()`. | — | `wax.js`, `ticker.js`, `helper.js` |
 | `theJunkWaxYears.html` | Static essay on hockey's "Junk Wax" era (the late-80s/early-90s overproduction boom this site's card reviews mostly cover). Linked from `waxReviews.html`'s junkWax intro copy (`renderCardIntro()`, `wax.js`). Was briefly moved into `Old HTML Pages/` by mistake and missed the site-wide HTML/CSS-conformity and SEO passes as a result — since restored and brought in line with the other pages (masthead/fonts/script-loading now match `lockout.html`'s pattern; a `<meta description="...">` typo, which meant this page never actually had a working meta description, and a broken `class="flex-container, intro"` — a stray comma silently prevented that layout class from ever applying — were also fixed). | — | `ticker.js`, `helper.js` |
@@ -34,37 +37,37 @@ one year+category combination.
 
 `sitemap.xml` (repo root, referenced from `robots.txt`) lists every
 real entry-point page for search-engine crawlers (Google, Bing, etc.).
-It is a generated file: `tools/generateSitemap/generate.mjs` builds it
-from the live site's own data, so it has to be re-run and committed
-whenever a set is added, removed, or has its year changed.
+It is a generated file, and since 2026-10-30 it is **not committed**:
+`tools/generateReviewPages/generate.mjs` writes it (and the review pages
+and link manifest, see `REVIEW_PAGES.md`) on every Amplify build, from
+the live site's own data, and `.gitignore` lists `/sitemap.xml`. A save
+to a live set in the CMS starts a build, so the sitemap follows the sets
+with no manual step. (Before that, `tools/generateSitemap/generate.mjs`
+was run by hand and the result committed; that tool was replaced.)
 
-Every review has its own URL (see "Linking to one specific set"), and
-the sitemap mirrors the canonical rule the review page applies:
-
-- a year with **one** set is listed as the bare year URL
-  (`waxReviews.html?year=&pageName=&blogCat=`), because that is its
-  canonical;
-- a year with **several** sets is listed as one `&setID=` URL per set,
-  and the bare year URL is left out, because it canonicalises to the
-  top-rated set and would otherwise disagree with the sitemap.
+Every review has its own page (see "Linking to one specific set"), and
+the sitemap lists exactly one URL per set: its `/reviews/<slug>/` page,
+which is also that page's canonical. The old rule (the bare year URL
+for a one-set year, one `&setID=` URL per set otherwise) is gone, since
+a multi-set year no longer has a URL that stands for it.
 
 The generator reads the set list from the public `getPublicCardSets`
-endpoint (see `API_ENDPOINTS.md`) instead of a hardcoded year list. It
-still keeps a small table of year ranges, duplicated from
-`categoryRanges` in `scripts/helper.js` (a browser script, not a Node
-module), but only to work out each set's `pageName`; a live set that
-falls outside every range stops the run with an error instead of being
-silently dropped. The old design (a hardcoded year-by-year list) had
-drifted from the site and left three live years out of the sitemap. If
-the endpoint is unreachable the generator exits without touching the
-file. The static pages (home, Player Search, Lockout, The Junk Wax
-Years, Timeline, Browse By Set, About) are listed alongside. There are
-no `tech.html` URLs: the tech blog is unlinked from the nav and home
-page and reachable only by direct URL.
+endpoint (see `API_ENDPOINTS.md`) instead of a hardcoded year list, and
+reads `categoryRanges` straight out of `scripts/helper.js` to work out
+each set's `pageName`, so those year ranges are no longer duplicated
+(they were until 2026-10-30); a live set outside every range stops the
+run with an error instead of being silently dropped. The old design (a
+hardcoded year-by-year list) had drifted from the site and left three
+live years out of the sitemap. If the endpoint is unreachable, or a set
+has a missing or duplicate slug, the generator exits without writing and
+the build fails, so Amplify keeps the previous deployment. The static
+pages (home, Player Search, Lockout, The Junk Wax Years, Timeline,
+Browse By Set, About) are listed alongside. There are no `tech.html`
+URLs: the tech blog is unlinked from the nav and home page and
+reachable only by direct URL.
 
 Search engines re-fetch a submitted sitemap on their own schedule, so
-regenerating and deploying is enough; resubmitting in Search Console
-only nudges it.
+deploying is enough; resubmitting in Search Console only nudges it.
 
 Every URL carries a `<lastmod>` date (YYYY-MM-DD), so a crawler can
 tell which pages changed and re-fetch those first:
@@ -75,32 +78,34 @@ tell which pages changed and re-fetch those first:
   fields come back from `getPublicCardSets`. A set's date therefore
   moves when you save it in the CMS, and only then;
 - a **static page** uses the date of its last git commit
-  (`git log -1 --format=%cs -- <file>`), which is why the generator has
-  to run in a checkout with history. Run it after committing page
-  changes, or those pages show their previous commit's date;
+  (`git log -1 --format=%cs -- <file>`), which works in the Amplify
+  build because it has the full history (checked from a diagnostic
+  build's log). A page change shows up in `<lastmod>` on the build its
+  commit starts;
 - a URL with no usable date simply gets no `<lastmod>` rather than a
   made-up one.
 
-Nothing runs the generator automatically (Amplify's build runs no
-commands), so the file is still regenerated and committed by hand.
+Nothing is run or committed by hand any more: the Amplify build runs
+the generator (`amplify.yml`), whether it was started by a git push or
+by a CMS save.
 
 ## `scripts/` — shared JS
 
 | File | Responsibility |
 |---|---|
 | `blogs.js` | Blog intro copy (`renderBlogIntro()`, for the Tech pages only — `index.html` and `about.html` write their intro and H1 straight into the HTML), `fetchBlogs()`/pagination/rendering for the blog stream, and the weather widget on `tech.html` (calls OpenWeatherMap directly from the browser using the visitor's geolocation; the bootstrap does nothing on a page with no `#weather` element). Loaded by `about.html` and `tech.html` only: the Home page is static and no longer uses it. |
-| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews (the fetch goes through `fetchJsonWithRetry()` and `waxReviews.html` starts it on `DOMContentLoaded` — see "SEO and social tags"), `fetchPageTitle()` (sets each shown set's title, description, social tags, JSON-LD and breadcrumb), the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. The prev/next set name in that label always drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle"), since the year picker above already shows the year and the shorter label fits a phone. It used to show the full name on desktop and the short one on phones, via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans that a mobile breakpoint swapped between; that pair and its CSS were removed so one rendering path serves every width. The name goes through `escapeHtml()` before it is inserted. The NHL scores ticker and its game modal used to live here and moved to `ticker.js` — see below. |
+| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews (the fetch goes through `fetchJsonWithRetry()` and `waxReviews.html` starts it on `DOMContentLoaded` — see "SEO and social tags"), `fetchPageTitle()` (sets each shown set's title, description, social tags, JSON-LD and breadcrumb), `reviewPath(item)` and `buildReviewCanonicalUrl(item)` (a set's `/reviews/<slug>/` address and the canonical built from it; the query form only for a set with no slug), `syncSetIdInUrl()` (replaces the address bar with the shown set's slug page — for every set, so an old query-string URL, and each set reached by pagination, ends up on its own clean address), the sort of a year's sets by `compareSetsForDefault()` from `helper.js`, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. The prev/next set name in that label always drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle"), since the year picker above already shows the year and the shorter label fits a phone. It used to show the full name on desktop and the short one on phones, via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans that a mobile breakpoint swapped between; that pair and its CSS were removed so one rendering path serves every width. The name goes through `escapeHtml()` before it is inserted. The NHL scores ticker and its game modal used to live here and moved to `ticker.js` — see below. |
 | `ticker.js` | The NHL/PWHL scores ticker under the masthead (`initNhlTicker()` and its helpers — see "NHL scores ticker" below) and the game modal opened from it (`openNhlGameModal()` and its render helpers — see "NHL game modal" below). Moved verbatim out of `wax.js` so pages that have nothing else to do with card sets (Player Search, the essays) can show the ticker. Starts itself on `DOMContentLoaded`. |
 | `timeline.js` | `timeline.html` only: fetches `/timeline/timeline.md`, parses it (`parseTimelineMarkdown()`) and builds the flip cards (`renderTimeline()`, `buildTimelineCard()`). Entry point is `initTimeline()`. See "Junk Wax timeline" below. |
-| `browseBySet.js` | `browseBySet.html` only: fetches the live set list once from `getPublicCardSets` (`BROWSE_SETS_URL`), splits it into the two columns, groups by season and builds the Review/Checklist links (`initBrowseBySet()`; `browseReviewUrl()` builds a set's review URL for both the links and the `ItemList` JSON-LD from `setBrowseItemListJsonLd()`). Checklist clicks hand off to `openChecklistModal()` in `wax.js`. See "Browse By Set" below. |
-| `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `truncateAtWord(text, max)` (cuts plain text at a word boundary and adds "..." only when it cut — shared by `wax.js`'s description fallback and the CMS SEO generators), `renderBreadcrumbs(pageName, label, url)` with `SITE_ORIGIN` and `BREADCRUMB_CATEGORY_IDS` (the visible breadcrumb nav plus its `BreadcrumbList` JSON-LD), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — now used only by the pages whose values depend on data, `waxReviews.html` and `tech.html`; the static pages carry those tags in their HTML instead, see "SEO and social tags") and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped/middle images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), `buildCardSetMarkup()` (the single source of truth for a card set review's HTML, shared by the live site's `displayCardSet()` and the CMS preview modal's `renderPreview()` — added 2026-09-28 to end the drift between two hand-maintained copies; see "Card set markup is shared with the CMS preview" below), hamburger menu toggle, cookie helper, the copyright-year footer line (`fetchCopyrightYear()`) and the public-page footer's link columns (`FOOTER_SECTIONS`/`fetchFooterLinks()` — see "Site footer" below). |
-| `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise); also the type-ahead dropdown (`initPlayerSearchTypeahead()`/`loadPlayerNameIndex()`/`rankPlayerNameMatch()`) that suggests player names client-side from a once-fetched, cached name index. See "Player search" below. |
-| `adminTools.js` | `cms/admin.html` support code: a growing set of self-service site-health checks (broken images, review-image alt text and size, orphaned checklists), each its own function calling the site's existing read APIs directly; the orphaned-checklist check can also delete the ticked checklists through `saveChecklist`. Its `fetchAllCardSets()` (every live set, via `getCardSetsByYear`, shared by the two image checks) happens to share a name with a different function in `cmsCardSet.js` (the CMS pick list); the two files are never loaded on the same page, so they don't clash, but rename one before ever loading both. See `CMS_GUIDE.md`'s "Admin Tools" section. |
+| `browseBySet.js` | `browseBySet.html` only: fetches the live set list once from `getPublicCardSets` (`BROWSE_SETS_URL`), splits it into the two columns, groups by season and builds the Review/Checklist links (`initBrowseBySet()`; `browseReviewUrl()` builds a set's review URL for both the links and the `ItemList` JSON-LD from `setBrowseItemListJsonLd()`: its `/reviews/<slug>/` page when the set has a slug, else the old query-string form). Checklist clicks hand off to `openChecklistModal()` in `wax.js`. See "Browse By Set" below. |
+| `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `truncateAtWord(text, max)` (cuts plain text at a word boundary and adds "..." only when it cut — shared by `wax.js`'s description fallback and the CMS SEO generators), `renderBreadcrumbs(pageName, label, url)` with `SITE_ORIGIN` and `BREADCRUMB_CATEGORY_IDS` (the visible breadcrumb nav plus its `BreadcrumbList` JSON-LD), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the review-link upgrade (`loadReviewLinks()` fetches `/reviews/index.json`, the manifest each build writes, as soon as `helper.js` runs on any non-CMS page; `applyReviewLinks()` swaps the `href` of every link carrying `data-review-cat`/`data-review-year` or `data-review-setid` to its `/reviews/<slug>/` page, called after the nav, footer, breadcrumb, year picker and Player Search results render; `reviewLinkAttrs()` adds those attributes for a `NAV_ITEMS` entry with a `review` year; `compareSetsForDefault()` is the one rule for which set a bare-year link opens — highest `stars`, ties by `setName` — shared with `wax.js`'s sort; see "Linking to one specific set"), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time; since 2026-10-30 `tools/generateReviewPages/generate.mjs` also reads this literal straight out of the file, so keep it a plain object literal ending in `};` at the start of a line), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — now used only by the pages whose values depend on data, `waxReviews.html` and `tech.html`; the static pages carry those tags in their HTML instead, see "SEO and social tags") and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped/middle images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), `buildCardSetMarkup()` (the single source of truth for a card set review's HTML, shared by the live site's `displayCardSet()` and the CMS preview modal's `renderPreview()` — added 2026-09-28 to end the drift between two hand-maintained copies; see "Card set markup is shared with the CMS preview" below), hamburger menu toggle, cookie helper, the copyright-year footer line (`fetchCopyrightYear()`) and the public-page footer's link columns (`FOOTER_SECTIONS`/`fetchFooterLinks()` — see "Site footer" below). |
+| `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise; each link carries `data-review-setid` and `applyReviewLinks()` upgrades it to the set's `/reviews/<slug>/` page); also the type-ahead dropdown (`initPlayerSearchTypeahead()`/`loadPlayerNameIndex()`/`rankPlayerNameMatch()`) that suggests player names client-side from a once-fetched, cached name index. See "Player search" below. |
+| `adminTools.js` | `cms/admin.html` support code: a growing set of self-service site-health checks (broken images, review-image alt text and size, review pages deployed, orphaned checklists), each its own function calling the site's existing read APIs directly; the orphaned-checklist check can also delete the ticked checklists through `saveChecklist`. Its `fetchAllCardSets()` (every live set, via `getCardSetsByYear`, shared by the two image checks) happens to share a name with a different function in `cmsCardSet.js` (the CMS pick list); the two files are never loaded on the same page, so they don't clash, but rename one before ever loading both. See `CMS_GUIDE.md`'s "Admin Tools" section. |
 | `auth.js` | Cognito OAuth2 code exchange + token refresh, gates every `/cms` page. See `AUTH.md`. |
 | `cmsBlog.js` | Blog post CRUD: `createBlogPost`, `updateBlogPost`, `deleteBlogPost`, `getBlogsForUpdate`, `getStagedBlogsForUpdate`, `displayBlogs`, `displayStagedBlogs`, `fetchBlogByID`, `populateBlog`, and the `BLOG_TYPE_LABELS` lookup object. One of 4 files split out of the former `scripts/cms.js` (1592 lines, deleted) on a by-concern basis, moved verbatim with no logic changes. See `CMS_GUIDE.md`. |
 | `cmsCardSet.js` | Card-set review CRUD: `createCardSet`, `updateCardSet`, `deleteCardSet`, `fetchAllCardSets`, `fetchAllStagedCardSets`, `displayCardSets`, `displayStagedCardSets`, `fetchCardSetByID`, `populateCardSet`, `openPreview`, `renderPreview`, `closePreview`, and the `CARDSET_CATEGORY_LABELS` lookup object. Split out of the former `cms.js` alongside `cmsBlog.js` — see that row above. Also owns the Star Rating widget shared by `createCardSet.html`/`setEdit.html`: `initStarRatingWidget()` (wires click/hover on the five star icons, called once per page on load) and `paintStarRating(value, containerId)` (the actual paint logic, also called by `populateCardSet()` once a set's real rating loads) — see `CMS_GUIDE.md`'s "Star Rating widget". `renderPreview()` no longer carries its own copy of the review markup: it calls `buildCardSetMarkup()` in `helper.js`, the same builder the live site uses, so the preview can't drift from production — see "Card set markup is shared with the CMS preview" below. |
 | `cmsImageBrowser.js` | The S3 image browser/upload modal, both families together since they share code (card-set images and blog images both use `uploadNewImage()`/`closeImageBrowser()`): `fetchImageList`, `renderImageList`, `openImageBrowser`, `filterImageList`, `openBlogImageBrowser`, `fetchBlogImageList`, `renderBlogImageList`, `filterBlogImageList`, `uploadNewImage`, `closeImageBrowser`. Split out of the former `cms.js` — see `cmsBlog.js` row above. `openImageBrowser(targetFieldId, onSelect)` gained an optional callback mode 2026-09-22 — when provided, picking/uploading an image calls `onSelect(fileName, imageUrl)` instead of writing to a form field, which is how the card-image-insert toolbar buttons (`cmsFormUI.js`) reuse this same picker. See `CMS_GUIDE.md`. |
-| `cmsFormUI.js` | Generic CMS form UI: `initTinyEditor` (TinyMCE init), `initPreviewEditor` (the inline editor behind the `setEdit.html` preview modal) plus the submit-button state helpers (`cmsButtonSubmit`, `cmsCreateButtonReset`, `changeMeBack`, `cmsUpdateButtonReset`, `changeMeBackUpdate`). Split out of the former `cms.js` — see `cmsBlog.js` row above. `fetchCopyrightYear()`, also formerly in `cms.js`, was dropped entirely during the split rather than migrated to any of these 4 files — it was a byte-identical duplicate of the copy already in `helper.js`, and every page that used the `cms.js` copy already loaded (or gained) `helper.js`. `initTinyEditor(selector, { cardImageBlocks })` gained an options param 2026-09-22 — true only on `createCardSet.html`/`setEdit.html`, it swaps TinyMCE's native image button/plugin for two custom ones (`registerCardImageBlockButtons()`) that insert the site's wrap/middle review images as atomic, non-editable blocks; `stripEditorOnlyMarkup()` removes that editor-only markup before any save. The wrap dialog inserts a fixed 150×150 inline size and offers a **Logo Type** dropdown (All-Star Logo → `img-wrap-sm`, Corporate Logo → `img-wrap-md`, the default) — it briefly auto-computed dimensions from the picked file's `naturalWidth`/`naturalHeight` instead, but that was dropped once wrap images settled on a standard size. See `CMS_GUIDE.md`'s "Wrapped/middle images in review body content". Also hosts the card-set SEO helpers: the **Generate** button functions for the SEO title, description, keywords and URL slug (`generateSeoTitle()` and friends, built from the form's own values — see `CMS_GUIDE.md`), the length counters and textarea auto-sizing (`updateSeoCharCounts()`, `autosizeTextarea()`), and the middle-image helpers (`imageNaturalSize()`, `fillMiddleImageSizes()`, `middleImageAltDefault()`). Also defines `tinyEditorReady`, a promise resolved with the editor once `tinymce.init()` finishes: `populateCardSet()`/`populateBlog()` set the body through it, since the edit pages' record fetch can finish before the editor exists. |
+| `cmsFormUI.js` | Generic CMS form UI: `initTinyEditor` (TinyMCE init), `initPreviewEditor` (the inline editor behind the `setEdit.html` preview modal) plus the submit-button state helpers (`cmsButtonSubmit`, `cmsCreateButtonReset`, `changeMeBack`, `cmsUpdateButtonReset`, `changeMeBackUpdate`). Split out of the former `cms.js` — see `cmsBlog.js` row above. `fetchCopyrightYear()`, also formerly in `cms.js`, was dropped entirely during the split rather than migrated to any of these 4 files — it was a byte-identical duplicate of the copy already in `helper.js`, and every page that used the `cms.js` copy already loaded (or gained) `helper.js`. `initTinyEditor(selector, { cardImageBlocks })` gained an options param 2026-09-22 — true only on `createCardSet.html`/`setEdit.html`, it swaps TinyMCE's native image button/plugin for two custom ones (`registerCardImageBlockButtons()`) that insert the site's wrap/middle review images as atomic, non-editable blocks; `stripEditorOnlyMarkup()` removes that editor-only markup before any save. The wrap dialog inserts a fixed 150×150 inline size and offers a **Logo Type** dropdown (All-Star Logo → `img-wrap-sm`, Corporate Logo → `img-wrap-md`, the default) — it briefly auto-computed dimensions from the picked file's `naturalWidth`/`naturalHeight` instead, but that was dropped once wrap images settled on a standard size. See `CMS_GUIDE.md`'s "Wrapped/middle images in review body content". Also hosts the card-set SEO helpers: the **Generate** button functions for the SEO title (no site-name suffix since 2026-10-30), description, keywords and URL slug (`generateSeoTitle()` and friends, built from the form's own values — see `CMS_GUIDE.md`), `seoSlugProblem(slug)` (the required-and-URL-safe check `createCardSet()` and `updateCardSet()` run before saving; the Lambdas repeat it), the length counters and textarea auto-sizing (`updateSeoCharCounts()`, `autosizeTextarea()`), and the middle-image helpers (`imageNaturalSize()`, `fillMiddleImageSizes()`, `middleImageAltDefault()`). Also defines `tinyEditorReady`, a promise resolved with the editor once `tinymce.init()` finishes: `populateCardSet()`/`populateBlog()` set the body through it, since the edit pages' record fetch can finish before the editor exists. |
 | `adminSMS.js` | Autobus SMS admin page logic: character/segment counter, GSM-7 vs Unicode encoding detection, broadcast send, bulk subscriber import, add-subscriber modal. See `CMS_GUIDE.md`. |
 | `checklistUpload.js` | `cms/uploadChecklist.html` support code: the upload/parse modal (drag-and-drop, mirrors `adminSMS.js`'s bulk-import modal structure/CSS), rendering the parsed result as an editable table, `saveChecklist()`, the Delete Checklist modal (same `.bulk-*` design and open/close behaviour as the upload modal), and that modal's Set Name type-ahead. The type-ahead is deliberately its own copy of `playerSearch.js`'s pattern rather than a shared helper, so the live public Player Search page stays untouched — a known duplication, not an oversight. It differs in two ways: its index is in-memory only (two Cognito-authorized fetches, not a public one worth persisting to `localStorage`), and it renders suggestions with `textContent` since set names contain apostrophes. The modal's group list is likewise read once per set and then edited in memory after each delete, rather than re-queried. See `CMS_GUIDE.md`. |
 | `cardSlotCalc.js` | `computeGridSpace()` — the Card-O-Matic slot/page calculator, used only by `cardChecker.html`. **No longer live** — `cardChecker.html` moved to `Old HTML Pages/` on 2026-08-15 (see "Public pages" above); this row previously said "Still live," which went stale when that move happened and wasn't updated here. |
@@ -133,22 +138,34 @@ the HTML (a crawler that doesn't run JS finds no heading otherwise), and
 `lockout.html` has its own title and description rather than the
 generic review-page ones it used to inherit.
 
-**`waxReviews.html`** is one file serving every review URL, so it can't
-hold a correct canonical or title for any of them. Its HTML carries
-only *generic* `og:` and `twitter:` fallbacks (title, description, the
-site image) so a shared link shows a branded card, and **deliberately no
-canonical and no `og:url`**: a fixed one would point all ~63 URLs at the
-same page. Once a set loads, `fetchPageTitle()` (`wax.js`) calls
-`setPageMeta()`, which overwrites those tags with the set's own values
-and adds the canonical and `og:url` (built from the set's clean
-parameters by `buildReviewCanonicalUrl()`). The title and description
+**Review pages.** Since 2026-10-30 a review has two kinds of address.
+A **generated page** (`/reviews/<slug>/`, built from `waxReviews.html`
+by every Amplify build — see "Linking to one specific set" and
+`REVIEW_PAGES.md`) has the set's own title, description, canonical,
+`og:` and `twitter:` tags written straight into its HTML, so Facebook,
+Discord, Reddit and X show a per-set preview card. The **old
+query-string URLs** are served by `waxReviews.html` itself, which can't
+hold a correct canonical or title for any one set (it serves every one),
+so its HTML carries only *generic* `og:` and `twitter:` fallbacks (title,
+description, the site image) and **deliberately no canonical and no
+`og:url`**: a fixed one would point all of them at the same page. For
+both, once a set loads, `fetchPageTitle()` (`wax.js`) calls
+`setPageMeta()`, which writes the set's values again (a no-op change on
+a generated page) and, on an old URL, adds the canonical and `og:url`
+built by `buildReviewCanonicalUrl()` — the set's `/reviews/<slug>/` page,
+or the query form for a set with no slug. The title and description
 come from the set's CMS fields (`seoPageTitle`, `seoMetaDesc`); only
 when a field is empty does the code fall back to
-`<set name> Hockey Card Set Review | Junk Wax Hockey` and to the first
-~155 characters of the review text cut at a word boundary
-(`truncateAtWord()`). The CMS **Generate** buttons exist so those
-fields are filled with something better than the fallback — see
-`CMS_GUIDE.md`.
+`<set name> Hockey Card Set Review` (no site-name suffix since
+2026-10-30, the same as the CMS Generate button) and to the first ~155
+characters of the review text cut at a word boundary (`truncateAtWord()`;
+the generator can't see the review text, so a generated page with no
+description gets "<set name> hockey card set review from Junk Wax
+Hockey." and a warning in the build log). The CMS **Generate** buttons
+exist so those fields are filled with something better than the
+fallback — see `CMS_GUIDE.md`. What a generated page still lacks is the
+review text itself: that is drawn in the browser, so a crawler that
+doesn't run JavaScript sees the head but not the body.
 
 **Why the review fetch starts on `DOMContentLoaded` and retries.** One
 Search Console snapshot of a review page held the error text from the
@@ -202,6 +219,7 @@ The top nav is entirely data-driven and rebuilt on every page load by
 - Adding a new page to the nav means adding one `NAV_MAP` entry; adding a brand-new nav destination means adding one `NAV_ITEMS` entry.
 - A page's own list leaves out its own link, which is why every page's list differs. The Home page's list also leaves out "Home" itself, since the masthead already is the link to it; every other page keeps it. `"timeline"` and `"browse"` (the "All Sets" link to `browseBySet.html`) sit just before `"search"` in every list except their own pages'. `"about"` is defined in `NAV_ITEMS` but in no `NAV_MAP` list: the About page is reached from the footer only. The footer reads the same `NAV_ITEMS` labels, so renaming a link there renames it in both places.
 - `tech` and `mache` are still defined in `NAV_ITEMS`, but no `NAV_MAP` entry lists them since the 2026-10-12 move; the `tech`/`ev` keys exist only so the still-reachable `tech.html` pages render a nav.
+- The four review-category items (`junk`, `classic`, `timmies`, `mcd`) carry a `review: { cat, year }` entry naming the year their link opens. They render with the query-string `href` plus `data-review-*` attributes, and `applyReviewLinks()` swaps in the `/reviews/<slug>/` URL of that year's default set once the build manifest loads (`reviewLinkAttrs()`, `loadReviewLinks()`; see "Linking to one specific set"). The footer's links and the breadcrumb's category link are upgraded the same way.
 
 The "set-o-matic" year picker (`renderSetPicker()`) works the same way
 — a `categoryRanges` object maps `blogCat` → `{start, end}` year ranges
@@ -209,7 +227,11 @@ per page, and the function generates the picker links dynamically
 instead of hand-written year links. It emits one flat list of `<div>`
 year cells (no per-desktop/mobile split, no `<table>`) into a single
 `.card-set-nav` flex-wrap container — see "Mobile / responsive design"
-below for why it's `<div>`-based rather than a table.
+below for why it's `<div>`-based rather than a table. Each year link is
+emitted with the query-string `href` plus `data-review-cat` and
+`data-review-year`, and `applyReviewLinks()` then points it at that year's
+default set's `/reviews/<slug>/` page, so clicking a year no longer
+changes the address bar afterwards.
 
 ## Mobile / responsive design
 
@@ -1243,7 +1265,11 @@ authorizer (CMS only), so a public page would need another public Lambda
 and API, and would still need the whole year's list for the Back/Next
 labels.
 
-**The address bar and canonical follow the set.** For years with more
+**The address bar and canonical follow the set.** (Since 2026-10-30
+this is the *fallback*: every set with an SEO Friendly URL slug gets its
+own `/reviews/<slug>/` page and the address bar, canonical and sitemap use
+that instead — see "Each set has its own page" below. What follows is
+still what happens for a set with no slug.) For years with more
 than one set, `syncSetIdInUrl()` writes the shown set's `setID` into the
 URL with `history.replaceState` (so paging adds no history entries), and
 `buildReviewCanonicalUrl()` builds the canonical and `og:url` from the
@@ -1263,6 +1289,60 @@ both get `setID` from their backends: `browseBySet.js` from
 treats the ID as optional, so a page deploy and a Lambda deploy can
 happen in either order.
 
+### Each set has its own page (`/reviews/<slug>/`, 2026-10-30)
+
+The full explanation, with the pipeline, the comparison with an
+enterprise static-site setup and the change log, is in `REVIEW_PAGES.md`.
+What matters for the front end:
+
+- **A page per set, built for the HTML.** Every Amplify build runs
+  `tools/generateReviewPages/generate.mjs`, which copies `waxReviews.html`
+  once per live set into `reviews/<slug>/index.html`. It replaces two
+  blocks marked with comments: `review-head` (title, description,
+  canonical, `og:*`, `twitter:*`) with the set's own values, and
+  `review-params` (the script defining `year`, `sortOrder`, `pageName`,
+  `blogCat`, `setID`) with fixed values. That is why `setID` is now a
+  global defined in that block and the `DOMContentLoaded` handler passes
+  it to `fetchCardSetsByYear()` instead of calling `params.get("setID")`
+  inline. Nothing else in the file differs, so a generated page is the
+  same page with the right head and the right set already chosen. The
+  review itself is still drawn in the browser by `wax.js`.
+- **Why folder URLs.** Each page is `reviews/<slug>/index.html` and is
+  linked as `/reviews/<slug>/`: a server answers a folder URL with its
+  `index.html`, so no `index.html` shows in the address (Amplify
+  confirmed by a spike page). A `<slug>.html` layout would have needed a
+  console rewrite rule per set.
+- **Absolute links.** A generated page sits one folder deeper, so the
+  masthead and checklist-modal links in `waxReviews.html` are
+  `/index.html`, not `index.html`.
+- **Old URLs keep working.** `waxReviews.html?year=...` is still served as
+  is, with its generic head. When the set loads, `syncSetIdInUrl()`
+  replaces the address bar with `/reviews/<slug>/` and the canonical
+  points there, so bookmarks work and search engines consolidate them
+  without redirect rules. `sortOrder` is not carried over. The 2004/mcd
+  redirect to `lockout.html` is unchanged.
+- **Canonical, address bar, sitemap.** `reviewPath(item)` gives
+  `/reviews/<slug>/`; `buildReviewCanonicalUrl()` and `syncSetIdInUrl()`
+  (both in `wax.js`) use it, and the sitemap lists exactly those URLs.
+  Paging between sets in a multi-set year moves the address to each set's
+  own page.
+- **Links to reviews come from a manifest.** The nav, footer, breadcrumb
+  category link, year picker and Player Search results render with the
+  query-string `href` plus `data-review-*` attributes;
+  `loadReviewLinks()` (`helper.js`) fetches `/reviews/index.json`, which
+  the same build wrote, and `applyReviewLinks()` swaps in the slug URLs.
+  A link follows a page only if both exist in one deployment, and with
+  the manifest missing the query links still work. A year's default set
+  (what a year link opens) is the highest `stars`, ties by set name —
+  `compareSetsForDefault()`, also used by `wax.js` to sort a year's sets,
+  so year links and old bare-year URLs agree. Browse By Set links to a
+  slug directly because its own fetch already returns the slug.
+- **Slug rules.** `seoURLSlug` is a required CMS field (lowercase
+  letters, numbers, single hyphens, unique among live sets), enforced by
+  `seoSlugProblem()` in `cmsFormUI.js` and by `createCardPost`/
+  `updateCardSet`. The generator refuses to write anything if a live set
+  has none, an invalid one, or a duplicate.
+
 ## Browse By Set (`browseBySet.html`)
 
 A public version of the CMS's "edit a live set" list: every live set,
@@ -1275,9 +1355,12 @@ nav markup, footer and scores ticker.
 **Data.** The CMS list endpoint is login-only and returns every
 review's full body text, so a public page can't use it. `getPublicCardSets`
 (see `API_ENDPOINTS.md` and `LAMBDA_FUNCTIONS.md`) is a small public
-Lambda that returns only `setID`, `setName`, `blogCat`, `year` and
-`hasChecklist`, plus `now` and `updatedAt` for the sitemap generator's
-`<lastmod>` (this page ignores those two), cached for 30 minutes. `initBrowseBySet()` fetches it
+Lambda that returns only a few small fields: `setID`, `setName`,
+`blogCat`, `year` and `hasChecklist` for this page, `seoURLSlug` for its
+Review links (to the set's `/reviews/<slug>/` page), plus `stars`, `now`,
+`updatedAt` and the SEO and header-image fields for the review-page
+generator that every build runs (this page ignores those), cached for 30
+minutes. `initBrowseBySet()` fetches it
 once from `BROWSE_SETS_URL` and fails soft with a short message (no
 sets live, endpoint down, or no URL configured) instead of an empty
 page.
@@ -1404,9 +1487,13 @@ uploaded checklists, with a link to each set's review. Added
   `getPageNameForYear(blogCat, year)` in `scripts/helper.js`, reusing
   the same `categoryRanges` data `renderSetPicker()` uses for the
   year-picker widget, rather than duplicating that mapping a third time
-  (it already exists once in `helper.js` and once, deliberately
-  duplicated with a keep-in-sync comment, in
-  `tools/generateSitemap/generate.mjs`).
+  (until 2026-10-30 it was also duplicated, with a keep-in-sync comment,
+  in the old `tools/generateSitemap/generate.mjs`; the replacement
+  generator now reads `categoryRanges` out of `helper.js` instead). The
+  link is then upgraded: it carries `data-review-setid` (plus the
+  category and year as a fallback), and `applyReviewLinks()` points it at
+  that set's `/reviews/<slug>/` page once the build manifest loads, so a
+  click opens the exact set and the address bar doesn't change.
 - **Nav**: added as `search` in `NAV_ITEMS`, labeled "Player Search" -
   shown site-wide (every `NAV_MAP` entry except `playerSearch`'s own,
   which self-excludes like every page does), always last (see

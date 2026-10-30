@@ -32,6 +32,7 @@ sitemap.
 | Doc | Covers |
 |---|---|
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | High-level system diagram, hosting, domains/DNS/redirects, AWS services in play |
+| [REVIEW_PAGES.md](./REVIEW_PAGES.md) | How the per-review `/reviews/<slug>/` pages are generated on every Amplify build and started by CMS saves: the pipeline, `waxReviews.html` as a template, why it is only a partial static-site setup (and how it compares with an enterprise headless-CMS one), URL design, failure modes, AWS setup, cost, change log |
 | [DATA_MODEL.md](./DATA_MODEL.md) | DynamoDB tables and the fields each one holds |
 | [API_ENDPOINTS.md](./API_ENDPOINTS.md) | Every API Gateway endpoint the frontend calls — URL, method, payload, purpose |
 | [FRONTEND.md](./FRONTEND.md) | Public-facing pages and the `scripts/*.js` files behind them, including how SEO and social-preview tags work |
@@ -51,10 +52,10 @@ sitemap.
 
 ## Command-line tools (`tools/` at the repo root)
 
-Run by hand with Node; neither is part of any deploy.
+Plain Node scripts with no dependencies.
 
-- `tools/generateSitemap/generate.mjs` — regenerates `sitemap.xml` from the live `getPublicCardSets` data (see `FRONTEND.md`'s sitemap section), with a `<lastmod>` on every URL. Re-run it whenever a card set is added or removed.
-- `tools/checklistParser/parse.mjs` — parses a checklist PDF into the JSON the checklist-upload flow produces, mirroring `Lambdas/parseChecklistPdf/` (see `LAMBDA_FUNCTIONS.md` and `CMS_GUIDE.md`).
+- `tools/generateReviewPages/generate.mjs` — **run by every Amplify build** (`amplify.yml`), not by hand: reads the live sets from `getPublicCardSets` and writes `reviews/<slug>/index.html` for each, `reviews/index.json` (the link manifest) and `sitemap.xml`, none of it committed (gitignored). A CMS save to a live set starts a build, so nothing needs re-running when a set is added or edited. You can still run it locally for a preview. It replaced `tools/generateSitemap/generate.mjs` on 2026-10-30. See `REVIEW_PAGES.md` and `FRONTEND.md`'s sitemap section.
+- `tools/checklistParser/parse.mjs` — run by hand, not part of any deploy: parses a checklist PDF into the JSON the checklist-upload flow produces, mirroring `Lambdas/parseChecklistPdf/` (see `LAMBDA_FUNCTIONS.md` and `CMS_GUIDE.md`).
 
 ## Known gaps — worth confirming against the AWS Console
 

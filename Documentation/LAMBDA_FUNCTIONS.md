@@ -3,10 +3,11 @@
 **30 of the 34 Lambda functions behind this site's API Gateway
 endpoints have their source checked into this repo**, under
 `Lambdas/` (as of 2026-08-15, one directory per function, named
-exactly after its AWS Lambda function name). `Lambdas/` holds 31
+exactly after its AWS Lambda function name). `Lambdas/` holds 32
 directories, not 30: `amplifyBuildNotifier` (added 2026-09-29) sits
-behind EventBridge rather than API Gateway and isn't part of that
-count — it's the only function here no frontend code ever calls.
+behind EventBridge, and `cardsRebuildTrigger` (added 2026-10-30) behind
+a DynamoDB Stream, rather than API Gateway, so neither is part of that
+count — they are the only functions here no frontend code ever calls.
 Most were pulled directly
 from the live Console via `aws lambda get-function` using the
 `amplify-readonly-cli` credential (see `CLAUDE.md` — its actual IAM
@@ -29,7 +30,7 @@ list — `Lambdas/listSubscribers/`. The remaining 4 of the 34
 removed again the same day — see "Orphaned/dead Lambdas" below.
 
 Deployment is still entirely manual for every one of them, but the
-mechanics differ by function: the 29 with no real dependencies
+mechanics differ by function: the 30 with no real dependencies
 (`dependencies: {}` in `package.json`) just need the updated
 `index.mjs` pasted into the Lambda Console's inline code editor and
 Deploy clicked — no zip needed. Two need a full `npm install` + zip
@@ -680,11 +681,17 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
 - **Dependencies** (`package.json`): none listed — only uses
   `@aws-sdk/client-dynamodb`/`@aws-sdk/lib-dynamodb`, which ship with
   the Lambda Node.js runtime.
-- **What it does**: backs `browseBySet.html` and the sitemap generator
-  with a public list of every live card set: `setID`, `setName`,
-  `blogCat`, `year` and `hasChecklist`, plus `now` (publish date) and
-  `updatedAt` (last CMS save) for the sitemap's `<lastmod>`, nothing
-  else.
+- **What it does**: backs `browseBySet.html`, the review-page generator
+  (`tools/generateReviewPages`, run by every Amplify build) and the admin
+  Review Pages Check with a public list of every live card set:
+  `setID`, `setName`, `blogCat`, `year` and `hasChecklist`, plus `now`
+  (publish date) and `updatedAt` (last CMS save) for the sitemap's
+  `<lastmod>`, and, since 2026-10-30, `stars` (decides a year's default
+  set; the generator refuses to run without it), `seoURLSlug` (the page's
+  address), `seoPageTitle`, `seoMetaDesc`, `seoTags`, `headerImg` and
+  `headerImgName` (the generated page's head). Nothing else. A
+  `?view=links` slim variant was added and removed the same day (public
+  pages read the build's static `reviews/index.json` instead).
 - **Why a new Lambda**: the CMS's `getCardSets` returns the same sets
   but as full items (including each review's `postBody`) and sits
   behind the Cognito Authorizer. A public page needs neither the bodies
@@ -693,8 +700,9 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   each returning review bodies from the `Cards` table (which has had
   throughput-cap incidents before).
 - **Query**: `blogStatus-year-index`, `blogStatus = "OK"`, with a
-  `ProjectionExpression` of `setID, setName, blogCat, #yr, hasChecklist,
-  #now, updatedAt` (`year` is a DynamoDB reserved word, hence the
+  `ProjectionExpression` of `setID, setName, blogCat, #yr, stars,
+  hasChecklist, #now, updatedAt, seoURLSlug, seoPageTitle, seoMetaDesc,
+  seoTags, headerImg, headerImgName` (`year` is a DynamoDB reserved word, hence the
   alias, and `now` is aliased too to be safe). It loops on
   `LastEvaluatedKey` so the list can't be silently truncated at the 1 MB
   page limit as the number of sets grows; an unpaginated read hitting
@@ -877,6 +885,20 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   payload with no `printRun` key leaves it untouched — so a browser
   still running an older cached `cmsCardSet.js` can't wipe a value it
   never displayed.
+- **Slug validation and duplicate check (2026-10-30)**: before writing, it
+  rejects (400) a missing or malformed `seoURLSlug` (lowercase letters,
+  numbers and single hyphens) and, when the save has `blogStatus` "OK", a
+  slug another live set already uses (`liveSetUsingSlug()` pages through
+  the `blogStatus-year-index` GSI, ignoring this set's own `setName`+`year`).
+  That query needs `dynamodb:Query` on
+  `arn:aws:dynamodb:us-east-2:339740904141:table/Cards/index/blogStatus-year-index`
+  added as an inline policy on the Lambda's role
+  (`updateCardSet-role-dxq1vucq`); without it every live save fails in the
+  catch-all with "Failed to update card set" (the CloudWatch line is an
+  `AccessDeniedException` naming the GSI — this happened on the first
+  save after the change). The 400s sit inside the existing `try`, so any
+  other failure still ends in that 500. A successful save also starts a
+  site build (stream to `cardsRebuildTrigger`).
 - **2026-08-15 incident, fixed**: this Lambda used to *also* fire a
   `CreateInvalidationCommand` against a CloudFront distribution
   (`E1ITD1S1KYPTFG`) after every successful save, inside the *same*
@@ -1179,6 +1201,56 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   not Twilio's own opt-out list. See `AMP_SMS_PLATFORM.md`'s "Subscriber
   lifecycle" for how the two stay in step.
 
+## `Lambdas/cardsRebuildTrigger/` — hand-built in this repo
+
+- **File**: `Lambdas/cardsRebuildTrigger/index.mjs` (added 2026-10-30). No
+  real dependency (`dependencies: {}`; `@aws-sdk/client-amplify` ships with
+  the Lambda Node.js runtime), so deploy by pasting `index.mjs` into the
+  Console's inline code editor. Runtime Node 24. Not behind API Gateway:
+  its trigger is the `Cards` table's DynamoDB Stream, and no frontend code
+  calls it.
+- **What it does**: starts an Amplify build whenever a live card set
+  changes in a way the generated site depends on, so a CMS save needs no
+  push and no manual step. It receives a batch of stream records (new and
+  old image of each changed item) and starts **one** release job
+  (`amplify:StartJob`, app `d20qsyoicusf3p`, branch `main`, job reason
+  "Card set change: <set names>") if any record counts.
+- **What counts** (`changesStaticOutput()`): an `INSERT` of a live item
+  (`blogStatus` "OK"); a `REMOVE` of one; or a `MODIFY` where the old or
+  new item is live and any of `blogStatus, setName, year, blogCat, setID,
+  stars, seoURLSlug, seoPageTitle, seoMetaDesc, seoTags, headerImg,
+  headerImgName, now, updatedAt` differ. Staged-only changes, vote counts
+  (`upvotes`/`downvotes`), `hasChecklist` flips and a body edit that
+  doesn't go through `updateCardSet` start nothing. Every `updateCardSet`
+  save moves `updatedAt`, so every CMS save of a live set does start a
+  build; that is deliberate, it keeps the sitemap's `<lastmod>` accurate.
+  Values are compared in DynamoDB's typed shape, so no unmarshalling.
+- **Failure behavior**: if `StartJob` throws the invocation fails and the
+  stream retries the batch (3 attempts); rebuilding is idempotent. A
+  batch with nothing that counts logs one line and does nothing.
+- **What the build does**: runs `tools/generateReviewPages/generate.mjs`
+  (`amplify.yml`), which writes the review pages, `reviews/index.json` and
+  `sitemap.xml`. See `REVIEW_PAGES.md`.
+- **AWS setup (manual, one time, done 2026-10-30)**:
+  1. DynamoDB, `Cards`, Exports and streams: turn on the stream, view type
+     **New and old images**.
+  2. Create the function, paste `index.mjs`. Role: attach the managed
+     policy `AWSLambdaDynamoDBExecutionRole` and add an inline policy
+     allowing `amplify:StartJob` on
+     `arn:aws:amplify:us-east-2:339740904141:apps/d20qsyoicusf3p/branches/main/jobs/*`.
+  3. Add a trigger: DynamoDB, the `Cards` stream, batch size 100, batch
+     window 60 seconds (so a burst of saves is one build), starting
+     position Latest, retry attempts 3.
+- **Verifying**: save a harmless change to a set's SEO description in the
+  CMS; within about a minute `aws amplify list-jobs --app-id
+  d20qsyoicusf3p --branch-name main --region us-east-2` shows a new job
+  (the read-only CLI user can't read this Lambda's logs or the trigger, so
+  check CloudWatch `/aws/lambda/cardsRebuildTrigger` in the Console: a
+  "Started Amplify job #N" line). Verified 2026-10-30: a save at 15:53 UTC
+  started build #3154 at 15:54:04.
+- **Cost**: the invocations and the stream reads are free or negligible;
+  the cost is the Amplify build minutes (see `REVIEW_PAGES.md`).
+
 ## Orphaned/dead Lambdas — removed from this repo
 
 Four functions turned out to be unreachable from any live frontend
@@ -1237,7 +1309,7 @@ section title:
 | `Lambdas/updateBlogPost/` | Update blog post | Plain `UpdateCommand` keyed on `blogType`+`time`. |
 | `Lambdas/listBlogsForUpdate/` | Get all live blogs (for the edit picker) | **Note**: despite the doc's previous description, this does a full unfiltered `Scan` (`published = :p` where `:p = true`) with no `ProjectionExpression` — the response is full blog records under `{items: [...]}`, not just `{title, blogID, blogType}`. `API_ENDPOINTS.md` corrected 2026-08-15. |
 | `Lambdas/getStagedBlogsForUpdate/` | Get all staged (draft) blogs | Same correction as above, mirrored: full `Scan` on `published = false`, full records returned, not a narrow projection. |
-| `Lambdas/createCardPost/` | Create card set | Despite the AWS function name, this is the "create card set" Lambda (its own header comment calls itself `createCardSet Lambda Function`). Generates `setID` via `Math.random().toString(36)` (not a UUID). Hardcodes the S3 image URL prefix (`headerImg`/`footerImg`) server-side — see the CloudFront-migration discussion this repo's git history has around 2026-08-15 for why that matters if image hosting ever moves off direct S3 URLs. Stores the optional `printRun` only when non-blank, so sets without one get no empty attribute. |
+| `Lambdas/createCardPost/` | Create card set | Despite the AWS function name, this is the "create card set" Lambda (its own header comment calls itself `createCardSet Lambda Function`). Generates `setID` via `Math.random().toString(36)` (not a UUID). Hardcodes the S3 image URL prefix (`headerImg`/`footerImg`) server-side — see the CloudFront-migration discussion this repo's git history has around 2026-08-15 for why that matters if image hosting ever moves off direct S3 URLs. Stores the optional `printRun` only when non-blank, so sets without one get no empty attribute. Since 2026-10-30 it rejects (400) a missing or malformed `seoURLSlug` and, for `blogStatus` "OK", a slug another live set already uses (a `blogStatus-year-index` query via `liveSetUsingSlug()`; a failing check returns 500), so its role needs an inline `dynamodb:Query` policy on that GSI like `updateCardSet`'s. A live create also starts a site build through the `Cards` stream. |
 | `Lambdas/getCardSets/` | Get all live card sets (for the edit picker) | Queries the `blogStatus-year-index` GSI, `blogStatus = "OK"`. File has old commented-out `ProjectionExpression` variants left in as history of the 2026-08-14 `getStagedCardSets` projection bug fix (see below) — this one already returns full items. |
 | `Lambdas/getStagedCardSets/` | Get all staged (draft) card sets | Same GSI, `blogStatus = "staged"`. This is the Lambda whose `ProjectionExpression` bug (only requesting `setName, setID`, silently dropping `blogCat`/`year`) was found and fixed on 2026-08-14 — see `API_ENDPOINTS.md` for the full story. The fixed projection requests `setName, setID, blogCat, year`; `year` is aliased in the expression (e.g. `#y`) since it's a DynamoDB reserved word. It also projects `hasChecklist` (added 2026-09-30) so `cms/uploadChecklist.html`'s Set Name type-ahead can offer only staged sets that have a checklist; `getCardSets` needed no change since it returns full items. |
 | `Lambdas/getCardSetByID/` | Get a single card set by ID | Converted from PartiQL (`SELECT * FROM Cards WHERE setID=?`, which forced a full-table Scan since `setID` isn't the table's key) to a `QueryCommand` against the `setID-index` GSI on 2026-09-04 — a genuine performance win, not just a style change; see `DATA_MODEL.md`'s `Cards` GSI table. |

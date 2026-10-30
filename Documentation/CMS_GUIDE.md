@@ -124,7 +124,7 @@ Grouped page links:
 | `cms/blogEdit.html` | Edit form for a single blog post, reached via `?blogID=&blogType=`. |
 | `cms/setEdit.html` | Edit form for a single card set, reached via `?setID=`. |
 | `cms/uploadChecklist.html` | Upload a card set checklist PDF, review/correct the parsed result, save to the `Checklists` table — see "Checklist upload" below. |
-| `cms/admin.html` | Self-service site-health checks (broken images, review-image alt text and size, orphaned checklists) — see "Admin Tools" below. |
+| `cms/admin.html` | Self-service site-health checks (broken images, review-image alt text and size, review pages deployed, orphaned checklists) — see "Admin Tools" below. |
 
 All create/edit forms use a hosted **TinyMCE** WYSIWYG editor
 (`initTinyEditor()` in `scripts/cmsFormUI.js`) for the body text — the
@@ -291,7 +291,8 @@ callback) is unchanged.
 
 A card set has four SEO fields on `createCardSet.html`/`setEdit.html`:
 **SEO Title** (`seoPageTitle`), **SEO Meta Description** (`seoMetaDesc`),
-**SEO Friendly URL** (`seoURLSlug`) and **SEO Keywords** (`seoTags`).
+**SEO Friendly URL** (`seoURLSlug`, **required** since 2026-10-30, see
+below) and **SEO Keywords** (`seoTags`).
 The live review page uses the title, description and keywords directly
 in its `<title>`, meta tags and social previews (`FRONTEND.md`'s "SEO
 and social tags"); only when a field is empty does the page fall back
@@ -305,11 +306,12 @@ The generators are deterministic templates, not AI, and use only what
 is already in the form, so they can't claim anything the form doesn't
 back up:
 
-- **Title**: `<set> Card Set Review | Junk Wax Hockey`, with the maker
-  inserted after the season when the set name lacks it ("1991-92
-  Stadium Club" plus Topps gives "1991-92 Topps Stadium Club Hockey")
-  and "Hockey" added when missing. Over 65 characters, the brand suffix
-  is dropped.
+- **Title**: `<set> Card Set Review`, with the maker inserted after the
+  season when the set name lacks it ("1991-92 Stadium Club" plus Topps
+  gives "1991-92 Topps Stadium Club Hockey") and "Hockey" added when
+  missing. It used to end with " | Junk Wax Hockey" when that fit in 65
+  characters, which made titles inconsistent; since 2026-10-30 there is
+  no site-name suffix, and the page's own fallback title matches.
 - **Meta description**: a base sentence ("<set> card set review.") then
   each of these only if it still fits in 160 characters: the size and
   the inserts, the rating, and the first sentence of the review's
@@ -319,9 +321,19 @@ back up:
   "<set name> checklist", "junk wax hockey", then the insert names;
   deduplicated, at most 12.
 - **URL slug**: the set name lowercased, apostrophes removed, other
-  symbols turned into hyphens. Nothing reads it yet: the live site's
-  review URLs still use query strings (`?year=&pageName=&blogCat=&setID=`),
-  so the field is stored for a possible move to clean URLs.
+  symbols turned into hyphens. Since 2026-10-30 it is the review's
+  address, `/reviews/<slug>/`, and it is **required** (it was stored but
+  unused before). The rules: lowercase letters, numbers and single
+  hyphens. `seoSlugProblem()` (`cmsFormUI.js`) checks it before
+  `createCardSet()` and `updateCardSet()` send anything (an alert names
+  the problem and focuses the field; `updateCardSet()` had no
+  validation at all before), and `createCardPost` and `updateCardSet`
+  repeat the check server-side. When a set is saved live (status OK) the
+  Lambdas also reject a slug another live set already uses, naming that
+  set, because two pages can't share an address and the site build would
+  refuse. Changing a slug after publishing gives the set a new address
+  and the old one stops working (there are no redirects), so treat it as
+  fixed once live.
 
 A button needs the Set Name first (it says so through `cmsAlert()`
 otherwise) and, when the field already holds different text, asks
@@ -336,6 +348,16 @@ contain one.
 Existing sets keep their saved text until you open one, click the
 buttons and update it. Saving also stamps the set's `updatedAt`, which
 becomes its sitemap `<lastmod>`.
+
+**Saving starts a site build.** A save to a live set triggers an Amplify
+build (the `Cards` table's stream calls `cardsRebuildTrigger`), which
+regenerates the set's `/reviews/<slug>/` page, the sitemap and the link
+manifest; the change is live about three minutes later, with nothing to
+run or push. Vote counts and checklist uploads don't start one. A new set's
+page, and an edited set's title, description and social tags in the raw
+HTML, appear when the build finishes; the review text itself is always
+live (the page's JavaScript fetches it). See `REVIEW_PAGES.md`, and the
+**Review Pages Check** under "Admin Tools" if a page seems to be missing.
 
 ### Star Rating widget
 
@@ -409,7 +431,11 @@ if you add a new required field to a create form, you must add a
 matching guard in its JS handler too, or a blank submission will sail
 straight through to the Lambda (this is exactly what caused a 500 on
 `createCardSet.html` before `setName` got a guard — see
-`API_ENDPOINTS.md`'s "Create card set" entry).
+`API_ENDPOINTS.md`'s "Create card set" entry). SEO Friendly URL
+(`seoURLSlug`) joined the required fields on 2026-10-30, checked by
+`seoSlugProblem()` in both `createCardSet()` and `updateCardSet()`
+(see "SEO fields and their Generate buttons" above); `updateCardSet()`,
+which had no client-side guards, is now `async` for that check.
 
 ### CMS alert / confirm modals
 
@@ -724,7 +750,7 @@ description, a "Run Check" button, a status line, and a results area.
 Adding a new one means adding a function to `adminTools.js` and a
 matching card here — not growing this into one do-everything script.
 
-Three checks exist today:
+Four checks exist today:
 
 - **Broken Image Check**: loads every image the *live* public site
   references — blog post `img` fields, card set `headerImgName`/
@@ -753,6 +779,15 @@ Three checks exist today:
   "not WebP" by design and is normally fine. Shares `fetchAllCardSets()`
   with the Broken Image Check, so it makes one `getCardSetsByYear` call
   per year (about 40) and takes about a minute.
+- **Review Pages Check** (added 2026-10-30): compares the live sets
+  with the pages actually deployed. It fetches `getPublicCardSets` once
+  and sends a `HEAD` request for `/reviews/<slug>/` for each set,
+  listing any set with no slug ("add one in the CMS") and any whose page
+  isn't there ("not deployed"). It exists because review pages are
+  generated by an Amplify build that a CMS save starts, so a missing page
+  right after a save is normal for about three minutes, but one that stays
+  missing means the build failed (the Amplify build email says why). Takes
+  a few seconds.
 - **Checklist Integrity Check**: finds **orphaned checklists** and lets
   you delete them. A checklist's `setName` is the only link between the
   `Checklists` and `Cards` tables (effectively a foreign key, though

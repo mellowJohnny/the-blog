@@ -2,8 +2,9 @@
 
 ## Overview
 
-The site is a static frontend (plain HTML/CSS/JS, no build step, no
-framework) that talks directly to a set of individual AWS Lambda
+The site is a static frontend (plain HTML/CSS/JS, no framework; the
+only build step generates the per-review pages, sitemap and link
+manifest — see `REVIEW_PAGES.md`) that talks directly to a set of individual AWS Lambda
 functions, each exposed through its own API Gateway REST API. There is
 no single backend app or router — every distinct action (get blogs,
 create a blog, get a card set by ID, upload an image, send an SMS...)
@@ -37,16 +38,32 @@ Browser (static HTML/CSS/JS, no framework)
    '-- <iframe> ----------> players.brightcove.net (NHL highlights player in the game modal)
 ```
 
+Content changes also travel a second path, from the CMS to the live
+site without a git push (added 2026-10-30; the full explanation is in
+`REVIEW_PAGES.md`):
+
+```
+CMS save --> DynamoDB Cards --stream--> Lambda cardsRebuildTrigger
+         --> amplify:StartJob --> Amplify build (runs the generator)
+         --> /reviews/<slug>/ pages + reviews/index.json + sitemap.xml deployed
+```
+
 ## Hosting & deployment
 
 The static site is deployed via **AWS Amplify Hosting**,
-connected directly to this repo's git history — no `amplify.yml` or
-other build config is checked in here, so Amplify is using
-its default/zero-config static-site build settings (there's no build
-step to run anyway; it's plain HTML/CSS/JS with no bundler).
+connected directly to this repo's git history. Until 2026-10-30 no
+build config was checked in and Amplify ran its default no-op build
+(the app's console build spec is `commands: []`). A root `amplify.yml`
+now exists and its one build command is
+`node tools/generateReviewPages/generate.mjs`, which writes the
+`/reviews/<slug>/` pages, `reviews/index.json` and `sitemap.xml` into the
+build output (all gitignored, never committed). Otherwise the site is
+still plain HTML/CSS/JS with no bundler. The build image is Amazon Linux 2
+with Node 16.19 and full git history (read from a diagnostic build's log),
+which is why the generator uses `node:https`, not `fetch`.
 
-- **Trigger**: any push to the tracked branch (this repo shows `main` as that branch).
-- **Process**: Amplify picks up the commit, runs its build (a no-op / asset-copy step given there's no framework here), and deploys straight to production — there's no staging environment or manual promotion step.
+- **Trigger**: two ways to start a build. Any push to the tracked branch (this repo shows `main` as that branch), and a save to a live card set in the CMS: a DynamoDB Stream on `Cards` calls the `cardsRebuildTrigger` Lambda, which starts a release job with `amplify:StartJob` (60 second batching, so a burst of saves is one build). See `REVIEW_PAGES.md`.
+- **Process**: Amplify picks up the commit (or the job), runs the generator, and deploys straight to production — there's no staging environment or manual promotion step. If the generator fails (bad slug data, API unreachable) the build fails and Amplify keeps serving the previous deployment.
 - **Notification**: a custom email summary on build completion, sent by `Lambdas/amplifyBuildNotifier/` — an EventBridge rule on "Amplify Deployment Status Change" (filtered to `SUCCEED`/`FAILED`) invokes it, and it calls `amplify:GetJob` for the commit, duration and per-step detail before publishing plain text to an SNS email topic. It replaced Amplify's own built-in build notifications, which said only that a build finished; the failing step's log URL in particular now arrives in the email rather than having to be dug out of the Console. Setup steps and the IAM permissions it needs: `LAMBDA_FUNCTIONS.md`. Still the only build/deploy signal — there's no CI status check, PR gate, or Slack/webhook integration in play.
 - **Practical implication**: pushing to `main` ships to the live site. There's no separate preview/staging branch — the `published`/`blogStatus` draft flags in DynamoDB (see `DATA_MODEL.md`) are what stand in for a staging environment at the *content* level, but not at the *code* level. A broken commit to `main` goes live as soon as Amplify's build finishes.
 
@@ -54,7 +71,7 @@ This is separate from Lambda deployment, which is manual per-function
 and not automated by this Amplify pipeline at all (see
 `LAMBDA_FUNCTIONS.md`). Every live Lambda's source is version-controlled
 in this repo under `Lambdas/`, but the deploy mechanics differ by
-function: the 28 with no real npm dependency just need the updated
+function: the 30 with no real npm dependency just need the updated
 `index.mjs` pasted into the Lambda Console's inline code editor and
 Deploy clicked, while `sendAlertHandler` (has `twilio`) and
 `parseChecklistPdf` (has `pdf-parse`) need a full `npm install` + zip +
@@ -172,13 +189,13 @@ Plain multi-page HTML site, no bundler/framework:
 - Every page is a standalone `.html` file at the repo root (`index.html`, `about.html`, `tech.html`, `waxReviews.html`, `browseBySet.html`, `playerSearch.html`, `lockout.html`, `theJunkWaxYears.html`, `timeline.html`) or under `/cms`. `cards.html` and `cardChecker.html` were both archived to `Old HTML Pages/` on 2026-08-15 — no longer live pages, see `FRONTEND.md`.
 - Shared behaviour lives in `/scripts/*.js`, included per-page via `<script src>` tags — see `FRONTEND.md` for which script does what.
 - Styling is a single `styles/styles.css`.
-- Pages read query-string parameters (`?year=`, `?blogType=`, `?pageName=`, `?blogCat=`) to decide what content to fetch and how to render the nav — see `FRONTEND.md`.
+- Pages read query-string parameters (`?year=`, `?blogType=`, `?pageName=`, `?blogCat=`) to decide what content to fetch and how to render the nav — see `FRONTEND.md`. The exception is the card set reviews: each has a generated page at `/reviews/<slug>/` with those values fixed in the HTML, while the old query-string URLs still work (`REVIEW_PAGES.md`).
 
 ## Backend
 
 - **API Gateway**: many independent REST APIs (each with its own random subdomain, e.g. `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev`), each fronting exactly one Lambda. Full inventory in `API_ENDPOINTS.md`. 25 of the 32 documented endpoints are deployed to a stage named `dev`; the 4 Autobus SMS endpoints, "Get all live sets (public)", "Get NHL game details" and "Get PWHL scores" (see `API_ENDPOINTS.md`) are on `prod`. That split is historical, not meaningful — there's no separate dev environment behind either name (no separate Lambda/DynamoDB per stage), and this site has exactly one real target (production; see "Hosting & deployment" above — a push to `main` goes live immediately, no staging step). Not worth renaming the existing 25 to `prod` retroactively, since an API Gateway stage rename changes its invoke URL, which would mean updating every hardcoded URL in `scripts/*.js` plus this doc for a purely cosmetic fix — but any *new* endpoint going forward should be deployed to `prod` from the start, so new work doesn't keep perpetuating the `dev` label.
 - **Lambda**: Node.js, using the modern modular `@aws-sdk/*` (v3) packages throughout (e.g. `@aws-sdk/client-dynamodb`), not the legacy `aws-sdk` v2. As of the 2026-08-15 sync, every live function's source is version-controlled in this repo under `Lambdas/`, not just `sendAlertHandler` — see `LAMBDA_FUNCTIONS.md` and the `## Commands` section of `CLAUDE.md` for the sync/deploy workflow.
-- **DynamoDB**: at least `Blogs`, `Cards`, `Checklists`, `Subscribers`, `SubscribersTest` tables. See `DATA_MODEL.md`. **Billing mode**: `Checklists` and `Cards` both run **On-Demand**, not Provisioned — `Checklists` because `searchPlayerName`'s full-table `Scan`-per-search design (see `LAMBDA_FUNCTIONS.md`) exhausted a provisioned RCU ceiling almost immediately; `Cards` for the same reason once `cms/admin.html`'s tools (also `LAMBDA_FUNCTIONS.md`) started making many rapid `Query` calls against it. Both also have an explicit **maximum throughput cap** set (DynamoDB Console → table → Additional settings → Maximum table throughput) — a deliberate middle ground: on-demand alone removes the fixed ceiling that caused the original throttling, but leaves read/write cost technically uncapped, and both tables sit behind fully public, unauthenticated read endpoints. The cap is a coarse, real-time circuit breaker against a runaway/abusive traffic spike, sized well above any known legitimate usage pattern (including bursty admin-tool runs) so it never interferes with normal traffic — complementary to, not a replacement for, the account-wide $5/month AWS Budget alert above, which is after-the-fact rather than preventative. Other tables' billing modes haven't been confirmed either way.
+- **DynamoDB**: at least `Blogs`, `Cards`, `Checklists`, `Subscribers`, `SubscribersTest` tables. See `DATA_MODEL.md`. `Cards` has a DynamoDB Stream turned on (new and old images) since 2026-10-30; its only consumer is the `cardsRebuildTrigger` Lambda (see "Hosting & deployment" above and `REVIEW_PAGES.md`). **Billing mode**: `Checklists` and `Cards` both run **On-Demand**, not Provisioned — `Checklists` because `searchPlayerName`'s full-table `Scan`-per-search design (see `LAMBDA_FUNCTIONS.md`) exhausted a provisioned RCU ceiling almost immediately; `Cards` for the same reason once `cms/admin.html`'s tools (also `LAMBDA_FUNCTIONS.md`) started making many rapid `Query` calls against it. Both also have an explicit **maximum throughput cap** set (DynamoDB Console → table → Additional settings → Maximum table throughput) — a deliberate middle ground: on-demand alone removes the fixed ceiling that caused the original throttling, but leaves read/write cost technically uncapped, and both tables sit behind fully public, unauthenticated read endpoints. The cap is a coarse, real-time circuit breaker against a runaway/abusive traffic spike, sized well above any known legitimate usage pattern (including bursty admin-tool runs) so it never interferes with normal traffic — complementary to, not a replacement for, the account-wide $5/month AWS Budget alert above, which is after-the-fact rather than preventative. Other tables' billing modes haven't been confirmed either way.
 - **S3**: bucket `mellowjohnny.cc.files` serves all images (`img/blog/`, `img/cards/`, `img/cms/`, favicons) directly over HTTPS, and also receives direct browser PUT uploads via presigned URLs generated by a Lambda (see `API_ENDPOINTS.md` → image upload).
 - **Cognito**: one User Pool, gates the `/cms` authoring tools via its Hosted UI. See `AUTH.md`.
 

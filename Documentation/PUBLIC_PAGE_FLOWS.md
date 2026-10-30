@@ -70,6 +70,12 @@ See `FRONTEND.md`'s "SEO and social tags".
   `#global-nav`. Purely client-side — the nav structure is a hardcoded
   map in `helper.js`, not backend-driven, since the site's page/category
   set changes rarely enough that there's no value in making it dynamic.
+  The four review-category links (and the matching footer links) render
+  with a query-string `href` and are then pointed at their year's
+  `/reviews/<slug>/` page by `applyReviewLinks()` once
+  `/reviews/index.json` loads — the same mechanism every public page
+  uses, described under "Links to reviews" in the Card Set Reviews
+  section below.
 
 **User interactions**:
 - Hamburger icon (mobile) → `toggleMenu()` (`helper.js`) — toggles an
@@ -204,6 +210,19 @@ fire off `window load`, same pattern as the blog pages; the review
 content starts earlier, on `DOMContentLoaded`, so its request doesn't
 wait for fonts, analytics and the ticker (see "Notable" below).
 
+**Two ways in (since 2026-10-30).** A review is reached either at its own
+generated page, `/reviews/<slug>/`, or at the old query-string URL
+(`waxReviews.html?year=...&pageName=...&blogCat=...[&setID=...]`). Both run
+the very same file and scripts: a generated page is `waxReviews.html`
+copied once per set by the Amplify build, with that set's title,
+description, canonical and social tags in its `<head>` and `year`,
+`pageName`, `blogCat` and `setID` fixed in the globals script instead of
+read from the URL. On the old URL the globals come from the query string
+and the head is the generic one; once the set loads the address bar is
+replaced with the set's `/reviews/<slug>/` page. Everything below applies
+to both unless it says otherwise. The generator and why it is built this
+way: `REVIEW_PAGES.md`.
+
 **What loads**: `scripts/wax.js`, `scripts/ticker.js`, `scripts/helper.js`
 (all `defer`), plus several inline `<script>` blocks in `<head>`, in this order:
 
@@ -219,11 +238,13 @@ wait for fonts, analytics and the ticker (see "Notable" below).
    `gtag('config', ...)` call for Analytics. The scores ticker isn't in
    this list: `ticker.js` starts itself on `DOMContentLoaded`.
 
-The raw HTML also holds generic Open Graph and Twitter tags (and no
-canonical), so a link shared to Facebook, Discord, Reddit or X, none of
-which run JavaScript, still gets a branded card; `fetchPageTitle()`
-below overwrites them per set for Google. See `FRONTEND.md`'s "SEO and
-social tags".
+The raw HTML of `waxReviews.html` itself holds generic Open Graph and
+Twitter tags (and no canonical), so a link to an old-style URL shared to
+Facebook, Discord, Reddit or X, none of which run JavaScript, still gets
+a branded card; `fetchPageTitle()` below overwrites them per set for
+Google. A generated page already has the set's own tags in its HTML, so
+a shared `/reviews/<slug>/` link gets a per-set card. See `FRONTEND.md`'s
+"SEO and social tags".
 
 **On `DOMContentLoaded`**: `renderCardIntro(pageName)` (`wax.js`) —
 static intro copy keyed by `pageName` (`classicWax`/`junkWax`/`timmies`/
@@ -249,8 +270,11 @@ everything else the visitor can see or navigate to on this page.
   through the nav. It looks up `categoryRanges[blogCat][pageName]` for
   a hardcoded `{start, end}` year range, then builds one `<div>` per
   year into `#set-picker` — the current year renders as plain text,
-  every other year as a link to
-  `waxReviews.html?year=<y>&pageName=<...>&blogCat=<...>`. Purely
+  every other year as a link, first emitted as
+  `waxReviews.html?year=<y>&pageName=<...>&blogCat=<...>` with
+  `data-review-cat`/`data-review-year` attributes and then upgraded by
+  `applyReviewLinks()` to that year's default set's `/reviews/<slug>/`
+  page (see "Links to reviews" below). Rendering is purely
   client-side, no API call — like the main nav, the set of valid years
   per category is a hardcoded map, not something that needs a backend
   round-trip to determine.
@@ -269,7 +293,9 @@ everything else the visitor can see or navigate to on this page.
   `blogCat-year-index` GSI, filtered to `blogStatus = "OK"`, so a
   staged/unpublished set is never returned here even if it otherwise
   matches. Once the result is back, `fetchCardSetsByYear()` sorts it via
-  `getSortOrder("stars", ...)`, stores it in `allCardSets`, sets
+  `compareSetsForDefault()` (`helper.js`: highest `stars` first, ties by
+  set name; or `getSortOrder("stars", "last")` for `sortOrder=last`),
+  stores it in `allCardSets`, sets
   `currentPage` (to 1, or to the matching set's page when the URL
   carries a `setID`, so a link can name one specific set — see
   `FRONTEND.md`'s "Linking to one specific set"), and calls
@@ -283,7 +309,7 @@ everything else the visitor can see or navigate to on this page.
   despite the name, this now does all of this page's per-set SEO work
   in one place, not just the title: it sets `document.title` to
   the set's CMS SEO title (`seoPageTitle`), or `<setName> Hockey Card
-  Set Review | Junk Wax Hockey` when that field is empty (so the browser
+  Set Review` when that field is empty (so the browser
   tab/bookmark reflect the specific set, not a generic page title),
   writes the set name into the
   previously-empty `<h1 id="pageHeader">` (this element used to have a
@@ -295,9 +321,9 @@ everything else the visitor can see or navigate to on this page.
   near 155 characters by `truncateAtWord()` (both `helper.js`), the
   set's own `headerImg`/`headerImgName` as the
   social-share image, and a canonical built from the set's own data by
-  `buildReviewCanonicalUrl()` (`year`, `pageName`, `blogCat`, plus
-  `setID` on multi-set years, so stray query parameters can't create
-  duplicate canonicals) — and writes a `Product`+`Review` JSON-LD block (`name`/`image` on the
+  `buildReviewCanonicalUrl()` (the set's `/reviews/<slug>/` page, so stray
+  query parameters can't create duplicate canonicals; the query form with
+  `year`, `pageName`, `blogCat` and `setID` only for a set with no slug) — and writes a `Product`+`Review` JSON-LD block (`name`/`image` on the
   `Product`, `author`/`datePublished`/`reviewRating` — out of 5, from
   `stars` — and a stripped-text `reviewBody` on the nested `Review`) via
   `setJsonLd("jsonld-cardset", ...)`, a fixed id for the same
@@ -314,7 +340,26 @@ everything else the visitor can see or navigate to on this page.
   which only renders anything when there's more than one set for that
   year (most years have exactly one; only 1989-90 onward have
   multiple, once card companies started releasing several sets per
-  season).
+  season). Just before it renders a set, `renderCardSetPage()` calls
+  `syncSetIdInUrl()`, which replaces the address bar with that set's
+  `/reviews/<slug>/` page (`history.replaceState`, so paging adds no
+  history entries): on an old query-string URL this is the rewrite to the
+  clean address, on a generated page it is the same address, and paging
+  to another set in a multi-set year moves it to that set's page.
+- **Links to reviews** (`helper.js`, on every public page, not just this
+  one). The nav, footer, breadcrumb category link, the year picker above
+  and Player Search results all link to reviews by year or `setID`, not by
+  slug, so they render with the query-string `href` plus `data-review-*`
+  attributes. `helper.js` starts `loadReviewLinks()` (a same-origin fetch
+  of `/reviews/index.json`, the manifest the Amplify build writes beside
+  the pages) the moment it runs, and `applyReviewLinks()` — called after
+  the nav, footer, picker, breadcrumb and search results render — swaps in
+  the `/reviews/<slug>/` URL. The manifest only lists pages that exist in
+  the same deployment, so a link never points at a page that hasn't been
+  built; with it missing (local dev) the query links stay and still work.
+  A year's link opens that year's default set: highest `stars`, ties by
+  set name (`compareSetsForDefault()`, the same rule this page sorts
+  with). See `REVIEW_PAGES.md`.
 - `applyRandomMastheadStyling()` (`helper.js`) — paints the masthead
   in a random NHL team's colours with its cheer label. Purely
   cosmetic, no API call — see `FRONTEND.md`'s "Typography / fonts".
@@ -545,7 +590,11 @@ flow).
   `setID` (returned by the same `Cards` query that supplies
   `year`/`blogCat`) makes the link open that exact set rather than the
   year's top-rated one, and is simply omitted if the response doesn't
-  carry it. `pageName`
+  carry it. The link also carries `data-review-setid`, and once the page
+  has rendered `applyReviewLinks()` (`helper.js`) swaps its `href` for
+  that set's `/reviews/<slug>/` page from the build manifest, so a click
+  opens the exact set at its clean address with no address-bar change.
+  `pageName`
   itself isn't returned by the API, so it's derived client-side via
   `getPageNameForYear(blogCat, year)` (`helper.js`), reusing the same
   `categoryRanges` data `renderSetPicker()` uses, so the search results
@@ -620,14 +669,17 @@ starts the scores ticker by itself.
   **Get all live sets (public)** once, fronted by the `getPublicCardSets`
   Lambda (`Lambdas/getPublicCardSets/`), which queries the `Cards`
   table's `blogStatus-year-index` GSI for `blogStatus = "OK"` and
-  returns only `setID`, `setName`, `blogCat`, `year` and `hasChecklist`
-  (plus `now` and `updatedAt`, which this page ignores and the sitemap
-  generator uses; the CMS's equivalent returns every review's body
-  behind a login, so it can't serve a public page). The sets are split by `blogCat` into
+  returns only a few small fields: `setID`, `setName`, `blogCat`, `year`
+  and `hasChecklist`, plus `seoURLSlug` for the links (and `stars`,
+  `now`, `updatedAt`, the SEO fields and header image, which this page
+  ignores and the review-page generator uses; the CMS's equivalent returns
+  every review's body behind a login, so it can't serve a public page).
+  The sets are split by `blogCat` into
   the Major Releases column (`reg`) and the Fast Food Sets column (`mcd`
   and `tims`), grouped under season headings and sorted, then rendered.
-  Each entry's **Review** link is built from `getPageNameForYear()` and
-  the set's `setID`, so it opens that exact set; its title drops the
+  Each entry's **Review** link goes to the set's `/reviews/<slug>/` page
+  (built from `seoURLSlug`; the old `getPageNameForYear()` + `setID`
+  query form only for a set with no slug), so it opens that exact set; its title drops the
   season because the heading above already shows it. A single click
   listener handles the **Checklist** links (they are rebuilt on every
   render) and calls `openChecklistModal()`, which fetches the checklist
