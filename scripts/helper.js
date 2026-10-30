@@ -124,7 +124,8 @@ function buildCardSetMarkup({
                 class="table-header-img"
                 fetchpriority="high"
                 alt="Vintage hockey cards from the ${year} ${mfg} set"
-                width="620">
+                width="620"
+                height="294">
             </div>
             <div class="set-details-list">
                 <div class="set-detail-row"><strong>Set Size:</strong> ${size}</div>
@@ -157,7 +158,8 @@ function buildCardSetMarkup({
                 class="table-footer-img"
                 loading="lazy"
                 alt="Vintage hockey cards from the ${year} ${mfg} set"
-                width="890">
+                width="890"
+                height="325">
             </div>
         </div>
   `;

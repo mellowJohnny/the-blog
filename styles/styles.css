@@ -2097,6 +2097,10 @@ label sup {
 
 .table-footer-img {
   width: 90%;
+  /* The tag carries width/height (the standard 890x325) so the browser can
+     reserve the space before the file arrives; auto keeps each file's own
+     shape once it has. */
+  height: auto;
   display: inline-block;
   vertical-align: top;
   margin: 0;
