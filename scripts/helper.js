@@ -237,14 +237,15 @@ function renderBreadcrumbs(pageName, currentLabel, currentUrl) {
 
   const category = NAV_ITEMS[BREADCRUMB_CATEGORY_IDS[pageName]];
   const trail = [{ name: NAV_ITEMS.home.label, url: "/index.html" }];
-  if (category) trail.push({ name: category.label, url: category.href });
+  if (category) trail.push({ name: category.label, url: category.href, attrs: reviewLinkAttrs(category) });
   trail.push({ name: currentLabel, url: currentUrl || window.location.href });
   const absolute = (url) => (url.startsWith("http") ? url : SITE_ORIGIN + url);
 
   const items = trail.map((step, i) => i === trail.length - 1
     ? `<li aria-current="page">${escapeHtml(step.name)}</li>`
-    : `<li><a href="${escapeHtml(step.url)}">${escapeHtml(step.name)}</a></li>`);
+    : `<li><a href="${escapeHtml(step.url)}"${step.attrs || ""}>${escapeHtml(step.name)}</a></li>`);
   nav.innerHTML = `<ol>${items.join("")}</ol>`;
+  applyReviewLinks();
 
   setJsonLd("jsonld-breadcrumbs", {
     "@context": "https://schema.org",
@@ -330,7 +331,7 @@ function buildFooterLink(link) {
     return `<span class="footer-link-inactive" aria-disabled="true">${escapeHtml(link.label)}</span>`;
   }
   const item = NAV_ITEMS[link.id];
-  return `<a href="${item.href}">${escapeHtml(link.label || item.label)}</a>`;
+  return `<a href="${item.href}"${reviewLinkAttrs(item)}>${escapeHtml(link.label || item.label)}</a>`;
 }
 
 function fetchFooterLinks() {
@@ -341,6 +342,7 @@ function fetchFooterLinks() {
     const heading = section.heading ? `<p class="footer-heading">${section.heading}</p>` : "";
     return `<div class="footer-col">${heading}${section.links.map(buildFooterLink).join("")}</div>`;
   }).join("");
+  applyReviewLinks();
 }
 
 // Sorting helper for blog posts ("time") and card set reviews
@@ -531,7 +533,7 @@ function renderSetPicker(year, blogCat, pageName) {
     cells += (y === parseInt(year))
       ? `<div class="${range.className}">${label}</div>`
       : `<div class="${range.className}">
-           <a href="/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}">
+           <a href="/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}" data-review-cat="${blogCat}" data-review-year="${y}">
              ${label}
            </a>
          </div>`;
@@ -543,11 +545,55 @@ function renderSetPicker(year, blogCat, pageName) {
   setPicker.innerHTML = `
     <div class="card-set-nav">${cells}</div>
   `;
+  applyReviewLinks();
 }
 
 
 
 
+
+/** Links to the reviews. Every review has its own /reviews/<slug>/ page, but
+ * the nav, year picker and Player Search know a year or setID, not a slug. They
+ * render with the query-string href plus data-review-* attributes, and
+ * applyReviewLinks() swaps in the slug path once the public set list loads
+ * (the query link keeps working if it hasn't, or the set isn't in the list).
+ */
+
+const REVIEW_LINKS_URL = "https://jlpd8ec14j.execute-api.us-east-2.amazonaws.com/prod?view=links";
+
+let reviewLinksPromise;
+function loadReviewLinks() {
+  reviewLinksPromise ||= fetch(REVIEW_LINKS_URL)
+    .then(res => (res.ok ? res.json() : []))
+    .then(list => (Array.isArray(list) ? list : []))
+    .catch(() => []);
+  return reviewLinksPromise;
+}
+
+// Start the fetch as soon as the script runs, so it is usually back before the
+// links render. The CMS never links to reviews.
+if (!window.location.pathname.startsWith("/cms/")) loadReviewLinks();
+
+// The set a bare-year URL opens: top-rated first, ties by name. waxReviews
+// sorts a year's sets with this too, so a year link and its page agree.
+function compareSetsForDefault(a, b) {
+  return (Number(b.stars) || 0) - (Number(a.stars) || 0) || a.setName.localeCompare(b.setName);
+}
+
+async function applyReviewLinks() {
+  const sets = await loadReviewLinks();
+  document.querySelectorAll("a[data-review-setid], a[data-review-year]").forEach(link => {
+    const { reviewSetid, reviewCat, reviewYear } = link.dataset;
+    const set = (reviewSetid && sets.find(s => s.setID === reviewSetid))
+      || sets.filter(s => s.blogCat === reviewCat && String(s.year) === reviewYear).sort(compareSetsForDefault)[0];
+    if (set && set.seoURLSlug) link.href = `/reviews/${set.seoURLSlug}/`;
+  });
+}
+
+// The data-review-* attributes for a NAV_ITEMS entry that links to a review year.
+function reviewLinkAttrs(item) {
+  return item.review ? ` data-review-cat="${item.review.cat}" data-review-year="${item.review.year}"` : "";
+}
 
 /** Top-level navigation, built from Object Maps rather than hardcoded
  * tables - add a page via NAV_MAP, a menu item via NAV_ITEMS.
@@ -556,10 +602,10 @@ function renderSetPicker(year, blogCat, pageName) {
 // Step 1: Define the navigation items as data
 const NAV_ITEMS = {
   home: { label: "Home", href: "/index.html" },
-  junk: { label: "90s Junk Wax", href: "/waxReviews.html?year=1987&pageName=junkWax&blogCat=reg" },
-  classic: { label: "Classic 80s Sets", href: "/waxReviews.html?year=1981&pageName=classicWax&blogCat=reg" },
-  timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2019&pageName=timmies&blogCat=tims" },
-  mcd: { label: "McDonald's Hockey", href: "/waxReviews.html?year=1991&pageName=mcd&blogCat=mcd" },
+  junk: { label: "90s Junk Wax", href: "/waxReviews.html?year=1987&pageName=junkWax&blogCat=reg", review: { cat: "reg", year: 1987 } },
+  classic: { label: "Classic 80s Sets", href: "/waxReviews.html?year=1981&pageName=classicWax&blogCat=reg", review: { cat: "reg", year: 1981 } },
+  timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2019&pageName=timmies&blogCat=tims", review: { cat: "tims", year: 2019 } },
+  mcd: { label: "McDonald's Hockey", href: "/waxReviews.html?year=1991&pageName=mcd&blogCat=mcd", review: { cat: "mcd", year: 1991 } },
   tech: { label: "Tech", href: "/tech.html?blogType=1&pageName=tech" },
   mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3&pageName=ev" },
   timeline: { label: "Junk Wax Timeline", href: "/timeline.html" },
@@ -598,7 +644,7 @@ const NAV_MAP = {
 
 // Step 3: Build a dynamic table generator
 function buildNavCell(item) {
-  return `<td class="nav-td"><a href="${item.href}">${item.label}</a></td>`;
+  return `<td class="nav-td"><a href="${item.href}"${reviewLinkAttrs(item)}>${item.label}</a></td>`;
 }
 
 // The new, dynamic fetchNav()
@@ -623,6 +669,7 @@ function fetchNav(pageName, blogType) {
       <tr>${cells}</tr>
     </table>
   `;
+  applyReviewLinks();
 }
 
 // Hamberger Menu Toggle

@@ -68,7 +68,7 @@ function renderCardIntro(pageName) {
             if (sortOrder === "last") {
                 data.sort(getSortOrder("stars", "last"));
             } else {
-                data.sort(getSortOrder("stars", "first"));
+                data.sort(compareSetsForDefault); // helper.js - the same rule the year links use
             }
 
             // Store results for pagination

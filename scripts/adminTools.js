@@ -275,6 +275,64 @@ async function runImageAltCheck() {
   }
 }
 
+/* Review Pages Check - the public links to a review follow its live slug,
+   but the /reviews/<slug>/ pages are generated, so a slug or a new set that
+   hasn't been regenerated and pushed yet is a link to a 404. */
+
+async function runReviewPagesCheck() {
+  const statusEl = document.getElementById("reviewPagesStatus");
+  const resultsEl = document.getElementById("reviewPagesResults");
+  const btn = document.getElementById("reviewPagesBtn");
+
+  btn.disabled = true;
+  resultsEl.innerHTML = "";
+  statusEl.textContent = "Fetching the live sets...";
+
+  try {
+    const res = await fetch(REVIEW_LINKS_URL); // helper.js
+    const sets = await res.json();
+    if (!res.ok || !Array.isArray(sets)) throw new Error(`The sets endpoint answered ${res.status}`);
+
+    const problems = [];
+    for (const set of sets.sort((a, b) => a.year - b.year || a.setName.localeCompare(b.setName))) {
+      const name = `${set.setName} (${set.year})`;
+      if (!set.seoURLSlug) {
+        problems.push({ set: name, page: "(no slug)", problem: "No SEO Friendly URL - add one in the CMS." });
+        continue;
+      }
+      statusEl.textContent = `Checking ${name}...`;
+      const page = `/reviews/${set.seoURLSlug}/`;
+      const pageRes = await fetch(page, { method: "HEAD" });
+      if (!pageRes.ok) problems.push({ set: name, page, problem: `Page not found (HTTP ${pageRes.status}) - regenerate the review pages.` });
+    }
+
+    if (problems.length === 0) {
+      statusEl.textContent = `Done — all ${sets.length} live set(s) have a review page.`;
+      return;
+    }
+
+    statusEl.textContent = `Done — ${problems.length} of ${sets.length} live set(s) have a problem:`;
+    resultsEl.innerHTML = `
+      <table class="admin-results-table">
+        <thead><tr><th>Set</th><th>Page</th><th>Problem</th></tr></thead>
+        <tbody>
+          ${problems.map((p) => `
+            <tr>
+              <td>${escapeHtml(p.set)}</td>
+              <td class="admin-results-url">${escapeHtml(p.page)}</td>
+              <td>${escapeHtml(p.problem)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+  } catch (err) {
+    statusEl.textContent = `Error: ${err.message}`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 /* Checklist Integrity Check - wires a button to searchPlayerName's
    ?audit=1 mode, which finds every Checklists setName with no matching
    Cards item (see DATA_MODEL.md). Its "orphans" list has one entry per

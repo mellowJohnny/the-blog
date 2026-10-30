@@ -214,7 +214,7 @@ function renderPlayerSearchResults(query, results) {
       : null;
 
     const setHeading = href
-      ? `<a href="${escapeHtml(href)}">${escapeHtml(result.setName)}</a>`
+      ? `<a href="${escapeHtml(href)}" data-review-setid="${escapeHtml(result.setID || "")}" data-review-cat="${escapeHtml(result.blogCat)}" data-review-year="${escapeHtml(result.year)}">${escapeHtml(result.setName)}</a>`
       : `${escapeHtml(result.setName)} <span class="player-search-no-review">(set not reviewed)</span>`;
 
     const cardRows = result.cards.map((card) => {
@@ -240,6 +240,7 @@ function renderPlayerSearchResults(query, results) {
     <p class="player-search-summary">Found ${results.length} set${results.length === 1 ? "" : "s"} matching "${escapeHtml(query)}":</p>
     ${groups}
   `;
+  applyReviewLinks(); // helper.js
 }
 
 async function runPlayerSearch(rawQuery) {
