@@ -135,7 +135,7 @@ function replaceBetween(html, name, replacement) {
 // Mirrors the title/description/image fallbacks in fetchPageTitle() (scripts/wax.js),
 // except the description: the review text isn't in the public list.
 function headBlock(set, url, warnings) {
-  const title = (set.seoPageTitle || "").trim() || `${set.setName} Hockey Card Set Review | Junk Wax Hockey`;
+  const title = (set.seoPageTitle || "").trim() || `${set.setName} Hockey Card Set Review`;
   let description = (set.seoMetaDesc || "").trim();
   if (!description) {
     description = `${set.setName} hockey card set review from Junk Wax Hockey.`;

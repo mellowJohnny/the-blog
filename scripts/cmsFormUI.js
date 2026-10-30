@@ -268,9 +268,7 @@ function seoInsertNames() {
 }
 
 function buildSeoTitle() {
-  const label = seoSetLabel();
-  const withBrand = `${label} Card Set Review | Junk Wax Hockey`;
-  return withBrand.length <= 65 ? withBrand : `${label} Card Set Review`;
+  return `${seoSetLabel()} Card Set Review`;
 }
 
 // Base sentence, then each extra only if it still fits in 160 characters.

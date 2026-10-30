@@ -184,7 +184,7 @@ function fetchPageTitle(item)
 
   // Prefer the CMS-authored SEO fields when present, falling back to
   // the generic derivation for sets that don't have them set.
-  const pageTitle = (seoPageTitle && seoPageTitle.trim()) || `${setName} Hockey Card Set Review | Junk Wax Hockey`;
+  const pageTitle = (seoPageTitle && seoPageTitle.trim()) || `${setName} Hockey Card Set Review`;
   document.title = pageTitle;
 
   // The on-page H1 always shows the real set name, never seoPageTitle -
