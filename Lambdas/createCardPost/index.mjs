@@ -74,6 +74,19 @@ export const handler = async (event) => {
     const headerImg = imageSlug;
     const footerImg = imageSlug;
 
+    // The slug is the review's public address (/reviews/<slug>/): required, URL-safe.
+    if (typeof seoURLSlug !== "string" || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(seoURLSlug.trim())) {
+        return {
+            statusCode: 400,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "OPTIONS,POST"
+            },
+            body: JSON.stringify({ error: "seoURLSlug is required: lowercase letters, numbers and single hyphens" })
+        };
+    }
+
     // Create JSON object with parameters for DynamoDB and store in a variable
     let params = {
         TableName: "Cards",

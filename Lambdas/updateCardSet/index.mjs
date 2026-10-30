@@ -82,6 +82,19 @@ if (payload.postBody) {
       };
     }
 
+    // The slug is the review's public address (/reviews/<slug>/): required, URL-safe.
+    if (typeof seoURLSlug !== "string" || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(seoURLSlug.trim())) {
+      return {
+        statusCode: 400,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Methods": "OPTIONS,PUT"
+        },
+        body: JSON.stringify({ error: "seoURLSlug is required: lowercase letters, numbers and single hyphens" })
+      };
+    }
+
     // printRun is optional: blank removes it, but a payload with no
     // printRun key at all (an older cached CMS script) leaves it alone,
     // so a stale browser can't wipe a value it never displayed.

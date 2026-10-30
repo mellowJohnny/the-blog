@@ -40,6 +40,13 @@ const CARDSET_CATEGORY_LABELS = {
     return;
   }
 
+  const slugProblem = seoSlugProblem(seoURLSlug); // cmsFormUI.js
+  if (slugProblem) {
+    await cmsAlert(slugProblem);
+    document.getElementById("seoURLSlug").focus();
+    return;
+  }
+
   // Call the Tiny API to fetch the content from the editor... stripped
   // of the noneditable-block markers the card-image-insert buttons add
   // (see stripEditorOnlyMarkup(), cmsFormUI.js) - editor-only, never saved.
@@ -124,8 +131,15 @@ const CARDSET_CATEGORY_LABELS = {
  * Updates an existing card set review via the updateCardSet API.
  */
 
-function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, printRun)
+async function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, printRun)
 {
+  const slugProblem = seoSlugProblem(seoURLSlug); // cmsFormUI.js
+  if (slugProblem) {
+    await cmsAlert(slugProblem);
+    document.getElementById("seoURLSlug").focus();
+    return;
+  }
+
   cmsButtonSubmit();
   cmsUpdateButtonReset();
 

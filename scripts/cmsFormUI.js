@@ -312,6 +312,16 @@ function buildSeoSlug() {
     .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
+// The slug becomes the review's address (/reviews/<slug>/), so it must be
+// present and URL-safe: lowercase words joined by single hyphens.
+function seoSlugProblem(slug) {
+  if (!slug || !slug.trim()) return "SEO Friendly URL is required.";
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug.trim())) {
+    return "SEO Friendly URL can only use lowercase letters, numbers and single hyphens - click Generate.";
+  }
+  return "";
+}
+
 async function fillSeoField(fieldId, build) {
   if (!seoFormValue("setName")) {
     await cmsAlert("Enter the Set Name first - the generators build from the set's own details.");
