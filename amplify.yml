@@ -1,0 +1,21 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - node -v
+        - git --version
+        - git rev-parse --is-shallow-repository || true
+        - git rev-list --count HEAD || true
+        - git fetch --unshallow || true
+        - git rev-list --count HEAD || true
+        - git log -1 --format=%cs -- index.html || true
+        - node --input-type=module -e "const x = await Promise.resolve(1); console.log('top-level await ok', x)" || true
+        - curl -s -o /dev/null -w "sets endpoint HTTP %{http_code}\n" https://jlpd8ec14j.execute-api.us-east-2.amazonaws.com/prod || true
+    build:
+      commands:
+        - echo "diagnostic build only - no generator yet"
+  artifacts:
+    baseDirectory: /
+    files:
+      - '**/*'
