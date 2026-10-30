@@ -158,6 +158,18 @@ function reviewPath(item) {
   return `/reviews/${item.seoURLSlug}/`;
 }
 
+// Where a link to a set goes: its own page, else (no slug yet) the query form
+// that opens that exact set.
+function reviewHref(item) {
+  if (item.seoURLSlug) return reviewPath(item);
+  const pageName = getPageNameForYear(item.blogCat, item.year);
+  const params = new URLSearchParams({ year: item.year });
+  if (pageName) params.set("pageName", pageName);
+  params.set("blogCat", item.blogCat);
+  if (item.setID) params.set("setID", item.setID);
+  return `/waxReviews.html?${params}`;
+}
+
 // The clean canonical/og:url for one review, built from its own data so extra
 // query params or a different param order can't create duplicate canonicals.
 // Its /reviews/<slug>/ page; the query form only for a set with no slug yet.
@@ -932,49 +944,23 @@ function renderPaginationControls() {
     ? `Next Up: ${escapeHtml(stripYearFromSetName(nextSet.setName))} →`
     : "Next →";
 
-  const prevLink = currentPage === 1 ? "" : `
-    <a
-      href="javascript:void(0)"
-      onclick="prevPage()"
-      class="pagination-link"
-    >
+  // Real links to the neighbouring sets' own pages, like the nav, so crawlers
+  // can follow them and Back works; the end of the list is plain text, not a link.
+  const prevLink = prevSet ? `
+    <a href="${reviewHref(prevSet)}" class="pagination-link">
       ${prevLabel}
     </a>
-  `;
+  ` : "";
+
+  const nextLink = nextSet
+    ? `<a href="${reviewHref(nextSet)}" class="pagination-link">${nextLabel}</a>`
+    : `<span class="pagination-link disabled">${nextLabel}</span>`;
 
   controls.innerHTML = `
     ${prevLink}
 
     <span class="pagination-page">Page ${currentPage} of ${totalPages}</span>
 
-    <a 
-      href="javascript:void(0)" 
-      onclick="nextPage()" 
-      class="pagination-link ${currentPage === totalPages ? "disabled" : ""}"
-    >
-      ${nextLabel}
-    </a>
+    ${nextLink}
   `;
-}
-
-/**
- * Next and Previous functions
- * Functions ensure that when we navigate forward or back, we are always back at the top
- */
-
-function nextPage() {
-  const totalPages = Math.ceil(allCardSets.length / pageSize);
-  if (currentPage < totalPages) {
-    currentPage++;
-    renderCardSetPage();
-    document.getElementById("card-intro").scrollIntoView({ behavior: "smooth" });
-  }
-}
-
-function prevPage() {
-  if (currentPage > 1) {
-    currentPage--;
-    renderCardSetPage();
-    document.getElementById("card-intro").scrollIntoView({ behavior: "smooth" });
-  }
 }
