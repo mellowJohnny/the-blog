@@ -52,8 +52,9 @@ sitemap.
 
 ## Command-line tools (`tools/` at the repo root)
 
-Plain Node scripts with no dependencies.
+Plain Node scripts. The generator has no dependencies; the minifier uses `esbuild`, the one package in the root `package.json` (pinned in `package-lock.json`, installed by `npm ci` in the Amplify build only).
 
+- `tools/minifyAssets/minify.mjs` — **run by every Amplify build** (`amplify.yml`), after the generator, never by hand: minifies the public scripts and `styles/styles.css` in place in the build's copy, with source maps, and fails the build if a file isn't smaller or loses a top-level name. It refuses to run outside Amplify unless `--force-in-place` is passed, because it overwrites files. See `REVIEW_PAGES.md`'s "The rest of the build: minified assets".
 - `tools/generateReviewPages/generate.mjs` — **run by every Amplify build** (`amplify.yml`), not by hand: reads the live sets from `getPublicCardSets` and writes `reviews/<slug>/index.html` for each, `reviews/index.json` (the link manifest) and `sitemap.xml`, none of it committed (gitignored). A CMS save to a live set starts a build, so nothing needs re-running when a set is added or edited. You can still run it locally for a preview. It replaced `tools/generateSitemap/generate.mjs` on 2026-10-30. See `REVIEW_PAGES.md` and `FRONTEND.md`'s sitemap section.
 - `tools/checklistParser/parse.mjs` — run by hand, not part of any deploy: parses a checklist PDF into the JSON the checklist-upload flow produces, mirroring `Lambdas/parseChecklistPdf/` (see `LAMBDA_FUNCTIONS.md` and `CMS_GUIDE.md`).
 

@@ -1,8 +1,10 @@
 # Frontend
 
-Plain HTML/CSS/JS, no framework, no bundler; the only build step is the
-generator that writes the per-review pages, sitemap and link manifest
-(see "Sitemap" below and `REVIEW_PAGES.md`). Every page
+Plain HTML/CSS/JS, no framework, no bundler. The Amplify build has two
+steps: the generator that writes the per-review pages, sitemap and link
+manifest (see "Sitemap" below), then a minifier for the public scripts and
+`styles.css` (see "Minified in production" under `scripts/`); both are
+described in `REVIEW_PAGES.md`. Every page
 loads a fixed set of `<script src>` tags and wires up behaviour with
 `window.addEventListener('load', ...)` / `DOMContentLoaded` handlers
 inline in the `<head>`.
@@ -90,6 +92,25 @@ the generator (`amplify.yml`), whether it was started by a git push or
 by a CMS save.
 
 ## `scripts/` — shared JS
+
+### Minified in production
+
+The files described below are the **readable source**. Since 2026-10-30 the
+Amplify build overwrites its own copies of the public ones (`helper.js`,
+`wax.js`, `ticker.js`, `blogs.js`, `playerSearch.js`, `browseBySet.js`,
+`timeline.js`) and `styles/styles.css` with minified versions, each with a
+linked source map (`x.js.map`) beside it, so the live site serves about half
+the bytes (roughly 67 KB to 34.5 KB over the wire, since the CDN already
+compresses with Brotli). The URLs are unchanged and nothing is committed
+minified. The CMS scripts, `auth.js` and `scripts/fonts/*` are not minified.
+Working with it (full details in `REVIEW_PAGES.md`): edit the readable
+source only; add any new public script or stylesheet to the list in
+`tools/minifyAssets/minify.mjs`; keep top-level `function`/`let`/`const`/`var`
+declarations at the start of a line, because the build checks that every such
+name survives minification (inline `onclick` handlers and calls between scripts
+rely on them) and fails, leaving the previous deployment live, if one doesn't;
+and expect a production console error to show a minified line unless dev tools
+are open, which load the source map and show the real file and line.
 
 | File | Responsibility |
 |---|---|

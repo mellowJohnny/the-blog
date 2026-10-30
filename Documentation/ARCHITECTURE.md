@@ -3,8 +3,8 @@
 ## Overview
 
 The site is a static frontend (plain HTML/CSS/JS, no framework; the
-only build step generates the per-review pages, sitemap and link
-manifest — see `REVIEW_PAGES.md`) that talks directly to a set of individual AWS Lambda
+Amplify build generates the per-review pages, sitemap and link manifest
+and minifies the public scripts and stylesheet — see `REVIEW_PAGES.md`) that talks directly to a set of individual AWS Lambda
 functions, each exposed through its own API Gateway REST API. There is
 no single backend app or router — every distinct action (get blogs,
 create a blog, get a card set by ID, upload an image, send an SMS...)
@@ -54,16 +54,23 @@ The static site is deployed via **AWS Amplify Hosting**,
 connected directly to this repo's git history. Until 2026-10-30 no
 build config was checked in and Amplify ran its default no-op build
 (the app's console build spec is `commands: []`). A root `amplify.yml`
-now exists and its one build command is
+now exists and runs, in order: `npm ci` (installs one dev dependency,
+`esbuild`, from the root `package.json`/`package-lock.json`);
 `node tools/generateReviewPages/generate.mjs`, which writes the
 `/reviews/<slug>/` pages, `reviews/index.json` and `sitemap.xml` into the
-build output (all gitignored, never committed). Otherwise the site is
-still plain HTML/CSS/JS with no bundler. The build image is Amazon Linux 2
-with Node 16.19 and full git history (read from a diagnostic build's log),
-which is why the generator uses `node:https`, not `fetch`.
+build output (all gitignored, never committed);
+`node tools/minifyAssets/minify.mjs`, which minifies the public scripts and
+`styles.css` in place in the build's copy (the repo keeps readable source;
+about 67 KB becomes 34.5 KB over the wire); and `rm -rf node_modules`, since
+the artifact is the whole directory and the installed packages must not be
+published. Otherwise the site is still plain HTML/CSS/JS with no bundler. The
+build image is Amazon Linux 2 with Node 16.19 and full git history (read from
+a diagnostic build's log), which is why the generator uses `node:https`, not
+`fetch`, and why esbuild is pinned to 0.19.12 (the last line that supports
+Node 16).
 
 - **Trigger**: two ways to start a build. Any push to the tracked branch (this repo shows `main` as that branch), and a save to a live card set in the CMS: a DynamoDB Stream on `Cards` calls the `cardsRebuildTrigger` Lambda, which starts a release job with `amplify:StartJob` (60 second batching, so a burst of saves is one build). See `REVIEW_PAGES.md`.
-- **Process**: Amplify picks up the commit (or the job), runs the generator, and deploys straight to production — there's no staging environment or manual promotion step. If the generator fails (bad slug data, API unreachable) the build fails and Amplify keeps serving the previous deployment.
+- **Process**: Amplify picks up the commit (or the job), runs the generator and the minifier, and deploys straight to production — there's no staging environment or manual promotion step. If either fails (bad slug data, API unreachable, a minified file that lost a top-level name, `npm ci` unable to reach the registry) the build fails and Amplify keeps serving the previous deployment.
 - **Notification**: a custom email summary on build completion, sent by `Lambdas/amplifyBuildNotifier/` — an EventBridge rule on "Amplify Deployment Status Change" (filtered to `SUCCEED`/`FAILED`) invokes it, and it calls `amplify:GetJob` for the commit, duration and per-step detail before publishing plain text to an SNS email topic. It replaced Amplify's own built-in build notifications, which said only that a build finished; the failing step's log URL in particular now arrives in the email rather than having to be dug out of the Console. Setup steps and the IAM permissions it needs: `LAMBDA_FUNCTIONS.md`. Still the only build/deploy signal — there's no CI status check, PR gate, or Slack/webhook integration in play.
 - **Practical implication**: pushing to `main` ships to the live site. There's no separate preview/staging branch — the `published`/`blogStatus` draft flags in DynamoDB (see `DATA_MODEL.md`) are what stand in for a staging environment at the *content* level, but not at the *code* level. A broken commit to `main` goes live as soon as Amplify's build finishes.
 
@@ -184,7 +191,7 @@ elsewhere. Practically, that means:
 
 ## Frontend
 
-Plain multi-page HTML site, no bundler/framework:
+Plain multi-page HTML site, no bundler/framework (the deployed public scripts and stylesheet are minified copies made in the Amplify build; the repo holds the readable source — see `REVIEW_PAGES.md`):
 
 - Every page is a standalone `.html` file at the repo root (`index.html`, `about.html`, `tech.html`, `waxReviews.html`, `browseBySet.html`, `playerSearch.html`, `lockout.html`, `theJunkWaxYears.html`, `timeline.html`) or under `/cms`. `cards.html` and `cardChecker.html` were both archived to `Old HTML Pages/` on 2026-08-15 — no longer live pages, see `FRONTEND.md`.
 - Shared behaviour lives in `/scripts/*.js`, included per-page via `<script src>` tags — see `FRONTEND.md` for which script does what.

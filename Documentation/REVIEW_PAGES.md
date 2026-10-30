@@ -23,6 +23,9 @@ records how it got here.
   review itself, the checklist, votes, the ticker) is still drawn in the
   browser by `wax.js` from the API.
 - Old query-string URLs (`waxReviews.html?year=1991&...`) keep working.
+- The same build then minifies the public scripts and `styles.css` in
+  place (see "The rest of the build: minified assets"); the repo keeps the
+  readable source.
 
 ## The pipeline
 
@@ -37,12 +40,15 @@ Lambda cardsRebuildTrigger --- amplify:StartJob (RELEASE, branch main)
         |
         v
 Amplify build (amplify.yml)
+   npm ci                                    (installs esbuild only)
    node tools/generateReviewPages/generate.mjs
         reads getPublicCardSets (live sets, stars, SEO fields)
         template: waxReviews.html
         writes: reviews/<slug>/index.html (one per set)
                 reviews/index.json        (link manifest)
                 sitemap.xml
+   node tools/minifyAssets/minify.mjs        (public JS + styles.css, in place)
+   rm -rf node_modules                       (keep it out of the artifact)
         |
         v
 Deploy to Amplify Hosting (CloudFront) --- amplifyBuildNotifier emails the result
@@ -63,12 +69,13 @@ content changes share one path.
    live. Every CMS save moves `updatedAt`, so every CMS save does start
    one; that is deliberate, it keeps the sitemap's `<lastmod>` honest.
    A burst of saves inside the 60 second batch window becomes one build.
-3. **Build.** `amplify.yml` runs the generator before the artifact is
-   zipped. The build image is Amazon Linux 2 with Node 16.19 (read from
-   a diagnostic build's log), which has no global `fetch`, so the
-   generator uses `node:https` and retries three times. Git history is
-   complete, so the static pages' `<lastmod>` (their last commit date)
-   works.
+3. **Build.** `amplify.yml` runs `npm ci`, then the generator, then the
+   asset minifier (see "The rest of the build: minified assets"), then
+   deletes `node_modules`, all before the artifact is zipped. The build
+   image is Amazon Linux 2 with Node 16.19 (read from a diagnostic build's
+   log), which has no global `fetch`, so the generator uses `node:https`
+   and retries three times. Git history is complete, so the static pages'
+   `<lastmod>` (their last commit date) works.
 4. **Generator.** For each live set it takes `waxReviews.html` as a
    template and replaces two marked blocks (below), then writes the
    page. It also writes the manifest and the sitemap.
@@ -197,6 +204,72 @@ into the working folder (ignored by git). Because the artifact is the
 whole repo, `amplify.yml` itself is also served at `/amplify.yml`, like
 `tools/` and `Documentation/` already are.
 
+## The rest of the build: minified assets
+
+Since 2026-10-30 the same build also minifies the public scripts and the
+stylesheet. It is described here because it shares `amplify.yml` and the
+"generated in the build, never committed" rule with the review pages.
+
+**What happens.** After the generator, `node tools/minifyAssets/minify.mjs`
+rewrites the build's own copies of `scripts/helper.js`, `wax.js`,
+`ticker.js`, `blogs.js`, `playerSearch.js`, `browseBySet.js`,
+`timeline.js` and `styles/styles.css` in place, with a linked source map
+(`helper.js.map` and so on, readable source embedded) beside each. The
+URLs don't change and no HTML changes, so every page, including every
+generated review page, picks the minified files up automatically. The repo
+keeps readable source and nothing minified is committed; the build machine
+is thrown away. The CMS scripts, `auth.js`, `scripts/fonts/*` (already
+base64, nothing to gain), deprecated scripts and the inline `<script>`
+blocks in the HTML are not touched.
+
+**Why this way.** The site already served Brotli, so the gain is smaller
+than raw sizes suggest but still about half: raw 260,043 to 135,417 bytes
+across the 8 files, and over the wire about 67 KB to 34.5 KB (live:
+`helper.js` 9.2 to 5.8 KB, `wax.js` 11.3 to 6.5 KB, `styles.css` 24.9 to
+11.4 KB; a review page goes from about 56 KB to 28 KB, and the browser
+parses less). Doing it in the build, not by committing minified copies,
+means no drift between source and output, and the source stays what you
+edit and read.
+
+**The tool.** esbuild, installed by `npm ci` from a root `package.json`
+and `package-lock.json` (the only dependency in the repo outside
+`Lambdas/`), pinned to 0.19.12 because 0.19 is the last line that supports
+the build image's Node 16. Each file is minified on its own, with no
+bundling and no format option: esbuild then keeps every top-level
+`function`, `let`, `const` and `var` name, which matters because inline
+`onclick` handlers and calls between scripts rely on those names, and only
+shortens local names. `rm -rf node_modules` runs last because the artifact
+is the whole directory and would otherwise publish the installed packages;
+that is also why `node_modules` isn't cached between builds (`npm ci` takes
+about half a second here).
+
+**Safety.** The tool overwrites files, so it refuses to run unless
+`AWS_APP_ID` is set (Amplify sets it) or `--force-in-place` is passed;
+`--root <dir>` points it at a scratch copy, which is how it was tested. It
+fails the build, leaving the previous deployment live and the notifier
+emailing the log, if any file is empty, not smaller, missing its source
+map, or has lost a top-level name found at the start of a line in the
+source (a regex check, so keep top-level declarations at the start of a
+line). It must run after the generator, which reads the readable
+`helper.js` and `waxReviews.html`.
+
+**Working with it.** Edit the readable source only. A new public script or
+stylesheet must be added to the list in `minify.mjs` or it ships unminified.
+A production console error shows minified lines unless dev tools are open
+(they fetch the `.map` and show the real file and line). The build log
+prints the before and after bytes per file. `npm audit` prints a notice for
+esbuild 0.19.12; it concerns esbuild's development server, which is never
+run here, and moving to a newer esbuild needs a newer Node than the image
+has.
+
+**How it was verified.** On a scratch copy (generate, then minify): 46
+browser checks gave identical results for the original and minified copies,
+and 36 screenshots (12 pages at 1300, 768 and 390 px, with recorded API
+data, a fixed random seed and fonts) were pixel-identical. On production
+(build #3157): 10 pages at two widths with no console errors, links
+upgraded, the checklist modal working, the `.map` files served and
+`/node_modules/` returning 404.
+
 ## Why this is only a partial static site
 
 The generated HTML contains the metadata but not the review. The review
@@ -257,6 +330,11 @@ Node. Not planned.
   markers broken): build fails, previous deployment stays live, the
   notifier emails the log link. While the API is down, builds started by
   unrelated pushes fail the same way.
+- **Minifier fails** (a file not smaller, a missing source map or a lost
+  top-level name, or `npm ci` unable to reach the npm registry): the build
+  fails the same way, the previous deployment stays live and the notifier
+  emails the log. A CMS save starts a build, so until it is fixed new
+  content doesn't reach the site either.
 - **Duplicate or invalid slug:** rejected at save time by the CMS Lambdas,
   so the generator's own check should never trip.
 - **Build in progress or failed:** a freshly saved set's page does not
@@ -298,10 +376,23 @@ build minutes a month while the account is within its free tier.
 Reading a DynamoDB Stream from Lambda is free, the trigger Lambda and the
 duplicate-slug query are negligible, and hosting grows by about 63 small
 files. There are no standing charges. The manifest also removed the
-per-page-view API call an earlier design needed.
+per-page-view API call an earlier design needed. Installing esbuild and
+minifying add about a second to a build (the log showed `npm ci` at 0.4 s
+and the minifier at 0.1 s), so the build minutes don't change.
 
 ## Change log
 
+- **2026-10-30 (later)** — Public JS and CSS minified in the build.
+  - New `tools/minifyAssets/minify.mjs` (esbuild 0.19.12), run by
+    `amplify.yml` after the generator; root `package.json` and
+    `package-lock.json` added; `npm ci` before and `rm -rf node_modules`
+    after, so the installed packages aren't published.
+  - 7 public scripts and `styles/styles.css` minified in place with linked
+    source maps: raw 260,043 to 135,417 bytes, about 67 KB to 34.5 KB over
+    the wire. Verified on a scratch copy (46 checks, 36 pixel-identical
+    screenshots) and on production (build #3157).
+  - The cache for `node_modules` in the original plan was dropped: the
+    artifact is the whole directory, so the folder is deleted instead.
 - **2026-10-30** — Review pages moved from one query-string URL to
   generated `/reviews/<slug>/` pages.
   - SEO Friendly URL made required and validated (client, create and

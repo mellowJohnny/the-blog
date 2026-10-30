@@ -20,16 +20,38 @@ reference and this file as the short orientation on top of it.
 
 ## Commands
 
-There is no package manager, linter, or test suite for the site itself —
-it's plain static HTML/CSS/JS with no bundler. Edit files directly and
-open them in a browser (or push to deploy — see below). There is nothing
-to `npm install` or `npm run` at the repo root. The one build step runs
-only in Amplify: `amplify.yml` runs `node tools/generateReviewPages/generate.mjs`,
+There is no linter or test suite for the site itself — it's plain static
+HTML/CSS/JS with no bundler. Edit files directly and open them in a
+browser (or push to deploy — see below). There is nothing to `npm install`
+or `npm run` for local development: the root `package.json` exists only for
+the Amplify build, whose `npm ci` installs one dev dependency (`esbuild`,
+pinned in `package-lock.json`). The build steps run only in Amplify, in this
+order (`amplify.yml`): (1) `node tools/generateReviewPages/generate.mjs`,
 which writes `reviews/<slug>/index.html` (one page per live card set),
-`reviews/index.json` and `sitemap.xml` into the build output. Those three
-are gitignored and never committed, so a local checkout has no `/reviews/`
-until you run the generator yourself (optional, for a preview). Full
-explanation: `Documentation/REVIEW_PAGES.md`.
+`reviews/index.json` and `sitemap.xml` into the build output; (2)
+`node tools/minifyAssets/minify.mjs`, which minifies the public scripts and
+`styles/styles.css` in place in the build's copy; (3) `rm -rf node_modules`,
+so the installed packages aren't published. The generated files are
+gitignored and never committed, so a local checkout has no `/reviews/` until
+you run the generator yourself (optional, for a preview). Full explanation:
+`Documentation/REVIEW_PAGES.md`.
+
+**Minified assets (added 2026-10-30)**: the repo always holds readable
+source; the deployed `scripts/{helper,wax,ticker,blogs,playerSearch,browseBySet,timeline}.js`
+and `styles/styles.css` are minified copies with a linked source map
+(`x.js.map`) beside each, so a production console error shows minified
+lines unless dev tools are open. Never edit the minified output, and never
+run `minify.mjs` on a working copy: it overwrites files in place, so it
+refuses to run unless `AWS_APP_ID` (set by Amplify) or `--force-in-place`
+is given (`--root <dir>` points it at a scratch copy). A new public script
+or stylesheet must be added to the list in `tools/minifyAssets/minify.mjs`.
+Keep top-level `function`/`let`/`const`/`var` declarations at the start of a
+line: the tool checks that every such name survives minification (inline
+`onclick` handlers and cross-file calls depend on them) and fails the build
+otherwise, which leaves the previous deployment live. The minifier must run
+after the generator, which reads the readable `helper.js`. The CMS scripts
+and `scripts/fonts/*` are not minified. esbuild is pinned to 0.19.12 because
+that is the last line supporting the build image's Node 16.
 
 The exception is the **Lambdas** — every AWS Lambda function behind
 this site's API Gateway endpoints now has its source checked into this
