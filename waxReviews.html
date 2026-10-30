@@ -181,6 +181,9 @@
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         renderCardIntro(pageName);
+        // Set-O-Matic Set Picker: needs only the URL params, so draw it before first
+        // paint - on window load it popped in late and pushed the page down
+        renderSetPicker(year,blogCat,pageName);
         //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
         fetchCardSetsByYear(year,sortOrder,blogCat,setID);
       });
@@ -192,8 +195,6 @@
         // First: fetch Global Nav from helper.js
         fetchNav(pageName);
         fetchFooterLinks();
-        // Call the Set-O-Matic Set Picker
-        renderSetPicker(year,blogCat,pageName);
         // Masthead: random NHL team colors on every load - helper.js
         applyRandomMastheadStyling();
       });
