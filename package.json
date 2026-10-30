@@ -1,0 +1,8 @@
+{
+  "name": "the-blog",
+  "private": true,
+  "description": "Static site. The only dependency is the minifier the Amplify build runs (tools/minifyAssets); nothing else needs installing.",
+  "devDependencies": {
+    "esbuild": "0.19.12"
+  }
+}

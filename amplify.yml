@@ -1,12 +1,21 @@
 version: 1
 frontend:
   phases:
+    preBuild:
+      commands:
+        # Only the minifier (esbuild, pinned in package-lock.json) is installed.
+        - npm ci
     build:
       commands:
         # Writes reviews/<slug>/index.html, reviews/index.json and sitemap.xml
         # from the live card sets; a failure fails the build, so the previous
-        # deployment stays live.
+        # deployment stays live. It reads the readable helper.js, so it runs first.
         - node tools/generateReviewPages/generate.mjs
+        # Then the public scripts and styles.css are minified in place in this
+        # build's copy (the repo keeps the readable source).
+        - node tools/minifyAssets/minify.mjs
+        # The artifact is the whole directory; don't publish the installed packages.
+        - rm -rf node_modules
   artifacts:
     baseDirectory: /
     files:
