@@ -24,8 +24,10 @@ function groupBrowseSetsBySeason(sets) {
   }));
 }
 
-// Site-relative review URL for a set, or null when no year range covers it.
+// Site-relative review URL for a set: its own /reviews/<slug>/ page, else the
+// query form; null when no year range covers it.
 function browseReviewUrl(set) {
+  if (set.seoURLSlug) return `/reviews/${set.seoURLSlug}/`;
   const pageName = getPageNameForYear(set.blogCat, set.year);
   if (!pageName) return null;
   const setParam = set.setID ? `&setID=${encodeURIComponent(set.setID)}` : "";
