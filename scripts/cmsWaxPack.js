@@ -4,6 +4,7 @@ const WAX_PACK_SAVE_URL = "https://b3qn1kny99.execute-api.us-east-2.amazonaws.co
 const WAX_PACK_DELETE_URL = "https://y4hs1e712l.execute-api.us-east-2.amazonaws.com/prod"; // deleteWaxPack API
 const WAX_PACK_GET_URL = "https://efh9lu4988.execute-api.us-east-2.amazonaws.com/prod"; // getWaxPacks API
 
+const WAX_PACK_REVIEWS_URL = "https://jlpd8ec14j.execute-api.us-east-2.amazonaws.com/prod"; // getPublicCardSets API
 const WAX_PACK_IMAGE_UPLOAD_URL = "https://k95rdenpn5.execute-api.us-east-2.amazonaws.com/dev"; // cmsImageUploader API
 const WAX_PACK_IMAGE_DIR = "img/wax-packs/";
 const WAX_PACK_IMAGE_BASE = `https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/${WAX_PACK_IMAGE_DIR}`;
@@ -16,6 +17,7 @@ const WAX_PACK_MANUFACTURERS = ["O-Pee-Chee", "Topps", "Upper Deck", "Score", "P
 const WAX_PACK_PACKAGING = ["Wax", "Rack", "Cello", "Blister"];
 
 let _waxPacks = [];
+let _waxReviews = [];
 let _waxPackBeingEdited = null;
 
 function waxPackField(id) {
@@ -26,8 +28,7 @@ function waxPackField(id) {
 
 async function initNewWaxPackPage() {
   renderWaxPackForm("create");
-  _waxPacks = await loadWaxPacks() || [];
-  fillWaxPackDropdowns();
+  await loadWaxPackFormData();
 }
 
 async function initPickWaxPackPage() {
@@ -42,7 +43,7 @@ async function initPickWaxPackPage() {
   Object.keys(WAX_PACK_TYPE_LABELS).forEach((type) => {
     const group = packs
       .filter((pack) => (pack.type || "main") === type)
-      .sort((a, b) => a.year - b.year || a.setName.localeCompare(b.setName) || a.packKey.localeCompare(b.packKey));
+      .sort((a, b) => a.year - b.year || a.name.localeCompare(b.name));
     if (!group.length) return;
 
     const header = document.createElement("h2");
@@ -55,8 +56,7 @@ async function initPickWaxPackPage() {
 
 async function initEditWaxPackPage() {
   renderWaxPackForm("edit");
-  _waxPacks = await loadWaxPacks() || [];
-  fillWaxPackDropdowns();
+  await loadWaxPackFormData();
 
   const params = new URLSearchParams(document.location.search);
   const year = Number(params.get("year"));
@@ -85,6 +85,29 @@ async function loadWaxPacks() {
   }
 }
 
+/** Loads the packs and the live reviews together, then fills the form's dropdowns from them. */
+async function loadWaxPackFormData() {
+  const [packs, reviews] = await Promise.all([loadWaxPacks(), loadWaxReviews()]);
+  _waxPacks = packs || [];
+  _waxReviews = reviews;
+  fillWaxPackDropdowns();
+}
+
+/** Live reviews for the "Related Review" dropdown; an empty list (form still works) if the request fails. */
+async function loadWaxReviews() {
+  try {
+    const response = await fetch(WAX_PACK_REVIEWS_URL);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const sets = await response.json();
+    return sets
+      .filter((set) => set.seoURLSlug)
+      .sort((a, b) => a.year - b.year || a.setName.localeCompare(b.setName));
+  } catch (error) {
+    console.log("Wax pack review list error:", error);
+    return [];
+  }
+}
+
 /** One picker entry, built like displayCardSets(): a table holding a link to the edit page. */
 function waxPackLink(pack) {
   const table = document.createElement("table");
@@ -95,7 +118,7 @@ function waxPackLink(pack) {
   const link = document.createElement("a");
   link.href = `waxPackEdit.html?year=${pack.year}&packKey=${encodeURIComponent(pack.packKey)}`;
   const label = document.createElement("strong");
-  label.textContent = `${pack.setName} - ${pack.packaging}, ${pack.format} (${pack.year})`;
+  label.textContent = `${pack.name} (${pack.year})`;
   link.appendChild(label);
   cell.appendChild(link);
   return table;
@@ -123,15 +146,14 @@ function renderWaxPackForm(mode) {
             <input type="number" id="wpYear" min="1900" max="2100" required>
           </td>
           <td>
-            <label>Set Name <sup>*</sup></label><br>
-            <input type="text" id="wpSetName" required>
+            <label>Pack Name <sup>*</sup></label><br>
+            <input type="text" id="wpName" required>
           </td>
         </tr>
         <tr>
           <td colspan="2">
-            <label>Set Slug <sup>*</sup></label>
-            <button type="button" class="seo-generate-btn" id="wpSlugButton" onclick="generateWaxPackSlug()">Generate</button><br>
-            <input type="text" id="wpSetSlug" required>
+            <label>Related Review</label><br>
+            <select id="wpReviewSlug" style="width: 400px;"></select>
           </td>
         </tr>
         <tr>
@@ -173,13 +195,8 @@ function renderWaxPackForm(mode) {
           </td>
         </tr>
         <tr>
-          <td colspan="2">
-            <label>Pack Photo</label><br>
-            <input type="text" id="wpImgName" readonly><br>
-            <input type="file" id="wpImageFile" accept="image/*">
-            <span id="wpImageStatus"></span><br>
-            <img id="wpImgPreview" alt="Pack photo preview" style="display: none; max-width: 160px;">
-          </td>
+          <td>${waxPackImageBlock("Front")}</td>
+          <td>${waxPackImageBlock("Back")}</td>
         </tr>
         <tr>
           <td colspan="2">
@@ -196,13 +213,20 @@ function renderWaxPackForm(mode) {
   ["wpManufacturer", "wpPackaging"].forEach((id) => {
     waxPackField(id).addEventListener("change", () => toggleWaxPackNewValue(id));
   });
-  waxPackField("wpImageFile").addEventListener("change", uploadWaxPackImage);
+  ["Front", "Back"].forEach((side) => {
+    waxPackField(`wp${side}File`).addEventListener("change", () => uploadWaxPackImage(side));
+  });
 }
 
 /** Seed values plus every value already saved (case-insensitive), then "Add new...". */
 function fillWaxPackDropdowns() {
   fillWaxPackDropdown("wpManufacturer", WAX_PACK_MANUFACTURERS, "manufacturer");
   fillWaxPackDropdown("wpPackaging", WAX_PACK_PACKAGING, "packaging");
+
+  const reviews = waxPackField("wpReviewSlug");
+  reviews.innerHTML = "";
+  reviews.add(new Option("None", ""));
+  _waxReviews.forEach((set) => reviews.add(new Option(`${set.setName} (${set.year})`, set.seoURLSlug)));
 }
 
 function fillWaxPackDropdown(selectId, seeds, field) {
@@ -239,47 +263,60 @@ function setWaxPackDropdown(selectId, value) {
   toggleWaxPackNewValue(selectId);
 }
 
-/** Fills the edit form from a saved pack; the four fields that make up its key are locked. */
+/** Fills the edit form from a saved pack; only the year (the table's partition key) is locked. */
 function populateWaxPackForm(pack) {
   _waxPackBeingEdited = pack;
 
   waxPackField("wpYear").value = pack.year;
-  waxPackField("wpSetName").value = pack.setName;
-  waxPackField("wpSetSlug").value = pack.setSlug;
+  waxPackField("wpName").value = pack.name;
+  setWaxPackReview(pack.reviewSlug || "");
   setWaxPackDropdown("wpManufacturer", pack.manufacturer);
   setWaxPackDropdown("wpPackaging", pack.packaging);
   waxPackField("wpType").value = pack.type || "main";
   waxPackField("wpFormat").value = pack.format;
   waxPackField("wpNumCards").value = pack.numCards;
   waxPackField("wpPrice").value = pack.price;
-  waxPackField("wpImgName").value = pack.imgName || "";
+  waxPackField("wpFrontImg").value = pack.frontImg || "";
+  waxPackField("wpBackImg").value = pack.backImg || "";
   waxPackField("wpNotes").value = pack.notes || "";
 
-  ["wpYear", "wpSetSlug", "wpSlugButton", "wpPackaging", "wpPackagingNew", "wpFormat"].forEach((id) => { waxPackField(id).disabled = true; });
-  showWaxPackImage();
+  waxPackField("wpYear").disabled = true;
+  showWaxPackImage("Front");
+  showWaxPackImage("Back");
 }
 
-/** Same rule as the card set slug: lowercase letters, numbers and single hyphens. */
-function generateWaxPackSlug() {
-  waxPackField("wpSetSlug").value = waxPackField("wpSetName").value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
+/** Selects the pack's review; one that is no longer a live review is kept as an extra option so saving doesn't drop it. */
+function setWaxPackReview(slug) {
+  const select = waxPackField("wpReviewSlug");
+  if (slug && ![...select.options].some((option) => option.value === slug)) {
+    select.add(new Option(`${slug} (not a live review)`, slug));
+  }
+  select.value = slug;
 }
 
-/************************************* Photo *************************************/
+/************************************* Front and back images *************************************/
 
-function showWaxPackImage() {
-  const name = waxPackField("wpImgName").value;
-  const img = waxPackField("wpImgPreview");
+/** The form block for one side ("Front" or "Back"): file name, chooser, status and preview. */
+function waxPackImageBlock(side) {
+  return `
+    <label>${side} Image</label><br>
+    <input type="text" id="wp${side}Img" readonly><br>
+    <input type="file" id="wp${side}File" accept="image/*">
+    <span id="wp${side}Status"></span><br>
+    <img id="wp${side}Preview" alt="${side} of the pack" style="display: none; max-width: 160px;">`;
+}
+
+function showWaxPackImage(side) {
+  const name = waxPackField(`wp${side}Img`).value;
+  const img = waxPackField(`wp${side}Preview`);
   img.style.display = name ? "" : "none";
   img.src = name ? WAX_PACK_IMAGE_BASE + encodeURIComponent(name) : "";
 }
 
-/** Gets a presigned URL from cmsImageUploader, PUTs the file to S3 under img/wax-packs/, then fills the image field. */
-async function uploadWaxPackImage() {
-  const file = waxPackField("wpImageFile").files[0];
-  const status = waxPackField("wpImageStatus");
+/** Gets a presigned URL from cmsImageUploader, PUTs the file to S3 under img/wax-packs/, then fills that side's field. */
+async function uploadWaxPackImage(side) {
+  const file = waxPackField(`wp${side}File`).files[0];
+  const status = waxPackField(`wp${side}Status`);
   if (!file) return;
 
   const fileName = file.name.toLowerCase().replace(/[^a-z0-9._-]+/g, "-");
@@ -297,9 +334,9 @@ async function uploadWaxPackImage() {
     const upload = await fetch(data.uploadUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
     if (!upload.ok) throw new Error(`S3 returned ${upload.status}`);
 
-    waxPackField("wpImgName").value = fileName;
+    waxPackField(`wp${side}Img`).value = fileName;
     status.textContent = "Uploaded.";
-    showWaxPackImage();
+    showWaxPackImage(side);
   } catch (error) {
     console.log("Wax pack image upload error:", error);
     status.textContent = "Upload failed.";
@@ -312,17 +349,19 @@ async function uploadWaxPackImage() {
 async function submitWaxPack() {
   const payload = {
     year: parseInt(waxPackField("wpYear").value, 10),
-    setSlug: waxPackField("wpSetSlug").value.trim(),
-    setName: waxPackField("wpSetName").value.trim(),
+    name: waxPackField("wpName").value.trim(),
+    reviewSlug: waxPackField("wpReviewSlug").value,
     manufacturer: waxPackDropdownValue("wpManufacturer"),
     packaging: waxPackDropdownValue("wpPackaging"),
     type: waxPackField("wpType").value,
     format: waxPackField("wpFormat").value,
     numCards: parseInt(waxPackField("wpNumCards").value, 10),
     price: parseFloat(waxPackField("wpPrice").value),
-    imgName: waxPackField("wpImgName").value.trim(),
+    frontImg: waxPackField("wpFrontImg").value.trim(),
+    backImg: waxPackField("wpBackImg").value.trim(),
     notes: waxPackField("wpNotes").value.trim()
   };
+  if (_waxPackBeingEdited) payload.packKey = _waxPackBeingEdited.packKey;
 
   try {
     const token = await getAuthToken();
