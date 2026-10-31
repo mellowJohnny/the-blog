@@ -114,7 +114,12 @@ a live set has a missing, invalid or duplicate `seoURLSlug`, if
 `getPublicCardSets` returns no `stars`, or if it can't find
 `categoryRanges` in `scripts/helper.js` (it reads the year ranges from
 there; keep that a plain object literal ending in `};`). It runs on
-Node 16 in the build image, so it uses `node:https`, not `fetch`.
+Node 16 in the build image, so it uses `node:https`, not `fetch`. Each
+generated head also preloads the set's header image (the page's LCP) and
+the set-data request; the data URL is the `SETS_BY_YEAR_URL` constant in
+the generator and must stay identical to the one `fetchCardSetsByYear()`
+builds in `scripts/wax.js` (see `Documentation/REVIEW_PAGES.md`, "Loading
+speed").
 `seoURLSlug` is a required CMS field, enforced by `seoSlugProblem()` and
 by the `createCardPost`/`updateCardSet` Lambdas (which also reject a slug
 another live set uses; their roles need `dynamodb:Query` on the

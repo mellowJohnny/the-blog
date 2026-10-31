@@ -49,6 +49,18 @@ after a create/update/delete redirects back to them (see
 `CMS_GUIDE.md`'s "Redirect on success"), so don't add caching to those
 without changing that expectation first.
 
+**Compression (2026-10-30)**: content encoding is a per-API setting in API
+Gateway (Settings, "Content encoding", with a small minimum size, then
+redeploy the stage); with it on, a client that sends
+`Accept-Encoding: gzip` gets a gzipped body. It is on for "Get card sets by
+year" only, where it matters most: a year with eight sets went from 50,793
+bytes to about 17,200. Checked the same day, "Get all live sets (public)"
+(about 45 KB) still returns uncompressed, as would any other API it hasn't
+been turned on for. It costs nothing, unlike API Gateway's stage cache,
+which was tried and turned off as too expensive for this site's traffic.
+To check an endpoint: `curl -s -D - -o /dev/null -H "Accept-Encoding: gzip"
+<url>` should show `content-encoding: gzip`.
+
 ### Get all blogs of a given type
 - **URL**: `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
@@ -69,7 +81,7 @@ without changing that expectation first.
 - **URL**: `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
 - **Query params**: `year`, `blogCat`
-- **Called from**: `fetchCardSetsByYear()` in `scripts/wax.js` (used by `waxReviews.html`)
+- **Called from**: `fetchCardSetsByYear()` in `scripts/wax.js` (used by `waxReviews.html`). Each generated `/reviews/<slug>/` page also preloads this exact URL from its `<head>` (`REVIEW_PAGES.md`, "Loading speed"), so keep the URL and parameters identical between `wax.js` and `tools/generateReviewPages/generate.mjs`.
 - **Response**: JSON array directly (each item has `postBody`, `year`, `mfg`, `size`, `subsets`, `stars`, `formats`, `headerImg`, `headerImgName`, `footerImg`, `footerImgName`, `setName`, `author`, `now`). `Cache-Control: public, max-age=1800` (30 min) on the success response — the Lambda's own comment says "CloudFront cache," but no CloudFront actually sits in front of this endpoint (see the caching note above), so today this is browser-only. Bumped from an original `max-age=300` to `1800` on 2026-08-14, since a published set review essentially never changes and votes are tracked via the separate `castVoteHandler` endpoint, not this one.
 - **Lambda**: `Lambdas/getCardSetsByYear/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Queries the `blogCat-year-index` GSI, filtered to `blogStatus = "OK"`.
 

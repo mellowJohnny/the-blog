@@ -139,8 +139,46 @@ What a generated page does when opened: the head and globals are
 already correct in the HTML; the same scripts run; `fetchCardSetsByYear`
 loads the year and opens the set whose `setID` matches; `fetchPageTitle`
 sets the same title and tags again plus breadcrumbs and the Product
-structured data; on `window.load` the nav, footer, picker and masthead
+structured data; the year picker is drawn on `DOMContentLoaded` (it only
+needs the URL values); on `window.load` the nav, footer and masthead
 render and the links are upgraded (below).
+
+## Loading speed: what a generated head preloads
+
+On a phone the page's largest element is the set's header image, but its
+`<img>` only exists once `wax.js` has downloaded, run, fetched the year's
+data and drawn the set. Left alone, the browser can't even see the image
+until then. So the generator puts two preloads in each generated head
+(`headBlock()` in `generate.mjs`), which let the browser start both
+downloads straight from the HTML:
+
+- **The header image**, a high-priority image preload of the set's
+  `headerImg` + `headerImgName` (the same URL `buildCardSetMarkup()` uses,
+  so the preload and the later `<img>` match). A set with no header image
+  gets none.
+- **The set data**, a `preload` of kind `fetch` (with `crossorigin`) for
+  `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=&blogCat=`
+  with that page's values. `fetchCardSetsByYear()` in `wax.js` calls the
+  identical URL with a plain `fetch()`, which the browser answers from the
+  preload, so the request starts about a second earlier on a slow phone
+  and is still sent only once (checked). The URL lives in two places, the
+  `SETS_BY_YEAR_URL` constant in `generate.mjs` and `wax.js`; if they ever
+  differ the preload is just wasted and the page still works, but the
+  speed-up is lost.
+
+Why not simply move the `<img>` into the HTML: that would also need the
+set's other fields at build time, which the public list doesn't carry
+(that is the larger step noted under "Why this is only a partial static
+site"). Two related details: the API preconnect in the template has
+`crossorigin`, because CORS fetches use a different connection pool from
+credentialed ones; and the old inline script that preloaded a
+`<year>_hero.webp` file was removed, since the page never used that file
+(for some sets the header image *is* the hero file, and those now get it
+through the header preload).
+
+Old query-string URLs get neither preload: the template doesn't know the
+year until JavaScript reads the address, and those pages replace their
+address with the slug URL anyway.
 
 ## Links: query hrefs, upgraded from the manifest
 
@@ -382,6 +420,20 @@ and the minifier at 0.1 s), so the build minutes don't change.
 
 ## Change log
 
+- **2026-10-30 (evening)** — Page-speed pass on review pages (PageSpeed
+  mobile: layout shift 0.355 to 0, LCP 6.2 s to 5.2 s simulated; a
+  throttled real-browser run lands at about 2.1 s).
+  - Generated head preloads the header image and the set-data request
+    (see "Loading speed" above); the unused `<year>_hero.webp` preload
+    script was removed from the template; the API preconnect got
+    `crossorigin`.
+  - Year picker moved from `window.load` to `DOMContentLoaded`.
+  - Fonts, image dimensions, pagination links and API compression are
+    covered in `FRONTEND.md` ("Typography / fonts", "Page speed
+    decisions") and `ARCHITECTURE.md`.
+  - Not done on purpose: baking the header image (or the whole set
+    details) into the generated HTML, which would take simulated LCP well
+    under a second; deferred until field data shows whether it is needed.
 - **2026-10-30 (later)** — Public JS and CSS minified in the build.
   - New `tools/minifyAssets/minify.mjs` (esbuild 0.19.12), run by
     `amplify.yml` after the generator; root `package.json` and

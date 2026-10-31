@@ -115,7 +115,7 @@ are open, which load the source map and show the real file and line.
 | File | Responsibility |
 |---|---|
 | `blogs.js` | Blog intro copy (`renderBlogIntro()`, for the Tech pages only — `index.html` and `about.html` write their intro and H1 straight into the HTML), `fetchBlogs()`/pagination/rendering for the blog stream, and the weather widget on `tech.html` (calls OpenWeatherMap directly from the browser using the visitor's geolocation; the bootstrap does nothing on a page with no `#weather` element). Loaded by `about.html` and `tech.html` only: the Home page is static and no longer uses it. |
-| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews (the fetch goes through `fetchJsonWithRetry()` and `waxReviews.html` starts it on `DOMContentLoaded` — see "SEO and social tags"), `fetchPageTitle()` (sets each shown set's title, description, social tags, JSON-LD and breadcrumb), `reviewPath(item)` and `buildReviewCanonicalUrl(item)` (a set's `/reviews/<slug>/` address and the canonical built from it; the query form only for a set with no slug), `syncSetIdInUrl()` (replaces the address bar with the shown set's slug page — for every set, so an old query-string URL, and each set reached by pagination, ends up on its own clean address), the sort of a year's sets by `compareSetsForDefault()` from `helper.js`, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. The prev/next set name in that label always drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle"), since the year picker above already shows the year and the shorter label fits a phone. It used to show the full name on desktop and the short one on phones, via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans that a mobile breakpoint swapped between; that pair and its CSS were removed so one rendering path serves every width. The name goes through `escapeHtml()` before it is inserted. The NHL scores ticker and its game modal used to live here and moved to `ticker.js` — see below. |
+| `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews (the fetch goes through `fetchJsonWithRetry()` and `waxReviews.html` starts it on `DOMContentLoaded` — see "SEO and social tags"), `fetchPageTitle()` (sets each shown set's title, description, social tags, JSON-LD and breadcrumb), `reviewPath(item)` and `buildReviewCanonicalUrl(item)` (a set's `/reviews/<slug>/` address and the canonical built from it; the query form only for a set with no slug), `syncSetIdInUrl()` (replaces the address bar with the shown set's slug page — for every set, so an old query-string URL, and each set reached by pagination, ends up on its own clean address), the sort of a year's sets by `compareSetsForDefault()` from `helper.js`, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. The previous and next entries are real `<a href>` links to the neighbouring set's page (`reviewHref(item)`: the `/reviews/<slug>/` path, or the query form for a set with no slug), not click handlers (`nextPage()`/`prevPage()` were removed), so crawlers follow them and Back works; at either end the missing direction is a disabled `<span>`. The prev/next set name in that label always drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle"), since the year picker above already shows the year and the shorter label fits a phone. It used to show the full name on desktop and the short one on phones, via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans that a mobile breakpoint swapped between; that pair and its CSS were removed so one rendering path serves every width. The name goes through `escapeHtml()` before it is inserted. The NHL scores ticker and its game modal used to live here and moved to `ticker.js` — see below. |
 | `ticker.js` | The NHL/PWHL scores ticker under the masthead (`initNhlTicker()` and its helpers — see "NHL scores ticker" below) and the game modal opened from it (`openNhlGameModal()` and its render helpers — see "NHL game modal" below). Moved verbatim out of `wax.js` so pages that have nothing else to do with card sets (Player Search, the essays) can show the ticker. Starts itself on `DOMContentLoaded`. |
 | `timeline.js` | `timeline.html` only: fetches `/timeline/timeline.md`, parses it (`parseTimelineMarkdown()`) and builds the flip cards (`renderTimeline()`, `buildTimelineCard()`). Entry point is `initTimeline()`. See "Junk Wax timeline" below. |
 | `browseBySet.js` | `browseBySet.html` only: fetches the live set list once from `getPublicCardSets` (`BROWSE_SETS_URL`), splits it into the two columns, groups by season and builds the Review/Checklist links (`initBrowseBySet()`; `browseReviewUrl()` builds a set's review URL for both the links and the `ItemList` JSON-LD from `setBrowseItemListJsonLd()`: its `/reviews/<slug>/` page when the set has a slug, else the old query-string form). Checklist clicks hand off to `openChecklistModal()` in `wax.js`. See "Browse By Set" below. |
@@ -478,6 +478,36 @@ family. Spicy Rice stays for page-level display headings. Nunito's 600 is
 the heaviest weight loaded; a bolder one needs adding to the Google Fonts
 URL on every page.
 
+**Keeping the swap from moving the page (review pages).** The Google
+fonts load after the page has first painted, so text used to render in
+Arial, then jump when Work Sans, Source Sans 3 or Nunito arrived (the
+biggest layout shift on the page, 0.355 on PageSpeed). Two fixes work
+together:
+
+- `waxReviews.html` preloads the latin `woff2` of Work Sans, Source Sans 3,
+  Special Elite and Nunito next to the Bebas Neue ones, so the files are
+  requested with the HTML instead of after the Google stylesheet arrives.
+  Each family is one variable file covering every weight we load. The URLs
+  are versioned (`v24`, `v20`, `v32`); if Google moves a file the preload
+  just goes unused (one wasted request) and the page still works, so
+  refresh them from the Google CSS when convenient.
+- `styles.css` defines a metric-matched fallback face per font ("Work Sans
+  Fallback", "Source Sans 3 Fallback", "Nunito Fallback"): Arial scaled
+  with `size-adjust`, `ascent-override` and `descent-override` to the web
+  font's average glyph width and line box, and every `font-family` stack
+  lists it between the web font and `sans-serif`. Any swap that still
+  happens then moves the text by almost nothing. The numbers were computed
+  with fontTools from the real font files (character-frequency-weighted
+  average width against Arial; Nunito matched to weight 600, its common
+  use). They need recomputing only if a font or its weights change.
+  `local("Arial")` doesn't exist on Android, where the fallback simply
+  isn't used and the stack falls through to plain `sans-serif`, as before.
+
+Other public pages still load these fonts without the preloads (they
+weren't the page being measured); add the same four `<link>` tags to one if
+its PageSpeed run shows font-swap shift.
+
+
 **`styles.css` itself does *not* use this preload pattern** — every
 public page loads it with a plain blocking `<link rel="stylesheet">`.
 It used to use the same `preload`+`onload`-swap trick the Google Fonts
@@ -519,6 +549,31 @@ issues in the mobile section above — don't hand-tune spacing to
 values drift out of sync differently at each screen size.
 
 **Random team colors + cheer label + pop-in animation**: `applyRandomMastheadStyling()` (`helper.js`) runs on load on all 6 pages using this masthead (`waxReviews.html`, `lockout.html`, `playerSearch.html`, `theJunkWaxYears.html`, `timeline.html`, `browseBySet.html`) — picks one of 32 NHL teams at random from `NHL_TEAM_COLORS`, sets `--team-primary`/`--team-tertiary` CSS custom properties that drive `.wax-reviews-mast-table`'s gradient (a simpler solid+stripe design via `.masthead-two-color` for genuinely two-color teams), and creates/reuses a `.masthead-team-label` span in the bottom-right corner showing that team's cheer text (e.g. "Go Canucks Go!") so the random pick is visually verifiable. That label's text is rendered via `renderLoudText()`, which wraps each character in its own `.loud-char` span with a staggered `animation-delay` — `styles.css`'s `loudPopIn` keyframes then pop/rotate each letter in on a delay, purely because a CSS `animation` on an element plays automatically the moment that element exists in the DOM (no JS trigger needed, since the label is fully torn down and rebuilt on every load rather than reused in place). `prefers-reduced-motion: reduce` skips the animation and shows the finished text immediately.
+
+## Page speed decisions (review pages)
+
+Measured with PageSpeed Insights mobile on `/reviews/1992-93-fleer-ultra/`,
+2026-10-30. After the changes in this pass: CLS 0.355 to 0, LCP 6.2 s to
+5.2 s (Lighthouse's slow-phone simulation), while a throttled real browser
+reaches the header image at about 2.1 s and PageSpeed's own observed
+breakdown is about 1.9 s. What was done, and why it was enough:
+
+- Header and footer images carry `width`/`height` (see "Card set markup"),
+  the fonts don't swap visibly ("Typography / fonts"), the year picker
+  draws on `DOMContentLoaded`, and pagination uses real links.
+- LCP is the set's header image, whose `<img>` is created by JavaScript.
+  The generated head preloads the image and the set-data request
+  (`REVIEW_PAGES.md`, "Loading speed"), and API Gateway compression is on
+  (`ARCHITECTURE.md`).
+
+Left alone on purpose, so nobody re-opens them without a reason:
+`styles.css` as a render-blocking request (about 40 ms, unscored; it must
+block, see "Typography / fonts"), "reduce unused CSS" (one sitewide
+stylesheet, unscored; splitting it adds requests and lets the CMS preview
+drift from the live page), and the larger fix of writing the header image,
+or the whole set details, into the generated HTML (it would take simulated
+LCP well under a second, but is a bigger change to how pages are built;
+revisit if field data after about 2026-12-01 still shows a slow LCP).
 
 ## Buttons
 
@@ -586,6 +641,15 @@ Worth knowing when changing either side:
 - Callers pass fully-built image URLs (`headerImgUrl`/`footerImgUrl`).
   The live site concatenates the S3 prefix the API returns; the CMS
   concatenates its own known `img/cards/` base.
+- The header image is written `width="620" height="294"` and the footer
+  `width="890" height="325"`: the median sizes of the existing files, so
+  the browser reserves about the right box before the image loads (the
+  alternative, re-shooting every image to one size, wasn't needed). The
+  CSS keeps `height: auto` on both (`.table-footer-img` gained it with
+  this change) so the attribute never stretches an image to a fixed
+  height. A file with a different shape (the 1992-93 Upper Deck header is
+  620x360) still moves the layout a little once it loads. Middle images
+  already get their dimensions from the CMS when the review is saved.
 - The preview needs the set's `now` (date) and `hasChecklist` values,
   which aren't form fields — `fetchCardSetByID()` stashes them in
   module-level variables for `renderPreview()` to read. Note the field

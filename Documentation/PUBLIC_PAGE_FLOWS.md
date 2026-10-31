@@ -195,8 +195,8 @@ canonical.
 above `#blogsDiv` that no script in `blogs.js` ever reads from or
 writes to — likely a leftover anchor from an earlier version of the
 pagination scroll behavior (which now targets `#blog-intro` instead, in
-both `nextBlogPage()`/`prevBlogPage()` here and their `waxReviews.html`
-counterparts `nextPage()`/`prevPage()`).
+`nextBlogPage()`/`prevBlogPage()` here; `waxReviews.html`'s pagination no
+longer scrolls at all, its links are real page navigations).
 
 ## Card Set Reviews - `waxReviews.html`
 
@@ -229,14 +229,19 @@ way: `REVIEW_PAGES.md`.
 1. A lockout-year redirect check (see "Notable" below) — runs
    immediately, before any other script, since it may bail out of
    rendering this page entirely.
-2. A Google Core Web Vitals preload hint for that year's hero image.
-3. `DOMContentLoaded` → `renderCardIntro(pageName)`, then
+2. `DOMContentLoaded` → `renderCardIntro(pageName)`,
+   `renderSetPicker(year, blogCat, pageName)`, then
    `fetchCardSetsByYear(year, sortOrder, blogCat, setID)`.
-4. `window load` → `fetchNav(pageName)`, `fetchFooterLinks()`,
-   `renderSetPicker(year, blogCat, pageName)`,
+3. `window load` → `fetchNav(pageName)`, `fetchFooterLinks()`,
    `applyRandomMastheadStyling()` (in that order), plus a
    `gtag('config', ...)` call for Analytics. The scores ticker isn't in
    this list: `ticker.js` starts itself on `DOMContentLoaded`.
+
+The `<head>` of a generated page also carries two preloads, for the set's
+header image and for the set-data request, so both downloads start with
+the HTML instead of waiting for `wax.js`; see `REVIEW_PAGES.md`
+("Loading speed"). An older inline script that preloaded a
+`<year>_hero.webp` file was removed, since nothing on the page used it.
 
 The raw HTML of `waxReviews.html` itself holds generic Open Graph and
 Twitter tags (and no canonical), so a link to an old-style URL shared to
@@ -254,7 +259,9 @@ before any real content has loaded. `fetchCardSetsByYear()` (described
 below) is started here too and not on `window load`: one indexed copy of
 a review page held the fetch's error text instead of the review, so the
 request now begins as early as possible, and `fetchJsonWithRetry()`
-retries it once.
+retries it once. `renderSetPicker()` runs here as well rather than on
+`window load`: it needs only the URL values, and drawn late it appeared
+above the review and pushed everything down (a layout shift).
 
 **On `window load`**: these calls together finish assembling
 everything else the visitor can see or navigate to on this page.
@@ -264,7 +271,8 @@ everything else the visitor can see or navigate to on this page.
   `NAV_MAP` entry (the other review sections, then `"search"` (Player
   Search), always last — Player Search is in every `NAV_MAP` entry
   except its own page's, and "Junk Wax Timeline" and "All Sets" sit just before it).
-- `renderSetPicker(year, blogCat, pageName)` (`helper.js`) — builds the
+- `renderSetPicker(year, blogCat, pageName)` (`helper.js`, run on
+  `DOMContentLoaded` — see above) — builds the
   "set-o-matic" year picker: the row letting a visitor jump directly to
   another year's review within the same category, without going back
   through the nav. It looks up `categoryRanges[blogCat][pageName]` for
@@ -340,7 +348,13 @@ everything else the visitor can see or navigate to on this page.
   which only renders anything when there's more than one set for that
   year (most years have exactly one; only 1989-90 onward have
   multiple, once card companies started releasing several sets per
-  season). Just before it renders a set, `renderCardSetPage()` calls
+  season). The previous and next links are real `<a href>` links to the
+  neighbouring set's page (`reviewHref()` in `wax.js`: the
+  `/reviews/<slug>/` path, or the query form for a set with no slug), so
+  a click is an ordinary navigation: Back works and crawlers follow the
+  link (Lighthouse flagged the old click-handler version as "Links are not
+  crawlable"). At either end the missing direction is a plain disabled
+  `<span>`. Just before it renders a set, `renderCardSetPage()` calls
   `syncSetIdInUrl()`, which replaces the address bar with that set's
   `/reviews/<slug>/` page (`history.replaceState`, so paging adds no
   history entries): on an old query-string URL this is the rewrite to the
@@ -494,9 +508,9 @@ everything else the visitor can see or navigate to on this page.
   changing years is really just a normal page navigation with different
   query params.
 - Pagination links (only shown when a year has more than one set) →
-  `nextPage()`/`prevPage()` (`wax.js`) — re-slice `allCardSets` and
-  `scrollIntoView()` back to `#card-intro`. No new fetch, same reasoning
-  as the blog pages' pagination.
+  plain `<a href>` links to the neighbouring set's `/reviews/<slug>/`
+  page (built by `reviewHref()` in `wax.js`), so each click is a normal
+  page navigation, unlike the blog pages' in-place pagination.
 - Hamburger icon → `toggleMenu()`, same as the blog pages.
 
 **Notable**: the inline lockout-year redirect exists as a deliberate
