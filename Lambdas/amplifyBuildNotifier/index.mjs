@@ -17,7 +17,7 @@ import { SNSClient, PublishCommand } from "@aws-sdk/client-sns";
 const amplify = new AmplifyClient({ region: "us-east-2" });
 const sns = new SNSClient({ region: "us-east-2" });
 
-const APP_NAME = "the-blog (mellowjohnny.cc)";
+const APP_NAME = "the-blog (www.junkwaxhockey.com)";
 
 function formatDuration(start, end) {
   if (!start || !end) return "unknown";

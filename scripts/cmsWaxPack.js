@@ -155,7 +155,7 @@ function renderWaxPackForm(mode) {
         <tr>
           <td colspan="2">
             <label>Related Review</label><br>
-            <select id="wpReviewSlug" style="width: 400px;"></select>
+            <select id="wpReviewSlug" style="width: 450px;"></select>
           </td>
         </tr>
         <tr>

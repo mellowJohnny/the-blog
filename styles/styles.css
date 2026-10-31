@@ -836,10 +836,10 @@ form {
   box-sizing: border-box;
 }
 
-/* Same box as the text fields above, at half their width (wax pack form: year, cards, price) */
+/* Same box as the text fields above, at the width of the form's 200px dropdowns (wax pack form: year, cards, price) */
 .cms-form-table input[type=number] {
   font-size: 16px;
-  width: 225px;
+  width: 200px;
   padding: 6px 10px;
   margin: 8px 0;
   display: inline-block;
