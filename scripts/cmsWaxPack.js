@@ -141,11 +141,13 @@ function renderWaxPackForm(mode) {
     <form id="waxPackForm">
       <table class="cms-form-table">
         <tr>
-          <td>
+          <td colspan="2">
             <label>Year <sup>*</sup></label><br>
             <input type="number" id="wpYear" min="1900" max="2100" required>
           </td>
-          <td>
+        </tr>
+        <tr>
+          <td colspan="2">
             <label>Pack Name <sup>*</sup></label><br>
             <input type="text" id="wpName" required>
           </td>
