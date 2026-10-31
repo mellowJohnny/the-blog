@@ -1,53 +1,212 @@
-/** Wax Pack Museum CMS (cms/waxPacks.html): list, add, edit and delete packs in the WaxPacks table. */
+/** Wax Pack Museum CMS: newWaxPack.html (add), pickWaxPack.html (list as links) and waxPackEdit.html (update/delete). */
 
 const WAX_PACK_SAVE_URL = "https://b3qn1kny99.execute-api.us-east-2.amazonaws.com/prod"; // saveWaxPack API
 const WAX_PACK_DELETE_URL = "https://y4hs1e712l.execute-api.us-east-2.amazonaws.com/prod"; // deleteWaxPack API
 const WAX_PACK_GET_URL = "https://efh9lu4988.execute-api.us-east-2.amazonaws.com/prod"; // getWaxPacks API
 
 const WAX_PACK_IMAGE_UPLOAD_URL = "https://k95rdenpn5.execute-api.us-east-2.amazonaws.com/dev"; // cmsImageUploader API
-const WAX_PACK_IMAGE_BASE = "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/museum/";
+const WAX_PACK_IMAGE_DIR = "img/wax-packs/";
+const WAX_PACK_IMAGE_BASE = `https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/${WAX_PACK_IMAGE_DIR}`;
 const WAX_PACK_NEW_VALUE = "__new__";
+const WAX_PACK_PICKER_URL = "/cms/pickWaxPack.html";
+const WAX_PACK_TYPE_LABELS = { "main": "Main", "fast food": "Fast Food" };
 
 // The same manufacturers createCardSet.html offers, so the dropdown is never empty.
 const WAX_PACK_MANUFACTURERS = ["O-Pee-Chee", "Topps", "Upper Deck", "Score", "Pro Set", "Fleer", "Leaf", "Pinnacle", "Pacific", "Ultimate"];
 const WAX_PACK_PACKAGING = ["Wax", "Rack", "Cello", "Blister"];
 
 let _waxPacks = [];
-let _waxPackEditing = false;
+let _waxPackBeingEdited = null;
 
 function waxPackField(id) {
   return document.getElementById(id);
 }
 
-/** Entry point: loads the packs, fills the dropdowns and wires the form. */
-function initWaxPacksPage() {
+/************************************* Page entry points *************************************/
+
+async function initNewWaxPackPage() {
+  renderWaxPackForm("create");
+  _waxPacks = await loadWaxPacks() || [];
+  fillWaxPackDropdowns();
+}
+
+async function initPickWaxPackPage() {
+  const packs = await loadWaxPacks();
+  if (!packs) return;
+  if (!packs.length) {
+    waxPackField("noWaxPacksDiv").textContent = "...no wax packs yet";
+    return;
+  }
+
+  const container = waxPackField("waxPackLinksDiv");
+  Object.keys(WAX_PACK_TYPE_LABELS).forEach((type) => {
+    const group = packs
+      .filter((pack) => (pack.type || "main") === type)
+      .sort((a, b) => a.year - b.year || a.setName.localeCompare(b.setName) || a.packKey.localeCompare(b.packKey));
+    if (!group.length) return;
+
+    const header = document.createElement("h2");
+    header.className = "blog-type-divider";
+    header.textContent = WAX_PACK_TYPE_LABELS[type];
+    container.appendChild(header);
+    group.forEach((pack) => container.appendChild(waxPackLink(pack)));
+  });
+}
+
+async function initEditWaxPackPage() {
+  renderWaxPackForm("edit");
+  _waxPacks = await loadWaxPacks() || [];
+  fillWaxPackDropdowns();
+
+  const params = new URLSearchParams(document.location.search);
+  const year = Number(params.get("year"));
+  const packKey = params.get("packKey");
+  const pack = _waxPacks.find((item) => item.year === year && item.packKey === packKey);
+
+  if (!pack) {
+    waxPackField("errorDiv").textContent = "these aren't the Droids you're looking for...";
+    return;
+  }
+  populateWaxPackForm(pack);
+}
+
+/************************************* Loading and listing *************************************/
+
+/** Every pack, or null (after an alert) if the request fails. no-store: the public endpoint is browser-cached for 30 minutes. */
+async function loadWaxPacks() {
+  try {
+    const response = await fetch(WAX_PACK_GET_URL, { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.log("Wax pack load error:", error);
+    await cmsAlert("Could not load the wax packs.");
+    return null;
+  }
+}
+
+/** One picker entry, built like displayCardSets(): a table holding a link to the edit page. */
+function waxPackLink(pack) {
+  const table = document.createElement("table");
+  table.className = "set-details-table-style";
+  const cell = table.insertRow().insertCell();
+  cell.style.cssText = "width:400px;font-size:20px";
+
+  const link = document.createElement("a");
+  link.href = `waxPackEdit.html?year=${pack.year}&packKey=${encodeURIComponent(pack.packKey)}`;
+  const label = document.createElement("strong");
+  label.textContent = `${pack.setName} - ${pack.packaging}, ${pack.format} (${pack.year})`;
+  link.appendChild(label);
+  cell.appendChild(link);
+  return table;
+}
+
+/************************************* The form (built once, used by new and edit) *************************************/
+
+function renderWaxPackForm(mode) {
+  const buttons = mode === "edit"
+    ? `<div style="display:grid; grid-template-columns: 1fr auto; align-items:center;">
+         <div style="justify-self:start;">
+           <button class="input-button" type="button" onclick="submitWaxPack()">Update Pack</button>&nbsp;&nbsp;&nbsp;&nbsp;
+           <button class="input-button btn-secondary" type="button" onclick="cmsCancelEdit('${WAX_PACK_PICKER_URL}')">Cancel</button>
+         </div>
+         <button class="input-button delete-btn" type="button" style="justify-self:end;" onclick="deleteWaxPack()">Delete Pack</button>
+       </div>`
+    : `<button class="input-button" type="button" onclick="submitWaxPack()">Save Pack</button>`;
+
+  waxPackField("waxPackFormHost").innerHTML = `
+    <form id="waxPackForm">
+      <table class="cms-form-table">
+        <tr>
+          <td>
+            <label>Year <sup>*</sup></label><br>
+            <input type="number" id="wpYear" min="1900" max="2100" required>
+          </td>
+          <td>
+            <label>Set Name <sup>*</sup></label><br>
+            <input type="text" id="wpSetName" required>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <label>Set Slug <sup>*</sup></label>
+            <button type="button" class="seo-generate-btn" id="wpSlugButton" onclick="generateWaxPackSlug()">Generate</button><br>
+            <input type="text" id="wpSetSlug" required>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>Manufacturer <sup>*</sup></label><br>
+            <select id="wpManufacturer" style="width: 200px;"></select>
+            <input type="text" id="wpManufacturerNew" style="display: none;">
+          </td>
+          <td>
+            <label>Packaging <sup>*</sup></label><br>
+            <select id="wpPackaging" style="width: 200px;"></select>
+            <input type="text" id="wpPackagingNew" style="display: none;">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>Type <sup>*</sup></label><br>
+            <select id="wpType" style="width: 200px;">
+              <option value="main">Main</option>
+              <option value="fast food">Fast Food</option>
+            </select>
+          </td>
+          <td>
+            <label>Format <sup>*</sup></label><br>
+            <select id="wpFormat" style="width: 200px;">
+              <option value="regular">Regular</option>
+              <option value="jumbo">Jumbo</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>Cards per Pack <sup>*</sup></label><br>
+            <input type="number" id="wpNumCards" min="1" max="200" required>
+          </td>
+          <td>
+            <label>Price <sup>*</sup></label><br>
+            <input type="number" id="wpPrice" min="0" max="1000" step="0.01" required>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <label>Pack Photo</label><br>
+            <input type="text" id="wpImgName" readonly><br>
+            <input type="file" id="wpImageFile" accept="image/*">
+            <span id="wpImageStatus"></span><br>
+            <img id="wpImgPreview" alt="Pack photo preview" style="display: none; max-width: 160px;">
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <label>Notes</label><br>
+            <textarea id="wpNotes" class="seo-textarea" rows="2"></textarea>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" align="left">${buttons}</td>
+        </tr>
+      </table>
+    </form>`;
+
   ["wpManufacturer", "wpPackaging"].forEach((id) => {
     waxPackField(id).addEventListener("change", () => toggleWaxPackNewValue(id));
   });
   waxPackField("wpImageFile").addEventListener("change", uploadWaxPackImage);
-  loadWaxPacks();
 }
 
-async function loadWaxPacks() {
-  try {
-    // no-store: the public endpoint is browser-cached for 30 minutes, which would hide a save.
-    const response = await fetch(WAX_PACK_GET_URL, { cache: "no-store" });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    _waxPacks = await response.json();
-  } catch (error) {
-    console.log("Wax pack load error:", error);
-    _waxPacks = [];
-    await cmsAlert("Could not load the wax packs.");
-  }
-  renderWaxPackList();
+/** Seed values plus every value already saved (case-insensitive), then "Add new...". */
+function fillWaxPackDropdowns() {
   fillWaxPackDropdown("wpManufacturer", WAX_PACK_MANUFACTURERS, "manufacturer");
   fillWaxPackDropdown("wpPackaging", WAX_PACK_PACKAGING, "packaging");
 }
 
-/** Seed values plus every value already saved (case-insensitive), then "Add new...". */
 function fillWaxPackDropdown(selectId, seeds, field) {
   const select = waxPackField(selectId);
-  const keep = select.value;
   const seen = new Map();
 
   [...seeds, ..._waxPacks.map((pack) => pack[field])].forEach((value) => {
@@ -58,7 +217,6 @@ function fillWaxPackDropdown(selectId, seeds, field) {
   select.add(new Option("Choose...", ""));
   [...seen.values()].sort((a, b) => a.localeCompare(b)).forEach((value) => select.add(new Option(value, value)));
   select.add(new Option("Add new...", WAX_PACK_NEW_VALUE));
-  if (keep && [...select.options].some((option) => option.value === keep)) select.value = keep;
   toggleWaxPackNewValue(selectId);
 }
 
@@ -81,38 +239,9 @@ function setWaxPackDropdown(selectId, value) {
   toggleWaxPackNewValue(selectId);
 }
 
-function renderWaxPackList() {
-  const body = waxPackField("waxPackRows");
-  body.innerHTML = "";
-  waxPackField("waxPackEmpty").style.display = _waxPacks.length ? "none" : "";
-
-  _waxPacks.forEach((pack, index) => {
-    const row = body.insertRow();
-    [pack.year, pack.setName, pack.manufacturer, pack.packaging, pack.type, pack.format, pack.numCards, `${pack.price.toFixed(2)} ${pack.currency}`]
-      .forEach((value) => { row.insertCell().textContent = value; });
-
-    const actions = row.insertCell();
-    actions.append(
-      waxPackButton("Edit", () => editWaxPack(index)),
-      " ",
-      waxPackButton("Delete", () => deleteWaxPack(pack))
-    );
-  });
-}
-
-function waxPackButton(label, onClick) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "input-button";
-  button.textContent = label;
-  button.addEventListener("click", onClick);
-  return button;
-}
-
-/** Fills the form from a saved pack; the four fields that make up its key are locked. */
-function editWaxPack(index) {
-  const pack = _waxPacks[index];
-  _waxPackEditing = true;
+/** Fills the edit form from a saved pack; the four fields that make up its key are locked. */
+function populateWaxPackForm(pack) {
+  _waxPackBeingEdited = pack;
 
   waxPackField("wpYear").value = pack.year;
   waxPackField("wpSetName").value = pack.setName;
@@ -123,26 +252,10 @@ function editWaxPack(index) {
   waxPackField("wpFormat").value = pack.format;
   waxPackField("wpNumCards").value = pack.numCards;
   waxPackField("wpPrice").value = pack.price;
-  waxPackField("wpCurrency").value = pack.currency;
   waxPackField("wpImgName").value = pack.imgName || "";
   waxPackField("wpNotes").value = pack.notes || "";
 
-  ["wpYear", "wpSetSlug", "wpPackaging", "wpPackagingNew", "wpFormat"].forEach((id) => { waxPackField(id).disabled = true; });
-  waxPackField("wpFormTitle").textContent = "...edit a wax pack";
-  waxPackField("wpCancelButton").style.display = "";
-  showWaxPackImage();
-  waxPackField("wpFormTitle").scrollIntoView();
-}
-
-function resetWaxPackForm() {
-  _waxPackEditing = false;
-  waxPackField("waxPackForm").reset();
-  waxPackField("wpImgName").value = "";
-  waxPackField("wpImageStatus").textContent = "";
-  ["wpYear", "wpSetSlug", "wpPackaging", "wpPackagingNew", "wpFormat"].forEach((id) => { waxPackField(id).disabled = false; });
-  waxPackField("wpFormTitle").textContent = "...add a wax pack";
-  waxPackField("wpCancelButton").style.display = "none";
-  ["wpManufacturer", "wpPackaging"].forEach(toggleWaxPackNewValue);
+  ["wpYear", "wpSetSlug", "wpSlugButton", "wpPackaging", "wpPackagingNew", "wpFormat"].forEach((id) => { waxPackField(id).disabled = true; });
   showWaxPackImage();
 }
 
@@ -154,6 +267,8 @@ function generateWaxPackSlug() {
     .replace(/^-|-$/g, "");
 }
 
+/************************************* Photo *************************************/
+
 function showWaxPackImage() {
   const name = waxPackField("wpImgName").value;
   const img = waxPackField("wpImgPreview");
@@ -161,7 +276,7 @@ function showWaxPackImage() {
   img.src = name ? WAX_PACK_IMAGE_BASE + encodeURIComponent(name) : "";
 }
 
-/** Gets a presigned URL from cmsImageUploader, PUTs the file to S3 under img/museum/, then fills the image field. */
+/** Gets a presigned URL from cmsImageUploader, PUTs the file to S3 under img/wax-packs/, then fills the image field. */
 async function uploadWaxPackImage() {
   const file = waxPackField("wpImageFile").files[0];
   const status = waxPackField("wpImageStatus");
@@ -174,7 +289,7 @@ async function uploadWaxPackImage() {
     const response = await fetch(WAX_PACK_IMAGE_UPLOAD_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fileName, directory: "img/museum/", contentType: file.type })
+      body: JSON.stringify({ fileName, directory: WAX_PACK_IMAGE_DIR, contentType: file.type })
     });
     const data = await response.json();
     if (!data.uploadUrl) throw new Error("No upload URL returned");
@@ -191,6 +306,9 @@ async function uploadWaxPackImage() {
   }
 }
 
+/************************************* Save and delete *************************************/
+
+/** Creates a pack (new page) or updates the loaded one (edit page); both return to the picker. */
 async function submitWaxPack() {
   const payload = {
     year: parseInt(waxPackField("wpYear").value, 10),
@@ -202,7 +320,6 @@ async function submitWaxPack() {
     format: waxPackField("wpFormat").value,
     numCards: parseInt(waxPackField("wpNumCards").value, 10),
     price: parseFloat(waxPackField("wpPrice").value),
-    currency: waxPackField("wpCurrency").value,
     imgName: waxPackField("wpImgName").value.trim(),
     notes: waxPackField("wpNotes").value.trim()
   };
@@ -220,24 +337,24 @@ async function submitWaxPack() {
       await cmsAlert(data.error || "An unknown error occurred.");
       return;
     }
-    await cmsAlert(_waxPackEditing ? "Wax pack updated." : "Wax pack saved.");
-    resetWaxPackForm();
-    await loadWaxPacks();
+    await cmsAlert(_waxPackBeingEdited ? "Wax pack updated." : "Wax pack saved.");
+    window.location.href = WAX_PACK_PICKER_URL;
   } catch (error) {
     console.log("Wax pack save error:", error);
     await cmsAlert("Network error saving the wax pack.");
   }
 }
 
-async function deleteWaxPack(pack) {
-  if (!await cmsConfirm(`Delete "${pack.setName}" (${pack.packaging}, ${pack.format})?`)) return;
+async function deleteWaxPack() {
+  if (!_waxPackBeingEdited) return;
+  if (!await cmsConfirm("Delete this wax pack? This cannot be undone.")) return;
 
   try {
     const token = await getAuthToken();
     const response = await fetch(WAX_PACK_DELETE_URL, {
       method: "DELETE",
       headers: { "Content-Type": "application/json", "Authorization": token },
-      body: JSON.stringify({ year: pack.year, packKey: pack.packKey })
+      body: JSON.stringify({ year: _waxPackBeingEdited.year, packKey: _waxPackBeingEdited.packKey })
     });
     const data = await response.json();
 
@@ -245,7 +362,8 @@ async function deleteWaxPack(pack) {
       await cmsAlert(data.error || "An unknown error occurred.");
       return;
     }
-    await loadWaxPacks();
+    await cmsAlert(data.message || "Wax pack deleted.");
+    window.location.href = WAX_PACK_PICKER_URL;
   } catch (error) {
     console.log("Wax pack delete error:", error);
     await cmsAlert("Network error deleting the wax pack.");

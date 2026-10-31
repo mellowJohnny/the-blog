@@ -1,5 +1,5 @@
 /*
- *  saveWaxPack Lambda Function - creates or overwrites one WaxPacks item (cms/waxPacks.html).
+ *  saveWaxPack Lambda Function - creates or overwrites one WaxPacks item (cms/newWaxPack.html, cms/waxPackEdit.html).
  *  Source of truth is this repo - don't edit it only in the AWS Console.
  */
 
@@ -15,7 +15,6 @@ const CORS_HEADERS = {
 };
 
 const FORMATS = ["regular", "jumbo"];
-const CURRENCIES = ["CAD", "USD"];
 const TYPES = ["main", "fast food"];
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
@@ -33,7 +32,7 @@ export const handler = async (event) => {
     const packaging = text(body.packaging, 40);
     const imgName = body.imgName ? text(body.imgName, 200) : "";
     const notes = body.notes ? text(body.notes, 1000) : "";
-    const { year, type, format, numCards, price, currency } = body;
+    const { year, type, format, numCards, price } = body;
 
     const problem =
       !Number.isInteger(year) || year < 1900 || year > 2100 ? "year must be a whole year" :
@@ -45,7 +44,6 @@ export const handler = async (event) => {
       !FORMATS.includes(format) ? "format must be regular or jumbo" :
       !Number.isInteger(numCards) || numCards < 1 || numCards > 200 ? "numCards must be a whole number from 1 to 200" :
       typeof price !== "number" || !(price >= 0) || price > 1000 ? "price must be a number from 0 to 1000" :
-      !CURRENCIES.includes(currency) ? "currency must be CAD or USD" :
       imgName === null ? "imgName is too long" :
       notes === null ? "notes are too long" : null;
 
@@ -58,7 +56,7 @@ export const handler = async (event) => {
     const item = {
       year,
       packKey: `${setSlug}#${packagingKey}#${format}`,
-      setSlug, setName, manufacturer, packaging, type, format, numCards, price, currency,
+      setSlug, setName, manufacturer, packaging, type, format, numCards, price,
       updatedAt: new Date().toISOString()
     };
     if (imgName) item.imgName = imgName;

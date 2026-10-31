@@ -1,5 +1,5 @@
 /*
- *  deleteWaxPack Lambda Function - deletes one WaxPacks item by year + packKey (cms/waxPacks.html).
+ *  deleteWaxPack Lambda Function - deletes one WaxPacks item by year + packKey (cms/waxPackEdit.html).
  *  Source of truth is this repo - don't edit it only in the AWS Console.
  */
 

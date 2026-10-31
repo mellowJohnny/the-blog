@@ -1,5 +1,5 @@
 /*
- *  getWaxPacks Lambda Function - public list of wax packs for the museum page and cms/waxPacks.html.
+ *  getWaxPacks Lambda Function - public list of wax packs for the museum page and the wax pack CMS pages.
  *  No parameters returns every pack; ?year= returns one year. Source of truth is this repo.
  */
 
