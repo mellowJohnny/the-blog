@@ -714,6 +714,20 @@ h1 {
   text-align: left;
 }
 
+.wax-pack-list {
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  font-size: 18px;
+  margin: 20px auto;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.wax-pack-list th,
+.wax-pack-list td {
+  padding: 6px 12px;
+  border-bottom: 1px solid #ccc;
+}
+
 .cms-form-table td {
   /* padding: 10px 12px; */
   padding: 8px 10px;
