@@ -23,6 +23,16 @@ messing up the layout with white borders and scoll bars
   descent-override: 44.33%;
   line-gap-override: 0%;
 }
+/* Nunito is used at 600 almost everywhere (set picker, headings), so this is
+   matched to that weight. */
+@font-face {
+  font-family: "Nunito Fallback";
+  src: local("Arial");
+  size-adjust: 103.75%;
+  ascent-override: 97.44%;
+  descent-override: 34.02%;
+  line-gap-override: 0%;
+}
 
 /* Core brand palette - the colors repeated 3+ times across the file.
    Introduced during a CSS audit pass; deliberately doesn't try to
@@ -529,7 +539,7 @@ h1 {
 
 /** Navigation link formatting **/
 .nav-td {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   font-size: 22px;
   margin: 15px;
   padding: 20px;
@@ -733,7 +743,7 @@ h1 {
   width: 100%;
   margin: 0;
   padding: 0;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   font-weight: 600;
   font-size: 23px;
   color:var(--color-text-dark);
@@ -758,7 +768,7 @@ h1 {
 }
 
 .set-o-matic-picker {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   font-weight: 600;
   font-size: 32px;
   text-align: center;
@@ -2144,7 +2154,7 @@ label sup {
   padding: 28px 20px 24px;
   background: var(--color-heading-outline);
   color: #ffffff;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   text-align: center;
 }
 
@@ -2265,7 +2275,7 @@ body:has(.site-footer) {
   margin: 22px 0 8px;
   padding-bottom: 4px;
   border-bottom: 1px solid var(--color-heading-outline);
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   font-weight: 600;
   font-size: 22px;
   color: var(--color-heading-outline);
@@ -2292,7 +2302,7 @@ body:has(.site-footer) {
   flex: none;
   gap: 14px;
   white-space: nowrap;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   font-weight: 600;
   font-size: 16px;
 }
