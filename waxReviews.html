@@ -144,23 +144,6 @@
     </script>
     <!-- review-params:end -->
 
-    <!-- Google Core Web Vitals Preload: make the "hero" image visible for each year. Makes GCWV happy -->
-    <script>
-      // Build the hero image URL using your new naming convention
-      if (year) {
-        const lcpUrl = `https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cards/${year}_hero.webp`;
-
-        // Inject a preload tag into <head>
-        const preload = document.createElement("link");
-        preload.rel = "preload";
-        preload.as = "image";
-        preload.href = lcpUrl;
-        preload.fetchPriority = "high";
-
-        document.head.appendChild(preload);
-      }
-    </script>
-
     <!-- Load the stylesheet -->
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 

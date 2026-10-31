@@ -143,6 +143,7 @@ function headBlock(set, url, warnings) {
   }
   const image = set.headerImg && set.headerImgName ? `${set.headerImg}${set.headerImgName}` : DEFAULT_IMAGE;
   const keywords = (set.seoTags || "").trim();
+  const hasHeaderImage = set.headerImg && set.headerImgName;
   const lines = [
     `<title>${escapeAttr(title)}</title>`,
     `<meta name="description" content="${escapeAttr(description)}">`,
@@ -156,7 +157,10 @@ function headBlock(set, url, warnings) {
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="twitter:title" content="${escapeAttr(title)}">`,
     `<meta name="twitter:description" content="${escapeAttr(description)}">`,
-    `<meta name="twitter:image" content="${escapeAttr(image)}">`
+    `<meta name="twitter:image" content="${escapeAttr(image)}">`,
+    // The header image is the page's LCP, but wax.js only adds its <img> after the data
+    // fetch; this lets the download start with the HTML. No crossorigin, to match the <img>.
+    ...(hasHeaderImage ? [`<link rel="preload" as="image" href="${escapeAttr(image)}" fetchpriority="high">`] : [])
   ];
   return lines.join("\n    ");
 }
