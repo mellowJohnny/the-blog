@@ -52,11 +52,11 @@ without changing that expectation first.
 **Compression (2026-10-30)**: content encoding is a per-API setting in API
 Gateway (Settings, "Content encoding", with a small minimum size, then
 redeploy the stage); with it on, a client that sends
-`Accept-Encoding: gzip` gets a gzipped body. It is on for "Get card sets by
-year" only, where it matters most: a year with eight sets went from 50,793
-bytes to about 17,200. Checked the same day, "Get all live sets (public)"
-(about 45 KB) still returns uncompressed, as would any other API it hasn't
-been turned on for. It costs nothing, unlike API Gateway's stage cache,
+`Accept-Encoding: gzip` gets a gzipped body. It is on for the two large
+public reads: "Get card sets by year" (a year with eight sets went from
+50,793 bytes to about 17,200) and "Get all live sets (public)" (44,991 to
+7,697, checked 2026-10-31). Any other API is uncompressed until it is
+turned on for it. It costs nothing, unlike API Gateway's stage cache,
 which was tried and turned off as too expensive for this site's traffic.
 To check an endpoint: `curl -s -D - -o /dev/null -H "Accept-Encoding: gzip"
 <url>` should show `content-encoding: gzip`.
