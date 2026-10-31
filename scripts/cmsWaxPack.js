@@ -88,7 +88,7 @@ function renderWaxPackList() {
 
   _waxPacks.forEach((pack, index) => {
     const row = body.insertRow();
-    [pack.year, pack.setName, pack.manufacturer, pack.packaging, pack.format, pack.numCards, `${pack.price.toFixed(2)} ${pack.currency}`]
+    [pack.year, pack.setName, pack.manufacturer, pack.packaging, pack.type, pack.format, pack.numCards, `${pack.price.toFixed(2)} ${pack.currency}`]
       .forEach((value) => { row.insertCell().textContent = value; });
 
     const actions = row.insertCell();
@@ -119,6 +119,7 @@ function editWaxPack(index) {
   waxPackField("wpSetSlug").value = pack.setSlug;
   setWaxPackDropdown("wpManufacturer", pack.manufacturer);
   setWaxPackDropdown("wpPackaging", pack.packaging);
+  waxPackField("wpType").value = pack.type || "main";
   waxPackField("wpFormat").value = pack.format;
   waxPackField("wpNumCards").value = pack.numCards;
   waxPackField("wpPrice").value = pack.price;
@@ -197,6 +198,7 @@ async function submitWaxPack() {
     setName: waxPackField("wpSetName").value.trim(),
     manufacturer: waxPackDropdownValue("wpManufacturer"),
     packaging: waxPackDropdownValue("wpPackaging"),
+    type: waxPackField("wpType").value,
     format: waxPackField("wpFormat").value,
     numCards: parseInt(waxPackField("wpNumCards").value, 10),
     price: parseFloat(waxPackField("wpPrice").value),

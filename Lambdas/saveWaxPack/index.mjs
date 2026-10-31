@@ -16,6 +16,7 @@ const CORS_HEADERS = {
 
 const FORMATS = ["regular", "jumbo"];
 const CURRENCIES = ["CAD", "USD"];
+const TYPES = ["main", "fast food"];
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 const reply = (statusCode, body) => ({ statusCode, headers: CORS_HEADERS, body: JSON.stringify(body) });
@@ -32,7 +33,7 @@ export const handler = async (event) => {
     const packaging = text(body.packaging, 40);
     const imgName = body.imgName ? text(body.imgName, 200) : "";
     const notes = body.notes ? text(body.notes, 1000) : "";
-    const { year, format, numCards, price, currency } = body;
+    const { year, type, format, numCards, price, currency } = body;
 
     const problem =
       !Number.isInteger(year) || year < 1900 || year > 2100 ? "year must be a whole year" :
@@ -40,6 +41,7 @@ export const handler = async (event) => {
       !setName ? "setName is required" :
       !manufacturer ? "manufacturer is required" :
       !packaging ? "packaging is required" :
+      !TYPES.includes(type) ? "type must be main or fast food" :
       !FORMATS.includes(format) ? "format must be regular or jumbo" :
       !Number.isInteger(numCards) || numCards < 1 || numCards > 200 ? "numCards must be a whole number from 1 to 200" :
       typeof price !== "number" || !(price >= 0) || price > 1000 ? "price must be a number from 0 to 1000" :
@@ -56,7 +58,7 @@ export const handler = async (event) => {
     const item = {
       year,
       packKey: `${setSlug}#${packagingKey}#${format}`,
-      setSlug, setName, manufacturer, packaging, format, numCards, price, currency,
+      setSlug, setName, manufacturer, packaging, type, format, numCards, price, currency,
       updatedAt: new Date().toISOString()
     };
     if (imgName) item.imgName = imgName;

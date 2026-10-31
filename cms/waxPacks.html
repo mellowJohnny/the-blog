@@ -84,6 +84,7 @@
               <th>Set</th>
               <th>Manufacturer</th>
               <th>Packaging</th>
+              <th>Type</th>
               <th>Format</th>
               <th>Cards</th>
               <th>Price</th>
@@ -132,16 +133,26 @@
             </tr>
             <tr>
               <td>
+                <label>Type <sup>*</sup></label><br>
+                <select id="wpType" style="width: 200px;">
+                  <option value="main">Main</option>
+                  <option value="fast food">Fast Food</option>
+                </select>
+              </td>
+              <td>
                 <label>Format <sup>*</sup></label><br>
                 <select id="wpFormat" style="width: 200px;">
                   <option value="regular">Regular</option>
                   <option value="jumbo">Jumbo</option>
                 </select>
               </td>
+            </tr>
+            <tr>
               <td>
                 <label>Cards per Pack <sup>*</sup></label><br>
                 <input type="number" id="wpNumCards" min="1" max="200" required>
               </td>
+              <td></td>
             </tr>
             <tr>
               <td>
