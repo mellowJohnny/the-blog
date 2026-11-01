@@ -10,9 +10,9 @@ const WAX_PACK_IMAGE_BASE = `https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.
 const WAX_PACK_PICKER_URL = "/cms/pickWaxPack.html";
 const WAX_PACK_TYPE_LABELS = { "main": "Main", "fast food": "Fast Food" };
 
-// The form's fixed dropdown lists, as [value, label] in alphabetical order (manufacturers as chosen for wax packs).
-const WAX_PACK_MANUFACTURERS = ["Fleer", "Leaf", "O-Pee-Chee", "Pacific", "Pinnacle", "Pro Set", "Score", "Topps", "Upper Deck"].map((name) => [name, name]);
-const WAX_PACK_PACKAGING = ["Flow", "Foil", "Wax"].map((name) => [name, name]);
+// The form's fixed dropdown lists, as [value, label]. Manufacturer and packaging keep the owner's chosen order; type and format are A to Z.
+const WAX_PACK_MANUFACTURERS = ["O-Pee-Chee", "Topps", "Upper Deck", "Pinnacle", "Score", "Pro Set", "Fleer", "Leaf", "Pacific"].map((name) => [name, name]);
+const WAX_PACK_PACKAGING = ["Wax", "Flow", "Foil"].map((name) => [name, name]);
 const WAX_PACK_TYPES = [["fast food", "Fast Food"], ["main", "Main"]];
 const WAX_PACK_FORMATS = [["jumbo", "Jumbo"], ["regular", "Regular"]];
 
