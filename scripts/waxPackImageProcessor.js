@@ -38,7 +38,7 @@ async function processWaxPackImage(file) {
 
   return {
     blob,
-    fileName: waxPackImageName(file.name),
+    fileName: waxPackImageName(file.name, await waxPackContentCode(blob)),
     contentType: "image/webp",
     width: WAX_PACK_IMG_W,
     height: WAX_PACK_IMG_H,
@@ -165,12 +165,18 @@ async function encodeWaxPackWebp(canvas) {
   return blob;
 }
 
-/** IMG_1234.JPG -> img-1234.webp */
-function waxPackImageName(originalName) {
+/** Six hex characters from the image's own bytes, so a different picture never reuses a (year-cached) file name. */
+async function waxPackContentCode(blob) {
+  const digest = await crypto.subtle.digest("SHA-256", await blob.arrayBuffer());
+  return [...new Uint8Array(digest).slice(0, 3)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+/** IMG_1234.JPG + a1b2c3 -> img-1234-a1b2c3.webp */
+function waxPackImageName(originalName, code) {
   const base = originalName
     .replace(/\.[^.]+$/, "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
-  return `${base || "pack"}.webp`;
+  return `${base || "pack"}-${code}.webp`;
 }
