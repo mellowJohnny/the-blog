@@ -259,7 +259,7 @@ function browseWaxPackImage(side) {
   openImageBrowser(`wp${side}Img`, (fileName) => {
     waxPackField(`wp${side}Img`).value = fileName;
     showWaxPackImage(side);
-  }, WAX_PACK_IMAGE_DIR);
+  }, WAX_PACK_IMAGE_DIR, processWaxPackImage);
 }
 
 function showWaxPackImage(side) {
