@@ -35,7 +35,7 @@ export const handler = async (event) => {
     const backImg = body.backImg ? text(body.backImg, 200) : "";
     const notes = body.notes ? text(body.notes, 1000) : "";
     const reviewSlug = body.reviewSlug || "";
-    const { year, type, format, numCards, price } = body;
+    const { year, type, format, numCards } = body;
     const isEdit = body.packKey !== undefined;
 
     const problem =
@@ -46,7 +46,6 @@ export const handler = async (event) => {
       !TYPES.includes(type) ? "type must be main or fast food" :
       !FORMATS.includes(format) ? "format must be regular or jumbo" :
       !Number.isInteger(numCards) || numCards < 1 || numCards > 200 ? "numCards must be a whole number from 1 to 200" :
-      typeof price !== "number" || !(price >= 0) || price > 1000 ? "price must be a number from 0 to 1000" :
       reviewSlug && (typeof reviewSlug !== "string" || !SLUG_PATTERN.test(reviewSlug)) ? "reviewSlug must be lowercase letters, numbers and single hyphens" :
       isEdit && (typeof body.packKey !== "string" || !SLUG_PATTERN.test(body.packKey)) ? "packKey is invalid" :
       frontImg === null ? "frontImg is too long" :
@@ -61,7 +60,7 @@ export const handler = async (event) => {
 
     const item = {
       year, packKey,
-      name, manufacturer, packaging, type, format, numCards, price,
+      name, manufacturer, packaging, type, format, numCards,
       updatedAt: new Date().toISOString()
     };
     if (reviewSlug) item.reviewSlug = reviewSlug;

@@ -7,13 +7,14 @@ const WAX_PACK_GET_URL = "https://efh9lu4988.execute-api.us-east-2.amazonaws.com
 const WAX_PACK_REVIEWS_URL = "https://jlpd8ec14j.execute-api.us-east-2.amazonaws.com/prod"; // getPublicCardSets API
 const WAX_PACK_IMAGE_DIR = "img/wax-packs/";
 const WAX_PACK_IMAGE_BASE = `https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/${WAX_PACK_IMAGE_DIR}`;
-const WAX_PACK_NEW_VALUE = "__new__";
 const WAX_PACK_PICKER_URL = "/cms/pickWaxPack.html";
 const WAX_PACK_TYPE_LABELS = { "main": "Main", "fast food": "Fast Food" };
 
-// The same manufacturers createCardSet.html offers, so the dropdown is never empty.
-const WAX_PACK_MANUFACTURERS = ["O-Pee-Chee", "Topps", "Upper Deck", "Score", "Pro Set", "Fleer", "Leaf", "Pinnacle", "Pacific", "Ultimate"];
-const WAX_PACK_PACKAGING = ["Wax", "Rack", "Cello", "Blister"];
+// The form's fixed dropdown lists, as [value, label] in alphabetical order (the manufacturers are createCardSet.html's).
+const WAX_PACK_MANUFACTURERS = ["Fleer", "Leaf", "O-Pee-Chee", "Pacific", "Pinnacle", "Pro Set", "Score", "Topps", "Ultimate", "Upper Deck"].map((name) => [name, name]);
+const WAX_PACK_PACKAGING = ["Blister", "Cello", "Rack", "Wax"].map((name) => [name, name]);
+const WAX_PACK_TYPES = [["fast food", "Fast Food"], ["main", "Main"]];
+const WAX_PACK_FORMATS = [["jumbo", "Jumbo"], ["regular", "Regular"]];
 
 let _waxPacks = [];
 let _waxReviews = [];
@@ -27,7 +28,8 @@ function waxPackField(id) {
 
 async function initNewWaxPackPage() {
   renderWaxPackForm("create");
-  await loadWaxPackFormData();
+  _waxReviews = await loadWaxReviews();
+  fillWaxPackDropdowns();
 }
 
 async function initPickWaxPackPage() {
@@ -55,7 +57,10 @@ async function initPickWaxPackPage() {
 
 async function initEditWaxPackPage() {
   renderWaxPackForm("edit");
-  await loadWaxPackFormData();
+  const [packs, reviews] = await Promise.all([loadWaxPacks(), loadWaxReviews()]);
+  _waxPacks = packs || [];
+  _waxReviews = reviews;
+  fillWaxPackDropdowns();
 
   const params = new URLSearchParams(document.location.search);
   const year = Number(params.get("year"));
@@ -84,14 +89,6 @@ async function loadWaxPacks() {
   }
 }
 
-/** Loads the packs and the live reviews together, then fills the form's dropdowns from them. */
-async function loadWaxPackFormData() {
-  const [packs, reviews] = await Promise.all([loadWaxPacks(), loadWaxReviews()]);
-  _waxPacks = packs || [];
-  _waxReviews = reviews;
-  fillWaxPackDropdowns();
-}
-
 /** Live reviews for the "Related Review" dropdown; an empty list (form still works) if the request fails. */
 async function loadWaxReviews() {
   try {
@@ -100,7 +97,7 @@ async function loadWaxReviews() {
     const sets = await response.json();
     return sets
       .filter((set) => set.seoURLSlug)
-      .sort((a, b) => a.year - b.year || a.setName.localeCompare(b.setName));
+      .sort((a, b) => a.setName.localeCompare(b.setName) || a.year - b.year);
   } catch (error) {
     console.log("Wax pack review list error:", error);
     return [];
@@ -161,38 +158,26 @@ function renderWaxPackForm(mode) {
           <td>
             <label>Manufacturer <sup>*</sup></label><br>
             <select id="wpManufacturer" style="width: 200px;"></select>
-            <input type="text" id="wpManufacturerNew" style="display: none;">
           </td>
           <td>
             <label>Packaging <sup>*</sup></label><br>
             <select id="wpPackaging" style="width: 200px;"></select>
-            <input type="text" id="wpPackagingNew" style="display: none;">
           </td>
         </tr>
         <tr>
           <td>
             <label>Type <sup>*</sup></label><br>
-            <select id="wpType" style="width: 200px;">
-              <option value="main">Main</option>
-              <option value="fast food">Fast Food</option>
-            </select>
+            <select id="wpType" style="width: 200px;"></select>
           </td>
           <td>
             <label>Format <sup>*</sup></label><br>
-            <select id="wpFormat" style="width: 200px;">
-              <option value="regular">Regular</option>
-              <option value="jumbo">Jumbo</option>
-            </select>
+            <select id="wpFormat" style="width: 200px;"></select>
           </td>
         </tr>
         <tr>
-          <td>
+          <td colspan="2">
             <label>Cards per Pack <sup>*</sup></label><br>
             <input type="number" id="wpNumCards" min="1" max="200" required>
-          </td>
-          <td>
-            <label>Price <sup>*</sup></label><br>
-            <input type="number" id="wpPrice" min="0" max="1000" step="0.01" required>
           </td>
         </tr>
         <tr>
@@ -210,55 +195,31 @@ function renderWaxPackForm(mode) {
         </tr>
       </table>
     </form>`;
-
-  ["wpManufacturer", "wpPackaging"].forEach((id) => {
-    waxPackField(id).addEventListener("change", () => toggleWaxPackNewValue(id));
-  });
 }
 
-/** Seed values plus every value already saved (case-insensitive), then "Add new...". */
+/** Fills every dropdown: the fixed lists, and the live reviews (alphabetical, "None" first). */
 function fillWaxPackDropdowns() {
-  fillWaxPackDropdown("wpManufacturer", WAX_PACK_MANUFACTURERS, "manufacturer");
-  fillWaxPackDropdown("wpPackaging", WAX_PACK_PACKAGING, "packaging");
-
-  const reviews = waxPackField("wpReviewSlug");
-  reviews.innerHTML = "";
-  reviews.add(new Option("None", ""));
-  _waxReviews.forEach((set) => reviews.add(new Option(`${set.setName} (${set.year})`, set.seoURLSlug)));
+  fillWaxPackSelect("wpManufacturer", WAX_PACK_MANUFACTURERS, "Choose...");
+  fillWaxPackSelect("wpPackaging", WAX_PACK_PACKAGING, "Choose...");
+  fillWaxPackSelect("wpType", WAX_PACK_TYPES, "Choose...");
+  fillWaxPackSelect("wpFormat", WAX_PACK_FORMATS, "Choose...");
+  fillWaxPackSelect("wpReviewSlug", _waxReviews.map((set) => [set.seoURLSlug, `${set.setName} (${set.year})`]), "None");
 }
 
-function fillWaxPackDropdown(selectId, seeds, field) {
+function fillWaxPackSelect(selectId, options, placeholder) {
   const select = waxPackField(selectId);
-  const seen = new Map();
-
-  [...seeds, ..._waxPacks.map((pack) => pack[field])].forEach((value) => {
-    if (value && !seen.has(value.toLowerCase())) seen.set(value.toLowerCase(), value);
-  });
-
   select.innerHTML = "";
-  select.add(new Option("Choose...", ""));
-  [...seen.values()].sort((a, b) => a.localeCompare(b)).forEach((value) => select.add(new Option(value, value)));
-  select.add(new Option("Add new...", WAX_PACK_NEW_VALUE));
-  toggleWaxPackNewValue(selectId);
+  select.add(new Option(placeholder, ""));
+  options.forEach(([value, label]) => select.add(new Option(label, value)));
 }
 
-function toggleWaxPackNewValue(selectId) {
-  const isNew = waxPackField(selectId).value === WAX_PACK_NEW_VALUE;
-  waxPackField(`${selectId}New`).style.display = isNew ? "" : "none";
-}
-
-/** The chosen dropdown value, or the typed one when "Add new..." is selected. */
-function waxPackDropdownValue(selectId) {
+/** Selects a saved value; one that is no longer in the list (older data) is kept as an extra option so saving doesn't drop it. */
+function setWaxPackSelect(selectId, value) {
   const select = waxPackField(selectId);
-  return select.value === WAX_PACK_NEW_VALUE ? waxPackField(`${selectId}New`).value.trim() : select.value;
-}
-
-function setWaxPackDropdown(selectId, value) {
-  const select = waxPackField(selectId);
-  const match = [...select.options].find((option) => option.value.toLowerCase() === value.toLowerCase());
-  select.value = match ? match.value : WAX_PACK_NEW_VALUE;
-  waxPackField(`${selectId}New`).value = match ? "" : value;
-  toggleWaxPackNewValue(selectId);
+  if (value && ![...select.options].some((option) => option.value === value)) {
+    select.add(new Option(value, value));
+  }
+  select.value = value;
 }
 
 /** Fills the edit form from a saved pack; only the year (the table's partition key) is locked. */
@@ -267,13 +228,12 @@ function populateWaxPackForm(pack) {
 
   waxPackField("wpYear").value = pack.year;
   waxPackField("wpName").value = pack.name;
-  setWaxPackReview(pack.reviewSlug || "");
-  setWaxPackDropdown("wpManufacturer", pack.manufacturer);
-  setWaxPackDropdown("wpPackaging", pack.packaging);
-  waxPackField("wpType").value = pack.type || "main";
-  waxPackField("wpFormat").value = pack.format;
+  setWaxPackSelect("wpReviewSlug", pack.reviewSlug || "");
+  setWaxPackSelect("wpManufacturer", pack.manufacturer);
+  setWaxPackSelect("wpPackaging", pack.packaging);
+  setWaxPackSelect("wpType", pack.type || "");
+  setWaxPackSelect("wpFormat", pack.format);
   waxPackField("wpNumCards").value = pack.numCards;
-  waxPackField("wpPrice").value = pack.price;
   waxPackField("wpFrontImg").value = pack.frontImg || "";
   waxPackField("wpBackImg").value = pack.backImg || "";
   waxPackField("wpNotes").value = pack.notes || "";
@@ -281,15 +241,6 @@ function populateWaxPackForm(pack) {
   waxPackField("wpYear").disabled = true;
   showWaxPackImage("Front");
   showWaxPackImage("Back");
-}
-
-/** Selects the pack's review; one that is no longer a live review is kept as an extra option so saving doesn't drop it. */
-function setWaxPackReview(slug) {
-  const select = waxPackField("wpReviewSlug");
-  if (slug && ![...select.options].some((option) => option.value === slug)) {
-    select.add(new Option(`${slug} (not a live review)`, slug));
-  }
-  select.value = slug;
 }
 
 /************************************* Front and back images *************************************/
@@ -326,12 +277,11 @@ async function submitWaxPack() {
     year: parseInt(waxPackField("wpYear").value, 10),
     name: waxPackField("wpName").value.trim(),
     reviewSlug: waxPackField("wpReviewSlug").value,
-    manufacturer: waxPackDropdownValue("wpManufacturer"),
-    packaging: waxPackDropdownValue("wpPackaging"),
+    manufacturer: waxPackField("wpManufacturer").value,
+    packaging: waxPackField("wpPackaging").value,
     type: waxPackField("wpType").value,
     format: waxPackField("wpFormat").value,
     numCards: parseInt(waxPackField("wpNumCards").value, 10),
-    price: parseFloat(waxPackField("wpPrice").value),
     frontImg: waxPackField("wpFrontImg").value.trim(),
     backImg: waxPackField("wpBackImg").value.trim(),
     notes: waxPackField("wpNotes").value.trim()
