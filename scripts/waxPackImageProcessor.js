@@ -5,6 +5,7 @@ const WAX_PACK_IMG_H = 1200;
 const WAX_PACK_IMG_MARGIN = 36;
 const WAX_PACK_IMG_ANALYSIS_SIDE = 1200;
 const WAX_PACK_IMG_DIFF = 45;
+const WAX_PACK_IMG_MIN_BACKDROP = 200;
 const WAX_PACK_IMG_MAX_BYTES = 250 * 1024;
 
 /** Resolves to { blob, fileName, contentType, width, height, warning }; rejects with a message fit to show the user. */
@@ -87,7 +88,7 @@ function findWaxPackBounds(bitmap) {
   const y1 = Math.min(ah, bottom + 1 + pad);
 
   const warnings = [];
-  if (Math.min(...backdrop) < 200) warnings.push("the backdrop doesn't look white");
+  if (Math.min(...backdrop) < WAX_PACK_IMG_MIN_BACKDROP) warnings.push("the backdrop doesn't look white");
   if ((x1 - x0) > aw * 0.97 && (y1 - y0) > ah * 0.97) warnings.push("the pack fills the whole photo");
 
   return {
@@ -136,9 +137,12 @@ function waxPackHalved(source, crop, dw, dh) {
 
 /** Scales each channel so the backdrop becomes 255 (undoes a grey camera cast), then snaps near-white to pure white. */
 function whitenWaxPackBackdrop(ctx, backdrop) {
+  // A backdrop that isn't close to white (marble, say) is left alone: boosting it would tint the whole image.
+  if (Math.min(...backdrop) < WAX_PACK_IMG_MIN_BACKDROP) return;
+
   const image = ctx.getImageData(0, 0, WAX_PACK_IMG_W, WAX_PACK_IMG_H);
   const px = image.data;
-  const gain = backdrop.map((v) => (v >= 150 ? 255 / v : 1));
+  const gain = backdrop.map((v) => 255 / v);
 
   for (let i = 0; i < px.length; i += 4) {
     const r = Math.min(255, px[i] * gain[0]);
