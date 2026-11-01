@@ -175,9 +175,13 @@ function renderWaxPackForm(mode) {
           </td>
         </tr>
         <tr>
-          <td colspan="2">
+          <td>
             <label>Cards per Pack <sup>*</sup></label><br>
             <input type="number" id="wpNumCards" min="1" max="200" required>
+          </td>
+          <td>
+            <label>Price</label><br>
+            <input type="text" id="wpPrice" maxlength="20" placeholder="e.g. 50¢ or $1.25" style="width: 200px;">
           </td>
         </tr>
         <tr>
@@ -234,6 +238,7 @@ function populateWaxPackForm(pack) {
   setWaxPackSelect("wpType", pack.type || "");
   setWaxPackSelect("wpFormat", pack.format);
   waxPackField("wpNumCards").value = pack.numCards;
+  waxPackField("wpPrice").value = pack.price || "";
   waxPackField("wpFrontImg").value = pack.frontImg || "";
   waxPackField("wpBackImg").value = pack.backImg || "";
   waxPackField("wpNotes").value = pack.notes || "";
@@ -282,6 +287,7 @@ async function submitWaxPack() {
     type: waxPackField("wpType").value,
     format: waxPackField("wpFormat").value,
     numCards: parseInt(waxPackField("wpNumCards").value, 10),
+    price: waxPackField("wpPrice").value.trim(),
     frontImg: waxPackField("wpFrontImg").value.trim(),
     backImg: waxPackField("wpBackImg").value.trim(),
     notes: waxPackField("wpNotes").value.trim()

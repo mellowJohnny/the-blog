@@ -34,6 +34,7 @@ export const handler = async (event) => {
     const frontImg = body.frontImg ? text(body.frontImg, 200) : "";
     const backImg = body.backImg ? text(body.backImg, 200) : "";
     const notes = body.notes ? text(body.notes, 1000) : "";
+    const price = body.price ? text(body.price, 20) : "";
     const reviewSlug = body.reviewSlug || "";
     const { year, type, format, numCards } = body;
     const isEdit = body.packKey !== undefined;
@@ -48,6 +49,7 @@ export const handler = async (event) => {
       !Number.isInteger(numCards) || numCards < 1 || numCards > 200 ? "numCards must be a whole number from 1 to 200" :
       reviewSlug && (typeof reviewSlug !== "string" || !SLUG_PATTERN.test(reviewSlug)) ? "reviewSlug must be lowercase letters, numbers and single hyphens" :
       isEdit && (typeof body.packKey !== "string" || !SLUG_PATTERN.test(body.packKey)) ? "packKey is invalid" :
+      price === null ? "price is too long" :
       frontImg === null ? "frontImg is too long" :
       backImg === null ? "backImg is too long" :
       notes === null ? "notes are too long" : null;
@@ -64,6 +66,7 @@ export const handler = async (event) => {
       updatedAt: new Date().toISOString()
     };
     if (reviewSlug) item.reviewSlug = reviewSlug;
+    if (price) item.price = price;
     if (frontImg) item.frontImg = frontImg;
     if (backImg) item.backImg = backImg;
     if (notes) item.notes = notes;
