@@ -27,7 +27,7 @@ async function uploadNewImage() {
   let directory = null;
 
   if (_imageBrowserTargetFieldId || _imageBrowserCallback) {
-    directory = "img/cards/";
+    directory = _imageBrowserDirectory;
   } else if (_blogImageTargetFieldId) {
     directory = "img/blog/";
   } else {
@@ -72,7 +72,7 @@ async function uploadNewImage() {
   status.textContent = "Upload complete! Refreshing...";
 
   // Refresh the image list and auto-select the new image
-  if (directory === "img/cards/") {
+  if (directory !== "img/blog/") {
     fetchImageList().then(files => {
       _imageBrowserFiles = files;
       renderImageList(files, _imageBrowserTargetFieldId);
@@ -122,7 +122,7 @@ function renderImageList(files, targetFieldId, filterText = "") {
    // .filter(file => file.startsWith("img/cards/"))
 
     // Filter out the root directory...
-    .filter(file => file.startsWith("img/cards/") && file.length > "img/cards/".length)
+    .filter(file => file.startsWith(_imageBrowserDirectory) && file.length > _imageBrowserDirectory.length)
 
 
 
@@ -133,7 +133,7 @@ function renderImageList(files, targetFieldId, filterText = "") {
     })
 
     .forEach(file => {
-      const fileName = file.replace("img/cards/", ""); // Path is specific to card sets
+      const fileName = file.replace(_imageBrowserDirectory, ""); // Path is the browser's current folder
       const imageUrl = "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/" + file;
 
       // Wrapper for thumbnail + label
@@ -187,14 +187,17 @@ function renderImageList(files, targetFieldId, filterText = "") {
 let _imageBrowserFiles = [];
 let _imageBrowserTargetFieldId = null;
 let _imageBrowserCallback = null;
+let _imageBrowserDirectory = "img/cards/";
 
 // Card picker, generalized: pass onSelect(fileName, imageUrl) to insert
 // the picked image somewhere other than a form field's value (e.g. a
 // TinyMCE editor) instead of the default target-field behaviour.
-function openImageBrowser(targetFieldId, onSelect = null) {
+// directory is the S3 folder to list and upload to (card sets by default).
+function openImageBrowser(targetFieldId, onSelect = null, directory = "img/cards/") {
   const modal = document.getElementById("imageBrowserModal");
   _imageBrowserTargetFieldId = targetFieldId;
   _imageBrowserCallback = onSelect;
+  _imageBrowserDirectory = directory;
 
   fetchImageList().then(files => {
     _imageBrowserFiles = files;

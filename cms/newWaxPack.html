@@ -39,6 +39,7 @@
     </noscript>
 
     <script src="/scripts/cmsWaxPack.js"></script>
+    <script src="/scripts/cmsImageBrowser.js"></script>
     <script src="/scripts/helper.js"></script>
 
     <script>
@@ -88,5 +89,52 @@
     <footer class="page-footer">
       <div id="copy"></div>
     </footer>
+
+    <!-- S3 Image Browser Modal, driven by scripts/cmsImageBrowser.js -->
+    <div id="imageBrowserModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeImageBrowser()">&times;</span>
+
+        <h3>Select an Image</h3>
+        <h4>Or Upload A New One</h4>
+
+        <div
+          style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"
+        >
+          <label
+            for="uploadFileInput" class="input-button"
+          >
+            Choose File
+          </label>
+
+          <input
+            type="file"
+            id="uploadFileInput"
+            accept="image/*"
+            style="display: none;">
+
+          <span id="selectedFileName" style="font-size: 14px; color: #333;"
+            >No file chosen</span
+          >
+
+          <button
+            type="button"
+            onclick="uploadNewImage()" class="input-button"
+          >
+            Upload
+          </button>
+        </div>
+        <div id="uploadStatus" style="font-size: 13px; color: #555;"></div>
+
+        <input
+          type="text"
+          id="imageSearch"
+          placeholder="Search images..."
+          oninput="filterImageList()"
+          style="width: 100%; padding: 6px; margin-top: 10px; margin-bottom: 10px; font-size: 14px; box-sizing: border-box;">
+
+        <div id="imageList"></div>
+      </div>
+    </div>
   </body>
 </html>

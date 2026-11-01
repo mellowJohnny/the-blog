@@ -5,7 +5,6 @@ const WAX_PACK_DELETE_URL = "https://y4hs1e712l.execute-api.us-east-2.amazonaws.
 const WAX_PACK_GET_URL = "https://efh9lu4988.execute-api.us-east-2.amazonaws.com/prod"; // getWaxPacks API
 
 const WAX_PACK_REVIEWS_URL = "https://jlpd8ec14j.execute-api.us-east-2.amazonaws.com/prod"; // getPublicCardSets API
-const WAX_PACK_IMAGE_UPLOAD_URL = "https://k95rdenpn5.execute-api.us-east-2.amazonaws.com/dev"; // cmsImageUploader API
 const WAX_PACK_IMAGE_DIR = "img/wax-packs/";
 const WAX_PACK_IMAGE_BASE = `https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/${WAX_PACK_IMAGE_DIR}`;
 const WAX_PACK_NEW_VALUE = "__new__";
@@ -215,9 +214,6 @@ function renderWaxPackForm(mode) {
   ["wpManufacturer", "wpPackaging"].forEach((id) => {
     waxPackField(id).addEventListener("change", () => toggleWaxPackNewValue(id));
   });
-  ["Front", "Back"].forEach((side) => {
-    waxPackField(`wp${side}File`).addEventListener("change", () => uploadWaxPackImage(side));
-  });
 }
 
 /** Seed values plus every value already saved (case-insensitive), then "Add new...". */
@@ -298,14 +294,21 @@ function setWaxPackReview(slug) {
 
 /************************************* Front and back images *************************************/
 
-/** The form block for one side ("Front" or "Back"): file name, chooser, status and preview. */
+/** The form block for one side ("Front" or "Back"): file name, Browse button and preview. */
 function waxPackImageBlock(side) {
   return `
     <label>${side} Image</label><br>
     <input type="text" id="wp${side}Img" readonly><br>
-    <input type="file" id="wp${side}File" accept="image/*">
-    <span id="wp${side}Status"></span><br>
+    <button class="input-button" type="button" onclick="browseWaxPackImage('${side}')">Browse</button><br>
     <img id="wp${side}Preview" alt="${side} of the pack" style="display: none; max-width: 160px;">`;
+}
+
+/** Opens the shared image browser (cmsImageBrowser.js) on the wax pack folder and fills that side with the pick. */
+function browseWaxPackImage(side) {
+  openImageBrowser(`wp${side}Img`, (fileName) => {
+    waxPackField(`wp${side}Img`).value = fileName;
+    showWaxPackImage(side);
+  }, WAX_PACK_IMAGE_DIR);
 }
 
 function showWaxPackImage(side) {
@@ -313,36 +316,6 @@ function showWaxPackImage(side) {
   const img = waxPackField(`wp${side}Preview`);
   img.style.display = name ? "" : "none";
   img.src = name ? WAX_PACK_IMAGE_BASE + encodeURIComponent(name) : "";
-}
-
-/** Gets a presigned URL from cmsImageUploader, PUTs the file to S3 under img/wax-packs/, then fills that side's field. */
-async function uploadWaxPackImage(side) {
-  const file = waxPackField(`wp${side}File`).files[0];
-  const status = waxPackField(`wp${side}Status`);
-  if (!file) return;
-
-  const fileName = file.name.toLowerCase().replace(/[^a-z0-9._-]+/g, "-");
-  status.textContent = "Uploading...";
-
-  try {
-    const response = await fetch(WAX_PACK_IMAGE_UPLOAD_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fileName, directory: WAX_PACK_IMAGE_DIR, contentType: file.type })
-    });
-    const data = await response.json();
-    if (!data.uploadUrl) throw new Error("No upload URL returned");
-
-    const upload = await fetch(data.uploadUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
-    if (!upload.ok) throw new Error(`S3 returned ${upload.status}`);
-
-    waxPackField(`wp${side}Img`).value = fileName;
-    status.textContent = "Uploaded.";
-    showWaxPackImage(side);
-  } catch (error) {
-    console.log("Wax pack image upload error:", error);
-    status.textContent = "Upload failed.";
-  }
 }
 
 /************************************* Save and delete *************************************/
