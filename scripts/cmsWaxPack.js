@@ -8,6 +8,7 @@ const WAX_PACK_REVIEWS_URL = "https://jlpd8ec14j.execute-api.us-east-2.amazonaws
 const WAX_PACK_IMAGE_DIR = "img/wax-packs/";
 const WAX_PACK_IMAGE_BASE = `https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/${WAX_PACK_IMAGE_DIR}`;
 const WAX_PACK_PICKER_URL = "/cms/pickWaxPack.html";
+const WAX_PACK_HOME_URL = "/cms/wlcms.html";
 const WAX_PACK_TYPE_LABELS = { "main": "Main", "fast food": "Fast Food" };
 
 // The form's fixed dropdown lists, as [value, label]. Manufacturer and packaging keep the owner's chosen order; type and format are A to Z.
@@ -308,7 +309,7 @@ async function submitWaxPack() {
       return;
     }
     await cmsAlert(_waxPackBeingEdited ? "Wax pack updated." : "Wax pack saved.");
-    window.location.href = WAX_PACK_PICKER_URL;
+    window.location.href = _waxPackBeingEdited ? WAX_PACK_PICKER_URL : WAX_PACK_HOME_URL;
   } catch (error) {
     console.log("Wax pack save error:", error);
     await cmsAlert("Network error saving the wax pack.");
