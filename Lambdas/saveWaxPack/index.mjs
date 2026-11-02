@@ -33,7 +33,8 @@ export const handler = async (event) => {
     const packaging = text(body.packaging, 40);
     const frontImg = body.frontImg ? text(body.frontImg, 200) : "";
     const backImg = body.backImg ? text(body.backImg, 200) : "";
-    const notes = body.notes ? text(body.notes, 1000) : "";
+    const notesFront = body.notesFront ? text(body.notesFront, 1000) : "";
+    const notesBack = body.notesBack ? text(body.notesBack, 1000) : "";
     const price = body.price ? text(body.price, 20) : "";
     const reviewSlug = body.reviewSlug || "";
     const { year, type, format, numCards } = body;
@@ -52,7 +53,8 @@ export const handler = async (event) => {
       price === null ? "price is too long" :
       frontImg === null ? "frontImg is too long" :
       backImg === null ? "backImg is too long" :
-      notes === null ? "notes are too long" : null;
+      notesFront === null ? "notesFront is too long" :
+      notesBack === null ? "notesBack is too long" : null;
 
     if (problem) return reply(400, { error: problem });
 
@@ -69,7 +71,9 @@ export const handler = async (event) => {
     if (price) item.price = price;
     if (frontImg) item.frontImg = frontImg;
     if (backImg) item.backImg = backImg;
-    if (notes) item.notes = notes;
+    // The old single "notes" field is no longer written; the CMS form loads it into notesFront, so a save carries it over.
+    if (notesFront) item.notesFront = notesFront;
+    if (notesBack) item.notesBack = notesBack;
 
     // A create must not overwrite another pack; an edit must not invent one.
     await ddb.send(new PutCommand({

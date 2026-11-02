@@ -34,7 +34,7 @@ function waxPackDetails(pack) {
     ["Format", pack.format ? pack.format.charAt(0).toUpperCase() + pack.format.slice(1) : ""],
     ["Cards per pack", pack.numCards],
     ["Price", pack.price],
-    ["Notes", pack.notes]
+    ["Notes", pack.notesFront || pack.notes] // "notes" is the old single field, shown as the front note until the pack is next saved
   ].filter(([, value]) => value !== undefined && value !== null && String(value).trim() !== "");
 }
 
@@ -89,6 +89,15 @@ function buildWaxPackCard(pack) {
     close.setAttribute("aria-label", `Show the front of the ${pack.name} pack`);
     close.appendChild(waxMuseumImage(pack.backImg, `${pack.name} wax pack, back`, "wax-museum-img"));
     back.appendChild(close);
+    if (pack.notesBack) {
+      const notes = waxMuseumEl("div", "wax-museum-caption");
+      const row = waxMuseumEl("div", "wax-museum-detail");
+      row.append(waxMuseumEl("dt", "", "Notes"), waxMuseumEl("dd", "", pack.notesBack));
+      const list = waxMuseumEl("dl", "wax-museum-details");
+      list.appendChild(row);
+      notes.appendChild(list);
+      back.appendChild(notes);
+    }
     card.appendChild(back);
 
     front.querySelector(".wax-museum-flip")?.addEventListener("click", () => setWaxPackCardFlipped(card, true, true));

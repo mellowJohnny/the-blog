@@ -190,9 +190,13 @@ function renderWaxPackForm(mode) {
           <td>${waxPackImageBlock("Back")}</td>
         </tr>
         <tr>
-          <td colspan="2">
-            <label>Notes</label><br>
-            <textarea id="wpNotes" class="seo-textarea" rows="2"></textarea>
+          <td>
+            <label>Notes - Pack Front</label><br>
+            <textarea id="wpNotesFront" class="seo-textarea" rows="2"></textarea>
+          </td>
+          <td>
+            <label>Notes - Pack Reverse</label><br>
+            <textarea id="wpNotesBack" class="seo-textarea" rows="2"></textarea>
           </td>
         </tr>
         <tr>
@@ -242,7 +246,9 @@ function populateWaxPackForm(pack) {
   waxPackField("wpPrice").value = pack.price || "";
   waxPackField("wpFrontImg").value = pack.frontImg || "";
   waxPackField("wpBackImg").value = pack.backImg || "";
-  waxPackField("wpNotes").value = pack.notes || "";
+  // Packs saved before the notes were split have only "notes", which counts as the front note.
+  waxPackField("wpNotesFront").value = pack.notesFront || pack.notes || "";
+  waxPackField("wpNotesBack").value = pack.notesBack || "";
 
   waxPackField("wpYear").disabled = true;
   showWaxPackImage("Front");
@@ -291,7 +297,8 @@ async function submitWaxPack() {
     price: waxPackField("wpPrice").value.trim(),
     frontImg: waxPackField("wpFrontImg").value.trim(),
     backImg: waxPackField("wpBackImg").value.trim(),
-    notes: waxPackField("wpNotes").value.trim()
+    notesFront: waxPackField("wpNotesFront").value.trim(),
+    notesBack: waxPackField("wpNotesBack").value.trim()
   };
   if (_waxPackBeingEdited) payload.packKey = _waxPackBeingEdited.packKey;
 

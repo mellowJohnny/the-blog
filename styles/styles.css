@@ -4728,7 +4728,7 @@ body:has(.site-footer) {
 
 .wax-museum-back {
   display: flex;
-  align-items: flex-start; /* the back photo sits where the front one does, so the pack stays put when it flips */
+  flex-direction: column; /* the back photo sits at the top, where the front one does, so the pack stays put when it flips; its notes go below */
   transform: rotateY(-180deg);
 }
 
