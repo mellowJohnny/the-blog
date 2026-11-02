@@ -920,7 +920,7 @@ label sup {
 
 .cms-masthead {
   margin: -8px -8px 0; /* cancel the body margin: edge to edge, like the home banner */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
 }
 
 /* Everything on a cardStack CMS page except the banner's section gets a left margin. */
