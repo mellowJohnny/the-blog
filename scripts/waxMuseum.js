@@ -44,7 +44,7 @@ function buildWaxPackCaption(pack) {
 
   const list = waxMuseumEl("dl", "wax-museum-details");
   waxPackDetails(pack).forEach(([label, value]) => {
-    const row = waxMuseumEl("div", "wax-museum-detail");
+    const row = waxMuseumEl("div", label === "Notes" ? "wax-museum-detail wax-museum-detail-wide" : "wax-museum-detail");
     row.append(waxMuseumEl("dt", "", label), waxMuseumEl("dd", "", String(value)));
     list.appendChild(row);
   });
