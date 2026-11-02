@@ -926,6 +926,8 @@ label sup {
   display: block;
   width: 100%;
   height: auto;
+  max-height: 150px; /* the image is 5:1, so on a wide screen it is cropped top and bottom instead of growing taller */
+  object-fit: cover;
 }
 
 .autobus-mast-table {
