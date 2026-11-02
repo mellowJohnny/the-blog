@@ -13,8 +13,8 @@ const WAX_PACK_TYPE_LABELS = { "main": "Main", "fast food": "Fast Food" };
 // The form's fixed dropdown lists, as [value, label]. Manufacturer and packaging keep the owner's chosen order; type and format are A to Z.
 const WAX_PACK_MANUFACTURERS = ["O-Pee-Chee", "Topps", "Upper Deck", "Pinnacle", "Score", "Pro Set", "Fleer", "Leaf", "Pacific"].map((name) => [name, name]);
 const WAX_PACK_PACKAGING = ["Wax", "Flow", "Foil"].map((name) => [name, name]);
-const WAX_PACK_TYPES = [["fast food", "Fast Food"], ["main", "Main"]];
-const WAX_PACK_FORMATS = [["jumbo", "Jumbo"], ["regular", "Regular"]];
+const WAX_PACK_TYPES = [["main", "Main"], ["fast food", "Fast Food"]];
+const WAX_PACK_FORMATS = [["regular", "Regular"], ["jumbo", "Jumbo"]];
 
 let _waxPacks = [];
 let _waxReviews = [];
@@ -181,7 +181,7 @@ function renderWaxPackForm(mode) {
           </td>
           <td>
             <label>Price</label><br>
-            <input type="text" id="wpPrice" maxlength="20" placeholder="e.g. 50¢ or $1.25" style="width: 200px;">
+            <input type="text" id="wpPrice" maxlength="20" style="width: 200px;">
           </td>
         </tr>
         <tr>
@@ -207,7 +207,7 @@ function fillWaxPackDropdowns() {
   fillWaxPackSelect("wpPackaging", WAX_PACK_PACKAGING, "Choose...");
   fillWaxPackSelect("wpType", WAX_PACK_TYPES, "Choose...");
   fillWaxPackSelect("wpFormat", WAX_PACK_FORMATS, "Choose...");
-  fillWaxPackSelect("wpReviewSlug", _waxReviews.map((set) => [set.seoURLSlug, `${set.setName} (${set.year})`]), "None");
+  fillWaxPackSelect("wpReviewSlug", _waxReviews.map((set) => [set.seoURLSlug, set.setName]), "None");
 }
 
 function fillWaxPackSelect(selectId, options, placeholder) {
