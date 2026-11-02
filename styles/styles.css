@@ -4728,7 +4728,7 @@ body:has(.site-footer) {
 
 .wax-museum-back {
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* the back photo sits where the front one does, so the pack stays put when it flips */
   transform: rotateY(-180deg);
 }
 
@@ -4761,10 +4761,6 @@ body:has(.site-footer) {
   width: 100%;
   height: auto;
   border-radius: 8px 8px 0 0;
-}
-
-.wax-museum-back .wax-museum-img {
-  border-radius: 8px;
 }
 
 .wax-museum-hint {
