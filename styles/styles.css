@@ -3327,13 +3327,28 @@ body:has(.site-footer) {
 /* Small "Generate" button beside a CMS SEO field, and its length counter. */
 .seo-generate-btn {
   margin-left: 8px;
-  padding: 1px 8px;
-  font-size: 12px;
+  padding: 4px 12px;
+  font-size: 14px;
   background-color: #256386;
   color: white;
   border: none;
-  border-radius: 3px;
+  border-radius: 4px;
   cursor: pointer;
+}
+
+.seo-generate-claude {
+  position: relative;
+  padding-left: 34px;
+  background-color: #d97757;
+}
+
+.seo-generate-claude svg {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
 }
 
 .seo-char-count {

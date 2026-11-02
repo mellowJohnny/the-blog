@@ -363,6 +363,7 @@ async function generateSeoDescription() {
   if (!seoFormValue("setName")) return fillSeoField("seoMetaDesc", buildSeoDescription);
 
   const button = document.querySelector('[onclick="generateSeoDescription()"]');
+  const label = button.querySelector(".seo-generate-label");
   const reviewText = seoReviewText();
   let description = "";
   let fallbackReason = "";
@@ -373,7 +374,7 @@ async function generateSeoDescription() {
     fallbackReason = "Write the review first so Claude has something to read. The basic description was used instead.";
   } else {
     button.disabled = true;
-    button.textContent = "Generating...";
+    label.textContent = "Generating...";
     try {
       description = await requestSeoDescription(reviewText);
     } catch (error) {
@@ -381,7 +382,7 @@ async function generateSeoDescription() {
       fallbackReason = "Claude couldn't write the description, so the basic one was used instead.";
     } finally {
       button.disabled = false;
-      button.textContent = "Generate";
+      label.textContent = "Generate with Claude";
     }
   }
 

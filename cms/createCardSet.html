@@ -183,7 +183,10 @@
                 </td>
                 <td>
                   <label>SEO Meta Description</label>
-                  <button type="button" class="seo-generate-btn" onclick="generateSeoDescription()">Generate</button>
+                  <button type="button" class="seo-generate-btn seo-generate-claude" onclick="generateSeoDescription()">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12L12 .5M12 12L16.2 4.6M12 12L22 6.2M12 12L20.5 12M12 12L22 17.7M12 12L16.2 19.4M12 12L12 23.5M12 12L7.7 19.4M12 12L2 17.8M12 12L3.5 12M12 12L2 6.2M12 12L7.7 4.6" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"></path></svg>
+                    <span class="seo-generate-label">Generate with Claude</span>
+                  </button>
                   <span class="seo-char-count" id="seoMetaDescCount"></span><br>
                   <textarea id="seoMetaDesc" class="seo-textarea" rows="1"></textarea>
                 </td>
