@@ -4673,3 +4673,175 @@ body:has(.site-footer) {
     visibility: visible;
   }
 }
+
+/************************************* Wax Pack Museum *************************************/
+
+.wax-museum {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+  box-sizing: border-box;
+  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  color: var(--color-text-dark);
+}
+
+.wax-museum-status {
+  text-align: center;
+  color: var(--color-text-dark);
+}
+
+.wax-museum-year-title {
+  margin: 32px 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--color-image-border);
+  font-size: 28px;
+}
+
+.wax-museum-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+/* Both faces share one grid cell, so the card is as tall as the taller face (the front, with its caption) and needs no JS to size it. */
+.wax-museum-card {
+  display: grid;
+  perspective: 1400px;
+}
+
+.wax-museum-face {
+  grid-area: 1 / 1;
+  box-sizing: border-box;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition: transform 0.6s ease;
+}
+
+.wax-museum-front {
+  display: flex;
+  flex-direction: column;
+  transform: rotateY(0deg);
+}
+
+.wax-museum-back {
+  display: flex;
+  align-items: center;
+  transform: rotateY(-180deg);
+}
+
+.wax-museum-card.is-flipped .wax-museum-front {
+  transform: rotateY(180deg);
+}
+
+.wax-museum-card.is-flipped .wax-museum-back {
+  transform: rotateY(0deg);
+}
+
+.wax-museum-flip {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.wax-museum-flip:focus-visible {
+  outline: 3px solid var(--color-link);
+  outline-offset: -3px;
+}
+
+.wax-museum-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px 8px 0 0;
+}
+
+.wax-museum-back .wax-museum-img {
+  border-radius: 8px;
+}
+
+.wax-museum-hint {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 2px 10px;
+  border-radius: 12px;
+  background: rgba(11, 62, 100, 0.85);
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.wax-museum-noimg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3 / 4;
+  background: #eceff1;
+  color: #5d6b78;
+}
+
+.wax-museum-caption {
+  padding: 14px 16px 16px;
+}
+
+.wax-museum-name {
+  margin: 0 0 8px;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.wax-museum-details {
+  margin: 0;
+  font-size: 14px;
+}
+
+.wax-museum-detail {
+  display: flex;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+.wax-museum-detail dt {
+  flex: 0 0 auto;
+  min-width: 7.5em;
+  font-weight: 700;
+}
+
+.wax-museum-detail dd {
+  margin: 0;
+}
+
+.wax-museum-review {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* No rotation for people who ask for less motion: a quick fade instead. */
+@media (prefers-reduced-motion: reduce) {
+  .wax-museum-face,
+  .wax-museum-card.is-flipped .wax-museum-front,
+  .wax-museum-card.is-flipped .wax-museum-back {
+    transform: none;
+    transition: opacity 0.15s linear;
+  }
+
+  .wax-museum-back,
+  .wax-museum-card.is-flipped .wax-museum-front {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .wax-museum-card.is-flipped .wax-museum-back {
+    opacity: 1;
+    visibility: visible;
+  }
+}
