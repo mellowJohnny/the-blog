@@ -138,7 +138,7 @@ function renderWaxPackForm(mode) {
       <table class="cms-form-table">
         <tr>
           <td colspan="2">
-            <label>Season (first year) <sup>*</sup></label> <small>e.g. 1989 for the 1989-90 season</small><br>
+            <label>Season <sup>*</sup></label> <small>e.g. 1989 for the 1989-90 season</small><br>
             <input type="number" id="wpYear" min="1900" max="2100" required>
           </td>
         </tr>
