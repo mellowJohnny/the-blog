@@ -924,11 +924,8 @@ label sup {
 
 .cms-masthead img {
   display: block;
-  width: auto;
-  max-width: 100%;
+  width: 100%;
   height: auto;
-  max-height: 150px; /* scales the whole 5:1 image down, so it is no longer edge to edge on a wide screen */
-  margin: 0 auto;
 }
 
 .autobus-mast-table {
