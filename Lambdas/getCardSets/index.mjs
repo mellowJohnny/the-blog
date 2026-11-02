@@ -38,16 +38,22 @@ export const handler = async () => {
   // };
 
   // V2
+  // V3 - the picker and the checklist type-ahead only need these fields; full
+  // items carry each review's postBody, which made this response huge and slow.
   const params = {
     TableName: "Cards",
     IndexName: "blogStatus-year-index",
+    ProjectionExpression: "setName, setID, blogCat, hasChecklist, #yr",
+    ExpressionAttributeNames: {
+      "#yr": "year"
+    },
     KeyConditionExpression: "blogStatus = :status",
     ExpressionAttributeValues: {
       ":status": "OK"
     },
     ScanIndexForward: true
   };
-  
+
 
   try {
     const data = await ddb.send(new QueryCommand(params));

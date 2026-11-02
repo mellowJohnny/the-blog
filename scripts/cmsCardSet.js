@@ -420,7 +420,7 @@ async function deleteCardSet(setID, setName, year) {
    * fetchAllCardSets(). */
 
   function displayCardSets(container, setID, setName) {
-  container.innerHTML += `
+  container.insertAdjacentHTML("beforeend", `
     <table class="set-details-table-style">
       <tr>
         <td style="width:400px;font-size:20px">
@@ -430,7 +430,7 @@ async function deleteCardSet(setID, setName, year) {
         </td>
       </tr>
     </table>
-  `;
+  `);
 }
 
 //************************************ displayStagedCardSets Helper Function *************************************
@@ -441,7 +441,7 @@ async function deleteCardSet(setID, setName, year) {
   function displayStagedCardSets(setID, setName) {
   const blogBody = document.getElementById("stagedBlogsDiv");
 
-  blogBody.innerHTML += `
+  blogBody.insertAdjacentHTML("beforeend", `
     <table class="set-details-table-style">
       <tr>
         <td style="width:400px;font-size:20px">
@@ -451,7 +451,7 @@ async function deleteCardSet(setID, setName, year) {
         </td>
       </tr>
     </table>
-  `;
+  `);
 }
 
 //**************************** Fetch Card Set by ID - Populates the CMS Form For Update **************************
