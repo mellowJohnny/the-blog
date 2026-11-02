@@ -241,8 +241,11 @@ async function cmsCancelEdit(redirectTo) {
     }
 
 // --- SEO "Generate" buttons (createCardSet.html / setEdit.html) ---
-// Each fills its field from the set's own form values: no AI, and nothing
-// the form can't back up. A field that already has text asks first.
+// Each fills its field from the set's own form values, except the description,
+// which Claude writes from the review (see generateSeoDescription).
+// A field that already has text asks first.
+
+const SEO_DESCRIPTION_API_URL = "https://1el471sn04.execute-api.us-east-2.amazonaws.com/prod"; // generateSeoDescription API
 
 function seoFormValue(id) {
   const el = document.getElementById(id);
@@ -335,7 +338,59 @@ async function fillSeoField(fieldId, build) {
 }
 
 function generateSeoTitle() { return fillSeoField("seoPageTitle", buildSeoTitle); }
-function generateSeoDescription() { return fillSeoField("seoMetaDesc", buildSeoDescription); }
+function seoReviewText() {
+  const editor = typeof tinymce !== "undefined" ? tinymce.get("postBody") : null;
+  return editor ? editor.getContent({ format: "text" }).trim() : "";
+}
+
+// Asks Claude (via the Lambda) to read the review and write the description.
+async function requestSeoDescription(reviewText) {
+  const response = await fetch(SEO_DESCRIPTION_API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": await getAuthToken() },
+    body: JSON.stringify({
+      setName: seoFormValue("setName"), mfg: seoFormValue("mfg"), size: seoFormValue("size"),
+      stars: seoFormValue("stars"), subsets: seoInsertNames().join(", "), reviewText
+    })
+  });
+  const data = await response.json();
+  if (!response.ok || !data.description) throw new Error(data.error || `HTTP ${response.status}`);
+  return data.description;
+}
+
+// Falls back to the basic generated text, and says so, when Claude can't be used.
+async function generateSeoDescription() {
+  if (!seoFormValue("setName")) return fillSeoField("seoMetaDesc", buildSeoDescription);
+
+  const button = document.querySelector('[onclick="generateSeoDescription()"]');
+  const reviewText = seoReviewText();
+  let description = "";
+  let fallbackReason = "";
+
+  if (!SEO_DESCRIPTION_API_URL) {
+    description = buildSeoDescription();
+  } else if (!reviewText) {
+    fallbackReason = "Write the review first so Claude has something to read. The basic description was used instead.";
+  } else {
+    button.disabled = true;
+    button.textContent = "Generating...";
+    try {
+      description = await requestSeoDescription(reviewText);
+    } catch (error) {
+      console.log("SEO description error:", error);
+      fallbackReason = "Claude couldn't write the description, so the basic one was used instead.";
+    } finally {
+      button.disabled = false;
+      button.textContent = "Generate";
+    }
+  }
+
+  if (fallbackReason) {
+    description = buildSeoDescription();
+    await cmsAlert(fallbackReason);
+  }
+  return fillSeoField("seoMetaDesc", () => description);
+}
 function generateSeoKeywords() { return fillSeoField("seoTags", buildSeoKeywords); }
 function generateSeoSlug() { return fillSeoField("seoURLSlug", buildSeoSlug); }
 
