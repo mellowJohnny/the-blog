@@ -1,6 +1,6 @@
 /**
- * Wax Pack Museum (cms/waxMuseum.html for now): one flip card per wax pack, grouped by year.
- * Front = front image plus every saved field, back = back image. Needs cmsWaxPack.js for the endpoint and image constants.
+ * Wax Pack Museum (cms/waxMuseum.html for now): one flip card per wax pack, in one grid, oldest year first.
+ * Front = front image plus the saved details (year and type are left out), back = back image. Needs cmsWaxPack.js for the endpoint and image constants.
  */
 
 function waxMuseumEl(tag, className, text) {
@@ -29,10 +29,8 @@ function sortWaxPacks(packs) {
 /** [label, value] rows for the front, leaving out anything empty (price and notes are optional). */
 function waxPackDetails(pack) {
   return [
-    ["Year", pack.year],
     ["Manufacturer", pack.manufacturer],
     ["Packaging", pack.packaging],
-    ["Type", WAX_PACK_TYPE_LABELS[pack.type] || pack.type],
     ["Format", pack.format ? pack.format.charAt(0).toUpperCase() + pack.format.slice(1) : ""],
     ["Cards per pack", pack.numCards],
     ["Price", pack.price],
@@ -122,19 +120,9 @@ function renderWaxMuseum(packs) {
   const gallery = document.getElementById("waxMuseum");
   gallery.replaceChildren();
 
-  let grid = null;
-  let lastYear = null;
-  sortWaxPacks(packs).forEach((pack) => {
-    if (pack.year !== lastYear) {
-      lastYear = pack.year;
-      const section = waxMuseumEl("section", "wax-museum-year");
-      section.appendChild(waxMuseumEl("h2", "wax-museum-year-title", String(pack.year)));
-      grid = waxMuseumEl("div", "wax-museum-grid");
-      section.appendChild(grid);
-      gallery.appendChild(section);
-    }
-    grid.appendChild(buildWaxPackCard(pack));
-  });
+  const grid = waxMuseumEl("div", "wax-museum-grid");
+  sortWaxPacks(packs).forEach((pack) => grid.appendChild(buildWaxPackCard(pack)));
+  gallery.appendChild(grid);
 }
 
 async function initWaxMuseum() {
