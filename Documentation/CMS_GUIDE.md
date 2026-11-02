@@ -302,9 +302,12 @@ thin ("1987-88 O-Pee-Chee Hockey", "A comprehensive review of the
 button (`generateSeoTitle()`, `generateSeoDescription()`,
 `generateSeoSlug()`, `generateSeoKeywords()` in `scripts/cmsFormUI.js`).
 
-The generators are deterministic templates, not AI, and use only what
-is already in the form, so they can't claim anything the form doesn't
-back up:
+The title, keywords and URL slug generators are deterministic
+templates, not AI, and use only what is already in the form, so they
+can't claim anything the form doesn't back up. The description button is
+different: **Generate with Claude** has Claude read the review and write
+it (see `SEO_DESCRIPTION_GENERATOR.md`), falling back to the template
+below if that fails:
 
 - **Title**: `<set> Card Set Review`, with the maker inserted after the
   season when the set name lacks it ("1991-92 Stadium Club" plus Topps
@@ -312,7 +315,7 @@ back up:
   missing. It used to end with " | Junk Wax Hockey" when that fit in 65
   characters, which made titles inconsistent; since 2026-10-30 there is
   no site-name suffix, and the page's own fallback title matches.
-- **Meta description**: a base sentence ("<set> card set review.") then
+- **Meta description (fallback template)**: a base sentence ("<set> card set review.") then
   each of these only if it still fits in 160 characters: the size and
   the inserts, the rating, and the first sentence of the review's
   first paragraph (a paragraph with no sentence end contributes

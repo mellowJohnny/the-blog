@@ -227,7 +227,7 @@ To check an endpoint: `curl -s -D - -o /dev/null -H "Accept-Encoding: gzip"
 - **Method**: GET
 - **Called from**: `fetchAllCardSets()` in `scripts/cmsCardSet.js` (used by `cms/pickCardSet.html`), and `loadCardSetNameIndex()` in `scripts/checklistUpload.js` (the Set Name type-ahead on `cms/uploadChecklist.html`'s Delete Checklist modal, which keeps only items with `hasChecklist` set).
 - **Response**: tolerant of several shapes — a raw array, `{ body: "<json array>" }`, `{ body: [...] }`, or `{ Items: [...] }`.
-- **Lambda**: `Lambdas/getCardSets/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Queries the `blogStatus-year-index` GSI, `blogStatus = "OK"`, no projection (full items).
+- **Lambda**: `Lambdas/getCardSets/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Queries the `blogStatus-year-index` GSI, `blogStatus = "OK"`, projecting only `setName, setID, blogCat, hasChecklist, year` (it returned full items, including every review body, until the picker was slow enough to notice).
 
 ### Get all staged (draft) card sets
 - **URL**: `https://ecy21wzgkl.execute-api.us-east-2.amazonaws.com/dev`
@@ -235,6 +235,14 @@ To check an endpoint: `curl -s -D - -o /dev/null -H "Accept-Encoding: gzip"
 - **Called from**: `fetchAllStagedCardSets()` in `scripts/cmsCardSet.js` (used by `cms/pickCardSet.html`), and `loadCardSetNameIndex()` in `scripts/checklistUpload.js` (the Set Name type-ahead on `cms/uploadChecklist.html`, alongside the live endpoint above).
 - **Response**: same tolerant unwrapping as above; items include `setID`, `setName`, `blogCat`, `year`, `hasChecklist`. `hasChecklist` was added to the projection (2026-09-30) so the type-ahead can offer only staged sets that have a checklist; it is absent on a set that has never had one, and `pickCardSet.html` ignores it. **Fixed 2026-08-14**: the `getStagedCardSets` Lambda's `ProjectionExpression` originally only requested `setName, setID` from the `blogStatus-year-index` GSI, so `blogCat`/`year` came back `undefined` on every item — this silently broke both category grouping (everything fell back to "Other") and sort order (`year` comparisons were `NaN`). Fixed by expanding the projection to `setName, setID, blogCat, #yr` with `year` aliased via `ExpressionAttributeNames` (`year` is a DynamoDB reserved word, can't appear unescaped in a `ProjectionExpression`). `fetchAllStagedCardSets()` in `scripts/cmsCardSet.js` also keeps a defensive fallback — a staged set with no `blogCat` but a `mfg` value is treated as `"reg"` — kept intentionally in case a record is ever created directly in DynamoDB without going through the CMS form.
 - **Lambda**: `Lambdas/getStagedCardSets/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Same GSI as `Lambdas/getCardSets/`, filtered to `blogStatus = "staged"`.
+
+### Generate an SEO meta description (Claude)
+- **URL**: `https://1el471sn04.execute-api.us-east-2.amazonaws.com/prod`
+- **Method**: POST (plus OPTIONS for CORS), Cognito Authorizer, bearer token in `Authorization`
+- **Body**: `{ setName, reviewText, mfg?, size?, stars?, subsets? }` — `setName` up to 200 characters, `reviewText` up to 20,000
+- **Called from**: `requestSeoDescription()` in `scripts/cmsFormUI.js`, via `generateSeoDescription()` (the "Generate with Claude" button on `cms/createCardSet.html` and `cms/setEdit.html`)
+- **Response**: `{ description }` (at most 160 characters) on success; `{ error }` with 400 for bad input or 502 when Bedrock fails or declines
+- **Lambda**: `Lambdas/generateSeoDescription/` (zip deploy, needs `@anthropic-ai/bedrock-sdk`). Calls Claude Haiku 4.5 on Amazon Bedrock. Full explanation in `SEO_DESCRIPTION_GENERATOR.md`.
 
 ### Get a single card set by ID
 - **URL**: `https://733bwunxq6.execute-api.us-east-2.amazonaws.com/dev`

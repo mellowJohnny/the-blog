@@ -41,6 +41,7 @@ sitemap.
 | [CMS_PAGE_FLOWS.md](./CMS_PAGE_FLOWS.md) | Every `/cms` page traced the same way as PUBLIC_PAGE_FLOWS.md |
 | [AUTH.md](./AUTH.md) | Cognito setup and the login flow used to gate `/cms` |
 | [LAMBDA_FUNCTIONS.md](./LAMBDA_FUNCTIONS.md) | The Lambda code that *is* in this repo, and an inventory of the ones that only live in the AWS Console |
+| [SEO_DESCRIPTION_GENERATOR.md](./SEO_DESCRIPTION_GENERATOR.md) | The "Generate with Claude" SEO meta description button: the click-to-Bedrock path, the Lambda's prompt and length control, why Haiku 4.5, IAM/deploy, cost, debugging |
 | [AMP_SMS_PLATFORM.md](./AMP_SMS_PLATFORM.md) | The Autobus Messaging Platform (SMS broadcast tool): bulk upload, subscriber management and inbound SMS, API security, and the core Lambda/admin page/JS — a repo mirror of the "AMP SMS - Platform Core" Confluence page |
 | [PWHL_API.md](./PWHL_API.md) | Research reference for the PWHL's data feed (HockeyTech), behind the PWHL section of the scores ticker — access quirks, views and status codes, as of October 2026 |
 | [NHL_API.md](./NHL_API.md) | Research reference for the NHL's free, undocumented API (`api-web.nhle.com`) behind the scores ticker — every area of functionality found, as of October 2026 |
