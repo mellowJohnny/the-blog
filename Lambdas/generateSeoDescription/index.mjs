@@ -1,18 +1,19 @@
 /*
  *  generateSeoDescription Lambda Function - writes a card set review's SEO meta description with Claude on Bedrock
  *  (the "Generate" button on cms/createCardSet.html and cms/setEdit.html).
- *  Needs the zip deploy (@anthropic-ai/bedrock-sdk); the role needs bedrock-mantle:CreateInference.
+ *  Needs the zip deploy (@anthropic-ai/bedrock-sdk); the role needs bedrock:InvokeModel on the inference profile
+ *  and on the foundation model. Haiku 5.5 is only served in us-east-2 through the US geo inference profile.
  *  Source of truth is this repo - don't edit it only in the AWS Console.
  */
 
-import { AnthropicBedrockMantle } from "@anthropic-ai/bedrock-sdk";
+import AnthropicBedrock from "@anthropic-ai/bedrock-sdk";
 
-const MODEL = "anthropic.claude-haiku-5-5";
+const MODEL = "us.anthropic.claude-haiku-5-5";
 const REGION = "us-east-2";
 const MAX_LENGTH = 160;
 const MAX_REVIEW_CHARS = 20000;
 
-const client = new AnthropicBedrockMantle({ awsRegion: REGION });
+const client = new AnthropicBedrock({ awsRegion: REGION });
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "https://www.junkwaxhockey.com",
@@ -74,7 +75,8 @@ export const handler = async (event) => {
 
     const response = await client.messages.create({
       model: MODEL,
-      max_tokens: 300,
+      max_tokens: 1024,
+      anthropic_version: "bedrock-2023-05-31", // the value AWS documents for bedrock-runtime InvokeModel
       system: SYSTEM_PROMPT,
       output_config: { effort: "low" },
       messages: [{ role: "user", content: `${details}\n\nReview:\n${reviewText}` }]
