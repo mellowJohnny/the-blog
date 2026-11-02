@@ -5,7 +5,7 @@ const WAX_PACK_IMG_H = 1200;
 const WAX_PACK_IMG_MARGIN = 36;
 const WAX_PACK_IMG_ANALYSIS_SIDE = 1200;
 const WAX_PACK_IMG_DIFF = 45;
-const WAX_PACK_IMG_MIN_BACKDROP = 200;
+const WAX_PACK_IMG_MIN_BACKDROP = 150; // an underexposed white backdrop reads about 175-215, so 200 left it grey
 const WAX_PACK_IMG_MAX_BYTES = 250 * 1024;
 
 /** Resolves to { blob, fileName, contentType, width, height, warning }; rejects with a message fit to show the user. */
