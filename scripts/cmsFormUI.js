@@ -331,7 +331,7 @@ async function fillSeoField(fieldId, build) {
   const field = document.getElementById(fieldId);
   const value = build();
   if (field.value.trim() && field.value.trim() !== value) {
-    if (!(await cmsConfirm("Replace the current text in this field with a generated version?"))) return;
+    if (!(await cmsConfirm(`Replace the current text in this field with this generated version?\n\n${value}`))) return;
   }
   field.value = value;
   updateSeoCharCounts();
