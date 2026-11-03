@@ -21,9 +21,18 @@ function waxMuseumImage(fileName, alt, className) {
   return img;
 }
 
-/** Oldest year first, then A to Z by name (the API orders by key, which isn't always the name's order). */
+/** The number in a name like "... Series 2 ...", or 0 for a pack with no series. */
+function waxPackSeries(pack) {
+  const match = /\bseries\s*(\d+)\b/i.exec(pack.name);
+  return match ? Number(match[1]) : 0;
+}
+
+/** Oldest year first, then packs with no series, Series 1, Series 2 and so on, then A to Z by name (the API orders by key, which isn't always the name's order). */
 function sortWaxPacks(packs) {
-  return [...packs].sort((a, b) => a.year - b.year || a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
+  return [...packs].sort((a, b) =>
+    a.year - b.year ||
+    waxPackSeries(a) - waxPackSeries(b) ||
+    a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
 }
 
 /** [label, value] rows for the front, leaving out anything empty (price and notes are optional). */
