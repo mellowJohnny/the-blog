@@ -13,7 +13,7 @@ const WAX_PACK_TYPE_LABELS = { "main": "Main", "fast food": "Fast Food" };
 
 // The form's fixed dropdown lists, as [value, label]. Manufacturer and packaging keep the owner's chosen order; type is A to Z.
 const WAX_PACK_MANUFACTURERS = ["O-Pee-Chee", "Topps", "Upper Deck", "Pinnacle", "Score", "Pro Set", "Fleer", "Leaf", "Pacific"].map((name) => [name, name]);
-const WAX_PACK_PACKAGING = ["Wax", "Flow", "Jumbo Flow Pack", "Foil"].map((name) => [name, name]);
+const WAX_PACK_PACKAGING = ["Wax", "Flow", "Jumbo Flow", "Foil"].map((name) => [name, name]);
 const WAX_PACK_TYPES = [["main", "Main"], ["fast food", "Fast Food"]];
 
 let _waxPacks = [];
