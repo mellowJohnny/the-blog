@@ -21,18 +21,29 @@ function waxMuseumImage(fileName, alt, className) {
   return img;
 }
 
+const WAX_PACK_SERIES = /\bseries\s*(\d+)\b/i;
+
 /** The number in a name like "... Series 2 ...", or 0 for a pack with no series. */
 function waxPackSeries(pack) {
-  const match = /\bseries\s*(\d+)\b/i.exec(pack.name);
+  const match = WAX_PACK_SERIES.exec(pack.name);
   return match ? Number(match[1]) : 0;
 }
 
-/** Oldest year first, then packs with no series, Series 1, Series 2 and so on, then A to Z by name (the API orders by key, which isn't always the name's order). */
+/** The set a pack belongs to: its name without the season ("1992-93") and without "Series 2" or anything after it, so "1992-93 Parkhurst Series 2 Jumbo" is "Parkhurst". */
+function waxPackSet(pack) {
+  const withoutSeason = pack.name.replace(/^\s*\d{4}\s*-\s*\d{2,4}\s+/, "");
+  const match = WAX_PACK_SERIES.exec(withoutSeason);
+  return (match ? withoutSeason.slice(0, match.index) : withoutSeason).trim();
+}
+
+/** Oldest year first, then one set at a time (A to Z), each with its packs in series order (none, 1, 2...) and then A to Z by name. The API orders by key, which isn't always the name's order. */
 function sortWaxPacks(packs) {
+  const compare = (a, b) => a.localeCompare(b, undefined, { sensitivity: "base" });
   return [...packs].sort((a, b) =>
     a.year - b.year ||
+    compare(waxPackSet(a), waxPackSet(b)) ||
     waxPackSeries(a) - waxPackSeries(b) ||
-    a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
+    compare(a.name, b.name));
 }
 
 /** [label, value] rows for the front, leaving out anything empty (price and notes are optional). */
