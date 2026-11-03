@@ -167,7 +167,9 @@ function renderWaxMuseum(packs) {
 
 async function initWaxMuseum() {
   const status = document.getElementById("waxMuseumStatus");
+  const overlay = document.getElementById("wax-museum-spinner-overlay");
   status.textContent = "Loading the wax packs...";
+  overlay.style.display = "flex"; // same overlay+spinner as Player Search
   try {
     // no-store while the page is being designed: the endpoint is otherwise browser-cached for 30 minutes.
     const response = await fetch(WAX_PACK_GET_URL, { cache: "no-store" });
@@ -182,5 +184,7 @@ async function initWaxMuseum() {
   } catch (error) {
     console.log("Wax museum load error:", error);
     status.textContent = "Couldn't load the wax packs. Please try again.";
+  } finally {
+    overlay.style.display = "none";
   }
 }

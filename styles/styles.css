@@ -282,8 +282,9 @@ h1 {
    spinner above (including reusing its autobus-spin keyframe, which
    has nothing Autobus-specific in it - just a rotation), just under
    playerSearch-specific names since this page has nothing to do with
-   the Autobus SMS tool. */
-#player-search-spinner-overlay {
+   the Autobus SMS tool. The Wax Museum page shares these same rules. */
+#player-search-spinner-overlay,
+#wax-museum-spinner-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -296,7 +297,8 @@ h1 {
     z-index: 9999;
 }
 
-.player-search-spinner {
+.player-search-spinner,
+.wax-museum-spinner {
     width: 60px;
     height: 60px;
     border: 6px solid #ccc;
