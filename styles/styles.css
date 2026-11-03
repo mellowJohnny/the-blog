@@ -4803,6 +4803,12 @@ body:has(.site-footer) {
   padding: 14px 16px 16px;
 }
 
+/* Every card is as tall as the 1983-84 O-Pee-Chee one (223px below the photo: name, details and two lines of notes). Notes must stay within two lines. */
+.wax-museum-front > .wax-museum-caption {
+  box-sizing: border-box;
+  min-height: 223px;
+}
+
 .wax-museum-name {
   margin: 0 0 8px;
   font-size: 18px;
