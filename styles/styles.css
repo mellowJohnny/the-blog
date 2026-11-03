@@ -297,6 +297,11 @@ h1 {
     z-index: 9999;
 }
 
+/* The Wax Museum page is a CMS page, whose body children get a 25px left margin (see "Everything on a cardStack CMS page"); the overlay must cover the full width. */
+#wax-museum-spinner-overlay {
+    margin: 0;
+}
+
 .player-search-spinner,
 .wax-museum-spinner {
     width: 60px;
