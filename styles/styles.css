@@ -4755,7 +4755,7 @@ body:has(.site-footer) {
 .wax-museum-flip {
   position: relative;
   display: block;
-  width: 75%; /* the pack photos are 25% smaller than the card; front and back match so the pack stays put on a flip */
+  width: 67.5%; /* the pack photos are 32.5% smaller than the card; front and back match so the pack stays put on a flip */
   margin: 0 auto;
   padding: 0;
   border: 0;
@@ -4765,7 +4765,7 @@ body:has(.site-footer) {
 
 /* A pack with no back photo has a plain image instead of a flip button; same size. */
 .wax-museum-front > .wax-museum-img {
-  width: 75%;
+  width: 67.5%;
   margin: 0 auto;
 }
 
