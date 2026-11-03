@@ -14,7 +14,6 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "POST,OPTIONS"
 };
 
-const FORMATS = ["regular", "jumbo"];
 const TYPES = ["main", "fast food"];
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
@@ -37,7 +36,7 @@ export const handler = async (event) => {
     const notesBack = body.notesBack ? text(body.notesBack, 1000) : "";
     const price = body.price ? text(body.price, 20) : "";
     const reviewSlug = body.reviewSlug || "";
-    const { year, type, format, numCards } = body;
+    const { year, type, numCards } = body;
     const isEdit = body.packKey !== undefined;
 
     const problem =
@@ -46,7 +45,6 @@ export const handler = async (event) => {
       !manufacturer ? "manufacturer is required" :
       !packaging ? "packaging is required" :
       !TYPES.includes(type) ? "type must be main or fast food" :
-      !FORMATS.includes(format) ? "format must be regular or jumbo" :
       !Number.isInteger(numCards) || numCards < 1 || numCards > 200 ? "numCards must be a whole number from 1 to 200" :
       reviewSlug && (typeof reviewSlug !== "string" || !SLUG_PATTERN.test(reviewSlug)) ? "reviewSlug must be lowercase letters, numbers and single hyphens" :
       isEdit && (typeof body.packKey !== "string" || !SLUG_PATTERN.test(body.packKey)) ? "packKey is invalid" :
@@ -64,7 +62,7 @@ export const handler = async (event) => {
 
     const item = {
       year, packKey,
-      name, manufacturer, packaging, type, format, numCards,
+      name, manufacturer, packaging, type, numCards,
       updatedAt: new Date().toISOString()
     };
     if (reviewSlug) item.reviewSlug = reviewSlug;

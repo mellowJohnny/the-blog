@@ -31,7 +31,6 @@ function waxPackDetails(pack) {
   return [
     ["Manufacturer", pack.manufacturer],
     ["Packaging", pack.packaging],
-    ["Format", pack.format ? pack.format.charAt(0).toUpperCase() + pack.format.slice(1) : ""],
     ["Cards per pack", pack.numCards],
     ["Price", pack.price],
     ["Notes", pack.notesFront || pack.notes] // "notes" is the old single field, shown as the front note until the pack is next saved

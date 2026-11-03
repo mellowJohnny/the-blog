@@ -11,11 +11,10 @@ const WAX_PACK_PICKER_URL = "/cms/pickWaxPack.html";
 const WAX_PACK_HOME_URL = "/cms/wlcms.html";
 const WAX_PACK_TYPE_LABELS = { "main": "Main", "fast food": "Fast Food" };
 
-// The form's fixed dropdown lists, as [value, label]. Manufacturer and packaging keep the owner's chosen order; type and format are A to Z.
+// The form's fixed dropdown lists, as [value, label]. Manufacturer and packaging keep the owner's chosen order; type is A to Z.
 const WAX_PACK_MANUFACTURERS = ["O-Pee-Chee", "Topps", "Upper Deck", "Pinnacle", "Score", "Pro Set", "Fleer", "Leaf", "Pacific"].map((name) => [name, name]);
-const WAX_PACK_PACKAGING = ["Wax", "Flow", "Foil"].map((name) => [name, name]);
+const WAX_PACK_PACKAGING = ["Wax", "Flow", "Jumbo Flow Pack", "Foil"].map((name) => [name, name]);
 const WAX_PACK_TYPES = [["main", "Main"], ["fast food", "Fast Food"]];
-const WAX_PACK_FORMATS = [["regular", "Regular"], ["jumbo", "Jumbo"]];
 
 let _waxPacks = [];
 let _waxReviews = [];
@@ -170,10 +169,6 @@ function renderWaxPackForm(mode) {
             <label>Type <sup>*</sup></label><br>
             <select id="wpType" style="width: 200px;"></select>
           </td>
-          <td>
-            <label>Format <sup>*</sup></label><br>
-            <select id="wpFormat" style="width: 200px;"></select>
-          </td>
         </tr>
         <tr>
           <td>
@@ -211,7 +206,6 @@ function fillWaxPackDropdowns() {
   fillWaxPackSelect("wpManufacturer", WAX_PACK_MANUFACTURERS, "Choose...");
   fillWaxPackSelect("wpPackaging", WAX_PACK_PACKAGING, "Choose...");
   fillWaxPackSelect("wpType", WAX_PACK_TYPES, "Choose...");
-  fillWaxPackSelect("wpFormat", WAX_PACK_FORMATS, "Choose...");
   fillWaxPackSelect("wpReviewSlug", _waxReviews.map((set) => [set.seoURLSlug, set.setName]), "None");
 }
 
@@ -241,7 +235,6 @@ function populateWaxPackForm(pack) {
   setWaxPackSelect("wpManufacturer", pack.manufacturer);
   setWaxPackSelect("wpPackaging", pack.packaging);
   setWaxPackSelect("wpType", pack.type || "");
-  setWaxPackSelect("wpFormat", pack.format);
   waxPackField("wpNumCards").value = pack.numCards;
   waxPackField("wpPrice").value = pack.price || "";
   waxPackField("wpFrontImg").value = pack.frontImg || "";
@@ -292,7 +285,6 @@ async function submitWaxPack() {
     manufacturer: waxPackField("wpManufacturer").value,
     packaging: waxPackField("wpPackaging").value,
     type: waxPackField("wpType").value,
-    format: waxPackField("wpFormat").value,
     numCards: parseInt(waxPackField("wpNumCards").value, 10),
     price: waxPackField("wpPrice").value.trim(),
     frontImg: waxPackField("wpFrontImg").value.trim(),
