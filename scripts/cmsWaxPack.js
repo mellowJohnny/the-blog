@@ -114,7 +114,7 @@ function waxPackLink(pack) {
   const link = document.createElement("a");
   link.href = `waxPackEdit.html?year=${pack.year}&packKey=${encodeURIComponent(pack.packKey)}`;
   const label = document.createElement("strong");
-  label.textContent = `${pack.name} (${pack.year})`;
+  label.textContent = pack.name;
   link.appendChild(label);
   cell.appendChild(link);
   return table;
