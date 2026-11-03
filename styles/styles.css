@@ -4695,8 +4695,13 @@ body:has(.site-footer) {
 .wax-museum-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr; /* every row is as tall as the tallest card, so all cards match */
   gap: 24px;
-  align-items: start;
+}
+
+/* Lets the card stretch to the row's height. */
+.wax-museum-item {
+  display: grid;
 }
 
 @media (max-width: 700px) {
@@ -4792,6 +4797,9 @@ body:has(.site-footer) {
 }
 
 .wax-museum-caption {
+  display: flex;
+  flex: 1; /* fills the card below the photo so the review link can sit at the bottom */
+  flex-direction: column;
   padding: 14px 16px 16px;
 }
 
@@ -4828,8 +4836,9 @@ body:has(.site-footer) {
 }
 
 .wax-museum-review {
-  display: inline-block;
-  margin-top: 10px;
+  align-self: flex-start;
+  margin-top: auto;
+  padding-top: 10px;
   font-size: 14px;
 }
 
