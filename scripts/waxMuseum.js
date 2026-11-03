@@ -1,7 +1,11 @@
 /**
- * Wax Pack Museum (cms/waxMuseum.html for now): one flip card per wax pack, in one grid, oldest year first.
- * Front = front image plus the saved details (year and type are left out), back = back image. Needs cmsWaxPack.js for the endpoint and image constants.
+ * Wax Pack Museum (waxMuseum.html): one flip card per wax pack, in one grid, oldest year first.
+ * Front = front image plus the saved details (year and type are left out), back = back image.
  */
+
+// Same values as in cmsWaxPack.js (the CMS script can't load on a public page).
+const WAX_PACK_GET_URL = "https://efh9lu4988.execute-api.us-east-2.amazonaws.com/prod"; // getWaxPacks API
+const WAX_PACK_IMAGE_BASE = "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/wax-packs/";
 
 function waxMuseumEl(tag, className, text) {
   const el = document.createElement(tag);
@@ -189,8 +193,7 @@ async function initWaxMuseum() {
   const overlay = document.getElementById("wax-museum-spinner-overlay");
   overlay.style.display = "flex"; // same overlay+spinner as Player Search
   try {
-    // no-store while the page is being designed: the endpoint is otherwise browser-cached for 30 minutes.
-    const response = await fetch(WAX_PACK_GET_URL, { cache: "no-store" });
+    const response = await fetch(WAX_PACK_GET_URL);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const packs = await response.json();
     if (!Array.isArray(packs) || !packs.length) {

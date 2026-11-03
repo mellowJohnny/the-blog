@@ -22,7 +22,7 @@ import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 
 // The public pages' own files. The CMS scripts and scripts/fonts/ are left alone.
-const SCRIPTS = ["helper", "wax", "ticker", "blogs", "playerSearch", "browseBySet", "timeline"]
+const SCRIPTS = ["helper", "wax", "ticker", "blogs", "playerSearch", "browseBySet", "timeline", "waxMuseum"]
   .map((name) => `scripts/${name}.js`);
 const STYLES = ["styles/styles.css"];
 

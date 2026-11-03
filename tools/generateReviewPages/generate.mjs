@@ -48,6 +48,7 @@ const STATIC_PAGES = [
   "/theJunkWaxYears.html",
   "/timeline.html",
   "/browseBySet.html",
+  "/waxMuseum.html",
   "/about.html"
 ];
 

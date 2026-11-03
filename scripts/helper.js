@@ -324,7 +324,7 @@ function getMonthName(monthNum) {
 const FOOTER_SECTIONS = [
   { heading: "Major Releases", links: [{ id: "classic", label: "Classic '80s" }, { id: "junk" }] },
   { heading: "Fast Food Releases", links: [{ id: "mcd" }, { id: "timmies" }] },
-  { heading: "Explore", links: [{ id: "timeline" }, { id: "search" }, { id: "browse" }] },
+  { heading: "Explore", links: [{ id: "timeline" }, { id: "search" }, { id: "browse" }, { id: "museum" }] },
   { links: [{ id: "home" }, { id: "about" }] }
 ];
 
@@ -616,6 +616,7 @@ const NAV_ITEMS = {
   search: { label: "Player Search", href: "/playerSearch.html" },
   // The footer shares this label. "about" is linked from the footer only.
   browse: { label: "All Sets", href: "/browseBySet.html" },
+  museum: { label: "Wax Museum", href: "/waxMuseum.html" },
   about: { label: "About", href: "/about.html" }
 };
 
@@ -623,27 +624,29 @@ const NAV_ITEMS = {
 // The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
   // "search" (Player Search) is on every page except playerSearch itself,
-  // always last; "browse" (All Sets) and "timeline" sit just before it, and
-  // each of those three self-excludes from its own page.
+  // always last; "browse" (All Sets), "museum" (Wax Museum) and "timeline"
+  // sit just before it, and each of those four self-excludes from its own page.
   // index.html is Home, so it leaves out its own "Home" link as redundant.
-  index: ["classic", "junk", "mcd", "timmies", "timeline", "browse", "search"],
-  tech: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "search"],
-  ev: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "search"],
-  junkWax: ["home", "classic", "mcd", "timmies", "timeline", "browse", "search"],
-  classicWax: ["home", "junk", "mcd", "timmies", "timeline", "browse", "search"],
-  timmies: ["home", "classic", "junk", "mcd", "timeline", "browse", "search"],
-  mcd: ["home", "classic", "junk", "timmies", "timeline", "browse", "search"],
-  playerSearch: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse"],
+  index: ["classic", "junk", "mcd", "timmies", "timeline", "browse", "museum", "search"],
+  tech: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "museum", "search"],
+  ev: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "museum", "search"],
+  junkWax: ["home", "classic", "mcd", "timmies", "timeline", "browse", "museum", "search"],
+  classicWax: ["home", "junk", "mcd", "timmies", "timeline", "browse", "museum", "search"],
+  timmies: ["home", "classic", "junk", "mcd", "timeline", "browse", "museum", "search"],
+  mcd: ["home", "classic", "junk", "timmies", "timeline", "browse", "museum", "search"],
+  playerSearch: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "museum"],
   // theJunkWaxYears.html is a static essay, not one of the junkWax/
   // classicWax/mcd/timmies review pages itself, so - like playerSearch -
   // nothing needs to self-exclude here; "junk" stays in the list.
-  junkWaxYears: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "search"],
+  junkWaxYears: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "museum", "search"],
   // timeline.html leaves out its own link, like playerSearch does.
-  timeline: ["home", "classic", "junk", "mcd", "timmies", "browse", "search"],
+  timeline: ["home", "classic", "junk", "mcd", "timmies", "browse", "museum", "search"],
   // browseBySet.html leaves out its own "browse" link, like timeline does.
-  browseBySet: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
+  browseBySet: ["home", "classic", "junk", "mcd", "timmies", "timeline", "museum", "search"],
+  // waxMuseum.html leaves out its own "museum" link, like browseBySet does.
+  waxMuseum: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "search"],
   // about.html is footer-only, so nothing self-excludes.
-  about: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "search"]
+  about: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "museum", "search"]
 };
 
 // Step 3: Build a dynamic table generator
