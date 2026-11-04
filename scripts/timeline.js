@@ -80,6 +80,9 @@ function buildTimelineCard(point, index) {
   toggle.setAttribute("aria-expanded", "false");
   if (point.year) toggle.appendChild(timelineEl("span", "timeline-year", point.year));
   if (point.title) toggle.appendChild(timelineEl("span", "timeline-heading", point.title));
+  const hint = timelineEl("span", "timeline-hint", "Flip");
+  hint.setAttribute("aria-hidden", "true");
+  toggle.appendChild(hint);
   front.appendChild(toggle);
 
   // Back: the bullets. Clicking anywhere on it flips it shut; the title row

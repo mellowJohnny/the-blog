@@ -4598,10 +4598,6 @@ body:has(.site-footer) {
   color: #3e4a56;
 }
 
-.timeline-card.is-viewed .timeline-toggle::after {
-  color: #8b97a3;
-}
-
 /* Text for screen readers only (the "viewed" cue). */
 .timeline-sr {
   position: absolute;
@@ -4618,7 +4614,7 @@ body:has(.site-footer) {
   align-items: flex-start;
   gap: 6px;
   width: 100%;
-  padding: 16px 44px 16px 20px;
+  padding: 16px 64px 16px 20px; /* clear of the Flip pill */
   position: relative;
   border: 0;
   border-radius: 6px;
@@ -4629,14 +4625,9 @@ body:has(.site-footer) {
   cursor: pointer;
 }
 
-.timeline-toggle::after {
-  content: "\21BB"; /* a "turn over" arrow */
-  position: absolute;
+.timeline-hint {
   top: 50%;
-  right: 16px;
   transform: translateY(-50%);
-  color: var(--color-text-dark);
-  font-size: 20px;
 }
 
 .timeline-toggle:focus-visible {
@@ -4670,28 +4661,17 @@ body:has(.site-footer) {
   color: var(--color-text-dark);
 }
 
-/* The title row is the button: it looks like a heading, with the same
-   turn-over arrow as the front, not a labelled "Close" control. */
+/* The title row is the button: it looks like a heading, not a labelled
+   "Close" control. */
 .timeline-close {
-  position: relative;
   width: 100%;
-  padding: 0 28px 0 0;
+  padding: 0;
   border: 0;
   background: none;
   color: inherit;
   font: inherit;
   text-align: left;
   cursor: pointer;
-}
-
-.timeline-close::after {
-  content: "\21BB";
-  position: absolute;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-  color: var(--color-text-dark);
-  font-size: 20px;
 }
 
 .timeline-list {
@@ -4870,15 +4850,20 @@ body:has(.site-footer) {
   border-radius: 8px 8px 0 0;
 }
 
-.wax-museum-hint {
+/* The "Flip" pill, shared with the Junk Wax Timeline's cards. */
+.wax-museum-hint,
+.timeline-hint {
   position: absolute;
   right: 10px;
-  bottom: 10px;
   padding: 2px 10px;
   border-radius: 12px;
   background: rgba(11, 62, 100, 0.85);
   color: #ffffff;
   font-size: 12px;
+}
+
+.wax-museum-hint {
+  bottom: 10px;
 }
 
 .wax-museum-noimg {
