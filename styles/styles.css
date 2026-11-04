@@ -4182,14 +4182,15 @@ body:has(.site-footer) {
    mid-word instead of overflowing cleanly, so this reuses the same
    hamburger treatment as phone widths rather than building a cramped
    layout for tablets.
-   1160px because the widest bar (Home, two dropdown buttons, Wax Museum,
-   Timeline and Player Search on Tech, About and similar pages, 12px of
-   padding each side - see the desktop block below) is about 1140px, plus
-   the 16px of body margin. Everything up to 1160px (an iPad in landscape
-   is 1080px) gets the hamburger; an iPad Air (1180px) gets the full bar.
+   1220px because the widest bar (Home, two dropdown buttons, The Wax
+   Museum, Timeline and Player Search on Tech, About and similar pages,
+   12px of padding each side - see the desktop block below) is about
+   1185px, plus the 16px of body margin; 1201px is exactly that and still
+   wraps, so there is 20px of headroom. Everything up to 1220px (an iPad
+   Air in landscape is 1180px) gets the hamburger.
    If a label or the nav font changes, re-measure the bar and move all
-   three 1160/1161 values together. */
-@media (max-width: 1160px) {
+   three 1220/1221 values together. */
+@media (max-width: 1220px) {
   .nav-links {
     display: none;
     width: fit-content;
@@ -4282,7 +4283,7 @@ body:has(.site-footer) {
    phone widths and look undersized on a much bigger tablet screen -
    scale both up. Phone (<=600px) keeps the smaller sizes from the
    block above. */
-@media (min-width: 601px) and (max-width: 1160px) {
+@media (min-width: 601px) and (max-width: 1220px) {
   .hamburger {
     font-size: 48px;
     padding: 14px;
@@ -4315,8 +4316,8 @@ body:has(.site-footer) {
 
 /* Wide screens: hide the hamburger and show the normal table nav.
    Narrower screens stay on the hamburger nav above - see the comment
-   there for why 1160px. */
-@media (min-width: 1161px) {
+   there for why 1220px. */
+@media (min-width: 1221px) {
   .hamburger {
     display: none;
   }
@@ -4333,7 +4334,7 @@ body:has(.site-footer) {
   }
 
   /* Tight gaps between links on every page, so even the eight-link bar
-     (about 1140px) fits from 1161px up and under the home banner. */
+     (about 1185px) fits from 1221px up and under the home banner. */
   .nav-td {
     padding: 20px 12px;
   }

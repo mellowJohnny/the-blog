@@ -616,7 +616,7 @@ const NAV_ITEMS = {
   search: { label: "Player Search", href: "/playerSearch.html" },
   // The footer shares this label. "about" is linked from the footer only.
   browse: { label: "All Sets", href: "/browseBySet.html" },
-  museum: { label: "Wax Museum", href: "/waxMuseum.html" },
+  museum: { label: "The Wax Museum", href: "/waxMuseum.html" },
   about: { label: "About", href: "/about.html" }
 };
 
