@@ -623,37 +623,37 @@ const NAV_ITEMS = {
 // Step 2: Group some items into dropdowns. A group id sits in NAV_MAP like
 // an item id; its links are the NAV_ITEMS ids listed here, in order.
 const NAV_GROUPS = {
-  major: { label: "Major Releases", items: ["classic", "junk", "browse"] },
+  major: { label: "Major Releases", items: ["classic", "junk"] },
   fastfood: { label: "Fast Food Releases", items: ["mcd", "timmies"] }
 };
 
 // The grouped item a page leaves out of its own dropdown.
-const NAV_SELF = { classicWax: "classic", junkWax: "junk", mcd: "mcd", timmies: "timmies", browseBySet: "browse" };
+const NAV_SELF = { classicWax: "classic", junkWax: "junk", mcd: "mcd", timmies: "timmies" };
 
 // Step 3: Define which pages show which top-level items
 // The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
-  // "search" (Player Search) is on every page except playerSearch itself,
-  // always last; "museum" (Wax Museum) and "timeline" sit just before it,
-  // and each of those three self-excludes from its own page. The grouped
-  // set links self-exclude through NAV_SELF.
+  // "browse" (All Sets) is always last, after "search" (Player Search);
+  // "museum" (Wax Museum), "timeline", "search" and "browse" each
+  // self-exclude from their own page. The grouped set links self-exclude
+  // through NAV_SELF.
   // index.html is Home, so it leaves out its own "Home" link as redundant.
-  index: ["major", "fastfood", "museum", "timeline", "search"],
-  tech: ["home", "major", "fastfood", "museum", "timeline", "search"],
-  ev: ["home", "major", "fastfood", "museum", "timeline", "search"],
-  junkWax: ["home", "major", "fastfood", "museum", "timeline", "search"],
-  classicWax: ["home", "major", "fastfood", "museum", "timeline", "search"],
-  timmies: ["home", "major", "fastfood", "museum", "timeline", "search"],
-  mcd: ["home", "major", "fastfood", "museum", "timeline", "search"],
-  playerSearch: ["home", "major", "fastfood", "museum", "timeline"],
+  index: ["major", "fastfood", "museum", "timeline", "search", "browse"],
+  tech: ["home", "major", "fastfood", "museum", "timeline", "search", "browse"],
+  ev: ["home", "major", "fastfood", "museum", "timeline", "search", "browse"],
+  junkWax: ["home", "major", "fastfood", "museum", "timeline", "search", "browse"],
+  classicWax: ["home", "major", "fastfood", "museum", "timeline", "search", "browse"],
+  timmies: ["home", "major", "fastfood", "museum", "timeline", "search", "browse"],
+  mcd: ["home", "major", "fastfood", "museum", "timeline", "search", "browse"],
+  playerSearch: ["home", "major", "fastfood", "museum", "timeline", "browse"],
   // theJunkWaxYears.html is a static essay, not one of the junkWax/
   // classicWax/mcd/timmies review pages itself, so nothing self-excludes.
-  junkWaxYears: ["home", "major", "fastfood", "museum", "timeline", "search"],
-  timeline: ["home", "major", "fastfood", "museum", "search"],
+  junkWaxYears: ["home", "major", "fastfood", "museum", "timeline", "search", "browse"],
+  timeline: ["home", "major", "fastfood", "museum", "search", "browse"],
   browseBySet: ["home", "major", "fastfood", "museum", "timeline", "search"],
-  waxMuseum: ["home", "major", "fastfood", "timeline", "search"],
+  waxMuseum: ["home", "major", "fastfood", "timeline", "search", "browse"],
   // about.html is footer-only, so nothing self-excludes.
-  about: ["home", "major", "fastfood", "museum", "timeline", "search"]
+  about: ["home", "major", "fastfood", "museum", "timeline", "search", "browse"]
 };
 
 // Step 4: Build a dynamic table generator
