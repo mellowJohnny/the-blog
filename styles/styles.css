@@ -540,9 +540,13 @@ h1 {
   }
 
 /** Navigation link formatting **/
+/* Same type as the footer: Nunito semi-bold, spaced capitals. */
 .nav-td {
   font-family: 'Nunito', 'Nunito Fallback', sans-serif;
-  font-size: 22px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   margin: 15px;
   padding: 20px;
 }
@@ -558,7 +562,6 @@ h1 {
 .top-nav {
   font-family: 'Nunito';
   font-size: 36px;
-  font-weight: bold;
   color:var(--color-text-dark);
 }
 
@@ -4179,14 +4182,14 @@ body:has(.site-footer) {
    mid-word instead of overflowing cleanly, so this reuses the same
    hamburger treatment as phone widths rather than building a cramped
    layout for tablets.
-   1200px because the widest bar (Home, two dropdown buttons, Wax Museum,
+   1280px because the widest bar (Home, two dropdown buttons, Wax Museum,
    Timeline, Player Search and All Sets on Tech, About and similar pages,
    12px of padding each side - see the desktop block below) is about
-   1175px, plus the 16px of body margin. Everything up to 1200px (an iPad
+   1255px, plus the 16px of body margin. Everything up to 1280px (an iPad
    Air in landscape is 1180px) gets the hamburger.
    If a label or the nav font changes, re-measure the bar and move all
-   three 1200/1201 values together. */
-@media (max-width: 1200px) {
+   three 1280/1281 values together. */
+@media (max-width: 1280px) {
   .nav-links {
     display: none;
     width: fit-content;
@@ -4251,7 +4254,8 @@ body:has(.site-footer) {
     box-sizing: border-box;
     padding: 12px 16px;
     font: inherit;
-    font-weight: bold;
+    letter-spacing: inherit;
+    text-transform: inherit;
     text-align: left;
     color: #fff;
     background: none;
@@ -4278,7 +4282,7 @@ body:has(.site-footer) {
    phone widths and look undersized on a much bigger tablet screen -
    scale both up. Phone (<=600px) keeps the smaller sizes from the
    block above. */
-@media (min-width: 601px) and (max-width: 1200px) {
+@media (min-width: 601px) and (max-width: 1280px) {
   .hamburger {
     font-size: 48px;
     padding: 14px;
@@ -4311,8 +4315,8 @@ body:has(.site-footer) {
 
 /* Wide screens: hide the hamburger and show the normal table nav.
    Narrower screens stay on the hamburger nav above - see the comment
-   there for why 1200px. */
-@media (min-width: 1201px) {
+   there for why 1280px. */
+@media (min-width: 1281px) {
   .hamburger {
     display: none;
   }
@@ -4329,7 +4333,7 @@ body:has(.site-footer) {
   }
 
   /* Tight gaps between links on every page, so even the eight-link bar
-     (about 1175px) fits from 1201px up and under the home banner. */
+     (about 1255px) fits from 1281px up and under the home banner. */
   .nav-td {
     padding: 20px 12px;
   }
@@ -4342,7 +4346,8 @@ body:has(.site-footer) {
 
   .nav-group-btn {
     font: inherit;
-    font-weight: bold;
+    letter-spacing: inherit;
+    text-transform: inherit;
     color: var(--color-heading-outline);
     background: none;
     border: none;
