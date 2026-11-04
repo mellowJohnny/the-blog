@@ -620,38 +620,53 @@ const NAV_ITEMS = {
   about: { label: "About", href: "/about.html" }
 };
 
-// Step 2: Define which pages show which items
+// Step 2: Group some items into dropdowns. A group id sits in NAV_MAP like
+// an item id; its links are the NAV_ITEMS ids listed here, in order.
+const NAV_GROUPS = {
+  major: { label: "Major Releases", items: ["classic", "junk", "browse"] },
+  fastfood: { label: "Fast Food Releases", items: ["mcd", "timmies"] }
+};
+
+// The grouped item a page leaves out of its own dropdown.
+const NAV_SELF = { classicWax: "classic", junkWax: "junk", mcd: "mcd", timmies: "timmies", browseBySet: "browse" };
+
+// Step 3: Define which pages show which top-level items
 // The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
   // "search" (Player Search) is on every page except playerSearch itself,
-  // always last; "browse" (All Sets), "museum" (Wax Museum) and "timeline"
-  // sit just before it, and each of those four self-excludes from its own page.
+  // always last; "museum" (Wax Museum) and "timeline" sit just before it,
+  // and each of those three self-excludes from its own page. The grouped
+  // set links self-exclude through NAV_SELF.
   // index.html is Home, so it leaves out its own "Home" link as redundant.
-  index: ["classic", "junk", "mcd", "timmies", "timeline", "browse", "museum", "search"],
-  tech: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "museum", "search"],
-  ev: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "museum", "search"],
-  junkWax: ["home", "classic", "mcd", "timmies", "timeline", "browse", "museum", "search"],
-  classicWax: ["home", "junk", "mcd", "timmies", "timeline", "browse", "museum", "search"],
-  timmies: ["home", "classic", "junk", "mcd", "timeline", "browse", "museum", "search"],
-  mcd: ["home", "classic", "junk", "timmies", "timeline", "browse", "museum", "search"],
-  playerSearch: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "museum"],
+  index: ["major", "fastfood", "museum", "timeline", "search"],
+  tech: ["home", "major", "fastfood", "museum", "timeline", "search"],
+  ev: ["home", "major", "fastfood", "museum", "timeline", "search"],
+  junkWax: ["home", "major", "fastfood", "museum", "timeline", "search"],
+  classicWax: ["home", "major", "fastfood", "museum", "timeline", "search"],
+  timmies: ["home", "major", "fastfood", "museum", "timeline", "search"],
+  mcd: ["home", "major", "fastfood", "museum", "timeline", "search"],
+  playerSearch: ["home", "major", "fastfood", "museum", "timeline"],
   // theJunkWaxYears.html is a static essay, not one of the junkWax/
-  // classicWax/mcd/timmies review pages itself, so - like playerSearch -
-  // nothing needs to self-exclude here; "junk" stays in the list.
-  junkWaxYears: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "museum", "search"],
-  // timeline.html leaves out its own link, like playerSearch does.
-  timeline: ["home", "classic", "junk", "mcd", "timmies", "browse", "museum", "search"],
-  // browseBySet.html leaves out its own "browse" link, like timeline does.
-  browseBySet: ["home", "classic", "junk", "mcd", "timmies", "timeline", "museum", "search"],
-  // waxMuseum.html leaves out its own "museum" link, like browseBySet does.
-  waxMuseum: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "search"],
+  // classicWax/mcd/timmies review pages itself, so nothing self-excludes.
+  junkWaxYears: ["home", "major", "fastfood", "museum", "timeline", "search"],
+  timeline: ["home", "major", "fastfood", "museum", "search"],
+  browseBySet: ["home", "major", "fastfood", "museum", "timeline", "search"],
+  waxMuseum: ["home", "major", "fastfood", "timeline", "search"],
   // about.html is footer-only, so nothing self-excludes.
-  about: ["home", "classic", "junk", "mcd", "timmies", "timeline", "browse", "museum", "search"]
+  about: ["home", "major", "fastfood", "museum", "timeline", "search"]
 };
 
-// Step 3: Build a dynamic table generator
+// Step 4: Build a dynamic table generator
 function buildNavCell(item) {
   return `<td class="nav-td"><a href="${item.href}"${reviewLinkAttrs(item)}>${item.label}</a></td>`;
+}
+
+function buildNavGroupCell(group, selfId) {
+  const links = group.items.filter(id => id !== selfId)
+    .map(id => `<li><a href="${NAV_ITEMS[id].href}"${reviewLinkAttrs(NAV_ITEMS[id])}>${NAV_ITEMS[id].label}</a></li>`)
+    .join("");
+  if (!links) return "";
+  return `<td class="nav-td nav-group"><button type="button" class="nav-group-btn" aria-haspopup="true" aria-expanded="false">${group.label}</button><ul class="nav-dropdown">${links}</ul></td>`;
 }
 
 // The new, dynamic fetchNav()
@@ -668,7 +683,7 @@ function fetchNav(pageName, blogType) {
   let cells = "";
 
   items.forEach(id => {
-      cells += buildNavCell(NAV_ITEMS[id]);
+      cells += NAV_GROUPS[id] ? buildNavGroupCell(NAV_GROUPS[id], NAV_SELF[pageName]) : buildNavCell(NAV_ITEMS[id]);
   });
 
   nav.innerHTML = `
@@ -678,6 +693,33 @@ function fetchNav(pageName, blogType) {
   `;
   applyReviewLinks();
 }
+
+// Dropdown groups: open one on click/tap (hover and focus work in CSS),
+// closing any other. The mobile menu shows every group expanded.
+function toggleNavGroup(button) {
+  const cell = button.closest(".nav-group");
+  const willOpen = !cell.classList.contains("open");
+  closeNavGroups();
+  cell.classList.toggle("open", willOpen);
+  button.setAttribute("aria-expanded", String(willOpen));
+}
+
+function closeNavGroups() {
+  document.querySelectorAll("#global-nav .nav-group.open").forEach(cell => {
+    cell.classList.remove("open");
+    cell.querySelector(".nav-group-btn").setAttribute("aria-expanded", "false");
+  });
+}
+
+document.addEventListener("click", (event) => {
+  const button = event.target.closest && event.target.closest("#global-nav .nav-group-btn");
+  if (button) toggleNavGroup(button);
+  else closeNavGroups();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeNavGroups();
+});
 
 // Hamberger Menu Toggle
 function toggleMenu() {
