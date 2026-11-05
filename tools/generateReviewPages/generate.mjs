@@ -13,6 +13,11 @@
 // output is committed. Nothing is written unless every live set has a valid,
 // unique seoURLSlug and both templates' markers are found exactly once.
 //
+// It also fills the browse-major / browse-fastfood marker blocks in
+// browseBySet.html with the columns' markup (browseColumnHtml() in
+// scripts/browseBySet.js), so the HTML itself links to every /reviews/<slug>/
+// page. That file is tracked, so a local run leaves it modified: discard it.
+//
 // Runs on Node 16 (the Amplify build image), hence node:https, not fetch.
 // Each set's pageName comes from categoryRanges in scripts/helper.js.
 //
@@ -21,6 +26,7 @@
 import fs from "node:fs";
 import https from "node:https";
 import path from "node:path";
+import vm from "node:vm";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
@@ -30,6 +36,9 @@ const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..
 const REVIEWS_DIR = path.join(REPO_ROOT, "reviews");
 const TEMPLATE_PATH = path.join(REPO_ROOT, "waxReviews.html");
 const HELPER_PATH = path.join(REPO_ROOT, "scripts", "helper.js");
+const WAX_PATH = path.join(REPO_ROOT, "scripts", "wax.js");
+const BROWSE_PAGE_PATH = path.join(REPO_ROOT, "browseBySet.html");
+const BROWSE_SCRIPT_PATH = path.join(REPO_ROOT, "scripts", "browseBySet.js");
 // The set-data endpoint fetchCardSetsByYear() calls in scripts/wax.js; the preload below must use
 // the identical URL or the browser fetches it twice.
 const SETS_BY_YEAR_URL = "https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev";
@@ -124,16 +133,58 @@ function escapeAttr(text) {
 }
 
 // The text between two marker comments, replaced; each marker must occur once.
-function replaceBetween(html, name, replacement) {
+// keepMarkers leaves the comments in place around the replacement.
+function replaceBetween(html, name, replacement, file = "waxReviews.html", keepMarkers = false) {
   const start = `<!-- ${name}:start -->`;
   const end = `<!-- ${name}:end -->`;
   if (html.split(start).length !== 2 || html.split(end).length !== 2) {
-    throw new Error(`waxReviews.html must contain "${start}" and "${end}" exactly once each`);
+    throw new Error(`${file} must contain "${start}" and "${end}" exactly once each`);
   }
   const from = html.indexOf(start);
   const to = html.indexOf(end) + end.length;
-  if (to < from) throw new Error(`${name} markers are out of order in waxReviews.html`);
-  return html.slice(0, from) + replacement + html.slice(to);
+  if (to < from) throw new Error(`${name} markers are out of order in ${file}`);
+  return keepMarkers
+    ? html.slice(0, from + start.length) + replacement + html.slice(to - end.length)
+    : html.slice(0, from) + replacement + html.slice(to);
+}
+
+// The source text of a top-level function in a browser script, by name.
+function liftFunction(source, name, file) {
+  const match = source.match(new RegExp(`^function ${name}\\([\\s\\S]*?\\n\\}`, "m"));
+  if (!match) throw new Error(`Could not find function ${name}() in ${file}`);
+  return match[0];
+}
+
+// browseColumnHtml() from scripts/browseBySet.js, run in a sandbox with the few
+// helpers it calls (escapeHtml, stripYearFromSetName, getPageNameForYear).
+function loadBrowseColumnHtml(categoryRanges) {
+  const helperSource = fs.readFileSync(HELPER_PATH, "utf8");
+  const waxSource = fs.readFileSync(WAX_PATH, "utf8");
+  const context = {
+    categoryRanges,
+    SITE_ORIGIN,
+    setJsonLd: () => {}
+  };
+  vm.createContext(context);
+  vm.runInContext([
+    liftFunction(helperSource, "escapeHtml", "scripts/helper.js"),
+    liftFunction(helperSource, "getPageNameForYear", "scripts/helper.js"),
+    liftFunction(waxSource, "stripYearFromSetName", "scripts/wax.js"),
+    fs.readFileSync(BROWSE_SCRIPT_PATH, "utf8")
+  ].join("\n"), context);
+  if (typeof context.browseColumnHtml !== "function") throw new Error("browseColumnHtml() not found in scripts/browseBySet.js");
+  return context.browseColumnHtml;
+}
+
+// browseBySet.html with both columns filled in. The same filters as initBrowseBySet().
+function buildBrowsePage(sets, categoryRanges) {
+  const browseColumnHtml = loadBrowseColumnHtml(categoryRanges);
+  const live = sets.filter((set) => set.setName && Number.isFinite(set.year));
+  const page = fs.readFileSync(BROWSE_PAGE_PATH, "utf8");
+  const major = browseColumnHtml(live.filter((set) => set.blogCat === "reg"));
+  const fastFood = browseColumnHtml(live.filter((set) => set.blogCat === "mcd" || set.blogCat === "tims"));
+  const withMajor = replaceBetween(page, "browse-major", major, "browseBySet.html", true);
+  return replaceBetween(withMajor, "browse-fastfood", fastFood, "browseBySet.html", true);
 }
 
 // Mirrors the title/description/image fallbacks in fetchPageTitle() (scripts/wax.js),
@@ -241,11 +292,13 @@ function buildManifest(sets) {
 }
 
 try {
-  const sets = reviewSets(await fetchLiveSets());
+  const liveSets = await fetchLiveSets();
+  const sets = reviewSets(liveSets);
   const template = fs.readFileSync(TEMPLATE_PATH, "utf8");
   const categoryRanges = loadCategoryRanges();
   const warnings = [];
   const pages = sets.map((set) => ({ set, html: buildPage(template, set, categoryRanges, warnings) }));
+  const browsePage = buildBrowsePage(liveSets, categoryRanges);
   const urls = buildUrls(sets);
 
   let written = 0;
@@ -254,6 +307,7 @@ try {
   }
   writeIfChanged(path.join(REVIEWS_DIR, "index.json"), buildManifest(sets));
   writeIfChanged(path.join(REPO_ROOT, "sitemap.xml"), buildSitemapXml(urls));
+  writeIfChanged(BROWSE_PAGE_PATH, browsePage);
 
   warnings.forEach((warning) => console.warn(`warning: ${warning}`));
   console.log(`${sets.length} review pages (${written} written), the link manifest and ${urls.length} sitemap URLs.`);

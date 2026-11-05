@@ -66,13 +66,17 @@ function buildBrowseSetEntry(set) {
     </div>`;
 }
 
-function renderBrowseColumn(containerId, sets) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = groupBrowseSetsBySeason(sets).map((group) => `
+// Also run by tools/generateReviewPages to pre-render the columns into the built page.
+function browseColumnHtml(sets) {
+  return groupBrowseSetsBySeason(sets).map((group) => `
     <div class="browse-season">
       <h3 class="browse-season-heading">${browseSeasonLabel(group.year)}</h3>
       ${group.sets.map(buildBrowseSetEntry).join("")}
     </div>`).join("");
+}
+
+function renderBrowseColumn(containerId, sets) {
+  document.getElementById(containerId).innerHTML = browseColumnHtml(sets);
 }
 
 async function initBrowseBySet() {
