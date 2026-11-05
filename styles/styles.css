@@ -4560,7 +4560,7 @@ body:has(.site-footer) {
   .nav-dropdown a {
     display: block;
     padding: 8px 20px;
-    font-size: 15px; /* a step down from the bar */
+    font-size: 17px; /* mixed case reads smaller than the bar's capitals */
   }
 
   .nav-dropdown a:hover,
