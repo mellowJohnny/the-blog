@@ -636,8 +636,6 @@ const NAV_ITEMS = {
   classic: { label: "Classic 80s Sets", href: "/waxReviews.html?year=1981&pageName=classicWax&blogCat=reg", review: { cat: "reg", year: 1981 } },
   timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2019&pageName=timmies&blogCat=tims", review: { cat: "tims", year: 2019 } },
   mcd: { label: "McDonald's Hockey", href: "/waxReviews.html?year=1991&pageName=mcd&blogCat=mcd", review: { cat: "mcd", year: 1991 } },
-  tech: { label: "Tech", href: "/tech.html?blogType=1&pageName=tech" },
-  mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3&pageName=ev" },
   timeline: { label: "Junk Wax Timeline", href: "/timeline.html" },
   search: { label: "Player Search", href: "/playerSearch.html" },
   // The footer shares this label. "about" is linked from the footer only.
@@ -665,8 +663,6 @@ const NAV_MAP = {
   // set links (including "browse", All Sets) self-exclude through NAV_SELF.
   // index.html is Home, so it leaves out its own "Home" link as redundant.
   index: ["major", "fastfood", "museum", "timeline", "search"],
-  tech: ["home", "major", "fastfood", "museum", "timeline", "search"],
-  ev: ["home", "major", "fastfood", "museum", "timeline", "search"],
   junkWax: ["home", "major", "fastfood", "museum", "timeline", "search"],
   classicWax: ["home", "major", "fastfood", "museum", "timeline", "search"],
   timmies: ["home", "major", "fastfood", "museum", "timeline", "search"],

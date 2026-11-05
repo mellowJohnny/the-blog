@@ -980,7 +980,6 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 }
 
 .masthead {
-  font-family: 'Spicy Rice';
   font-size: 7vw;
   color: var(--color-link);
   background-color: var(--color-masthead-bg);
@@ -2378,7 +2377,7 @@ body:has(.site-footer) {
 }
 
 .error-msg {
-  font-family: 'Fira Code';
+  font-family: monospace;
   font-size: 18px;
   color:rgb(7, 62, 126);
   width:400px;

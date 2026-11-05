@@ -16,6 +16,8 @@ frontend:
         - node tools/minifyAssets/minify.mjs
         # The artifact is the whole directory; don't publish the installed packages.
         - rm -rf node_modules
+        # Archived pages stay in git but are not published.
+        - rm -rf "Old HTML Pages"
   artifacts:
     baseDirectory: /
     files:
