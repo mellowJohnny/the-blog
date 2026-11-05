@@ -137,7 +137,7 @@ h1 {
     padding: 0;
     margin: 0 0 6px 0;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     color: #000;
 }
 
@@ -399,14 +399,14 @@ h1 {
   color: #333;
   text-decoration: underline;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .bulk-file-name {
   margin: 8px 0 0 0;
   font-size: 0.85rem;
   color: #333;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* --- Feedback --- */
@@ -989,8 +989,8 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 .autobus-cms-logo {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 40px;
-  text-align: left; 
-  font-weight: 500;         
+  text-align: left;
+  font-weight: 400;
   color: #f574e0;
   background-color: rgb(0, 0, 0);
   padding: 4px 16px 4px 10px; /* add more right padding */
@@ -1108,7 +1108,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 
 .wax-reviews-masthead a {
   font-family: Bebas Neue;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 128px;
   position: relative;
   z-index: 1; /* keeps text above the blur */
@@ -1504,7 +1504,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   /* After the font shorthand, which would otherwise reset it. */
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -1550,7 +1550,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 
 .nhl-goal-time {
   width: 44px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .nhl-goal-scorer {
@@ -1619,7 +1619,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 
 .nhl-linescore thead th {
   color: #555;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .nhl-linescore thead th:first-child,
@@ -1714,7 +1714,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
   color: #fff;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   text-align: left;
 }
 
@@ -1738,7 +1738,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 
 .nhl-recap a {
   color: #256386;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .nhl-recap-image {
@@ -1927,7 +1927,6 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   margin-left: 5px;
   margin-right: 5px;
   font-family: 'Special Elite';
-  font-style: italic;
   font-size: 16px;
   text-align: left;
   padding: 6px;
@@ -2042,6 +2041,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   padding: 2px 4px;
 }
 
+/* Special Elite has no bold: the browser's synthesised bold here is kept on purpose. */
 .set-detail-row strong {
   font-family: 'Special Elite', sans-serif;
 }
@@ -2746,7 +2746,7 @@ body:has(.site-footer) {
   border-radius: var(--btn-radius);
   padding: 10px 20px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
   cursor: pointer;
   box-shadow: 0 0 0 1px #fff, 0 0 0 2px var(--btn-ring);
@@ -2840,7 +2840,7 @@ body:has(.site-footer) {
 
 .checklist-modal-masthead a {
   font-family: 'Bebas Neue';
-  font-weight: 500;
+  font-weight: 400;
   font-size: 40px;
   text-transform: uppercase;
   text-decoration: none;
