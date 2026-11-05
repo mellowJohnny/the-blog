@@ -174,9 +174,9 @@
         renderCardIntro(pageName);
         // Set-O-Matic Set Picker: needs only the URL params, so draw it before first
         // paint - on window load it popped in late and pushed the page down
-        renderSetPicker(year,blogCat,pageName);
+        renderSetPicker(year,resolveBlogCat(blogCat,pageName),pageName);
         //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
-        fetchCardSetsByYear(year,sortOrder,blogCat,setID);
+        fetchCardSetsByYear(year,sortOrder,resolveBlogCat(blogCat,pageName),setID);
       });
     </script>
 

@@ -510,6 +510,16 @@ function getPageNameForYear(blogCat, year) {
   return null;
 }
 
+// Old indexed links carry pageName but no blogCat. Returns the given blogCat,
+// else the category whose ranges include pageName (null if neither).
+function resolveBlogCat(blogCat, pageName) {
+  if (blogCat) return blogCat;
+  for (const cat in categoryRanges) {
+    if (categoryRanges[cat][pageName]) return cat;
+  }
+  return null;
+}
+
 function renderSetPicker(year, blogCat, pageName) {
   const setPicker = document.getElementById("set-picker");
 
