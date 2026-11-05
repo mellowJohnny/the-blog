@@ -2267,10 +2267,10 @@ body:has(.site-footer) {
   cursor: default;
 }
 
-/* 600 like the links: only 200 and 600 are loaded, so 400 would get the thin 200. */
+/* The light weight, stated: only 200 and 600 are loaded, so 400 would silently get 200. */
 .site-footer #copy {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 200;
 }
 
 .site-footer #copy p {
@@ -2283,7 +2283,7 @@ body:has(.site-footer) {
   display: inline-block;
   margin-top: 10px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 200;
   color: var(--color-heading-outline);
   text-decoration: none;
 }
