@@ -618,6 +618,7 @@ function reviewLinkAttrs(item) {
  * tables - add a page via NAV_MAP, a menu item via NAV_ITEMS.
  */
 
+// nav-block:start (tools/generateReviewPages runs this block to pre-render the nav)
 // Step 1: Define the navigation items as data
 const NAV_ITEMS = {
   home: { label: "Home", href: "/index.html" },
@@ -671,41 +672,57 @@ const NAV_MAP = {
   about: ["home", "major", "fastfood", "museum", "timeline", "search"]
 };
 
-// Step 4: Build a dynamic table generator
-function buildNavCell(item) {
-  return `<td class="nav-td"><a href="${item.href}"${reviewLinkAttrs(item)}>${item.label}</a></td>`;
+// Step 4: Build a dynamic table generator. hrefFor(item), when given, returns
+// an item's final link (the generator pre-renders them that way); else the
+// item's own href, which applyReviewLinks() upgrades.
+function buildNavCell(item, hrefFor) {
+  const href = (hrefFor && hrefFor(item)) || item.href;
+  return `<td class="nav-td"><a href="${href}"${reviewLinkAttrs(item)}>${item.label}</a></td>`;
 }
 
-function buildNavGroupCell(group, selfId) {
+function buildNavGroupCell(group, selfId, hrefFor) {
   const links = group.items.filter(id => id !== selfId)
-    .map(id => `<li><a href="${NAV_ITEMS[id].href}"${reviewLinkAttrs(NAV_ITEMS[id])}>${NAV_ITEMS[id].label}</a></li>`)
+    .map(id => {
+      const item = NAV_ITEMS[id];
+      const href = (hrefFor && hrefFor(item)) || item.href;
+      return `<li><a href="${href}"${reviewLinkAttrs(item)}>${item.label}</a></li>`;
+    })
     .join("");
   if (!links) return "";
   return `<td class="nav-td nav-group"><button type="button" class="nav-group-btn" aria-haspopup="true" aria-expanded="false">${group.label}</button><ul class="nav-dropdown">${links}</ul></td>`;
 }
 
-// The new, dynamic fetchNav()
-function fetchNav(pageName, blogType) {
-  const nav = document.getElementById("global-nav");
-
+// The nav table for a page, or "" for a page with no NAV_MAP entry.
+function navHtml(pageName, blogType, hrefFor) {
   // Determine key (e.g. "tech_1", "tech_3")
   const key = blogType ? `${pageName}_${blogType}` : pageName;
 
   const items = NAV_MAP[key];
-  if (!items) return;
+  if (!items) return "";
 
-  
   let cells = "";
 
   items.forEach(id => {
-      cells += NAV_GROUPS[id] ? buildNavGroupCell(NAV_GROUPS[id], NAV_SELF[pageName]) : buildNavCell(NAV_ITEMS[id]);
+      cells += NAV_GROUPS[id] ? buildNavGroupCell(NAV_GROUPS[id], NAV_SELF[pageName], hrefFor) : buildNavCell(NAV_ITEMS[id], hrefFor);
   });
 
-  nav.innerHTML = `
+  return `
     <table class="top-nav nav-table">
       <tr>${cells}</tr>
     </table>
   `;
+}
+// nav-block:end
+
+function fetchNav(pageName, blogType) {
+  const nav = document.getElementById("global-nav");
+  // A built page already ships its nav with final links.
+  if (nav.querySelector(".top-nav")) return;
+
+  const html = navHtml(pageName, blogType);
+  if (!html) return;
+
+  nav.innerHTML = html;
   applyReviewLinks();
 }
 

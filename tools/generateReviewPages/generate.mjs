@@ -14,10 +14,11 @@
 // output is committed. Nothing is written unless every live set has a valid,
 // unique seoURLSlug and both templates' markers are found exactly once.
 //
-// It also fills the browse-major / browse-fastfood marker blocks in
-// browseBySet.html with the columns' markup (browseColumnHtml() in
-// scripts/browseBySet.js), so the HTML itself links to every /reviews/<slug>/
-// page. That file is tracked, so a local run leaves it modified: discard it.
+// It also pre-renders, so the HTML itself links to every /reviews/<slug>/ page:
+// the main nav (nav markers) into each review page and into the static pages in
+// NAV_PAGE_FILES, and the browse-major / browse-fastfood columns into
+// browseBySet.html (browseColumnHtml() in scripts/browseBySet.js). Those static
+// pages are tracked, so a local run leaves them modified: discard the changes.
 //
 // Runs on Node 16 (the Amplify build image), hence node:https, not fetch.
 // Each set's pageName comes from categoryRanges in scripts/helper.js.
@@ -156,9 +157,17 @@ function liftFunction(source, name, file) {
   return match[0];
 }
 
+// The text between two marker lines (// name:start ... // name:end) in a browser script.
+function liftBlock(source, name, file) {
+  const start = source.indexOf(`// ${name}:start`);
+  const end = source.indexOf(`// ${name}:end`);
+  if (start < 0 || end < start) throw new Error(`Could not find the "${name}" block in ${file}`);
+  return source.slice(start, end);
+}
+
 // The browser functions the pages are pre-rendered with (browseColumnHtml() in
-// scripts/browseBySet.js; setPickerHtml() and compareSetsForDefault() in
-// scripts/helper.js), run in a sandbox with the few helpers they call.
+// scripts/browseBySet.js; setPickerHtml(), compareSetsForDefault() and navHtml()
+// in scripts/helper.js), run in a sandbox with the few helpers they call.
 function loadBrowserFunctions(categoryRanges) {
   const helperSource = fs.readFileSync(HELPER_PATH, "utf8");
   const waxSource = fs.readFileSync(WAX_PATH, "utf8");
@@ -173,10 +182,12 @@ function loadBrowserFunctions(categoryRanges) {
     liftFunction(helperSource, "getPageNameForYear", "scripts/helper.js"),
     liftFunction(helperSource, "setPickerHtml", "scripts/helper.js"),
     liftFunction(helperSource, "compareSetsForDefault", "scripts/helper.js"),
+    liftFunction(helperSource, "reviewLinkAttrs", "scripts/helper.js"),
+    liftBlock(helperSource, "nav-block", "scripts/helper.js"),
     liftFunction(waxSource, "stripYearFromSetName", "scripts/wax.js"),
     fs.readFileSync(BROWSE_SCRIPT_PATH, "utf8")
   ].join("\n"), context);
-  for (const name of ["browseColumnHtml", "setPickerHtml", "compareSetsForDefault"]) {
+  for (const name of ["browseColumnHtml", "setPickerHtml", "compareSetsForDefault", "navHtml"]) {
     if (typeof context[name] !== "function") throw new Error(`${name}() did not load from the browser scripts`);
   }
   return context;
@@ -189,6 +200,29 @@ function pickerHrefFor(set, sets, compareSetsForDefault) {
     const best = sets.filter((s) => s.blogCat === set.blogCat && s.year === year).sort(compareSetsForDefault)[0];
     return best ? `/reviews/${best.seoURLSlug}/` : null;
   };
+}
+
+// A nav link's final href: the page of the default set for the item's category
+// and year (what applyReviewLinks() picks), or nothing for an item that isn't a set link.
+function navHrefFor(sets, compareSetsForDefault) {
+  return (item) => {
+    if (!item.review) return null;
+    const best = sets.filter((s) => s.blogCat === item.review.cat && s.year === item.review.year).sort(compareSetsForDefault)[0];
+    return best ? `/reviews/${best.seoURLSlug}/` : null;
+  };
+}
+
+// The pages with a nav pre-rendered into them, besides the review pages. Each
+// names its NAV_MAP key in data-nav-page on #global-nav.
+const NAV_PAGE_FILES = [
+  "index.html", "about.html", "playerSearch.html", "timeline.html", "theJunkWaxYears.html",
+  "browseBySet.html", "waxMuseum.html", "lockout.html"
+];
+
+// html with its nav markers filled by navHtml(pageName, ...).
+function fillNav(html, pageName, navMarkup, file) {
+  if (!navMarkup) throw new Error(`${file}: "${pageName}" has no NAV_MAP entry in scripts/helper.js`);
+  return replaceBetween(html, "nav", navMarkup, file, true);
 }
 
 // browseBySet.html with both columns filled in. The same filters as initBrowseBySet().
@@ -248,11 +282,12 @@ function paramsBlock(set, categoryRanges) {
     </script>`;
 }
 
-function buildPage(template, set, categoryRanges, warnings, pickerHtml) {
+function buildPage(template, set, categoryRanges, warnings, pickerHtml, navMarkup) {
   const url = `${SITE_ORIGIN}/reviews/${set.seoURLSlug}/`;
   let html = replaceBetween(template, "review-head", headBlock(set, url, warnings));
   html = replaceBetween(html, "review-params", paramsBlock(set, categoryRanges));
   html = replaceBetween(html, "set-picker", pickerHtml, "waxReviews.html", true);
+  html = fillNav(html, pageNameFor(set, categoryRanges), navMarkup, "waxReviews.html");
   const doctypeEnd = html.indexOf(">") + 1;
   if (!/^<!doctype html>/i.test(html)) throw new Error("waxReviews.html must start with <!doctype html>");
   return `${html.slice(0, doctypeEnd)}\n${BANNER}${html.slice(doctypeEnd)}`;
@@ -312,13 +347,19 @@ try {
   const template = fs.readFileSync(TEMPLATE_PATH, "utf8");
   const categoryRanges = loadCategoryRanges();
   const warnings = [];
-  const { browseColumnHtml, setPickerHtml, compareSetsForDefault } = loadBrowserFunctions(categoryRanges);
+  const { browseColumnHtml, setPickerHtml, compareSetsForDefault, navHtml } = loadBrowserFunctions(categoryRanges);
+  const navLinkFor = navHrefFor(sets, compareSetsForDefault);
   const pages = sets.map((set) => {
-    const hrefFor = pickerHrefFor(set, sets, compareSetsForDefault);
-    const pickerHtml = setPickerHtml(set.year, set.blogCat, pageNameFor(set, categoryRanges), hrefFor);
-    return { set, html: buildPage(template, set, categoryRanges, warnings, pickerHtml) };
+    const pageName = pageNameFor(set, categoryRanges);
+    const pickerHtml = setPickerHtml(set.year, set.blogCat, pageName, pickerHrefFor(set, sets, compareSetsForDefault));
+    return { set, html: buildPage(template, set, categoryRanges, warnings, pickerHtml, navHtml(pageName, undefined, navLinkFor)) };
   });
-  const browsePage = buildBrowsePage(liveSets, browseColumnHtml);
+  const navPages = NAV_PAGE_FILES.map((file) => {
+    const source = file === "browseBySet.html" ? buildBrowsePage(liveSets, browseColumnHtml) : fs.readFileSync(path.join(REPO_ROOT, file), "utf8");
+    const match = source.match(/id="global-nav"[^>]*data-nav-page="([^"]+)"/);
+    if (!match) throw new Error(`${file} needs data-nav-page on #global-nav`);
+    return { file: path.join(REPO_ROOT, file), html: fillNav(source, match[1], navHtml(match[1], undefined, navLinkFor), file) };
+  });
   const urls = buildUrls(sets);
 
   let written = 0;
@@ -327,7 +368,7 @@ try {
   }
   writeIfChanged(path.join(REVIEWS_DIR, "index.json"), buildManifest(sets));
   writeIfChanged(path.join(REPO_ROOT, "sitemap.xml"), buildSitemapXml(urls));
-  writeIfChanged(BROWSE_PAGE_PATH, browsePage);
+  for (const { file, html } of navPages) writeIfChanged(file, html);
 
   warnings.forEach((warning) => console.warn(`warning: ${warning}`));
   console.log(`${sets.length} review pages (${written} written), the link manifest and ${urls.length} sitemap URLs.`);
