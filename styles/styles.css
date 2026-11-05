@@ -2267,8 +2267,10 @@ body:has(.site-footer) {
   cursor: default;
 }
 
+/* 600 like the links: only 200 and 600 are loaded, so 400 would get the thin 200. */
 .site-footer #copy {
   font-size: 13px;
+  font-weight: 600;
 }
 
 .site-footer #copy p {
@@ -2281,6 +2283,7 @@ body:has(.site-footer) {
   display: inline-block;
   margin-top: 10px;
   font-size: 12px;
+  font-weight: 600;
   color: var(--color-heading-outline);
   text-decoration: none;
 }
@@ -4234,7 +4237,10 @@ body:has(.site-footer) {
     display: block;
   }
 
+  /* ☰ isn't in any of our fonts; this picks the system's symbol glyph
+     instead of leaving the browser's serif default to choose. */
   .hamburger {
+    font-family: system-ui, sans-serif;
     font-size: 32px;
     cursor: pointer;
     padding: 10px;
@@ -4890,7 +4896,8 @@ body:has(.site-footer) {
   border-radius: 8px 8px 0 0;
 }
 
-/* The "Flip" pill, shared with the Junk Wax Timeline's cards. */
+/* The "Flip" pill, shared with the Junk Wax Timeline's cards. It sits inside a
+   button, which doesn't inherit the page font, so it names its own. */
 .wax-museum-hint,
 .timeline-hint {
   position: absolute;
@@ -4899,7 +4906,9 @@ body:has(.site-footer) {
   border-radius: 12px;
   background: rgba(11, 62, 100, 0.85);
   color: #ffffff;
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   font-size: 12px;
+  font-weight: 600;
 }
 
 .wax-museum-hint {
