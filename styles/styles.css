@@ -1015,7 +1015,7 @@ select {
 
 textarea {
   font-size: 24px;
-  font-family: 'Consolas', Courier, monospace;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   width: 80%;
   height: 150px;
   box-sizing: border-box;
@@ -1078,7 +1078,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 }
 
 .autobus-masthead {
-  font-family: 'Arial';
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 7vw;
   color: #000000;
   background-color: rgb(0, 0, 0);
@@ -2470,7 +2470,7 @@ body:has(.site-footer) {
 }
 
 .error-msg {
-  font-family: monospace;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 18px;
   color:rgb(7, 62, 126);
   width:400px;
@@ -3443,13 +3443,13 @@ body:has(.site-footer) {
 }
 
 /* Multi-line SEO fields (description, keywords): same look as the text inputs
-   above them, not the 24px monospace postBody textarea. */
+   above them, not the 24px postBody textarea. */
 .seo-textarea {
   width: 450px;
   height: auto;
   margin: 8px 0;
   padding: 6px 10px;
-  font-family: Arial, sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 16px;
   resize: none;
   overflow: hidden;
