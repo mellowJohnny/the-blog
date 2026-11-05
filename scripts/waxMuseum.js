@@ -33,20 +33,31 @@ function waxPackSeries(pack) {
   return match ? Number(match[1]) : 0;
 }
 
-/** The set a pack belongs to: its name without the season ("1992-93") and without "Series 2" or anything after it, so "1992-93 Parkhurst Series 2 Jumbo" is "Parkhurst". */
+const WAX_PACK_LOW = /\blow\b/i;
+const WAX_PACK_HIGH = /\bhigh\b/i;
+
+/** 0 for a "Low" pack, 2 for a "High" pack, 1 for neither: Low packs came out before High packs. */
+function waxPackRelease(pack) {
+  if (WAX_PACK_LOW.test(pack.name)) return 0;
+  return WAX_PACK_HIGH.test(pack.name) ? 2 : 1;
+}
+
+/** The set a pack belongs to: its name without the season ("1992-93"), without "Low" or "High", and without "Series 2" or anything after it, so "1992-93 Parkhurst Series 2 Jumbo" is "Parkhurst". */
 function waxPackSet(pack) {
   const withoutSeason = pack.name.replace(/^\s*\d{4}\s*-\s*\d{2,4}\s+/, "");
   const match = WAX_PACK_SERIES.exec(withoutSeason);
-  return (match ? withoutSeason.slice(0, match.index) : withoutSeason).trim();
+  const setName = match ? withoutSeason.slice(0, match.index) : withoutSeason;
+  return setName.replace(/\b(low|high)\b/gi, "").replace(/\s+/g, " ").trim();
 }
 
-/** Oldest year first, then one set at a time (A to Z), each with its packs in series order (none, 1, 2...) and then A to Z by name. The API orders by key, which isn't always the name's order. */
+/** Oldest year first, then one set at a time (A to Z), each with its packs in series order (none, 1, 2...), then Low before High, then A to Z by name. The API orders by key, which isn't always the name's order. */
 function sortWaxPacks(packs) {
   const compare = (a, b) => a.localeCompare(b, undefined, { sensitivity: "base" });
   return [...packs].sort((a, b) =>
     a.year - b.year ||
     compare(waxPackSet(a), waxPackSet(b)) ||
     waxPackSeries(a) - waxPackSeries(b) ||
+    waxPackRelease(a) - waxPackRelease(b) ||
     compare(a.name, b.name));
 }
 
