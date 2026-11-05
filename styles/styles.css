@@ -8,14 +8,6 @@ messing up the layout with white borders and scoll bars
 /* Metric-matched stand-ins for the Google fonts: Arial resized to the web
    font's width and line box, so the swap-in barely moves the text. */
 @font-face {
-  font-family: "Work Sans Fallback";
-  src: local("Arial");
-  size-adjust: 113.14%;
-  ascent-override: 82.2%;
-  descent-override: 21.48%;
-  line-gap-override: 0%;
-}
-@font-face {
   font-family: "Source Sans 3 Fallback";
   src: local("Arial");
   size-adjust: 90.24%;
@@ -135,11 +127,11 @@ h1 {
 .autobus-results-table,
 .autobus-textarea,
 .autobus-send-btn {
-    font-family: "Work Sans", "Work Sans Fallback", sans-serif;
+    font-family: "Source Sans 3", "Source Sans 3 Fallback", sans-serif;
 }
 
 .autobus-sent-message-title {
-    font-family: "Work Sans", "Work Sans Fallback", sans-serif;
+    font-family: "Source Sans 3", "Source Sans 3 Fallback", sans-serif;
     display: block;
     background: none;
     padding: 0;
@@ -152,7 +144,7 @@ h1 {
 /* Had no rule at all previously, so it fell back to the browser's
    default serif font instead of matching the rest of the page */
 .autobus-sent-message {
-    font-family: "Work Sans", "Work Sans Fallback", sans-serif;
+    font-family: "Source Sans 3", "Source Sans 3 Fallback", sans-serif;
     display: block;
     font-size: 16px;
     color: #000;
@@ -270,7 +262,7 @@ h1 {
 }
 
 .autobus-results-label {
-    font-family: "Work Sans", "Work Sans Fallback", sans-serif;
+    font-family: "Source Sans 3", "Source Sans 3 Fallback", sans-serif;
     display: block;
     /* font-weight: 600; */
     margin-bottom: 6px;
@@ -365,7 +357,7 @@ h1 {
 }
 
 .bulk-modal-title {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 1.2rem;
   margin: 0 0 12px 0;
@@ -447,7 +439,7 @@ h1 {
 }
 
 .bulk-btn {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 .bulk-btn-upload {
@@ -485,7 +477,7 @@ h1 {
   position: sticky;
   top: 0;
   background: #f4f4f4;
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 0.85rem;
 }
 
@@ -531,7 +523,7 @@ h1 {
 }
 
 .help-section-title {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 0.95rem;
   color: #222;
@@ -858,7 +850,7 @@ table {
  }
 
 form {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 20px;
   padding-left: 1.5%;
  }
@@ -1410,8 +1402,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 
 /* NHL game modal (openNhlGameModal(), wax.js) - reuses the checklist
    modal's overlay/content/close classes; .nhl-game-modal narrows it. */
-/* Same type as the blog/review pages: Source Sans 3 body text in the
-   site's body colour, Work Sans for headings (like blog post titles). */
+/* Same type as the blog/review pages: Source Sans 3 in the site's body colour. */
 .checklist-modal-content.nhl-game-modal {
   max-width: 900px;
   color: rgb(34, 38, 41);
@@ -1422,7 +1413,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 .nhl-game-abbrev,
 .nhl-game-section h3,
 .nhl-recap h3 {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 .nhl-game-scoreline {
@@ -1511,7 +1502,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   color: #444;
   font: inherit;
   /* After the font shorthand, which would otherwise reset it. */
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -1779,7 +1770,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 .blog-type-divider {
   margin-top: 24px;
   margin-bottom: 8px;
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 1.3rem;
   font-weight: bold;
   font-style: italic;
@@ -1791,7 +1782,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 }
 
 .header-style h1{
-    font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+    font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
     font-size: 28px;
     margin: 5px;
     position: relative;
@@ -1809,7 +1800,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 }
 
 .intro {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 18px;
   margin: 5px auto;
   width: 950px;
@@ -1848,7 +1839,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 } 
 
 .blog-title {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 22px;
   color:rgb(11, 109, 167);
 }
@@ -2197,7 +2188,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 
 .page-footer {
     font-size: 10px;
-    font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+    font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
     padding: 20px;
     display: inline;
 }
@@ -2305,7 +2296,7 @@ body:has(.site-footer) {
 .browse-status {
   margin: 12px 16px;
   text-align: center;
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 .browse-columns {
@@ -2326,7 +2317,7 @@ body:has(.site-footer) {
 
 .browse-col-heading {
   margin: 16px 0 4px;
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 28px;
 }
 
@@ -2580,7 +2571,7 @@ body:has(.site-footer) {
 .cms-alert-header {
   background-color: var(--color-masthead-bg);
   color: rgb(252, 252, 245);
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 15px;
   padding: 12px 20px;
@@ -2600,7 +2591,7 @@ body:has(.site-footer) {
   margin: 0 20px 20px auto;
   background-color: #256386;
   color: #fff;
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 /* cmsConfirm() (scripts/helper.js) - reuses .cms-alert-overlay/-content
@@ -2611,7 +2602,7 @@ body:has(.site-footer) {
 .cms-confirm-header {
   background-color: #a83232;
   color: rgb(252, 252, 245);
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 15px;
   padding: 12px 20px;
@@ -2625,13 +2616,13 @@ body:has(.site-footer) {
 }
 
 .cms-confirm-cancel-btn {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 .cms-confirm-confirm-btn {
   background-color: #a83232;
   color: #fff;
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 /* Checklist display (waxReviews.html) - the public-facing "Checklist"
@@ -2728,13 +2719,13 @@ body:has(.site-footer) {
 }
 
 .checklist-modal-print-btn {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   background-color: #256386;
   color: white;
 }
 
 .checklist-modal-pdf-btn {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   background-color: #256386;
   color: white;
 }
@@ -2862,7 +2853,7 @@ body:has(.site-footer) {
 }
 
 .checklist-modal-title {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 1.4rem;
   color: var(--color-text-dark);
@@ -2876,7 +2867,7 @@ body:has(.site-footer) {
 
 .checklist-modal-group-title {
   column-span: all;
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 1.1rem;
   color: var(--color-text-dark);
@@ -3067,7 +3058,7 @@ body:has(.site-footer) {
 
 /*************************************** Pagination Styles... ********************************/
 .pagination-link {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 1.4rem;
   color: var(--color-link);
   text-decoration: none;
@@ -3088,7 +3079,7 @@ body:has(.site-footer) {
 }
 
 .pagination-page {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 1.2rem;
   margin: 0 10px;
   color: #444;
@@ -3219,7 +3210,7 @@ body:has(.site-footer) {
 
 .player-search-message,
 .player-search-summary {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 /* #playerSearchResults prefix (id specificity) beats the bare
@@ -3238,7 +3229,7 @@ body:has(.site-footer) {
 }
 
 .player-search-set-name {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   margin-bottom: 8px;
 }
 
@@ -3285,7 +3276,7 @@ body:has(.site-footer) {
   margin: 0 0 32px 0;
   padding-bottom: 24px;
   border-bottom: 1px solid var(--color-input-border);
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 .admin-tool-card h2 {
@@ -3435,7 +3426,7 @@ body:has(.site-footer) {
 .weather-box,
 .weather-full,
 .weather-condensed {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 /* index.html's banner masthead, edge to edge at every width: the -8px margins
@@ -3557,7 +3548,7 @@ body:has(.site-footer) {
 }
 
 .add-subscriber-label {
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 0.88rem;
   color: #333;
@@ -4477,7 +4468,7 @@ body:has(.site-footer) {
   margin: 0 auto;
   padding: 0 16px 40px;
   box-sizing: border-box;
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   /* A closed card's hidden back face can be taller than the card and would
      otherwise stretch the page below the footer. The padding above leaves
      room for the card shadows. */
@@ -4803,7 +4794,7 @@ body:has(.site-footer) {
   margin: 0 auto;
   padding: 0 16px 40px;
   box-sizing: border-box;
-  font-family: 'Work Sans', 'Work Sans Fallback', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   color: var(--color-text-dark);
 }
 
