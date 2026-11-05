@@ -676,6 +676,12 @@ h1 {
   padding: 20px;
 }
 
+/* Dropdown links keep their written capitalisation (and drop the caps spacing). */
+.nav-dropdown a {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
 /* The blue of the timeline heading; the phone/tablet menu rule below
    (white on blue) comes later in the file and still wins there. */
 .nav-td a {
@@ -1886,6 +1892,35 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
     margin: 5px;
     position: relative;
     top: 1px;
+}
+
+/* One size for every page's main heading: the intro h1s (Home, About, The Junk
+   Wax Years), the .header-style h1s and the review pages' intro h2. */
+.intro h1,
+.header-style h1,
+#card-intro h2 {
+  font-size: 34px;
+}
+
+/* Public pages: line the heading up with the intro text below it (the .intro
+   column). The /cms pages, which have no .site-footer, keep their layout. */
+body:has(.site-footer) .header-style {
+  box-sizing: border-box;
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
+body:has(.site-footer) .header-style h1 {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Tablet: the .flex-container column adds its 5px margin + 15px padding here. */
+@media (min-width: 601px) and (max-width: 1060px) {
+  body:has(.site-footer) .header-style {
+    padding: 0 20px;
+  }
 }
 
 /* waxReviews.html only (see the .wax-set-name-header class on its
