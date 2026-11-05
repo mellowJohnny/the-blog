@@ -1823,7 +1823,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   padding-top: 8px;
 }
 
-#junkwax-intro p:first-child {
+#junkwax-intro h1 {
   margin-top: 0;
 }
 

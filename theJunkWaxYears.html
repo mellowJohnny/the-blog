@@ -118,12 +118,6 @@
 
         fetchCopyrightYear();
 
-        // Set-o-matic picker: every year in the junkWax range links to
-        // the real review page. Passing no "current year" (this page
-        // isn't tied to one) means every cell renders as a link - see
-        // renderSetPicker()'s y === parseInt(year) check in helper.js.
-        renderSetPicker(null, "reg", "junkWax");
-
         // Static essay, content never varies - its Article schema is built
         // once here from the page text.
         const articleBody = document.querySelector(".intro")
@@ -182,20 +176,9 @@
     </nav>
     <main>
       <section>
-        <div class="header-style">
-          <h1>Junk Wax Curious?</h1>
-        </div>
-
-        <div class="set-o-matic-picker">the set-o-matic year picker</div>
-
-        <div class="flex-container">
-          <div id="set-picker">
-            <!-- renderSetPicker() function in helper.js -->
-          </div>
-        </div>
-
         <div class="flex-container">
           <div class="intro" id="junkwax-intro">
+            <h1>Junk Wax Curious?</h1>
             <p>
               If you are wondering what the "Junk Wax" era is as it
               relates to sports card collecting, let me <i>wax</i>
