@@ -4396,7 +4396,7 @@ body:has(.site-footer) {
   .nav-dropdown a {
     display: block;
     padding: 8px 20px;
-    font-size: 16px; /* a step down from the bar, the same as the footer links */
+    font-size: 15px; /* a step down from the bar */
   }
 
   .nav-dropdown a:hover,
