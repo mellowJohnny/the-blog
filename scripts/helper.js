@@ -520,20 +520,15 @@ function resolveBlogCat(blogCat, pageName) {
   return null;
 }
 
-function renderSetPicker(year, blogCat, pageName) {
-  const setPicker = document.getElementById("set-picker");
-
+// The year picker's markup. hrefFor(y), when given, returns a year's final link
+// (tools/generateReviewPages pre-renders it that way); else the query form that
+// applyReviewLinks() upgrades.
+function setPickerHtml(year, blogCat, pageName, hrefFor) {
   const catConfig = categoryRanges[blogCat];
-  if (!catConfig) {
-    setPicker.innerHTML = `<p>No template found for category "${blogCat}"</p>`;
-    return;
-  }
+  if (!catConfig) return `<p>No template found for category "${blogCat}"</p>`;
 
   const range = catConfig[pageName];
-  if (!range) {
-    setPicker.innerHTML = `<p>No range found for category "${blogCat}" and page "${pageName}"</p>`;
-    return;
-  }
+  if (!range) return `<p>No range found for category "${blogCat}" and page "${pageName}"</p>`;
 
   const totalYears = range.end - range.start + 1;
   let cells = "";
@@ -541,11 +536,13 @@ function renderSetPicker(year, blogCat, pageName) {
   for (let i = 0; i < totalYears; i++) {
     const y = range.start + i;
     const label = `${y}-${(y + 1).toString().slice(-2)}`;
+    const href = (hrefFor && hrefFor(y))
+      || `/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}`;
 
     cells += (y === parseInt(year))
       ? `<div class="${range.className}">${label}</div>`
       : `<div class="${range.className}">
-           <a href="/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}" data-review-cat="${blogCat}" data-review-year="${y}">
+           <a href="${href}" data-review-cat="${blogCat}" data-review-year="${y}">
              ${label}
            </a>
          </div>`;
@@ -554,9 +551,17 @@ function renderSetPicker(year, blogCat, pageName) {
   // .card-set-nav is a flex-wrap container (styles.css), so it wraps onto
   // as many lines as needed at any viewport width and any total year
   // count, with no split point to maintain as ranges grow.
-  setPicker.innerHTML = `
+  return `
     <div class="card-set-nav">${cells}</div>
   `;
+}
+
+function renderSetPicker(year, blogCat, pageName) {
+  const setPicker = document.getElementById("set-picker");
+  // A generated review page already ships its picker with final links.
+  if (setPicker.querySelector(".card-set-nav")) return;
+
+  setPicker.innerHTML = setPickerHtml(year, blogCat, pageName);
   applyReviewLinks();
 }
 

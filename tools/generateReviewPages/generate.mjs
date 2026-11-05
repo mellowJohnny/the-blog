@@ -5,8 +5,9 @@
 // waxReviews.html is the template: for each live set the <title>/description/
 // canonical/social tags (between its review-head markers) and the globals
 // script (between its review-params markers) are swapped for that set's own
-// values, so crawlers that don't run JavaScript get a per-set preview. The
-// page's JS still renders the review itself.
+// values, so crawlers that don't run JavaScript get a per-set preview. The year
+// picker (set-picker markers) is pre-rendered with /reviews/<slug>/ links too.
+// The page's JS still renders the review itself.
 //
 // Amplify runs this on every build (amplify.yml), and a change to a live set
 // in the CMS starts a build (Lambdas/cardsRebuildTrigger), so none of the
@@ -155,9 +156,10 @@ function liftFunction(source, name, file) {
   return match[0];
 }
 
-// browseColumnHtml() from scripts/browseBySet.js, run in a sandbox with the few
-// helpers it calls (escapeHtml, stripYearFromSetName, getPageNameForYear).
-function loadBrowseColumnHtml(categoryRanges) {
+// The browser functions the pages are pre-rendered with (browseColumnHtml() in
+// scripts/browseBySet.js; setPickerHtml() and compareSetsForDefault() in
+// scripts/helper.js), run in a sandbox with the few helpers they call.
+function loadBrowserFunctions(categoryRanges) {
   const helperSource = fs.readFileSync(HELPER_PATH, "utf8");
   const waxSource = fs.readFileSync(WAX_PATH, "utf8");
   const context = {
@@ -169,16 +171,28 @@ function loadBrowseColumnHtml(categoryRanges) {
   vm.runInContext([
     liftFunction(helperSource, "escapeHtml", "scripts/helper.js"),
     liftFunction(helperSource, "getPageNameForYear", "scripts/helper.js"),
+    liftFunction(helperSource, "setPickerHtml", "scripts/helper.js"),
+    liftFunction(helperSource, "compareSetsForDefault", "scripts/helper.js"),
     liftFunction(waxSource, "stripYearFromSetName", "scripts/wax.js"),
     fs.readFileSync(BROWSE_SCRIPT_PATH, "utf8")
   ].join("\n"), context);
-  if (typeof context.browseColumnHtml !== "function") throw new Error("browseColumnHtml() not found in scripts/browseBySet.js");
-  return context.browseColumnHtml;
+  for (const name of ["browseColumnHtml", "setPickerHtml", "compareSetsForDefault"]) {
+    if (typeof context[name] !== "function") throw new Error(`${name}() did not load from the browser scripts`);
+  }
+  return context;
+}
+
+// A year picker's link for each year: the page of that year's default set (the
+// one applyReviewLinks() picks), or nothing for a year with no review page.
+function pickerHrefFor(set, sets, compareSetsForDefault) {
+  return (year) => {
+    const best = sets.filter((s) => s.blogCat === set.blogCat && s.year === year).sort(compareSetsForDefault)[0];
+    return best ? `/reviews/${best.seoURLSlug}/` : null;
+  };
 }
 
 // browseBySet.html with both columns filled in. The same filters as initBrowseBySet().
-function buildBrowsePage(sets, categoryRanges) {
-  const browseColumnHtml = loadBrowseColumnHtml(categoryRanges);
+function buildBrowsePage(sets, browseColumnHtml) {
   const live = sets.filter((set) => set.setName && Number.isFinite(set.year));
   const page = fs.readFileSync(BROWSE_PAGE_PATH, "utf8");
   const major = browseColumnHtml(live.filter((set) => set.blogCat === "reg"));
@@ -234,10 +248,11 @@ function paramsBlock(set, categoryRanges) {
     </script>`;
 }
 
-function buildPage(template, set, categoryRanges, warnings) {
+function buildPage(template, set, categoryRanges, warnings, pickerHtml) {
   const url = `${SITE_ORIGIN}/reviews/${set.seoURLSlug}/`;
   let html = replaceBetween(template, "review-head", headBlock(set, url, warnings));
   html = replaceBetween(html, "review-params", paramsBlock(set, categoryRanges));
+  html = replaceBetween(html, "set-picker", pickerHtml, "waxReviews.html", true);
   const doctypeEnd = html.indexOf(">") + 1;
   if (!/^<!doctype html>/i.test(html)) throw new Error("waxReviews.html must start with <!doctype html>");
   return `${html.slice(0, doctypeEnd)}\n${BANNER}${html.slice(doctypeEnd)}`;
@@ -297,8 +312,13 @@ try {
   const template = fs.readFileSync(TEMPLATE_PATH, "utf8");
   const categoryRanges = loadCategoryRanges();
   const warnings = [];
-  const pages = sets.map((set) => ({ set, html: buildPage(template, set, categoryRanges, warnings) }));
-  const browsePage = buildBrowsePage(liveSets, categoryRanges);
+  const { browseColumnHtml, setPickerHtml, compareSetsForDefault } = loadBrowserFunctions(categoryRanges);
+  const pages = sets.map((set) => {
+    const hrefFor = pickerHrefFor(set, sets, compareSetsForDefault);
+    const pickerHtml = setPickerHtml(set.year, set.blogCat, pageNameFor(set, categoryRanges), hrefFor);
+    return { set, html: buildPage(template, set, categoryRanges, warnings, pickerHtml) };
+  });
+  const browsePage = buildBrowsePage(liveSets, browseColumnHtml);
   const urls = buildUrls(sets);
 
   let written = 0;
