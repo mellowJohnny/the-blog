@@ -318,6 +318,7 @@ function getMonthName(monthNum) {
         
     }
 
+// footer-block:start (tools/generateReviewPages runs this block to pre-render the footer)
 // Public-page footer, one column per section. An entry with an id links to
 // that NAV_ITEMS page (label optional); one without is not built yet, so it
 // shows dimmed and unlinked. A section with no heading stands on its own.
@@ -328,22 +329,31 @@ const FOOTER_SECTIONS = [
   { links: [{ id: "home" }, { id: "about" }] }
 ];
 
-function buildFooterLink(link) {
+// hrefFor(item), when given, returns an item's final link (the generator
+// pre-renders them that way); else the item's own href, which applyReviewLinks() upgrades.
+function buildFooterLink(link, hrefFor) {
   if (!link.id) {
     return `<span class="footer-link-inactive" aria-disabled="true">${escapeHtml(link.label)}</span>`;
   }
   const item = NAV_ITEMS[link.id];
-  return `<a href="${item.href}"${reviewLinkAttrs(item)}>${escapeHtml(link.label || item.label)}</a>`;
+  const href = (hrefFor && hrefFor(item)) || item.href;
+  return `<a href="${href}"${reviewLinkAttrs(item)}>${escapeHtml(link.label || item.label)}</a>`;
 }
+
+function footerHtml(hrefFor) {
+  return FOOTER_SECTIONS.map(section => {
+    const heading = section.heading ? `<p class="footer-heading">${section.heading}</p>` : "";
+    return `<div class="footer-col">${heading}${section.links.map(link => buildFooterLink(link, hrefFor)).join("")}</div>`;
+  }).join("");
+}
+// footer-block:end
 
 function fetchFooterLinks() {
   const footerNav = document.getElementById("footer-links");
-  if (!footerNav) return;
+  // A built page already ships its footer with final links.
+  if (!footerNav || footerNav.querySelector(".footer-col")) return;
 
-  footerNav.innerHTML = FOOTER_SECTIONS.map(section => {
-    const heading = section.heading ? `<p class="footer-heading">${section.heading}</p>` : "";
-    return `<div class="footer-col">${heading}${section.links.map(buildFooterLink).join("")}</div>`;
-  }).join("");
+  footerNav.innerHTML = footerHtml();
   applyReviewLinks();
 }
 
