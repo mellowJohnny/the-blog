@@ -42,12 +42,12 @@ function waxPackRelease(pack) {
   return WAX_PACK_HIGH.test(pack.name) ? 2 : 1;
 }
 
-/** The set a pack belongs to: its name without the season ("1992-93"), without "Low" or "High", and without "Series 2" or anything after it, so "1992-93 Parkhurst Series 2 Jumbo" is "Parkhurst". */
+/** The set a pack belongs to: its name without the season ("1992-93"), without "Low", "High" or "Jumbo", and without "Series 2" or anything after it, so "1992-93 Parkhurst Series 2 Jumbo" is "Parkhurst". */
 function waxPackSet(pack) {
   const withoutSeason = pack.name.replace(/^\s*\d{4}\s*-\s*\d{2,4}\s+/, "");
   const match = WAX_PACK_SERIES.exec(withoutSeason);
   const setName = match ? withoutSeason.slice(0, match.index) : withoutSeason;
-  return setName.replace(/\b(low|high)\b/gi, "").replace(/\s+/g, " ").trim();
+  return setName.replace(/\b(low|high|jumbo)\b/gi, "").replace(/\s+/g, " ").trim();
 }
 
 /** Oldest year first, then one set at a time (A to Z), each with its packs in series order (none, 1, 2...), then Low before High, then A to Z by name. The API orders by key, which isn't always the name's order. */
