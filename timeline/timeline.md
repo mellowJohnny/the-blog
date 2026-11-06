@@ -41,24 +41,20 @@
 - Pro Set, Pinnacle, and Upper Deck get NHL licenses: hobby explodes from two sets to nine
 - Companies allowed two sets each: Some opt for French / English, some produce "regular" & "premium" sets
 - Set sizes explode:
-  - Pro Set's enormous 705-card set, with countless errors
-  - Upper Deck's 550-card sets (English & French) released across two Series
-    - “High” Series Factory sets
-    - First Upper Deck Young Guns cards
-    - French set frenzy: Canada-only edition reportedly had lower production
-  - O-Pee-Chee's 528-card "main" set, and "limited" 132-card Premier set
-    - Premier sets the hobby world on fire, further stoking speculation
-    - Also available as a Factory set 
-  - Topps: 396-card main set and "premium" 264 card Bowman set, still with gum!
-  - Score's (Pinnacle) 440 cards sets; one American, one Canadian, also in Factory Sets
-    - Eric Lindros mania as Score has the only official RC
-- In total 4,005 base cards were available to collect
-- Over-production:
-  - Upper Deck “High” Series packs contained a mix of Low and High Series cards  
-  - Upper Deck and Pro Set go back to the presses for multiple print runs as demand continues  
-- Factors driving speculation:
-  - First Beckett hockey price guide: Wayne Gretzky graces the first cover
-  - O-Pee-Chee Premier's rumoured limited print run and frenzy around the Jagr / Roenick / Fedorov RCs
+  - Pro Set's enormous 705-card set
+  - Upper Deck's 550-card set 
+  - O-Pee-Chee's 528-card "main" set
+  - Score's 440 cards sets; one American, one Canadian, also in Factory Sets
+- Eric Lindros Score RC frenzy
+- First Upper Deck Young Guns cards
+- Premier sets the hobby world on fire, further stoking speculation
+- French set frenzy: Canada-only edition with reported lower production
+- Rampant Over-production 
+  - Upper Deck High Series packs were a mix of Low and High Series cards  
+  - Upper Deck and Pro Set go back to the presses for multiple print runs 
+  - Factory Sets from Score, Upper Deck, Topps & OPC  
+- First Beckett hockey price guide helps drive speculation
+- O-Pee-Chee Premier's "limited" print run and frenzy around the Jagr / Roenick / Fedorov RCs
 - Counterfeit Patrick Roy and Brett Hull OPC cards begin to surface
 
 
