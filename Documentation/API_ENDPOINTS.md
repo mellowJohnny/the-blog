@@ -64,8 +64,8 @@ To check an endpoint: `curl -s -D - -o /dev/null -H "Accept-Encoding: gzip"
 ### Get all blogs of a given type
 - **URL**: `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
-- **Query params**: `blogType` (e.g. `1`, `3`, `5`, `99`)
-- **Called from**: `fetchBlogs()` in `scripts/blogs.js` (used by `index.html`, `tech.html`)
+- **Query params**: `blogType` (e.g. `98`, the About post; `1`, `3`, `5` were the archived Tech pages')
+- **Called from**: `fetchBlogs()` in `scripts/blogs.js` (used by `about.html`; `index.html` is static and `tech.html` is archived)
 - **Response**: JSON array of blog objects directly (`postBody`, `author`, `time`, `title`, `img`, `imgCap`) — *not* wrapped in `{Items: [...]}` the way raw DynamoDB `scan`/`query` results are, even though the Lambda now reads via a plain `QueryCommand` (see below) — it unwraps `result.Items` itself before returning. `Cache-Control: public, max-age=600` (10 min) on the success response only — added 2026-08-14, the error responses (400/500) intentionally have no caching header.
 - **Lambda**: `Lambdas/getBlogs/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Converted 2026-09-04 from PartiQL to `QueryCommand` on `blogType` (the `Blogs` table's partition key), filtered to `published = true`.
 
@@ -89,10 +89,18 @@ To check an endpoint: `curl -s -D - -o /dev/null -H "Accept-Encoding: gzip"
 - **URL**: `https://jlpd8ec14j.execute-api.us-east-2.amazonaws.com/prod`
 - **Method**: GET
 - **Query params**: none
-- **Called from**: `initBrowseBySet()` in `scripts/browseBySet.js` (used by `browseBySet.html`, as `BROWSE_SETS_URL`), `tools/generateReviewPages/generate.mjs` (the review-page generator every Amplify build runs: it builds the `/reviews/<slug>/` pages, `reviews/index.json` and `sitemap.xml` from it; it replaced `tools/generateSitemap` 2026-10-30) and `runReviewPagesCheck()` in `scripts/adminTools.js` (`GET_PUBLIC_CARD_SETS_URL`).
+- **Called from**: `initBrowseBySet()` in `scripts/browseBySet.js` (used by `browseBySet.html`, as `BROWSE_SETS_URL`), `tools/generateReviewPages/generate.mjs` (the review-page generator every Amplify build runs: it builds the `/reviews/<slug>/` pages, `reviews/index.json` and `sitemap.xml` from it; it replaced `tools/generateSitemap` 2026-10-30) and `runReviewPagesCheck()` in `scripts/adminTools.js` (`GET_PUBLIC_CARD_SETS_URL`), and `loadWaxReviews()` in `scripts/cmsWaxPack.js` (`WAX_PACK_REVIEWS_URL`, the wax pack form's review-link dropdown).
 - **Response**: JSON array directly, one small object per live set: `{ setID, setName, blogCat, year, stars, hasChecklist, now, updatedAt, seoURLSlug, seoPageTitle, seoMetaDesc, seoTags, headerImg, headerImgName }` (`hasChecklist` is absent on a set that has never had a checklist; `updatedAt` is absent on a set not saved in the CMS since it was introduced; `now`, the publish date, and `updatedAt` feed the sitemap's `<lastmod>`; `stars` decides each year's default set and the generator refuses to run without it; the slug and SEO fields feed the generated pages; `browseBySet.html` uses only `setID`, `setName`, `blogCat`, `year`, `hasChecklist` and `seoURLSlug`). `Cache-Control: public, max-age=1800`, `Access-Control-Allow-Origin: *`. (A `?view=links` slim variant existed briefly on 2026-10-30 and was removed; public pages now read the static `reviews/index.json` instead.)
 - **`/reviews/index.json` is not an API** but a static file the Amplify build writes next to the generated pages (gitignored): `[{ setID, setName, blogCat, year, seoURLSlug, stars }]` for every set that has a page, loaded by `loadReviewLinks()` in `scripts/helper.js` to turn year and `setID` links into `/reviews/<slug>/` URLs. See `REVIEW_PAGES.md`.
 - **Lambda**: `Lambdas/getPublicCardSets/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Queries the `blogStatus-year-index` GSI for `blogStatus = "OK"` with a projection of just those fields, following `LastEvaluatedKey`. Public, no Cognito Authorizer. It exists because the CMS's "Get all live card sets" (below) is login-only and returns every review's full body; a public page can't use that, and calling "Get card sets by year" once per year per category would have meant about 50 requests, each carrying review bodies.
+
+### Get wax packs (public)
+- **URL**: `https://efh9lu4988.execute-api.us-east-2.amazonaws.com/prod`
+- **Method**: GET
+- **Query params**: none returns every pack; `?year=` (a whole number) returns one season. A non-integer `year` is a 400.
+- **Called from**: `initWaxMuseum()` in `scripts/waxMuseum.js` (`waxMuseum.html`) and `loadWaxPacks()` in `scripts/cmsWaxPack.js` (the CMS wax pack pages, fetched with `cache: "no-store"` so an edit shows at once).
+- **Response**: JSON array of `WaxPacks` items (see `DATA_MODEL.md`), sorted by year then `packKey`; the museum re-sorts for display. `Cache-Control: public, max-age=1800`, `Access-Control-Allow-Origin: *`.
+- **Lambda**: `Lambdas/getWaxPacks/`. A `Scan` (all) or a `Query` on `year`, following `LastEvaluatedKey`. Public, no auth by design, the same trust level as the other public reads.
 
 ### Cast a vote on a card set
 - **URL**: `https://lo07upgip8.execute-api.us-east-2.amazonaws.com/dev`
@@ -251,6 +259,33 @@ To check an endpoint: `curl -s -D - -o /dev/null -H "Accept-Encoding: gzip"
 - **Called from**: `fetchCardSetByID()` in `scripts/cmsCardSet.js` (used by `cms/setEdit.html`)
 - **Response**: array of one item (again tolerant of `{items:[...]}` / raw array / `{body:...}` / `{Items:[...]}`), containing `blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, postBody, year, mfg, size, subsets, stars, formats, setName, headerImgName, footerImgName`.
 - **Lambda**: `Lambdas/getCardSetByID/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Converted 2026-09-04 from a PartiQL `SELECT * FROM Cards WHERE setID=?` (a non-key `WHERE` clause, so it forced a full-table Scan under the hood) to a `QueryCommand` against the `setID-index` GSI — a real efficiency win, not just a style change. See `DATA_MODEL.md`'s `Cards` GSI table.
+
+## CMS — wax packs (The Wax Museum)
+
+Both back the CMS wax pack pages (`newWaxPack.html`, `waxPackEdit.html`,
+via `scripts/cmsWaxPack.js`). Both send the Cognito ID token in an
+`Authorization` header (`getAuthToken()`), and each Lambda's CORS
+allows only `https://www.junkwaxhockey.com`. **Whether API Gateway
+enforces the token (a Cognito Authorizer on the method) has not been
+verified** the way the older CMS endpoints were: a no-token probe was
+blocked in the 2026-11-05 docs session. Check it with an unauthenticated
+request before relying on it. Reads use the public "Get wax packs" above.
+
+### Save a wax pack (create or edit)
+- **URL**: `https://b3qn1kny99.execute-api.us-east-2.amazonaws.com/prod`
+- **Method**: POST
+- **Body**: `{ year, name, manufacturer, packaging, type, numCards, price?, frontImg?, backImg?, notesFront?, notesBack?, reviewSlug?, packKey? }`. With no `packKey` it creates (the key is slugified from `name`); with a `packKey` it edits that item.
+- **Called from**: `submitWaxPack()` in `scripts/cmsWaxPack.js`.
+- **Response**: 200 `{ message, year, packKey }`; 400 naming the first invalid field; 409 if a create's key already exists for that year; 404 if an edit's item doesn't exist (both through a `ConditionExpression`).
+- **Lambda**: `Lambdas/saveWaxPack/` (`PutCommand` on `WaxPacks`).
+
+### Delete a wax pack
+- **URL**: `https://y4hs1e712l.execute-api.us-east-2.amazonaws.com/prod`
+- **Method**: DELETE
+- **Body**: `{ year, packKey }`
+- **Called from**: `deleteWaxPack()` in `scripts/cmsWaxPack.js` (after a `cmsConfirm()`).
+- **Response**: 200 `{ message }`; 400 for a missing key; 404 if no such pack.
+- **Lambda**: `Lambdas/deleteWaxPack/` (`DeleteCommand` with `attribute_exists(packKey)`).
 
 ## CMS — checklist upload
 

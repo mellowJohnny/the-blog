@@ -15,7 +15,8 @@ changing layout CSS on these pages.
 
 ## HTML conventions for `/cms` pages
 
-All 10 pages under `/cms` were brought into a consistent structure on
+All the pages under `/cms` (10 at the time; 13 since the three wax pack
+pages were added in November 2026) were brought into a consistent structure on
 2026-09-03 (script placement, `<head>` element order, dead code). This
 is the convention to follow for any new `/cms` page or edit to an
 existing one. **This is scoped to `/cms` specifically** — the public
@@ -43,13 +44,18 @@ reference, e.g. `cms/admin.html`):
    Don't also add the older plain `favicon.ico`/`favicon.png` pair —
    every page used to carry both, which the cleanup pass removed as a
    duplicate.
-6. `<link rel="stylesheet" href="/styles/styles.css">`
-7. The Google Fonts preconnect/preload/noscript block (copy verbatim
-   from any current page — it's identical across all 10).
-8. Page-specific `<script>` tags, in this order: any external library
+6. `<link rel="stylesheet" href="/styles/styles.css">` — this also
+   brings the fonts: since 2026-11-05 every font is self-hosted and
+   declared in `styles.css`, so `/cms` pages no longer have a Google
+   Fonts block (it was removed from all 13). The CMS uses the site's
+   families only: Source Sans 3 for text (including the SMS masthead,
+   text areas, the SEO description box and the empty-list messages,
+   which used Arial, Consolas, Fira Code or `monospace` until then),
+   Nunito and Special Elite where the shared styles use them.
+7. Page-specific `<script>` tags, in this order: any external library
    (e.g. TinyMCE), then this site's own `<script src="/scripts/...">`
    tags, then any inline `<script>` block. All of it lives inside
-   `<head>` — none of these 10 pages should have a `<script>` tag
+   `<head>` — none of these pages should have a `<script>` tag
    after `</head>` or at the bottom of `<body>` anymore (`smsAdmin.html`
    and `wlcms.html` both used to do this before the cleanup).
 
@@ -67,7 +73,7 @@ already used for `fetchCopyrightYear()` on every page.
   not self-closed — no trailing `/>`. `smsAdmin.html` was the one
   holdout using XHTML-style self-closing tags; it's been normalized to
   match the other 9.
-- Nine of the ten pages open with `<header class="cms-masthead">`
+- Every page except `smsAdmin.html` opens with `<header class="cms-masthead">`
   holding a single full-width `images/cms-masthead.webp` (1500x300,
   edge to edge like the public Home banner; `.cms-masthead` in
   `styles.css` cancels the body margin). `smsAdmin.html` keeps its own
@@ -99,8 +105,10 @@ sed -E 's#<(meta|link|br|img|input|hr)([^>]*)\s*/>#<\1\2>#g'
 
 ## cardStack — blog & card set authoring
 
-Entry point: `cms/wlcms.html` — its centered nav is grouped into three
-dropdown/flyout menus (Cards, Blogs, Admin) plus a plain Exit link,
+Entry point: `cms/wlcms.html` — its centered nav is grouped into
+dropdown/flyout menus (Cards, Wax Packs, Blogs, Admin) plus a plain Exit
+link (the Wax Packs menu holds New and Edit only; its old link to the
+public museum page was removed on 2026-11-04),
 rather than one flat row of links. Each opens two ways, independently:
 a small inline script scoped to `#wlcms-top-nav` toggles an `open`
 class on click (this is what drives it on touch, where hover isn't
@@ -125,6 +133,9 @@ Grouped page links:
 | `cms/setEdit.html` | Edit form for a single card set, reached via `?setID=`. |
 | `cms/uploadChecklist.html` | Upload a card set checklist PDF, review/correct the parsed result, save to the `Checklists` table — see "Checklist upload" below. |
 | `cms/admin.html` | Self-service site-health checks (broken images, review-image alt text and size, review pages deployed, orphaned checklists) — see "Admin Tools" below. |
+| `cms/newWaxPack.html` | Add a wax pack to The Wax Museum — see "Wax packs" below. |
+| `cms/pickWaxPack.html` | Every wax pack, as links to its edit page. |
+| `cms/waxPackEdit.html` | Edit or delete one wax pack, reached via `?year=&packKey=`. |
 
 All create/edit forms use a hosted **TinyMCE** WYSIWYG editor
 (`initTinyEditor()` in `scripts/cmsFormUI.js`) for the body text — the
@@ -815,6 +826,43 @@ Four checks exist today:
   deleting it removes those players from search too. Nothing is
   pre-ticked. The audit request skips the browser cache so a re-run
   after a delete shows current data.
+
+### Wax packs (The Wax Museum)
+
+Three pages, all driven by `scripts/cmsWaxPack.js`, feed the public
+Wax Museum (`waxMuseum.html`, see `FRONTEND.md`) through the `WaxPacks`
+table (`DATA_MODEL.md`):
+
+- **New Wax Pack** (`newWaxPack.html`) and **Edit Wax Pack**
+  (`waxPackEdit.html?year=&packKey=`) share one form, built once by
+  `renderWaxPackForm()`: year, name, manufacturer, packaging, type
+  (Main / Fast Food), cards per pack, price, front and back image, front
+  and back notes, and an optional link to the set's review. Manufacturer,
+  packaging and type are fixed dropdowns (`WAX_PACK_MANUFACTURERS`,
+  `WAX_PACK_PACKAGING`, `WAX_PACK_TYPES`); add a value there, and the
+  `saveWaxPack` Lambda accepts any text for manufacturer and packaging
+  but only `main`/`fast food` for type. The review dropdown lists every
+  live set from `getPublicCardSets` and stores its `seoURLSlug`.
+- **Pick Wax Pack** (`pickWaxPack.html`) lists every pack as a link to
+  its edit page (the list is fetched without the browser cache, so a
+  fresh save shows at once).
+- **Save** sends the whole form to `saveWaxPack` with the Cognito token;
+  a new pack's key is made from its name once and kept through later
+  renames. **Delete** (edit page) asks through `cmsConfirm()` and calls
+  `deleteWaxPack`. Both return to the pick list.
+
+**Images.** Each side's Browse button opens the shared image browser
+(`cmsImageBrowser.js`) on the `img/wax-packs/` folder: `openImageBrowser()`
+takes an optional directory and an optional processor since this feature.
+Uploads go through `processWaxPackImage()` (`scripts/waxPackImageProcessor.js`)
+first, entirely in the browser: it finds the pack on its white backdrop,
+crops and centres it on a 900x1200 white canvas with a margin, whitens the
+backdrop, and encodes WebP (quality 0.82, dropping to 0.6 to stay under
+250 KB). The file name gets six hex characters from a hash of the image
+(`IMG_1234.JPG` becomes `img-1234-a1b2c3.webp`), so a different picture
+never reuses a name a browser may have cached. It needs a browser that
+can write WebP (Chrome, Edge, Firefox); an iPhone HEIC photo needs
+exporting as JPEG first.
 
 ## Autobus Messaging Platform — `cms/smsAdmin.html`
 

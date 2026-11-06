@@ -1,9 +1,12 @@
 # Frontend
 
-Plain HTML/CSS/JS, no framework, no bundler. The Amplify build has two
+Plain HTML/CSS/JS, no framework, no bundler. The Amplify build has three
 steps: the generator that writes the per-review pages, sitemap and link
-manifest (see "Sitemap" below), then a minifier for the public scripts and
-`styles.css` (see "Minified in production" under `scripts/`); both are
+manifest and pre-renders the nav, footer, year picker and Browse By Set
+columns into the HTML (see "Sitemap" and "Navigation system" below), then
+a minifier for the public scripts and `styles.css` (see "Minified in
+production" under `scripts/`), then a step that deletes `Old HTML Pages/`
+from the deployed copy so archived pages aren't published; all are
 described in `REVIEW_PAGES.md`. Every page
 loads a fixed set of `<script src>` tags and wires up behaviour with
 `window.addEventListener('load', ...)` / `DOMContentLoaded` handlers
@@ -13,18 +16,22 @@ inline in the `<head>`.
 
 | Page | Purpose | Key query params | Scripts used |
 |---|---|---|---|
-| `index.html` | Homepage — an edge-to-edge image banner (`.home-masthead`; its -8px margins cancel the browser's default 8px body margin, and it scales with the window at every width — see "Home page banner" below) over static intro and post cards written straight into the HTML (see "Home page content" below). **No scores ticker, by design.** No weather widget (that exists only on `tech.html`). Its canonical, Open Graph and Twitter tags are static in the `<head>` — see "SEO and social tags". | — | `helper.js` |
-| `tech.html` | Tech / Mach-E / Raspberry Pi blog stream, filtered by `blogType`. **Not linked from the nav, home page or sitemap since the 2026-10-12 move to junkwaxhockey.com - reachable only by direct URL.** Masthead uses the `.masthead-container` (masthead + weather widget) layout that `index.html` had before it got its banner — it used to show a decorative gif instead and never actually rendered the weather widget (loaded `blogs.js`, which targets `#weather`, but had no such element — silently broken). Fixed by adopting that markup. It is the only page that still has the weather widget. | `blogType`, `pageName` | `blogs.js`, `helper.js` |
+| `index.html` | Homepage — an edge-to-edge image banner (`.home-masthead`; its -8px margins cancel the browser's default 8px body margin, and it scales with the window at every width — see "Home page banner" below) over static intro and post cards written straight into the HTML (see "Home page content" below). **No scores ticker, by design.** No weather widget (its only page, `tech.html`, is archived). Its canonical, Open Graph and Twitter tags are static in the `<head>` — see "SEO and social tags". | — | `helper.js` |
 | `waxReviews.html` | Card set review stream — the main hockey card content. Since 2026-10-30 it is two things: the **template** the generator copies into one page per set (`/reviews/<slug>/`, with that set's head tags and `year`/`pageName`/`blogCat`/`setID` fixed in the HTML), and the page that still serves the **old query-string URLs**, which rewrite their own address to the slug page once the set loads. See "Linking to one specific set" below and `REVIEW_PAGES.md`. The title, description, canonical, Open Graph/Twitter tags, JSON-LD and breadcrumb are written by JavaScript for every set (a generated page already has the first four in its HTML) — see "SEO and social tags". | `year`, `pageName`, `blogCat`, `sortOrder`, `setID` (all fixed in a generated page) | `wax.js`, `ticker.js`, `helper.js` |
 | `reviews/<slug>/index.html` | **Generated, not in git** (gitignored): one page per live set, written by every Amplify build from `waxReviews.html`, plus `reviews/index.json` (the link manifest). See "Sitemap" below and `REVIEW_PAGES.md`. | — | same as `waxReviews.html` |
 | `playerSearch.html` | Player search — find every set a player appears in, across all uploaded checklists, with links to each set's review. See "Player search" below. | — | `playerSearch.js`, `ticker.js`, `helper.js` |
 | `lockout.html` | Static essay about the 2004-05 NHL lockout. Special-cased redirect target — see below. Its title, description, H1 and social tags are static in the HTML (nothing sets them from JavaScript any more); the breadcrumb is filled by `renderBreadcrumbs()`. | — | `wax.js`, `ticker.js`, `helper.js` |
-| `theJunkWaxYears.html` | Static essay on hockey's "Junk Wax" era (the late-80s/early-90s overproduction boom this site's card reviews mostly cover). Linked from `waxReviews.html`'s junkWax intro copy (`renderCardIntro()`, `wax.js`). Was briefly moved into `Old HTML Pages/` by mistake and missed the site-wide HTML/CSS-conformity and SEO passes as a result — since restored and brought in line with the other pages (masthead/fonts/script-loading now match `lockout.html`'s pattern; a `<meta description="...">` typo, which meant this page never actually had a working meta description, and a broken `class="flex-container, intro"` — a stray comma silently prevented that layout class from ever applying — were also fixed). | — | `ticker.js`, `helper.js` |
+| `theJunkWaxYears.html` | Static essay on hockey's "Junk Wax" era (the late-80s/early-90s overproduction boom this site's card reviews mostly cover). Linked from `waxReviews.html`'s junkWax intro copy (`renderCardIntro()`, `wax.js`). Since 2026-11-05 it has no set-o-matic year picker (an essay isn't one of the review pages), and its "Junk Wax Curious?" heading sits inside the essay's `.intro` block, the way the Home page places its heading, so the two line up. Was briefly moved into `Old HTML Pages/` by mistake and missed the site-wide HTML/CSS-conformity and SEO passes as a result — since restored and brought in line with the other pages (masthead/fonts/script-loading now match `lockout.html`'s pattern; a `<meta description="...">` typo, which meant this page never actually had a working meta description, and a broken `class="flex-container, intro"` — a stray comma silently prevented that layout class from ever applying — were also fixed). | — | `ticker.js`, `helper.js` |
 | `timeline.html` | Interactive timeline of the Junk Wax era — one flip card per season, built in the browser from a markdown file. See "Junk Wax timeline" below. | — | `timeline.js`, `ticker.js`, `helper.js` |
-| `browseBySet.html` | Every live set in two columns (Major Releases; Fast Food Sets), grouped by season, each with Review and Checklist links, plus an `ItemList` JSON-LD block of the same links. Carries the scores ticker. Linked from the nav and footer as "All Sets". See "Browse By Set" below. | — | `browseBySet.js`, `wax.js`, `ticker.js`, `helper.js` |
+| `browseBySet.html` | Every live set in two columns (Major Releases; Fast Food Sets), grouped by season, each with Review and Checklist links, plus an `ItemList` JSON-LD block of the same links. Since 2026-11-05 the build pre-renders both columns into the HTML, so it is the one page whose raw HTML links to every `/reviews/<slug>/` page. Carries the scores ticker. Linked from the nav (last item under Major Releases) and footer as "All Sets". See "Browse By Set" below. | — | `browseBySet.js`, `wax.js`, `ticker.js`, `helper.js` |
+| `waxMuseum.html` | The Wax Museum: a gallery of wax packs, one flip card per pack (front: pack image, set, details; back: the pack's back image and notes). Data comes from the `WaxPacks` table via `getWaxPacks`, entered in the CMS's wax pack pages. Masthead, nav and footer like the other pages; no scores ticker. See "The Wax Museum" below. | — | `waxMuseum.js`, `helper.js` |
 | `about.html` | The About page: the Home page's layout, but its single `blogType` 98 post is fetched, so it stays editable in the CMS. Its H1 is static in the HTML, as are its social tags. Footer link only. See "About page" below. | — | `blogs.js`, `helper.js` |
 
-**No longer live**: `cards.html` (the "what is Junk Wax" essay) and `cardChecker.html` (the "Card-O-Matic" slot calculator) were both moved to `Old HTML Pages/` on 2026-08-15 — see "Orphaned / legacy files" below. `cards.html` had already been documented here as deprecated-but-still-linked before that move; this doc previously still listed both as live public pages, which was stale.
+**No longer live**: `cards.html` (the "what is Junk Wax" essay) and `cardChecker.html` (the "Card-O-Matic" slot calculator) were both moved to `Old HTML Pages/` on 2026-08-15, and `tech.html` (the old Tech / Mach-E / Raspberry Pi blog stream, the only page with the weather widget) and `example.html` (a reCAPTCHA demo) followed on 2026-11-05. Since that date the build deletes `Old HTML Pages/` from the deployed copy (`amplify.yml`), so none of them is reachable any more; they stay in git. See "Orphaned / legacy files" below.
+
+**Page titles** follow one pattern: `Heading - short description | Junk Wax Hockey` (for example "The Wax Museum - vintage and junk wax hockey card wax packs, front and back | Junk Wax Hockey"), in `<title>` and the matching `og:title`/`twitter:title`. Review pages take theirs from the set's CMS SEO fields instead.
+
+**Page headings** share one size: the intro `h1`s (Home, About, The Junk Wax Years), the `.header-style h1`s (Player Search, Timeline, Browse By Set, The Wax Museum, Lockout) and the review pages' intro `h2` are all 34px (one rule in `styles.css`). On the public pages the `.header-style` block is also sized and padded to start exactly where the `.intro` text column does, at every width (a `body:has(.site-footer)` rule, so the `/cms` pages, which share the class, keep their layout).
 
 ### `waxReviews.html` → `lockout.html` redirect
 
@@ -34,6 +41,14 @@ redirects to `lockout.html?year=2004&pageName=mcd&blogCat=mcd` — there
 was no 2004-05 McDonald's set (season was cancelled), so this swaps in
 the essay page instead of showing an empty/broken review page for that
 one year+category combination.
+
+Old links that carry `pageName` but no `blogCat` (for example
+`?year=1987&pageName=junkWax`, which Google had indexed from an earlier
+version of the site) used to ask the API for `blogCat=null` and show
+"coming soon". `resolveBlogCat(blogCat, pageName)` in `helper.js` now
+takes the category from `categoryRanges` when `blogCat` is missing, so
+those URLs load their set and rewrite to its `/reviews/<slug>/` page like
+any other old URL.
 
 ### Sitemap
 
@@ -64,9 +79,8 @@ live years out of the sitemap. If the endpoint is unreachable, or a set
 has a missing or duplicate slug, the generator exits without writing and
 the build fails, so Amplify keeps the previous deployment. The static
 pages (home, Player Search, Lockout, The Junk Wax Years, Timeline,
-Browse By Set, About) are listed alongside. There are no `tech.html`
-URLs: the tech blog is unlinked from the nav and home page and
-reachable only by direct URL.
+Browse By Set, The Wax Museum, About) are listed alongside. There are no
+`tech.html` URLs: that page is archived and not published.
 
 Search engines re-fetch a submitted sitemap on their own schedule, so
 deploying is enough; resubmitting in Search Console only nudges it.
@@ -98,7 +112,7 @@ by a CMS save.
 The files described below are the **readable source**. Since 2026-10-30 the
 Amplify build overwrites its own copies of the public ones (`helper.js`,
 `wax.js`, `ticker.js`, `blogs.js`, `playerSearch.js`, `browseBySet.js`,
-`timeline.js`) and `styles/styles.css` with minified versions, each with a
+`timeline.js`, `waxMuseum.js`) and `styles/styles.css` with minified versions, each with a
 linked source map (`x.js.map`) beside it, so the live site serves about half
 the bytes (roughly 67 KB to 34.5 KB over the wire, since the CDN already
 compresses with Brotli). The URLs are unchanged and nothing is committed
@@ -114,12 +128,14 @@ are open, which load the source map and show the real file and line.
 
 | File | Responsibility |
 |---|---|
-| `blogs.js` | Blog intro copy (`renderBlogIntro()`, for the Tech pages only — `index.html` and `about.html` write their intro and H1 straight into the HTML), `fetchBlogs()`/pagination/rendering for the blog stream, and the weather widget on `tech.html` (calls OpenWeatherMap directly from the browser using the visitor's geolocation; the bootstrap does nothing on a page with no `#weather` element). Loaded by `about.html` and `tech.html` only: the Home page is static and no longer uses it. |
+| `blogs.js` | `fetchBlogs()`/pagination/rendering for the blog stream, which `about.html` uses to load its single editable post. It still holds the Tech pages' intro copy (`renderBlogIntro()`) and the weather widget (OpenWeatherMap, from the visitor's geolocation; the bootstrap does nothing on a page with no `#weather` element), but their only page, `tech.html`, was archived on 2026-11-05. Loaded by `about.html` only. |
 | `wax.js` | Card set intro copy (`renderCardIntro()`), `fetchCardSetsByYear()`/pagination/rendering for card set reviews (the fetch goes through `fetchJsonWithRetry()` and `waxReviews.html` starts it on `DOMContentLoaded` — see "SEO and social tags"), `fetchPageTitle()` (sets each shown set's title, description, social tags, JSON-LD and breadcrumb), `reviewPath(item)` and `buildReviewCanonicalUrl(item)` (a set's `/reviews/<slug>/` address and the canonical built from it; the query form only for a set with no slug), `syncSetIdInUrl()` (replaces the address bar with the shown set's slug page — for every set, so an old query-string URL, and each set reached by pagination, ends up on its own clean address), the sort of a year's sets by `compareSetsForDefault()` from `helper.js`, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. The previous and next entries are real `<a href>` links to the neighbouring set's page (`reviewHref(item)`: the `/reviews/<slug>/` path, or the query form for a set with no slug), not click handlers (`nextPage()`/`prevPage()` were removed), so crawlers follow them and Back works; at either end the missing direction is a disabled `<span>`. The prev/next set name in that label always drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle"), since the year picker above already shows the year and the shorter label fits a phone. It used to show the full name on desktop and the short one on phones, via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans that a mobile breakpoint swapped between; that pair and its CSS were removed so one rendering path serves every width. The name goes through `escapeHtml()` before it is inserted. The NHL scores ticker and its game modal used to live here and moved to `ticker.js` — see below. |
 | `ticker.js` | The NHL/PWHL scores ticker under the masthead (`initNhlTicker()` and its helpers — see "NHL scores ticker" below) and the game modal opened from it (`openNhlGameModal()` and its render helpers — see "NHL game modal" below). Moved verbatim out of `wax.js` so pages that have nothing else to do with card sets (Player Search, the essays) can show the ticker. Starts itself on `DOMContentLoaded`. |
 | `timeline.js` | `timeline.html` only: fetches `/timeline/timeline.md`, parses it (`parseTimelineMarkdown()`) and builds the flip cards (`renderTimeline()`, `buildTimelineCard()`). Entry point is `initTimeline()`. See "Junk Wax timeline" below. |
-| `browseBySet.js` | `browseBySet.html` only: fetches the live set list once from `getPublicCardSets` (`BROWSE_SETS_URL`), splits it into the two columns, groups by season and builds the Review/Checklist links (`initBrowseBySet()`; `browseReviewUrl()` builds a set's review URL for both the links and the `ItemList` JSON-LD from `setBrowseItemListJsonLd()`: its `/reviews/<slug>/` page when the set has a slug, else the old query-string form). Checklist clicks hand off to `openChecklistModal()` in `wax.js`. See "Browse By Set" below. |
-| `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `truncateAtWord(text, max)` (cuts plain text at a word boundary and adds "..." only when it cut — shared by `wax.js`'s description fallback and the CMS SEO generators), `renderBreadcrumbs(pageName, label, url)` with `SITE_ORIGIN` and `BREADCRUMB_CATEGORY_IDS` (the visible breadcrumb nav plus its `BreadcrumbList` JSON-LD), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top-nav builder (`fetchNav()`/`NAV_MAP`/`NAV_ITEMS`), the review-link upgrade (`loadReviewLinks()` fetches `/reviews/index.json`, the manifest each build writes, as soon as `helper.js` runs on any non-CMS page; `applyReviewLinks()` swaps the `href` of every link carrying `data-review-cat`/`data-review-year` or `data-review-setid` to its `/reviews/<slug>/` page, called after the nav, footer, breadcrumb, year picker and Player Search results render; `reviewLinkAttrs()` adds those attributes for a `NAV_ITEMS` entry with a `review` year; `compareSetsForDefault()` is the one rule for which set a bare-year link opens — highest `stars`, ties by `setName` — shared with `wax.js`'s sort; see "Linking to one specific set"), the "set-o-matic" year-picker builder (`renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time; since 2026-10-30 `tools/generateReviewPages/generate.mjs` also reads this literal straight out of the file, so keep it a plain object literal ending in `};` at the start of a line), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — now used only by the pages whose values depend on data, `waxReviews.html` and `tech.html`; the static pages carry those tags in their HTML instead, see "SEO and social tags") and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped/middle images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), `buildCardSetMarkup()` (the single source of truth for a card set review's HTML, shared by the live site's `displayCardSet()` and the CMS preview modal's `renderPreview()` — added 2026-09-28 to end the drift between two hand-maintained copies; see "Card set markup is shared with the CMS preview" below), hamburger menu toggle, cookie helper, the copyright-year footer line (`fetchCopyrightYear()`) and the public-page footer's link columns (`FOOTER_SECTIONS`/`fetchFooterLinks()` — see "Site footer" below). |
+| `browseBySet.js` | `browseBySet.html` only: fetches the live set list once from `getPublicCardSets` (`BROWSE_SETS_URL`), splits it into the two columns, groups by season and builds the Review/Checklist links (`initBrowseBySet()`; `browseReviewUrl()` builds a set's review URL for both the links and the `ItemList` JSON-LD from `setBrowseItemListJsonLd()`: its `/reviews/<slug>/` page when the set has a slug, else the old query-string form). Checklist clicks hand off to `openChecklistModal()` in `wax.js`. The column markup comes from `browseColumnHtml(sets)`, a pure function the build generator also runs (in a Node sandbox) to pre-render the columns into the page, so the two can't drift. See "Browse By Set" below. |
+| `waxMuseum.js` | `waxMuseum.html` only: fetches every pack once from `getWaxPacks`, sorts them (`sortWaxPacks()`: oldest year first, then one set at a time A to Z, then series order, then "Low" before "High" packs, then name) and renders the flip cards in batches of six as the visitor scrolls (`renderWaxMuseum()`, `buildWaxPackCard()`). Entry point is `initWaxMuseum()`. See "The Wax Museum" below. |
+| `cmsWaxPack.js` | The three CMS wax pack pages (`newWaxPack.html`, `pickWaxPack.html`, `waxPackEdit.html`): the shared form, its fixed manufacturer/packaging/type dropdowns, the front/back image pickers (S3 `img/wax-packs/`), the review-link dropdown (from `getPublicCardSets`), and the save and delete calls, which send the Cognito token. See `CMS_GUIDE.md`. |
+| `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `truncateAtWord(text, max)` (cuts plain text at a word boundary and adds "..." only when it cut — shared by `wax.js`'s description fallback and the CMS SEO generators), `renderBreadcrumbs(pageName, label, url)` with `SITE_ORIGIN` and `BREADCRUMB_CATEGORY_IDS` (the visible breadcrumb nav plus its `BreadcrumbList` JSON-LD), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top nav (`NAV_ITEMS`/`NAV_GROUPS`/`NAV_SELF`/`NAV_MAP`, the pure `navHtml()` and the thin `fetchNav()`; see "Navigation system"), `resolveBlogCat()` (the category for an old review URL that has `pageName` but no `blogCat`), the review-link upgrade (`loadReviewLinks()` fetches `/reviews/index.json`, the manifest each build writes, as soon as `helper.js` runs on any non-CMS page; `applyReviewLinks()` swaps the `href` of every link carrying `data-review-cat`/`data-review-year` or `data-review-setid` to its `/reviews/<slug>/` page, called after the nav, footer, breadcrumb, year picker and Player Search results render; `reviewLinkAttrs()` adds those attributes for a `NAV_ITEMS` entry with a `review` year; `compareSetsForDefault()` is the one rule for which set a bare-year link opens — highest `stars`, ties by `setName` — shared with `wax.js`'s sort; see "Linking to one specific set"), the "set-o-matic" year-picker builder (the pure `setPickerHtml()` plus the thin `renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time; since 2026-10-30 `tools/generateReviewPages/generate.mjs` also reads this literal straight out of the file, so keep it a plain object literal ending in `};` at the start of a line), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — now used only by `waxReviews.html`, whose values depend on data (it also served the archived `tech.html`); the static pages carry those tags in their HTML instead, see "SEO and social tags") and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped/middle images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), `buildCardSetMarkup()` (the single source of truth for a card set review's HTML, shared by the live site's `displayCardSet()` and the CMS preview modal's `renderPreview()` — added 2026-09-28 to end the drift between two hand-maintained copies; see "Card set markup is shared with the CMS preview" below), hamburger menu toggle, cookie helper, the copyright-year footer line (`fetchCopyrightYear()`) and the public-page footer's link columns (`FOOTER_SECTIONS`, the pure `footerHtml()` and the thin `fetchFooterLinks()` — see "Site footer" below). The nav block and the footer block are each wrapped in `// nav-block:start`/`:end` and `// footer-block:start`/`:end` comments: the build generator runs exactly those slices (plus a few single functions it lifts by name) to pre-render the same markup, so keep the comments and keep those functions free of DOM access. |
 | `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise; each link carries `data-review-setid` and `applyReviewLinks()` upgrades it to the set's `/reviews/<slug>/` page); also the type-ahead dropdown (`initPlayerSearchTypeahead()`/`loadPlayerNameIndex()`/`rankPlayerNameMatch()`) that suggests player names client-side from a once-fetched, cached name index. See "Player search" below. |
 | `adminTools.js` | `cms/admin.html` support code: a growing set of self-service site-health checks (broken images, review-image alt text and size, review pages deployed, orphaned checklists), each its own function calling the site's existing read APIs directly; the orphaned-checklist check can also delete the ticked checklists through `saveChecklist`. Its `fetchAllCardSets()` (every live set, via `getCardSetsByYear`, shared by the two image checks) happens to share a name with a different function in `cmsCardSet.js` (the CMS pick list); the two files are never loaded on the same page, so they don't clash, but rename one before ever loading both. See `CMS_GUIDE.md`'s "Admin Tools" section. |
 | `auth.js` | Cognito OAuth2 code exchange + token refresh, gates every `/cms` page. See `AUTH.md`. |
@@ -147,7 +163,7 @@ the page is shared. The rules below follow from that.
 
 **Static pages** (`index.html`, `about.html`, `browseBySet.html`,
 `playerSearch.html`, `theJunkWaxYears.html`, `timeline.html`,
-`lockout.html`) hold their `<title>`, meta description, `canonical`, the
+`waxMuseum.html`, `lockout.html`) hold their `<title>`, meta description, `canonical`, the
 `og:` tags (type, title, description, url, image) and the `twitter:`
 tags (card, title, description, image) directly in the `<head>`. The
 HTML is the only source: their old `setPageMeta()` calls were removed so
@@ -225,34 +241,83 @@ pages. For the first set of a category the middle link and the current
 page share a URL; that is harmless. Styles are `.breadcrumbs` in
 `styles.css`.
 
-**The sitemap** is covered under "Sitemap" above. The nav and footer
-links are built by JavaScript, so a crawler that doesn't run it sees no
-internal links in the raw HTML; Google does run it (confirmed in Search
-Console), which is why no `<noscript>` link fallback exists.
+**The sitemap** is covered under "Sitemap" above.
+
+**Internal links in the raw HTML (2026-11-05).** Search Console showed 45
+old `waxReviews.html?...` URLs as "Duplicate without user-selected
+canonical" and none of the `/reviews/<slug>/` pages crawled. The cause:
+every link to a slug page was built by JavaScript (the nav, footer, year
+picker and Browse By Set columns started as query-string links that
+`applyReviewLinks()` upgraded after a fetch), so the raw HTML linked only
+to the old URLs, and those all share one raw HTML with no canonical.
+Every build now pre-renders the nav and footer into each public page and
+review page, the year picker into each review page, and the Browse By
+Set columns into `browseBySet.html`, with the final `/reviews/<slug>/`
+links already in place (see "Navigation system" and `REVIEW_PAGES.md`).
+The browser's code skips drawing a block that is already there, so
+nothing flickers from old to new links.
 
 ## Navigation system (`helper.js`)
 
-The top nav is entirely data-driven and rebuilt on every page load by
-`fetchNav(pageName, blogType)`:
+The top nav is entirely data-driven. Since 2026-11-03 it has two
+dropdown groups, so the bar holds six items instead of eight links in a
+row:
 
-- `NAV_ITEMS` — the master list of every possible nav link (label + href).
-- `NAV_MAP` — per-page key (e.g. `"index"`, `"tech"`, `"junkWax"`) → ordered list of which `NAV_ITEMS` to show. `tech`/`ev` pages key off `${pageName}_${blogType}` when a `blogType` is present.
-- Adding a new page to the nav means adding one `NAV_MAP` entry; adding a brand-new nav destination means adding one `NAV_ITEMS` entry.
-- A page's own list leaves out its own link, which is why every page's list differs. The Home page's list also leaves out "Home" itself, since the masthead already is the link to it; every other page keeps it. `"timeline"` and `"browse"` (the "All Sets" link to `browseBySet.html`) sit just before `"search"` in every list except their own pages'. `"about"` is defined in `NAV_ITEMS` but in no `NAV_MAP` list: the About page is reached from the footer only. The footer reads the same `NAV_ITEMS` labels, so renaming a link there renames it in both places.
-- `tech` and `mache` are still defined in `NAV_ITEMS`, but no `NAV_MAP` entry lists them since the 2026-10-12 move; the `tech`/`ev` keys exist only so the still-reachable `tech.html` pages render a nav.
-- The four review-category items (`junk`, `classic`, `timmies`, `mcd`) carry a `review: { cat, year }` entry naming the year their link opens. They render with the query-string `href` plus `data-review-*` attributes, and `applyReviewLinks()` swaps in the `/reviews/<slug>/` URL of that year's default set once the build manifest loads (`reviewLinkAttrs()`, `loadReviewLinks()`; see "Linking to one specific set"). The footer's links and the breadcrumb's category link are upgraded the same way.
+**Home** · **Major Releases ▾** (Classic 80s Sets, 90s Junk Wax, All
+Sets) · **Fast Food Releases ▾** (McDonald's Hockey, Tim Hortons Hockey)
+· **The Wax Museum** · **Junk Wax Timeline** · **Player Search**
 
-The "set-o-matic" year picker (`renderSetPicker()`) works the same way
-— a `categoryRanges` object maps `blogCat` → `{start, end}` year ranges
-per page, and the function generates the picker links dynamically
-instead of hand-written year links. It emits one flat list of `<div>`
-year cells (no per-desktop/mobile split, no `<table>`) into a single
-`.card-set-nav` flex-wrap container — see "Mobile / responsive design"
-below for why it's `<div>`-based rather than a table. Each year link is
-emitted with the query-string `href` plus `data-review-cat` and
-`data-review-year`, and `applyReviewLinks()` then points it at that year's
-default set's `/reviews/<slug>/` page, so clicking a year no longer
-changes the address bar afterwards.
+The data lives in four objects in `helper.js`:
+
+- `NAV_ITEMS` — every link (label + href). The footer reads the same labels, so renaming a link renames it in both places. `"about"` is defined here but in no nav list: the About page is reached from the footer only.
+- `NAV_GROUPS` — the two dropdowns (`major`, `fastfood`): a label and the `NAV_ITEMS` ids inside, in order. A group id sits in a page's list like an item id.
+- `NAV_SELF` — the grouped item a page leaves out of its own dropdown (for example `browseBySet` → `browse`); a group left with no links isn't drawn.
+- `NAV_MAP` — per-page key (`"index"`, `"junkWax"`, `"waxMuseum"`, ...) → ordered list of top-level ids. Player Search is always last, with The Wax Museum and the Junk Wax Timeline just before it, and each of those three is left out of its own page's list. The Home page leaves out "Home" (the masthead links there). Adding a page to the nav means adding one `NAV_MAP` entry (and a `NAV_SELF` entry if it is a grouped item); a new destination means one `NAV_ITEMS` entry.
+
+`navHtml(pageName, blogType, hrefFor)` builds the table as a string
+(`buildNavCell()`, `buildNavGroupCell()`) and `fetchNav()` writes it into
+`#global-nav`, then calls `applyReviewLinks()`. The four review-category
+items (`junk`, `classic`, `timmies`, `mcd`) carry a `review: { cat, year }`
+entry: in the browser they render with the query-string `href` plus
+`data-review-*` attributes and `applyReviewLinks()` swaps in the
+`/reviews/<slug>/` URL of that year's default set once the manifest loads.
+
+**Pre-rendered by the build (2026-11-05).** Each public page's
+`#global-nav` holds `<!-- nav:start --><!-- nav:end -->` markers and
+names its `NAV_MAP` key in `data-nav-page` (Lockout uses `mcd`, since it
+is reached from the McDonald's links). Every build runs `navHtml()` in a
+sandbox with an `hrefFor` that gives each review-category link its final
+`/reviews/<slug>/` URL and writes the result between the markers, on the
+static pages and on every generated review page (whose key comes from
+the set). `fetchNav()` returns early when `#global-nav` already holds a
+nav, so the browser never redraws it. The footer works the same way
+(`footer:start`/`footer:end` markers, `footerHtml()`). A missing marker,
+missing `data-nav-page` or unknown key fails the build. `tech.html` was
+the one page left JS-built, and it is archived.
+
+**Behaviour.** A dropdown opens on hover (CSS) or on click/tap/Enter
+(`toggleNavGroup()` toggles `.open` and `aria-expanded`); Escape or a
+click outside closes it (`closeNavGroups()`). In the phone/tablet
+hamburger menu every group is shown expanded: the group name is a
+non-interactive heading and its links are indented beneath it.
+
+**Look.** The bar is Nunito 600, 18px, uppercase with 0.08em letter
+spacing, the same type as the footer. Dropdown links keep their written
+capitalisation (`text-transform: none`, normal letter spacing) and are
+19px on desktop, since mixed case reads smaller than the bar's capitals.
+
+The "set-o-matic" year picker works the same way: `categoryRanges` maps
+`blogCat` → `{start, end}` year ranges per page, and the pure
+`setPickerHtml(year, blogCat, pageName, hrefFor)` builds one flat list of
+`<div>` year cells (no `<table>`) into a single `.card-set-nav` flex-wrap
+container — see "Mobile / responsive design" below for why it's
+`<div>`-based. In the browser `renderSetPicker()` writes it with
+query-string links that `applyReviewLinks()` upgrades; each generated
+review page has it pre-rendered between `set-picker` markers with the
+final `/reviews/<slug>/` links (the year's default set, the same one
+`applyReviewLinks()` would pick), and `renderSetPicker()` then leaves it
+alone. A year with no live set (2004 McDonald's, the lockout) keeps its
+query link, which redirects to `lockout.html`.
 
 ## Mobile / responsive design
 
@@ -270,28 +335,24 @@ Without that band the review pages scrolled sideways between 601px and
 about 1060px, because `.flex-container div` applies to every nested
 div, not just the outer wrapper.
 
-The global nav has its own breakpoint at 1380px. At 1380px and below
-the hamburger menu stays active (normally phone-only), and from 1381px
-the full `<table class="nav-table">` (one `<td>` per `NAV_ITEMS` entry,
-built by `fetchNav()` in `helper.js`) takes over. The table needs to
+The global nav has its own breakpoint at 1220px. At 1220px and below
+the hamburger menu stays active (normally phone-only), and from 1221px
+the full `<table class="nav-table">` (one `<td>` per top-level item,
+built by `navHtml()` in `helper.js`) takes over. The table needs to
 fit on one line: below its natural width it shrinks each cell until
-label text wraps mid-word. The widest bar is eight links (Tech, About,
-Junk Wax Years and similar pages) at about 1365px with the tight 12px
-side padding on `.nav-td`, plus 16px of body margin, so 1381px leaves
-room; each extra link costs roughly 100 to 170px depending on its
-label, which is why "All Sets" was chosen over "Browse By Set". The
-number also matters for iPads: current models' landscape CSS viewports
-run from about 1080px (mini) to 1366px (12.9" Pro). The 12.9" Pro is
-15px short of fitting the widest bar, so it gets the hamburger on every
-page, even the shorter six-link bars that would fit. Trimming the link
-padding from 12px to 10px would bring the widest bar to about 1333px
-and keep that iPad on the full bar. The `@media (min-width: 1381px)`
+label text wraps mid-word. The widest bar (six items, in uppercase
+Nunito) measures about 1185px, so 1221px leaves about 20px of headroom;
+a wrapped bar was measured at 1201px. The `@media (min-width: 1221px)`
 block (further down the file) is what turns the hamburger back off and
-shows the table. When a link is added or a label changes, re-measure
-the widest bar and move all three 1380/1381 values together.
+shows the table. When an item is added or a label changes, re-measure
+the widest bar and move all three 1220/1221 values together (`max-width:
+1220px`, the tablet band's `max-width: 1220px` and `min-width: 1221px`).
+Fonts are self-hosted and preloaded, so the bar normally paints in
+Nunito; a probe once caught it at 1241px in the fallback face before
+Nunito loaded, which is why the headroom matters.
 
 Within the hamburger range, a narrower band, `@media (min-width: 601px)
-and (max-width: 1380px)`, bumps the hamburger icon and open-menu sizing
+and (max-width: 1220px)`, bumps the hamburger icon and open-menu sizing
 up (32px → 48px icon, 0.9rem → 1.3rem menu text, more generous link
 padding) beyond the phone-tuned defaults. A tablet's screen is big
 enough that phone-sized controls read as too small.
@@ -459,79 +520,82 @@ knowing before touching this CSS again:
 
 ## Typography / fonts
 
-Every live page (everything above except the deprecated `cards.html`)
-loads the identical Google Fonts set via the identical `preload`+`onload`+
-`noscript` pattern: Spicy Rice, Nunito (200/600), Special Elite, Work Sans
-(400/700), Source Sans 3 (200/400/700), Fira Code (300). A font audit
-found and fixed real bugs here — several CMS pages were silently
-missing Work Sans/Source Sans 3/Special Elite for content that actually
-renders on them (falling back to a generic system font), while
-simultaneously loading Audiowide and Caveat, which nothing on the site
-ever uses. Keep any new page's font `<link>` block byte-for-byte
-identical to the others unless it genuinely needs a font none of them
-load.
+Since a font audit and cleanup on 2026-11-05 the site uses four
+families, all **self-hosted** from `/fonts/` and declared once, in a
+"Fonts" block at the top of `styles.css`. No page loads anything from
+Google Fonts.
 
-Nunito 600 is the "navigation" face: the top nav, the footer links, and the
-set-o-matic year picker (its year links and the "the set-o-matic year picker"
-heading above them) all use it, so every wayfinding element reads as one
-family. Spicy Rice stays for page-level display headings. Nunito's 600 is
-the heaviest weight loaded; a bolder one needs adding to the Google Fonts
-URL on every page.
+| Family | Role | Weights / styles loaded |
+|---|---|---|
+| **Nunito** | Wayfinding: the nav bar and dropdowns, the footer, the year picker and its heading, Browse By Set's season headings and links, the Flip pills | 200, 600 |
+| **Source Sans 3** | All other text: headings, intros, review bodies, set details values, the ticker, modals, the CMS | 400, 700, italic 400, italic 700 |
+| **Bebas Neue** | The "Junk Wax Hockey" masthead and the checklist modal's masthead | 400 |
+| **Special Elite** | The typewriter accent on review pages: set details field names and values table, captions, the Checklist link | 400 |
 
-**Keeping the swap from moving the page (review pages).** The Google
-fonts load after the page has first painted, so text used to render in
-Arial, then jump when Work Sans, Source Sans 3 or Nunito arrived (the
-biggest layout shift on the page, 0.355 on PageSpeed). Two fixes work
-together:
+**How they're served.** Each family is the woff2 Google serves (one
+variable file per subset and style), in latin and latin-ext, with
+Google's version in the filename (`source-sans-3-latin-v20.woff2`).
+Every face has Google's `unicode-range`, so the latin-ext file downloads
+only for text that needs it (names like Hašek), and `font-display:
+swap`. A variable file gets one `@font-face` per weight we use, so a
+request for a weight we don't load resolves to the nearest loaded one
+exactly as before (a 700 Nunito request gets 600, not real bold).
+Browsers fetch a font file only when text on the page uses it, so
+Special Elite downloads only on review pages. `customHttp.yml` (Amplify
+custom headers) gives every `.woff2` a one-year `immutable` browser
+cache; that's safe because a font update gets a new filename. The
+licences sit beside the files (`fonts/LICENSE-*.txt`: SIL OFL 1.1 for
+Nunito, Source Sans 3 and Bebas Neue, Apache 2.0 for Special Elite), and
+`fonts/README.md` says how to update them. The checklist PDF export
+embeds its own copies of Bebas Neue and Source Sans 3
+(`scripts/fonts/*.js`), separate from page rendering.
 
-- `waxReviews.html` preloads the latin `woff2` of Work Sans, Source Sans 3,
-  Special Elite and Nunito next to the Bebas Neue ones, so the files are
-  requested with the HTML instead of after the Google stylesheet arrives.
-  Each family is one variable file covering every weight we load. The URLs
-  are versioned (`v24`, `v20`, `v32`); if Google moves a file the preload
-  just goes unused (one wasted request) and the page still works, so
-  refresh them from the Google CSS when convenient.
-- `styles.css` defines a metric-matched fallback face per font ("Work Sans
-  Fallback", "Source Sans 3 Fallback", "Nunito Fallback"): Arial scaled
-  with `size-adjust`, `ascent-override` and `descent-override` to the web
+**What was removed and why.** Work Sans (it set headings and intros;
+replaced by Source Sans 3 after comparing mockups, option B), Spicy Rice
+(used only by the archived `tech.html` masthead), Fira Code (used only by
+the CMS empty-list messages) and Source Sans 3's unused 200 weight. Rules
+that asked for weights a family doesn't have now ask for the one that
+renders (Source Sans 3 600 → 700, Bebas Neue 500 → 400), which changed
+nothing on screen. Source Sans 3 italic files were added, so `<i>`/`<em>`
+in review bodies are true italics instead of slanted uprights. Special
+Elite has no bold: its bold field names are the browser's synthesised
+bold, kept on purpose (commented in `styles.css`); its faked italic on
+`.card-table-style td` was removed. The footer's copyright line and the
+WLCMS link ask for Nunito 200 explicitly (they used to ask for 400 and
+silently get 200), and the Flip pills, which sit inside buttons that
+don't inherit the page font, name Nunito 600 themselves. The hamburger
+`☰` uses `system-ui`, since the glyph isn't in any of our fonts.
+
+**Keeping the swap from moving the page.** Text used to render in Arial,
+then jump when the web fonts arrived (the biggest layout shift on review
+pages, 0.355 on PageSpeed). Two things work together:
+
+- Every public page preloads `nunito-latin` (the nav and footer) and,
+  where it has the masthead, `bebas-neue-latin`; `waxReviews.html` (and
+  so every generated review page) also preloads the latin Source Sans 3
+  and Special Elite files. The files are requested with the HTML instead
+  of after the stylesheet is parsed.
+- `styles.css` defines a metric-matched fallback face per text font
+  ("Source Sans 3 Fallback", "Nunito Fallback"): Arial scaled with
+  `size-adjust`, `ascent-override` and `descent-override` to the web
   font's average glyph width and line box, and every `font-family` stack
   lists it between the web font and `sans-serif`. Any swap that still
-  happens then moves the text by almost nothing. The numbers were computed
-  with fontTools from the real font files (character-frequency-weighted
-  average width against Arial; Nunito matched to weight 600, its common
-  use). They need recomputing only if a font or its weights change.
-  `local("Arial")` doesn't exist on Android, where the fallback simply
-  isn't used and the stack falls through to plain `sans-serif`, as before.
+  happens then moves the text by almost nothing. The numbers were
+  computed with fontTools from the real font files (Nunito matched to
+  weight 600, its common use). `local("Arial")` doesn't exist on
+  Android, where the stack falls through to plain `sans-serif`.
 
-Other public pages still load these fonts without the preloads (they
-weren't the page being measured); add the same four `<link>` tags to one if
-its PageSpeed run shows font-swap shift.
+**`styles.css` itself is not preloaded or swapped** — every public page
+loads it with a plain blocking `<link rel="stylesheet">`. It used to use
+a `preload`+`onload` swap (non-render-blocking), but that meant a
+visible flash of unstyled content on every navigation, compounded by
+the CDN's `max-age=0` browser caching forcing a revalidation each time.
+A missing font only swaps to a fallback; missing CSS breaks the whole
+layout, so the stylesheet blocks and the fonts don't.
 
-
-**`styles.css` itself does *not* use this preload pattern** — every
-public page loads it with a plain blocking `<link rel="stylesheet">`.
-It used to use the same `preload`+`onload`-swap trick the Google Fonts
-links still use (non-render-blocking, so the browser could paint HTML
-before CSS was ready), but that meant a real, visible flash of
-completely unstyled content on every navigation - worse as
-`styles.css` grew, and compounded by `styles.css`'s own CDN cache
-headers: a year-long cache at the edge, but `max-age=0` for the
-browser itself, forcing a revalidation round-trip on every navigation
-before the non-blocking swap could even fire. Switched to blocking
-specifically to fix that; the
-Google Fonts links are unaffected and still use the non-blocking
-pattern deliberately (a missing/slow *font* swaps to a fallback
-gracefully, which is a much smaller visual disruption than missing all
-page layout/color).
-
-`waxReviews.html`'s masthead treatment (also used by `lockout.html` and
-`playerSearch.html`) is the one deliberate exception: it uses a
-self-hosted `Bebas Neue` (`@font-face`) instead of the `Spicy Rice` every other masthead
-uses — **confirmed intentional by the site owner**, not drift, so don't
-"fix" it to match. Same for the pseudo-headline convention inside body
-content: blog posts (`index.html`/`tech.html`) use plain bold text for
-section breaks, while card reviews use `<p class="caption">` (Special
-Elite) baked into the stored `postBody` — also confirmed intentional.
+The pseudo-headline convention inside body content is deliberate: card
+reviews use `<p class="caption">` (Special Elite) baked into the stored
+`postBody`, while the blog posts used plain bold text.
 
 One real CSS gotcha found while fixing the waxReviews masthead's mobile
 vertical alignment: `.wax-reviews-masthead a` centers its text via
@@ -548,7 +612,7 @@ issues in the mobile section above — don't hand-tune spacing to
 "assist" a centering mechanism that's already doing the job; the two
 values drift out of sync differently at each screen size.
 
-**Random team colors + cheer label + pop-in animation**: `applyRandomMastheadStyling()` (`helper.js`) runs on load on all 6 pages using this masthead (`waxReviews.html`, `lockout.html`, `playerSearch.html`, `theJunkWaxYears.html`, `timeline.html`, `browseBySet.html`) — picks one of 32 NHL teams at random from `NHL_TEAM_COLORS`, sets `--team-primary`/`--team-tertiary` CSS custom properties that drive `.wax-reviews-mast-table`'s gradient (a simpler solid+stripe design via `.masthead-two-color` for genuinely two-color teams), and creates/reuses a `.masthead-team-label` span in the bottom-right corner showing that team's cheer text (e.g. "Go Canucks Go!") so the random pick is visually verifiable. That label's text is rendered via `renderLoudText()`, which wraps each character in its own `.loud-char` span with a staggered `animation-delay` — `styles.css`'s `loudPopIn` keyframes then pop/rotate each letter in on a delay, purely because a CSS `animation` on an element plays automatically the moment that element exists in the DOM (no JS trigger needed, since the label is fully torn down and rebuilt on every load rather than reused in place). `prefers-reduced-motion: reduce` skips the animation and shows the finished text immediately.
+**Random team colors + cheer label + pop-in animation**: `applyRandomMastheadStyling()` (`helper.js`) runs on load on all 7 pages using this masthead (`waxReviews.html`, `lockout.html`, `playerSearch.html`, `theJunkWaxYears.html`, `timeline.html`, `browseBySet.html`, `waxMuseum.html`) — picks one of 32 NHL teams at random from `NHL_TEAM_COLORS`, sets `--team-primary`/`--team-tertiary` CSS custom properties that drive `.wax-reviews-mast-table`'s gradient (a simpler solid+stripe design via `.masthead-two-color` for genuinely two-color teams), and creates/reuses a `.masthead-team-label` span in the bottom-right corner showing that team's cheer text (e.g. "Go Canucks Go!") so the random pick is visually verifiable. That label's text is rendered via `renderLoudText()`, which wraps each character in its own `.loud-char` span with a staggered `animation-delay` — `styles.css`'s `loudPopIn` keyframes then pop/rotate each letter in on a delay, purely because a CSS `animation` on an element plays automatically the moment that element exists in the DOM (no JS trigger needed, since the label is fully torn down and rebuilt on every load rather than reused in place). `prefers-reduced-motion: reduce` skips the animation and shows the finished text immediately.
 
 ## Page speed decisions (review pages)
 
@@ -1168,7 +1232,12 @@ and `fetchCopyrightYear()` and must not change.
 
 **Markup.** Each page has `<footer class="site-footer">` holding
 `<nav id="footer-links">` and `<div id="copy">`, and its load handler calls
-`fetchFooterLinks()` (`helper.js`). `#copy` is untouched, so the copyright
+`fetchFooterLinks()` (`helper.js`). Since 2026-11-05 the build pre-renders
+the link columns between `<!-- footer:start --><!-- footer:end -->`
+markers inside `#footer-links` (on every public page and generated review
+page), with final `/reviews/<slug>/` links, and `fetchFooterLinks()`
+returns early when the columns are already there; `footerHtml()` builds
+the same markup in both places. `#copy` is untouched, so the copyright
 still comes from `fetchCopyrightYear()` (on `waxReviews.html`, from
 `fetchCardSetsByYear()`).
 
@@ -1200,8 +1269,12 @@ Keyboard users still get a white focus outline. The rule is written as
 (near the top of `styles.css`) has higher specificity than a single class
 and would otherwise turn the link blue and visible.
 
-**Limitation.** The links are built by JavaScript, like the nav, so a visitor
-with JavaScript off sees only the copyright line.
+**Type.** Nunito 600 for the links and headings; the copyright line and
+the WLCMS link are Nunito 200 by choice (stated explicitly, since only 200
+and 600 are loaded).
+
+**JavaScript off.** The links are in the HTML (pre-rendered), so they
+show; only the copyright year is still written by script.
 
 ## Home page content (`index.html`)
 
@@ -1223,9 +1296,8 @@ it (the CMS no longer offers Home Page as a type for new posts, though
 deliberately is not `#blogsDiv`, whose `min-height: 750px` pre-sizes
 late-arriving content and would only add dead space here. The old
 `BlogPosting` structured-data block went with the dynamic rendering. The
-blog-stream machinery in `blogs.js` is still used by `about.html` and
-`tech.html`, and its fallback intro (the old Home welcome copy) still
-serves `tech.html?blogType=4`.
+blog-stream machinery in `blogs.js` is still used by `about.html`
+(`tech.html`, its other user, is archived).
 
 ## Home page banner
 
@@ -1296,6 +1368,10 @@ breaking the list). A heading that starts with a season such as
   its card would stretch the page below the footer. `#timelineSection` uses
   `overflow-y: clip` (not `hidden`, so it doesn't become a scroll container)
   to cut that off; its bottom padding leaves room for the card shadows.
+- The front shows a "Flip" pill (`.timeline-hint`, vertically centred on
+  the right), the same pill as the Wax Museum's cards (one shared rule),
+  replacing the old ↻ icon. It is `aria-hidden`, since the button's own
+  label already says what it does.
 - Opening a card marks it viewed: its front greys out and gets a hidden
   "(viewed)" for screen readers. That state lives in page memory only,
   so a reload starts fresh.
@@ -1480,6 +1556,45 @@ gets the same list in machine-readable form. It uses the same
 `browseReviewUrl()` as the visible Review links, so the two can't
 disagree.
 
+**Pre-rendered columns (2026-11-05).** The two column divs hold
+`browse-major` and `browse-fastfood` marker comments. Every build runs
+`browseColumnHtml()` from `browseBySet.js` in a sandbox (with
+`escapeHtml`, `getPageNameForYear` and `stripYearFromSetName` lifted from
+`helper.js`/`wax.js`) and writes the columns between the markers in the
+deployed copy, so the page's raw HTML links to every `/reviews/<slug>/`
+page, the main way a crawler finds them. In the browser,
+`initBrowseBySet()` still fetches and re-renders the same markup.
+
+## The Wax Museum (`waxMuseum.html`)
+
+A gallery of the wax packs behind the card sets, live since 2026-11-03.
+Each pack is a flip card: the front shows the pack image with its set
+name and details (manufacturer, packaging, cards per pack, price) and a
+"Flip" pill; the back shows the back-of-pack image and notes. Packs with
+a linked review get a link to its `/reviews/<slug>/` page.
+
+**Data.** `initWaxMuseum()` fetches every pack once from `getWaxPacks`
+(public, cached 30 minutes; see `API_ENDPOINTS.md`), from the `WaxPacks`
+table (`DATA_MODEL.md`). Images are on S3 under `img/wax-packs/`. A
+spinner overlay shows while it loads, and a status line explains a
+failure or a `noscript` visitor.
+
+**Order.** `sortWaxPacks()`: oldest year first, then one set at a time
+(A to Z by the name without its season or "Series N"), then series order
+(none, 1, 2, ...), then "Low" before "High" packs (`waxPackRelease()`:
+Low packs were released before High ones; the words are ignored when
+grouping by set, so "Topps Low" and "Topps High" stay together), then A
+to Z by name. The API's own order is by key, which isn't the name's order.
+
+**Rendering.** Cards render six at a time (`WAX_MUSEUM_BATCH`) as the
+visitor scrolls, and images load lazily. Flipping is a click or Enter;
+`setWaxPackCardFlipped()` keeps focus and the hidden face's
+accessibility state in step.
+
+**Editing.** Packs are added and edited in the CMS (New Wax Pack, Edit
+Wax Pack; see `CMS_GUIDE.md`). The museum page itself isn't linked from
+the CMS menu.
+
 ## About page (`about.html`)
 
 The Home page's layout (same banner, nav, footer and scripts)
@@ -1596,8 +1711,8 @@ uploaded checklists, with a link to each set's review. Added
   deploy) still links to the year page. See "Linking to one specific
   set".
 - **Masthead**: uses the same `waxReviews.html`/`lockout.html` masthead
-  treatment (self-hosted Bebas Neue, no weather widget) rather than the
-  `index.html`/`tech.html` one - see "Typography / fonts" above.
+  treatment (Bebas Neue) rather than the Home page's image banner - see
+  "Typography / fonts" above.
 - **Rookie cards called out**: a card whose `notes` contain `RC` as a
   whole word (`\bRC\b` - so it won't match `RC` as a substring inside
   some other token) renders bold and in the site's one established red
@@ -1607,10 +1722,10 @@ uploaded checklists, with a link to each set's review. Added
 
 ## Orphaned / legacy files
 
-These exist in the repo but aren't reachable from the current site
-navigation:
+These exist in the repo but aren't published:
 
-- `Old HTML Pages/` — `pw.html`, `quad2.html`, `signup.html`, `thanks.html`, and, as of 2026-08-15, `cards.html` and `cardChecker.html` too (moved here from the repo root — see "Public pages" above). `cardChecker.html`'s own nav bar still links to `/quad2.html` and `/junkWax.html`/`/classicWax.html` (old pre-query-string URL scheme) — these links are stale relative to the current single-page-per-category + query-string routing used elsewhere (`waxReviews.html?...`).
-- `example.html` — a generic Google reCAPTCHA demo snippet, unrelated to this site's own reCAPTCHA usage (if any) or content.
+- `Old HTML Pages/` — `pw.html`, `quad2.html`, `signup.html`, `thanks.html`, `cards.html` and `cardChecker.html` (moved here 2026-08-15), and `tech.html` (the old blog stream) and `example.html` (a generic Google reCAPTCHA demo) (moved here 2026-11-05 with `git mv`). Since 2026-11-05 the Amplify build runs `rm -rf "Old HTML Pages"` after the generator and minifier, so nothing in this folder is deployed; before that, everything in it was publicly reachable, because the build publishes the whole repo (`artifacts.files: '**/*'`). The dead nav entries for `tech.html` (`NAV_ITEMS.tech`/`mache`, `NAV_MAP.tech`/`ev`) were removed at the same time.
+
+Note that the build still publishes every other repo folder: `Documentation/`, `Lambdas/` source, `tools/` and `CLAUDE.md` all return 200 on the live site. That was flagged on 2026-11-05 and left as is by choice; the same build step could exclude them.
 
 (`styles/styles copy.css` and `Lambda Functions/newAllBlogs.html`, both previously listed here, no longer exist in the repo.)

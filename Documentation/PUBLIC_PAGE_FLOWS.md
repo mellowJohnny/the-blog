@@ -62,20 +62,22 @@ See `FRONTEND.md`'s "SEO and social tags".
   from `FOOTER_SECTIONS`, reusing the same `NAV_ITEMS` addresses as the
   nav. Every public page makes this one call, so only this page spells it
   out; see `FRONTEND.md`'s "Site footer".
-- `fetchNav("index")` (`helper.js`) — builds the top nav bar itself
-  (the links to the card review sections, the timeline, All Sets and
-  Player Search), by looking up `NAV_MAP["index"]` (`classic, junk, mcd,
-  timmies, timeline, browse, search`, with no "Home" link, since the
-  masthead already is one) and rendering it as a `<table>` into
-  `#global-nav`. Purely client-side — the nav structure is a hardcoded
-  map in `helper.js`, not backend-driven, since the site's page/category
-  set changes rarely enough that there's no value in making it dynamic.
-  The four review-category links (and the matching footer links) render
-  with a query-string `href` and are then pointed at their year's
-  `/reviews/<slug>/` page by `applyReviewLinks()` once
-  `/reviews/index.json` loads — the same mechanism every public page
-  uses, described under "Links to reviews" in the Card Set Reviews
-  section below.
+- `fetchNav("index")` (`helper.js`) — the top nav. `NAV_MAP["index"]`
+  is `major, fastfood, museum, timeline, search` (two dropdown groups,
+  then The Wax Museum, the Junk Wax Timeline and Player Search; no
+  "Home" link, since the masthead already is one). Since 2026-11-05 the
+  build has already written this nav, with final `/reviews/<slug>/`
+  links, between marker comments in `#global-nav` (the page names its
+  key in `data-nav-page="index"`), so `fetchNav()` finds it and returns
+  without drawing anything; `fetchFooterLinks()` does the same for the
+  pre-rendered footer. On a copy of the page that hasn't been through a
+  build (a local checkout), they build the same markup with
+  `navHtml()`/`footerHtml()` and `applyReviewLinks()` upgrades the
+  review-category links once `/reviews/index.json` loads, as described
+  under "Links to reviews" in the Card Set Reviews section below. The
+  nav structure is a hardcoded map in `helper.js`, not backend-driven,
+  since the site's page/category set changes rarely. See `FRONTEND.md`'s
+  "Navigation system".
 
 **User interactions**:
 - Hamburger icon (mobile) → `toggleMenu()` (`helper.js`) — toggles an
@@ -88,9 +90,14 @@ See `FRONTEND.md`'s "SEO and social tags".
   `/cms` access begins for a logged-out visitor. It is hidden (the
   footer's own colour) and only visible as an outline on keyboard focus.
 
-## Tech Blogs - `tech.html`
+## Tech Blogs - `tech.html` (archived)
 
-This page is where the site's **blog stream** machinery runs: one
+**Archived 2026-11-05**: `tech.html` was moved to `Old HTML Pages/`, which
+the build doesn't publish, and its nav entries were removed. The flow
+below is kept as a record of how it worked; `about.html` still uses the
+same `blogs.js` blog-stream machinery.
+
+This page was where the site's **blog stream** machinery runs: one
 `blogs.js` pattern, parameterized by whichever `blogType` the URL
 specifies (`1`=Tech, `3`=Mach-E, `4`=SYNC Updates, `5`=Raspberry Pi),
 rather than a separate page/script per category. `about.html` uses the
@@ -230,12 +237,21 @@ way: `REVIEW_PAGES.md`.
    immediately, before any other script, since it may bail out of
    rendering this page entirely.
 2. `DOMContentLoaded` → `renderCardIntro(pageName)`,
-   `renderSetPicker(year, blogCat, pageName)`, then
-   `fetchCardSetsByYear(year, sortOrder, blogCat, setID)`.
+   `renderSetPicker(year, resolveBlogCat(blogCat, pageName), pageName)`, then
+   `fetchCardSetsByYear(year, sortOrder, resolveBlogCat(blogCat, pageName), setID)`.
+   `resolveBlogCat()` (`helper.js`) fills in a missing `blogCat` from
+   `pageName`, for old indexed links like `?year=1987&pageName=junkWax`.
 3. `window load` → `fetchNav(pageName)`, `fetchFooterLinks()`,
    `applyRandomMastheadStyling()` (in that order), plus a
    `gtag('config', ...)` call for Analytics. The scores ticker isn't in
    this list: `ticker.js` starts itself on `DOMContentLoaded`.
+
+On a generated page the nav, footer and year picker are already in the
+HTML (the build pre-renders them with final `/reviews/<slug>/` links;
+`REVIEW_PAGES.md`, "Links"), so `fetchNav()`, `fetchFooterLinks()` and
+`renderSetPicker()` each see their block and return without drawing. On
+an old query-string URL those blocks are empty in the HTML and the calls
+build them as described below.
 
 The `<head>` of a generated page also carries two preloads, for the set's
 header image and for the set-data request, so both downloads start with
@@ -265,12 +281,12 @@ above the review and pushed everything down (a layout shift).
 
 **On `window load`**: these calls together finish assembling
 everything else the visitor can see or navigate to on this page.
-- `fetchNav(pageName)` (`helper.js`) — builds the top nav bar, same
-  mechanism as the blog pages, but `waxReviews.html`'s `pageName`
-  values (`junkWax`, `classicWax`, `timmies`, `mcd`) each map to a
-  `NAV_MAP` entry (the other review sections, then `"search"` (Player
-  Search), always last — Player Search is in every `NAV_MAP` entry
-  except its own page's, and "Junk Wax Timeline" and "All Sets" sit just before it).
+- `fetchNav(pageName)` (`helper.js`) — builds the top nav bar.
+  `waxReviews.html`'s `pageName` values (`junkWax`, `classicWax`,
+  `timmies`, `mcd`) each map to a `NAV_MAP` entry: Home, the Major
+  Releases and Fast Food Releases dropdowns, The Wax Museum, the Junk
+  Wax Timeline and Player Search (always last). The page's own category
+  is left out of its dropdown through `NAV_SELF`.
 - `renderSetPicker(year, blogCat, pageName)` (`helper.js`, run on
   `DOMContentLoaded` — see above) — builds the
   "set-o-matic" year picker: the row letting a visitor jump directly to
@@ -622,9 +638,8 @@ flow).
   modal's "Rookies only" filter, so rookie cards are visually
   consistent wherever they appear across the site.
 
-**Notable**: this page's masthead uses the same self-hosted Bebas Neue
-treatment as `waxReviews.html`/`lockout.html` (not the
-`index.html`/`tech.html` masthead, and no weather widget) — see
+**Notable**: this page's masthead uses the same Bebas Neue treatment as
+`waxReviews.html`/`lockout.html` (not the Home page's image banner) — see
 `FRONTEND.md`'s "Typography / fonts" section.
 
 ## Junk Wax Timeline - `timeline.html`
@@ -709,6 +724,49 @@ starts the scores ticker by itself.
 If the endpoint is down or returns nothing, a short message replaces
 the columns.
 
+**Already in the HTML (since 2026-11-05)**: the build pre-renders both
+columns (and the nav and footer) into the deployed page with
+`browseColumnHtml()`, the same function `initBrowseBySet()` uses, so the
+raw HTML links to every `/reviews/<slug>/` page; this page is the main
+place a crawler finds them. `initBrowseBySet()` still fetches and
+redraws the same markup, which also keeps the Checklist links and the
+JSON-LD current between builds.
+
+## The Wax Museum - `waxMuseum.html`
+
+A gallery of the wax packs behind the card sets. Its job is to turn one
+list of packs into a grid of flip cards, in release order.
+
+**What loads**: `scripts/waxMuseum.js` and `scripts/helper.js` (both
+`defer`) and one inline `window load` handler. No scores ticker. A
+spinner overlay (`#wax-museum-spinner-overlay`) covers the page while
+the packs load.
+
+**On `window load`**:
+- `fetchCopyrightYear()`, `fetchNav("waxMuseum")` and
+  `fetchFooterLinks()` (`helper.js`) — the chrome, as elsewhere (the nav
+  and footer are pre-rendered by the build, so the last two find them in
+  place). The Wax Museum is left out of its own nav.
+- `applyRandomMastheadStyling()` (`helper.js`) — the masthead colours.
+- `initWaxMuseum()` (`waxMuseum.js`) — the content. It calls **Get wax
+  packs (public)** once, fronted by the `getWaxPacks` Lambda
+  (`Lambdas/getWaxPacks/`), which scans the `WaxPacks` table (cached 30
+  minutes). `sortWaxPacks()` then orders them: year, set (A to Z, with
+  the season, "Series N" and "Low"/"High" stripped from the name), series
+  number, Low before High, name. `renderWaxMuseum()` draws the first six
+  cards (`buildWaxPackCard()`: pack image, set name, details, a "Flip"
+  pill; back image and notes on the reverse) and the next six each time
+  the visitor nears the bottom. Images come from S3 `img/wax-packs/` and
+  load lazily. A pack with a `reviewSlug` links to that set's
+  `/reviews/<slug>/` page.
+
+**User interactions**: clicking a card (or Enter) flips it,
+`setWaxPackCardFlipped()` moving focus and the hidden face's
+accessibility state with it.
+
+If the endpoint fails, `#waxMuseumStatus` says so; with JavaScript off,
+its `noscript` text explains the gallery needs it.
+
 ## About - `about.html`
 
 The About page uses the same blog-stream machinery as the Tech pages
@@ -719,8 +777,8 @@ The About page uses the same blog-stream machinery as the Tech pages
 the `Blogs` table by partition key, so no backend change was needed.
 Its layout is the Home page's (same banner, nav and footer),
 but unlike the Home page its content is still fetched, because the About
-post is meant to be edited through the CMS. The heading "about junk wax
-hockey..." is written into the HTML (a script used to inject it with
+post is meant to be edited through the CMS. The heading ("How This Site
+Comes Together" since 2026-11-04) is written into the HTML (a script used to inject it with
 `renderBlogIntro('98')`, which left the raw HTML with no H1; that call
 and its branch are gone), and the post below it carries the content,
 with the usual byline. The title, description, canonical and share tags

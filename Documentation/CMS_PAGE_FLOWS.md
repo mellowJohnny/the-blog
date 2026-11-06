@@ -1,7 +1,8 @@
 # CMS Page Flows
 
-The companion to `PUBLIC_PAGE_FLOWS.md`, covering all 10 pages under
-`/cms`. Same idea per page: not just what loads and what each
+The companion to `PUBLIC_PAGE_FLOWS.md`, covering the pages under
+`/cms` (the three wax pack pages added in November 2026 are summarised
+in one section at the end, "Wax pack pages"). Same idea per page: not just what loads and what each
 interaction triggers, but why — what each page is actually there to
 accomplish, and for anything that reaches the backend, the full chain
 from the JS function through the API endpoint (named exactly as in
@@ -25,7 +26,7 @@ resolves to `helper.js`, with no load-order ambiguity left to call out.
 
 This page's entire job is orientation, not data: it's the landing page
 after Cognito login, and exists purely to route the logged-in user to
-whichever of the other 9 pages they actually want, via a dropdown nav.
+whichever of the other pages they actually want, via a dropdown nav.
 Nothing here needs to know about blogs, card sets, or subscribers.
 
 **What loads**: `auth.js`, `helper.js`.
@@ -37,7 +38,7 @@ hub, the only CMS page with that property, precisely because its whole
 purpose is routing rather than reading or writing any data.
 
 **User interactions**:
-- Cards / Blogs / Admin dropdown buttons → a small inline script
+- Cards / Wax Packs / Blogs / Admin dropdown buttons → a small inline script
   written directly in this page (not in any shared `scripts/*.js` file)
   toggles an `.open` class on click, closes any other open dropdown
   first, and closes on an outside click or Escape. Independently, a
@@ -46,8 +47,9 @@ purpose is routing rather than reading or writing any data.
   `CMS_GUIDE.md`'s "Entry point & pages" section for this nav's full
   description.
 - Every link inside a dropdown (`...new card set`, `...edit a card
-  set`, `...upload a checklist`, `...new blog post`, `...edit a blog
-  post`, `...admin tools`, `AMP SMS`) and the plain `...exit` link are
+  set`, `...upload a checklist`, `...new wax pack`, `...edit wax pack`,
+  `...new blog post`, `...edit a blog post`, `...admin tools`, `AMP SMS`)
+  and the plain `...exit` link are
   all ordinary `<a href>` navigations to another page — no JS, no API
   call, since this page's job ends the moment a destination is chosen.
 
@@ -954,7 +956,36 @@ than running as bare top-level code.
   backdrop, closes that modal.
 
 **Notable**: all four endpoints this page calls are deployed to the
-API Gateway `prod` stage — the only others there are the public "Get all
-live sets", "Get NHL game details" and "Get PWHL scores"; every remaining
-endpoint (25 of them) is on `dev`.
-See `ARCHITECTURE.md`.
+API Gateway `prod` stage, like the other newer endpoints (the public
+"Get all live sets", the ticker endpoints and the wax pack endpoints);
+the older ones are on `dev`. See `ARCHITECTURE.md`.
+
+## Wax pack pages — `cms/newWaxPack.html`, `cms/pickWaxPack.html`, `cms/waxPackEdit.html`
+
+These three pages exist to keep the `WaxPacks` table filled, which is
+everything The Wax Museum (`waxMuseum.html`) shows. All load
+`scripts/cmsWaxPack.js` and `helper.js`; the two form pages also load
+`cmsImageBrowser.js` and `waxPackImageProcessor.js` for the image
+pickers. Field rules and the image processing are in `CMS_GUIDE.md`'s
+"Wax packs".
+
+- **`pickWaxPack.html`** — `initPickWaxPackPage()` calls **Get wax packs
+  (public)** (`getWaxPacks` Lambda, a `Scan` of `WaxPacks`, fetched with
+  `cache: "no-store"` so a fresh save shows) and lists every pack as a
+  link to `waxPackEdit.html?year=&packKey=`.
+- **`newWaxPack.html`** — `initNewWaxPackPage()` builds the empty form
+  and fills its review dropdown from **Get all live sets (public)**
+  (`getPublicCardSets`). **Save** (`submitWaxPack()`) calls **Save a wax
+  pack** (`saveWaxPack` Lambda, a conditional `PutCommand` that refuses
+  to overwrite an existing key) with the Cognito token, then returns to
+  the pick list.
+- **`waxPackEdit.html`** — `initEditWaxPackPage()` loads the packs and
+  the review list in parallel, finds the one matching the URL's `year`
+  and `packKey` (or shows an error), and fills the form. **Save** sends
+  the same request with its `packKey`, which the Lambda turns into a
+  conditional update that 404s if the item is gone; **Delete**
+  (`deleteWaxPack()`, after `cmsConfirm()`) calls **Delete a wax pack**
+  (`deleteWaxPack` Lambda).
+- **Browse** (either image) opens the shared image browser on S3
+  `img/wax-packs/`; a new upload is cropped, whitened and converted to
+  WebP in the browser before the presigned upload.

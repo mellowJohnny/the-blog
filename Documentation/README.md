@@ -14,8 +14,9 @@ that's called out explicitly.
 "the hella files" (junkwaxhockey.com) is Christian Couillard's site:
 an extensive hobby section reviewing vintage and "junk wax" era hockey
 card sets (O-Pee-Chee, Upper Deck, Score, McDonald's, Tim Hortons,
-etc) with full checklists, a player search and a live NHL/PWHL scores
-ticker. It also hosts a couple of small utility pages and a private
+etc) with full checklists, a player search, The Wax Museum (a gallery
+of wax packs, front and back), a Junk Wax timeline and a live NHL/PWHL
+scores ticker. It also hosts a couple of small utility pages and a private
 CMS ("cardStack") used to author/edit content, plus a small SMS
 broadcast tool ("Autobus Messaging Platform") for a cycling club. The
 site doubles as a personal playground for AWS services — API Gateway,
@@ -23,16 +24,16 @@ Lambda, DynamoDB, S3, Cognito.
 
 It moved from `mellowjohnny.cc` on 2026-10-12; that domain now
 redirects here (see `ARCHITECTURE.md`). The earlier personal blog
-(tech, Mustang Mach-E, Raspberry Pi) is still in the code and the
-`Blogs` table but is no longer linked from the nav, home page or
-sitemap.
+(tech, Mustang Mach-E, Raspberry Pi) is still in the `Blogs` table,
+but its page, `tech.html`, was archived to `Old HTML Pages/` on
+2026-11-05 and that folder isn't published.
 
 ## Document index
 
 | Doc | Covers |
 |---|---|
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | High-level system diagram, hosting, domains/DNS/redirects, AWS services in play |
-| [REVIEW_PAGES.md](./REVIEW_PAGES.md) | How the per-review `/reviews/<slug>/` pages are generated on every Amplify build and started by CMS saves: the pipeline, `waxReviews.html` as a template, why it is only a partial static-site setup (and how it compares with an enterprise headless-CMS one), URL design, failure modes, AWS setup, cost, change log |
+| [REVIEW_PAGES.md](./REVIEW_PAGES.md) | How the per-review `/reviews/<slug>/` pages are generated on every Amplify build and started by CMS saves: the pipeline, `waxReviews.html` as a template, the nav/footer/year-picker/Browse By Set pre-rendering, why it is only a partial static-site setup (and how it compares with an enterprise headless-CMS one), URL design, failure modes, AWS setup, cost, change log |
 | [DATA_MODEL.md](./DATA_MODEL.md) | DynamoDB tables and the fields each one holds |
 | [API_ENDPOINTS.md](./API_ENDPOINTS.md) | Every API Gateway endpoint the frontend calls — URL, method, payload, purpose |
 | [FRONTEND.md](./FRONTEND.md) | Public-facing pages and the `scripts/*.js` files behind them, including how SEO and social-preview tags work |
@@ -56,7 +57,7 @@ sitemap.
 Plain Node scripts. The generator has no dependencies; the minifier uses `esbuild`, the one package in the root `package.json` (pinned in `package-lock.json`, installed by `npm ci` in the Amplify build only).
 
 - `tools/minifyAssets/minify.mjs` — **run by every Amplify build** (`amplify.yml`), after the generator, never by hand: minifies the public scripts and `styles/styles.css` in place in the build's copy, with source maps, and fails the build if a file isn't smaller or loses a top-level name. It refuses to run outside Amplify unless `--force-in-place` is passed, because it overwrites files. See `REVIEW_PAGES.md`'s "The rest of the build: minified assets".
-- `tools/generateReviewPages/generate.mjs` — **run by every Amplify build** (`amplify.yml`), not by hand: reads the live sets from `getPublicCardSets` and writes `reviews/<slug>/index.html` for each, `reviews/index.json` (the link manifest) and `sitemap.xml`, none of it committed (gitignored). A CMS save to a live set starts a build, so nothing needs re-running when a set is added or edited. You can still run it locally for a preview. It replaced `tools/generateSitemap/generate.mjs` on 2026-10-30. See `REVIEW_PAGES.md` and `FRONTEND.md`'s sitemap section.
+- `tools/generateReviewPages/generate.mjs` — **run by every Amplify build** (`amplify.yml`), not by hand: reads the live sets from `getPublicCardSets` and writes `reviews/<slug>/index.html` for each, `reviews/index.json` (the link manifest) and `sitemap.xml`, none of it committed (gitignored), and pre-renders the nav, footer, year picker and Browse By Set columns into the build's copy of the pages. A CMS save to a live set starts a build, so nothing needs re-running when a set is added or edited. You can still run it locally for a preview, but it also rewrites 8 tracked static pages, so discard those changes afterwards. It replaced `tools/generateSitemap/generate.mjs` on 2026-10-30. See `REVIEW_PAGES.md` and `FRONTEND.md`'s sitemap section.
 - `tools/checklistParser/parse.mjs` — run by hand, not part of any deploy: parses a checklist PDF into the JSON the checklist-upload flow produces, mirroring `Lambdas/parseChecklistPdf/` (see `LAMBDA_FUNCTIONS.md` and `CMS_GUIDE.md`).
 
 ## Known gaps — worth confirming against the AWS Console
@@ -64,5 +65,6 @@ Plain Node scripts. The generator has no dependencies; the minifier uses `esbuil
 - Both `Cards`' and `Blogs`' key schemas are now confirmed (per the site owner, checked directly against the DynamoDB console): `Cards` — partition key `setName`, sort key `year`; `Blogs` — partition key `blogType`, sort key `time`. See `DATA_MODEL.md`.
 - Whether `BlogPost` (singular-table name seen in `Creating A New Lambda.txt`) is a legacy table that's since been renamed/replaced by `Blogs`, or a second table still in use.
 - **Resolved 2026-08-15**: the source of every Lambda behind the API Gateway endpoints in `API_ENDPOINTS.md` is now checked into this repo (one directory per function) — see `LAMBDA_FUNCTIONS.md`. The `amplify-readonly-cli` credential turned out to have broader IAM access than its name/original docs suggested (full Lambda read, confirmed via `aws lambda get-function`), which is how this was pulled in directly rather than by hand. The prototype code in `Lambda Functions/` is still a separate, older thing and still doesn't match the real deployed versions — several confirmed mismatches are now documented per-file in `LAMBDA_FUNCTIONS.md`.
+- Whether the wax pack write endpoints (`saveWaxPack`, `deleteWaxPack`, added 2026-11-01) have a Cognito Authorizer on API Gateway: the frontend sends the token, but no unauthenticated probe has been run against them. See `API_ENDPOINTS.md`.
 - CORS / auth configuration on each API Gateway route can't be inspected directly from here (the same broad-access credential does **not** extend to `apigateway:GET`, confirmed denied) — but has been verified indirectly via `curl` for every CMS write/read endpoint (all 15 original cardStack/Autobus endpoints plus the 2 checklist-upload endpoints): each returns `401` unauthenticated and `200` on `OPTIONS`, confirming a Cognito Authorizer is attached to the real method but not to `OPTIONS`. Only image upload/list (`cmsImageUploader`, `cmsImagePicker`) remain unauthenticated — see `AUTH.md`.
 - The real invoke URL for `Lambdas/inboundSMSHandler/`'s API Gateway endpoint — its Lambda source is now in the repo (see `LAMBDA_FUNCTIONS.md`), but since it's a Twilio-to-us webhook rather than something this frontend calls, it was never discoverable by this doc's original "grep for `fetch()` calls" method, and (per the point above) can't be looked up via API Gateway either.

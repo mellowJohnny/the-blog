@@ -1,13 +1,16 @@
 # Lambda Functions
 
-**30 of the 34 Lambda functions behind this site's API Gateway
-endpoints have their source checked into this repo**, under
-`Lambdas/` (as of 2026-08-15, one directory per function, named
-exactly after its AWS Lambda function name). `Lambdas/` holds 32
-directories, not 30: `amplifyBuildNotifier` (added 2026-09-29) sits
-behind EventBridge, and `cardsRebuildTrigger` (added 2026-10-30) behind
-a DynamoDB Stream, rather than API Gateway, so neither is part of that
-count — they are the only functions here no frontend code ever calls.
+**Every live Lambda function has its source checked into this repo**,
+under `Lambdas/`, one directory per function, named exactly after its
+AWS Lambda function name. As of 2026-11-05 `Lambdas/` holds 36
+directories: 34 sit behind API Gateway, and two don't —
+`amplifyBuildNotifier` (added 2026-09-29) runs off EventBridge, and
+`cardsRebuildTrigger` (added 2026-10-30) off a DynamoDB Stream; they are
+the only functions here no frontend code ever calls. The newest three,
+`getWaxPacks`, `saveWaxPack` and `deleteWaxPack` (2026-11-01, The Wax
+Museum), are covered in "Wax Museum Lambdas" below. (The history: on
+2026-08-15, 30 of the then-34 API Gateway functions were in the repo
+and the other 4 were found dead and removed.)
 Most were pulled directly
 from the live Console via `aws lambda get-function` using the
 `amplify-readonly-cli` credential (see `CLAUDE.md` — its actual IAM
@@ -30,14 +33,15 @@ list — `Lambdas/listSubscribers/`. The remaining 4 of the 34
 removed again the same day — see "Orphaned/dead Lambdas" below.
 
 Deployment is still entirely manual for every one of them, but the
-mechanics differ by function: the 30 with no real dependencies
+mechanics differ by function: the 33 with no real dependencies
 (`dependencies: {}` in `package.json`) just need the updated
 `index.mjs` pasted into the Lambda Console's inline code editor and
-Deploy clicked — no zip needed. Two need a full `npm install` + zip
+Deploy clicked — no zip needed. Three need a full `npm install` + zip
 (code + `node_modules`) + "Update from a .zip file" upload instead:
-`sendAlertHandler` (has `twilio`) and `parseChecklistPdf` (has
+`sendAlertHandler` (has `twilio`), `parseChecklistPdf` (has
 `pdf-parse`, pinned to its v1 major — see that section below for why)
-— see their sections for specifics. Per the header comment most files
+and `generateSeoDescription` (has `@anthropic-ai/bedrock-sdk`; see
+`SEO_DESCRIPTION_GENERATOR.md`) — see their sections for specifics. Per the header comment most files
 carry: **never edit any of them directly in the Console without also
 updating this repo** — this repo is now the source of truth, and a
 Console-only edit made after 2026-08-15 would silently drift out of
@@ -1250,6 +1254,36 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   started build #3154 at 15:54:04.
 - **Cost**: the invocations and the stream reads are free or negligible;
   the cost is the Amplify build minutes (see `REVIEW_PAGES.md`).
+
+## Wax Museum Lambdas — hand-built in this repo
+
+Three small functions behind The Wax Museum (`waxMuseum.html`) and its
+CMS pages, all on the `WaxPacks` table (`DATA_MODEL.md`), all on `prod`
+stages, all with no dependencies (paste-deploy). Full contracts are in
+`API_ENDPOINTS.md`.
+
+- **`getWaxPacks`** — public read: every pack (`Scan`) or one season
+  (`Query` on `year`), following `LastEvaluatedKey` so the list is never
+  cut at 1 MB, sorted by year then `packKey`. CORS `*`, cached 30
+  minutes.
+- **`saveWaxPack`** — create or edit, one `PutCommand`. It validates
+  every field (required name, manufacturer, packaging, `type` of `main`
+  or `fast food`, `numCards` 1 to 200, length caps, slug patterns) and
+  returns the first problem as a 400. A create slugifies the name into
+  `packKey` and is conditioned on `attribute_not_exists` (409 on a
+  duplicate); an edit keeps its `packKey` and is conditioned on
+  `attribute_exists` (404 if gone), so a rename never creates a second
+  item. It stopped writing the old single `notes` field (the CMS form
+  carries it into `notesFront`).
+- **`deleteWaxPack`** — `DeleteCommand` by `year` + `packKey`,
+  conditioned on `attribute_exists` so a stale key is a 404, not a
+  silent no-op.
+
+The save and delete calls send the Cognito token and their CORS allows
+only the site's origin; whether their API Gateway methods have a
+Cognito Authorizer hasn't been verified (see `API_ENDPOINTS.md`). Their
+roles need `PutItem`/`DeleteItem` on `WaxPacks`; `getWaxPacks` needs
+`Scan` and `Query`.
 
 ## Orphaned/dead Lambdas — removed from this repo
 

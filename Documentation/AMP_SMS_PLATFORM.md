@@ -246,9 +246,8 @@ A plain-language reference modal accessible from the navigation bar. Covers:
 | File | Purpose |
 | --- | --- |
 | `/scripts/auth.js` | Cognito authentication — loaded first in `<head>` |
-| `/styles/styles.css` | All platform styles |
+| `/styles/styles.css` | All platform styles, and the fonts: Source Sans 3 (the page's text, including the Autobus masthead since 2026-11-05) and the site's other self-hosted families, served from `/fonts/` (no Google Fonts) |
 | `/scripts/adminSMS.js` | All page logic and interactivity |
-| Google Fonts | Spicy Rice, Nunito, Special Elite, Work Sans, Source Sans 3 |
 
 ---
 

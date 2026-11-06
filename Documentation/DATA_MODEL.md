@@ -223,6 +223,35 @@ to strangers. A deleted subscriber has to be re-added with the SMS
 admin's "add subscriber" (or a new bulk import). To take someone off the
 list, set `status` to `unsubscribed` instead of deleting the item.
 
+## `WaxPacks` table
+
+Backs The Wax Museum (`waxMuseum.html`), added 2026-11-01 to 11-03; one
+item per wax pack, written from the CMS wax pack pages.
+
+**Keys** (as the Lambdas use them, not checked in the console):
+partition key `year` (Number, the season's first year), sort key
+`packKey` (String). `packKey` is a slug made once from the pack name at
+creation (`saveWaxPack`) and kept when the name is edited later, so a
+rename doesn't orphan the item.
+
+| Field | Type | Notes |
+|---|---|---|
+| `year` | Number | Partition key. 1900 to 2100. |
+| `packKey` | String | Sort key; lowercase letters, numbers and single hyphens. |
+| `name` | String | Required, up to 100 characters (for example "1992-93 Parkhurst Series 2 Jumbo"). The museum's sort reads the set, "Series N" and "Low"/"High" out of it. |
+| `manufacturer` | String | Required, up to 60. The CMS offers a fixed list (O-Pee-Chee, Topps, Upper Deck, Pinnacle, Score, Pro Set, Fleer, Leaf, Pacific). |
+| `packaging` | String | Required, up to 40. Fixed list: Wax Pack, Flow Pack, Jumbo Flow Pack, Foil Pack, Cello Pack, Blister Pack. |
+| `type` | String | Required: `main` or `fast food`. |
+| `numCards` | Number | Required, cards per pack, 1 to 200. |
+| `price` | String | Optional, up to 20 (as printed, for example "50¢"). |
+| `frontImg` / `backImg` | String | Optional file names under S3 `img/wax-packs/`. |
+| `notesFront` / `notesBack` | String | Optional, up to 1000 each. An older single `notes` field is no longer written; the edit form loads it into `notesFront`, so a save carries it over. |
+| `reviewSlug` | String | Optional: the `seoURLSlug` of the set's review, which the museum links to. |
+| `updatedAt` | String | ISO timestamp of the last save. |
+
+A "format" field existed briefly and was removed on 2026-11-03.
+Optional fields are omitted rather than stored empty.
+
 ## `BlogIntro` / `CardIntro` tables — dead, backing orphaned Lambdas
 
 Discovered 2026-08-15 while briefly pulling the full Lambda inventory
@@ -243,6 +272,7 @@ persistent store the site depends on:
 
 - `img/blog/` — blog post images.
 - `img/cards/` — card set header/footer/middle images, keyed loosely by convention as `{year}_hero.webp`, `{setSlug}_Middle.webp`, etc.
+- `img/wax-packs/` — Wax Museum pack images, front and back (`frontImg`/`backImg` in `WaxPacks`).
 - `img/cms/` — CMS-only UI assets (e.g. the Autobus nameplate logo).
 - root — favicons (`favicon.ico`, `favicon2.ico`, etc).
 

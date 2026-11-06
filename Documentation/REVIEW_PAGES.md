@@ -23,6 +23,11 @@ records how it got here.
   review itself, the checklist, votes, the ticker) is still drawn in the
   browser by `wax.js` from the API.
 - Old query-string URLs (`waxReviews.html?year=1991&...`) keep working.
+- Since 2026-11-05 the generator also pre-renders the shared blocks
+  whose links point at review pages: the nav and footer (every public
+  page and review page), the year picker (every review page) and the
+  Browse By Set columns, with final `/reviews/<slug>/` links in the HTML
+  (see "Links" below).
 - The same build then minifies the public scripts and `styles.css` in
   place (see "The rest of the build: minified assets"); the repo keeps the
   readable source.
@@ -44,11 +49,14 @@ Amplify build (amplify.yml)
    node tools/generateReviewPages/generate.mjs
         reads getPublicCardSets (live sets, stars, SEO fields)
         template: waxReviews.html
-        writes: reviews/<slug>/index.html (one per set)
+        writes: reviews/<slug>/index.html (one per set, nav/footer/picker filled in)
                 reviews/index.json        (link manifest)
                 sitemap.xml
+        fills in place: the nav and footer of 8 static pages,
+                        browseBySet.html's two columns
    node tools/minifyAssets/minify.mjs        (public JS + styles.css, in place)
    rm -rf node_modules                       (keep it out of the artifact)
+   rm -rf "Old HTML Pages"                   (archived pages aren't published)
         |
         v
 Deploy to Amplify Hosting (CloudFront) --- amplifyBuildNotifier emails the result
@@ -77,8 +85,10 @@ content changes share one path.
    and retries three times. Git history is complete, so the static pages'
    `<lastmod>` (their last commit date) works.
 4. **Generator.** For each live set it takes `waxReviews.html` as a
-   template and replaces two marked blocks (below), then writes the
-   page. It also writes the manifest and the sitemap.
+   template, replaces two marked blocks (below) and fills three more
+   (nav, footer, year picker), then writes the page. It also writes the
+   manifest and the sitemap, and fills the nav and footer markers of the
+   static pages and the Browse By Set columns in the build's copy.
 5. **Deploy and notify.** Amplify deploys the artifact. The existing
    `amplifyBuildNotifier` emails the result, including the failing
    step's log link if the build failed.
@@ -89,7 +99,15 @@ Nothing is written unless every live set passes:
 
 - a `seoURLSlug` that is present, lowercase letters, numbers and single
   hyphens, and unique among live sets;
-- both marker pairs found exactly once in `waxReviews.html`;
+- every marker pair found exactly once: `review-head`, `review-params`,
+  `set-picker`, `nav` and `footer` in `waxReviews.html`; `nav` and
+  `footer` in each static page, which must also name a known `NAV_MAP`
+  key in `data-nav-page`; `browse-major` and `browse-fastfood` in
+  `browseBySet.html`;
+- the browser functions it runs (below) found and loadable: the
+  `nav-block` and `footer-block` slices of `helper.js`, `setPickerHtml`,
+  `compareSetsForDefault` and friends, and `browseColumnHtml` in
+  `browseBySet.js`;
 - `stars` present in the API response (otherwise `getPublicCardSets` has
   not been redeployed with it);
 - `categoryRanges` readable from `scripts/helper.js`, and a range that
@@ -180,14 +198,47 @@ Old query-string URLs get neither preload: the template doesn't know the
 year until JavaScript reads the address, and those pages replace their
 address with the slug URL anyway.
 
-## Links: query hrefs, upgraded from the manifest
+## Links: pre-rendered by the build, upgraded in the browser
 
-The nav, footer, breadcrumb category link, year picker and Player Search
-results know a year or a `setID`, not a slug. They render with the
-query-string `href` plus `data-review-cat` / `data-review-year` (or
-`data-review-setid`) attributes. `helper.js` starts loading
-`/reviews/index.json` as soon as it runs, and `applyReviewLinks()`
-swaps in `/reviews/<slug>/` for every such link once it arrives.
+**Why pre-render (2026-11-05).** Search Console listed 45 old
+`waxReviews.html?...` URLs as "Duplicate without user-selected
+canonical" and none of the slug pages crawled. Every link to a slug page
+was drawn by JavaScript with a query-string `href` first, so a crawler
+reading the raw HTML only ever found the old URLs (which all share one
+raw HTML with no canonical), and a rendered snapshot could catch them
+before the upgrade.
+
+**How.** The nav, footer, year picker and Browse By Set columns are each
+built by one pure function in the browser code (`navHtml()`,
+`footerHtml()`, `setPickerHtml()` in `helper.js`; `browseColumnHtml()` in
+`browseBySet.js`). The generator runs those same functions at build time
+in a `node:vm` sandbox: it lifts the `// nav-block:start`/`:end` and
+`// footer-block:start`/`:end` slices of `helper.js`, a few single
+functions by name (`escapeHtml`, `getPageNameForYear`, `setPickerHtml`,
+`compareSetsForDefault`, `reviewLinkAttrs`, and `stripYearFromSetName`
+from `wax.js`), and all of `browseBySet.js`. It passes each function an
+`hrefFor` resolver that returns a link's final `/reviews/<slug>/` URL
+(the year's default set, by `compareSetsForDefault()`, exactly what
+`applyReviewLinks()` would pick), and writes the result between marker
+comments, keeping the markers. One implementation serves both places,
+so the pre-rendered markup can't drift from what the browser would draw;
+it was checked to be identical on all 71 pages. The browser code skips a
+block that is already present (`fetchNav()`, `fetchFooterLinks()`,
+`renderSetPicker()`), so there's no query-then-slug flicker. A year with
+no live set (2004 McDonald's) keeps its query link, which redirects to
+`lockout.html`.
+
+The static pages are tracked files, so a local generator run leaves them
+modified: discard those changes (in Amplify it only touches the build's
+copy).
+
+**In the browser.** Old query-string pages (`waxReviews.html?...`) and
+the breadcrumb and Player Search results still use the original path:
+they render with the query-string `href` plus `data-review-cat` /
+`data-review-year` (or `data-review-setid`) attributes. `helper.js`
+starts loading `/reviews/index.json` as soon as it runs, and
+`applyReviewLinks()` swaps in `/reviews/<slug>/` for every such link
+once it arrives.
 
 The manifest is written by the same build as the pages, so it only ever
 lists pages that exist in that deployment: no window where a link
@@ -224,7 +275,8 @@ function, so the year links and the old bare-year URLs agree. (Before
 - **Old URLs.** `waxReviews.html?...` still works (above), including
   `&setID=` links. The 2004/mcd special case still redirects to the
   lockout page. A `sortOrder=last` parameter is dropped when the address
-  is rewritten.
+  is rewritten. An old link with `pageName` but no `blogCat` gets its
+  category from `resolveBlogCat()` (`helper.js`) and loads normally.
 - **Social previews.** Facebook, Discord, Reddit and X read only the raw
   HTML, so only a slug URL gets a per-set preview; a shared old-style
   link gets the generic one.
@@ -238,9 +290,11 @@ the whole directory and deploys it, and the machine is discarded.
 `.gitignore` lists `/reviews/` and `/sitemap.xml`. To see them, fetch the
 live URLs (for example `/reviews/index.json`); to get a local copy run
 `node tools/generateReviewPages/generate.mjs`, which writes the same files
-into the working folder (ignored by git). Because the artifact is the
-whole repo, `amplify.yml` itself is also served at `/amplify.yml`, like
-`tools/` and `Documentation/` already are.
+into the working folder (ignored by git) and also modifies the tracked
+static pages it pre-renders into (discard those). Because the artifact is
+the whole repo, `amplify.yml` itself is also served at `/amplify.yml`, like
+`tools/` and `Documentation/` already are; only `Old HTML Pages/` is
+removed before deploy (2026-11-05).
 
 ## The rest of the build: minified assets
 
@@ -251,7 +305,7 @@ stylesheet. It is described here because it shares `amplify.yml` and the
 **What happens.** After the generator, `node tools/minifyAssets/minify.mjs`
 rewrites the build's own copies of `scripts/helper.js`, `wax.js`,
 `ticker.js`, `blogs.js`, `playerSearch.js`, `browseBySet.js`,
-`timeline.js` and `styles/styles.css` in place, with a linked source map
+`timeline.js`, `waxMuseum.js` and `styles/styles.css` in place, with a linked source map
 (`helper.js.map` and so on, readable source embedded) beside each. The
 URLs don't change and no HTML changes, so every page, including every
 generated review page, picks the minified files up automatically. The repo
@@ -420,6 +474,18 @@ and the minifier at 0.1 s), so the build minutes don't change.
 
 ## Change log
 
+- **2026-11-05** — Links in the raw HTML, archived pages unpublished.
+  - Fixed the old URLs Google had indexed: `resolveBlogCat()` serves links
+    that have `pageName` but no `blogCat`.
+  - The generator pre-renders, in order of rollout: the Browse By Set
+    columns, each review page's year picker, the nav (static pages and
+    review pages) and the footer, through the same pure functions the
+    browser uses (see "Links"). New marker pairs and `data-nav-page`; new
+    failure checks.
+  - `tech.html` and `example.html` moved to `Old HTML Pages/`, and
+    `amplify.yml` gained `rm -rf "Old HTML Pages"`.
+  - Fonts self-hosted (`/fonts/`, `customHttp.yml` for their cache
+    header); see `FRONTEND.md`, "Typography / fonts".
 - **2026-10-30 (evening)** — Page-speed pass on review pages (PageSpeed
   mobile: layout shift 0.355 to 0, LCP 6.2 s to 5.2 s simulated; a
   throttled real-browser run lands at about 2.1 s).

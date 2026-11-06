@@ -23,13 +23,11 @@ Browser (static HTML/CSS/JS, no framework)
    |                        AWS Lambda (one function per endpoint)
    |                              |
    |                              v
-   |                        DynamoDB (Blogs, Cards, Checklists, Subscribers, SubscribersTest)
+   |                        DynamoDB (Blogs, Cards, Checklists, WaxPacks, Subscribers, SubscribersTest)
    |
    |-- <img src>/S3 -----> S3 bucket "mellowjohnny.cc.files" (images, favicons, S3 presigned uploads)
    |
    |-- redirect ---------> Cognito Hosted UI (login, only for /cms/*)
-   |
-   |-- fetch() -----------> api.openweathermap.org (weather widget on tech.html only, client-side API key)
    |
    |-- <img src> ---------> assets.nhle.com, media.d3.nhle.com (NHL logos, recap/video images)
    |
@@ -58,12 +56,25 @@ now exists and runs, in order: `npm ci` (installs one dev dependency,
 `esbuild`, from the root `package.json`/`package-lock.json`);
 `node tools/generateReviewPages/generate.mjs`, which writes the
 `/reviews/<slug>/` pages, `reviews/index.json` and `sitemap.xml` into the
-build output (all gitignored, never committed);
-`node tools/minifyAssets/minify.mjs`, which minifies the public scripts and
-`styles.css` in place in the build's copy (the repo keeps readable source;
-about 67 KB becomes 34.5 KB over the wire); and `rm -rf node_modules`, since
-the artifact is the whole directory and the installed packages must not be
-published. Otherwise the site is still plain HTML/CSS/JS with no bundler. The
+build output (all gitignored, never committed) and pre-renders the nav,
+footer, year picker and Browse By Set columns into the build's copy of the
+pages; `node tools/minifyAssets/minify.mjs`, which minifies the public
+scripts and `styles.css` in place in the build's copy (the repo keeps
+readable source; about 67 KB becomes 34.5 KB over the wire);
+`rm -rf node_modules`, since the artifact is the whole directory and the
+installed packages must not be published; and (since 2026-11-05)
+`rm -rf "Old HTML Pages"`, so archived pages stay in git but aren't
+published. Everything else in the repo is published as is, including
+`Documentation/`, `Lambdas/` source, `tools/` and `CLAUDE.md`.
+
+A root `customHttp.yml` (since 2026-11-05; Amplify reads it at build time,
+and the console has no custom headers of its own) gives every `.woff2` file
+`Cache-Control: public, max-age=31536000, immutable`. Every other file keeps
+Amplify's default (`public, max-age=0, s-maxage=31536000`: cached a year at
+the CDN, revalidated by the browser on each visit). The fonts can be cached
+that hard because they are self-hosted under versioned filenames (`/fonts/`,
+see `FRONTEND.md`, "Typography / fonts"); the site makes no request to Google
+Fonts. Otherwise the site is still plain HTML/CSS/JS with no bundler. The
 build image is Amazon Linux 2 with Node 16.19 and full git history (read from
 a diagnostic build's log), which is why the generator uses `node:https`, not
 `fetch`, and why esbuild is pinned to 0.19.12 (the last line that supports
@@ -78,10 +89,11 @@ This is separate from Lambda deployment, which is manual per-function
 and not automated by this Amplify pipeline at all (see
 `LAMBDA_FUNCTIONS.md`). Every live Lambda's source is version-controlled
 in this repo under `Lambdas/`, but the deploy mechanics differ by
-function: the 30 with no real npm dependency just need the updated
+function: the 33 with no real npm dependency just need the updated
 `index.mjs` pasted into the Lambda Console's inline code editor and
-Deploy clicked, while `sendAlertHandler` (has `twilio`) and
-`parseChecklistPdf` (has `pdf-parse`) need a full `npm install` + zip +
+Deploy clicked, while `sendAlertHandler` (has `twilio`),
+`parseChecklistPdf` (has `pdf-parse`) and `generateSeoDescription` (has
+`@anthropic-ai/bedrock-sdk`) need a full `npm install` + zip +
 "Update from a .zip file" upload instead.
 
 ### Domains, DNS and redirects
@@ -193,24 +205,24 @@ elsewhere. Practically, that means:
 
 Plain multi-page HTML site, no bundler/framework (the deployed public scripts and stylesheet are minified copies made in the Amplify build; the repo holds the readable source — see `REVIEW_PAGES.md`):
 
-- Every page is a standalone `.html` file at the repo root (`index.html`, `about.html`, `tech.html`, `waxReviews.html`, `browseBySet.html`, `playerSearch.html`, `lockout.html`, `theJunkWaxYears.html`, `timeline.html`) or under `/cms`. `cards.html` and `cardChecker.html` were both archived to `Old HTML Pages/` on 2026-08-15 — no longer live pages, see `FRONTEND.md`.
+- Every page is a standalone `.html` file at the repo root (`index.html`, `about.html`, `waxReviews.html`, `browseBySet.html`, `playerSearch.html`, `lockout.html`, `theJunkWaxYears.html`, `timeline.html`, `waxMuseum.html`) or under `/cms`. `cards.html` and `cardChecker.html` were archived to `Old HTML Pages/` on 2026-08-15, and `tech.html` and `example.html` on 2026-11-05; that folder isn't published — see `FRONTEND.md`.
 - Shared behaviour lives in `/scripts/*.js`, included per-page via `<script src>` tags — see `FRONTEND.md` for which script does what.
 - Styling is a single `styles/styles.css`.
 - Pages read query-string parameters (`?year=`, `?blogType=`, `?pageName=`, `?blogCat=`) to decide what content to fetch and how to render the nav — see `FRONTEND.md`. The exception is the card set reviews: each has a generated page at `/reviews/<slug>/` with those values fixed in the HTML, while the old query-string URLs still work (`REVIEW_PAGES.md`).
 
 ## Backend
 
-- **API Gateway**: many independent REST APIs (each with its own random subdomain, e.g. `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev`), each fronting exactly one Lambda. Full inventory in `API_ENDPOINTS.md`. 25 of the 32 documented endpoints are deployed to a stage named `dev`; the 4 Autobus SMS endpoints, "Get all live sets (public)", "Get NHL game details" and "Get PWHL scores" (see `API_ENDPOINTS.md`) are on `prod`. That split is historical, not meaningful — there's no separate dev environment behind either name (no separate Lambda/DynamoDB per stage), and this site has exactly one real target (production; see "Hosting & deployment" above — a push to `main` goes live immediately, no staging step). Not worth renaming the existing 25 to `prod` retroactively, since an API Gateway stage rename changes its invoke URL, which would mean updating every hardcoded URL in `scripts/*.js` plus this doc for a purely cosmetic fix — but any *new* endpoint going forward should be deployed to `prod` from the start, so new work doesn't keep perpetuating the `dev` label.
+- **API Gateway**: many independent REST APIs (each with its own random subdomain, e.g. `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev`), each fronting exactly one Lambda. Full inventory in `API_ENDPOINTS.md`. The older endpoints are deployed to a stage named `dev`; the newer ones — the 4 Autobus SMS endpoints, "Get all live sets (public)", the NHL/PWHL ticker endpoints and the three wax pack endpoints, among others (see `API_ENDPOINTS.md`) — are on `prod`. That split is historical, not meaningful — there's no separate dev environment behind either name (no separate Lambda/DynamoDB per stage), and this site has exactly one real target (production; see "Hosting & deployment" above — a push to `main` goes live immediately, no staging step). Not worth renaming the existing 25 to `prod` retroactively, since an API Gateway stage rename changes its invoke URL, which would mean updating every hardcoded URL in `scripts/*.js` plus this doc for a purely cosmetic fix — but any *new* endpoint going forward should be deployed to `prod` from the start, so new work doesn't keep perpetuating the `dev` label.
 - **API Gateway compression and caching**: content encoding is a free per-API setting, turned on so far for the two large public reads, "Get card sets by year" (gzip took its response from about 50 KB to 17 KB) and "Get all live sets (public)" (about 45 KB to 7.7 KB), while the stage cache was tried and switched off as too expensive for this site's traffic. The `Cache-Control` headers the public Lambdas send still give repeat visitors browser caching. Details and a one-line check: `API_ENDPOINTS.md` ("Compression").
 - **Lambda**: Node.js, using the modern modular `@aws-sdk/*` (v3) packages throughout (e.g. `@aws-sdk/client-dynamodb`), not the legacy `aws-sdk` v2. As of the 2026-08-15 sync, every live function's source is version-controlled in this repo under `Lambdas/`, not just `sendAlertHandler` — see `LAMBDA_FUNCTIONS.md` and the `## Commands` section of `CLAUDE.md` for the sync/deploy workflow.
-- **DynamoDB**: at least `Blogs`, `Cards`, `Checklists`, `Subscribers`, `SubscribersTest` tables. See `DATA_MODEL.md`. `Cards` has a DynamoDB Stream turned on (new and old images) since 2026-10-30; its only consumer is the `cardsRebuildTrigger` Lambda (see "Hosting & deployment" above and `REVIEW_PAGES.md`). **Billing mode**: `Checklists` and `Cards` both run **On-Demand**, not Provisioned — `Checklists` because `searchPlayerName`'s full-table `Scan`-per-search design (see `LAMBDA_FUNCTIONS.md`) exhausted a provisioned RCU ceiling almost immediately; `Cards` for the same reason once `cms/admin.html`'s tools (also `LAMBDA_FUNCTIONS.md`) started making many rapid `Query` calls against it. Both also have an explicit **maximum throughput cap** set (DynamoDB Console → table → Additional settings → Maximum table throughput) — a deliberate middle ground: on-demand alone removes the fixed ceiling that caused the original throttling, but leaves read/write cost technically uncapped, and both tables sit behind fully public, unauthenticated read endpoints. The cap is a coarse, real-time circuit breaker against a runaway/abusive traffic spike, sized well above any known legitimate usage pattern (including bursty admin-tool runs) so it never interferes with normal traffic — complementary to, not a replacement for, the account-wide $5/month AWS Budget alert above, which is after-the-fact rather than preventative. Other tables' billing modes haven't been confirmed either way.
-- **S3**: bucket `mellowjohnny.cc.files` serves all images (`img/blog/`, `img/cards/`, `img/cms/`, favicons) directly over HTTPS, and also receives direct browser PUT uploads via presigned URLs generated by a Lambda (see `API_ENDPOINTS.md` → image upload).
+- **DynamoDB**: at least `Blogs`, `Cards`, `Checklists`, `WaxPacks`, `Subscribers`, `SubscribersTest` tables. See `DATA_MODEL.md`. `Cards` has a DynamoDB Stream turned on (new and old images) since 2026-10-30; its only consumer is the `cardsRebuildTrigger` Lambda (see "Hosting & deployment" above and `REVIEW_PAGES.md`). **Billing mode**: `Checklists` and `Cards` both run **On-Demand**, not Provisioned — `Checklists` because `searchPlayerName`'s full-table `Scan`-per-search design (see `LAMBDA_FUNCTIONS.md`) exhausted a provisioned RCU ceiling almost immediately; `Cards` for the same reason once `cms/admin.html`'s tools (also `LAMBDA_FUNCTIONS.md`) started making many rapid `Query` calls against it. Both also have an explicit **maximum throughput cap** set (DynamoDB Console → table → Additional settings → Maximum table throughput) — a deliberate middle ground: on-demand alone removes the fixed ceiling that caused the original throttling, but leaves read/write cost technically uncapped, and both tables sit behind fully public, unauthenticated read endpoints. The cap is a coarse, real-time circuit breaker against a runaway/abusive traffic spike, sized well above any known legitimate usage pattern (including bursty admin-tool runs) so it never interferes with normal traffic — complementary to, not a replacement for, the account-wide $5/month AWS Budget alert above, which is after-the-fact rather than preventative. Other tables' billing modes haven't been confirmed either way.
+- **S3**: bucket `mellowjohnny.cc.files` serves all images (`img/blog/`, `img/cards/`, `img/wax-packs/`, `img/cms/`, favicons) directly over HTTPS, and also receives direct browser PUT uploads via presigned URLs generated by a Lambda (see `API_ENDPOINTS.md` → image upload).
 - **Cognito**: one User Pool, gates the `/cms` authoring tools via its Hosted UI. See `AUTH.md`.
 
 ## Third-party services
 
 - **TinyMCE** (cloud-hosted, API key embedded in `cms/*.html`) — WYSIWYG editor used for blog post bodies and card set review bodies in the CMS. The key only works on domains approved in the Tiny account it came from; an unapproved domain gets a "domain is not registered" banner and a disabled editor. The current key is from an account created 2026-10-13, with `junkwaxhockey.com` and `www.junkwaxhockey.com` approved.
-- **OpenWeatherMap** — the weather widget on `tech.html` only (`scripts/blogs.js`; the Home page no longer has one); API key is hardcoded client-side (`49f84d9cdb7907dfd2b02085e270372e`) — this is visible to anyone viewing page source, worth being aware of even though OpenWeather free-tier keys are generally meant to be used this way.
+- **OpenWeatherMap** — the weather widget (`scripts/blogs.js`), whose only page, `tech.html`, was archived on 2026-11-05, so nothing live calls it now; API key is hardcoded client-side (`49f84d9cdb7907dfd2b02085e270372e`) — this is visible to anyone viewing page source, worth being aware of even though OpenWeather free-tier keys are generally meant to be used this way.
 - **NHL API** (`api-web.nhle.com`, plus NHL.com's content API `forge-dapi.d3.nhle.com`) — free, undocumented, no API key. Feeds the scores ticker and the game modal on the ticker pages (Wax Reviews, Player Search, Lockout, The Junk Wax Years, Timeline), always through the `getNhlScores`/`getNhlGameDetails` Lambdas because `api-web` sends no CORS headers; only images (`assets.nhle.com`, `media.d3.nhle.com`) load directly in the browser. See `NHL_API.md`.
 - **HockeyTech** (`lscluster.hockeytech.com`) — the PWHL's stats provider, no public API. Feeds the PWHL section of the scores ticker, always through the `getPwhlScores` Lambda: the feed returns an empty response to any request with an `Origin` header, so browsers can't call it. Uses the PWHL site's own public key. See `PWHL_API.md`.
 - **Brightcove** — the NHL's own video player (`players.brightcove.net`, account `6415718365001`), embedded as an `<iframe>` in the game modal for highlights, loaded only when the visitor clicks play. Plays NHL pre-roll ads.
