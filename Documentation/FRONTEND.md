@@ -1601,7 +1601,7 @@ The Home page's layout (same banner, nav, footer and scripts)
 showing the blog post(s) of `blogType` 98. Unlike the Home page, which
 is static, it still fetches its content: `fetchBlogs('98')`, plus
 `fetchNav("about")`, because the About post is meant to be edited
-through the CMS. Its H1 ("about junk wax hockey...") is written
+through the CMS. Its H1 ("How This Site Comes Together") is written
 straight into the HTML inside `#blog-intro`, along with its own
 title, description, canonical and social tags, so a crawler that
 doesn't run JavaScript still finds a heading and a preview card.
