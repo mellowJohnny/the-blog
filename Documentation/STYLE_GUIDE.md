@@ -110,6 +110,12 @@ other family, and no Google Fonts link.
   root page breaks there. External links (`https://…`), in-page anchors
   (`#…`) and `mailto:` are fine as they are. The style check flags any
   other relative `href` (`relative-link`).
+- **Head order.** Every public page starts the same way: `<!doctype html>`
+  (lowercase), `<html lang="en-ca">`, then in `<head>`: `<meta charset>`,
+  the viewport `<meta>`, the three favicon links (`/favicon.ico`,
+  `icon-192.png`, `apple-touch-icon.png`, one attribute per line), then the
+  title, description, canonical and social tags. (`waxReviews.html` has no
+  canonical in its head on purpose; each set's is set per page.)
 - **New public pages** copy an existing page's head and skeleton: the same
   head order, masthead, `nav`/`footer` markers with `data-nav-page`, the
   ticker block where the page has one, and the analytics loader (see
@@ -163,8 +169,9 @@ gtag('config', 'G-JMGVGK09QX');
 `tools/styleCheck/check.mjs` checks the mechanical rules: colours outside
 `:root`, font families, sizes and weights off the scale, headings styled
 outside the shared rules, inline `style=""`, `<i>`/`<b>`/`<font>`, relative
-links, skipped heading levels in static HTML, and the analytics loader (an
-old-style `async` tag, or a page with no window-load loader). It is run by hand and is
+links, skipped heading levels in static HTML, the head order (lowercase
+doctype, then charset, viewport, favicons and title), and the analytics
+loader (an old-style `async` tag, or a page with no window-load loader). It is run by hand and is
 never part of the Amplify build.
 
 - `node tools/styleCheck/check.mjs` checks only the lines changed since the
@@ -211,7 +218,6 @@ Anything outside them follows the guide.
 Found by the 2026-11-06 consistency review. Fix them rather than copy them.
 `check.mjs --all` lists the mechanical ones line by line.
 
-- `<!DOCTYPE>` casing and favicon tag formatting differ between pages.
 - `body` has no font family, so anything missed falls back to Times.
 - Review and post body text is `rgb(34, 38, 41)`, not black like intros.
 - `styles.css` still has many hand-typed colours and sizes from before this

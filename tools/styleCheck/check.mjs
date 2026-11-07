@@ -116,8 +116,25 @@ function checkCss(file, lines, wanted) {
   });
 }
 
+// STYLE_GUIDE.md "Head order": lowercase doctype, then charset, viewport, the favicons, then the title.
+const HEAD_STEPS = [["charset", /<meta\s+charset/i], ["viewport", /name=["']viewport["']/i],
+  ["favicon", /rel=["']icon["']/i], ["apple-touch-icon", /rel=["']apple-touch-icon["']/i], ["title", /<title\b/i]];
+
+function checkHeadOrder(file, lines) {
+  const firstReal = lines.findIndex((l) => l.trim() !== "");
+  if (lines[firstReal].trim() !== "<!doctype html>") report(file, firstReal + 1, "head-order", `first line must be <!doctype html>: ${lines[firstReal]}`);
+  let previous = -1;
+  for (const [name, re] of HEAD_STEPS) {
+    const at = lines.findIndex((l) => re.test(l));
+    if (at === -1) { report(file, 1, "head-order", `no ${name} in the head`); continue; }
+    if (at < previous) report(file, at + 1, "head-order", `${name} comes before the element the guide puts ahead of it`);
+    previous = Math.max(previous, at);
+  }
+}
+
 function checkMarkup(file, lines, wanted, isHtml) {
   let lastLevel = 0;
+  if (isHtml) checkHeadOrder(file, lines);
   // Every public page must load analytics with the window-load loader (STYLE_GUIDE.md, "Analytics")
   if (isHtml && !lines.some((l) => /g\.src\s*=\s*'https:\/\/www\.googletagmanager\.com\/gtag\/js/.test(l))) {
     report(file, 1, "analytics-loader", "no window-load analytics loader in this page");
