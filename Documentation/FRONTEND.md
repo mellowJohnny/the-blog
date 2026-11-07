@@ -20,7 +20,7 @@ inline in the `<head>`.
 | `waxReviews.html` | Card set review stream — the main hockey card content. Since 2026-10-30 it is two things: the **template** the generator copies into one page per set (`/reviews/<slug>/`, with that set's head tags and `year`/`pageName`/`blogCat`/`setID` fixed in the HTML), and the page that still serves the **old query-string URLs**, which rewrite their own address to the slug page once the set loads. See "Linking to one specific set" below and `REVIEW_PAGES.md`. The title, description, canonical, Open Graph/Twitter tags, JSON-LD and breadcrumb are written by JavaScript for every set (a generated page already has the first four in its HTML) — see "SEO and social tags". | `year`, `pageName`, `blogCat`, `sortOrder`, `setID` (all fixed in a generated page) | `wax.js`, `ticker.js`, `helper.js` |
 | `reviews/<slug>/index.html` | **Generated, not in git** (gitignored): one page per live set, written by every Amplify build from `waxReviews.html`, plus `reviews/index.json` (the link manifest). See "Sitemap" below and `REVIEW_PAGES.md`. | — | same as `waxReviews.html` |
 | `playerSearch.html` | Player search — find every set a player appears in, across all uploaded checklists, with links to each set's review. See "Player search" below. | — | `playerSearch.js`, `ticker.js`, `helper.js` |
-| `lockout.html` | Static essay about the 2004-05 NHL lockout. Special-cased redirect target — see below. Its title, description, H1 and social tags are static in the HTML (nothing sets them from JavaScript any more); the breadcrumb is filled by `renderBreadcrumbs()`. | — | `wax.js`, `ticker.js`, `helper.js` |
+| `lockout.html` | Static essay about the 2004-05 NHL lockout. Special-cased redirect target — see below. Its title, description, H1 and social tags are static in the HTML (nothing sets them from JavaScript any more); the breadcrumb is filled by `renderBreadcrumbs()`. Its `year`/`pageName`/`blogCat` globals are fixed (`"2004"`, `"mcd"`, `"mcd"`), not read from the URL, since the nav, footer and sitemap link to the bare `/lockout.html` (2026-11-06); the old per-year hero-image preload went with them (there is no 2004 hero). It loads no set, so it has no loading spinner. | — | `wax.js`, `ticker.js`, `helper.js` |
 | `theJunkWaxYears.html` | Static essay on hockey's "Junk Wax" era (the late-80s/early-90s overproduction boom this site's card reviews mostly cover). Linked from `waxReviews.html`'s junkWax intro copy (`renderCardIntro()`, `wax.js`). Since 2026-11-05 it has no set-o-matic year picker (an essay isn't one of the review pages), and its "Junk Wax Curious?" heading sits inside the essay's `.intro` block, the way the Home page places its heading, so the two line up. Was briefly moved into `Old HTML Pages/` by mistake and missed the site-wide HTML/CSS-conformity and SEO passes as a result — since restored and brought in line with the other pages (masthead/fonts/script-loading now match `lockout.html`'s pattern; a `<meta description="...">` typo, which meant this page never actually had a working meta description, and a broken `class="flex-container, intro"` — a stray comma silently prevented that layout class from ever applying — were also fixed). | — | `ticker.js`, `helper.js` |
 | `timeline.html` | Interactive timeline of the Junk Wax era — one flip card per season, built in the browser from a markdown file. See "Junk Wax timeline" below. | — | `timeline.js`, `ticker.js`, `helper.js` |
 | `browseBySet.html` | Every live set in two columns (Major Releases; Fast Food Sets), grouped by season, each with Review and Checklist links, plus an `ItemList` JSON-LD block of the same links. Since 2026-11-05 the build pre-renders both columns into the HTML, so it is the one page whose raw HTML links to every `/reviews/<slug>/` page. Carries the scores ticker. Linked from the nav (last item under Major Releases) and footer as "All Sets". See "Browse By Set" below. | — | `browseBySet.js`, `wax.js`, `ticker.js`, `helper.js` |
@@ -31,7 +31,9 @@ inline in the `<head>`.
 
 **Page titles** follow one pattern: `Heading - short description | Junk Wax Hockey` (for example "The Wax Museum - vintage and junk wax hockey card wax packs, front and back | Junk Wax Hockey"), in `<title>` and the matching `og:title`/`twitter:title`. Review pages take theirs from the set's CMS SEO fields instead.
 
-**Page headings** share one size: the intro `h1`s (Home, About, The Junk Wax Years), the `.header-style h1`s (Player Search, Timeline, Browse By Set, The Wax Museum, Lockout) and the review pages' intro `h2` are all 34px (one rule in `styles.css`). On the public pages the `.header-style` block is also sized and padded to start exactly where the `.intro` text column does, at every width (a `body:has(.site-footer)` rule, so the `/cms` pages, which share the class, keep their layout).
+**Page headings** share one size: the intro `h1`s (Home, About, The Junk Wax Years), the `.header-style h1`s (Player Search, Timeline, Browse By Set, The Wax Museum, Lockout) and the review pages' intro `h2` are all 34px (one rule in `styles.css`). On the public pages the `.header-style` block is also sized and padded to start exactly where the `.intro` text column does, at every width (a `body:has(.site-footer)` rule, so the `/cms` pages, which share the class, keep their layout). The title sits 13px below the nav (25px below the breadcrumbs, from the trail's bottom padding) with about 23px down to the intro text, the same on every page; the intro block's own padding is one shared rule rather than one per page.
+
+**Section headings** go through two shared rules, so they can't drift apart: an h2 rule (`.blog-title`, `#timelineTitle`, `.browse-col-heading`: 26px navy, 22px on phones) and an h3 rule (`.player-search-set-name`, `.browse-season-heading`: 20px navy). Bylines are one `.byline` class (dark grey, upright), built by `blogs.js` and `buildCardSetMarkup()`. Colours, sizes and markup rules for all of this are binding in `STYLE_GUIDE.md`, and `tools/styleCheck/check.mjs` checks them.
 
 ### `waxReviews.html` → `lockout.html` redirect
 
@@ -135,7 +137,7 @@ are open, which load the source map and show the real file and line.
 | `browseBySet.js` | `browseBySet.html` only: fetches the live set list once from `getPublicCardSets` (`BROWSE_SETS_URL`), splits it into the two columns, groups by season and builds the Review/Checklist links (`initBrowseBySet()`; `browseReviewUrl()` builds a set's review URL for both the links and the `ItemList` JSON-LD from `setBrowseItemListJsonLd()`: its `/reviews/<slug>/` page when the set has a slug, else the old query-string form). Checklist clicks hand off to `openChecklistModal()` in `wax.js`. The column markup comes from `browseColumnHtml(sets)`, a pure function the build generator also runs (in a Node sandbox) to pre-render the columns into the page, so the two can't drift. See "Browse By Set" below. |
 | `waxMuseum.js` | `waxMuseum.html` only: fetches every pack once from `getWaxPacks`, sorts them (`sortWaxPacks()`: oldest year first, then one set at a time A to Z, then series order, then "Low" before "High" packs, then name) and renders the flip cards in batches of six as the visitor scrolls (`renderWaxMuseum()`, `buildWaxPackCard()`). Entry point is `initWaxMuseum()`. See "The Wax Museum" below. |
 | `cmsWaxPack.js` | The three CMS wax pack pages (`newWaxPack.html`, `pickWaxPack.html`, `waxPackEdit.html`): the shared form, its fixed manufacturer/packaging/type dropdowns, the front/back image pickers (S3 `img/wax-packs/`), the review-link dropdown (from `getPublicCardSets`), and the save and delete calls, which send the Cognito token. See `CMS_GUIDE.md`. |
-| `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `truncateAtWord(text, max)` (cuts plain text at a word boundary and adds "..." only when it cut — shared by `wax.js`'s description fallback and the CMS SEO generators), `renderBreadcrumbs(pageName, label, url)` with `SITE_ORIGIN` and `BREADCRUMB_CATEGORY_IDS` (the visible breadcrumb nav plus its `BreadcrumbList` JSON-LD), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top nav (`NAV_ITEMS`/`NAV_GROUPS`/`NAV_SELF`/`NAV_MAP`, the pure `navHtml()` and the thin `fetchNav()`; see "Navigation system"), `resolveBlogCat()` (the category for an old review URL that has `pageName` but no `blogCat`), the review-link upgrade (`loadReviewLinks()` fetches `/reviews/index.json`, the manifest each build writes, as soon as `helper.js` runs on any non-CMS page; `applyReviewLinks()` swaps the `href` of every link carrying `data-review-cat`/`data-review-year` or `data-review-setid` to its `/reviews/<slug>/` page, called after the nav, footer, breadcrumb, year picker and Player Search results render; `reviewLinkAttrs()` adds those attributes for a `NAV_ITEMS` entry with a `review` year; `compareSetsForDefault()` is the one rule for which set a bare-year link opens — highest `stars`, ties by `setName` — shared with `wax.js`'s sort; see "Linking to one specific set"), the "set-o-matic" year-picker builder (the pure `setPickerHtml()` plus the thin `renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time; since 2026-10-30 `tools/generateReviewPages/generate.mjs` also reads this literal straight out of the file, so keep it a plain object literal ending in `};` at the start of a line), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — now used only by `waxReviews.html`, whose values depend on data (it also served the archived `tech.html`); the static pages carry those tags in their HTML instead, see "SEO and social tags") and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped/middle images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), `buildCardSetMarkup()` (the single source of truth for a card set review's HTML, shared by the live site's `displayCardSet()` and the CMS preview modal's `renderPreview()` — added 2026-09-28 to end the drift between two hand-maintained copies; see "Card set markup is shared with the CMS preview" below), hamburger menu toggle, cookie helper, the copyright-year footer line (`fetchCopyrightYear()`) and the public-page footer's link columns (`FOOTER_SECTIONS`, the pure `footerHtml()` and the thin `fetchFooterLinks()` — see "Site footer" below). The nav block and the footer block are each wrapped in `// nav-block:start`/`:end` and `// footer-block:start`/`:end` comments: the build generator runs exactly those slices (plus a few single functions it lifts by name) to pre-render the same markup, so keep the comments and keep those functions free of DOM access. |
+| `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `truncateAtWord(text, max)` (cuts plain text at a word boundary and adds "..." only when it cut — shared by `wax.js`'s description fallback and the CMS SEO generators), `renderBreadcrumbs(pageName, label, url)` with `SITE_ORIGIN` and `BREADCRUMB_CATEGORY_IDS` (the visible breadcrumb nav plus its `BreadcrumbList` JSON-LD), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top nav (`NAV_ITEMS`/`NAV_GROUPS`/`NAV_SELF`/`NAV_MAP`, the pure `navHtml()` and the thin `fetchNav()`; see "Navigation system"), `resolveBlogCat()` (the category for an old review URL that has `pageName` but no `blogCat`), the review-link upgrade (`loadReviewLinks()` fetches `/reviews/index.json`, the manifest each build writes, as soon as `helper.js` runs on any non-CMS page; `applyReviewLinks()` swaps the `href` of every link carrying `data-review-cat`/`data-review-year` or `data-review-setid` to its `/reviews/<slug>/` page, called after the nav, footer, breadcrumb, year picker and Player Search results render; `reviewLinkAttrs()` adds those attributes for a `NAV_ITEMS` entry with a `review` year; `compareSetsForDefault()` is the one rule for which set a bare-year link opens — highest `stars`, ties by `setName` — shared with `wax.js`'s sort; see "Linking to one specific set"), the "set-o-matic" year-picker builder (the pure `setPickerHtml()` plus the thin `renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time; since 2026-10-30 `tools/generateReviewPages/generate.mjs` also reads this literal straight out of the file, so keep it a plain object literal ending in `};` at the start of a line), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — now used only by `waxReviews.html`, whose values depend on data (it also served the archived `tech.html`); the static pages carry those tags in their HTML instead, see "SEO and social tags") and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped/middle images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), `buildCardSetMarkup()` (the single source of truth for a card set review's HTML, shared by the live site's `displayCardSet()` and the CMS preview modal's `renderPreview()` — added 2026-09-28 to end the drift between two hand-maintained copies; see "Card set markup is shared with the CMS preview" below), the one loading spinner every public page uses (`showSpinner(container)` — see "Loading spinner" below), hamburger menu toggle, cookie helper, the copyright-year footer line (`fetchCopyrightYear()`) and the public-page footer's link columns (`FOOTER_SECTIONS`, the pure `footerHtml()` and the thin `fetchFooterLinks()` — see "Site footer" below). The nav block and the footer block are each wrapped in `// nav-block:start`/`:end` and `// footer-block:start`/`:end` comments: the build generator runs exactly those slices (plus a few single functions it lifts by name) to pre-render the same markup, so keep the comments and keep those functions free of DOM access. |
 | `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise; each link carries `data-review-setid` and `applyReviewLinks()` upgrades it to the set's `/reviews/<slug>/` page); also the type-ahead dropdown (`initPlayerSearchTypeahead()`/`loadPlayerNameIndex()`/`rankPlayerNameMatch()`) that suggests player names client-side from a once-fetched, cached name index. See "Player search" below. |
 | `adminTools.js` | `cms/admin.html` support code: a growing set of self-service site-health checks (broken images, review-image alt text and size, review pages deployed, orphaned checklists), each its own function calling the site's existing read APIs directly; the orphaned-checklist check can also delete the ticked checklists through `saveChecklist`. Its `fetchAllCardSets()` (every live set, via `getCardSetsByYear`, shared by the two image checks) happens to share a name with a different function in `cmsCardSet.js` (the CMS pick list); the two files are never loaded on the same page, so they don't clash, but rename one before ever loading both. See `CMS_GUIDE.md`'s "Admin Tools" section. |
 | `auth.js` | Cognito OAuth2 code exchange + token refresh, gates every `/cms` page. See `AUTH.md`. |
@@ -239,7 +241,10 @@ looked up from `NAV_ITEMS`), not a "Junk Wax Years" step, because
 `theJunkWaxYears.html` is an essay and not a parent of the review
 pages. For the first set of a category the middle link and the current
 page share a URL; that is harmless. Styles are `.breadcrumbs` in
-`styles.css`.
+`styles.css`. Only pages below a section carry a trail; the top-level
+pages have none on purpose (owner decision, 2026-11-07): a "Home ›
+Page" trail adds nothing for visitors, and breadcrumbs aren't a ranking
+factor.
 
 **The sitemap** is covered under "Sitemap" above.
 
@@ -304,7 +309,8 @@ non-interactive heading and its links are indented beneath it.
 **Look.** The bar is Nunito 600, 18px, uppercase with 0.08em letter
 spacing, the same type as the footer. Dropdown links keep their written
 capitalisation (`text-transform: none`, normal letter spacing) and are
-19px on desktop, since mixed case reads smaller than the bar's capitals.
+20px on desktop (the nearest type-scale size, `STYLE_GUIDE.md`), since
+mixed case reads smaller than the bar's capitals.
 
 The "set-o-matic" year picker works the same way: `categoryRanges` maps
 `blogCat` → `{start, end}` year ranges per page, and the pure
@@ -353,7 +359,7 @@ Nunito loaded, which is why the headroom matters.
 
 Within the hamburger range, a narrower band, `@media (min-width: 601px)
 and (max-width: 1220px)`, bumps the hamburger icon and open-menu sizing
-up (32px → 48px icon, 0.9rem → 1.3rem menu text, more generous link
+up (32px → 48px icon, 14px → 20px menu text, more generous link
 padding) beyond the phone-tuned defaults. A tablet's screen is big
 enough that phone-sized controls read as too small.
 
@@ -527,8 +533,8 @@ Google Fonts.
 
 | Family | Role | Weights / styles loaded |
 |---|---|---|
-| **Nunito** | Wayfinding: the nav bar and dropdowns, the footer, the year picker and its heading, Browse By Set's season headings and links, the Flip pills | 200, 600 |
-| **Source Sans 3** | All other text: headings, intros, review bodies, set details values, the ticker, modals, the CMS | 400, 700, italic 400, italic 700 |
+| **Nunito** | Wayfinding: the nav bar and dropdowns, the footer, the year picker and its heading, Browse By Set's Review/Checklist links, the Flip pills | 200, 600 |
+| **Source Sans 3** | All other text: headings (including Browse By Set's column and season headings since 2026-11-07), intros, review bodies, set details values, the ticker, modals, the CMS. It is also the `body` default on the public pages (`body:has(.site-footer)`), so text with no rule of its own never falls back to the browser's serif | 400, 700, italic 400, italic 700 |
 | **Bebas Neue** | The "Junk Wax Hockey" masthead and the checklist modal's masthead | 400 |
 | **Special Elite** | The typewriter accent on review pages: set details field names and values table, captions, the Checklist link | 400 |
 
@@ -648,9 +654,10 @@ rule, so it wins at equal specificity), with tokens on `:root`
 
 - **Primary** (the default): filled, 10px corners, and a thin outer ring
   in the button's own colour — `box-shadow: 0 0 0 1px #fff, 0 0 0 2px
-  var(--btn-ring)`. Every action button is the CMS blue (`#256386`);
-  destructive ones (`.delete-btn`, `.cms-confirm-confirm-btn`) are red
-  (`#a83232`) and set `--btn-ring` to match. Hover darkens via
+  var(--btn-ring)`. Every action button is the CMS blue
+  (`--color-button`, `#256386`); destructive ones (`.delete-btn`,
+  `.cms-confirm-confirm-btn`) are red (`--color-red`, `#a83232`) and set
+  `--btn-ring` to match. Hover darkens via
   `filter: brightness(0.92)`; keyboard focus gets an outline.
 - **Secondary**: white with a grey border and no ring — every Cancel and
   every pure-dismiss Close. Comes from `.bulk-btn-cancel`,
@@ -672,6 +679,47 @@ browser's Choose File/Upload controls were converted from inline styles
 to `.input-button` for exactly that reason. Deliberately excluded: the
 👍/👎 `.vote-btn` pills, the `.cms-nav-parent` dropdown toggles, `×`
 close icons, the hamburger, and TinyMCE's own toolbar buttons.
+
+## Loading spinner
+
+Every public wait for data uses one spinner, `showSpinner(container)` in
+`helper.js` (2026-11-07). Before it, loading looked four different ways:
+two copies of the same full-screen spinner (Player Search, the Wax
+Museum), "Loading..." text (All Sets, Timeline, both modals) and a blank
+box (the review pages, About).
+
+- **Two placements.** With no argument it shows a full-screen overlay
+  (`.site-spinner-overlay`, built on first use and appended to `body`, so
+  no page carries spinner markup). Given an element, it puts the same
+  ring inside it (`.site-spinner-inline`), which is how the checklist and
+  NHL game modals show it without stacking an overlay on the modal.
+- **The 300ms delay.** It appears only if the load takes longer than
+  300ms, so a fast load never flashes it. It returns a `hide()` function
+  that each caller runs when the fetch settles, success or failure;
+  `hide()` cancels the delay, so a fast load never shows anything. A
+  counter keeps overlapping overlay calls (two quick Player Searches)
+  from hiding it early.
+- **The fun text.** Under the ring, `startSpinnerText()` types a random
+  phrase from `SPINNER_PHRASES` a letter every 50ms behind a blinking
+  block cursor (`.site-spinner-cursor`, in the text colour), and picks a
+  different one every 2 seconds. The untyped rest of the phrase is laid
+  out but invisible (`.site-spinner-text-rest`), so the centred text
+  doesn't slide sideways as it grows. The typed text, cursor and rest are
+  built once and only their text changes, because re-rendering the cursor
+  would restart its blink. The phrase is `aria-hidden`; screen readers
+  get the box's `role="status"` and `aria-label="Loading"` once instead of
+  a new phrase every second.
+- **Where it's used.** `runPlayerSearch()`, `initWaxMuseum()`,
+  `initTimeline()`, `fetchCardSetsByYear()` (it covers the retry pause),
+  `fetchBlogs()` (About), `openChecklistModal()` and `openNhlGameModal()`.
+  Error messages still go in each page's own status element.
+- **All Sets refreshes silently.** The build pre-renders its list, so
+  `initBrowseBySet()` shows the spinner only when the columns start empty
+  (an unbuilt local checkout). Whiting out a list that's already on
+  screen would be worse than no indicator.
+- **The CMS copy.** The SMS tool's `#autobus-spinner-overlay`
+  (`adminSMS.js`) shares the same CSS rules, but has its own markup and
+  no text.
 
 ## Card set markup is shared with the CMS preview
 
@@ -1393,6 +1441,8 @@ title, description, canonical and share tags in the HTML (see "SEO and
 social tags"), builds an Article JSON-LD block with `setJsonLd()`,
 carries the scores ticker, and has a
 `<noscript>` message because the cards need JavaScript to exist at all.
+While the markdown loads the shared spinner shows (see "Loading
+spinner"); a failed load puts a message in `#timelineStatus`.
 
 ## Linking to one specific set (`setID`)
 
@@ -1563,7 +1613,10 @@ disagree.
 `helper.js`/`wax.js`) and writes the columns between the markers in the
 deployed copy, so the page's raw HTML links to every `/reviews/<slug>/`
 page, the main way a crawler finds them. In the browser,
-`initBrowseBySet()` still fetches and re-renders the same markup.
+`initBrowseBySet()` still fetches and re-renders the same markup,
+silently: it shows the loading spinner only when the columns start
+empty (see "Loading spinner"). Its old "Loading the sets..." line sat
+above a list that was already complete.
 
 ## The Wax Museum (`waxMuseum.html`)
 
@@ -1575,16 +1628,17 @@ a linked review get a link to its `/reviews/<slug>/` page.
 
 **Data.** `initWaxMuseum()` fetches every pack once from `getWaxPacks`
 (public, cached 30 minutes; see `API_ENDPOINTS.md`), from the `WaxPacks`
-table (`DATA_MODEL.md`). Images are on S3 under `img/wax-packs/`. A
-spinner overlay shows while it loads, and a status line explains a
-failure or a `noscript` visitor.
+table (`DATA_MODEL.md`). Images are on S3 under `img/wax-packs/`. The
+shared loading spinner shows while it loads (see "Loading spinner"), and
+a status line explains a failure or a `noscript` visitor.
 
 **Order.** `sortWaxPacks()`: oldest year first, then one set at a time
 (A to Z by the name without its season or "Series N"), then series order
 (none, 1, 2, ...), then "Low" before "High" packs (`waxPackRelease()`:
-Low packs were released before High ones; the words are ignored when
-grouping by set, so "Topps Low" and "Topps High" stay together), then A
-to Z by name. The API's own order is by key, which isn't the name's order.
+Low packs were released before High ones), then A to Z by name.
+Grouping by set (`waxPackSet()`) ignores "Low", "High" and "Jumbo"
+(Jumbo since 2026-11-05), so "Topps Low", "Topps High" and "Parkhurst
+Series 2 Jumbo" sit with the rest of their set. The API's own order is by key, which isn't the name's order.
 
 **Rendering.** Cards render six at a time (`WAX_MUSEUM_BATCH`) as the
 visitor scrolls, and images load lazily. Flipping is a click or Enter;
@@ -1659,24 +1713,19 @@ uploaded checklists, with a link to each set's review. Added
   highlighted), Escape/an outside click closes the dropdown, and
   clicking a suggestion fills the input and calls `runPlayerSearch()`
   immediately.
-- **In-progress feedback**: `runPlayerSearch()` shows a full-page
-  spinner overlay (`#player-search-spinner-overlay`/
-  `.player-search-spinner`, `styles.css`) for the duration of the fetch,
-  hidden again in a `finally` so it clears on success, an empty result,
-  or an error alike - added because the `Scan`-per-request Lambda above
-  can take a couple of seconds, and the static "Searching..." text alone
-  made it hard to tell whether anything was actually happening. Same
-  overlay+spinner pattern as `smsAdmin.html`'s send-in-progress spinner
-  (`adminSMS.js`), reusing its `@keyframes autobus-spin` rotation (which
-  has nothing Autobus-specific in it) under player-search-specific
-  names rather than the shared Autobus ones, since this page has
-  nothing to do with that tool.
+- **In-progress feedback**: `runPlayerSearch()` clears the old results
+  and shows the shared loading spinner (see "Loading spinner") for the
+  duration of the fetch, hidden again in a `finally` so it clears on
+  success, an empty result, or an error alike. The `Scan`-per-request
+  Lambda above takes about 4 seconds, and the old static "Searching..."
+  text alone made it hard to tell whether anything was happening.
 - **Results**: grouped by `setName`, each group showing every matching
   card (number, player name, notes, and which insert set it's from, if
   any) under that set, ordered main-set cards first then each insert
   set, sorted within each group by `sortIndex` — the same ordering rule
   `wax.js`'s checklist modal uses (see "Checklist display" above), not
-  raw fetch order. A group's heading is a link to that set's review
+  raw fetch order. A group's heading (an `h2`, styled by the shared h3
+  rule; see "Section headings" near the top) is a link to that set's review
   on `waxReviews.html` when the API returned a `year`/`blogCat` for it
   (i.e. a matching `Cards` item exists); otherwise it's plain text - see
   `DATA_MODEL.md`'s "setName ↔ Cards.setName 1:1 assumption" note for
@@ -1716,7 +1765,7 @@ uploaded checklists, with a link to each set's review. Added
 - **Rookie cards called out**: a card whose `notes` contain `RC` as a
   whole word (`\bRC\b` - so it won't match `RC` as a substring inside
   some other token) renders bold and in the site's one established red
-  (`#a83232`, same as `.delete-btn`/`label sup`) via a
+  (`--color-red`, same as `.delete-btn`/`label sup`) via a
   `.player-search-card-notes-rc` class, rather than blending in with
   every other trailing marker.
 

@@ -815,8 +815,8 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   - `Cache-Control` is `600` rather than `3600` for a final whose
     recap isn't published yet, so the first visitor after the final
     horn doesn't cache "no recap" for an hour.
-- **Timings**: cold start ~4.5s, warm 0.6–0.9s — the modal shows
-  "Loading game..." meanwhile.
+- **Timings**: cold start ~4.5s, warm 0.6–0.9s — the modal shows the
+  site's loading spinner meanwhile (`FRONTEND.md`, "Loading spinner").
 
 ## `Lambdas/getPwhlScores/` — hand-built in this repo
 

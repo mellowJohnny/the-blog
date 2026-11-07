@@ -227,7 +227,7 @@ Plain multi-page HTML site, no bundler/framework (the deployed public scripts an
 - **HockeyTech** (`lscluster.hockeytech.com`) — the PWHL's stats provider, no public API. Feeds the PWHL section of the scores ticker, always through the `getPwhlScores` Lambda: the feed returns an empty response to any request with an `Origin` header, so browsers can't call it. Uses the PWHL site's own public key. See `PWHL_API.md`.
 - **Brightcove** — the NHL's own video player (`players.brightcove.net`, account `6415718365001`), embedded as an `<iframe>` in the game modal for highlights, loaded only when the visitor clicks play. Plays NHL pre-roll ads.
 - **Twilio** — outbound SMS for the Autobus Messaging Platform, called from the `sendAlertHandler` Lambda using account credentials stored as Lambda environment variables (not in this repo).
-- **Google Analytics (gtag.js)** — `G-JMGVGK09QX`, loaded on most public pages.
+- **Google Analytics (gtag.js)** — `G-JMGVGK09QX`, on all nine public pages, each with the same loader: the gtag queue is set up inline and `gtag/js` is injected on `window` `load`, so it never competes with the page's own requests. The exact snippet is in `STYLE_GUIDE.md` ("Analytics"); since 2026-11-06 no page uses the old blocking `<script async src>` tag.
 - **SweetAlert** (`unpkg.com/sweetalert`) — used for the small utility pages (Card-O-Matic, Quadratic solver) instead of native `alert()`.
 
 ## Notable cross-cutting patterns
