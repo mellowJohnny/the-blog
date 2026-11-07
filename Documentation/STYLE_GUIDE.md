@@ -32,12 +32,24 @@ Use the `:root` tokens in `styles.css`. Don't type a colour value into a rule.
 | `--color-image-border` | `rgb(22, 86, 138)` | Image borders |
 | `--color-masthead-bg` | `rgb(44, 82, 137)` | Masthead fallback background |
 | `--color-accent-hover` | `#e551f5` | Link hover accent |
+| `--color-white` | `#fff` | Text on dark backgrounds (footer, phone menu, buttons, Flip pills); card, modal and dropdown backgrounds |
+| `--color-button` | `#256386` | Button fills, checklist filter pills, breadcrumb links |
+| `--color-red` | `#a83232` | The site's one red: rookie-card notes (the CMS also uses it for required marks and delete buttons) |
+| `--color-content-bg` | `rgb(212, 233, 241)` | The `.blog-entry` content box |
+| `--color-masthead-text` | `rgb(252, 252, 245)` (cream) | "Junk Wax Hockey" masthead text, page and checklist modal |
+| `--color-grey-dark` | `#444` | Dark grey text: modal ×, pagination page count, viewed Timeline year |
+| `--color-grey` | `#666` | Muted text: notes, breadcrumb separators and current page, disabled links, viewed cards |
+| `--color-grey-light` | `#ccc` | Light borders and dividers |
+| `--color-surface-muted` | `#eceff1` | Muted backgrounds: viewed Timeline cards, missing-image placeholders |
 
 - **Body text** is black (`--color-text`) everywhere, in the content boxes
   as well as on the page background.
-- **Red** `#a83232` is the site's one red (rookie cards, required-field
-  marks, destructive buttons). Use it only for those, and add it as a token
-  the next time a rule needs it.
+- **Three greys only.** Pick dark, mid or light; don't add an in-between
+  shade.
+- **Translucent black or white** (`rgba(0, 0, 0, a)`, `rgba(255, 255, 255, a)`)
+  is allowed for overlays, sheens and dividers on dark backgrounds. A
+  translucent site colour uses `color-mix()` on its token, for example
+  `color-mix(in srgb, var(--color-text-dark) 85%, transparent)`.
 - A new colour needs a new token, added here first.
 
 ## Fonts
@@ -70,14 +82,20 @@ other family, and no Google Fonts link.
 | h1 page title | 34px | One per page. Black. Shared rule `.intro h1, .header-style h1, #card-intro h2`. |
 | h2 section heading | 26px, 22px at 600px and below | Navy. Shared rule `.blog-title, #timelineTitle, .browse-col-heading`. |
 | h3 sub-heading | 20px | Navy. Shared rule `.player-search-set-name, .browse-season-heading`. |
-| Card title | 16–18px | Navy, inside small cards only (`.wax-museum-name`, `.timeline-back-title`). |
+| Card title | 16–18px | Navy, inside small cards and modals only. Approved: `.wax-museum-name`, `.timeline-back-title`, `.timeline-heading`, `.checklist-modal-title` (22px, the modal's own title), `.checklist-modal-group-title`, `.set-details-name`. |
 | Body text | 18px | Intros, review and post bodies. |
-| Small text | 16px | Bylines and captions may use it; details lists, footer links. |
-| Fine print | 12–14px | Labels, pills, the copyright line. |
+| Small text | 16px | Bylines and captions may use it; details lists. |
+| Secondary text | 15px | Footer links, breadcrumbs, checklist cards, Timeline lists. |
+| Fine print | 12–14px | Labels (`.footer-heading`), pills, notes, the copyright line. |
 
+- **px only.** No `rem` or `em` sizes: they compound inside nested elements
+  and drift off the scale.
+- **Icon glyphs** (the ☰ menu button, the × close, the ▾ dropdown arrow) are
+  sized to fit their control, not to the text scale.
 - **A new heading joins a shared rule.** Add its selector to the h2 or h3
   rule; give it its own rule only for margins and alignment. Never give a
-  heading its own font size or colour.
+  heading its own font size or colour. The approved card and modal titles
+  above are the only exceptions; a new one is approved here first.
 - The review page intro h2 is 34px on purpose: the real h1 (the set name) is
   hidden, so the intro heading is the visible page title.
 
@@ -223,8 +241,6 @@ Anything outside them follows the guide.
 
 ## Known deviations still to fix
 
-Found by the 2026-11-06 consistency review. Fix them rather than copy them.
-`check.mjs --all` lists the mechanical ones line by line.
-
-- `styles.css` still has many hand-typed colours and sizes from before this
-  guide.
+None. Every item from the 2026-11-06 consistency review is fixed, and
+`check.mjs --all` reports no findings (2026-11-07). Keep it at zero: a new
+finding is a regression to fix, not a new baseline.

@@ -14,7 +14,7 @@ function renderBlogIntro(blogType) {
   if (blogType === "1") {
     introHTML = `
       <h1>The Tech Blog</h1>
-      <p>Just a couple of random throughts on Technology - from AI to using an iPad for development tasks, and whatever else strikes my fancy. Oh, and that .gif of a 727 in the top corner is the Internet's <i>very first</i>, created by Steve Wilhite in 1987 while working at CompuServe. And according to Steve, it's pronounced "jif"...</p>
+      <p>Just a couple of random throughts on Technology - from AI to using an iPad for development tasks, and whatever else strikes my fancy. Oh, and that .gif of a 727 in the top corner is the Internet's <em>very first</em>, created by Steve Wilhite in 1987 while working at CompuServe. And according to Steve, it's pronounced "jif"...</p>
     `;
   } else if (blogType === "3") {
     introHTML = `
@@ -197,7 +197,7 @@ function renderBlogPage() {
           onerror="this.style.display='none'; this.nextElementSibling.style.display='none';"
           alt="${cleanImgCap}">
      <br>
-     <i>${cleanImgCap}</i>
+     <em>${cleanImgCap}</em>
      <hr/><br>`;
 
   setJsonLd("jsonld-blogpost", jsonLdData);

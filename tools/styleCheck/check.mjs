@@ -53,15 +53,19 @@ function report(file, lineNo, rule, text) {
 
 // CMS-only rules are out of scope; approved components (STYLE_GUIDE.md, "Approved deviations") keep their own look.
 function isSkippedSelector(selector) {
+  if (config.cmsOwnedSelectors.includes(selector.trim())) return true;
   return [...config.cmsSelectorPrefixes, ...config.approvedComponentPrefixes].some((prefix) => selector.includes(prefix));
 }
+
+// Translucent black or white is allowed for overlays, sheens and dividers on dark backgrounds
+const TRANSLUCENT_BW = /rgba\(\s*(0\s*,\s*0\s*,\s*0|255\s*,\s*255\s*,\s*255)\s*,\s*[\d.]+\s*\)/gi;
 
 function checkDeclaration(file, lineNo, selector, prop, value, piece) {
   const raw = `${selector.replace(/\s+/g, " ").slice(0, 50)} { ${piece.trim()} }`;
   const v = value.trim();
   const lower = v.toLowerCase();
   if (config.colourProperties.includes(prop) && !lower.startsWith("var(")) {
-    const stripped = lower.replace(/var\([^)]*\)/g, "");
+    const stripped = lower.replace(/var\([^)]*\)/g, "").replace(TRANSLUCENT_BW, "");
     const keywordOnly = config.colourKeywordsAllowed.includes(stripped.trim());
     if (!keywordOnly && (COLOUR_LITERAL.test(stripped) || NAMED_COLOURS.test(stripped))) report(file, lineNo, "colour", raw);
   }

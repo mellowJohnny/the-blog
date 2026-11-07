@@ -6,10 +6,14 @@
   "cmsSelectorPrefixes": [".cms-", ".autobus-", "#autobus-", ".admin-", ".bulk-", "#previewContainer", ".preview-modal",
                           ".star-rating", "#wlcms", ".pick-", ".checklist-upload", ".checklist-review",
                           ".checklist-delete", "#checklist-", ".add-subscriber", ".list-subscribers", ".input-label", ".help-",
-                          "#helpModal", ".modal", ".sms-", ".seo-", ".preview-", "#previewModal"],
+                          "#helpModal", ".modal", ".sms-", ".seo-", ".preview-", "#previewModal",
+                          ".delete-btn", ".input-text-disabled", ".blog-type-divider", ".page-footer", ".error-msg",
+                          "#checklistImportLink", "#checklistDeleteLink", ".checklist-typeahead", ".checklist-status-msg",
+                          ".checklist-row-delete", "#previewBody", ".close", "textarea", "label sup"],
+  "cmsOwnedSelectors": ["h1", ".top-nav"],
   "approvedComponentPrefixes": [".nhl-", ".ticker-", "#nhlTicker", "#nhlGame"],
-  "fontSizeExemptSelectors": ["masthead", ".loud-char"],
-  "fontSizesPx": [34, 26, 22, 20, 18, 16, 14, 13, 12],
+  "fontSizeExemptSelectors": ["masthead", ".loud-char", ".hamburger", ".checklist-modal-close", ".nav-group-btn::after"],
+  "fontSizesPx": [34, 26, 22, 20, 18, 16, 15, 14, 13, 12],
   "fontWeights": ["200", "400", "600", "700", "normal", "bold", "inherit"],
   "fontFamilies": ["Source Sans 3", "Nunito", "Bebas Neue", "Special Elite", "inherit"],
   "familiesNeedingFallback": ["Source Sans 3", "Nunito"],
@@ -19,5 +23,6 @@
   "colourKeywordsAllowed": ["transparent", "currentcolor", "inherit", "none", "initial", "unset"],
   "sharedHeadingSelectors": [".intro h1", ".header-style h1", "#card-intro h2", ".blog-title", "#timelineTitle",
                              ".browse-col-heading", ".player-search-set-name", ".browse-season-heading"],
-  "approvedHeadingSelectors": [".wax-museum-name", ".timeline-back-title", ".checklist-modal-title", ".set-details-name"]
+  "approvedHeadingSelectors": [".wax-museum-name", ".timeline-back-title", ".checklist-modal-title", ".set-details-name",
+                               ".footer-heading", ".browse-set-name", ".timeline-heading", ".checklist-modal-group-title"]
 }

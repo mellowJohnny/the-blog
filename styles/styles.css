@@ -178,6 +178,15 @@ messing up the layout with white borders and scoll bars
   --color-page-bg: rgb(228, 241, 250);
   --color-byline: #555;
   --color-text: #000;
+  --color-white: #fff;
+  --color-button: #256386;
+  --color-red: #a83232;
+  --color-content-bg: rgb(212, 233, 241);
+  --color-masthead-text: rgb(252, 252, 245);
+  --color-grey-dark: #444;
+  --color-grey: #666;
+  --color-grey-light: #ccc;
+  --color-surface-muted: #eceff1;
   /* Buttons - see the shared "Buttons" block near the checklist modal */
   --btn-radius: 10px;
   --btn-secondary-border: #d6d6d6;
@@ -428,7 +437,7 @@ h1 {
 .wax-museum-spinner {
     width: 60px;
     height: 60px;
-    border: 6px solid #ccc;
+    border: 6px solid var(--color-grey-light);
     border-top-color: #333;
     border-radius: 50%;
     animation: autobus-spin 0.8s linear infinite;
@@ -655,7 +664,7 @@ h1 {
 
 
   .blog-img {
-    border: 3px solid rgb(5, 60, 82);
+    border: 3px solid var(--color-image-border);
     border-radius: 4px;
     padding: 3px;
     max-width: 100%;
@@ -883,7 +892,7 @@ h1 {
   padding: 0;
   font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   font-weight: 600;
-  font-size: 23px;
+  font-size: 22px;
   color:var(--color-text-dark);
   height: auto;
 }
@@ -908,7 +917,7 @@ h1 {
 .set-o-matic-picker {
   font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   font-weight: 600;
-  font-size: 32px;
+  font-size: 26px;
   text-align: center;
   height: 42px;
 }
@@ -942,8 +951,7 @@ hr {
   height:2px;
   width: 75%;
   border-width:0;
-  color:gray;
-  background-color:rgb(14, 74, 114)
+  background-color: var(--color-text-dark);
 }
 
 a {
@@ -1040,8 +1048,8 @@ textarea {
 
 .input-button {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  background-color: #256386;
-  color: white;
+  background-color: var(--color-button);
+  color: var(--color-white);
   text-decoration: none;
   margin: 4px 2px;
 }
@@ -1137,8 +1145,8 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  color: white;
-  font-family: sans-serif;
+  color: var(--color-white);
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 /* Genuinely two-color (+white) teams (Detroit, Tampa Bay, Toronto -
@@ -1226,7 +1234,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   z-index: 1; /* keeps text above the blur */
   text-transform: uppercase;
   text-decoration: none;
-  color: rgb(252, 252, 245);
+  color: var(--color-masthead-text);
   display: flex;
   align-items: center;
   padding-left: 20px;
@@ -1895,7 +1903,6 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 
 .header-style h1{
     font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-    font-size: 28px;
     margin: 5px;
     position: relative;
     top: 1px;
@@ -1996,8 +2003,8 @@ body:has(.site-footer) .header-style + .flex-container > .intro > p:last-child {
 }
 
 .blog-entry { /* USED BY ALL REVIEW PAGES */ 
-    font-family: 'Source Sans 3';
-    background: rgb(212, 233, 241);
+    font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+    background: var(--color-content-bg);
     border-radius: 3px;
     color: var(--color-text);
     font-size: 18px;
@@ -2386,7 +2393,7 @@ body:has(.site-footer) .header-style + .flex-container > .intro > p:last-child {
   margin: auto -8px -8px;
   padding: 28px 20px 24px;
   background: var(--color-heading-outline);
-  color: #ffffff;
+  color: var(--color-white);
   font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   text-align: center;
 }
@@ -2428,7 +2435,7 @@ body:has(.site-footer) {
 }
 
 #footer-links a {
-  color: #ffffff;
+  color: var(--color-white);
   text-decoration: none;
   transition: color 0.15s ease;
 }
@@ -2466,7 +2473,7 @@ body:has(.site-footer) {
 }
 
 .site-footer .footer-wlcms:focus-visible {
-  outline: 2px solid #ffffff;
+  outline: 2px solid var(--color-white);
   outline-offset: 2px;
 }
 
@@ -2830,7 +2837,7 @@ body:has(.site-footer) {
 }
 
 .checklist-modal-content {
-  background-color: #fff;
+  background-color: var(--color-white);
   margin: 0 auto 40px auto;
   padding: 24px 32px;
   border-radius: 8px;
@@ -2879,9 +2886,9 @@ body:has(.site-footer) {
   flex-shrink: 0;
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
-  font-size: 17px;
-  color: #fff;
-  background-color: #256386;
+  font-size: 16px;
+  color: var(--color-white);
+  background-color: var(--color-button);
   border-radius: 20px;
   padding: 8px 16px;
   cursor: pointer;
@@ -2900,14 +2907,14 @@ body:has(.site-footer) {
 
 .checklist-modal-print-btn {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  background-color: #256386;
-  color: white;
+  background-color: var(--color-button);
+  color: var(--color-white);
 }
 
 .checklist-modal-pdf-btn {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  background-color: #256386;
-  color: white;
+  background-color: var(--color-button);
+  color: var(--color-white);
 }
 
 /* Buttons - one shared shape for every site/CMS button, placed after
@@ -2996,7 +3003,7 @@ body:has(.site-footer) {
 .checklist-modal-close {
   font-size: 32px;
   font-weight: bold;
-  color: #444;
+  color: var(--color-grey-dark);
   cursor: pointer;
   line-height: 1;
 }
@@ -3024,7 +3031,7 @@ body:has(.site-footer) {
   font-size: 40px;
   text-transform: uppercase;
   text-decoration: none;
-  color: rgb(252, 252, 245);
+  color: var(--color-masthead-text);
   text-shadow:
     -1px -1px 0 var(--color-heading-outline),
      1px -1px 0 var(--color-heading-outline),
@@ -3035,7 +3042,7 @@ body:has(.site-footer) {
 .checklist-modal-title {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
-  font-size: 1.4rem;
+  font-size: 22px;
   color: var(--color-text-dark);
   margin: 0;
 }
@@ -3049,7 +3056,7 @@ body:has(.site-footer) {
   column-span: all;
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 18px;
   color: var(--color-text-dark);
   border-bottom: 2px solid var(--color-input-border);
   margin: 20px 0 8px 0;
@@ -3082,8 +3089,8 @@ body:has(.site-footer) {
 }
 
 .checklist-modal-card-notes {
-  color: #777;
-  font-size: 0.85em;
+  color: var(--color-grey);
+  font-size: 13px;
 }
 
 @media (max-width: 600px) {
@@ -3165,7 +3172,7 @@ body:has(.site-footer) {
     display: inline-block;
     width: 10px;
     height: 10px;
-    border: 1px solid #000;
+    border: 1px solid var(--color-text);
     margin-right: 6px;
     vertical-align: middle;
   }
@@ -3174,10 +3181,10 @@ body:has(.site-footer) {
     display: block;
     margin-top: 24px;
     padding-top: 8px;
-    border-top: 1px solid #ccc;
+    border-top: 1px solid var(--color-grey-light);
     font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
     font-size: 12px;
-    color: #666;
+    color: var(--color-grey);
     text-align: center;
   }
 }
@@ -3246,7 +3253,7 @@ body:has(.site-footer) {
 /*************************************** Pagination Styles... ********************************/
 .pagination-link {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  font-size: 1.4rem;
+  font-size: 22px;
   color: var(--color-link);
   text-decoration: none;
   margin: 0 15px;
@@ -3259,7 +3266,7 @@ body:has(.site-footer) {
 }
 
 .pagination-link.disabled {
-  color: #999;
+  color: var(--color-grey);
   pointer-events: none;
   text-decoration: none;
   cursor: default;
@@ -3267,9 +3274,9 @@ body:has(.site-footer) {
 
 .pagination-page {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  font-size: 1.2rem;
+  font-size: 20px;
   margin: 0 10px;
-  color: #444;
+  color: var(--color-grey-dark);
 }
 
 /*************************************** Vote Widget Styles... ********************************/
@@ -3287,7 +3294,7 @@ body:has(.site-footer) {
   gap: 6px;
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 16px;
-  background-color: #fff;
+  background-color: var(--color-white);
   border: 1px solid var(--color-text-dark);
   border-radius: 20px;
   padding: 8px 16px;
@@ -3306,7 +3313,7 @@ body:has(.site-footer) {
 
 .vote-btn.voted {
   background-color: var(--color-text-dark);
-  color: #fff;
+  color: var(--color-white);
 }
 
 .vote-btn:disabled {
@@ -3364,7 +3371,7 @@ body:has(.site-footer) {
   margin: 2px 0 0 0;
   padding: 4px 0;
   list-style: none;
-  background-color: #fff;
+  background-color: var(--color-white);
   border: 1px solid var(--color-input-border);
   border-radius: 4px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -3413,7 +3420,7 @@ body:has(.site-footer) {
 }
 
 .player-search-no-review {
-  font-size: 0.85em;
+  font-size: 16px;
   font-weight: normal;
   color: var(--color-text-dark);
   opacity: 0.7;
@@ -3431,16 +3438,15 @@ body:has(.site-footer) {
 }
 
 .player-search-card-notes {
-  font-size: 0.85em;
+  font-size: 14px;
   opacity: 0.75;
 }
 
 /* Rookie cards (RC in the notes column) are the most sought-after -
-   call them out instead of blending in with every other marker. Same
-   red as .delete-btn/label sup elsewhere on the site. */
+   call them out in the site's one red instead of blending in. */
 .player-search-card-notes-rc {
   font-weight: bold;
-  color: #a83232;
+  color: var(--color-red);
   opacity: 1;
 }
 
@@ -3501,11 +3507,11 @@ body:has(.site-footer) {
 .breadcrumbs li + li::before {
   content: "\203A";
   margin-right: 6px;
-  color: #777;
+  color: var(--color-grey);
 }
 
 .breadcrumbs a {
-  color: #256386;
+  color: var(--color-button);
   text-decoration: none;
 }
 
@@ -3514,7 +3520,7 @@ body:has(.site-footer) {
 }
 
 .breadcrumbs li[aria-current] {
-  color: #555;
+  color: var(--color-grey);
 }
 
 /* Multi-line SEO fields (description, keywords): same look as the text inputs
@@ -3877,12 +3883,12 @@ body:has(.site-footer) {
 
   /* Pagination */
   .pagination-link {
-    font-size: 1rem;
+    font-size: 16px;
     margin: 0 8px;
   }
 
   .pagination-page {
-    font-size: 0.9rem;
+    font-size: 14px;
   }
 
   /* Masthead & Weather Mobile Styles (index.html only - .masthead-container
@@ -4383,7 +4389,7 @@ body:has(.site-footer) {
     padding: 0;
     margin: 0;
     text-align: left;
-    font-size: 0.9rem;
+    font-size: 14px;
     border-bottom: 1px solid rgba(255,255,255,0.2);
   }
 
@@ -4394,7 +4400,7 @@ body:has(.site-footer) {
     width: 100%;
     box-sizing: border-box;
     padding: 12px 16px;
-    color: #fff;
+    color: var(--color-white);
   }
 
   /* Dropdown groups: the menu shows them expanded, the group name as a
@@ -4408,7 +4414,7 @@ body:has(.site-footer) {
     letter-spacing: inherit;
     text-transform: inherit;
     text-align: left;
-    color: #fff;
+    color: var(--color-white);
     background: none;
     border: none;
     pointer-events: none;
@@ -4444,7 +4450,7 @@ body:has(.site-footer) {
   }
 
   .nav-td {
-    font-size: 1.3rem;
+    font-size: 20px;
   }
 
   .nav-td a {
@@ -4535,7 +4541,7 @@ body:has(.site-footer) {
   .nav-dropdown a {
     display: block;
     padding: 8px 20px;
-    font-size: 19px; /* mixed case reads smaller than the bar's capitals */
+    font-size: 20px; /* mixed case reads smaller than the bar's capitals */
   }
 
   .nav-dropdown a:hover,
@@ -4695,7 +4701,7 @@ body:has(.site-footer) {
 
 .timeline-front {
   border: 1px solid var(--timeline-blue);
-  background: #ffffff;
+  background: var(--color-white);
   color: var(--color-text-dark);
   transform: rotateY(0deg);
 }
@@ -4722,14 +4728,14 @@ body:has(.site-footer) {
 }
 
 .timeline-card.is-viewed .timeline-front {
-  border-color: #c5cdd5;
-  background: #eceff1;
-  color: #5d6b78;
+  border-color: var(--color-grey-light);
+  background: var(--color-surface-muted);
+  color: var(--color-grey);
 }
 
 .timeline-card.is-viewed .timeline-year {
-  background: #c5cdd5;
-  color: #3e4a56;
+  background: var(--color-grey-light);
+  color: var(--color-grey-dark);
 }
 
 /* Text for screen readers only (the "viewed" cue). */
@@ -4924,7 +4930,7 @@ body:has(.site-footer) {
   grid-area: 1 / 1;
   box-sizing: border-box;
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--color-white);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -4988,8 +4994,8 @@ body:has(.site-footer) {
   right: 10px;
   padding: 2px 10px;
   border-radius: 12px;
-  background: rgba(11, 62, 100, 0.85);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--color-text-dark) 85%, transparent);
+  color: var(--color-white);
   font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   font-size: 12px;
   font-weight: 600;
@@ -5004,8 +5010,8 @@ body:has(.site-footer) {
   align-items: center;
   justify-content: center;
   aspect-ratio: 3 / 4;
-  background: #eceff1;
-  color: #5d6b78;
+  background: var(--color-surface-muted);
+  color: var(--color-grey);
 }
 
 .wax-museum-caption {

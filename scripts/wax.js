@@ -20,7 +20,7 @@ function renderCardIntro(pageName) {
   } else if (pageName === "junkWax") {
     introHTML = `
       <h2>Junk Wax Sets</h2>
-      <p>The late '80s and early '90s...Miami Vice, acid wash jeans, teal San Jose Sharks jerseys...and a hockey card explosion. Consider this: the 1989-90 season had just two licensed hockey sets - Topps in the US and O-Pee-Chee in Canada. But just a few years later there were thirteen licensed sets and legendary over-production, ushering in the <i><a href="/theJunkWaxYears.html">Junk Wax</a></i> era. But don't let that deter you, there are some hidden gems if you are willing to dig around...</p>
+      <p>The late '80s and early '90s...Miami Vice, acid wash jeans, teal San Jose Sharks jerseys...and a hockey card explosion. Consider this: the 1989-90 season had just two licensed hockey sets - Topps in the US and O-Pee-Chee in Canada. But just a few years later there were thirteen licensed sets and legendary over-production, ushering in the <em><a href="/theJunkWaxYears.html">Junk Wax</a></em> era. But don't let that deter you, there are some hidden gems if you are willing to dig around...</p>
     `;
   } else if (pageName === "timmies") {
     introHTML = `
