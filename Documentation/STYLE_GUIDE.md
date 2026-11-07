@@ -170,7 +170,6 @@ Anything outside them follows the guide.
 Found by the 2026-11-06 consistency review. Fix them rather than copy them.
 `check.mjs --all` lists the mechanical ones line by line.
 
-- The Player Search input uses the system font.
 - The Wax Museum has a larger gap between its heading and intro than the
   other `.header-style` pages.
 - Lockout's "404 - Season Not Found" is bare text, not a paragraph.

@@ -3312,6 +3312,8 @@ body:has(.site-footer) {
 #player-search-form input[type="text"] {
   width: 100%;
   max-width: 450px;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  font-size: 20px;
 }
 
 /* #player-search-form prefix (id specificity) beats the shared
