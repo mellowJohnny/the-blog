@@ -312,27 +312,41 @@ function getMonthName(monthNum) {
 // One loading spinner for every public page: full-screen, or inside `container`
 // (modals). It appears only after 300ms so fast loads never flash it; returns hide().
 let spinnerOverlayUsers = 0;
+let spinnerOverlayTextTimer;
 function showSpinner(container) {
   let inline = null;
+  let inlineTextTimer;
   let done = false;
   if (container) container.innerHTML = "";
   else spinnerOverlayUsers++;
   const timer = setTimeout(() => {
     if (container) {
       inline = container.appendChild(buildSpinner("site-spinner-inline"));
+      inlineTextTimer = startSpinnerText(inline);
       return;
     }
     const overlay = document.getElementById("site-spinner-overlay") || document.body.appendChild(buildSpinner("site-spinner-overlay"));
     overlay.id = "site-spinner-overlay";
+    if (overlay.hidden || !spinnerOverlayTextTimer) {
+      clearInterval(spinnerOverlayTextTimer);
+      spinnerOverlayTextTimer = startSpinnerText(overlay);
+    }
     overlay.hidden = false;
   }, 300);
   return () => {
     if (done) return;
     done = true;
     clearTimeout(timer);
-    if (container) return inline?.remove();
+    if (container) {
+      clearInterval(inlineTextTimer);
+      return inline?.remove();
+    }
     const overlay = document.getElementById("site-spinner-overlay");
-    if (--spinnerOverlayUsers === 0 && overlay) overlay.hidden = true;
+    if (--spinnerOverlayUsers === 0 && overlay) {
+      overlay.hidden = true;
+      clearInterval(spinnerOverlayTextTimer);
+      spinnerOverlayTextTimer = null;
+    }
   };
 }
 
@@ -341,8 +355,24 @@ function buildSpinner(className) {
   box.className = className;
   box.setAttribute("role", "status");
   box.setAttribute("aria-label", "Loading");
-  box.innerHTML = '<div class="site-spinner"></div>';
+  // aria-hidden: a screen reader shouldn't announce a new phrase every second.
+  box.innerHTML = '<div class="site-spinner"></div><p class="site-spinner-text" aria-hidden="true"></p>';
   return box;
+}
+
+const SPINNER_PHRASES = ["opening wax packs...", "sorting cards...", "reading the Sports page...",
+  "sharpening skates...", "bag skate...", "spitting chicklets...", "going bar down...", "taping sticks...",
+  "filling water bottles...", "driving the Zamboni...", "signing autographs...", "calling my agent...", "wiping the visor..."];
+
+// A random phrase now, then a different random one every second; returns the interval.
+function startSpinnerText(box) {
+  const el = box.querySelector(".site-spinner-text");
+  const rotate = () => {
+    const choices = SPINNER_PHRASES.filter((phrase) => phrase !== el.textContent);
+    el.textContent = choices[Math.floor(Math.random() * choices.length)];
+  };
+  rotate();
+  return setInterval(rotate, 1000);
 }
 
 
