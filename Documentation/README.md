@@ -38,6 +38,7 @@ but its page, `tech.html`, was archived to `Old HTML Pages/` on
 | [API_ENDPOINTS.md](./API_ENDPOINTS.md) | Every API Gateway endpoint the frontend calls — URL, method, payload, purpose |
 | [FRONTEND.md](./FRONTEND.md) | Public-facing pages and the `scripts/*.js` files behind them, including how SEO and social-preview tags work |
 | [PUBLIC_PAGE_FLOWS.md](./PUBLIC_PAGE_FLOWS.md) | Public pages traced end to end — what loads, what runs on load, what each interaction calls and why |
+| [STYLE_GUIDE.md](./STYLE_GUIDE.md) | **Binding** style rules for the public pages: colour tokens, fonts, type scale, headings, components to reuse, markup rules, known traps, a pre-flight checklist and the deviations still to fix |
 | [CMS_GUIDE.md](./CMS_GUIDE.md) | The `/cms` authoring tools ("cardStack") and the Autobus SMS admin tool |
 | [CMS_PAGE_FLOWS.md](./CMS_PAGE_FLOWS.md) | Every `/cms` page traced the same way as PUBLIC_PAGE_FLOWS.md |
 | [AUTH.md](./AUTH.md) | Cognito setup and the login flow used to gate `/cms` |
@@ -58,6 +59,7 @@ Plain Node scripts. The generator has no dependencies; the minifier uses `esbuil
 
 - `tools/minifyAssets/minify.mjs` — **run by every Amplify build** (`amplify.yml`), after the generator, never by hand: minifies the public scripts and `styles/styles.css` in place in the build's copy, with source maps, and fails the build if a file isn't smaller or loses a top-level name. It refuses to run outside Amplify unless `--force-in-place` is passed, because it overwrites files. See `REVIEW_PAGES.md`'s "The rest of the build: minified assets".
 - `tools/generateReviewPages/generate.mjs` — **run by every Amplify build** (`amplify.yml`), not by hand: reads the live sets from `getPublicCardSets` and writes `reviews/<slug>/index.html` for each, `reviews/index.json` (the link manifest) and `sitemap.xml`, none of it committed (gitignored), and pre-renders the nav, footer, year picker and Browse By Set columns into the build's copy of the pages. A CMS save to a live set starts a build, so nothing needs re-running when a set is added or edited. You can still run it locally for a preview, but it also rewrites 8 tracked static pages, so discard those changes afterwards. It replaced `tools/generateSitemap/generate.mjs` on 2026-10-30. See `REVIEW_PAGES.md` and `FRONTEND.md`'s sitemap section.
+- `tools/styleCheck/check.mjs` — run by hand, never by the build: checks the public pages, their scripts and `styles.css` against `STYLE_GUIDE.md` (colour tokens, fonts, type scale, heading rules, inline styles, presentational tags, relative links). By default only lines changed since the last commit; `--all` lists the whole backlog. Allowed values live in `tools/styleCheck/config.json`.
 - `tools/checklistParser/parse.mjs` — run by hand, not part of any deploy: parses a checklist PDF into the JSON the checklist-upload flow produces, mirroring `Lambdas/parseChecklistPdf/` (see `LAMBDA_FUNCTIONS.md` and `CMS_GUIDE.md`).
 
 ## Known gaps — worth confirming against the AWS Console
