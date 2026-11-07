@@ -105,8 +105,41 @@ other family, and no Google Fonts link.
   generated review pages sit one folder deeper.
 - **New public pages** copy an existing page's head and skeleton: the same
   head order, masthead, `nav`/`footer` markers with `data-nav-page`, the
-  ticker block where the page has one, and the analytics loader that waits
-  for the window `load` event.
+  ticker block where the page has one, and the analytics loader (see
+  Analytics below).
+
+## Analytics
+
+Every public page loads Google Analytics (property `G-JMGVGK09QX`) only
+after the window `load` event, so it never competes with the page's own
+content while it loads. Use exactly this block in the `<head>`:
+
+```html
+<!-- Global site tag (gtag.js) - Load Google Analytics until later -->
+<script>
+  window.addEventListener('load', function() {
+    var g = document.createElement('script');
+    g.src = 'https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX';
+    g.async = true;
+    document.head.appendChild(g);
+  });
+</script>
+```
+
+and, in the page's main inline script, the standard queue, which records
+the page view as soon as the library arrives:
+
+```js
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-JMGVGK09QX');
+```
+
+- No `<script async src="…googletagmanager…">` tag: it starts downloading
+  during page load. The style check flags it (`analytics-loader`).
+- No other tracking or third-party tag without the owner's approval.
+- `/cms` pages carry no analytics.
 
 ## Known traps
 
@@ -123,7 +156,8 @@ other family, and no Google Fonts link.
 `tools/styleCheck/check.mjs` checks the mechanical rules: colours outside
 `:root`, font families, sizes and weights off the scale, headings styled
 outside the shared rules, inline `style=""`, `<i>`/`<b>`/`<font>`, relative
-links, and skipped heading levels in static HTML. It is run by hand and is
+links, skipped heading levels in static HTML, and the analytics loader (an
+old-style `async` tag, or a page with no window-load loader). It is run by hand and is
 never part of the Amplify build.
 
 - `node tools/styleCheck/check.mjs` checks only the lines changed since the

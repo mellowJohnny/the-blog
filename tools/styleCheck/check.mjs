@@ -118,12 +118,17 @@ function checkCss(file, lines, wanted) {
 
 function checkMarkup(file, lines, wanted, isHtml) {
   let lastLevel = 0;
+  // Every public page must load analytics with the window-load loader (STYLE_GUIDE.md, "Analytics")
+  if (isHtml && !lines.some((l) => /g\.src\s*=\s*'https:\/\/www\.googletagmanager\.com\/gtag\/js/.test(l))) {
+    report(file, 1, "analytics-loader", "no window-load analytics loader in this page");
+  }
   lines.forEach((line, i) => {
     const lineNo = i + 1;
     const want = !wanted || wanted.has(lineNo);
     if (want && /\sstyle\s*=\s*["']/.test(line)) report(file, lineNo, "inline-style", line);
     if (want && PRESENTATIONAL.test(line)) report(file, lineNo, "presentational-tag", line);
     if (want && RELATIVE_LINK.test(line) && !/<link\b/.test(line)) report(file, lineNo, "relative-link", line);
+    if (want && isHtml && /(?<![.\w])src\s*=\s*["'][^"']*googletagmanager/.test(line)) report(file, lineNo, "analytics-loader", line);
     if (isHtml) {
       for (const h of line.matchAll(/<h([1-6])\b/gi)) {
         const level = Number(h[1]);
