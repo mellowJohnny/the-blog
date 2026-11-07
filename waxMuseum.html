@@ -38,11 +38,15 @@
     <!-- The nav and footer use Nunito -->
     <link rel="preload" href="/fonts/nunito-latin-v32.woff2" as="font" type="font/woff2" crossorigin>
 
-    <!-- Analytics -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX"
-    ></script>
+    <!-- Global site tag (gtag.js) - Load Google Analytics until later -->
+    <script>
+      window.addEventListener('load', function() {
+        var g = document.createElement('script');
+        g.src = 'https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX';
+        g.async = true;
+        document.head.appendChild(g);
+      });
+    </script>
 
     <!-- Load the Hella Files scripts -->
     <script src="/scripts/waxMuseum.js" defer></script>
