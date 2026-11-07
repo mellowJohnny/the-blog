@@ -41,8 +41,6 @@ Use the `:root` tokens in `styles.css`. Don't type a colour value into a rule.
 | `--color-grey` | `#666` | Muted text: notes, breadcrumb separators and current page, disabled links, viewed cards |
 | `--color-grey-light` | `#ccc` | Light borders and dividers |
 | `--color-surface-muted` | `#eceff1` | Muted backgrounds: viewed Timeline cards, missing-image placeholders |
-| `--color-terminal-green` | `#33ff33` | The loading spinner's '80s terminal cursor only (owner decision, 2026-11-07) |
-
 - **Body text** is black (`--color-text`) everywhere, in the content boxes
   as well as on the page background.
 - **Three greys only.** Pick dark, mid or light; don't add an in-between
@@ -119,7 +117,7 @@ other family, and no Google Fonts link.
 | Flip hint on a card | The shared Flip pill (`.timeline-hint`) | A new pill |
 | Breadcrumbs | `#breadcrumbs` filled by `renderBreadcrumbs()`, with its `BreadcrumbList` structured data, on pages below a section only: the review pages and Lockout. Top-level pages have none on purpose (owner decision, 2026-11-07): a "Home › Page" trail adds nothing, and breadcrumbs aren't a ranking factor. | Breadcrumbs on a top-level page |
 | Scores ticker | The `#nhlTicker` block, on the hockey content pages. Home and The Wax Museum have none on purpose (owner decision). | Adding it to Home or the Wax Museum |
-| Loading spinner | `showSpinner()` (helper.js) around every fetch a visitor waits on; call the function it returns when the fetch settles, success or failure. No argument gives the full-screen overlay (page loads). Passing a modal's body element puts the same ring inline in that body. It appears only after 300ms, so fast loads never flash it. Under the ring, a random phrase from `SPINNER_PHRASES` types out letter by letter behind a green block cursor (blinking once typed) and changes every 2 seconds; add new phrases to that list. Error messages still go in the page's own status element. Content that is already on screen (the pre-rendered All Sets list) refreshes with no spinner. | "Loading..." text, a blank wait, a page-specific spinner copy, or an overlay stacked on a modal |
+| Loading spinner | `showSpinner()` (helper.js) around every fetch a visitor waits on; call the function it returns when the fetch settles, success or failure. No argument gives the full-screen overlay (page loads). Passing a modal's body element puts the same ring inline in that body. It appears only after 300ms, so fast loads never flash it. Under the ring, a random phrase from `SPINNER_PHRASES` types out letter by letter behind a block cursor in the text colour (blinking once typed) and changes every 2 seconds; add new phrases to that list. Error messages still go in the page's own status element. Content that is already on screen (the pre-rendered All Sets list) refreshes with no spinner. | "Loading..." text, a blank wait, a page-specific spinner copy, or an overlay stacked on a modal |
 | Section divider | `.browse-season-heading`'s underline or the result divider | Ad hoc `<hr>` styling |
 
 ## Markup rules

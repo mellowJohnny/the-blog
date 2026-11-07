@@ -364,7 +364,7 @@ const SPINNER_PHRASES = ["opening wax packs...", "sorting cards...", "reading th
   "sharpening skates...", "bag skate...", "spitting chicklets...", "going bar down...", "taping sticks...",
   "filling water bottles...", "driving the Zamboni...", "signing autographs...", "calling my agent...", "wiping the visor..."];
 
-// A different random phrase every 2s, typed out a letter every 50ms behind a green cursor.
+// A different random phrase every 2s, typed out a letter every 50ms behind a block cursor.
 // The untyped rest is laid out but invisible, so the centred text doesn't shift as it grows.
 function startSpinnerText(box) {
   const el = box.querySelector(".site-spinner-text");
