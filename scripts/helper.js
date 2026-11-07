@@ -364,15 +364,28 @@ const SPINNER_PHRASES = ["opening wax packs...", "sorting cards...", "reading th
   "sharpening skates...", "bag skate...", "spitting chicklets...", "going bar down...", "taping sticks...",
   "filling water bottles...", "driving the Zamboni...", "signing autographs...", "calling my agent...", "wiping the visor..."];
 
-// A random phrase now, then a different random one every second; returns the interval.
+// A different random phrase every 2s, typed out a letter every 50ms behind a green cursor.
+// The untyped rest is laid out but invisible, so the centred text doesn't shift as it grows.
 function startSpinnerText(box) {
   const el = box.querySelector(".site-spinner-text");
-  const rotate = () => {
-    const choices = SPINNER_PHRASES.filter((phrase) => phrase !== el.textContent);
-    el.textContent = choices[Math.floor(Math.random() * choices.length)];
+  let phrase = "";
+  let tick = 0;
+  let shown = -1;
+  const step = () => {
+    if (tick % 40 === 0) {
+      const choices = SPINNER_PHRASES.filter((p) => p !== phrase);
+      phrase = choices[Math.floor(Math.random() * choices.length)];
+      shown = -1;
+    }
+    const typed = Math.min(tick % 40 + 1, phrase.length);
+    tick++;
+    if (typed === shown) return; // re-rendering would restart the cursor's blink
+    shown = typed;
+    const cursor = typed === phrase.length ? "site-spinner-cursor site-spinner-cursor-blink" : "site-spinner-cursor";
+    el.innerHTML = `${escapeHtml(phrase.slice(0, typed))}<span class="${cursor}"></span><span class="site-spinner-text-rest">${escapeHtml(phrase.slice(typed))}</span>`;
   };
-  rotate();
-  return setInterval(rotate, 1000);
+  step();
+  return setInterval(step, 50);
 }
 
 

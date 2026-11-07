@@ -187,6 +187,7 @@ messing up the layout with white borders and scoll bars
   --color-grey: #666;
   --color-grey-light: #ccc;
   --color-surface-muted: #eceff1;
+  --color-terminal-green: #33ff33;
   /* Buttons - see the shared "Buttons" block near the checklist modal */
   --btn-radius: 10px;
   --btn-secondary-border: #d6d6d6;
@@ -423,6 +424,28 @@ h1 {
     margin: 14px 0 0;
     font-size: 18px;
     color: var(--color-grey-dark);
+}
+
+.site-spinner-text-rest {
+    visibility: hidden;
+}
+
+/* A solid block while typing, blinking once the phrase is done, like an '80s terminal. */
+.site-spinner-cursor {
+    display: inline-block;
+    width: 0.55em;
+    height: 1.05em;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    background: var(--color-terminal-green);
+}
+
+.site-spinner-cursor-blink {
+    animation: site-cursor-blink 1s step-end infinite;
+}
+
+@keyframes site-cursor-blink {
+    50% { visibility: hidden; }
 }
 
 .site-spinner,
