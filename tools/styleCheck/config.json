@@ -7,6 +7,7 @@
                           ".star-rating", "#wlcms", ".pick-", ".checklist-upload", ".checklist-review",
                           ".checklist-delete", "#checklist-", ".add-subscriber", ".list-subscribers", ".input-label", ".help-",
                           "#helpModal", ".modal", ".sms-", ".seo-", ".preview-", "#previewModal"],
+  "approvedComponentPrefixes": [".nhl-", ".ticker-", "#nhlTicker", "#nhlGame"],
   "fontSizeExemptSelectors": ["masthead", ".loud-char"],
   "fontSizesPx": [34, 26, 22, 20, 18, 16, 14, 13, 12],
   "fontWeights": ["200", "400", "600", "700", "normal", "bold", "inherit"],

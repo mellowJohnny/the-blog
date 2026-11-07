@@ -148,12 +148,28 @@ applies.
    it looks like the neighbouring pages.
 5. The style check passes for the changed files.
 
+## Approved deviations
+
+Self-contained components the owner approved on 2026-11-06 to keep their own
+palette and sizes. They follow their own internal rules instead of the
+tokens and type scale above, and the style check skips them (the
+`approvedComponentPrefixes` list in `tools/styleCheck/config.json`).
+
+- **The NHL/PWHL scores ticker** (`#nhlTicker`, `.nhl-ticker`, `.nhl-chip`,
+  `.ticker-*`): a dark strip with its own greys, white text and league
+  colours, sized to fit 40px.
+- **The NHL game modal** (`.nhl-game-*`, `.nhl-linescore`, `.nhl-team-stats`,
+  `.nhl-goal-*`, `.nhl-video-*`, `.nhl-recap`): modelled on nhl.com's game
+  page, with its own score, badge and tab styles.
+
+New work on these components stays consistent with the component itself.
+Anything outside them follows the guide.
+
 ## Known deviations still to fix
 
 Found by the 2026-11-06 consistency review. Fix them rather than copy them.
 `check.mjs --all` lists the mechanical ones line by line.
 
-- Lockout's title shrinks to 20px on phones (`#pageHeader` phone rule).
 - The Player Search input uses the system font.
 - The Wax Museum has a larger gap between its heading and intro than the
   other `.header-style` pages.

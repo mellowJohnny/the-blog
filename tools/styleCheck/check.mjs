@@ -51,8 +51,9 @@ function report(file, lineNo, rule, text) {
   findings.push({ file, lineNo, rule, text: text.trim().slice(0, 110) });
 }
 
-function isCmsSelector(selector) {
-  return config.cmsSelectorPrefixes.some((prefix) => selector.includes(prefix));
+// CMS-only rules are out of scope; approved components (STYLE_GUIDE.md, "Approved deviations") keep their own look.
+function isSkippedSelector(selector) {
+  return [...config.cmsSelectorPrefixes, ...config.approvedComponentPrefixes].some((prefix) => selector.includes(prefix));
 }
 
 function checkDeclaration(file, lineNo, selector, prop, value, piece) {
@@ -107,7 +108,7 @@ function checkCss(file, lines, wanted) {
     }
     function checkPiece(piece) {
       const selector = [...stack].reverse().find((s) => !s.startsWith("@")) || "";
-      if (!selector || selector === ":root" || isCmsSelector(selector)) return;
+      if (!selector || selector === ":root" || isSkippedSelector(selector)) return;
       if (wanted && !wanted.has(i + 1)) return;
       const m = piece.match(/^\s*([a-z-]+)\s*:\s*(.+)$/i);
       if (m) checkDeclaration(file, i + 1, selector, m[1].toLowerCase(), m[2].replace(/!important/i, ""), piece);
