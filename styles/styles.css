@@ -1901,6 +1901,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 .header-style h1,
 #card-intro h2 {
   font-size: 34px;
+  line-height: 1.1;
 }
 
 /* Public pages: line the heading up with the intro text below it (the .intro
@@ -1912,16 +1913,27 @@ body:has(.site-footer) .header-style {
   padding: 0 10px;
 }
 
+/* Page titles get one spacing in both layouts (title in .header-style, or inside .intro):
+   13px below the nav or breadcrumbs, about 23px down to the intro text. */
 body:has(.site-footer) .header-style h1 {
-  margin-left: 0;
-  margin-right: 0;
+  margin: 12px 0 5px;
 }
 
-/* One spacing for an intro under a .header-style heading (Player Search, Timeline,
-   Wax Museum, Lockout): tighter than the .flex-container div padding and <p> margins. */
+#card-intro h2 {
+  margin-bottom: 0.67em;
+}
+
 body:has(.site-footer) .header-style + .flex-container > .intro {
-  padding-top: 8px;
+  padding-top: 14px;
   padding-bottom: 8px;
+}
+
+/* Phones drop the intro's 5px top margin; keep it so both title layouts match there too */
+@media (max-width: 600px) {
+  body:has(.site-footer) .header-style + .flex-container > .intro,
+  body:has(.site-footer) .flex-container > .intro:has(> h1:first-child) {
+    margin-top: 5px;
+  }
 }
 
 body:has(.site-footer) .header-style + .flex-container > .intro > p:first-child {

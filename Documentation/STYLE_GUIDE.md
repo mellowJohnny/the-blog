@@ -85,7 +85,7 @@ other family, and no Google Fonts link.
 
 | Need | Use | Don't |
 |---|---|---|
-| Page title block | `.header-style` with an `h1`, or an `h1` inside `.intro` | A new title wrapper |
+| Page title block | `.header-style` with an `h1`, or an `h1` inside `.intro`. Both get the same spacing from the shared rules: 13px below the nav or breadcrumbs, about 23px to the intro text, at every width. | A new title wrapper, or per-page title margins |
 | Intro paragraph | `<div class="intro"><p>…</p></div>` inside `.flex-container`. Directly under a `.header-style` heading it gets the shared spacing rule. | Bare text in the intro div, or a per-page intro padding rule |
 | Content box (review, post, essay) | `.blog-entry` | A new boxed container |
 | Byline | `.byline` (dark grey, regular, not italic) | `<strong><i>` |
