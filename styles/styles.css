@@ -429,18 +429,15 @@ h1 {
     visibility: hidden;
 }
 
-/* A solid block while typing, blinking once the phrase is done, like an '80s terminal.
-   An empty inline-block's bottom edge sits on the text baseline. */
+/* A blinking block, like an '80s terminal. An empty inline-block's
+   bottom edge sits on the text baseline. */
 .site-spinner-cursor {
     display: inline-block;
     width: 0.5em;
-    height: 0.75em;
+    height: 0.95em;
     margin-left: 2px;
     vertical-align: baseline;
     background: currentColor;
-}
-
-.site-spinner-cursor-blink {
     animation: site-cursor-blink 1s step-end infinite;
 }
 
