@@ -1943,7 +1943,7 @@ body:has(.site-footer) .header-style {
 }
 
 /* Page titles get one spacing in both layouts (title in .header-style, or inside .intro):
-   13px below the nav or breadcrumbs, about 23px down to the intro text. */
+   13px below the nav (25px below breadcrumbs), about 23px down to the intro text. */
 body:has(.site-footer) .header-style h1 {
   margin: 12px 0 5px;
 }
@@ -3514,7 +3514,7 @@ body:has(.site-footer) {
   flex-wrap: wrap;
   gap: 6px;
   margin: 0;
-  padding: 10px 10px 0;
+  padding: 10px 10px 12px;
   list-style: none;
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 15px;
