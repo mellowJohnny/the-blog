@@ -153,7 +153,7 @@ function buildCardSetMarkup({
 
         <div class="set-footer-table-style">
             
-            <div style="text-align:center">
+            <div class="set-footer-image">
                 <img src="${footerImgUrl}"
                 class="table-footer-img"
                 loading="lazy"

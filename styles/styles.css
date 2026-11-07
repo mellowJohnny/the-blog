@@ -2127,6 +2127,11 @@ body:has(.site-footer) .header-style + .flex-container > .intro > p:last-child {
   margin: 0;
 }
 
+/* The footer image, centred (buildCardSetMarkup() in helper.js, live page and CMS preview) */
+.set-footer-image {
+  text-align: center;
+}
+
 /* Breathing room between the end of the review text and the caption */
 #cardSetDiv .set-footer-table-style {
   margin-top: 16px;
@@ -3218,6 +3223,13 @@ body:has(.site-footer) {
   color: var(--color-accent-hover);
   text-decoration: none;
   cursor: pointer;
+}
+
+/* The previous/next row under a review (wax.js). The #cardSetDiv prefix out-ranks
+   the .flex-container div margin, as the old inline style did. */
+#cardSetDiv .pagination-controls {
+  text-align: center;
+  margin: 8px 0 20px 0;
 }
 
 /*************************************** Pagination Styles... ********************************/

@@ -170,8 +170,6 @@ Anything outside them follows the guide.
 Found by the 2026-11-06 consistency review. Fix them rather than copy them.
 `check.mjs --all` lists the mechanical ones line by line.
 
-- Inline `text-align:center` in the review template (`helper.js`,
-  `wax.js`).
 - Analytics loads immediately on Home, About, Player Search and The Wax
   Museum, instead of on window `load`.
 - Masthead links use `index.html` instead of `/index.html` on most pages.
