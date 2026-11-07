@@ -693,8 +693,9 @@ box (the review pages, About).
   no page carries spinner markup). Given an element, it puts the same
   ring inside it (`.site-spinner-inline`), which is how the checklist and
   NHL game modals show it without stacking an overlay on the modal.
-- **The 300ms delay.** It appears only if the load takes longer than
-  300ms, so a fast load never flashes it. It returns a `hide()` function
+- **The 500ms delay.** It appears only if the load takes longer than
+  500ms (300ms until the owner raised it, 2026-11-07), so a fast load
+  never flashes it. It returns a `hide()` function
   that each caller runs when the fetch settles, success or failure;
   `hide()` cancels the delay, so a fast load never shows anything. A
   counter keeps overlapping overlay calls (two quick Player Searches)
@@ -713,6 +714,19 @@ box (the review pages, About).
   `initTimeline()`, `fetchCardSetsByYear()` (it covers the retry pause),
   `fetchBlogs()` (About), `openChecklistModal()` and `openNhlGameModal()`.
   Error messages still go in each page's own status element.
+- **Tapping a link (touch devices, 2026-11-07).** On a slow phone
+  connection a tap gave no sign it worked until the next page arrived.
+  `showNavigationSpinner()`, one document `click` listener on public pages,
+  shows the overlay when a tap on a touch screen with no hover
+  (`(hover: none) and (pointer: coarse)`) follows a link that leaves the
+  page. It skips links a page handles itself (`defaultPrevented`: the
+  Checklist links), new-tab and download links, `mailto:`/`tel:`, and
+  `#hash` links on the same page. It uses the same 500ms delay, so a fast
+  page change shows nothing. A `pageshow` listener hides it when Back
+  restores a page from the back/forward cache (which would otherwise
+  come back with the overlay up), and a 20-second timeout hides it if
+  the navigation never completes. Desktop keeps the browser's own
+  indicator (owner decision).
 - **All Sets refreshes silently.** The build pre-renders its list, so
   `initBrowseBySet()` shows the spinner only when the columns start empty
   (an unbuilt local checkout). Whiting out a list that's already on

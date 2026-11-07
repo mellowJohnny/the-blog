@@ -310,7 +310,7 @@ function getMonthName(monthNum) {
 }
 
 // One loading spinner for every public page: full-screen, or inside `container`
-// (modals). It appears only after 300ms so fast loads never flash it; returns hide().
+// (modals). It appears only after 500ms so fast loads never flash it; returns hide().
 let spinnerOverlayUsers = 0;
 let spinnerOverlayTextTimer;
 function showSpinner(container) {
@@ -332,7 +332,7 @@ function showSpinner(container) {
       spinnerOverlayTextTimer = startSpinnerText(overlay);
     }
     overlay.hidden = false;
-  }, 300);
+  }, 500);
   return () => {
     if (done) return;
     done = true;
@@ -385,6 +385,30 @@ function startSpinnerText(box) {
   };
   step();
   return setInterval(step, 50);
+}
+
+// Touch devices: a tapped link that leaves the page shows the spinner, so a slow connection
+// still confirms the tap. Links a page handles itself (preventDefault) and new tabs are skipped.
+let hideNavigationSpinner;
+function showNavigationSpinner(event) {
+  if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  if (!window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
+  const link = event.target.closest("a[href]");
+  if (!link || link.hasAttribute("download") || (link.target && link.target !== "_self")) return;
+  const url = new URL(link.href, window.location.href);
+  const here = window.location;
+  if (!/^https?:$/.test(url.protocol)) return;
+  if (url.origin === here.origin && url.pathname === here.pathname && url.search === here.search) return; // a #hash on this page
+  hideNavigationSpinner?.();
+  const hide = showSpinner();
+  const safety = setTimeout(hide, 20000); // a navigation that never completes mustn't lock the page
+  hideNavigationSpinner = () => { clearTimeout(safety); hide(); };
+}
+
+if (!window.location.pathname.startsWith("/cms/")) {
+  document.addEventListener("click", showNavigationSpinner);
+  // Back/forward restores a cached page as it was left, overlay and all.
+  window.addEventListener("pageshow", (event) => { if (event.persisted) hideNavigationSpinner?.(); });
 }
 
 
