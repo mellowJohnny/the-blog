@@ -230,7 +230,7 @@ function renderPlayerSearchResults(query, results) {
 
     return `
       <div class="player-search-group">
-        <h3 class="player-search-set-name"> ${setHeading}</h3>
+        <h2 class="player-search-set-name"> ${setHeading}</h2>
         <ul class="player-search-card-list">${cardRows}</ul>
       </div>
     `;

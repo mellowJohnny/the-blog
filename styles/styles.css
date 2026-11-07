@@ -1973,10 +1973,31 @@ body:has(.site-footer) .header-style h1 {
     padding: 10px; /* changing to 10px */
 } 
 
-.blog-title {
+/* One standard for section headings (h2) and sub-headings (h3) on the public pages;
+   each class keeps its own margins and alignment further down. */
+.blog-title,
+#timelineTitle,
+.browse-col-heading {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  font-size: 22px;
-  color:rgb(11, 109, 167);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--color-text-dark);
+}
+
+.player-search-set-name,
+.browse-season-heading {
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--color-text-dark);
+}
+
+@media (max-width: 600px) {
+  .blog-title,
+  #timelineTitle,
+  .browse-col-heading {
+    font-size: 22px;
+  }
 }
 
 /* Author, date and reading time above a review or blog post (helper.js, blogs.js) */
@@ -2466,18 +2487,12 @@ body:has(.site-footer) {
 
 .browse-col-heading {
   margin: 16px 0 4px;
-  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  font-size: 28px;
 }
 
 .browse-season-heading {
   margin: 22px 0 8px;
   padding-bottom: 4px;
-  border-bottom: 1px solid var(--color-heading-outline);
-  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
-  font-weight: 600;
-  font-size: 22px;
-  color: var(--color-heading-outline);
+  border-bottom: 1px solid var(--color-text-dark);
 }
 
 .browse-set {
@@ -3378,7 +3393,6 @@ body:has(.site-footer) {
 }
 
 .player-search-set-name {
-  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   margin-bottom: 8px;
 }
 
@@ -4627,8 +4641,6 @@ body:has(.site-footer) {
 #timelineTitle {
   margin: 24px 0 18px;
   text-align: center;
-  font-size: 26px;
-  color: var(--color-heading-outline);
 }
 
 .timeline-status {
@@ -4881,10 +4893,6 @@ body:has(.site-footer) {
 }
 
 @media (max-width: 600px) {
-  #timelineTitle {
-    font-size: 22px;
-  }
-
   .timeline-line::before {
     left: 12px;
     margin-left: 0;

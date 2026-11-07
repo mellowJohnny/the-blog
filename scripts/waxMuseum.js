@@ -74,7 +74,7 @@ function waxPackDetails(pack) {
 
 function buildWaxPackCaption(pack) {
   const caption = waxMuseumEl("div", "wax-museum-caption");
-  caption.appendChild(waxMuseumEl("h3", "wax-museum-name", pack.name));
+  caption.appendChild(waxMuseumEl("h2", "wax-museum-name", pack.name));
 
   const list = waxMuseumEl("dl", "wax-museum-details");
   waxPackDetails(pack).forEach(([label, value]) => {
