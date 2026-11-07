@@ -175,9 +175,9 @@ function renderBlogPage() {
   if (cleanImg === "none") {
     blogBody.innerHTML +=
       `<h2 class="blog-title">${cleanTitle}</h2>
-       <strong><i>${cleanAuthor}</i></strong><br>
-       <strong><i>${fixDate(date)}</i></strong><br>
-       <strong><i>${readingStats.minutes} minute read</i></strong><br>
+       <div class="byline">${cleanAuthor}<br>
+       ${fixDate(date)}<br>
+       ${readingStats.minutes} minute read</div>
        ${cleanPostBody}
        <hr/><br>`;
     setJsonLd("jsonld-blogpost", jsonLdData);
@@ -188,10 +188,10 @@ function renderBlogPage() {
 
   // Otherwise include the image with an onerror handler
   blogBody.innerHTML += 
-    `<h2 class="blog-title">${cleanTitle}</h2> 
-     <strong><i>${cleanAuthor}</i></strong><br>
-     <strong><i>${fixDate(date)}</i></strong><br>
-     <strong><i>${readingStats.minutes} minute read</i></strong><br>
+    `<h2 class="blog-title">${cleanTitle}</h2>
+     <div class="byline">${cleanAuthor}<br>
+     ${fixDate(date)}<br>
+     ${readingStats.minutes} minute read</div>
      ${cleanPostBody}
      <img src="${cleanImg}" class="blog-img"
           onerror="this.style.display='none'; this.nextElementSibling.style.display='none';"

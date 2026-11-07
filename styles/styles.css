@@ -176,6 +176,7 @@ messing up the layout with white borders and scoll bars
   --color-input-border: rgb(85, 174, 233);
   --color-accent-hover: #e551f5;
   --color-page-bg: rgb(228, 241, 250);
+  --color-byline: #555;
   /* Buttons - see the shared "Buttons" block near the checklist modal */
   --btn-radius: 10px;
   --btn-secondary-border: #d6d6d6;
@@ -1976,6 +1977,20 @@ body:has(.site-footer) .header-style h1 {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 22px;
   color:rgb(11, 109, 167);
+}
+
+/* Author, date and reading time above a review or blog post (helper.js, blogs.js) */
+.byline {
+  color: var(--color-byline);
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Out-ranks the bare .flex-container div rule, which would indent it and force 1000px */
+.flex-container .byline {
+  width: auto;
+  padding: 0;
+  margin: 0;
 }
 
 .blurb p {
