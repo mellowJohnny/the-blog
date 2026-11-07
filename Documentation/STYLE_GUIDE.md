@@ -23,6 +23,7 @@ Use the `:root` tokens in `styles.css`. Don't type a colour value into a rule.
 | Token | Value | Use |
 |---|---|---|
 | `--color-page-bg` | `rgb(228, 241, 250)` | Page background |
+| `--color-text` | `#000` (black) | Body text: intros, review and post bodies |
 | `--color-text-dark` | `rgb(11, 62, 100)` (navy) | h2 and h3 headings, card titles, modal titles |
 | `--color-heading-outline` | `rgb(2, 70, 153)` | Nav links, footer band, masthead text outline |
 | `--color-link` | `#3FA7D6` | Links in content |
@@ -32,7 +33,8 @@ Use the `:root` tokens in `styles.css`. Don't type a colour value into a rule.
 | `--color-masthead-bg` | `rgb(44, 82, 137)` | Masthead fallback background |
 | `--color-accent-hover` | `#e551f5` | Link hover accent |
 
-- **Body text** is black on the page background.
+- **Body text** is black (`--color-text`) everywhere, in the content boxes
+  as well as on the page background.
 - **Red** `#a83232` is the site's one red (rookie cards, required-field
   marks, destructive buttons). Use it only for those, and add it as a token
   the next time a rule needs it.
@@ -96,6 +98,8 @@ other family, and no Google Fonts link.
 | Image caption | Italic, `<em>` or a caption class | Bold italic |
 | Button | `.input-button` (the shared "Buttons" block) | A new button style or inline style |
 | Flip hint on a card | The shared Flip pill (`.timeline-hint`) | A new pill |
+| Breadcrumbs | `#breadcrumbs` filled by `renderBreadcrumbs()`, with its `BreadcrumbList` structured data, on pages below a section only: the review pages and Lockout. Top-level pages have none on purpose (owner decision, 2026-11-07): a "Home › Page" trail adds nothing, and breadcrumbs aren't a ranking factor. | Breadcrumbs on a top-level page |
+| Scores ticker | The `#nhlTicker` block, on the hockey content pages. Home and The Wax Museum have none on purpose (owner decision). | Adding it to Home or the Wax Museum |
 | Section divider | `.browse-season-heading`'s underline or the result divider | Ad hoc `<hr>` styling |
 
 ## Markup rules
@@ -222,6 +226,5 @@ Anything outside them follows the guide.
 Found by the 2026-11-06 consistency review. Fix them rather than copy them.
 `check.mjs --all` lists the mechanical ones line by line.
 
-- Review and post body text is `rgb(34, 38, 41)`, not black like intros.
 - `styles.css` still has many hand-typed colours and sizes from before this
   guide.

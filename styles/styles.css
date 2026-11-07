@@ -177,6 +177,7 @@ messing up the layout with white borders and scoll bars
   --color-accent-hover: #e551f5;
   --color-page-bg: rgb(228, 241, 250);
   --color-byline: #555;
+  --color-text: #000;
   /* Buttons - see the shared "Buttons" block near the checklist modal */
   --btn-radius: 10px;
   --btn-secondary-border: #d6d6d6;
@@ -1998,7 +1999,7 @@ body:has(.site-footer) .header-style + .flex-container > .intro > p:last-child {
     font-family: 'Source Sans 3';
     background: rgb(212, 233, 241);
     border-radius: 3px;
-    color:rgb(34, 38, 41);
+    color: var(--color-text);
     font-size: 18px;
     font-weight: 400; /* Light */
     text-align: left;
@@ -2044,13 +2045,6 @@ body:has(.site-footer) .header-style + .flex-container > .intro > p:last-child {
   width: auto;
   padding: 0;
   margin: 0;
-}
-
-.blurb p {
-  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  color:rgb(34, 38, 41);
-  font-size: 16px;
-  text-align: left;
 }
 
 .caption {
