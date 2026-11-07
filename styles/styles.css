@@ -932,6 +932,11 @@ body {
     font-size: 18px;
 }
 
+/* Public pages: a default text font, so anything that sets none gets Source Sans 3, not Times */
+body:has(.site-footer) {
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+}
+
 hr {
   height:2px;
   width: 75%;

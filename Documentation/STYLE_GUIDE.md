@@ -50,6 +50,10 @@ other family, and no Google Fonts link.
 | Bebas Neue | The "Junk Wax Hockey" masthead only | 400 |
 | Special Elite | Review set details and `.caption` only | 400 |
 
+- The public pages' `body` defaults to Source Sans 3, so text that sets no
+  font still gets the right one. Still name the family on components that
+  need a specific one; don't rely on the default for Nunito, Bebas Neue or
+  Special Elite.
 - Always write the full stack with the fallback face, for example
   `'Source Sans 3', 'Source Sans 3 Fallback', sans-serif`.
 - Ask only for a weight the family has. A 600 Source Sans 3 renders as 700;
@@ -218,7 +222,6 @@ Anything outside them follows the guide.
 Found by the 2026-11-06 consistency review. Fix them rather than copy them.
 `check.mjs --all` lists the mechanical ones line by line.
 
-- `body` has no font family, so anything missed falls back to Times.
 - Review and post body text is `rgb(34, 38, 41)`, not black like intros.
 - `styles.css` still has many hand-typed colours and sizes from before this
   guide.
