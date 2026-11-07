@@ -1917,6 +1917,21 @@ body:has(.site-footer) .header-style h1 {
   margin-right: 0;
 }
 
+/* One spacing for an intro under a .header-style heading (Player Search, Timeline,
+   Wax Museum, Lockout): tighter than the .flex-container div padding and <p> margins. */
+body:has(.site-footer) .header-style + .flex-container > .intro {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+body:has(.site-footer) .header-style + .flex-container > .intro > p:first-child {
+  margin-top: 0;
+}
+
+body:has(.site-footer) .header-style + .flex-container > .intro > p:last-child {
+  margin-bottom: 0;
+}
+
 /* Tablet: the .flex-container column adds its 5px margin + 15px padding here. */
 @media (min-width: 601px) and (max-width: 1060px) {
   body:has(.site-footer) .header-style {
@@ -3287,20 +3302,6 @@ body:has(.site-footer) {
    it. Scoped under #player-search-form rather than editing the shared
    rule, same pattern as other .flex-container-related fixes - see
    FRONTEND.md's Mobile / responsive design gotchas. */
-/* Tighter than the shared .flex-container div's 15px/5px padding+margin
-   and the browser's default <p> margins - this page's intro is a short
-   two-line blurb, not a big content block, so the generic spacing left
-   too much air above/below it. */
-#player-search-intro {
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-
-#player-search-intro p {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
 #player-search-form {
   padding-top: 8px;
 }
@@ -4535,16 +4536,6 @@ body:has(.site-footer) {
    Sits outside .flex-container on purpose, so the .flex-container div
    descendant rule (1000px wide, 15px padding) doesn't hit its divs.
    ============================================ */
-
-#timeline-intro {
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-
-#timeline-intro p {
-  margin-top: 0;
-  margin-bottom: 12px;
-}
 
 #timelineSection {
   --timeline-blue: #6bb7e6; /* rink ice: the line and the card backs */

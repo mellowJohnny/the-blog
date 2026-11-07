@@ -86,7 +86,7 @@ other family, and no Google Fonts link.
 | Need | Use | Don't |
 |---|---|---|
 | Page title block | `.header-style` with an `h1`, or an `h1` inside `.intro` | A new title wrapper |
-| Intro paragraph | `<div class="intro"><p>…</p></div>` inside `.flex-container` | Bare text in the intro div |
+| Intro paragraph | `<div class="intro"><p>…</p></div>` inside `.flex-container`. Directly under a `.header-style` heading it gets the shared spacing rule. | Bare text in the intro div, or a per-page intro padding rule |
 | Content box (review, post, essay) | `.blog-entry` | A new boxed container |
 | Byline | `.byline` (dark grey, regular, not italic) | `<strong><i>` |
 | Image caption | Italic, `<em>` or a caption class | Bold italic |
@@ -170,8 +170,6 @@ Anything outside them follows the guide.
 Found by the 2026-11-06 consistency review. Fix them rather than copy them.
 `check.mjs --all` lists the mechanical ones line by line.
 
-- The Wax Museum has a larger gap between its heading and intro than the
-  other `.header-style` pages.
 - Lockout's "404 - Season Not Found" is bare text, not a paragraph.
 - Inline `text-align:center` in the review template (`helper.js`,
   `wax.js`).
