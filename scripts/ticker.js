@@ -713,7 +713,7 @@ async function openNhlGameModal(gameId) {
   ["nhlGameHeader", "nhlGameBoxScore", "nhlGameRecap"].forEach((id) => {
     document.getElementById(id).innerHTML = "";
   });
-  summary.innerHTML = "<p>Loading game...</p>";
+  const hideSpinner = showSpinner(summary); // helper.js
   const firstTab = overlay.querySelector('[role="tab"]');
   selectNhlGameTab(firstTab);
   overlay.style.display = "block";
@@ -725,11 +725,13 @@ async function openNhlGameModal(gameId) {
     if (!res.ok) throw new Error(`NHL game request failed: ${res.status}`);
     game = await res.json();
   } catch (err) {
+    hideSpinner();
     if (requestId !== nhlGameRequestId) return;
     console.log("NHL game fetch failed:", err);
     summary.innerHTML = "<p>Couldn't load this game right now - please try again.</p>";
     return;
   }
+  hideSpinner();
   if (requestId !== nhlGameRequestId) return;
 
   renderNhlGameHeader(game);

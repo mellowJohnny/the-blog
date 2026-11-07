@@ -86,8 +86,10 @@ function renderBlogIntro(blogType) {
   */
 
   function fetchBlogs(blogType) {
+  const hideSpinner = showSpinner(); // helper.js
   fetch(`https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev?blogType=${blogType}`)
     .then(res => res.json())
+    .finally(hideSpinner)
     .then(blogArray => {
 
       if (!Array.isArray(blogArray)) {

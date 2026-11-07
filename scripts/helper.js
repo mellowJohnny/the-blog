@@ -309,6 +309,42 @@ function getMonthName(monthNum) {
   return months[monthNum] || null; // or "Invalid month"
 }
 
+// One loading spinner for every public page: full-screen, or inside `container`
+// (modals). It appears only after 300ms so fast loads never flash it; returns hide().
+let spinnerOverlayUsers = 0;
+function showSpinner(container) {
+  let inline = null;
+  let done = false;
+  if (container) container.innerHTML = "";
+  else spinnerOverlayUsers++;
+  const timer = setTimeout(() => {
+    if (container) {
+      inline = container.appendChild(buildSpinner("site-spinner-inline"));
+      return;
+    }
+    const overlay = document.getElementById("site-spinner-overlay") || document.body.appendChild(buildSpinner("site-spinner-overlay"));
+    overlay.id = "site-spinner-overlay";
+    overlay.hidden = false;
+  }, 300);
+  return () => {
+    if (done) return;
+    done = true;
+    clearTimeout(timer);
+    if (container) return inline?.remove();
+    const overlay = document.getElementById("site-spinner-overlay");
+    if (--spinnerOverlayUsers === 0 && overlay) overlay.hidden = true;
+  };
+}
+
+function buildSpinner(className) {
+  const box = document.createElement("div");
+  box.className = className;
+  box.setAttribute("role", "status");
+  box.setAttribute("aria-label", "Loading");
+  box.innerHTML = '<div class="site-spinner"></div>';
+  return box;
+}
+
 
     //************ Helper Function To Generate Copyright Date for any <div id="copy"> tag ********************
     function fetchCopyrightYear() {

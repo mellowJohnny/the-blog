@@ -54,7 +54,9 @@ function renderCardIntro(pageName) {
 
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
 
+    const hideSpinner = showSpinner(); // helper.js
     fetchJsonWithRetry(urlToFetch)
+        .finally(hideSpinner)
         .then(data => {
 
             // Lambda returns an array, not { Items: [...] }
@@ -398,7 +400,7 @@ function openChecklistModal(link) {
   title.textContent = setName;
   // The plain set name, so applyChecklistFilters() can add/remove the filter suffix.
   title.dataset.setName = setName;
-  body.innerHTML = "<p>Loading checklist...</p>";
+  const hideSpinner = showSpinner(body); // helper.js
   overlay.style.display = "block";
   // Scopes the @media print rules to print only the modal - without
   // this, printing the page normally (modal closed) would print
@@ -415,6 +417,7 @@ function openChecklistModal(link) {
       if (!response.ok) throw new Error(`Checklist request failed: ${response.status}`);
       return response.json();
     })
+    .finally(hideSpinner)
     .then(items => {
       currentChecklistItems = items;
       // Routes through applyChecklistFilters() instead of

@@ -201,8 +201,7 @@ function renderWaxMuseum(packs) {
 
 async function initWaxMuseum() {
   const status = document.getElementById("waxMuseumStatus");
-  const overlay = document.getElementById("wax-museum-spinner-overlay");
-  overlay.style.display = "flex"; // same overlay+spinner as Player Search
+  const hideSpinner = showSpinner(); // helper.js
   try {
     const response = await fetch(WAX_PACK_GET_URL);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -217,6 +216,6 @@ async function initWaxMuseum() {
     console.log("Wax museum load error:", error);
     status.textContent = "Couldn't load the wax packs. Please try again.";
   } finally {
-    overlay.style.display = "none";
+    hideSpinner();
   }
 }

@@ -256,13 +256,9 @@ async function runPlayerSearch(rawQuery) {
   url.searchParams.set("q", query);
   history.replaceState(null, "", url);
 
-  renderPlayerSearchMessage(`Searching for "${query}"...`);
-
-  // Same overlay+spinner pattern as smsAdmin.html (adminSMS.js) - the
-  // Lambda's Scan-per-request design (LAMBDA_FUNCTIONS.md) can take a
-  // couple seconds, and static "Searching..." text alone wasn't clear enough.
-  const overlay = document.getElementById("player-search-spinner-overlay");
-  if (overlay) overlay.style.display = "flex";
+  // The Lambda's Scan-per-request design (LAMBDA_FUNCTIONS.md) can take a couple seconds.
+  document.getElementById("playerSearchResults").innerHTML = "";
+  const hideSpinner = showSpinner(); // helper.js
 
   try {
     const response = await fetch(`${PLAYER_SEARCH_API_URL}?q=${encodeURIComponent(query)}`);
@@ -278,6 +274,6 @@ async function runPlayerSearch(rawQuery) {
     console.error("Player search failed:", err);
     renderPlayerSearchMessage("Something went wrong with that search - please try again.");
   } finally {
-    if (overlay) overlay.style.display = "none";
+    hideSpinner();
   }
 }
