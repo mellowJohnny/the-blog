@@ -204,7 +204,6 @@ Anything outside them follows the guide.
 Found by the 2026-11-06 consistency review. Fix them rather than copy them.
 `check.mjs --all` lists the mechanical ones line by line.
 
-- Masthead links use `index.html` instead of `/index.html` on most pages.
 - `<!DOCTYPE>` casing and favicon tag formatting differ between pages.
 - `body` has no font family, so anything missed falls back to Times.
 - Review and post body text is `rgb(34, 38, 41)`, not black like intros.
