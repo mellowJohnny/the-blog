@@ -101,8 +101,15 @@ other family, and no Google Fonts link.
   measured height); fixed looks belong in CSS.
 - **No `<i>`, `<b>` or `<font>` for looks.** Use a class, or `<em>`/`<strong>`
   when the meaning is emphasis.
-- **Absolute links** to site pages (`/index.html`, not `index.html`), since
-  generated review pages sit one folder deeper.
+- **Absolute links to site pages.** Every link (`href`) to a page on this
+  site starts with `/`: `/index.html`, `/theJunkWaxYears.html`,
+  `/reviews/<slug>/`, never `index.html` or `../index.html`. This applies to
+  static HTML and to links built in scripts; script, stylesheet and image
+  paths (`src`, `<link href>`) use the same `/…` form. Generated review pages sit one
+  folder deeper (`/reviews/<slug>/`), so a relative link that works on a
+  root page breaks there. External links (`https://…`), in-page anchors
+  (`#…`) and `mailto:` are fine as they are. The style check flags any
+  other relative `href` (`relative-link`).
 - **New public pages** copy an existing page's head and skeleton: the same
   head order, masthead, `nav`/`footer` markers with `data-nav-page`, the
   ticker block where the page has one, and the analytics loader (see
