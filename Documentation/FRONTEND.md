@@ -688,9 +688,14 @@ two copies of the same full-screen spinner (Player Search, the Wax
 Museum), "Loading..." text (All Sets, Timeline, both modals) and a blank
 box (the review pages, About).
 
-- **Two placements.** With no argument it shows a full-screen overlay
-  (`.site-spinner-overlay`, built on first use and appended to `body`, so
-  no page carries spinner markup). Given an element, it puts the same
+- **Two placements.** With no argument it shows a small white card
+  centred on the screen (`.site-spinner-overlay`, built on first use and
+  appended to `body`, so no page carries spinner markup). Until
+  2026-11-08 this was a full-screen white wash; the owner picked the card
+  from a set of mockups so the page stays visible. The page also stays
+  usable during a load (a second search just replaces the first). The
+  card has a fixed width, so it doesn't resize as phrases of different
+  lengths rotate. Given an element, it puts the same
   ring inside it (`.site-spinner-inline`), which is how the checklist and
   NHL game modals show it without stacking an overlay on the modal.
 - **The 500ms delay.** It appears only if the load takes longer than
@@ -732,8 +737,9 @@ box (the review pages, About).
   (an unbuilt local checkout). Whiting out a list that's already on
   screen would be worse than no indicator.
 - **The CMS copy.** The SMS tool's `#autobus-spinner-overlay`
-  (`adminSMS.js`) shares the same CSS rules, but has its own markup and
-  no text.
+  (`adminSMS.js`) shares the ring's CSS, but has its own markup and no
+  text, and deliberately stays a full-screen overlay: it also blocks taps
+  while a broadcast is sending.
 
 ## Card set markup is shared with the CMS preview
 

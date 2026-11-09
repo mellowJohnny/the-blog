@@ -309,7 +309,7 @@ function getMonthName(monthNum) {
   return months[monthNum] || null; // or "Invalid month"
 }
 
-// One loading spinner for every public page: full-screen, or inside `container`
+// One loading spinner for every public page: a small centred card, or inside `container`
 // (modals). It appears only after 500ms so fast loads never flash it; returns hide().
 let spinnerOverlayUsers = 0;
 let spinnerOverlayTextTimer;
