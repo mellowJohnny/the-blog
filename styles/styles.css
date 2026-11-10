@@ -1223,8 +1223,8 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 
 /* City-only label (applyRandomMastheadTeam(), helper.js) so the random
    team pick can be visually verified at a glance. White-on-dark-shadow
-   rather than the masthead text's fixed blue outline, since that outline
-   is tuned for the large Bebas Neue title, not legible at this size. */
+   rather than the masthead title's varsity outline, which is tuned for
+   the large Bebas Neue title, not legible at this size. */
 .masthead-team-label {
   position: absolute;
   right: 8px;
@@ -1284,30 +1284,26 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   align-items: center;
   padding-left: 20px;
   height: 150px;
-  text-shadow:
-    -2px -2px 0 var(--color-heading-outline),
-     2px -2px 0 var(--color-heading-outline),
-    -2px  2px 0 var(--color-heading-outline),
-     2px  2px 0 var(--color-heading-outline);
+  /* Varsity twill, like jersey numbers: a thick outline in the team's second colour
+     (paint-order keeps it outside the letters), a thin ring in its main colour, then a
+     raised shadow. --mast-ring/--mast-drop are the ring width and shadow offset. */
+  --mast-ring: 3px;
+  --mast-drop: 5px;
+  letter-spacing: 3px;
+  -webkit-text-stroke: 10px var(--team-tertiary);
+  paint-order: stroke fill;
+  filter:
+    drop-shadow(var(--mast-ring) 0 0 var(--team-primary))
+    drop-shadow(calc(-1 * var(--mast-ring)) 0 0 var(--team-primary))
+    drop-shadow(0 var(--mast-ring) 0 var(--team-primary))
+    drop-shadow(0 calc(-1 * var(--mast-ring)) 0 var(--team-primary))
+    drop-shadow(calc(var(--mast-drop) - 1px) var(--mast-drop) 0 rgba(0, 0, 0, 0.45));
 }
 
-/* .masthead-two-color's centered white stripe sits directly under part
-   of the title - the near-white fill (rgb(252,252,245)) all but
-   vanishes against it, leaving only the thin 2px blue outline above to
-   define the letterforms, which isn't enough on its own. Add a larger,
-   darker outline layer behind the existing blue one (painted first,
-   per text-shadow's back-to-front list order) so the title stays
-   legible over white without changing the stripe's centered position. */
+/* Two-colour teams (Detroit, Tampa Bay, Toronto) would get the same colour for the
+   outline and the ring, which vanishes into the background - outline in black instead. */
 .wax-reviews-mast-table.masthead-two-color .wax-reviews-masthead a {
-  text-shadow:
-    -2px -2px 0 var(--color-heading-outline),
-     2px -2px 0 var(--color-heading-outline),
-    -2px  2px 0 var(--color-heading-outline),
-     2px  2px 0 var(--color-heading-outline),
-    -3px -3px 0 #000000,
-     3px -3px 0 #000000,
-    -3px  3px 0 #000000,
-     3px  3px 0 #000000;
+  -webkit-text-stroke-color: var(--color-text);
 }
 
 /* NHL scores ticker (initNhlTicker(), wax.js) - dark strip under the
@@ -4132,26 +4128,11 @@ body:has(.site-footer) {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     white-space: nowrap;
-    text-shadow:
-      -1px -1px 0 var(--color-heading-outline),
-       1px -1px 0 var(--color-heading-outline),
-      -1px  1px 0 var(--color-heading-outline),
-       1px  1px 0 var(--color-heading-outline);
-  }
-
-  /* The extra dark outline for two-color teams (Detroit/Tampa Bay/
-     Toronto - see the base .masthead-two-color rule) exists because the
-     centered white stripe there is wide enough to swallow the title's
-     near-white fill on desktop. On mobile the title is small enough,
-     and the stripe proportionally narrow enough, that the plain
-     outline above already reads fine - drop back to it instead of the
-     heavier one. */
-  .wax-reviews-mast-table.masthead-two-color .wax-reviews-masthead a {
-    text-shadow:
-      -1px -1px 0 var(--color-heading-outline),
-       1px -1px 0 var(--color-heading-outline),
-      -1px  1px 0 var(--color-heading-outline),
-       1px  1px 0 var(--color-heading-outline);
+    /* The varsity outline, ring and shadow, scaled to the smaller title */
+    --mast-ring: 1.5px;
+    --mast-drop: 3px;
+    letter-spacing: 1px;
+    -webkit-text-stroke-width: 5px;
   }
 
   .wax-reviews-mast-table {
