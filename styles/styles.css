@@ -1285,7 +1285,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   padding-left: 20px;
   height: 150px;
   /* Varsity twill, like jersey numbers: a thick outline in the team's second colour
-     (paint-order keeps it outside the letters), a ring in its main colour, a thin white
+     (paint-order keeps it outside the letters), a ring in its main colour, a thin cream
      edge, then a raised shadow. --mast-ring/-edge/-drop set the widths and shadow offset. */
   --mast-ring: 3px;
   --mast-edge: 1.5px;
@@ -1298,10 +1298,10 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
     drop-shadow(calc(-1 * var(--mast-ring)) 0 0 var(--team-primary))
     drop-shadow(0 var(--mast-ring) 0 var(--team-primary))
     drop-shadow(0 calc(-1 * var(--mast-ring)) 0 var(--team-primary))
-    drop-shadow(var(--mast-edge) 0 0 var(--color-white))
-    drop-shadow(calc(-1 * var(--mast-edge)) 0 0 var(--color-white))
-    drop-shadow(0 var(--mast-edge) 0 var(--color-white))
-    drop-shadow(0 calc(-1 * var(--mast-edge)) 0 var(--color-white))
+    drop-shadow(var(--mast-edge) 0 0 var(--color-masthead-text))
+    drop-shadow(calc(-1 * var(--mast-edge)) 0 0 var(--color-masthead-text))
+    drop-shadow(0 var(--mast-edge) 0 var(--color-masthead-text))
+    drop-shadow(0 calc(-1 * var(--mast-edge)) 0 var(--color-masthead-text))
     drop-shadow(calc(var(--mast-drop) - 1px) var(--mast-drop) 0 rgba(0, 0, 0, 0.45));
 }
 
