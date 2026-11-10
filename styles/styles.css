@@ -187,6 +187,7 @@ messing up the layout with white borders and scoll bars
   --color-grey: #666;
   --color-grey-light: #ccc;
   --color-surface-muted: #eceff1;
+  --color-starburst: #ffd23f;
   /* Buttons - see the shared "Buttons" block near the checklist modal */
   --btn-radius: 10px;
   --btn-secondary-border: #d6d6d6;
@@ -5059,9 +5060,63 @@ body:has(.site-footer) {
   min-height: 223px;
 }
 
-/* McFarlane's Shelf reuses these cards; its captions are shorter than a pack's, so no height floor. */
+/* McFarlane's Shelf reuses these cards. A figure's caption is only a name, one row of
+   details and up to two lines of notes, so it has no height floor and less padding. */
+.mcfarlanes-shelf .wax-museum-front {
+  position: relative; /* anchors the variant starburst */
+}
+
 .mcfarlanes-shelf .wax-museum-front > .wax-museum-caption {
   min-height: 0;
+  padding: 4px 16px 12px;
+}
+
+.mcfarlanes-shelf .wax-museum-name {
+  margin-bottom: 4px;
+}
+
+.mcfarlanes-shelf .wax-museum-detail {
+  padding: 2px 0;
+}
+
+/* The comic-style "Variant!" starburst: a 24-point star cut by clip-path on ::before,
+   outlined and lifted by drop-shadows on the badge (a clipped shape can't take a border). */
+.mcfarlanes-variant {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 92px;
+  height: 92px;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  font-size: 14px;
+  font-style: italic;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-red);
+  transform: rotate(-12deg);
+  filter:
+    drop-shadow(1.5px 0 0 var(--color-text-dark))
+    drop-shadow(-1.5px 0 0 var(--color-text-dark))
+    drop-shadow(0 1.5px 0 var(--color-text-dark))
+    drop-shadow(0 -1.5px 0 var(--color-text-dark))
+    drop-shadow(2px 3px 0 rgba(0, 0, 0, 0.25));
+  cursor: default;
+}
+
+.mcfarlanes-variant::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-starburst);
+  clip-path: polygon(50% 0%, 59.3% 15.2%, 75% 6.7%, 75.5% 24.5%, 93.3% 25%, 84.8% 40.7%,
+    100% 50%, 84.8% 59.3%, 93.3% 75%, 75.5% 75.5%, 75% 93.3%, 59.3% 84.8%, 50% 100%,
+    40.7% 84.8%, 25% 93.3%, 24.5% 75.5%, 6.7% 75%, 15.2% 59.3%, 0% 50%, 15.2% 40.7%,
+    6.7% 25%, 24.5% 24.5%, 25% 6.7%, 40.7% 15.2%);
 }
 
 .wax-museum-name {

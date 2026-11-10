@@ -24,12 +24,11 @@ function sortFigures(figures) {
     compare(a.variant, b.variant));
 }
 
-/** [label, value] rows for the caption, leaving out anything empty (variant and notes are optional). */
+/** [label, value] rows for the caption, leaving out anything empty (notes are optional). A variant gets a starburst instead. */
 function figureDetails(figure) {
   return [
     ["Series", figure.series],
     ["Released", figure.releaseYear],
-    ["Variant", figure.variant],
     ["Notes", figure.notes]
   ].filter(([, value]) => value !== undefined && value !== null && String(value).trim() !== "");
 }
@@ -39,10 +38,17 @@ function buildFigureCard(figure) {
   const card = shelfEl("div", "wax-museum-card");
   const front = shelfEl("div", "wax-museum-face wax-museum-front");
 
+  // Comic-style "Variant!" starburst on the top corner; the variant's name shows on hover
+  if (figure.variant && String(figure.variant).trim()) {
+    const burst = shelfEl("span", "mcfarlanes-variant", "Variant!");
+    burst.title = figure.variant;
+    front.appendChild(burst);
+  }
+
   if (figure.image) {
     const img = shelfEl("img", "wax-museum-img");
     img.src = SPORTSPICK_IMAGE_BASE + encodeURIComponent(figure.image);
-    img.alt = `${figure.playerName} McFarlane Sportspicks figure, ${figure.series}`;
+    img.alt = `${figure.playerName} McFarlane Sportspicks figure, ${figure.series}${figure.variant ? `, ${figure.variant}` : ""}`;
     img.width = 900;
     img.height = 1200;
     img.loading = "lazy";
