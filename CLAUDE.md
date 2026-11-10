@@ -160,6 +160,19 @@ amplify-readonly-cli` before assuming either way; this is still a
 read-only credential regardless of scope, no write/deploy access to
 anything.
 
+## Style guide: binding for public pages
+
+Any new or changed public-page markup, CSS or script-built HTML **must**
+follow `Documentation/STYLE_GUIDE.md`: colours only from the `:root`
+tokens, the four fonts, the type scale, headings through the shared h2/h3
+rules with no skipped levels, existing components reused, no inline
+styles. Reuse before inventing; a deviation needs the owner's approval
+first and is then recorded in the guide. Before calling a UI change
+done, run its pre-flight checklist and `node tools/styleCheck/check.mjs`
+(checks lines changed since the last commit; it must report nothing;
+`--all` lists the whole backlog). The check is a local tool, never a
+build step. `/cms` pages are out of scope.
+
 ## Planning workflow
 
 Before making any multi-file change, non-trivial refactor, or anything 

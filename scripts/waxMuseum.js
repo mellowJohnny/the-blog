@@ -74,7 +74,7 @@ function waxPackDetails(pack) {
 
 function buildWaxPackCaption(pack) {
   const caption = waxMuseumEl("div", "wax-museum-caption");
-  caption.appendChild(waxMuseumEl("h3", "wax-museum-name", pack.name));
+  caption.appendChild(waxMuseumEl("h2", "wax-museum-name", pack.name));
 
   const list = waxMuseumEl("dl", "wax-museum-details");
   waxPackDetails(pack).forEach(([label, value]) => {
@@ -159,50 +159,14 @@ function setWaxPackCardFlipped(card, flipped, moveFocus = false) {
   if (moveFocus) (flipped ? back : front).querySelector(".wax-museum-flip").focus({ preventScroll: true });
 }
 
-const WAX_MUSEUM_BATCH = 6;
-
-/** Cards are built WAX_MUSEUM_BATCH at a time; an empty sentinel below the grid loads the next batch as it nears the viewport. */
+/** Lazy-loads the sorted cards as the page scrolls (renderLazyGrid() in helper.js). */
 function renderWaxMuseum(packs) {
-  const gallery = document.getElementById("waxMuseum");
-  gallery.replaceChildren();
-
-  const sorted = sortWaxPacks(packs);
-  const grid = waxMuseumEl("div", "wax-museum-grid");
-  gallery.appendChild(grid);
-
-  let shown = 0;
-  const showNextBatch = () => {
-    sorted.slice(shown, shown + WAX_MUSEUM_BATCH).forEach((pack) => grid.appendChild(buildWaxPackCard(pack)));
-    shown += WAX_MUSEUM_BATCH;
-  };
-  showNextBatch();
-  if (shown >= sorted.length) return;
-  if (!("IntersectionObserver" in window)) {
-    while (shown < sorted.length) showNextBatch();
-    return;
-  }
-
-  const sentinel = waxMuseumEl("div", "wax-museum-sentinel");
-  gallery.appendChild(sentinel);
-  const observer = new IntersectionObserver((entries) => {
-    if (!entries.some((entry) => entry.isIntersecting)) return;
-    showNextBatch();
-    if (shown >= sorted.length) {
-      observer.disconnect();
-      sentinel.remove();
-    } else {
-      // Re-observing makes the browser report again, in case the sentinel is still in view (tall screens).
-      observer.unobserve(sentinel);
-      observer.observe(sentinel);
-    }
-  }, { rootMargin: "600px 0px" });
-  observer.observe(sentinel);
+  renderLazyGrid(document.getElementById("waxMuseum"), sortWaxPacks(packs), buildWaxPackCard);
 }
 
 async function initWaxMuseum() {
   const status = document.getElementById("waxMuseumStatus");
-  const overlay = document.getElementById("wax-museum-spinner-overlay");
-  overlay.style.display = "flex"; // same overlay+spinner as Player Search
+  const hideSpinner = showSpinner(); // helper.js
   try {
     const response = await fetch(WAX_PACK_GET_URL);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -217,6 +181,6 @@ async function initWaxMuseum() {
     console.log("Wax museum load error:", error);
     status.textContent = "Couldn't load the wax packs. Please try again.";
   } finally {
-    overlay.style.display = "none";
+    hideSpinner();
   }
 }

@@ -15,7 +15,9 @@ serves it and the DynamoDB table/index it actually reads or writes.
 meaningful JS of its own, beyond the scores ticker it shares with the
 other hockey pages (see the Card Set Reviews flow below) and the
 breadcrumb that `renderBreadcrumbs()` fills. Its title, description, H1
-and share tags are written in the HTML.
+and share tags are written in the HTML, and its `year`/`pageName`/`blogCat`
+globals are fixed to the 2004 McDonald's values rather than read from
+the URL, since every link to it is the bare `/lockout.html`.
 
 ## Home Page - `index.html`
 
@@ -32,7 +34,9 @@ one Home post, that was an API round trip, a placeholder that reserved
 changes.
 
 **What loads**: `scripts/helper.js` (`defer`) and one inline `window
-load` handler. `blogs.js` is not loaded. The masthead is the
+load` handler. `blogs.js` is not loaded. Analytics uses the same loader
+as every public page (`gtag/js` injected on `window` `load`; see
+`STYLE_GUIDE.md`'s "Analytics"). The masthead is the
 edge-to-edge image banner (see `FRONTEND.md`'s "Home page banner"). The
 Home page has no scores ticker, by design.
 
@@ -309,7 +313,10 @@ everything else the visitor can see or navigate to on this page.
   non-OK reply such as a throttled 429 counted as a failure, so a
   single dropped request doesn't leave an error message (or, for a
   429, a misleading "coming soon" message) in the page a crawler
-  indexes; two failures show the "Ah, Houston" text. It's the main function
+  indexes; two failures show the "Ah, Houston" text. The site's loading
+  spinner (`showSpinner()`, `helper.js`; see `FRONTEND.md`'s "Loading
+  spinner") covers the wait, retry pause included, and hides once the
+  request settles. It's the main function
   that pulls in every card set matching this year and category from
   the `Cards` table in DynamoDB, via **Get card sets by year**
   (`?year=<y>&blogCat=<c>`), which is fronted by the `getCardSetsByYear`
@@ -432,7 +439,8 @@ everything else the visitor can see or navigate to on this page.
   Lambda (`Lambdas/getNhlGameDetails/`), which reads no DynamoDB
   table: it combines the NHL's Game Center endpoints, the standings
   (team records) and NHL.com's content API (recap and video) into one
-  response — see `NHL_API.md`. The result fills the score header and
+  response — see `NHL_API.md`. The site's loading spinner sits inline in
+  the Summary panel while it waits. The result fills the score header and
   the Summary / Box Score / Recap tabs. Clicking the Recap tab's video
   poster → `playNhlGameVideo()` swaps in the NHL's own Brightcove
   player; no API call of ours. ×, Escape or the backdrop →
@@ -459,8 +467,9 @@ everything else the visitor can see or navigate to on this page.
 - "Checklist" link (only rendered when `hasChecklist` is true) exists
   because not every set has had its full card-by-card checklist
   uploaded yet — `openChecklistModal(this)` (`wax.js`) reads `setName`
-  off `data-set-name`, shows `#checklistModalOverlay`, resets both
-  filter checkboxes, then calls **Get checklist by set name**,
+  off `data-set-name`, shows `#checklistModalOverlay` with the site's
+  loading spinner inline in its body, resets both filter checkboxes,
+  then calls **Get checklist by set name**,
   fronted by the `getChecklistBySetName` Lambda
   (`Lambdas/getChecklistBySetName/`), which does a `Query` (not a full
   `Scan`) against the `Checklists` table's partition key for an exact
@@ -603,7 +612,8 @@ flow).
   triggering an expensive scan for a query too short to be meaningful).
   Otherwise it updates the URL via `history.replaceState` (so the
   search becomes shareable/bookmarkable without a full page reload),
-  shows a "Searching..." message, then calls **Search players by
+  clears the old results and shows the site's loading spinner
+  (`showSpinner()`, `helper.js`; the search takes about 4 seconds), then calls **Search players by
   name** (`q` mode), fronted by the `searchPlayerName` Lambda
   (`Lambdas/searchPlayerName/`) — this is the one endpoint on the
   entire site that does a full paginated `Scan` of the `Checklists`
@@ -660,8 +670,9 @@ only data source is a static file served from the same site.
   into a model (a title plus a list of points, each with nested
   bullets), and `renderTimeline()` builds one card per point. Because
   the cards are built from the file, an author edits text and never
-  touches the HTML. If the fetch fails or the file has no cards, a
-  friendly message replaces the cards instead of a blank page.
+  touches the HTML. The site's loading spinner shows while the file
+  loads. If the fetch fails or the file has no cards, a friendly
+  message replaces the cards instead of a blank page.
 - `setJsonLd()` (`helper.js`) writes an Article JSON-LD block, its body
   text taken from the page's intro paragraph. The title, description,
   canonical and Open Graph/Twitter tags are static in the HTML, so
@@ -730,7 +741,9 @@ columns (and the nav and footer) into the deployed page with
 raw HTML links to every `/reviews/<slug>/` page; this page is the main
 place a crawler finds them. `initBrowseBySet()` still fetches and
 redraws the same markup, which also keeps the Checklist links and the
-JSON-LD current between builds.
+JSON-LD current between builds. That refresh is silent: the loading
+spinner shows only when the columns start empty (a local checkout that
+hasn't been through a build).
 
 ## The Wax Museum - `waxMuseum.html`
 
@@ -738,9 +751,9 @@ A gallery of the wax packs behind the card sets. Its job is to turn one
 list of packs into a grid of flip cards, in release order.
 
 **What loads**: `scripts/waxMuseum.js` and `scripts/helper.js` (both
-`defer`) and one inline `window load` handler. No scores ticker. A
-spinner overlay (`#wax-museum-spinner-overlay`) covers the page while
-the packs load.
+`defer`) and one inline `window load` handler. No scores ticker. The
+site's loading spinner (`showSpinner()`, `helper.js`) covers the page
+while the packs load.
 
 **On `window load`**:
 - `fetchCopyrightYear()`, `fetchNav("waxMuseum")` and
@@ -752,7 +765,7 @@ the packs load.
   packs (public)** once, fronted by the `getWaxPacks` Lambda
   (`Lambdas/getWaxPacks/`), which scans the `WaxPacks` table (cached 30
   minutes). `sortWaxPacks()` then orders them: year, set (A to Z, with
-  the season, "Series N" and "Low"/"High" stripped from the name), series
+  the season, "Series N" and "Low"/"High"/"Jumbo" stripped from the name), series
   number, Low before High, name. `renderWaxMuseum()` draws the first six
   cards (`buildWaxPackCard()`: pack image, set name, details, a "Flip"
   pill; back image and notes on the reverse) and the next six each time
@@ -781,7 +794,7 @@ post is meant to be edited through the CMS. The heading ("How This Site
 Comes Together" since 2026-11-04) is written into the HTML (a script used to inject it with
 `renderBlogIntro('98')`, which left the raw HTML with no H1; that call
 and its branch are gone), and the post below it carries the content,
-with the usual byline. The title, description, canonical and share tags
+with the usual byline. The site's loading spinner covers the fetch. The title, description, canonical and share tags
 are static in the HTML too, so the page never inherits the tech-blog
 metadata `renderBlogIntro()` writes for the Tech pages. It is
 footer-only (not in the nav) and has no hidden WLCMS link.

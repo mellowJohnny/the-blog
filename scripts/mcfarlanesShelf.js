@@ -1,0 +1,91 @@
+/**
+ * McFarlane's Shelf (cms/mcfarlanesShelf.html, dark-deployed): one card per Sportspicks figure, in the Wax Museum's
+ * three-up grid, oldest release first. Same card style as the museum's packs, with one face (figures don't flip).
+ */
+
+// Same values as in cmsSportspicks.js (the CMS script isn't loaded here).
+const SPORTSPICK_GET_URL = "https://j35hpf8jb8.execute-api.us-east-2.amazonaws.com/prod"; // getSportspicks API
+const SPORTSPICK_IMAGE_BASE = "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/sportspicks/";
+
+function shelfEl(tag, className, text) {
+  const el = document.createElement(tag);
+  if (className) el.className = className;
+  if (text !== undefined) el.textContent = text;
+  return el;
+}
+
+/** Oldest release first, then series ("Series 2" before "Series 10"), player and variant. */
+function sortFigures(figures) {
+  const compare = (a, b) => (a || "").localeCompare(b || "", undefined, { sensitivity: "base", numeric: true });
+  return [...figures].sort((a, b) =>
+    a.releaseYear - b.releaseYear ||
+    compare(a.series, b.series) ||
+    compare(a.playerName, b.playerName) ||
+    compare(a.variant, b.variant));
+}
+
+/** [label, value] rows for the caption, leaving out anything empty (variant and notes are optional). */
+function figureDetails(figure) {
+  return [
+    ["Series", figure.series],
+    ["Released", figure.releaseYear],
+    ["Variant", figure.variant],
+    ["Notes", figure.notes]
+  ].filter(([, value]) => value !== undefined && value !== null && String(value).trim() !== "");
+}
+
+function buildFigureCard(figure) {
+  const item = shelfEl("article", "wax-museum-item");
+  const card = shelfEl("div", "wax-museum-card");
+  const front = shelfEl("div", "wax-museum-face wax-museum-front");
+
+  if (figure.image) {
+    const img = shelfEl("img", "wax-museum-img");
+    img.src = SPORTSPICK_IMAGE_BASE + encodeURIComponent(figure.image);
+    img.alt = `${figure.playerName} McFarlane Sportspicks figure, ${figure.series}`;
+    img.width = 900;
+    img.height = 1200;
+    img.loading = "lazy";
+    img.decoding = "async";
+    front.appendChild(img);
+  } else {
+    front.appendChild(shelfEl("div", "wax-museum-noimg", "No image yet"));
+  }
+
+  const caption = shelfEl("div", "wax-museum-caption");
+  caption.appendChild(shelfEl("h2", "wax-museum-name", figure.playerName));
+  const list = shelfEl("dl", "wax-museum-details");
+  figureDetails(figure).forEach(([label, value]) => {
+    const row = shelfEl("div", label === "Notes" ? "wax-museum-detail wax-museum-detail-wide" : "wax-museum-detail");
+    row.append(shelfEl("dt", "", label), shelfEl("dd", "", String(value)));
+    list.appendChild(row);
+  });
+  caption.appendChild(list);
+  front.appendChild(caption);
+
+  card.appendChild(front);
+  item.appendChild(card);
+  return item;
+}
+
+async function initMcfarlanesShelf() {
+  const status = document.getElementById("mcfarlanesShelfStatus");
+  const hideSpinner = showSpinner(); // helper.js
+  try {
+    // no-store while dark, so a figure saved a moment ago shows up; drop it at go-live to use the 30-minute cache.
+    const response = await fetch(SPORTSPICK_GET_URL, { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const figures = await response.json();
+    if (!Array.isArray(figures) || !figures.length) {
+      status.textContent = "No figures yet.";
+      return;
+    }
+    renderLazyGrid(document.getElementById("mcfarlanesShelf"), sortFigures(figures), buildFigureCard); // helper.js
+    status.textContent = "";
+  } catch (error) {
+    console.log("McFarlane's Shelf load error:", error);
+    status.textContent = "Couldn't load the figures. Please try again.";
+  } finally {
+    hideSpinner();
+  }
+}

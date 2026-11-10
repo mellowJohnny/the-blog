@@ -1,15 +1,24 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html lang="en-ca">
   <head>
-  <meta charset="utf-8">
+    <meta charset="utf-8">
     <!-- Without this, mobile Safari renders at a wide desktop-width
          virtual viewport and just zooms the page out to fit, so the
          @media (max-width: 600px) rules in styles.css never trigger -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
-    <link rel="icon" type="image/png" sizes="192x192" href="/images/icons/icon-192.png">
-    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
+    <link
+      rel="icon"
+      href="/favicon.ico"
+      sizes="16x16 32x32 48x48">
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/images/icons/icon-192.png">
+    <link
+      rel="apple-touch-icon"
+      href="/images/icons/apple-touch-icon.png">
     <title>Player Search - find which vintage hockey card sets a player appears in | Junk Wax Hockey</title>
 
     <meta name="description"
@@ -43,11 +52,15 @@
       <style>.nhl-ticker { display: none; }</style>
     </noscript>
 
-    <!-- Analytics -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX"
-    ></script>
+    <!-- Global site tag (gtag.js) - Load Google Analytics until later -->
+    <script>
+      window.addEventListener('load', function() {
+        var g = document.createElement('script');
+        g.src = 'https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX';
+        g.async = true;
+        document.head.appendChild(g);
+      });
+    </script>
 
     <!-- Load the Hella Files scripts -->
     <script src="scripts/playerSearch.js" defer></script>
@@ -98,7 +111,7 @@
     <table class="wax-reviews-mast-table">
       <tr>
         <td>
-          <header class="wax-reviews-masthead"><a href="index.html">Junk Wax Hockey</a></header>
+          <header class="wax-reviews-masthead"><a href="/index.html">Junk Wax Hockey</a></header>
         </td>
       </tr>
     </table>
@@ -130,7 +143,7 @@
         </div>
         <div class="flex-container">
           <div class="intro" id="player-search-intro">
-            <p>Wondering which sets your favourite players are in? Search by player name to find out! Just remember not every set from the junk wax era has been reviewed, so there may be gaps</p>
+            <p>Wondering which sets your favourite players are in? Search by player name to find out! Not every set from the junk wax era has been reviewed, so there may be gaps. Just like Bobby Clarke's smile.</p>
           </div>
         </div>
       </section>
@@ -163,15 +176,6 @@
     <div id="copy"></div>
     <!-- Populated by fetchCopyrightYear() in helper.js -->
   </footer>
-
-  <!-- Shown/hidden by runPlayerSearch() in playerSearch.js while a
-       search is in flight - same overlay+spinner pattern as
-       smsAdmin.html's #autobus-spinner-overlay (styles.css), just
-       under player-search-specific names since this page has nothing
-       to do with the Autobus SMS tool. -->
-  <div id="player-search-spinner-overlay">
-    <div class="player-search-spinner"></div>
-  </div>
 </body>
 
 </html>

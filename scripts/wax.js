@@ -20,7 +20,7 @@ function renderCardIntro(pageName) {
   } else if (pageName === "junkWax") {
     introHTML = `
       <h2>Junk Wax Sets</h2>
-      <p>The late '80s and early '90s...Miami Vice, acid wash jeans, teal San Jose Sharks jerseys...and a hockey card explosion. Consider this: the 1989-90 season had just two licensed hockey sets - Topps in the US and O-Pee-Chee in Canada. But just a few years later there were thirteen licensed sets and legendary over-production, ushering in the <i><a href="/theJunkWaxYears.html">Junk Wax</a></i> era. But don't let that deter you, there are some hidden gems if you are willing to dig around...</p>
+      <p>The late '80s and early '90s...Miami Vice, acid wash jeans, teal San Jose Sharks jerseys...and a hockey card explosion. Consider this: the 1989-90 season had just two licensed hockey sets - Topps in the US and O-Pee-Chee in Canada. But just a few years later there were thirteen licensed sets and legendary over-production, ushering in the <em><a href="/theJunkWaxYears.html">Junk Wax</a></em> era. But don't let that deter you, there are some hidden gems if you are willing to dig around...</p>
     `;
   } else if (pageName === "timmies") {
     introHTML = `
@@ -54,7 +54,9 @@ function renderCardIntro(pageName) {
 
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
 
+    const hideSpinner = showSpinner(); // helper.js
     fetchJsonWithRetry(urlToFetch)
+        .finally(hideSpinner)
         .then(data => {
 
             // Lambda returns an array, not { Items: [...] }
@@ -279,7 +281,7 @@ function fetchPageTitle(item)
 
         <!-- Filled in by renderPaginationControls() (below), called right
              after this whole set's HTML is inserted - see renderCardSetPage() -->
-        <div id="paginationControls" style="text-align:center; margin:8px 0 20px 0;"></div>
+        <div id="paginationControls" class="pagination-controls"></div>
 
         <div class="vote-widget" id="vote-widget-${voteKey}">
             <button
@@ -398,7 +400,7 @@ function openChecklistModal(link) {
   title.textContent = setName;
   // The plain set name, so applyChecklistFilters() can add/remove the filter suffix.
   title.dataset.setName = setName;
-  body.innerHTML = "<p>Loading checklist...</p>";
+  const hideSpinner = showSpinner(body); // helper.js
   overlay.style.display = "block";
   // Scopes the @media print rules to print only the modal - without
   // this, printing the page normally (modal closed) would print
@@ -415,6 +417,7 @@ function openChecklistModal(link) {
       if (!response.ok) throw new Error(`Checklist request failed: ${response.status}`);
       return response.json();
     })
+    .finally(hideSpinner)
     .then(items => {
       currentChecklistItems = items;
       // Routes through applyChecklistFilters() instead of

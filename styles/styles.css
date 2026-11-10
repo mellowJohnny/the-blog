@@ -176,6 +176,17 @@ messing up the layout with white borders and scoll bars
   --color-input-border: rgb(85, 174, 233);
   --color-accent-hover: #e551f5;
   --color-page-bg: rgb(228, 241, 250);
+  --color-byline: #555;
+  --color-text: #000;
+  --color-white: #fff;
+  --color-button: #256386;
+  --color-red: #a83232;
+  --color-content-bg: rgb(212, 233, 241);
+  --color-masthead-text: rgb(252, 252, 245);
+  --color-grey-dark: #444;
+  --color-grey: #666;
+  --color-grey-light: #ccc;
+  --color-surface-muted: #eceff1;
   /* Buttons - see the shared "Buttons" block near the checklist modal */
   --btn-radius: 10px;
   --btn-secondary-border: #d6d6d6;
@@ -376,7 +387,44 @@ h1 {
     font-size: 16px;
 }
 
-/* Progress Spinner */
+/* Loading spinner - showSpinner() in helper.js builds it on public pages: a small
+   card centred on the screen, with no wash, so the page stays visible and usable.
+   Fixed width, so the card doesn't resize as phrases of different lengths rotate. */
+.site-spinner-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 260px;
+    max-width: calc(100vw - 32px);
+    box-sizing: border-box;
+    padding: 22px 16px 18px;
+    background: var(--color-white);
+    border-radius: 12px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 9999;
+}
+
+.site-spinner-overlay[hidden] {
+    display: none;
+}
+
+.site-spinner-overlay .site-spinner {
+    width: 44px;
+    height: 44px;
+    border-width: 5px;
+}
+
+.site-spinner-overlay .site-spinner-text {
+    margin-top: 12px;
+    white-space: nowrap;
+}
+
+/* The Autobus SMS tool (adminSMS.js) keeps a full-screen overlay on purpose:
+   it also blocks taps while a broadcast is sending. */
 #autobus-spinner-overlay {
     position: fixed;
     top: 0;
@@ -390,46 +438,54 @@ h1 {
     z-index: 9999;
 }
 
+/* Inside a modal body, in place of its content. */
+.site-spinner-inline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 0;
+}
+
+/* The rotating phrase under the ring (startSpinnerText() in helper.js). */
+.site-spinner-text {
+    min-height: 1.4em;
+    margin: 14px 0 0;
+    font-size: 18px;
+    color: var(--color-grey-dark);
+}
+
+.site-spinner-text-rest {
+    visibility: hidden;
+}
+
+/* A blinking block, like an '80s terminal. An empty inline-block's
+   bottom edge sits on the text baseline. */
+.site-spinner-cursor {
+    display: inline-block;
+    width: 0.5em;
+    height: 0.95em;
+    margin-left: 2px;
+    vertical-align: baseline;
+    background: currentColor;
+    animation: site-cursor-blink 1s step-end infinite;
+}
+
+@keyframes site-cursor-blink {
+    50% { visibility: hidden; }
+}
+
+.site-spinner,
 .autobus-spinner {
     width: 60px;
     height: 60px;
-    border: 6px solid #ccc;
-    border-top-color: #333;
+    border: 6px solid var(--color-grey-light);
+    border-top-color: var(--color-grey-dark);
     border-radius: 50%;
-    animation: autobus-spin 0.8s linear infinite;
+    animation: site-spin 0.8s linear infinite;
 }
 
-@keyframes autobus-spin {
+@keyframes site-spin {
     to { transform: rotate(360deg); }
-}
-
-/* Progress Spinner - Player Search - same look/pattern as the Autobus
-   spinner above (including reusing its autobus-spin keyframe, which
-   has nothing Autobus-specific in it - just a rotation), just under
-   playerSearch-specific names since this page has nothing to do with
-   the Autobus SMS tool. The Wax Museum page shares these same rules. */
-#player-search-spinner-overlay,
-#wax-museum-spinner-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.75);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-}
-
-.player-search-spinner,
-.wax-museum-spinner {
-    width: 60px;
-    height: 60px;
-    border: 6px solid #ccc;
-    border-top-color: #333;
-    border-radius: 50%;
-    animation: autobus-spin 0.8s linear infinite;
 }
 
 /* --- Overlay --- */
@@ -653,7 +709,7 @@ h1 {
 
 
   .blog-img {
-    border: 3px solid rgb(5, 60, 82);
+    border: 3px solid var(--color-image-border);
     border-radius: 4px;
     padding: 3px;
     max-width: 100%;
@@ -881,7 +937,7 @@ h1 {
   padding: 0;
   font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   font-weight: 600;
-  font-size: 23px;
+  font-size: 22px;
   color:var(--color-text-dark);
   height: auto;
 }
@@ -906,7 +962,7 @@ h1 {
 .set-o-matic-picker {
   font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   font-weight: 600;
-  font-size: 32px;
+  font-size: 26px;
   text-align: center;
   height: 42px;
 }
@@ -931,12 +987,16 @@ body {
     font-size: 18px;
 }
 
+/* Public pages: a default text font, so anything that sets none gets Source Sans 3, not Times */
+body:has(.site-footer) {
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+}
+
 hr {
   height:2px;
   width: 75%;
   border-width:0;
-  color:gray;
-  background-color:rgb(14, 74, 114)
+  background-color: var(--color-text-dark);
 }
 
 a {
@@ -1033,8 +1093,8 @@ textarea {
 
 .input-button {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  background-color: #256386;
-  color: white;
+  background-color: var(--color-button);
+  color: var(--color-white);
   text-decoration: none;
   margin: 4px 2px;
 }
@@ -1130,8 +1190,8 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  color: white;
-  font-family: sans-serif;
+  color: var(--color-white);
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 /* Genuinely two-color (+white) teams (Detroit, Tampa Bay, Toronto -
@@ -1219,7 +1279,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   z-index: 1; /* keeps text above the blur */
   text-transform: uppercase;
   text-decoration: none;
-  color: rgb(252, 252, 245);
+  color: var(--color-masthead-text);
   display: flex;
   align-items: center;
   padding-left: 20px;
@@ -1888,7 +1948,6 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 
 .header-style h1{
     font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-    font-size: 28px;
     margin: 5px;
     position: relative;
     top: 1px;
@@ -1900,6 +1959,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 .header-style h1,
 #card-intro h2 {
   font-size: 34px;
+  line-height: 1.1;
 }
 
 /* Public pages: line the heading up with the intro text below it (the .intro
@@ -1911,9 +1971,35 @@ body:has(.site-footer) .header-style {
   padding: 0 10px;
 }
 
+/* Page titles get one spacing in both layouts (title in .header-style, or inside .intro):
+   13px below the nav (25px below breadcrumbs), about 23px down to the intro text. */
 body:has(.site-footer) .header-style h1 {
-  margin-left: 0;
-  margin-right: 0;
+  margin: 12px 0 5px;
+}
+
+#card-intro h2 {
+  margin-bottom: 0.67em;
+}
+
+body:has(.site-footer) .header-style + .flex-container > .intro {
+  padding-top: 14px;
+  padding-bottom: 8px;
+}
+
+/* Phones drop the intro's 5px top margin; keep it so both title layouts match there too */
+@media (max-width: 600px) {
+  body:has(.site-footer) .header-style + .flex-container > .intro,
+  body:has(.site-footer) .flex-container > .intro:has(> h1:first-child) {
+    margin-top: 5px;
+  }
+}
+
+body:has(.site-footer) .header-style + .flex-container > .intro > p:first-child {
+  margin-top: 0;
+}
+
+body:has(.site-footer) .header-style + .flex-container > .intro > p:last-child {
+  margin-bottom: 0;
 }
 
 /* Tablet: the .flex-container column adds its 5px margin + 15px padding here. */
@@ -1962,49 +2048,62 @@ body:has(.site-footer) .header-style h1 {
 }
 
 .blog-entry { /* USED BY ALL REVIEW PAGES */ 
-    font-family: 'Source Sans 3';
-    background: rgb(212, 233, 241);
+    font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+    background: var(--color-content-bg);
     border-radius: 3px;
-    color:rgb(34, 38, 41);
+    color: var(--color-text);
     font-size: 18px;
     font-weight: 400; /* Light */
     text-align: left;
     padding: 10px; /* changing to 10px */
 } 
 
-.blog-title {
+/* One standard for section headings (h2) and sub-headings (h3) on the public pages;
+   each class keeps its own margins and alignment further down. */
+.blog-title,
+#timelineTitle,
+.browse-col-heading {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  font-size: 22px;
-  color:rgb(11, 109, 167);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--color-text-dark);
 }
 
-.blurb p {
+.player-search-set-name,
+.browse-season-heading {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  color:rgb(34, 38, 41);
-  font-size: 16px;
-  text-align: left;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--color-text-dark);
 }
 
-  #weather {
-    display: flex;
-    justify-content: left;
-    min-height: 50px;
+@media (max-width: 600px) {
+  .blog-title,
+  #timelineTitle,
+  .browse-col-heading {
+    font-size: 22px;
   }
+}
+
+/* Author, date and reading time above a review or blog post (helper.js, blogs.js) */
+.byline {
+  color: var(--color-byline);
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Out-ranks the bare .flex-container div rule, which would indent it and force 1000px */
+.flex-container .byline {
+  width: auto;
+  padding: 0;
+  margin: 0;
+}
 
 .caption {
   font-family: "Special Elite";
   font-size: 16px;
 }
     
-
-/* Table Stuff */
-.table-style {
-  margin-left: auto;
-  margin-right: auto;
-  font-family: 'Nunito';
-  font-size: 16px;
-  text-align: left;
-}
 
 .set-details-table-style {
   width: 100%;
@@ -2089,6 +2188,11 @@ body:has(.site-footer) .header-style h1 {
   max-width: none;
   padding: 0;
   margin: 0;
+}
+
+/* The footer image, centred (buildCardSetMarkup() in helper.js, live page and CMS preview) */
+.set-footer-image {
+  text-align: center;
 }
 
 /* Breathing room between the end of the review text and the caption */
@@ -2334,7 +2438,7 @@ body:has(.site-footer) .header-style h1 {
   margin: auto -8px -8px;
   padding: 28px 20px 24px;
   background: var(--color-heading-outline);
-  color: #ffffff;
+  color: var(--color-white);
   font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   text-align: center;
 }
@@ -2376,7 +2480,7 @@ body:has(.site-footer) {
 }
 
 #footer-links a {
-  color: #ffffff;
+  color: var(--color-white);
   text-decoration: none;
   transition: color 0.15s ease;
 }
@@ -2414,7 +2518,7 @@ body:has(.site-footer) {
 }
 
 .site-footer .footer-wlcms:focus-visible {
-  outline: 2px solid #ffffff;
+  outline: 2px solid var(--color-white);
   outline-offset: 2px;
 }
 
@@ -2451,18 +2555,12 @@ body:has(.site-footer) {
 
 .browse-col-heading {
   margin: 16px 0 4px;
-  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  font-size: 28px;
 }
 
 .browse-season-heading {
   margin: 22px 0 8px;
   padding-bottom: 4px;
-  border-bottom: 1px solid var(--color-heading-outline);
-  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
-  font-weight: 600;
-  font-size: 22px;
-  color: var(--color-heading-outline);
+  border-bottom: 1px solid var(--color-text-dark);
 }
 
 .browse-set {
@@ -2784,7 +2882,7 @@ body:has(.site-footer) {
 }
 
 .checklist-modal-content {
-  background-color: #fff;
+  background-color: var(--color-white);
   margin: 0 auto 40px auto;
   padding: 24px 32px;
   border-radius: 8px;
@@ -2833,9 +2931,9 @@ body:has(.site-footer) {
   flex-shrink: 0;
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
-  font-size: 17px;
-  color: #fff;
-  background-color: #256386;
+  font-size: 16px;
+  color: var(--color-white);
+  background-color: var(--color-button);
   border-radius: 20px;
   padding: 8px 16px;
   cursor: pointer;
@@ -2854,14 +2952,14 @@ body:has(.site-footer) {
 
 .checklist-modal-print-btn {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  background-color: #256386;
-  color: white;
+  background-color: var(--color-button);
+  color: var(--color-white);
 }
 
 .checklist-modal-pdf-btn {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  background-color: #256386;
-  color: white;
+  background-color: var(--color-button);
+  color: var(--color-white);
 }
 
 /* Buttons - one shared shape for every site/CMS button, placed after
@@ -2950,7 +3048,7 @@ body:has(.site-footer) {
 .checklist-modal-close {
   font-size: 32px;
   font-weight: bold;
-  color: #444;
+  color: var(--color-grey-dark);
   cursor: pointer;
   line-height: 1;
 }
@@ -2978,7 +3076,7 @@ body:has(.site-footer) {
   font-size: 40px;
   text-transform: uppercase;
   text-decoration: none;
-  color: rgb(252, 252, 245);
+  color: var(--color-masthead-text);
   text-shadow:
     -1px -1px 0 var(--color-heading-outline),
      1px -1px 0 var(--color-heading-outline),
@@ -2989,7 +3087,7 @@ body:has(.site-footer) {
 .checklist-modal-title {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
-  font-size: 1.4rem;
+  font-size: 22px;
   color: var(--color-text-dark);
   margin: 0;
 }
@@ -3003,7 +3101,7 @@ body:has(.site-footer) {
   column-span: all;
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 18px;
   color: var(--color-text-dark);
   border-bottom: 2px solid var(--color-input-border);
   margin: 20px 0 8px 0;
@@ -3036,8 +3134,8 @@ body:has(.site-footer) {
 }
 
 .checklist-modal-card-notes {
-  color: #777;
-  font-size: 0.85em;
+  color: var(--color-grey);
+  font-size: 13px;
 }
 
 @media (max-width: 600px) {
@@ -3119,7 +3217,7 @@ body:has(.site-footer) {
     display: inline-block;
     width: 10px;
     height: 10px;
-    border: 1px solid #000;
+    border: 1px solid var(--color-text);
     margin-right: 6px;
     vertical-align: middle;
   }
@@ -3128,10 +3226,10 @@ body:has(.site-footer) {
     display: block;
     margin-top: 24px;
     padding-top: 8px;
-    border-top: 1px solid #ccc;
+    border-top: 1px solid var(--color-grey-light);
     font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
     font-size: 12px;
-    color: #666;
+    color: var(--color-grey);
     text-align: center;
   }
 }
@@ -3190,10 +3288,17 @@ body:has(.site-footer) {
   cursor: pointer;
 }
 
+/* The previous/next row under a review (wax.js). The #cardSetDiv prefix out-ranks
+   the .flex-container div margin, as the old inline style did. */
+#cardSetDiv .pagination-controls {
+  text-align: center;
+  margin: 8px 0 20px 0;
+}
+
 /*************************************** Pagination Styles... ********************************/
 .pagination-link {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  font-size: 1.4rem;
+  font-size: 22px;
   color: var(--color-link);
   text-decoration: none;
   margin: 0 15px;
@@ -3206,7 +3311,7 @@ body:has(.site-footer) {
 }
 
 .pagination-link.disabled {
-  color: #999;
+  color: var(--color-grey);
   pointer-events: none;
   text-decoration: none;
   cursor: default;
@@ -3214,9 +3319,9 @@ body:has(.site-footer) {
 
 .pagination-page {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  font-size: 1.2rem;
+  font-size: 20px;
   margin: 0 10px;
-  color: #444;
+  color: var(--color-grey-dark);
 }
 
 /*************************************** Vote Widget Styles... ********************************/
@@ -3234,7 +3339,7 @@ body:has(.site-footer) {
   gap: 6px;
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 16px;
-  background-color: #fff;
+  background-color: var(--color-white);
   border: 1px solid var(--color-text-dark);
   border-radius: 20px;
   padding: 8px 16px;
@@ -3253,7 +3358,7 @@ body:has(.site-footer) {
 
 .vote-btn.voted {
   background-color: var(--color-text-dark);
-  color: #fff;
+  color: var(--color-white);
 }
 
 .vote-btn:disabled {
@@ -3272,20 +3377,6 @@ body:has(.site-footer) {
    it. Scoped under #player-search-form rather than editing the shared
    rule, same pattern as other .flex-container-related fixes - see
    FRONTEND.md's Mobile / responsive design gotchas. */
-/* Tighter than the shared .flex-container div's 15px/5px padding+margin
-   and the browser's default <p> margins - this page's intro is a short
-   two-line blurb, not a big content block, so the generic spacing left
-   too much air above/below it. */
-#player-search-intro {
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-
-#player-search-intro p {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
 #player-search-form {
   padding-top: 8px;
 }
@@ -3297,6 +3388,8 @@ body:has(.site-footer) {
 #player-search-form input[type="text"] {
   width: 100%;
   max-width: 450px;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  font-size: 20px;
 }
 
 /* #player-search-form prefix (id specificity) beats the shared
@@ -3323,7 +3416,7 @@ body:has(.site-footer) {
   margin: 2px 0 0 0;
   padding: 4px 0;
   list-style: none;
-  background-color: #fff;
+  background-color: var(--color-white);
   border: 1px solid var(--color-input-border);
   border-radius: 4px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -3363,7 +3456,6 @@ body:has(.site-footer) {
 }
 
 .player-search-set-name {
-  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   margin-bottom: 8px;
 }
 
@@ -3373,7 +3465,7 @@ body:has(.site-footer) {
 }
 
 .player-search-no-review {
-  font-size: 0.85em;
+  font-size: 16px;
   font-weight: normal;
   color: var(--color-text-dark);
   opacity: 0.7;
@@ -3391,16 +3483,15 @@ body:has(.site-footer) {
 }
 
 .player-search-card-notes {
-  font-size: 0.85em;
+  font-size: 14px;
   opacity: 0.75;
 }
 
 /* Rookie cards (RC in the notes column) are the most sought-after -
-   call them out instead of blending in with every other marker. Same
-   red as .delete-btn/label sup elsewhere on the site. */
+   call them out in the site's one red instead of blending in. */
 .player-search-card-notes-rc {
   font-weight: bold;
-  color: #a83232;
+  color: var(--color-red);
   opacity: 1;
 }
 
@@ -3452,7 +3543,7 @@ body:has(.site-footer) {
   flex-wrap: wrap;
   gap: 6px;
   margin: 0;
-  padding: 10px 10px 0;
+  padding: 10px 10px 12px;
   list-style: none;
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 15px;
@@ -3461,11 +3552,11 @@ body:has(.site-footer) {
 .breadcrumbs li + li::before {
   content: "\203A";
   margin-right: 6px;
-  color: #777;
+  color: var(--color-grey);
 }
 
 .breadcrumbs a {
-  color: #256386;
+  color: var(--color-button);
   text-decoration: none;
 }
 
@@ -3474,7 +3565,7 @@ body:has(.site-footer) {
 }
 
 .breadcrumbs li[aria-current] {
-  color: #555;
+  color: var(--color-grey);
 }
 
 /* Multi-line SEO fields (description, keywords): same look as the text inputs
@@ -3544,23 +3635,6 @@ body:has(.site-footer) {
   padding: 15px 20px;
   background-color: var(--color-masthead-bg);
   flex-wrap: nowrap;
-}
-
-.weather-box {
-  font-size: 1rem;
-  color: rgb(169, 220, 243);
-  text-align: left;
-  max-width: 500px;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-  margin-left: auto;
-}
-
-/* Let's make sure the fonts are always applied */
-.weather-box,
-.weather-full,
-.weather-condensed {
-  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 /* index.html's banner masthead, edge to edge at every width: the -8px margins
@@ -3854,12 +3928,12 @@ body:has(.site-footer) {
 
   /* Pagination */
   .pagination-link {
-    font-size: 1rem;
+    font-size: 16px;
     margin: 0 8px;
   }
 
   .pagination-page {
-    font-size: 0.9rem;
+    font-size: 14px;
   }
 
   /* Masthead & Weather Mobile Styles (index.html only - .masthead-container
@@ -3881,29 +3955,6 @@ body:has(.site-footer) {
     white-space: nowrap;
   }
 
-  /* flex:1 so this actually claims the leftover row width as real box
-     width, instead of margin-left:auto pushing it right while the box
-     itself stays shrink-wrapped to its content (the previous approach
-     turned unused space into invisible margin instead of usable room) */
-  .weather-box {
-    font-size: 0.75rem;
-    flex: 1;
-    max-width: 70%;
-    text-align: center;
-    padding-left: 10px;
-    box-sizing: border-box;
-  }
-
-  /* #weather is display:flex (base rule, justify-content:left) since
-     the element carries both id="weather" and class="weather-box" - the
-     text-align:center above does nothing because its children are flex
-     items, not inline text. Override the actual alignment mechanism. */
-  #weather {
-    justify-content: center;
-  }
-
-  .weather-full { display: none; }
-  .weather-condensed { display: block; }
 
 /* ============================
    cardStack CMS SHARED CHROME (wlcms.html, createBlogPost.html,
@@ -4029,20 +4080,6 @@ body:has(.site-footer) {
      Not Found" text on lockout.html, neither of which should be hidden. */
   #card-intro {
     display: none;
-  }
-
-  /* Set name heading, right under the hamburger menu, sized to match
-     .set-details-name's 20px. Only actually visible on lockout.html
-     now - waxReviews.html hides this same #pageHeader element on every
-     breakpoint via .wax-set-name-header (see the base-CSS rule near
-     .header-style h1), since its set-details section repeats the name
-     as its own heading. Scoped to the #pageHeader id, not
-     .header-style h1 generally - that class/tag pair is shared with
-     playerSearch.html, theJunkWaxYears.html, and several CMS pages,
-     none of which should be affected by a change meant for the
-     set-review pages only. */
-  #pageHeader {
-    font-size: 20px;
   }
 
 /* ============================
@@ -4397,7 +4434,7 @@ body:has(.site-footer) {
     padding: 0;
     margin: 0;
     text-align: left;
-    font-size: 0.9rem;
+    font-size: 14px;
     border-bottom: 1px solid rgba(255,255,255,0.2);
   }
 
@@ -4408,7 +4445,7 @@ body:has(.site-footer) {
     width: 100%;
     box-sizing: border-box;
     padding: 12px 16px;
-    color: #fff;
+    color: var(--color-white);
   }
 
   /* Dropdown groups: the menu shows them expanded, the group name as a
@@ -4422,7 +4459,7 @@ body:has(.site-footer) {
     letter-spacing: inherit;
     text-transform: inherit;
     text-align: left;
-    color: #fff;
+    color: var(--color-white);
     background: none;
     border: none;
     pointer-events: none;
@@ -4458,7 +4495,7 @@ body:has(.site-footer) {
   }
 
   .nav-td {
-    font-size: 1.3rem;
+    font-size: 20px;
   }
 
   .nav-td a {
@@ -4466,17 +4503,6 @@ body:has(.site-footer) {
   }
 }
 
-
-/* Hide the mobile-condensed weather text above phone width (was
-   previously unconditional/unscoped - same specificity as the mobile
-   "display: block" rule for .weather-condensed and later in the file,
-   so it silently won on mobile too, hiding the weather widget entirely
-   there. Same bug shape as the .masthead conflict.) */
-@media (min-width: 601px) {
-  .weather-condensed {
-    display: none;
-  }
-}
 
 /* Wide screens: hide the hamburger and show the normal table nav.
    Narrower screens stay on the hamburger nav above - see the comment
@@ -4560,7 +4586,7 @@ body:has(.site-footer) {
   .nav-dropdown a {
     display: block;
     padding: 8px 20px;
-    font-size: 19px; /* mixed case reads smaller than the bar's capitals */
+    font-size: 20px; /* mixed case reads smaller than the bar's capitals */
   }
 
   .nav-dropdown a:hover,
@@ -4585,16 +4611,6 @@ body:has(.site-footer) {
    descendant rule (1000px wide, 15px padding) doesn't hit its divs.
    ============================================ */
 
-#timeline-intro {
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-
-#timeline-intro p {
-  margin-top: 0;
-  margin-bottom: 12px;
-}
-
 #timelineSection {
   --timeline-blue: #6bb7e6; /* rink ice: the line and the card backs */
   --timeline-red: #c8102e; /* NHL red: the dots */
@@ -4612,8 +4628,6 @@ body:has(.site-footer) {
 #timelineTitle {
   margin: 24px 0 18px;
   text-align: center;
-  font-size: 26px;
-  color: var(--color-heading-outline);
 }
 
 .timeline-status {
@@ -4732,7 +4746,7 @@ body:has(.site-footer) {
 
 .timeline-front {
   border: 1px solid var(--timeline-blue);
-  background: #ffffff;
+  background: var(--color-white);
   color: var(--color-text-dark);
   transform: rotateY(0deg);
 }
@@ -4759,14 +4773,14 @@ body:has(.site-footer) {
 }
 
 .timeline-card.is-viewed .timeline-front {
-  border-color: #c5cdd5;
-  background: #eceff1;
-  color: #5d6b78;
+  border-color: var(--color-grey-light);
+  background: var(--color-surface-muted);
+  color: var(--color-grey);
 }
 
 .timeline-card.is-viewed .timeline-year {
-  background: #c5cdd5;
-  color: #3e4a56;
+  background: var(--color-grey-light);
+  color: var(--color-grey-dark);
 }
 
 /* Text for screen readers only (the "viewed" cue). */
@@ -4866,10 +4880,6 @@ body:has(.site-footer) {
 }
 
 @media (max-width: 600px) {
-  #timelineTitle {
-    font-size: 22px;
-  }
-
   .timeline-line::before {
     left: 12px;
     margin-left: 0;
@@ -4965,7 +4975,7 @@ body:has(.site-footer) {
   grid-area: 1 / 1;
   box-sizing: border-box;
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--color-white);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -5029,8 +5039,8 @@ body:has(.site-footer) {
   right: 10px;
   padding: 2px 10px;
   border-radius: 12px;
-  background: rgba(11, 62, 100, 0.85);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--color-text-dark) 85%, transparent);
+  color: var(--color-white);
   font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   font-size: 12px;
   font-weight: 600;
@@ -5045,8 +5055,8 @@ body:has(.site-footer) {
   align-items: center;
   justify-content: center;
   aspect-ratio: 3 / 4;
-  background: #eceff1;
-  color: #5d6b78;
+  background: var(--color-surface-muted);
+  color: var(--color-grey);
 }
 
 .wax-museum-caption {
@@ -5060,6 +5070,11 @@ body:has(.site-footer) {
 .wax-museum-front > .wax-museum-caption {
   box-sizing: border-box;
   min-height: 223px;
+}
+
+/* McFarlane's Shelf reuses these cards; its captions are shorter than a pack's, so no height floor. */
+.mcfarlanes-shelf .wax-museum-front > .wax-museum-caption {
+  min-height: 0;
 }
 
 .wax-museum-name {

@@ -130,7 +130,7 @@ function buildCardSetMarkup({
             <div class="set-details-list">
                 <div class="set-detail-row"><strong>Set Size:</strong> ${size}</div>
                 ${printRunRow}
-                <div class="set-detail-row"><strong>Inserts:</strong> <i>${subsets}</i></div>
+                <div class="set-detail-row"><strong>Inserts:</strong> ${subsets}</div>
                 <div class="set-detail-row"><strong>Release Year:</strong> ${year}</div>
                 <div class="set-detail-row"><strong>Formats:</strong> ${formats}</div>
                 <div class="set-detail-row"><strong>Manufacturer:</strong> ${mfg}</div>
@@ -142,8 +142,8 @@ function buildCardSetMarkup({
         <table class="set-details-author">
           <tr>
             <td>
-                <strong><i>${author} - ${fixDate(date)}</i></strong><br>
-                <strong><i>${readingStats.minutes} minute read</i></strong>
+                <div class="byline">${author} - ${fixDate(date)}<br>
+                ${readingStats.minutes} minute read</div>
             </td>
           </tr>
           <tr>
@@ -153,7 +153,7 @@ function buildCardSetMarkup({
 
         <div class="set-footer-table-style">
             
-            <div style="text-align:center">
+            <div class="set-footer-image">
                 <img src="${footerImgUrl}"
                 class="table-footer-img"
                 loading="lazy"
@@ -307,6 +307,147 @@ function getMonthName(monthNum) {
   };
 
   return months[monthNum] || null; // or "Invalid month"
+}
+
+// The card galleries (Wax Museum, McFarlane's Shelf): buildItem(item) cards in the three-up grid,
+// built 6 at a time; an empty sentinel below the grid loads the next batch as it nears the viewport.
+const LAZY_GRID_BATCH = 6;
+function renderLazyGrid(container, items, buildItem) {
+  container.replaceChildren();
+  const grid = document.createElement("div");
+  grid.className = "wax-museum-grid";
+  container.appendChild(grid);
+
+  let shown = 0;
+  const showNextBatch = () => {
+    items.slice(shown, shown + LAZY_GRID_BATCH).forEach((item) => grid.appendChild(buildItem(item)));
+    shown += LAZY_GRID_BATCH;
+  };
+  showNextBatch();
+  if (shown >= items.length) return;
+  if (!("IntersectionObserver" in window)) {
+    while (shown < items.length) showNextBatch();
+    return;
+  }
+
+  const sentinel = document.createElement("div");
+  sentinel.className = "wax-museum-sentinel";
+  container.appendChild(sentinel);
+  const observer = new IntersectionObserver((entries) => {
+    if (!entries.some((entry) => entry.isIntersecting)) return;
+    showNextBatch();
+    if (shown >= items.length) {
+      observer.disconnect();
+      sentinel.remove();
+    } else {
+      // Re-observing makes the browser report again, in case the sentinel is still in view (tall screens).
+      observer.unobserve(sentinel);
+      observer.observe(sentinel);
+    }
+  }, { rootMargin: "600px 0px" });
+  observer.observe(sentinel);
+}
+
+// One loading spinner for every public page: a small centred card, or inside `container`
+// (modals). It appears only after 500ms so fast loads never flash it; returns hide().
+let spinnerOverlayUsers = 0;
+let spinnerOverlayTextTimer;
+function showSpinner(container) {
+  let inline = null;
+  let inlineTextTimer;
+  let done = false;
+  if (container) container.innerHTML = "";
+  else spinnerOverlayUsers++;
+  const timer = setTimeout(() => {
+    if (container) {
+      inline = container.appendChild(buildSpinner("site-spinner-inline"));
+      inlineTextTimer = startSpinnerText(inline);
+      return;
+    }
+    const overlay = document.getElementById("site-spinner-overlay") || document.body.appendChild(buildSpinner("site-spinner-overlay"));
+    overlay.id = "site-spinner-overlay";
+    if (overlay.hidden || !spinnerOverlayTextTimer) {
+      clearInterval(spinnerOverlayTextTimer);
+      spinnerOverlayTextTimer = startSpinnerText(overlay);
+    }
+    overlay.hidden = false;
+  }, 500);
+  return () => {
+    if (done) return;
+    done = true;
+    clearTimeout(timer);
+    if (container) {
+      clearInterval(inlineTextTimer);
+      return inline?.remove();
+    }
+    const overlay = document.getElementById("site-spinner-overlay");
+    if (--spinnerOverlayUsers === 0 && overlay) {
+      overlay.hidden = true;
+      clearInterval(spinnerOverlayTextTimer);
+      spinnerOverlayTextTimer = null;
+    }
+  };
+}
+
+function buildSpinner(className) {
+  const box = document.createElement("div");
+  box.className = className;
+  box.setAttribute("role", "status");
+  box.setAttribute("aria-label", "Loading");
+  // aria-hidden: a screen reader shouldn't announce a new phrase every second.
+  box.innerHTML = '<div class="site-spinner"></div><p class="site-spinner-text" aria-hidden="true"></p>';
+  return box;
+}
+
+const SPINNER_PHRASES = ["opening wax packs...", "sorting cards...", "reading the Sports page...",
+  "sharpening skates...", "bag skate...", "spitting chicklets...", "going bar down...", "taping sticks...",
+  "filling water bottles...", "flooding the rink...", "signing autographs...", "checking the standings..."];
+
+// A different random phrase every 2s, typed out a letter every 50ms behind a block cursor.
+// The untyped rest is laid out but invisible, so the centred text doesn't shift as it grows.
+function startSpinnerText(box) {
+  const el = box.querySelector(".site-spinner-text");
+  // Built once and only the text changes, so re-rendering never restarts the cursor's blink.
+  el.innerHTML = '<span></span><span class="site-spinner-cursor"></span><span class="site-spinner-text-rest"></span>';
+  const [typedEl, , restEl] = el.children;
+  let phrase = "";
+  let tick = 0;
+  const step = () => {
+    if (tick % 40 === 0) {
+      const choices = SPINNER_PHRASES.filter((p) => p !== phrase);
+      phrase = choices[Math.floor(Math.random() * choices.length)];
+    }
+    const typed = Math.min(tick % 40 + 1, phrase.length);
+    typedEl.textContent = phrase.slice(0, typed);
+    restEl.textContent = phrase.slice(typed);
+    tick++;
+  };
+  step();
+  return setInterval(step, 50);
+}
+
+// Touch devices: a tapped link that leaves the page shows the spinner, so a slow connection
+// still confirms the tap. Links a page handles itself (preventDefault) and new tabs are skipped.
+let hideNavigationSpinner;
+function showNavigationSpinner(event) {
+  if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  if (!window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
+  const link = event.target.closest("a[href]");
+  if (!link || link.hasAttribute("download") || (link.target && link.target !== "_self")) return;
+  const url = new URL(link.href, window.location.href);
+  const here = window.location;
+  if (!/^https?:$/.test(url.protocol)) return;
+  if (url.origin === here.origin && url.pathname === here.pathname && url.search === here.search) return; // a #hash on this page
+  hideNavigationSpinner?.();
+  const hide = showSpinner();
+  const safety = setTimeout(hide, 20000); // a navigation that never completes mustn't lock the page
+  hideNavigationSpinner = () => { clearTimeout(safety); hide(); };
+}
+
+if (!window.location.pathname.startsWith("/cms/")) {
+  document.addEventListener("click", showNavigationSpinner);
+  // Back/forward restores a cached page as it was left, overlay and all.
+  window.addEventListener("pageshow", (event) => { if (event.persisted) hideNavigationSpinner?.(); });
 }
 
 
@@ -674,6 +815,8 @@ const NAV_MAP = {
   timeline: ["home", "major", "fastfood", "museum", "search"],
   browseBySet: ["home", "major", "fastfood", "museum", "timeline", "search"],
   waxMuseum: ["home", "major", "fastfood", "timeline", "search"],
+  // McFarlane's Shelf is dark-deployed at /cms/mcfarlanesShelf.html: nothing links to it yet.
+  mcfarlanesShelf: ["home", "major", "fastfood", "museum", "timeline", "search"],
   // about.html is footer-only, so nothing self-excludes.
   about: ["home", "major", "fastfood", "museum", "timeline", "search"]
 };

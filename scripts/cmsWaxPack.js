@@ -139,7 +139,7 @@ function renderWaxPackForm(mode) {
         <tr>
           <td colspan="2">
             <label>Season <sup>*</sup></label> <small>e.g. 1989 for the 1989-90 season</small><br>
-            <input type="number" id="wpYear" min="1900" max="2100" required>
+            <input type="text" id="wpYear" inputmode="numeric" maxlength="4" required>
           </td>
         </tr>
         <tr>

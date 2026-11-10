@@ -91,7 +91,9 @@ async function initBrowseBySet() {
     openChecklistModal(link);
   });
 
-  status.textContent = "Loading the sets...";
+  // A pre-rendered list (every deploy) refreshes silently; only an empty page waits on a spinner.
+  const preRendered = document.querySelector("#browseColumns .browse-set-name");
+  const hideSpinner = preRendered ? () => {} : showSpinner(); // helper.js
   try {
     if (!BROWSE_SETS_URL) throw new Error("No sets endpoint configured");
     const res = await fetch(BROWSE_SETS_URL);
@@ -111,5 +113,7 @@ async function initBrowseBySet() {
   } catch (err) {
     console.log("Browse By Set:", err);
     status.textContent = "The list of sets couldn't be loaded right now. Please try again later.";
+  } finally {
+    hideSpinner();
   }
 }

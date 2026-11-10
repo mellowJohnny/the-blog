@@ -175,7 +175,7 @@ async function initTimeline() {
   const status = document.getElementById("timelineStatus");
   if (!container || !status) return;
 
-  status.textContent = "Loading the timeline...";
+  const hideSpinner = showSpinner(); // helper.js
   try {
     const res = await fetch(TIMELINE_MD_URL);
     if (!res.ok) throw new Error(`Timeline file request failed: ${res.status}`);
@@ -186,5 +186,7 @@ async function initTimeline() {
   } catch (err) {
     console.log("Timeline:", err);
     status.textContent = "The timeline couldn't be loaded right now. Please try again later.";
+  } finally {
+    hideSpinner();
   }
 }
