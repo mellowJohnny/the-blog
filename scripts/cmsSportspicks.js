@@ -118,6 +118,13 @@ function renderSportspickForm(mode) {
           </td>
         </tr>
         <tr>
+          <td colspan="2">
+            <label>Series <sup>*</sup></label> <small>pick one already used, or type a new one</small><br>
+            <input type="text" id="spSeries" list="spSeriesList" maxlength="100" style="width: 450px;" required>
+            <datalist id="spSeriesList"></datalist>
+          </td>
+        </tr>
+        <tr>
           <td>
             <label>Player Name <sup>*</sup></label><br>
             <input type="text" id="spPlayerName" maxlength="100" required>
@@ -125,13 +132,6 @@ function renderSportspickForm(mode) {
           <td>
             <label>Variant</label> <small>e.g. Blue jersey, Chase</small><br>
             <input type="text" id="spVariant" maxlength="60">
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <label>Series <sup>*</sup></label> <small>pick one already used, or type a new one</small><br>
-            <input type="text" id="spSeries" list="spSeriesList" maxlength="100" style="width: 450px;" required>
-            <datalist id="spSeriesList"></datalist>
           </td>
         </tr>
         <tr>
