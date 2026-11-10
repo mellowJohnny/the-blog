@@ -206,13 +206,16 @@ function renderPlayerSearchResults(query, results) {
     const pageName = (result.year && result.blogCat)
       ? getPageNameForYear(result.blogCat, result.year)
       : null;
+    // setID opens that exact set in a multi-set year (waxReviews.html would
+    // otherwise open the top-rated one); a response without it still links.
+    const setParam = result.setID ? `&setID=${encodeURIComponent(result.setID)}` : "";
     const href = pageName
-      ? `/waxReviews.html?year=${encodeURIComponent(result.year)}&pageName=${encodeURIComponent(pageName)}&blogCat=${encodeURIComponent(result.blogCat)}`
+      ? `/waxReviews.html?year=${encodeURIComponent(result.year)}&pageName=${encodeURIComponent(pageName)}&blogCat=${encodeURIComponent(result.blogCat)}${setParam}`
       : null;
 
     const setHeading = href
-      ? `<a href="${escapeHtml(href)}">${escapeHtml(result.setName)}</a>`
-      : `${escapeHtml(result.setName)} <span class="player-search-no-review">(review not linked yet)</span>`;
+      ? `<a href="${escapeHtml(href)}" data-review-setid="${escapeHtml(result.setID || "")}" data-review-cat="${escapeHtml(result.blogCat)}" data-review-year="${escapeHtml(result.year)}">${escapeHtml(result.setName)}</a>`
+      : `${escapeHtml(result.setName)} <span class="player-search-no-review">(set not reviewed)</span>`;
 
     const cardRows = result.cards.map((card) => {
       const insertNote = card.insertSetName ? ` — ${escapeHtml(card.insertSetName)}` : "";
@@ -227,7 +230,7 @@ function renderPlayerSearchResults(query, results) {
 
     return `
       <div class="player-search-group">
-        <h3 class="player-search-set-name">Set: ${setHeading}</h3>
+        <h3 class="player-search-set-name"> ${setHeading}</h3>
         <ul class="player-search-card-list">${cardRows}</ul>
       </div>
     `;
@@ -237,6 +240,7 @@ function renderPlayerSearchResults(query, results) {
     <p class="player-search-summary">Found ${results.length} set${results.length === 1 ? "" : "s"} matching "${escapeHtml(query)}":</p>
     ${groups}
   `;
+  applyReviewLinks(); // helper.js
 }
 
 async function runPlayerSearch(rawQuery) {

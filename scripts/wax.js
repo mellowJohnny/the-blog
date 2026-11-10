@@ -20,7 +20,7 @@ function renderCardIntro(pageName) {
   } else if (pageName === "junkWax") {
     introHTML = `
       <h2>Junk Wax Sets</h2>
-      <p>The late '80s and early '90s...Miami Vice, acid wash jeans, teal San Jose Sharks jerseys...and a hockey card explosion. Consider this: the 1989-90 season had just two licensed hockey sets - Topps in the US and O-Pee-Chee in Canada. But just a few years later there were thirteen licensed sets and legendary over-production, ushering in the <i><a href="theJunkWaxYears.html">Junk Wax</a></i> era. But don't let that deter you, there are some hidden gems if you are willing to dig around...</p>
+      <p>The late '80s and early '90s...Miami Vice, acid wash jeans, teal San Jose Sharks jerseys...and a hockey card explosion. Consider this: the 1989-90 season had just two licensed hockey sets - Topps in the US and O-Pee-Chee in Canada. But just a few years later there were thirteen licensed sets and legendary over-production, ushering in the <i><a href="/theJunkWaxYears.html">Junk Wax</a></i> era. But don't let that deter you, there are some hidden gems if you are willing to dig around...</p>
     `;
   } else if (pageName === "timmies") {
     introHTML = `
@@ -40,12 +40,21 @@ function renderCardIntro(pageName) {
       }
   }// end renderCardIntro()
 
- function fetchCardSetsByYear(year, sortOrder, blogCat) {
+ // One retry after a pause: a single dropped or throttled request (a non-OK
+ // reply counts) shouldn't leave a visitor or a crawler with an error page.
+ function fetchJsonWithRetry(url) {
+    const attempt = () => fetch(url).then(response => {
+        if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+        return response.json();
+    });
+    return attempt().catch(() => new Promise(resolve => setTimeout(resolve, 1500)).then(attempt));
+ }
+
+ function fetchCardSetsByYear(year, sortOrder, blogCat, setID) {
 
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
 
-    fetch(urlToFetch)
-        .then(response => response.json())
+    fetchJsonWithRetry(urlToFetch)
         .then(data => {
 
             // Lambda returns an array, not { Items: [...] }
@@ -59,12 +68,14 @@ function renderCardIntro(pageName) {
             if (sortOrder === "last") {
                 data.sort(getSortOrder("stars", "last"));
             } else {
-                data.sort(getSortOrder("stars", "first"));
+                data.sort(compareSetsForDefault); // helper.js - the same rule the year links use
             }
 
             // Store results for pagination
             allCardSets = data;
-            currentPage = 1;
+            // A setID in the URL opens on that set; unknown or missing, the first.
+            const startIndex = setID ? allCardSets.findIndex(set => set.setID === setID) : -1;
+            currentPage = startIndex >= 0 ? startIndex + 1 : 1;
             renderCardSetPage();
         })
         .catch(err => {
@@ -75,6 +86,20 @@ function renderCardIntro(pageName) {
 
         // Dynamically display the copyright year 
         fetchCopyrightYear();
+}
+
+// Puts the shown set's own address in the address bar (replaceState, so paging
+// adds no history entries): its /reviews/<slug>/ page, else (no slug yet) its
+// setID on multi-set years.
+function syncSetIdInUrl(item) {
+  if (item.seoURLSlug) {
+    history.replaceState(null, "", reviewPath(item));
+    return;
+  }
+  if (allCardSets.length < 2 || !item.setID) return;
+  const url = new URL(window.location.href);
+  url.searchParams.set("setID", item.setID);
+  history.replaceState(null, "", url);
 }
 
 /**
@@ -90,6 +115,9 @@ function renderCardSetPage() {
   const end = start + pageSize;
 
   const pageItems = allCardSets.slice(start, end);
+
+  // Before fetchPageTitle() below, which reads the URL for its canonical.
+  if (pageItems.length) syncSetIdInUrl(pageItems[0]);
 
   // Let's populate card set
   pageItems.forEach(item => {
@@ -125,6 +153,37 @@ function renderCardSetPage() {
   renderPaginationControls();
 }
 
+// A review's own page, generated per set by tools/generateReviewPages.
+function reviewPath(item) {
+  return `/reviews/${item.seoURLSlug}/`;
+}
+
+// Where a link to a set goes: its own page, else (no slug yet) the query form
+// that opens that exact set.
+function reviewHref(item) {
+  if (item.seoURLSlug) return reviewPath(item);
+  const pageName = getPageNameForYear(item.blogCat, item.year);
+  const params = new URLSearchParams({ year: item.year });
+  if (pageName) params.set("pageName", pageName);
+  params.set("blogCat", item.blogCat);
+  if (item.setID) params.set("setID", item.setID);
+  return `/waxReviews.html?${params}`;
+}
+
+// The clean canonical/og:url for one review, built from its own data so extra
+// query params or a different param order can't create duplicate canonicals.
+// Its /reviews/<slug>/ page; the query form only for a set with no slug yet.
+function buildReviewCanonicalUrl(item) {
+  if (item.seoURLSlug) return `https://www.junkwaxhockey.com${reviewPath(item)}`;
+  const pageName = getPageNameForYear(item.blogCat, item.year)
+    || new URLSearchParams(window.location.search).get("pageName");
+  const params = new URLSearchParams({ year: item.year });
+  if (pageName) params.set("pageName", pageName);
+  params.set("blogCat", item.blogCat);
+  if (allCardSets.length > 1 && item.setID) params.set("setID", item.setID);
+  return `https://www.junkwaxhockey.com/waxReviews.html?${params}`;
+}
+
 /* Dynamically create & render the page title, meta tags, and
  * structured data for waxReviews.html/lockout.html, once per set as it loads 
  */
@@ -137,7 +196,7 @@ function fetchPageTitle(item)
 
   // Prefer the CMS-authored SEO fields when present, falling back to
   // the generic derivation for sets that don't have them set.
-  const pageTitle = (seoPageTitle && seoPageTitle.trim()) || `Review: ${setName}`;
+  const pageTitle = (seoPageTitle && seoPageTitle.trim()) || `${setName} Hockey Card Set Review`;
   document.title = pageTitle;
 
   // The on-page H1 always shows the real set name, never seoPageTitle -
@@ -147,7 +206,7 @@ function fetchPageTitle(item)
 
   const image = `${headerImg}${headerImgName}`;
   const description = (seoMetaDesc && seoMetaDesc.trim())
-    || stripHtmlTags(postBody).trim().slice(0, 300); // helper.js
+    || truncateAtWord(stripHtmlTags(postBody), 155); // helper.js
   const keywords = (seoTags && seoTags.trim()) || undefined;
 
   setPageMeta({
@@ -155,9 +214,15 @@ function fetchPageTitle(item)
     description: description,
     keywords: keywords,
     image: image,
-    url: window.location.href,
+    url: buildReviewCanonicalUrl(item),
     type: "website"
   });
+
+  renderBreadcrumbs(
+    getPageNameForYear(item.blogCat, item.year) || new URLSearchParams(window.location.search).get("pageName"),
+    setName,
+    buildReviewCanonicalUrl(item)
+  ); // helper.js
 
   // Fixed id (not derived from setName): only one set is ever shown per
   // page at a time (pageSize is 1), so each pagination click should
@@ -318,7 +383,7 @@ const CHECKLIST_API_URL = "https://xbizlwvad5.execute-api.us-east-2.amazonaws.co
 // escapeHtml() now lives in helper.js (shared with playerSearch.js).
 
 // Holds the current set's fetched items so the "Rookies only" checkbox
-// (applyChecklistRookieFilter()) can re-render from what's already in
+// (applyChecklistFilters()) can re-render from what's already in
 // memory instead of re-querying getChecklistBySetName on every toggle.
 let currentChecklistItems = [];
 
@@ -327,9 +392,12 @@ function openChecklistModal(link) {
   const overlay = document.getElementById("checklistModalOverlay");
   const title = document.getElementById("checklistModalTitle");
   const body = document.getElementById("checklistModalBody");
+  const insertFilter = document.getElementById("checklistInsertFilter");
   const rookieFilter = document.getElementById("checklistRookieFilter");
 
   title.textContent = setName;
+  // The plain set name, so applyChecklistFilters() can add/remove the filter suffix.
+  title.dataset.setName = setName;
   body.innerHTML = "<p>Loading checklist...</p>";
   overlay.style.display = "block";
   // Scopes the @media print rules to print only the modal - without
@@ -337,8 +405,9 @@ function openChecklistModal(link) {
   // nothing, since those rules would apply unconditionally.
   document.body.classList.add("checklist-modal-open");
   currentChecklistItems = [];
-  // The checkbox is shared across every set's modal - reset it so a
+  // The checkboxes are shared across every set's modal - reset them so a
   // filter left on from a previous set doesn't silently carry over.
+  if (insertFilter) insertFilter.checked = false;
   if (rookieFilter) rookieFilter.checked = false;
 
   fetch(`${CHECKLIST_API_URL}?setName=${encodeURIComponent(setName)}`)
@@ -348,10 +417,10 @@ function openChecklistModal(link) {
     })
     .then(items => {
       currentChecklistItems = items;
-      // Routes through applyChecklistRookieFilter() instead of
+      // Routes through applyChecklistFilters() instead of
       // rendering `items` directly - a slow fetch leaves a window
-      // where the visitor toggles the checkbox before this resolves.
-      applyChecklistRookieFilter();
+      // where the visitor toggles a checkbox before this resolves.
+      applyChecklistFilters();
     })
     .catch(err => {
       console.log("Checklist fetch failed:", err);
@@ -359,23 +428,60 @@ function openChecklistModal(link) {
     });
 }
 
-// "Rookies only" handler - filters the already-fetched
-// currentChecklistItems client-side (whole-word "RC" in notes, same
-// rule playerSearch.js uses) and re-renders. No re-fetch/re-query.
-function applyChecklistRookieFilter() {
+// Which of the modal's filters are on. Shared by the screen render and the
+// PDF export, so a download always matches what is showing.
+function getChecklistFilterState() {
+  const insertFilter = document.getElementById("checklistInsertFilter");
   const rookieFilter = document.getElementById("checklistRookieFilter");
+  return {
+    inserts: !!(insertFilter && insertFilter.checked),
+    rookies: !!(rookieFilter && rookieFilter.checked)
+  };
+}
+
+// Both filters on = the rookies that are in insert sets.
+function filterChecklistItems(items) {
+  const { inserts, rookies } = getChecklistFilterState();
+  return items
+    .filter(item => !inserts || item.type === "insertSet")
+    .filter(item => !rookies || (item.notes && /\bRC\b/.test(item.notes)));
+}
+
+// Names the filters in the title so a printed or downloaded list says it's filtered.
+function checklistFilterSuffix() {
+  const { inserts, rookies } = getChecklistFilterState();
+  return (inserts ? " - Inserts" : "") + (rookies ? " - Rookies" : "");
+}
+
+function applyChecklistFilters() {
   const body = document.getElementById("checklistModalBody");
-  const isFiltered = rookieFilter && rookieFilter.checked;
-  const items = isFiltered
-    ? currentChecklistItems.filter(item => item.notes && /\bRC\b/.test(item.notes))
-    : currentChecklistItems;
+  const title = document.getElementById("checklistModalTitle");
+  const insertLabel = document.getElementById("checklistInsertFilterLabel");
+  const { inserts, rookies } = getChecklistFilterState();
+  const items = filterChecklistItems(currentChecklistItems);
+
+  // Offer "Inserts only" only when this checklist has insert cards at all.
+  if (insertLabel) insertLabel.hidden = !currentChecklistItems.some(item => item.type === "insertSet");
+
+  // Offer "Rookies only" only when the main set has an RC card.
+  const rookieLabel = document.getElementById("checklistRookieFilterLabel");
+  if (rookieLabel) {
+    rookieLabel.hidden = !currentChecklistItems.some(item =>
+      item.type !== "insertSet" && item.type !== "extendedSet" && /\bRC\b/.test(item.notes || ""));
+  }
+
+  if (title.dataset.setName) title.textContent = title.dataset.setName + checklistFilterSuffix();
 
   // renderChecklistGroups()'s own empty-state message ("No checklist
-  // data found for this set") would be misleading here - a checklist
-  // with zero rookies isn't the same as no checklist existing at all.
-  body.innerHTML = (isFiltered && items.length === 0)
-    ? "<p>No rookie cards found in this checklist.</p>"
-    : renderChecklistGroups(items);
+  // data found for this set") would be misleading here - a filtered
+  // list with zero cards isn't the same as no checklist existing at all.
+  if ((inserts || rookies) && items.length === 0) {
+    body.innerHTML = rookies
+      ? `<p>No rookie cards found in ${inserts ? "the insert sets" : "this checklist"}.</p>`
+      : "<p>No insert sets found in this checklist.</p>";
+    return;
+  }
+  body.innerHTML = renderChecklistGroups(items);
 }
 
 function closeChecklistModal() {
@@ -404,13 +510,21 @@ document.addEventListener("click", (event) => {
 // Groups/sorts/labels a checklist's items - shared by the HTML
 // renderer and the PDF exporter so both stay in sync. Returns
 // [{ title, cards }, ...]; title text is raw/unescaped either way.
+// Insert groups that aren't really insert sets, so they get no " - Insert Set"
+// suffix. Keyed "<setName>|<insertSetName>"; the Tembec cards were a test run
+// that was never sold. (Box sets that belong with a main set are Extended Sets.)
+const CHECKLIST_NO_SUFFIX_GROUPS = new Set([
+  "1989-90 O-Pee-Chee|Tembec Test Run - All Cards Feature White Backs"
+]);
+
 function buildChecklistGroups(items) {
   if (!items || items.length === 0) return [];
 
   const byGroup = (a, b) => (a.sortIndex ?? 0) - (b.sortIndex ?? 0);
   const groups = [];
 
-  const mainCards = items.filter(item => item.type !== "insertSet").sort(byGroup);
+  const isMainCard = item => item.type !== "insertSet" && item.type !== "extendedSet";
+  const mainCards = items.filter(isMainCard).sort(byGroup);
   if (mainCards.length > 0) {
     groups.push({ title: "Main Set", cards: mainCards });
   }
@@ -440,7 +554,23 @@ function buildChecklistGroups(items) {
   insertEntries.sort((a, b) => Number(a.isMemorabilia) - Number(b.isMemorabilia));
 
   insertEntries.forEach(({ name, cards, isMemorabilia }) => {
-    groups.push({ title: `${name} - ${isMemorabilia ? "Memorabilia" : "Insert Set"}`, cards });
+    const exempt = CHECKLIST_NO_SUFFIX_GROUPS.has(`${cards[0].setName}|${name}`);
+    const suffix = exempt ? "" : ` - ${isMemorabilia ? "Memorabilia" : "Insert Set"}`;
+    groups.push({ title: `${name}${suffix}`, cards });
+  });
+
+  // Extended Sets (mail-away / box sets that belong with the main set) come
+  // last, after the insert sets, and are never insert-filtered.
+  const extendedGroups = new Map();
+  items
+    .filter(item => item.type === "extendedSet")
+    .forEach(item => {
+      const name = item.insertSetName || "Extended Set";
+      if (!extendedGroups.has(name)) extendedGroups.set(name, []);
+      extendedGroups.get(name).push(item);
+    });
+  [...extendedGroups.keys()].sort().forEach(name => {
+    groups.push({ title: `Extended Set - ${name}`, cards: extendedGroups.get(name).sort(byGroup) });
   });
 
   return groups;
@@ -512,26 +642,25 @@ function sanitizeFilename(name) {
 }
 
 function exportChecklistPdf() {
-  // Mirrors applyChecklistRookieFilter()'s own filtering exactly, so a
-  // download taken while "Rookies only" is checked matches what's
-  // actually on screen rather than always exporting the full checklist.
-  const rookieFilter = document.getElementById("checklistRookieFilter");
-  const isFiltered = rookieFilter && rookieFilter.checked;
-  const items = isFiltered
-    ? currentChecklistItems.filter(item => item.notes && /\bRC\b/.test(item.notes))
-    : currentChecklistItems;
+  // Same filtering as the screen (filterChecklistItems), so a download
+  // taken while a filter is on matches what's actually showing rather
+  // than always exporting the full checklist.
+  const items = filterChecklistItems(currentChecklistItems);
 
   const groups = buildChecklistGroups(items);
-  // Nothing to export - the modal body already says so ("No rookie
-  // cards found in this checklist"), so the button is a silent no-op
-  // rather than popping a second message on top of that.
+  // Nothing to export - the modal body already says so, so the button
+  // is a silent no-op rather than popping a second message on top.
   if (groups.length === 0) return;
 
-  const setName = document.getElementById("checklistModalTitle").textContent;
+  // The title already carries the filter suffix; the filename builds its own.
+  const titleEl = document.getElementById("checklistModalTitle");
+  const setName = titleEl.textContent;
+  const { inserts, rookies } = getChecklistFilterState();
+  const fileBase = (titleEl.dataset.setName || setName) + (inserts ? " Inserts" : "") + (rookies ? " Rookies" : "");
 
   loadJsPdf()
     .then(() => {
-      buildChecklistPdfDocument(setName, groups).save(`${sanitizeFilename(setName)}-checklist.pdf`);
+      buildChecklistPdfDocument(setName, groups).save(`${sanitizeFilename(fileBase)}-checklist.pdf`);
     })
     .catch(err => {
       console.log("PDF export failed:", err);
@@ -608,7 +737,7 @@ function buildChecklistPdfDocument(setName, groups) {
   doc.setFont("BebasNeue", "normal");
   doc.setFontSize(mastheadFontSize);
   const mastheadBaseline = y + mastheadBarHeight / 2 + mastheadFontSize * 0.35;
-  drawOutlinedText("JUNK WAX HOCKEY", marginX + mastheadPaddingX, mastheadBaseline, mastheadOutlineColor, mastheadTextColor);
+  drawOutlinedText("JUNK WAX HOCKEY.COM",marginX + mastheadPaddingX, mastheadBaseline, mastheadOutlineColor, mastheadTextColor);
   doc.setTextColor(0);
   y += mastheadBarHeight + 16;
 
@@ -784,8 +913,8 @@ function buildChecklistPdfDocument(setName, groups) {
  */
 
 // Strips a leading "YYYY" or "YYYY-YY" release year off a set name -
-// e.g. "1991-92 Pinnacle" -> "Pinnacle". Used only for the mobile
-// pagination label (styles.css swaps it in via .pagination-setname-short).
+// e.g. "1991-92 Pinnacle" -> "Pinnacle". Used for the pagination labels
+// (the year picker above already shows the year) and Browse By Set titles.
 function stripYearFromSetName(setName) {
   return setName.replace(/^\d{4}(-\d{2,4})?\s+/, "");
 }
@@ -809,55 +938,29 @@ function renderPaginationControls() {
   const nextSet = allCardSets[end + 1];
 
   const prevLabel = prevSet
-    ? `← Back To: <span class="pagination-setname-full">${prevSet.setName}</span><span class="pagination-setname-short">${stripYearFromSetName(prevSet.setName)}</span>`
+    ? `← Back To: ${escapeHtml(stripYearFromSetName(prevSet.setName))}`
     : "← Previous";
   const nextLabel = nextSet
-    ? `Next Up: <span class="pagination-setname-full">${nextSet.setName}</span><span class="pagination-setname-short">${stripYearFromSetName(nextSet.setName)}</span> →`
+    ? `Next Up: ${escapeHtml(stripYearFromSetName(nextSet.setName))} →`
     : "Next →";
 
-  const prevLink = currentPage === 1 ? "" : `
-    <a
-      href="javascript:void(0)"
-      onclick="prevPage()"
-      class="pagination-link"
-    >
+  // Real links to the neighbouring sets' own pages, like the nav, so crawlers
+  // can follow them and Back works; the end of the list is plain text, not a link.
+  const prevLink = prevSet ? `
+    <a href="${reviewHref(prevSet)}" class="pagination-link">
       ${prevLabel}
     </a>
-  `;
+  ` : "";
+
+  const nextLink = nextSet
+    ? `<a href="${reviewHref(nextSet)}" class="pagination-link">${nextLabel}</a>`
+    : `<span class="pagination-link disabled">${nextLabel}</span>`;
 
   controls.innerHTML = `
     ${prevLink}
 
     <span class="pagination-page">Page ${currentPage} of ${totalPages}</span>
 
-    <a 
-      href="javascript:void(0)" 
-      onclick="nextPage()" 
-      class="pagination-link ${currentPage === totalPages ? "disabled" : ""}"
-    >
-      ${nextLabel}
-    </a>
+    ${nextLink}
   `;
-}
-
-/**
- * Next and Previous functions
- * Functions ensure that when we navigate forward or back, we are always back at the top
- */
-
-function nextPage() {
-  const totalPages = Math.ceil(allCardSets.length / pageSize);
-  if (currentPage < totalPages) {
-    currentPage++;
-    renderCardSetPage();
-    document.getElementById("card-intro").scrollIntoView({ behavior: "smooth" });
-  }
-}
-
-function prevPage() {
-  if (currentPage > 1) {
-    currentPage--;
-    renderCardSetPage();
-    document.getElementById("card-intro").scrollIntoView({ behavior: "smooth" });
-  }
 }

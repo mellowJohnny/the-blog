@@ -12,30 +12,17 @@
     <title>cardStack cms - tools</title>
     <link
       rel="icon"
-      type="image/x-icon"
-      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+      href="/favicon.ico"
+      sizes="16x16 32x32 48x48">
     <link
       rel="icon"
       type="image/png"
-      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+      sizes="192x192"
+      href="/images/icons/icon-192.png">
     <link
       rel="apple-touch-icon"
-      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+      href="/images/icons/apple-touch-icon.png">
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      rel="preload"
-      href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap"
-      as="style"
-      onload="this.rel='stylesheet'">
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
-    </noscript>
 
     <script src="/scripts/cmsBlog.js"></script>
     <script src="/scripts/adminTools.js"></script>
@@ -50,20 +37,9 @@
 
   <body>
     <section>
-      <table class="mast-table">
-        <tr>
-          <td width="80%">
-            <div>
-              <header class="masthead">card<i>Stack</i></header>
-            </div>
-          </td>
-          <td class="cms-logo">
-            <i>Content</i><br>
-            <strong>Management</strong><br>
-            <i>System</i><br>
-          </td>
-        </tr>
-      </table>
+      <header class="cms-masthead">
+        <img src="/images/cms-masthead.webp" width="1500" height="200" alt="cardStack CMS">
+      </header>
     </section>
 
     <section>
@@ -113,10 +89,50 @@
           </div>
 
           <div class="admin-tool-card">
+            <h2>Image Alt &amp; Size Check</h2>
+            <p>
+              Checks the images inside every live review for missing or filename-style alt text,
+              a missing width or height (which makes the page jump as it loads), and non-WebP files.
+              Takes about a minute.
+            </p>
+            <button
+              type="button"
+              id="altCheckBtn"
+              class="input-button"
+              onclick="runImageAltCheck()"
+            >
+              Run Check
+            </button>
+            <p id="altCheckStatus" class="admin-status-msg"></p>
+            <div id="altCheckResults"></div>
+          </div>
+
+          <div class="admin-tool-card">
+            <h2>Review Pages Check</h2>
+            <p>
+              Checks that every live review has an SEO Friendly URL and that its page under
+              /reviews/ is on the site. Saving a set starts a site build that creates the page
+              (about three minutes), so a missing page right after a save is normal; one that
+              stays missing means the build failed. Takes a few seconds.
+            </p>
+            <button
+              type="button"
+              id="reviewPagesBtn"
+              class="input-button"
+              onclick="runReviewPagesCheck()"
+            >
+              Run Check
+            </button>
+            <p id="reviewPagesStatus" class="admin-status-msg"></p>
+            <div id="reviewPagesResults"></div>
+          </div>
+
+          <div class="admin-tool-card">
             <h2>Checklist Integrity Check</h2>
             <p>
-              Every live checklist should link to exactly one card set review 
-              This checks every uploaded checklist and flags any that don't have a matching review 
+              Every live checklist should link to exactly one card set review.
+              This checks every uploaded checklist and lists any orphans that don't have a matching review.
+              Tick the ones to remove and press Delete (this cannot be undone).
             </p>
             <button
               type="button"

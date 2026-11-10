@@ -21,6 +21,10 @@
 // prefixed by group:
 //   main set:   MAIN#<cardNumber>
 //   insert set: INSERT#<insertSetName>#<cardNumber>
+// An Extended Set (a mail-away or box set that belongs with the main set)
+// is stored as type "extendedSet" under that same INSERT# prefix, so a
+// group is always identified by its name alone: re-saving an insert group
+// as extended replaces its rows in place instead of leaving duplicates.
 // The human-readable card number (unprefixed) is kept separately in a
 // cardNumberDisplay attribute - the sort key's actual value is never
 // shown to a user, just used for key uniqueness/grouping.
@@ -183,6 +187,9 @@ export const handler = async (event) => {
     const body = JSON.parse(event.body || "{}");
     const setName = body.setName?.trim();
     const insertSetName = body.insertSetName?.trim() || "";
+    // An Extended Set (mail-away / box set that belongs with the main set)
+    // reuses the insertSetName field for its name; only meaningful with one.
+    const extended = body.extended === true && insertSetName !== "";
     const cards = body.cards;
 
     if (!setName) {
@@ -195,9 +202,11 @@ export const handler = async (event) => {
 
     // Derived before the save-path guards below so the delete branch can
     // reuse the exact same prefix expression - the two must never drift.
-    const type = insertSetName ? "insertSet" : "main";
+    const type = insertSetName ? (extended ? "extendedSet" : "insertSet") : "main";
     const prefix = insertSetName ? `INSERT#${insertSetName}#` : "MAIN#";
-    const groupLabel = insertSetName ? `the "${insertSetName}" insert set of "${setName}"` : `the main set of "${setName}"`;
+    const groupLabel = insertSetName
+      ? `the "${insertSetName}" ${extended ? "extended set" : "insert set"} of "${setName}"`
+      : `the main set of "${setName}"`;
 
     // Delete mode. confirmDelete is the only way past the non-empty-cards
     // guard below, which otherwise protects every checklist on the site

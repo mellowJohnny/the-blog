@@ -19,6 +19,18 @@ function stripHtmlTags(htmlString) {
   return htmlString.replace(/<[^>]*>/g, " ");
 }
 
+// Cuts plain text to at most `max` characters at a word boundary, adding
+// "..." only when something was cut. Shared by wax.js's SEO fallbacks and
+// the CMS SEO generators in cmsFormUI.js.
+function truncateAtWord(text, max) {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max - 3);
+  const lastSpace = cut.lastIndexOf(" ");
+  const base = lastSpace > max / 2 ? cut.slice(0, lastSpace) : cut;
+  return base.replace(/[\s,;:-]+$/, "") + "...";
+}
+
 /**
  * .img-wrap-sm/.img-wrap-md images opt into smaller mobile sizing -
  * reads each image's actual width/height (inline style preferred over
@@ -112,7 +124,8 @@ function buildCardSetMarkup({
                 class="table-header-img"
                 fetchpriority="high"
                 alt="Vintage hockey cards from the ${year} ${mfg} set"
-                width="620">
+                width="620"
+                height="294">
             </div>
             <div class="set-details-list">
                 <div class="set-detail-row"><strong>Set Size:</strong> ${size}</div>
@@ -122,7 +135,7 @@ function buildCardSetMarkup({
                 <div class="set-detail-row"><strong>Formats:</strong> ${formats}</div>
                 <div class="set-detail-row"><strong>Manufacturer:</strong> ${mfg}</div>
                 ${checklistRow}
-                <div class="set-detail-row"><strong>Hella Rating:</strong> ${cleanStars}</div>
+                <div class="set-detail-row"><strong>Rating:</strong> ${cleanStars}</div>
             </div>
         </div>
         <br>
@@ -145,7 +158,8 @@ function buildCardSetMarkup({
                 class="table-footer-img"
                 loading="lazy"
                 alt="Vintage hockey cards from the ${year} ${mfg} set"
-                width="890">
+                width="890"
+                height="325">
             </div>
         </div>
   `;
@@ -213,6 +227,40 @@ function setJsonLd(id, data) {
   script.textContent = JSON.stringify(data);
 }
 
+// Breadcrumbs for the set-review pages: Home > category > this page, as the
+// visible #breadcrumbs nav and matching BreadcrumbList JSON-LD. The middle
+// step is the real nav category (NAV_ITEMS) the page's pageName belongs to.
+const BREADCRUMB_CATEGORY_IDS = { classicWax: "classic", junkWax: "junk", mcd: "mcd", timmies: "timmies" };
+const SITE_ORIGIN = "https://www.junkwaxhockey.com";
+
+function renderBreadcrumbs(pageName, currentLabel, currentUrl) {
+  const nav = document.getElementById("breadcrumbs");
+  if (!nav) return;
+
+  const category = NAV_ITEMS[BREADCRUMB_CATEGORY_IDS[pageName]];
+  const trail = [{ name: NAV_ITEMS.home.label, url: "/index.html" }];
+  if (category) trail.push({ name: category.label, url: category.href, attrs: reviewLinkAttrs(category) });
+  trail.push({ name: currentLabel, url: currentUrl || window.location.href });
+  const absolute = (url) => (url.startsWith("http") ? url : SITE_ORIGIN + url);
+
+  const items = trail.map((step, i) => i === trail.length - 1
+    ? `<li aria-current="page">${escapeHtml(step.name)}</li>`
+    : `<li><a href="${escapeHtml(step.url)}"${step.attrs || ""}>${escapeHtml(step.name)}</a></li>`);
+  nav.innerHTML = `<ol>${items.join("")}</ol>`;
+  applyReviewLinks();
+
+  setJsonLd("jsonld-breadcrumbs", {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": trail.map((step, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "name": step.name,
+      "item": absolute(step.url)
+    }))
+  });
+}
+
 
    // ----------------------------- Date Helper Functions ----------------------------
 
@@ -269,6 +317,45 @@ function getMonthName(monthNum) {
         copyFooter.innerHTML = `<p>&copy; ${copyYear} Christian Couillard </p>`;
         
     }
+
+// footer-block:start (tools/generateReviewPages runs this block to pre-render the footer)
+// Public-page footer, one column per section. An entry with an id links to
+// that NAV_ITEMS page (label optional); one without is not built yet, so it
+// shows dimmed and unlinked. A section with no heading stands on its own.
+const FOOTER_SECTIONS = [
+  { heading: "Major Releases", links: [{ id: "classic", label: "Classic '80s" }, { id: "junk" }] },
+  { heading: "Fast Food Releases", links: [{ id: "mcd" }, { id: "timmies" }] },
+  { heading: "Explore", links: [{ id: "timeline" }, { id: "search" }, { id: "browse" }, { id: "museum" }] },
+  { links: [{ id: "home" }, { id: "about" }] }
+];
+
+// hrefFor(item), when given, returns an item's final link (the generator
+// pre-renders them that way); else the item's own href, which applyReviewLinks() upgrades.
+function buildFooterLink(link, hrefFor) {
+  if (!link.id) {
+    return `<span class="footer-link-inactive" aria-disabled="true">${escapeHtml(link.label)}</span>`;
+  }
+  const item = NAV_ITEMS[link.id];
+  const href = (hrefFor && hrefFor(item)) || item.href;
+  return `<a href="${href}"${reviewLinkAttrs(item)}>${escapeHtml(link.label || item.label)}</a>`;
+}
+
+function footerHtml(hrefFor) {
+  return FOOTER_SECTIONS.map(section => {
+    const heading = section.heading ? `<p class="footer-heading">${section.heading}</p>` : "";
+    return `<div class="footer-col">${heading}${section.links.map(link => buildFooterLink(link, hrefFor)).join("")}</div>`;
+  }).join("");
+}
+// footer-block:end
+
+function fetchFooterLinks() {
+  const footerNav = document.getElementById("footer-links");
+  // A built page already ships its footer with final links.
+  if (!footerNav || footerNav.querySelector(".footer-col")) return;
+
+  footerNav.innerHTML = footerHtml();
+  applyReviewLinks();
+}
 
 // Sorting helper for blog posts ("time") and card set reviews
 // ("stars") - order "first" = highest/newest first, "last" = oldest
@@ -433,20 +520,25 @@ function getPageNameForYear(blogCat, year) {
   return null;
 }
 
-function renderSetPicker(year, blogCat, pageName) {
-  const setPicker = document.getElementById("set-picker");
-
-  const catConfig = categoryRanges[blogCat];
-  if (!catConfig) {
-    setPicker.innerHTML = `<p>No template found for category "${blogCat}"</p>`;
-    return;
+// Old indexed links carry pageName but no blogCat. Returns the given blogCat,
+// else the category whose ranges include pageName (null if neither).
+function resolveBlogCat(blogCat, pageName) {
+  if (blogCat) return blogCat;
+  for (const cat in categoryRanges) {
+    if (categoryRanges[cat][pageName]) return cat;
   }
+  return null;
+}
+
+// The year picker's markup. hrefFor(y), when given, returns a year's final link
+// (tools/generateReviewPages pre-renders it that way); else the query form that
+// applyReviewLinks() upgrades.
+function setPickerHtml(year, blogCat, pageName, hrefFor) {
+  const catConfig = categoryRanges[blogCat];
+  if (!catConfig) return `<p>No template found for category "${blogCat}"</p>`;
 
   const range = catConfig[pageName];
-  if (!range) {
-    setPicker.innerHTML = `<p>No range found for category "${blogCat}" and page "${pageName}"</p>`;
-    return;
-  }
+  if (!range) return `<p>No range found for category "${blogCat}" and page "${pageName}"</p>`;
 
   const totalYears = range.end - range.start + 1;
   let cells = "";
@@ -454,11 +546,13 @@ function renderSetPicker(year, blogCat, pageName) {
   for (let i = 0; i < totalYears; i++) {
     const y = range.start + i;
     const label = `${y}-${(y + 1).toString().slice(-2)}`;
+    const href = (hrefFor && hrefFor(y))
+      || `/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}`;
 
     cells += (y === parseInt(year))
       ? `<div class="${range.className}">${label}</div>`
       : `<div class="${range.className}">
-           <a href="/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}">
+           <a href="${href}" data-review-cat="${blogCat}" data-review-year="${y}">
              ${label}
            </a>
          </div>`;
@@ -467,82 +561,203 @@ function renderSetPicker(year, blogCat, pageName) {
   // .card-set-nav is a flex-wrap container (styles.css), so it wraps onto
   // as many lines as needed at any viewport width and any total year
   // count, with no split point to maintain as ranges grow.
-  setPicker.innerHTML = `
+  return `
     <div class="card-set-nav">${cells}</div>
   `;
+}
+
+function renderSetPicker(year, blogCat, pageName) {
+  const setPicker = document.getElementById("set-picker");
+  // A generated review page already ships its picker with final links.
+  if (setPicker.querySelector(".card-set-nav")) return;
+
+  setPicker.innerHTML = setPickerHtml(year, blogCat, pageName);
+  applyReviewLinks();
 }
 
 
 
 
+
+/** Links to the reviews. Every review has its own /reviews/<slug>/ page, but
+ * the nav, year picker and Player Search know a year or setID, not a slug. They
+ * render with the query-string href plus data-review-* attributes, and
+ * applyReviewLinks() swaps in the slug path once the manifest loads. The
+ * manifest is written by each Amplify build alongside the pages themselves
+ * (tools/generateReviewPages), so it only lists pages that exist. The query link
+ * keeps working if it hasn't loaded, or the set isn't in it.
+ */
+
+const REVIEW_LINKS_URL = "/reviews/index.json";
+
+let reviewLinksPromise;
+function loadReviewLinks() {
+  reviewLinksPromise ||= fetch(REVIEW_LINKS_URL)
+    .then(res => (res.ok ? res.json() : []))
+    .then(list => (Array.isArray(list) ? list : []))
+    .catch(() => []);
+  return reviewLinksPromise;
+}
+
+// Start the fetch as soon as the script runs, so it is usually back before the
+// links render. The CMS never links to reviews.
+if (!window.location.pathname.startsWith("/cms/")) loadReviewLinks();
+
+// The set a bare-year URL opens: top-rated first, ties by name. waxReviews
+// sorts a year's sets with this too, so a year link and its page agree.
+function compareSetsForDefault(a, b) {
+  return (Number(b.stars) || 0) - (Number(a.stars) || 0) || a.setName.localeCompare(b.setName);
+}
+
+async function applyReviewLinks() {
+  const sets = await loadReviewLinks();
+  document.querySelectorAll("a[data-review-setid], a[data-review-year]").forEach(link => {
+    const { reviewSetid, reviewCat, reviewYear } = link.dataset;
+    const set = (reviewSetid && sets.find(s => s.setID === reviewSetid))
+      || sets.filter(s => s.blogCat === reviewCat && String(s.year) === reviewYear).sort(compareSetsForDefault)[0];
+    if (set && set.seoURLSlug) link.href = `/reviews/${set.seoURLSlug}/`;
+  });
+}
+
+// The data-review-* attributes for a NAV_ITEMS entry that links to a review year.
+function reviewLinkAttrs(item) {
+  return item.review ? ` data-review-cat="${item.review.cat}" data-review-year="${item.review.year}"` : "";
+}
 
 /** Top-level navigation, built from Object Maps rather than hardcoded
  * tables - add a page via NAV_MAP, a menu item via NAV_ITEMS.
  */
 
+// nav-block:start (tools/generateReviewPages runs this block to pre-render the nav)
 // Step 1: Define the navigation items as data
 const NAV_ITEMS = {
   home: { label: "Home", href: "/index.html" },
-  junk: { label: "90s Junk Wax", href: "/waxReviews.html?year=1987&pageName=junkWax&blogCat=reg" },
-  classic: { label: "Classic 80s Sets", href: "/waxReviews.html?year=1981&pageName=classicWax&blogCat=reg" },
-  timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2019&pageName=timmies&blogCat=tims" },
-  mcd: { label: "McDonald's Hockey", href: "/waxReviews.html?year=1991&pageName=mcd&blogCat=mcd" },
-  tech: { label: "Tech", href: "/tech.html?blogType=1&pageName=tech" },
-  mache: { label: "Mustang Mach-E", href: "/tech.html?blogType=3&pageName=ev" },
+  junk: { label: "90s Junk Wax", href: "/waxReviews.html?year=1987&pageName=junkWax&blogCat=reg", review: { cat: "reg", year: 1987 } },
+  classic: { label: "Classic 80s Sets", href: "/waxReviews.html?year=1981&pageName=classicWax&blogCat=reg", review: { cat: "reg", year: 1981 } },
+  timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2019&pageName=timmies&blogCat=tims", review: { cat: "tims", year: 2019 } },
+  mcd: { label: "McDonald's Hockey", href: "/waxReviews.html?year=1991&pageName=mcd&blogCat=mcd", review: { cat: "mcd", year: 1991 } },
   timeline: { label: "Junk Wax Timeline", href: "/timeline.html" },
-  search: { label: "Player Search", href: "/playerSearch.html" }
+  search: { label: "Player Search", href: "/playerSearch.html" },
+  // The footer shares this label. "about" is linked from the footer only.
+  browse: { label: "All Sets", href: "/browseBySet.html" },
+  museum: { label: "The Wax Museum", href: "/waxMuseum.html" },
+  about: { label: "About", href: "/about.html" }
 };
 
-// Step 2: Define which pages show which items
+// Step 2: Group some items into dropdowns. A group id sits in NAV_MAP like
+// an item id; its links are the NAV_ITEMS ids listed here, in order.
+const NAV_GROUPS = {
+  major: { label: "Major Releases", items: ["classic", "junk", "browse"] },
+  fastfood: { label: "Fast Food Releases", items: ["mcd", "timmies"] }
+};
+
+// The grouped item a page leaves out of its own dropdown.
+const NAV_SELF = { classicWax: "classic", junkWax: "junk", mcd: "mcd", timmies: "timmies", browseBySet: "browse" };
+
+// Step 3: Define which pages show which top-level items
 // The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
   // "search" (Player Search) is on every page except playerSearch itself,
-  // always last; "timeline" sits just before it, and each of those two
-  // self-excludes from its own page.
-  index: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
-  tech: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
-  ev: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
-  junkWax: ["home", "classic", "mcd", "timmies", "timeline", "search"],
-  classicWax: ["home", "junk", "mcd", "timmies", "timeline", "search"],
-  timmies: ["home", "classic", "junk", "mcd", "timeline", "search"],
-  mcd: ["home", "classic", "junk", "timmies", "timeline", "search"],
-  playerSearch: ["home", "classic", "junk", "mcd", "timmies", "timeline"],
+  // always last; "museum" (Wax Museum) and "timeline" sit just before it,
+  // and each of those three self-excludes from its own page. The grouped
+  // set links (including "browse", All Sets) self-exclude through NAV_SELF.
+  // index.html is Home, so it leaves out its own "Home" link as redundant.
+  index: ["major", "fastfood", "museum", "timeline", "search"],
+  junkWax: ["home", "major", "fastfood", "museum", "timeline", "search"],
+  classicWax: ["home", "major", "fastfood", "museum", "timeline", "search"],
+  timmies: ["home", "major", "fastfood", "museum", "timeline", "search"],
+  mcd: ["home", "major", "fastfood", "museum", "timeline", "search"],
+  playerSearch: ["home", "major", "fastfood", "museum", "timeline"],
   // theJunkWaxYears.html is a static essay, not one of the junkWax/
-  // classicWax/mcd/timmies review pages itself, so - like playerSearch -
-  // nothing needs to self-exclude here; "junk" stays in the list.
-  junkWaxYears: ["home", "classic", "junk", "mcd", "timmies", "timeline", "search"],
-  // timeline.html leaves out its own link, like playerSearch does.
-  timeline: ["home", "classic", "junk", "mcd", "timmies", "search"]
+  // classicWax/mcd/timmies review pages itself, so nothing self-excludes.
+  junkWaxYears: ["home", "major", "fastfood", "museum", "timeline", "search"],
+  timeline: ["home", "major", "fastfood", "museum", "search"],
+  browseBySet: ["home", "major", "fastfood", "museum", "timeline", "search"],
+  waxMuseum: ["home", "major", "fastfood", "timeline", "search"],
+  // about.html is footer-only, so nothing self-excludes.
+  about: ["home", "major", "fastfood", "museum", "timeline", "search"]
 };
 
-// Step 3: Build a dynamic table generator
-function buildNavCell(item) {
-  return `<td class="nav-td"><a href="${item.href}">${item.label}</a></td>`;
+// Step 4: Build a dynamic table generator. hrefFor(item), when given, returns
+// an item's final link (the generator pre-renders them that way); else the
+// item's own href, which applyReviewLinks() upgrades.
+function buildNavCell(item, hrefFor) {
+  const href = (hrefFor && hrefFor(item)) || item.href;
+  return `<td class="nav-td"><a href="${href}"${reviewLinkAttrs(item)}>${item.label}</a></td>`;
 }
 
-// The new, dynamic fetchNav()
-function fetchNav(pageName, blogType) {
-  const nav = document.getElementById("global-nav");
+function buildNavGroupCell(group, selfId, hrefFor) {
+  const links = group.items.filter(id => id !== selfId)
+    .map(id => {
+      const item = NAV_ITEMS[id];
+      const href = (hrefFor && hrefFor(item)) || item.href;
+      return `<li><a href="${href}"${reviewLinkAttrs(item)}>${item.label}</a></li>`;
+    })
+    .join("");
+  if (!links) return "";
+  return `<td class="nav-td nav-group"><button type="button" class="nav-group-btn" aria-haspopup="true" aria-expanded="false">${group.label}</button><ul class="nav-dropdown">${links}</ul></td>`;
+}
 
+// The nav table for a page, or "" for a page with no NAV_MAP entry.
+function navHtml(pageName, blogType, hrefFor) {
   // Determine key (e.g. "tech_1", "tech_3")
   const key = blogType ? `${pageName}_${blogType}` : pageName;
 
   const items = NAV_MAP[key];
-  if (!items) return;
+  if (!items) return "";
 
-  
   let cells = "";
 
   items.forEach(id => {
-      cells += buildNavCell(NAV_ITEMS[id]);
+      cells += NAV_GROUPS[id] ? buildNavGroupCell(NAV_GROUPS[id], NAV_SELF[pageName], hrefFor) : buildNavCell(NAV_ITEMS[id], hrefFor);
   });
 
-  nav.innerHTML = `
+  return `
     <table class="top-nav nav-table">
       <tr>${cells}</tr>
     </table>
   `;
 }
+// nav-block:end
+
+function fetchNav(pageName, blogType) {
+  const nav = document.getElementById("global-nav");
+  // A built page already ships its nav with final links.
+  if (nav.querySelector(".top-nav")) return;
+
+  const html = navHtml(pageName, blogType);
+  if (!html) return;
+
+  nav.innerHTML = html;
+  applyReviewLinks();
+}
+
+// Dropdown groups: open one on click/tap (hover and focus work in CSS),
+// closing any other. The mobile menu shows every group expanded.
+function toggleNavGroup(button) {
+  const cell = button.closest(".nav-group");
+  const willOpen = !cell.classList.contains("open");
+  closeNavGroups();
+  cell.classList.toggle("open", willOpen);
+  button.setAttribute("aria-expanded", String(willOpen));
+}
+
+function closeNavGroups() {
+  document.querySelectorAll("#global-nav .nav-group.open").forEach(cell => {
+    cell.classList.remove("open");
+    cell.querySelector(".nav-group-btn").setAttribute("aria-expanded", "false");
+  });
+}
+
+document.addEventListener("click", (event) => {
+  const button = event.target.closest && event.target.closest("#global-nav .nav-group-btn");
+  if (button) toggleNavGroup(button);
+  else closeNavGroups();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeNavGroups();
+});
 
 // Hamberger Menu Toggle
 function toggleMenu() {

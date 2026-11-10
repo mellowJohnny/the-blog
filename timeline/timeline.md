@@ -1,45 +1,45 @@
 ### The Junk Wax Era
 
-#### 1984-85 O-Pee-Chee & Topps Sets
+#### 1984-85 O-Pee-Chee & Topps
 - The beginning of the Junk Wax era
 - OPC: 396 bilingual cards (Canada); Topps: 165 English cards (US)
 - OPC production estimated at roughly 6 million packs, based on a contest run that year
 - Notable rookies: Steve Yzerman, Doug Gilmour, Chris Chelios
 
-#### 1985-86 O-Pee-Chee & Topps Sets
+#### 1985-86 O-Pee-Chee & Topps
 - The Mario Lemieux RC set
 - OPC down to 264 bilingual cards; Topps 165 cards plus a sticker in each pack
 - Notable OPC rookies: Lemieux, Al MacInnis, Kirk Muller
 
-#### 1986-87 O-Pee-Chee & Topps Sets
+#### 1986-87 O-Pee-Chee & Topps
 - The Patrick Roy RC set
 - OPC steady at 264 cards; Topps up slightly to 198 cards plus a sticker
 - Notable OPC rookies: Roy, Petr Klima, Wendel Clark
 
-#### 1987-88 O-Pee-Chee & Topps Sets
+#### 1987-88 O-Pee-Chee & Topps
 - OPC stayed at 264 cards; Topps continued with 198 cards and one sticker per pack
-- Notable OPC RCs: Adam Oates, Luc Robitaille, Stephane Richer, Esa Tikkanen, Rick Tocchet
-- OPC released its first "Minis" set (42 cards)
+- Notable OPC RCs: Adam Oates, Luc Robitaille, Stéphane Richer, Esa Tikkanen, Rick Tocchet
+- OPC released its first “Minis” set (42 cards)
 
-#### 1988-89 O-Pee-Chee & Topps Sets
+#### 1988-89 O-Pee-Chee & Topps
 - The Brett Hull RC set
 - OPC continued at 264 cards, Minis set; Topps with 198
-- Rack packs returned to mass-market retailers: 42-card sealed cello packs including a "Mini" card
-- Wayne Gretzky traded to Los Angeles over the summer, fueling interest in hockey south of the border
+- Rack packs returned to mass-market retailers: 42-card sealed cello packs including a “Mini” card
+- Wayne Gretzky traded to Los Angeles over the summer, fuelling interest in hockey south of the border
 
 #### 1989-90 The End of the Topps / OPC Monopoly
 - Last year O-Pee-Chee and Topps held exclusive rights to produce hockey cards in Canada and the US
 - OPC set increased to 330 bilingual cards; standout RCs include Joe Sakic and Brian Leetch
-- Topps’ 198 card set was rumoured to have a lower print run than OPC (unverifiable urban legend)
+- Topps’ 198-card set was rumoured to have a lower print run than OPC (unverifiable urban legend)
 - No Minis set
-- Upper Deck releases their first Baseball set 
+- Upper Deck releases its first baseball set 
     - Premium card stock, anti-counterfeit holograms, and foil packs to stop tampering
-    - Even at twice the price of Topps, Fleer & Donruss they sold out in days
+    - Even at twice the price of Topps, Fleer & Donruss, they sold out in days
 
 
 #### 1990-91 Upper Deck Arrives
-- Pro Set, Pinnacle, and Upper Deck get NHL licenses: hobby explodes from two sets to nine
-- Companies allowed two sets each: Some opt for French / English, some produce "regular" & "premium" sets
+- Pro Set, Pinnacle, and Upper Deck get NHL licences: hobby explodes from two sets to nine
+- Companies are allowed two sets each
 - Set sizes explode:
   - Pro Set's enormous 705-card set
   - Upper Deck's 550-card set 
@@ -65,28 +65,28 @@
   - Regular set featured a full “Gold” parallel set, inserted one per pack
 - Upper Deck: one English set, one French set, and an English / Czech set of World Junior players
 - Pinnacle releases three Score sets (English, Canadian bilingual, American) and two Pinnacle sets 
- - Pro Set releases a regular, French and a premium Platinum set, plus Parkhurst in English and French
+- Pro Set releases a regular, French and a premium Platinum set, plus Parkhurst in English and French
 - Score, Bowman, Upper Deck Series 2, and OPC Premier also available as factory sets
-- First McDonald's Upper Deck "All-Star" set released
+- First McDonald’s Upper Deck “All-Star” set released
 
 #### 1992-93 Saturation, Pro Set Bankruptcy
-- Only 13 sets produced; Pro Set doesn't survive
+- Only 13 sets produced; Pro Set doesn’t survive
 - Upper Deck releases one French and one English set
 - OPC releases a main and an over-produced Premier set
   - The “25th Anniversary” is the last-ever OPC set printed in Canada, with a unique design, still wrapped in wax paper, but no gum
 - Pinnacle produces four sets (two Score, two Pinnacle)
-- Pro Set Series 1 ships, plus a Parkhurst set with its parallel "Emerald" foil insert set
+- Pro Set Series 1 ships, plus a Parkhurst set with its parallel “Emerald” foil insert set
   - Pro Set Series 2 never released, company declares bankruptcy
 - Topps releases main and Stadium Club sets 
-- Fleer joins the party late with their premium Ultra set 
+- Fleer joins the party late with its premium Ultra set 
 - Marvel buys Fleer, chasing the card boom
 
-#### 1993-94 Consolidation
+#### 1993-94 Industry Consolidation
 - Fourteen total sets released:
   - Two new sets from Leaf: Donruss & a Leaf main set
   - Fleer releases Ultra, and a “tall boy” PowerPlay set 
-  - Topps only release premium sets:
-    - US and Canadian Premier set which feature a gold foil parallel insert set
+  - Topps releases only premium sets:
+    - US and Canadian Premier sets, which feature a gold foil parallel insert set
     - Stadium Club in the US
     - Stadium Club O-Pee-Chee set released for Canada
   - Upper Deck releases two sets: a main set and a Parkhurst set, after buying the rights from Pro Set
@@ -99,9 +99,9 @@
   - Fleer: Ultra and Flair
   - Topps: Premier, Stadium Club, Finest, O-Pee-Chee Premier in Canada
   - Pinnacle: Select, Score, and a main Pinnacle set
- - NHL season shortened by the Owner’s lockout
+- NHL season shortened by the owners’ lockout
 
-#### 1995-96 Focus on "Scarcity", more Bankruptcies
+#### 1995-96 Focus on “Scarcity”, more bankruptcies
 - Market shift to smaller, premium sets, with a staggering 24 sets released:
   - Five Topps sets, including Bowman (165 cards), Super Skills (90), Finest (191), Stadium Club (225), and main set (385)
   - Four Fleer sets: Metal (200), SkyBox E-Motion (200), SkyBox Impact (250), and Ultra (400)
@@ -111,7 +111,7 @@
 - Marvel files for bankruptcy, taking the Fleer & SkyBox imprints with it
 
 #### Long Term Impact
-- The 2004-05 NHL lockout leads to a complete restructuring of NHL card licensing, with the NHL looking for credibility and stability: Upper Deck was granted the sole license from 2004 to 2009
+- The 2004-05 NHL lockout leads to a complete restructuring of NHL card licensing, with the NHL looking for credibility and stability: Upper Deck was granted the sole licence from 2004 to 2009
 - Upper Deck officially acquires Fleer / SkyBox and Parkhurst brands in 2005, and the O-Pee-Chee brand in 2006
-- Upper Deck shares the license with Panini from 2010-11 to 2013-14, and regained exclusive status beginning with the 2014-15 season
+- Upper Deck shares the licence with Panini from 2010-11 to 2013-14, and regained exclusive status beginning with the 2014-15 season
 - In 2021 it signed a long-term agreement with the NHL to become the sole physical hockey card manufacturer

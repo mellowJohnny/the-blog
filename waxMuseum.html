@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+
+<html lang="en-ca">
+  <head>
+  <meta charset="utf-8">
+    <!-- Without this, mobile Safari renders at a wide desktop-width
+         virtual viewport and just zooms the page out to fit, so the
+         @media (max-width: 600px) rules in styles.css never trigger -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+    <link rel="icon" type="image/png" sizes="192x192" href="/images/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
+    <title>The Wax Museum - vintage and junk wax hockey card wax packs, front and back | Junk Wax Hockey</title>
+
+    <meta name="description"
+          content="A gallery of vintage and junk wax era hockey card wax packs, from O-Pee-Chee and Topps to Score and Upper Deck. Flip each pack to see the back, with the manufacturer, packaging, cards per pack and price.">
+    <link rel="canonical" href="https://www.junkwaxhockey.com/waxMuseum.html">
+    <!-- Social preview tags - static because Facebook, Discord, Reddit and X don't run JavaScript -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="The Wax Museum - vintage and junk wax hockey card wax packs, front and back | Junk Wax Hockey">
+    <meta property="og:description" content="A gallery of vintage and junk wax era hockey card wax packs, from O-Pee-Chee and Topps to Score and Upper Deck. Flip each pack to see the back, with the manufacturer, packaging, cards per pack and price.">
+    <meta property="og:url" content="https://www.junkwaxhockey.com/waxMuseum.html">
+    <meta property="og:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="The Wax Museum - vintage and junk wax hockey card wax packs, front and back | Junk Wax Hockey">
+    <meta name="twitter:description" content="A gallery of vintage and junk wax era hockey card wax packs, from O-Pee-Chee and Topps to Score and Upper Deck. Flip each pack to see the back, with the manufacturer, packaging, cards per pack and price.">
+    <meta name="twitter:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
+
+    <!-- Fonts are self-hosted (@font-face in styles.css); the masthead uses Bebas Neue -->
+    <link rel="preload" href="/fonts/bebas-neue-latin-v16.woff2" as="font" type="font/woff2" crossorigin>
+
+    <!-- Load the stylesheet - plain blocking link, deliberately not the
+         preload+swap trick (see index.html's comment - that let raw
+         unstyled HTML paint before CSS was ready, a visible flash on
+         every navigation). -->
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+
+    <!-- The nav and footer use Nunito -->
+    <link rel="preload" href="/fonts/nunito-latin-v32.woff2" as="font" type="font/woff2" crossorigin>
+
+    <!-- Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX"
+    ></script>
+
+    <!-- Load the Hella Files scripts -->
+    <script src="/scripts/waxMuseum.js" defer></script>
+    <script src="/scripts/helper.js" defer></script>
+
+    <script>
+      const pageName = "waxMuseum"; // matches the NAV_MAP key in helper.js
+
+      window.addEventListener('load', (event) => {
+        // *** Fetch copyright year from helper.js
+        fetchCopyrightYear();
+
+        // *** Fetch the Top Nav from helper.js
+        fetchNav(pageName);
+        fetchFooterLinks();
+
+        // Masthead: random NHL team colors on every load - helper.js
+        applyRandomMastheadStyling();
+
+        // Load and show the wax packs - waxMuseum.js
+        initWaxMuseum();
+      });
+
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JMGVGK09QX');
+    </script>
+ </head>
+
+ <body>
+  <section>
+    <table class="wax-reviews-mast-table">
+      <tr>
+        <td>
+          <header class="wax-reviews-masthead"><a href="index.html">Junk Wax Hockey</a></header>
+        </td>
+      </tr>
+    </table>
+  </section>
+
+  <div>
+    <nav>
+          <!-- Hamberger menu for mobile in helper.js -->
+        <div class="nav-container" id="global-nav-placeholder">
+          <div class="hamburger" onclick="toggleMenu()">☰</div>
+          <div id="global-nav" class="nav-links" data-nav-page="waxMuseum"><!-- nav:start --><!-- nav:end --></div>
+        </div>
+      </nav>
+  </div>
+    <main>
+      <section>
+        <div class="header-style">
+          <h1>The Wax Museum</h1>
+        </div>
+        <div class="flex-container">
+          <div class="intro" id="wax-museum-intro">
+            <p>The wax packs behind the card sets. Enjoy the iconic early O-Pee-Chee / Topps artwork, and take a nostalgic trip through the Junk Wax era to relive some of your favourites. Stale gum not included.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <p class="wax-museum-status" id="waxMuseumStatus" role="status">
+          <noscript>The wax packs need JavaScript to load. Please turn it on to see the gallery.</noscript>
+        </p>
+        <div id="waxMuseum" class="wax-museum"></div>
+      </section>
+    </main>
+
+  <footer class="site-footer">
+    <!-- Populated by fetchFooterLinks() in helper.js -->
+    <nav id="footer-links" aria-label="Footer"><!-- footer:start --><!-- footer:end --></nav>
+    <div id="copy"></div>
+    <!-- Populated by fetchCopyrightYear() in helper.js -->
+  </footer>
+
+  <!-- Shown/hidden by initWaxMuseum() in waxMuseum.js while the packs load -
+       same overlay+spinner as playerSearch.html (styles.css). -->
+  <div id="wax-museum-spinner-overlay">
+    <div class="wax-museum-spinner"></div>
+  </div>
+</body>
+
+</html>

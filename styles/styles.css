@@ -5,6 +5,160 @@ messing up the layout with white borders and scoll bars
 
 /** Clean-up with Cursor on June 17, 2026 **/
 
+/* Fonts: every face is self-hosted from /fonts (see fonts/README.md). Each
+   variable file gets a face per weight we use, so a missing weight resolves to
+   the nearest one we load, as before. latin-ext faces download only when needed. */
+@font-face {
+  font-family: "Source Sans 3";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/source-sans-3-latin-ext-v20.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Source Sans 3";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/source-sans-3-latin-v20.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Source Sans 3";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fonts/source-sans-3-latin-ext-v20.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Source Sans 3";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fonts/source-sans-3-latin-v20.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Source Sans 3";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/source-sans-3-italic-latin-ext-v20.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Source Sans 3";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/source-sans-3-italic-latin-v20.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Source Sans 3";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fonts/source-sans-3-italic-latin-ext-v20.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Source Sans 3";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fonts/source-sans-3-italic-latin-v20.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Bebas Neue";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/bebas-neue-latin-ext-v16.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Bebas Neue";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/bebas-neue-latin-v16.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Special Elite";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/special-elite-latin-ext-v20.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Special Elite";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/special-elite-latin-v20.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Metric-matched stand-ins: Arial resized to the web font's width and line
+   box, so the swap-in barely moves the text. */
+@font-face {
+  font-family: "Source Sans 3 Fallback";
+  src: local("Arial");
+  size-adjust: 90.24%;
+  ascent-override: 113.48%;
+  descent-override: 44.33%;
+  line-gap-override: 0%;
+}
+/* Nunito is used at 600 almost everywhere (set picker, headings), so this is
+   matched to that weight. */
+@font-face {
+  font-family: "Nunito Fallback";
+  src: local("Arial");
+  size-adjust: 103.75%;
+  ascent-override: 97.44%;
+  descent-override: 34.02%;
+  line-gap-override: 0%;
+}
+/* Nunito: the weights we use are 200 and 600, so a 700 request resolves to 600. */
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url(/fonts/nunito-latin-ext-v32.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url(/fonts/nunito-latin-v32.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(/fonts/nunito-latin-ext-v32.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(/fonts/nunito-latin-v32.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* Core brand palette - the colors repeated 3+ times across the file.
    Introduced during a CSS audit pass; deliberately doesn't try to
    name every one-off gray/black/shadow value, just the recurring
@@ -42,6 +196,18 @@ messing up the layout with white borders and scoll bars
     margin: 5px; 
   }
 
+  /* Tablets: the 1000px-wide divs (plus 30px of padding and 10px of margin)
+     are wider than the screen below about 1060px, so the review pages
+     scrolled sideways. Shrink them to fit, like the phone layout does,
+     keeping the desktop padding and margin. */
+  @media (min-width: 601px) and (max-width: 1060px) {
+    .flex-container div {
+      width: calc(100% - 10px);
+      max-width: 1030px;
+      box-sizing: border-box;
+    }
+  }
+
   a:link, a:visited {
     color: var(--color-link);
 }
@@ -60,24 +226,24 @@ h1 {
 .autobus-results-table,
 .autobus-textarea,
 .autobus-send-btn {
-    font-family: "Work Sans", sans-serif;
+    font-family: "Source Sans 3", "Source Sans 3 Fallback", sans-serif;
 }
 
 .autobus-sent-message-title {
-    font-family: "Work Sans", sans-serif;
+    font-family: "Source Sans 3", "Source Sans 3 Fallback", sans-serif;
     display: block;
     background: none;
     padding: 0;
     margin: 0 0 6px 0;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     color: #000;
 }
 
 /* Had no rule at all previously, so it fell back to the browser's
    default serif font instead of matching the rest of the page */
 .autobus-sent-message {
-    font-family: "Work Sans", sans-serif;
+    font-family: "Source Sans 3", "Source Sans 3 Fallback", sans-serif;
     display: block;
     font-size: 16px;
     color: #000;
@@ -195,7 +361,7 @@ h1 {
 }
 
 .autobus-results-label {
-    font-family: "Work Sans", sans-serif;
+    font-family: "Source Sans 3", "Source Sans 3 Fallback", sans-serif;
     display: block;
     /* font-weight: 600; */
     margin-bottom: 6px;
@@ -241,8 +407,9 @@ h1 {
    spinner above (including reusing its autobus-spin keyframe, which
    has nothing Autobus-specific in it - just a rotation), just under
    playerSearch-specific names since this page has nothing to do with
-   the Autobus SMS tool. */
-#player-search-spinner-overlay {
+   the Autobus SMS tool. The Wax Museum page shares these same rules. */
+#player-search-spinner-overlay,
+#wax-museum-spinner-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -255,7 +422,8 @@ h1 {
     z-index: 9999;
 }
 
-.player-search-spinner {
+.player-search-spinner,
+.wax-museum-spinner {
     width: 60px;
     height: 60px;
     border: 6px solid #ccc;
@@ -284,11 +452,11 @@ h1 {
   width: 480px;
   max-width: 92vw;
   box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 .bulk-modal-title {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 1.2rem;
   margin: 0 0 12px 0;
@@ -330,14 +498,14 @@ h1 {
   color: #333;
   text-decoration: underline;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .bulk-file-name {
   margin: 8px 0 0 0;
   font-size: 0.85rem;
   color: #333;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* --- Feedback --- */
@@ -370,12 +538,65 @@ h1 {
 }
 
 .bulk-btn {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 .bulk-btn-upload {
   background: #256386;
   color: #fff;
+}
+
+/* List All Subscribers modal: wider than the default 480px for its table */
+.list-subscribers-modal {
+  width: 640px;
+}
+
+.list-subscribers-scroll {
+  max-height: 50vh;
+  overflow-y: auto;
+  margin-top: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.list-subscribers-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+.list-subscribers-table th,
+.list-subscribers-table td {
+  padding: 8px 14px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.list-subscribers-table th {
+  position: sticky;
+  top: 0;
+  background: #f4f4f4;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  font-size: 0.85rem;
+}
+
+.list-subscribers-status {
+  display: inline-block;
+  padding: 1px 10px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  background: #eee;
+  color: #555;
+}
+
+.list-subscribers-status.subscribed {
+  background: #edfaed;
+  color: #2a6b2a;
+}
+
+.list-subscribers-status.unsubscribed {
+  background: #fdecea;
+  color: #8b1a1a;
 }
 
 /* User Guide Modal */
@@ -390,7 +611,7 @@ h1 {
   max-height: 85vh;
   overflow-y: auto;
   box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 /* --- Help content --- */
@@ -401,7 +622,7 @@ h1 {
 }
 
 .help-section-title {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 0.95rem;
   color: #222;
@@ -444,18 +665,34 @@ h1 {
   }
 
 /** Navigation link formatting **/
+/* Same type as the footer: Nunito semi-bold, spaced capitals. */
 .nav-td {
-  font-family: 'Nunito', sans-serif;
-  font-size: 22px;
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   margin: 15px;
   padding: 20px;
+}
+
+/* Dropdown links keep their written capitalisation (and drop the caps spacing). */
+.nav-dropdown a {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* The blue of the timeline heading; the phone/tablet menu rule below
+   (white on blue) comes later in the file and still wins there. */
+.nav-td a {
+  color: var(--color-heading-outline);
+  transition: color 0.15s ease;
 }
 
 
 .top-nav {
   font-family: 'Nunito';
   font-size: 36px;
-  font-weight: bold;
   color:var(--color-text-dark);
 }
 
@@ -476,7 +713,7 @@ h1 {
 
 .cms-nav-td {
   display: block;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 24px;
   color:var(--color-text-dark);
   margin: 0;
@@ -488,7 +725,7 @@ h1 {
 .cms-top-nav {
   display: block;
   width: 100%;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 36px;
   color:var(--color-text-dark);
   margin: 15px 0;
@@ -522,7 +759,7 @@ h1 {
   width: 100%;
   margin: 0;
   padding: 8px 0;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 .cms-nav-item {
@@ -533,7 +770,7 @@ h1 {
 .cms-nav-parent,
 .cms-nav-item-plain > a {
   display: block;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 24px;
   color: var(--color-link);
   background: none;
@@ -579,7 +816,7 @@ h1 {
 
 .cms-nav-dropdown a {
   display: block;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 20px;
   color: var(--color-text-dark);
   padding: 10px 16px;
@@ -604,7 +841,7 @@ h1 {
 }
 
 .cms-form-table {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 18px;
   width: 50%;
   margin: 20px 0;
@@ -642,7 +879,8 @@ h1 {
   width: 100%;
   margin: 0;
   padding: 0;
-  font-family: 'Spicy Rice';
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
+  font-weight: 600;
   font-size: 23px;
   color:var(--color-text-dark);
   height: auto;
@@ -666,7 +904,8 @@ h1 {
 }
 
 .set-o-matic-picker {
-  font-family: 'Spicy Rice';
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
+  font-weight: 600;
   font-size: 32px;
   text-align: center;
   height: 42px;
@@ -716,7 +955,7 @@ table {
  }
 
 form {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 20px;
   padding-left: 1.5%;
  }
@@ -725,6 +964,18 @@ form {
  input[type=text] { 
   font-size: 16px;
   width: 450px; /* Hard code text box width */
+  padding: 6px 10px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid var(--color-input-border);
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+/* Same box as the text fields above, at the width of the form's 200px dropdowns (wax pack form: season year, cards per pack) */
+.cms-form-table input[type=number] {
+  font-size: 16px;
+  width: 200px;
   padding: 6px 10px;
   margin: 8px 0;
   display: inline-block;
@@ -746,7 +997,7 @@ select {
 /* Star Rating widget - createCardSet.html/setEdit.html (initStarRatingWidget()/
    paintStarRating() in cmsCardSet.js). The real value lives in a hidden
    #stars input right after this; these spans are purely visual. Uses the
-   same glowing-star emoji as the public "Hella Rating" display (wax.js)
+   same glowing-star emoji as the public "Rating" display (helper.js)
    for the selected state - emoji ignore CSS `color`, so "empty" is the
    same glyph desaturated/dimmed via `filter` rather than a second icon. */
 .star-rating-widget {
@@ -770,7 +1021,7 @@ select {
 
 textarea {
   font-size: 24px;
-  font-family: 'Consolas', Courier, monospace;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   width: 80%;
   height: 150px;
   box-sizing: border-box;
@@ -781,7 +1032,7 @@ textarea {
 } 
 
 .input-button {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   background-color: #256386;
   color: white;
   text-decoration: none;
@@ -803,10 +1054,20 @@ label sup {
   background-color: #c5cdd3;
 }
 
- .mast-table {
-  border-collapse: collapse;
+.cms-masthead {
+  margin: -8px -8px 0; /* cancel the body margin: edge to edge, like the home banner */
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+}
+
+/* Everything on a cardStack CMS page except the banner's section gets a left margin. */
+body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
+  margin-left: 25px;
+}
+
+.cms-masthead img {
+  display: block;
   width: 100%;
-  background-color: var(--color-masthead-bg);
+  height: auto;
 }
 
 .autobus-mast-table {
@@ -815,27 +1076,7 @@ label sup {
   background-color: rgb(0, 0, 0);
 }
 
-.mast-table td {
-  vertical-align: top;
-  padding: 0;
-  margin: 0;
-}
-
-.mast-table tr {
-  height: 7vw; /* matches masthead font size */
-}
-
-.mast-table img {
-  display: block;
-  height: 100%;
-  width: auto;
-  margin: 0;
-  padding: 0;
-}
-
-
 .masthead {
-  font-family: 'Spicy Rice';
   font-size: 7vw;
   color: var(--color-link);
   background-color: var(--color-masthead-bg);
@@ -843,30 +1084,18 @@ label sup {
 }
 
 .autobus-masthead {
-  font-family: 'Arial';
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 7vw;
   color: #000000;
   background-color: rgb(0, 0, 0);
   padding: 1px 10px 0 10px;
 }
 
-.cms-logo {
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 40px;
-  text-align: left; 
-  font-weight: 500;         
-  color: var(--color-link);
-  background-color: var(--color-masthead-bg);
-  padding: 4px 16px 4px 10px; /* add more right padding */
-  line-height: 1.2;
-  display: block;             /* ensures alignment behaves predictably */
-}
-
 .autobus-cms-logo {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 40px;
-  text-align: left; 
-  font-weight: 500;         
+  text-align: left;
+  font-weight: 400;
   color: #f574e0;
   background-color: rgb(0, 0, 0);
   padding: 4px 16px 4px 10px; /* add more right padding */
@@ -941,7 +1170,7 @@ label sup {
   right: 8px;
   bottom: 4px;
   z-index: 1;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 24px;
   color: rgba(255, 255, 255, 0.85);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
@@ -984,7 +1213,7 @@ label sup {
 
 .wax-reviews-masthead a {
   font-family: Bebas Neue;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 128px;
   position: relative;
   z-index: 1; /* keeps text above the blur */
@@ -1032,7 +1261,7 @@ label sup {
   overflow: hidden;
   background-color: #1b1b1b;
   color: #f2f2f2;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 15px;
   font-variant-numeric: tabular-nums;
 }
@@ -1278,19 +1507,18 @@ label sup {
 
 /* NHL game modal (openNhlGameModal(), wax.js) - reuses the checklist
    modal's overlay/content/close classes; .nhl-game-modal narrows it. */
-/* Same type as the blog/review pages: Source Sans 3 body text in the
-   site's body colour, Work Sans for headings (like blog post titles). */
+/* Same type as the blog/review pages: Source Sans 3 in the site's body colour. */
 .checklist-modal-content.nhl-game-modal {
   max-width: 900px;
   color: rgb(34, 38, 41);
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-variant-numeric: tabular-nums;
 }
 
 .nhl-game-abbrev,
 .nhl-game-section h3,
 .nhl-recap h3 {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 .nhl-game-scoreline {
@@ -1379,9 +1607,9 @@ label sup {
   color: #444;
   font: inherit;
   /* After the font shorthand, which would otherwise reset it. */
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -1427,7 +1655,7 @@ label sup {
 
 .nhl-goal-time {
   width: 44px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .nhl-goal-scorer {
@@ -1496,7 +1724,7 @@ label sup {
 
 .nhl-linescore thead th {
   color: #555;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .nhl-linescore thead th:first-child,
@@ -1591,7 +1819,7 @@ label sup {
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
   color: #fff;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   text-align: left;
 }
 
@@ -1615,7 +1843,7 @@ label sup {
 
 .nhl-recap a {
   color: #256386;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .nhl-recap-image {
@@ -1647,7 +1875,7 @@ label sup {
 .blog-type-divider {
   margin-top: 24px;
   margin-bottom: 8px;
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 1.3rem;
   font-weight: bold;
   font-style: italic;
@@ -1659,11 +1887,40 @@ label sup {
 }
 
 .header-style h1{
-    font-family: 'Work Sans', sans-serif;
+    font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
     font-size: 28px;
     margin: 5px;
     position: relative;
     top: 1px;
+}
+
+/* One size for every page's main heading: the intro h1s (Home, About, The Junk
+   Wax Years), the .header-style h1s and the review pages' intro h2. */
+.intro h1,
+.header-style h1,
+#card-intro h2 {
+  font-size: 34px;
+}
+
+/* Public pages: line the heading up with the intro text below it (the .intro
+   column). The /cms pages, which have no .site-footer, keep their layout. */
+body:has(.site-footer) .header-style {
+  box-sizing: border-box;
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
+body:has(.site-footer) .header-style h1 {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Tablet: the .flex-container column adds its 5px margin + 15px padding here. */
+@media (min-width: 601px) and (max-width: 1060px) {
+  body:has(.site-footer) .header-style {
+    padding: 0 20px;
+  }
 }
 
 /* waxReviews.html only (see the .wax-set-name-header class on its
@@ -1677,7 +1934,7 @@ label sup {
 }
 
 .intro {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 18px;
   margin: 5px auto;
   width: 950px;
@@ -1700,7 +1957,7 @@ label sup {
   padding-top: 8px;
 }
 
-#junkwax-intro p:first-child {
+#junkwax-intro h1 {
   margin-top: 0;
 }
 
@@ -1716,13 +1973,13 @@ label sup {
 } 
 
 .blog-title {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 22px;
   color:rgb(11, 109, 167);
 }
 
 .blurb p {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   color:rgb(34, 38, 41);
   font-size: 16px;
   text-align: left;
@@ -1754,14 +2011,14 @@ label sup {
   table-layout: fixed;
   font-size: 18px;
   line-height: 1.4;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 /* Previously had no base/desktop rule at all - only the mobile override
    existed, so desktop relied purely on inherited styling. Matches the
    mobile values intentionally now instead of by inheritance accident. */
 .set-details-author {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 18px;
   /* Missing these let the review body (postBody, TinyMCE-authored HTML
      of widely varying quality/vintage) push this table wider than its
@@ -1804,7 +2061,6 @@ label sup {
   margin-left: 5px;
   margin-right: 5px;
   font-family: 'Special Elite';
-  font-style: italic;
   font-size: 16px;
   text-align: left;
   padding: 6px;
@@ -1864,7 +2120,7 @@ label sup {
   grid-template-areas:
     "name image"
     "list image";
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   padding: var(--set-details-top-pad) 0 0 0;
   /* Explicit, not auto: the percentage column tracks shrink-wrap to
      content when the parent's width is indefinite, which is the case
@@ -1900,7 +2156,7 @@ label sup {
 .set-details-list {
   grid-area: list;
   /* Flex column so .set-detail-row-checklist's order below can move
-     the Checklist row after Hella Rating without changing the DOM
+     the Checklist row after Rating without changing the DOM
      order displayCardSet() (wax.js) builds - applies on both desktop
      and mobile, same reorder either way. */
   display: flex;
@@ -1914,18 +2170,19 @@ label sup {
      (still visible in the #previewContainer .set-details-author td
      strong/i rule) of field names in Special Elite, values in the
      regular body font, not the whole row in one font. */
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 18px;
   padding: 2px 4px;
 }
 
+/* Special Elite has no bold: the browser's synthesised bold here is kept on purpose. */
 .set-detail-row strong {
   font-family: 'Special Elite', sans-serif;
 }
 
 /* order:0 (the default) for every other row keeps them in their
    existing DOM order; giving just this one a higher order value moves
-   it after all of them, i.e. after Hella Rating - on both desktop and
+   it after all of them, i.e. after Rating - on both desktop and
    mobile. */
 .set-detail-row-checklist {
   order: 1;
@@ -2050,6 +2307,10 @@ label sup {
 
 .table-footer-img {
   width: 90%;
+  /* The tag carries width/height (the standard 890x325) so the browser can
+     reserve the space before the file arrives; auto keeps each file's own
+     shape once it has. */
+  height: auto;
   display: inline-block;
   vertical-align: top;
   margin: 0;
@@ -2061,9 +2322,181 @@ label sup {
 
 .page-footer {
     font-size: 10px;
-    font-family: 'Work Sans', sans-serif;
+    font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
     padding: 20px;
     display: inline;
+}
+
+/* Public-page footer. A separate class from .page-footer, which the /cms
+   pages still use. The negative margins cancel the body's 8px margin so the
+   band runs edge to edge, like the home banner. */
+.site-footer {
+  margin: auto -8px -8px;
+  padding: 28px 20px 24px;
+  background: var(--color-heading-outline);
+  color: #ffffff;
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
+  text-align: center;
+}
+
+/* Only pages with this footer: a short page still ends with it at the
+   bottom of the window, and the /cms pages' body is left alone. */
+body:has(.site-footer) {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px 64px;
+  margin-bottom: 22px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.footer-heading {
+  margin: 0 0 2px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+#footer-links a {
+  color: #ffffff;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+#footer-links a:hover,
+#footer-links a:focus-visible {
+  color: var(--color-link);
+}
+
+/* Pages that don't exist yet: visible, but not links. */
+.footer-link-inactive {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* The light weight, stated: only 200 and 600 are loaded, so 400 would silently get 200. */
+.site-footer #copy {
+  font-size: 13px;
+  font-weight: 200;
+}
+
+.site-footer #copy p {
+  margin: 0;
+}
+
+/* The /cms login link on the home page: the same colour as the footer so it
+   stays hidden, but it shows an outline for keyboard users. */
+.site-footer .footer-wlcms {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 200;
+  color: var(--color-heading-outline);
+  text-decoration: none;
+}
+
+.site-footer .footer-wlcms:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  #footer-links {
+    gap: 20px 36px;
+    font-size: 15px;
+  }
+}
+
+/* Browse By Set (browseBySet.html). Plain divs outside .flex-container, whose
+   bare "div" rule would force every nested div to 1000px wide. */
+.browse-status {
+  margin: 12px 16px;
+  text-align: center;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+}
+
+.browse-columns {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 56px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 16px 24px;
+  box-sizing: border-box;
+}
+
+.browse-col {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.browse-col-heading {
+  margin: 16px 0 4px;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  font-size: 28px;
+}
+
+.browse-season-heading {
+  margin: 22px 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--color-heading-outline);
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--color-heading-outline);
+}
+
+.browse-set {
+  display: flex;
+  align-items: baseline;
+  column-gap: 14px;
+  margin: 0 0 14px;
+}
+
+/* A name too long for the column wraps; the links never leave its first line. */
+.browse-set-name {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.browse-set-links {
+  display: flex;
+  flex: none;
+  gap: 14px;
+  white-space: nowrap;
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+@media (max-width: 600px) {
+  .browse-columns {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
 }
 
 .password-style {
@@ -2072,7 +2505,7 @@ label sup {
 }
 
 .error-msg {
-  font-family: 'Fira Code';
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 18px;
   color:rgb(7, 62, 126);
   width:400px;
@@ -2116,7 +2549,7 @@ label sup {
   width: 100%;
   max-width: none;
   margin: 0;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 16px;
   padding: 6px 8px;
   border: 1px solid var(--color-input-border);
@@ -2153,7 +2586,7 @@ label sup {
 .checklist-typeahead-suggestion {
   padding: 8px 12px;
   cursor: pointer;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 16px;
 }
 
@@ -2177,18 +2610,18 @@ label sup {
   gap: 12px;
   padding: 8px 0;
   border-bottom: 1px solid var(--color-input-border);
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 16px;
 }
 
 .checklist-page-content {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   max-width: 700px;
   padding-left: 8px;
 }
 
 .checklist-status-msg {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 16px;
   max-width: 900px;
   margin-top: 28px;
@@ -2196,7 +2629,7 @@ label sup {
 }
 
 .checklist-review-table {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 15px;
   width: 100%;
   border-collapse: collapse;
@@ -2218,7 +2651,7 @@ label sup {
 .checklist-review-table input[type="text"] {
   width: 100%;
   box-sizing: border-box;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 15px;
   padding: 4px 6px;
   border: 1px solid var(--color-input-border);
@@ -2266,13 +2699,13 @@ label sup {
   width: 90%;
   max-width: 420px;
   overflow: hidden;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 .cms-alert-header {
   background-color: var(--color-masthead-bg);
   color: rgb(252, 252, 245);
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 15px;
   padding: 12px 20px;
@@ -2292,7 +2725,7 @@ label sup {
   margin: 0 20px 20px auto;
   background-color: #256386;
   color: #fff;
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 /* cmsConfirm() (scripts/helper.js) - reuses .cms-alert-overlay/-content
@@ -2303,7 +2736,7 @@ label sup {
 .cms-confirm-header {
   background-color: #a83232;
   color: rgb(252, 252, 245);
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 15px;
   padding: 12px 20px;
@@ -2317,13 +2750,13 @@ label sup {
 }
 
 .cms-confirm-cancel-btn {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 .cms-confirm-confirm-btn {
   background-color: #a83232;
   color: #fff;
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 /* Checklist display (waxReviews.html) - the public-facing "Checklist"
@@ -2363,7 +2796,7 @@ label sup {
      off the right edge of the screen on real phones (e.g. iPhone 14). */
   box-sizing: border-box;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 .checklist-modal-controls {
@@ -2385,12 +2818,20 @@ label sup {
   margin: 0 0 16px 0;
 }
 
-.checklist-modal-rc-filter {
+.checklist-modal-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.checklist-modal-filter {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 17px;
   color: #fff;
@@ -2400,7 +2841,11 @@ label sup {
   cursor: pointer;
 }
 
-.checklist-modal-rc-filter input[type="checkbox"] {
+.checklist-modal-filter[hidden] {
+  display: none;
+}
+
+.checklist-modal-filter input[type="checkbox"] {
   width: 18px;
   height: 18px;
   accent-color: #2e8b57;
@@ -2408,13 +2853,13 @@ label sup {
 }
 
 .checklist-modal-print-btn {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   background-color: #256386;
   color: white;
 }
 
 .checklist-modal-pdf-btn {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   background-color: #256386;
   color: white;
 }
@@ -2435,7 +2880,7 @@ label sup {
   border-radius: var(--btn-radius);
   padding: 10px 20px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
   cursor: pointer;
   box-shadow: 0 0 0 1px #fff, 0 0 0 2px var(--btn-ring);
@@ -2529,7 +2974,7 @@ label sup {
 
 .checklist-modal-masthead a {
   font-family: 'Bebas Neue';
-  font-weight: 500;
+  font-weight: 400;
   font-size: 40px;
   text-transform: uppercase;
   text-decoration: none;
@@ -2542,7 +2987,7 @@ label sup {
 }
 
 .checklist-modal-title {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 1.4rem;
   color: var(--color-text-dark);
@@ -2556,7 +3001,7 @@ label sup {
 
 .checklist-modal-group-title {
   column-span: all;
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 1.1rem;
   color: var(--color-text-dark);
@@ -2624,7 +3069,7 @@ label sup {
     gap: 10px;
   }
 
-  .checklist-modal-rc-filter {
+  .checklist-modal-filters {
     align-self: flex-end;
   }
 }
@@ -2666,7 +3111,7 @@ label sup {
   }
 
   .checklist-modal-controls,
-  .checklist-modal-rc-filter {
+  .checklist-modal-filters {
     display: none !important;
   }
 
@@ -2684,7 +3129,7 @@ label sup {
     margin-top: 24px;
     padding-top: 8px;
     border-top: 1px solid #ccc;
-    font-family: 'Source Sans 3', sans-serif;
+    font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
     font-size: 12px;
     color: #666;
     text-align: center;
@@ -2719,7 +3164,7 @@ label sup {
   max-width: 90%;
   border-radius: 8px;
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 /* Image list grid */
@@ -2747,7 +3192,7 @@ label sup {
 
 /*************************************** Pagination Styles... ********************************/
 .pagination-link {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 1.4rem;
   color: var(--color-link);
   text-decoration: none;
@@ -2768,14 +3213,10 @@ label sup {
 }
 
 .pagination-page {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 1.2rem;
   margin: 0 10px;
   color: #444;
-}
-
-.pagination-setname-short {
-  display: none;
 }
 
 /*************************************** Vote Widget Styles... ********************************/
@@ -2791,7 +3232,7 @@ label sup {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 16px;
   background-color: #fff;
   border: 1px solid var(--color-text-dark);
@@ -2893,7 +3334,7 @@ label sup {
 .player-search-suggestion {
   padding: 8px 12px;
   cursor: pointer;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 .player-search-suggestion:hover,
@@ -2903,7 +3344,7 @@ label sup {
 
 .player-search-message,
 .player-search-summary {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 /* #playerSearchResults prefix (id specificity) beats the bare
@@ -2922,7 +3363,7 @@ label sup {
 }
 
 .player-search-set-name {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   margin-bottom: 8px;
 }
 
@@ -2945,7 +3386,7 @@ label sup {
 }
 
 .player-search-card-list li {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   padding: 4px 0;
 }
 
@@ -2969,11 +3410,11 @@ label sup {
   margin: 0 0 32px 0;
   padding-bottom: 24px;
   border-bottom: 1px solid var(--color-input-border);
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 .admin-tool-card h2 {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
 .admin-status-msg {
@@ -2984,7 +3425,7 @@ label sup {
 .admin-results-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 15px;
 }
 
@@ -3001,8 +3442,98 @@ label sup {
 }
 
 .admin-results-list {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 15px;
+}
+
+/* Breadcrumb trail above the set-review pages (renderBreadcrumbs() in helper.js). */
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 10px 10px 0;
+  list-style: none;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  font-size: 15px;
+}
+
+.breadcrumbs li + li::before {
+  content: "\203A";
+  margin-right: 6px;
+  color: #777;
+}
+
+.breadcrumbs a {
+  color: #256386;
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumbs li[aria-current] {
+  color: #555;
+}
+
+/* Multi-line SEO fields (description, keywords): same look as the text inputs
+   above them, not the 24px postBody textarea. */
+.seo-textarea {
+  width: 450px;
+  height: auto;
+  margin: 8px 0;
+  padding: 6px 10px;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  font-size: 16px;
+  resize: none;
+  overflow: hidden;
+}
+
+/* Small "Generate" button beside a CMS SEO field, and its length counter. */
+.seo-generate-btn {
+  margin-left: 8px;
+  padding: 4px 12px;
+  font-size: 14px;
+  background-color: #256386;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.seo-generate-claude {
+  position: relative;
+  padding-left: 34px;
+  background-color: #d97757;
+}
+
+.seo-generate-claude svg {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
+}
+
+.seo-char-count {
+  margin-left: 8px;
+  font-size: 12px;
+  color: #555;
+}
+
+.seo-char-count.seo-count-over {
+  color: #a83232;
+  font-weight: bold;
+}
+
+.admin-orphan-row {
+  display: block;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-input-border);
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  font-size: 16px;
 }
 
 
@@ -3029,12 +3560,11 @@ label sup {
 .weather-box,
 .weather-full,
 .weather-condensed {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
 }
 
-/* index.html's banner masthead, edge to edge: the -8px margins cancel the
-   browser's default body margin. Past the image's own width it stops
-   growing and centres, so a very wide monitor doesn't upscale it. */
+/* index.html's banner masthead, edge to edge at every width: the -8px margins
+   cancel the browser's default body margin, and the image scales with the window. */
 .home-masthead {
   position: relative;
   margin: -8px -8px 0;
@@ -3042,18 +3572,19 @@ label sup {
   isolation: isolate; /* keeps the blend modes inside the banner */
 }
 
-@media (min-width: 2100px) {
-  .home-masthead {
-    max-width: 2078px;
-    margin: -8px auto 0;
-  }
-}
-
 .home-masthead img {
   display: block;
   width: 100%;
   height: auto;
-  filter: brightness(0.88) saturate(1.1); /* a touch darker and richer */
+}
+
+/* Phones: the banner is stretched taller (3.5:1 instead of its native 6:1)
+   so it isn't a thin strip; the lettering gets a little taller with it. */
+@media (max-width: 600px) {
+  .home-masthead img {
+    aspect-ratio: 7 / 2;
+    object-fit: fill;
+  }
 }
 
 /* Wax-paper texture over the banner: a lit turbulence map (flat = neutral
@@ -3066,8 +3597,8 @@ label sup {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  -webkit-mask-image: url("/images/masthead-v7.webp");
-  mask-image: url("/images/masthead-v7.webp");
+  -webkit-mask-image: url("/images/masthead-v19.webp");
+  mask-image: url("/images/masthead-v19.webp");
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
 }
@@ -3114,7 +3645,7 @@ label sup {
   border-radius: 8px;
   width: 1000px; /* Match the width of the live site's flex container */
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 18px;
   font-weight: 400; /* Light */
 }
@@ -3124,7 +3655,7 @@ label sup {
    #previewContainer, which then had to be re-added by hand for every
    markup change - the mechanism behind preview/production drift. */
 .preview-modal {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 18px;
   font-weight: 400; /* Light */
   text-align: left;
@@ -3151,7 +3682,7 @@ label sup {
 }
 
 .add-subscriber-label {
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 0.88rem;
   color: #333;
@@ -3159,7 +3690,7 @@ label sup {
 }
 
 .add-subscriber-input {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 0.95rem;
   padding: 8px 10px;
   border: 1px solid #ccc;
@@ -3191,7 +3722,7 @@ label sup {
   border-collapse: collapse;
   font-size: 18px;
   line-height: 1.4;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 400; /* Light */
 }
 
@@ -3200,6 +3731,31 @@ label sup {
   padding: 2px 4px;
   font-size: 18px;
   text-align: left;
+}
+
+/* The review text is editable in place; the outline shows where, and
+   disappears when not hovered/focused so the preview still looks like the site. */
+.preview-hint {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+  color: #555;
+}
+
+/* Docked formatting bar for the in-place editor; stays visible while scrolling */
+.preview-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+#previewBody:hover {
+  outline: 1px dashed #256386;
+}
+
+#previewBody.mce-edit-focus {
+  outline: 1px solid #256386;
 }
 
 /* Caption styling */
@@ -3306,14 +3862,6 @@ label sup {
     font-size: 0.9rem;
   }
 
-  .pagination-setname-full {
-    display: none;
-  }
-
-  .pagination-setname-short {
-    display: inline;
-  }
-
   /* Masthead & Weather Mobile Styles (index.html only - .masthead-container
      is unique to that page). Scoped to .masthead-container .masthead
      specifically - a bare .masthead rule here would collide with the
@@ -3360,8 +3908,8 @@ label sup {
 /* ============================
    cardStack CMS SHARED CHROME (wlcms.html, createBlogPost.html,
    createCardSet.html, blogEdit.html, setEdit.html, pickBlog.html,
-   pickCardSet.html) - also tech.html for the masthead/mast-table rules,
-   since it reuses the same masthead markup
+   pickCardSet.html) - also tech.html for the .masthead rules, since it
+   reuses that class (the CMS pages themselves now use .cms-masthead)
    ============================ */
 
   /* Set picker */
@@ -3422,25 +3970,10 @@ label sup {
     padding: 8px 14px;
   }
 
-  /* cardStack CMS masthead (shared across every cms/*.html page) - a
-     real height (not auto) so height:100% on any img inside the row has
-     something to compute against; auto height makes percentage-height
-     children fall back to their native size instead. Scaled to roughly
-     match the 14vw masthead font. */
-  .mast-table tr {
-    height: 16vw;
-  }
-
   .masthead {
     font-size: 14vw;
     text-align: center;
     padding: 8px 10px 4px 10px;
-  }
-
-  /* Hide the "Content Management System" subtitle on mobile rather than
-     squeezing a fixed 40px font into a 20%-width table column */
-  .cms-logo {
-    display: none;
   }
 
 /* ============================
@@ -3706,7 +4239,7 @@ label sup {
   display: table-cell;
   table-layout: fixed;
   margin: 0; /* Remove side margins */
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 18px;
   line-height: 1.4;
   text-align: left;
@@ -3764,6 +4297,14 @@ label sup {
     width: 100%;
   }
 
+  /* Review-body image from the CMS: the desktop 75% shrinks it below the
+     header and footer images on a phone, so fill the column instead.
+     border-box keeps the 2px border inside that width. */
+  .card-middle-img {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
   /* Centered via the parent's text-align:center (inline-block respects that
      reliably) rather than width:100%+max-width+margin:auto, since that
      combination wasn't resolving correctly here */
@@ -3796,17 +4337,21 @@ label sup {
 } /* END MOBILE RESPONSIVE */
 
 
-/* Tablet + mobile: keep the nav collapsed into the hamburger menu. The
+/* Narrow screens: keep the nav collapsed into the hamburger menu. The
    full table nav (one <td> per NAV_ITEMS entry) doesn't have room to
-   lay out on one line below desktop widths - it shrinks each cell
-   until label text wraps mid-word instead of overflowing cleanly, so
-   this reuses the same hamburger treatment as phone widths rather than
-   building a separate cramped-but-not-wrapped layout just for tablets.
-   1400px (not 1024px) because current iPads' landscape CSS viewport
-   width ranges from ~1080px (mini) up to 1366px (12.9" Pro) - 1024px
-   was the old "classic iPad landscape" assumption and left every
-   modern iPad showing the wrapped desktop nav in landscape. */
-@media (max-width: 1400px) {
+   lay out on one line, and shrinks each cell until label text wraps
+   mid-word instead of overflowing cleanly, so this reuses the same
+   hamburger treatment as phone widths rather than building a cramped
+   layout for tablets.
+   1220px because the widest bar (Home, two dropdown buttons, The Wax
+   Museum, Timeline and Player Search on Tech, About and similar pages,
+   12px of padding each side - see the desktop block below) is about
+   1185px, plus the 16px of body margin; 1201px is exactly that and still
+   wraps, so there is 20px of headroom. Everything up to 1220px (an iPad
+   Air in landscape is 1180px) gets the hamburger.
+   If a label or the nav font changes, re-measure the bar and move all
+   three 1220/1221 values together. */
+@media (max-width: 1220px) {
   .nav-links {
     display: none;
     width: fit-content;
@@ -3817,7 +4362,10 @@ label sup {
     display: block;
   }
 
+  /* ☰ isn't in any of our fonts; this picks the system's symbol glyph
+     instead of leaving the browser's serif default to choose. */
   .hamburger {
+    font-family: system-ui, sans-serif;
     font-size: 32px;
     cursor: pointer;
     padding: 10px;
@@ -3862,13 +4410,44 @@ label sup {
     padding: 12px 16px;
     color: #fff;
   }
+
+  /* Dropdown groups: the menu shows them expanded, the group name as a
+     heading row and its links indented beneath. */
+  .nav-group-btn {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 16px;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    text-align: left;
+    color: #fff;
+    background: none;
+    border: none;
+    pointer-events: none;
+  }
+
+  .nav-dropdown {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-dropdown li {
+    border-top: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .nav-dropdown a {
+    padding-left: 32px;
+  }
 }
 
 /* Tablet only: the hamburger icon and menu sizes above were tuned for
    phone widths and look undersized on a much bigger tablet screen -
    scale both up. Phone (<=600px) keeps the smaller sizes from the
    block above. */
-@media (min-width: 601px) and (max-width: 1400px) {
+@media (min-width: 601px) and (max-width: 1220px) {
   .hamburger {
     font-size: 48px;
     padding: 14px;
@@ -3899,17 +4478,94 @@ label sup {
   }
 }
 
-/* Desktop only: hide the hamburger and show the normal table nav.
-   Tablets stay on the hamburger nav above (max-width: 1400px) - see
-   the comment there for why 1400px rather than the more obvious-looking
-   1024px. */
-@media (min-width: 1401px) {
+/* Wide screens: hide the hamburger and show the normal table nav.
+   Narrower screens stay on the hamburger nav above - see the comment
+   there for why 1220px. */
+@media (min-width: 1221px) {
   .hamburger {
     display: none;
   }
 
   .nav-links {
     display: block;
+  }
+
+  /* Desktop bar: links go to the lighter site-link blue on hover or keyboard
+     focus. The phone/tablet menu (white on blue) is left alone. */
+  .nav-td a:hover,
+  .nav-td a:focus-visible {
+    color: var(--color-link);
+  }
+
+  /* Tight gaps between links on every page, so even the eight-link bar
+     (about 1185px) fits from 1221px up and under the home banner. */
+  .nav-td {
+    padding: 20px 12px;
+  }
+
+  /* Dropdown groups: a button styled like the links, with a panel under
+     it that opens on hover, keyboard focus or click (.open). */
+  .nav-group {
+    position: relative;
+  }
+
+  .nav-group-btn {
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    color: var(--color-heading-outline);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+
+  .nav-group-btn::after {
+    content: "\25BE";
+    font-size: 0.6em;
+    margin-left: 8px;
+    display: inline-block;
+  }
+
+  .nav-group:hover .nav-group-btn,
+  .nav-group-btn:focus-visible,
+  .nav-group.open .nav-group-btn {
+    color: var(--color-link);
+  }
+
+  .nav-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 100%;
+    box-sizing: border-box;
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+    white-space: nowrap;
+    text-align: left;
+    background-color: var(--color-page-bg);
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+  }
+
+  .nav-group:hover .nav-dropdown,
+  .nav-group.open .nav-dropdown {
+    display: block;
+  }
+
+  .nav-dropdown a {
+    display: block;
+    padding: 8px 20px;
+    font-size: 19px; /* mixed case reads smaller than the bar's capitals */
+  }
+
+  .nav-dropdown a:hover,
+  .nav-dropdown a:focus-visible {
+    color: var(--color-link);
   }
 }
 
@@ -3946,7 +4602,11 @@ label sup {
   margin: 0 auto;
   padding: 0 16px 40px;
   box-sizing: border-box;
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  /* A closed card's hidden back face can be taller than the card and would
+     otherwise stretch the page below the footer. The padding above leaves
+     room for the card shadows. */
+  overflow-y: clip;
 }
 
 #timelineTitle {
@@ -4041,6 +4701,18 @@ label sup {
   perspective: 1400px;
 }
 
+/* Desktop cards reach 15% less far from the line; left-hand cards
+   stay pushed against it. Phones keep the full width. */
+@media (min-width: 601px) {
+  .timeline-card {
+    width: 85%;
+  }
+
+  .timeline-item-left .timeline-card {
+    margin-left: auto;
+  }
+}
+
 .timeline-ready .timeline-card {
   transition: height 0.6s ease;
 }
@@ -4051,7 +4723,7 @@ label sup {
   left: 0;
   width: 100%;
   box-sizing: border-box;
-  border-radius: 10px;
+  border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -4097,10 +4769,6 @@ label sup {
   color: #3e4a56;
 }
 
-.timeline-card.is-viewed .timeline-toggle::after {
-  color: #8b97a3;
-}
-
 /* Text for screen readers only (the "viewed" cue). */
 .timeline-sr {
   position: absolute;
@@ -4113,14 +4781,14 @@ label sup {
 
 .timeline-toggle {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
   width: 100%;
-  padding: 16px 44px 16px 20px;
+  padding: 16px 64px 16px 20px; /* clear of the Flip pill */
   position: relative;
   border: 0;
-  border-radius: 10px;
+  border-radius: 6px;
   background: none;
   color: inherit;
   font: inherit;
@@ -4128,14 +4796,9 @@ label sup {
   cursor: pointer;
 }
 
-.timeline-toggle::after {
-  content: "\21BB"; /* a "turn over" arrow */
-  position: absolute;
+.timeline-hint {
   top: 50%;
-  right: 16px;
   transform: translateY(-50%);
-  color: var(--timeline-red);
-  font-size: 20px;
 }
 
 .timeline-toggle:focus-visible {
@@ -4150,7 +4813,7 @@ label sup {
 
 .timeline-year {
   padding: 2px 10px;
-  border-radius: 999px;
+  border-radius: 4px;
   background: var(--timeline-blue);
   color: var(--color-text-dark);
   font-size: 13px;
@@ -4158,6 +4821,7 @@ label sup {
 }
 
 .timeline-heading {
+  max-width: 100%;
   font-size: 16px;
   font-weight: 700;
 }
@@ -4168,28 +4832,17 @@ label sup {
   color: var(--color-text-dark);
 }
 
-/* The title row is the button: it looks like a heading, with the same
-   turn-over arrow as the front, not a labelled "Close" control. */
+/* The title row is the button: it looks like a heading, not a labelled
+   "Close" control. */
 .timeline-close {
-  position: relative;
   width: 100%;
-  padding: 0 28px 0 0;
+  padding: 0;
   border: 0;
   background: none;
   color: inherit;
   font: inherit;
   text-align: left;
   cursor: pointer;
-}
-
-.timeline-close::after {
-  content: "\21BB";
-  position: absolute;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-  color: var(--timeline-red);
-  font-size: 20px;
 }
 
 .timeline-list {
@@ -4206,6 +4859,10 @@ label sup {
 .timeline-list .timeline-list {
   margin-top: 6px;
   list-style: circle;
+}
+
+.timeline-list .timeline-list .timeline-list {
+  list-style: square;
 }
 
 @media (max-width: 600px) {
@@ -4249,7 +4906,7 @@ label sup {
   .timeline-card.is-flipped .timeline-front,
   .timeline-card.is-flipped .timeline-back {
     transform: none;
-    transition: opacity 0.15s linear, visibility 0.15s linear;
+    transition: opacity 0.15s linear; /* visibility flips at once, so the new face can take focus */
   }
 
   .timeline-back,
@@ -4259,6 +4916,207 @@ label sup {
   }
 
   .timeline-card.is-flipped .timeline-back {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/************************************* Wax Pack Museum *************************************/
+
+.wax-museum {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+  box-sizing: border-box;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  color: var(--color-text-dark);
+}
+
+.wax-museum-status {
+  text-align: center;
+  color: var(--color-text-dark);
+}
+
+.wax-museum-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr; /* every row is as tall as the tallest card, so all cards match */
+  gap: 24px;
+}
+
+/* Lets the card stretch to the row's height. */
+.wax-museum-item {
+  display: grid;
+}
+
+@media (max-width: 700px) {
+  .wax-museum-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Both faces share one grid cell, so the card is as tall as the taller face (the front, with its caption) and needs no JS to size it. */
+.wax-museum-card {
+  display: grid;
+  perspective: 1400px;
+}
+
+.wax-museum-face {
+  grid-area: 1 / 1;
+  box-sizing: border-box;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition: transform 0.6s ease;
+}
+
+.wax-museum-front {
+  display: flex;
+  flex-direction: column;
+  transform: rotateY(0deg);
+}
+
+.wax-museum-back {
+  display: flex;
+  flex-direction: column; /* the back photo sits at the top, where the front one does, so the pack stays put when it flips; its notes go below */
+  transform: rotateY(-180deg);
+}
+
+.wax-museum-card.is-flipped .wax-museum-front {
+  transform: rotateY(180deg);
+}
+
+.wax-museum-card.is-flipped .wax-museum-back {
+  transform: rotateY(0deg);
+}
+
+.wax-museum-flip {
+  position: relative;
+  display: block;
+  width: 67.5%; /* the pack photos are 32.5% smaller than the card; front and back match so the pack stays put on a flip */
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+/* A pack with no back photo has a plain image instead of a flip button; same size. */
+.wax-museum-front > .wax-museum-img {
+  width: 67.5%;
+  margin: 0 auto;
+}
+
+.wax-museum-flip:focus-visible {
+  outline: 3px solid var(--color-link);
+  outline-offset: -3px;
+}
+
+.wax-museum-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px 8px 0 0;
+}
+
+/* The "Flip" pill, shared with the Junk Wax Timeline's cards. It sits inside a
+   button, which doesn't inherit the page font, so it names its own. */
+.wax-museum-hint,
+.timeline-hint {
+  position: absolute;
+  right: 10px;
+  padding: 2px 10px;
+  border-radius: 12px;
+  background: rgba(11, 62, 100, 0.85);
+  color: #ffffff;
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.wax-museum-hint {
+  bottom: 10px;
+}
+
+.wax-museum-noimg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3 / 4;
+  background: #eceff1;
+  color: #5d6b78;
+}
+
+.wax-museum-caption {
+  display: flex;
+  flex: 1; /* fills the card below the photo so the review link can sit at the bottom */
+  flex-direction: column;
+  padding: 14px 16px 16px;
+}
+
+/* Every card is as tall as the 1983-84 O-Pee-Chee one (223px below the photo: name, details and two lines of notes). Notes must stay within two lines. */
+.wax-museum-front > .wax-museum-caption {
+  box-sizing: border-box;
+  min-height: 223px;
+}
+
+.wax-museum-name {
+  margin: 0 0 8px;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.wax-museum-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* two details per row keeps the cards short */
+  column-gap: 12px;
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Notes can run long, so they get the full width. */
+.wax-museum-detail:last-child:nth-child(odd),
+.wax-museum-detail-wide {
+  grid-column: 1 / -1;
+}
+
+.wax-museum-detail {
+  padding: 4px 0;
+}
+
+.wax-museum-detail dt {
+  font-weight: 700;
+}
+
+.wax-museum-detail dd {
+  margin: 0;
+}
+
+.wax-museum-review {
+  align-self: flex-start;
+  margin-top: auto;
+  padding-top: 10px;
+  font-size: 14px;
+}
+
+/* No rotation for people who ask for less motion: a quick fade instead. */
+@media (prefers-reduced-motion: reduce) {
+  .wax-museum-face,
+  .wax-museum-card.is-flipped .wax-museum-front,
+  .wax-museum-card.is-flipped .wax-museum-back {
+    transform: none;
+    transition: opacity 0.15s linear;
+  }
+
+  .wax-museum-back,
+  .wax-museum-card.is-flipped .wax-museum-front {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .wax-museum-card.is-flipped .wax-museum-back {
     opacity: 1;
     visibility: visible;
   }

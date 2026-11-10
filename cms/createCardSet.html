@@ -12,30 +12,17 @@
     <title>cardStack cms - new set</title>
     <link
       rel="icon"
-      type="image/x-icon"
-      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+      href="/favicon.ico"
+      sizes="16x16 32x32 48x48">
     <link
       rel="icon"
       type="image/png"
-      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+      sizes="192x192"
+      href="/images/icons/icon-192.png">
     <link
       rel="apple-touch-icon"
-      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+      href="/images/icons/apple-touch-icon.png">
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      rel="preload"
-      href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap"
-      as="style"
-      onload="this.rel='stylesheet'">
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
-    </noscript>
 
     <!-- TinyMCE -->
     <script
@@ -59,20 +46,9 @@
 
   <body>
     <section>
-      <table class="mast-table">
-        <tr>
-          <td width="80%">
-            <div>
-              <header class="masthead">card<i>Stack</i></header>
-            </div>
-          </td>
-          <td class="cms-logo">
-            <i>Content</i><br>
-            <strong>Management</strong><br>
-            <i>System</i><br>
-          </td>
-        </tr>
-      </table>
+      <header class="cms-masthead">
+        <img src="/images/cms-masthead.webp" width="1500" height="200" alt="cardStack CMS">
+      </header>
     </section>
 
     <section>
@@ -179,29 +155,39 @@
                     <option value="Leaf">Leaf</option>
                     <option value="Pinnacle">Pinnacle</option>
                     <option value="Pacific">Pacific</option>
+                    <option value="Ultimate">Ultimate</option>
                   </select>
                 </td>
               </tr>
               <tr>
                 <!-- 6th Row - two SEO fields -->
                 <td>
-                  <label>SEO Title</label><br>
+                  <label>SEO Title</label>
+                  <button type="button" class="seo-generate-btn" onclick="generateSeoTitle()">Generate</button>
+                  <span class="seo-char-count" id="seoPageTitleCount"></span><br>
                   <input type="text" id="seoPageTitle">
                 </td>
                 <td>
-                  <label>SEO Meta Description</label><br>
-                  <input type="text" id="seoMetaDesc">
+                  <label>SEO Meta Description</label>
+                  <button type="button" class="seo-generate-btn seo-generate-claude" onclick="generateSeoDescription()">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12L12 .5M12 12L16.2 4.6M12 12L22 6.2M12 12L20.5 12M12 12L22 17.7M12 12L16.2 19.4M12 12L12 23.5M12 12L7.7 19.4M12 12L2 17.8M12 12L3.5 12M12 12L2 6.2M12 12L7.7 4.6" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"></path></svg>
+                    <span class="seo-generate-label">Generate with Claude</span>
+                  </button>
+                  <span class="seo-char-count" id="seoMetaDescCount"></span><br>
+                  <textarea id="seoMetaDesc" class="seo-textarea" rows="1"></textarea>
                 </td>
               </tr>
               <tr>
                 <!-- 7th Row - two SEO fields -->
                 <td>
-                  <label>SEO Friendly URL</label><br>
+                  <label>SEO Friendly URL <sup>*</sup></label>
+                  <button type="button" class="seo-generate-btn" onclick="generateSeoSlug()">Generate</button><br>
                   <input type="text" id="seoURLSlug">
                 </td>
                 <td>
-                  <label>SEO Tags</label><br>
-                  <input type="text" id="seoTags">
+                  <label>SEO Tags</label>
+                  <button type="button" class="seo-generate-btn" onclick="generateSeoKeywords()">Generate</button><br>
+                  <textarea id="seoTags" class="seo-textarea" rows="1"></textarea>
                 </td>
               </tr>
               <tr>
@@ -325,11 +311,11 @@
         <div
           style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"
         >
-          <!-- Styled Choose File button -->
+          <!-- Styled Choose Image button -->
           <label
             for="uploadFileInput" class="input-button"
           >
-            Choose File
+            Choose Image
           </label>
 
           <!-- Hidden native input -->

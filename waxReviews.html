@@ -7,31 +7,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link
       rel="icon"
-      type="image/x-icon"
-      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+      href="/favicon.ico"
+      sizes="16x16 32x32 48x48">
     <link
       rel="icon"
       type="image/png"
-      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+      sizes="192x192"
+      href="/images/icons/icon-192.png">
     <link
       rel="apple-touch-icon"
-      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+      href="/images/icons/apple-touch-icon.png">
 
-    <!-- Default title, overwritten per-set by fetchPageTitle() in wax.js
-           (called from fetchCardSetsByYear()) once the set data loads. -->
+    <!-- The review-head markers delimit the block that tools/generateReviewPages
+         replaces per set to build reviews/<slug>/index.html. Here it is the
+         generic fallback; fetchPageTitle() in wax.js overwrites it per set. -->
+    <!-- review-head:start -->
     <title>
-      Junk Wax Hockey...vintage hockey card set reviews
+      Vintage Hockey Card Set Reviews | Junk Wax Hockey
     </title>
 
     <meta
       name="description"
       content="Focusing on the Junk Wax Era, in-depth reviews of almost every hockey card set from 1977-78 to 1994-95, including O-Pee-Chee, Upper Deck, Score, Topps, Pinnacle, McDonald's and Tim Hortons. Are any of them still worth collecting? Let's find out!">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Generic social preview fallback for crawlers that don't run JavaScript
+         (Facebook, Discord, Reddit, X). The canonical/og:url can't be static in
+         this file, since it serves every old-style query URL. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Vintage Hockey Card Set Reviews | Junk Wax Hockey">
+    <meta property="og:description" content="Focusing on the Junk Wax Era, in-depth reviews of almost every hockey card set from 1977-78 to 1994-95, including O-Pee-Chee, Upper Deck, Score, Topps, Pinnacle, McDonald's and Tim Hortons. Are any of them still worth collecting? Let's find out!">
+    <meta property="og:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Vintage Hockey Card Set Reviews | Junk Wax Hockey">
+    <meta name="twitter:description" content="Focusing on the Junk Wax Era, in-depth reviews of almost every hockey card set from 1977-78 to 1994-95, including O-Pee-Chee, Upper Deck, Score, Topps, Pinnacle, McDonald's and Tim Hortons. Are any of them still worth collecting? Let's find out!">
+    <meta name="twitter:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
+    <!-- review-head:end -->
     <link rel="preconnect" href="https://s3.us-east-2.amazonaws.com">
     <link
       rel="preconnect"
-      href="https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com">
+      href="https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com"
+      crossorigin>
 
     <!-- Global site tag (gtag.js) - Load Google Analytics until later -->
     <script>
@@ -58,79 +72,30 @@
       }
     </script>
 
-    <style>
-        /* latin-ext */
-      @font-face {
-        font-family: 'Bebas Neue';
-        font-style: normal;
-        font-weight: 400;
-        font-display: swap;
-        src: url(https://fonts.gstatic.com/s/bebasneue/v16/JTUSjIg69CK48gW7PXoo9WdhyyTh89ZNpQ.woff2) format('woff2');
-        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-      }
-      /* latin */
-      @font-face {
-        font-family: 'Bebas Neue';
-        font-style: normal;
-        font-weight: 400;
-        font-display: swap;
-        src: url(https://fonts.gstatic.com/s/bebasneue/v16/JTUSjIg69CK48gW7PXoo9WlhyyTh89Y.woff2) format('woff2');
-        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-      }
-    </style>
-
-    <link
-      rel="preload"
-      href="https://fonts.gstatic.com/s/bebasneue/v16/JTUSjIg69CK48gW7PXoo9WdhyyTh89ZNpQ.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin>
-    <link
-      rel="preload"
-      href="https://fonts.gstatic.com/s/bebasneue/v16/JTUSjIg69CK48gW7PXoo9WlhyyTh89Y.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin>
+    <!-- Fonts are self-hosted (@font-face in styles.css); the masthead uses Bebas Neue -->
+    <link rel="preload" href="/fonts/bebas-neue-latin-v16.woff2" as="font" type="font/woff2" crossorigin>
+    <!-- Body fonts (latin subset): requested with the HTML instead of after the
+         stylesheet arrives, so the text doesn't reflow when they swap in -->
+    <link rel="preload" href="/fonts/source-sans-3-latin-v20.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/special-elite-latin-v20.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/nunito-latin-v32.woff2" as="font" type="font/woff2" crossorigin>
 
     <!-- Set up some global variables visible to all page scripts -->
+    <!-- review-params:start -->
     <script>
       const params = new URLSearchParams(window.location.search);
       const year = params.get("year");
       const sortOrder = params.get("sortOrder");
       const pageName = params.get("pageName");
       const blogCat = params.get("blogCat");
+      const setID = params.get("setID");
     </script>
-
-    <!-- Google Core Web Vitals Preload: make the "hero" image visible for each year. Makes GCWV happy -->
-    <script>
-      // Build the hero image URL using your new naming convention
-      if (year) {
-        const lcpUrl = `https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cards/${year}_hero.webp`;
-
-        // Inject a preload tag into <head>
-        const preload = document.createElement("link");
-        preload.rel = "preload";
-        preload.as = "image";
-        preload.href = lcpUrl;
-        preload.fetchPriority = "high";
-
-        document.head.appendChild(preload);
-      }
-    </script>
+    <!-- review-params:end -->
 
     <!-- Load the stylesheet -->
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
-    <!-- Google Fonts -->
-    <link
-      rel="preload"
-      href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap"
-      as="style"
-      onload="this.rel='stylesheet'">
     <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
       <style>.nhl-ticker { display: none; }</style>
     </noscript>
 
@@ -139,11 +104,17 @@
     <script src="/scripts/ticker.js" defer></script>
     <script src="/scripts/helper.js" defer></script>
 
-    <!-- Wait for the DOM to load, then run the Intro script -->
+    <!-- Wait for the DOM, then run the Intro script and start the set fetch right
+         away - not on window load, which also waits on fonts, analytics and the ticker -->
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-      renderCardIntro(pageName);
-        });
+        renderCardIntro(pageName);
+        // Set-O-Matic Set Picker: needs only the URL params, so draw it before first
+        // paint - on window load it popped in late and pushed the page down
+        renderSetPicker(year,resolveBlogCat(blogCat,pageName),pageName);
+        //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
+        fetchCardSetsByYear(year,sortOrder,resolveBlogCat(blogCat,pageName),setID);
+      });
     </script>
 
     <script>
@@ -151,10 +122,7 @@
       window.addEventListener('load', (event) => {
         // First: fetch Global Nav from helper.js
         fetchNav(pageName);
-        // Call the Set-O-Matic Set Picker
-        renderSetPicker(year,blogCat,pageName);
-        //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
-        fetchCardSetsByYear(year,sortOrder,blogCat);
+        fetchFooterLinks();
         // Masthead: random NHL team colors on every load - helper.js
         applyRandomMastheadStyling();
       });
@@ -173,7 +141,7 @@
         <tr>
           <td>
             <header class="wax-reviews-masthead">
-              <a href="index.html">Junk Wax Hockey</a>
+              <a href="/index.html">Junk Wax Hockey</a>
             </header>
           </td>
         </tr>
@@ -195,10 +163,12 @@
       <!-- Hamberger menu for mobile in helper.js -->
       <div class="nav-container" id="global-nav-placeholder">
         <div class="hamburger" onclick="toggleMenu()">☰</div>
-        <div id="global-nav" class="nav-links"></div>
+        <div id="global-nav" class="nav-links"><!-- nav:start --><!-- nav:end --></div>
       </div>
     </nav>
     <main>
+      <!-- Filled by renderBreadcrumbs() in helper.js, once the set loads -->
+      <nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb"></nav>
       <section>
         <div class="header-style wax-set-name-header">
           <h1 id="pageHeader"></h1>
@@ -216,9 +186,8 @@
         <div class="set-o-matic-picker">the set-o-matic year picker</div>
 
         <div class="flex-container">
-          <div id="set-picker">
-            <!-- renderSetPicker() function in helper.js -->
-          </div>
+          <div id="set-picker"><!-- set-picker:start --><!-- set-picker:end --></div>
+          <!-- Drawn by renderSetPicker() in helper.js; a generated page ships it pre-rendered -->
         </div>
       </section>
 
@@ -230,9 +199,11 @@
       </section>
     </main>
 
-    <footer class="page-footer">
+    <footer class="site-footer">
+      <!-- Populated by fetchFooterLinks() in helper.js -->
+      <nav id="footer-links" aria-label="Footer"><!-- footer:start --><!-- footer:end --></nav>
       <div id="copy"></div>
-      <!-- fetchCopyrightYear() called from fetchCardSetsByYear() on page load -->
+      <!-- fetchCopyrightYear() is called from fetchCardSetsByYear() on page load -->
     </footer>
 
     <!-- Checklist modal -->
@@ -258,17 +229,32 @@
           >
         </div>
         <header class="checklist-modal-masthead">
-          <a href="index.html">Junk Wax Hockey</a>
+          <a href="/index.html">Junk Wax Hockey.com</a>
         </header>
         <div class="checklist-modal-title-row">
           <h2 id="checklistModalTitle" class="checklist-modal-title"></h2>
-          <label class="checklist-modal-rc-filter">
-            <input
-              type="checkbox"
-              id="checklistRookieFilter"
-              onchange="applyChecklistRookieFilter()">
-            Rookies only
-          </label>
+          <div class="checklist-modal-filters">
+            <label
+              class="checklist-modal-filter"
+              id="checklistInsertFilterLabel"
+              hidden>
+              <input
+                type="checkbox"
+                id="checklistInsertFilter"
+                onchange="applyChecklistFilters()">
+              Inserts only
+            </label>
+            <label
+              class="checklist-modal-filter"
+              id="checklistRookieFilterLabel"
+              hidden>
+              <input
+                type="checkbox"
+                id="checklistRookieFilter"
+                onchange="applyChecklistFilters()">
+              Rookies only
+            </label>
+          </div>
         </div>
         <div id="checklistModalBody"></div>
         <!-- Print-only -->

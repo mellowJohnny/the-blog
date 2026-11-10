@@ -20,7 +20,7 @@
 // with a GSI if that table gets much bigger.
 //
 // For each distinct matching setName, does a second, cheap Query
-// (partition key, not a scan) against Cards to get year/blogCat, so the
+// (partition key, not a scan) against Cards to get year/blogCat/setID, so the
 // frontend can build a working link back to that set's review on
 // waxReviews.html. pageName (the third param that URL needs) isn't
 // looked up here - it's a pure UI/nav concept derived from blogCat+year,
@@ -62,30 +62,42 @@ async function scanAllMatchingCards(queryLower) {
 }
 
 // Same full paginated Scan as scanAllMatchingCards, but collects every
-// distinct setName instead of filtering by player - backs ?audit=1
-// below, a data-integrity check for the 1:1 Checklists<->Cards
-// assumption every search result link depends on: every setName in
-// Checklists should resolve to exactly one Cards item, or a search
-// result shows up unlinked (see DATA_MODEL.md's Checklists table).
-async function scanAllDistinctSetNames() {
-  const setNames = new Set();
+// setName and its checklist groups (main/insert/extended, with card
+// counts) instead of filtering by player - backs ?audit=1 below, a
+// data-integrity check for the 1:1 Checklists<->Cards assumption every
+// search result link depends on: every setName in Checklists should
+// resolve to exactly one Cards item, or a search result shows up
+// unlinked (see DATA_MODEL.md's Checklists table).
+// Returns Map(setName -> Map(insertSetName -> { type, count })), "" = main.
+async function scanAllChecklistGroups() {
+  const sets = new Map();
   let lastEvaluatedKey;
 
   do {
     const result = await docClient.send(new ScanCommand({
       TableName: CHECKLISTS_TABLE,
-      ProjectionExpression: "setName",
+      ProjectionExpression: "setName, insertSetName, #t",
+      ExpressionAttributeNames: { "#t": "type" },
       ExclusiveStartKey: lastEvaluatedKey
     }));
 
     for (const item of result.Items || []) {
-      if (item.setName) setNames.add(item.setName);
+      if (!item.setName) continue;
+      const insertSetName = item.insertSetName || "";
+      const groups = sets.get(item.setName) || new Map();
+      const group = groups.get(insertSetName) || {
+        type: item.type || (insertSetName ? "insertSet" : "main"),
+        count: 0
+      };
+      group.count += 1;
+      groups.set(insertSetName, group);
+      sets.set(item.setName, groups);
     }
 
     lastEvaluatedKey = result.LastEvaluatedKey;
   } while (lastEvaluatedKey);
 
-  return [...setNames];
+  return sets;
 }
 
 // Same full paginated Scan as the others, but collects every distinct
@@ -121,7 +133,7 @@ async function getCardsEntriesForSet(setName) {
     TableName: CARDS_TABLE,
     KeyConditionExpression: "setName = :setName",
     ExpressionAttributeValues: { ":setName": setName },
-    ProjectionExpression: "setName, #yr, blogCat",
+    ProjectionExpression: "setName, setID, #yr, blogCat",
     ExpressionAttributeNames: { "#yr": "year" }
   }));
 
@@ -156,9 +168,11 @@ export const handler = async (event) => {
     // feature itself. Enumerates every distinct setName in Checklists
     // and reports which ones have no matching Cards item, i.e. would
     // show up in search results with no working review link. See
-    // scanAllDistinctSetNames() above.
+    // scanAllChecklistGroups() above. "orphans" lists each checklist
+    // (one group of a set) of those unlinked sets, for the admin delete list.
     if (event?.queryStringParameters?.audit === "1") {
-      const setNames = await scanAllDistinctSetNames();
+      const sets = await scanAllChecklistGroups();
+      const setNames = [...sets.keys()];
       const unlinkedSetNames = [];
 
       for (const setName of setNames) {
@@ -168,13 +182,21 @@ export const handler = async (event) => {
 
       unlinkedSetNames.sort();
 
+      // One entry per checklist, set name then group ("" = main sorts first).
+      const orphans = unlinkedSetNames.flatMap((setName) =>
+        [...sets.get(setName)]
+          .map(([insertSetName, { type, count }]) => ({ setName, insertSetName, type, count }))
+          .sort((a, b) => a.insertSetName.localeCompare(b.insertSetName))
+      );
+
       return {
         statusCode: 200,
         headers: CORS_HEADERS,
         body: JSON.stringify({
           totalDistinctSetNames: setNames.length,
           linkedCount: setNames.length - unlinkedSetNames.length,
-          unlinkedSetNames
+          unlinkedSetNames,
+          orphans
         })
       };
     }
@@ -214,9 +236,11 @@ export const handler = async (event) => {
     // "NNO") that doesn't sort numerically. Same convention
     // getChecklistBySetName's items already carry sortIndex for - see
     // DATA_MODEL.md's Checklists table.
+    // Main, then Extended Set, then insert sets (matches the checklist modal).
+    const TYPE_RANK = { main: 0, extendedSet: 1, insertSet: 2 };
     for (const cards of bySetName.values()) {
       cards.sort((a, b) => {
-        if (a.type !== b.type) return a.type === "insertSet" ? 1 : -1;
+        if (a.type !== b.type) return (TYPE_RANK[a.type] ?? 0) - (TYPE_RANK[b.type] ?? 0);
         if (a.insertSetName !== b.insertSetName) return a.insertSetName.localeCompare(b.insertSetName);
         return a.sortIndex - b.sortIndex;
       });
@@ -232,7 +256,7 @@ export const handler = async (event) => {
         results.push({ setName, year: null, blogCat: null, cards });
       } else {
         for (const cardsItem of cardsEntries) {
-          results.push({ setName, year: cardsItem.year, blogCat: cardsItem.blogCat, cards });
+          results.push({ setName, year: cardsItem.year, blogCat: cardsItem.blogCat, setID: cardsItem.setID, cards });
         }
       }
     }

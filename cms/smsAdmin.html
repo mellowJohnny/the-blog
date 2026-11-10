@@ -12,30 +12,17 @@
     <title>Autobus SMS Admin</title>
     <link
       rel="icon"
-      type="image/x-icon"
-      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+      href="/favicon.ico"
+      sizes="16x16 32x32 48x48">
     <link
       rel="icon"
       type="image/png"
-      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+      sizes="192x192"
+      href="/images/icons/icon-192.png">
     <link
       rel="apple-touch-icon"
-      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+      href="/images/icons/apple-touch-icon.png">
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      rel="preload"
-      href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap"
-      as="style"
-      onload="this.rel='stylesheet'">
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
-    </noscript>
 
     <script src="/scripts/helper.js"></script>
     <script src="/scripts/adminSMS.js"></script>
@@ -77,6 +64,9 @@
               </td>
               <td class="cms-nav-td">
                 <a href="#" id="addSubscriberLink">...add subscriber</a>
+              </td>
+              <td class="cms-nav-td">
+                <a href="#" id="listSubscribersLink">...list all subscribers</a>
               </td>
               <td class="cms-nav-td">
                 <a href="#" id="helpLink">...user guide</a>
@@ -242,7 +232,8 @@
               the message only to subscribers flagged as test users. Use this to
               verify your message looks correct before sending it to the full
               list. When Test Mode is unchecked, the message goes to all active
-              subscribers.
+              subscribers. Opting out (texting STOP) or back in (texting START)
+              only changes the live subscriber list, not the test list.
             </p>
 
             <h3 class="help-section-title">Sending</h3>
@@ -269,6 +260,21 @@
               is deleted. A summary showing how many records were removed and
               imported is displayed on completion, along with any rows that
               were skipped (e.g. a missing name or an unusable phone number).
+            </p>
+
+            <h3 class="help-section-title">Opt-Outs &amp; Re-subscribing</h3>
+            <p>
+              After a new subscriber list is bulk uploaded, that effectively
+              means all the numbers have "opted-in". Our first text of the
+              year, which welcomes all riders to the Club, is their opportunity
+              to opt-out (or at any other subsequent point).
+            </p>
+            <p>
+              Nothing needs to be done on our side for opt-outs, the code is
+              self-managing. Records will simply be marked as "unsubscribed"
+              and can be flipped back at any time to "subscribed" by texting
+              START. After the first SMS blast of the year the list is actually
+              managed by the users.
             </p>
 
             <h3 class="help-section-title">A Note on Segments &amp; Cost</h3>
@@ -337,6 +343,40 @@
               class="bulk-btn bulk-btn-cancel"
               style="display:none;"
             >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- List All Subscribers Modal -->
+      <div id="listSubscribersOverlay" class="bulk-overlay" style="display:none;">
+        <div class="bulk-modal list-subscribers-modal">
+          <h2 class="bulk-modal-title">All Subscribers</h2>
+
+          <p id="listSubscribersSummary" class="bulk-modal-instructions"></p>
+
+          <div
+            id="listSubscribersFeedback"
+            class="bulk-feedback"
+            style="display:none;"
+          ></div>
+
+          <div class="list-subscribers-scroll">
+            <table class="list-subscribers-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="listSubscribersBody"></tbody>
+            </table>
+          </div>
+
+          <div class="bulk-modal-actions">
+            <button id="listSubscribersCloseBtn" class="bulk-btn bulk-btn-cancel">
               Close
             </button>
           </div>

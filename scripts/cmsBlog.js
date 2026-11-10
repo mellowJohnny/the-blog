@@ -14,6 +14,7 @@ const BLOG_TYPE_LABELS = {
   3: "Mach‑E",
   4: "SYNC Updates",
   5: "Raspberry Pi",
+  98: "About",
   99: "Home Page"
 };
 

@@ -11,6 +11,10 @@ it's a Twilio-to-us webhook, not something this frontend calls — see
 `LAMBDA_FUNCTIONS.md` for it instead.
 
 All URLs are `https://{id}.execute-api.us-east-2.amazonaws.com/{stage}`.
+The stage is `dev` for the older endpoints; newer ones (the Autobus SMS
+endpoints, the NHL/PWHL ticker endpoints and "Get all live sets
+(public)") are deployed to a stage named `prod`. Each entry below names
+its stage in its URL.
 
 ## Public site — read APIs
 
@@ -45,11 +49,23 @@ after a create/update/delete redirects back to them (see
 `CMS_GUIDE.md`'s "Redirect on success"), so don't add caching to those
 without changing that expectation first.
 
+**Compression (2026-10-30)**: content encoding is a per-API setting in API
+Gateway (Settings, "Content encoding", with a small minimum size, then
+redeploy the stage); with it on, a client that sends
+`Accept-Encoding: gzip` gets a gzipped body. It is on for the two large
+public reads: "Get card sets by year" (a year with eight sets went from
+50,793 bytes to about 17,200) and "Get all live sets (public)" (44,991 to
+7,697, checked 2026-10-31). Any other API is uncompressed until it is
+turned on for it. It costs nothing, unlike API Gateway's stage cache,
+which was tried and turned off as too expensive for this site's traffic.
+To check an endpoint: `curl -s -D - -o /dev/null -H "Accept-Encoding: gzip"
+<url>` should show `content-encoding: gzip`.
+
 ### Get all blogs of a given type
 - **URL**: `https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
-- **Query params**: `blogType` (e.g. `1`, `3`, `5`, `99`)
-- **Called from**: `fetchBlogs()` in `scripts/blogs.js` (used by `index.html`, `tech.html`)
+- **Query params**: `blogType` (e.g. `98`, the About post; `1`, `3`, `5` were the archived Tech pages')
+- **Called from**: `fetchBlogs()` in `scripts/blogs.js` (used by `about.html`; `index.html` is static and `tech.html` is archived)
 - **Response**: JSON array of blog objects directly (`postBody`, `author`, `time`, `title`, `img`, `imgCap`) — *not* wrapped in `{Items: [...]}` the way raw DynamoDB `scan`/`query` results are, even though the Lambda now reads via a plain `QueryCommand` (see below) — it unwraps `result.Items` itself before returning. `Cache-Control: public, max-age=600` (10 min) on the success response only — added 2026-08-14, the error responses (400/500) intentionally have no caching header.
 - **Lambda**: `Lambdas/getBlogs/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Converted 2026-09-04 from PartiQL to `QueryCommand` on `blogType` (the `Blogs` table's partition key), filtered to `published = true`.
 
@@ -65,9 +81,26 @@ without changing that expectation first.
 - **URL**: `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
 - **Query params**: `year`, `blogCat`
-- **Called from**: `fetchCardSetsByYear()` in `scripts/wax.js` (used by `waxReviews.html`)
+- **Called from**: `fetchCardSetsByYear()` in `scripts/wax.js` (used by `waxReviews.html`). Each generated `/reviews/<slug>/` page also preloads this exact URL from its `<head>` (`REVIEW_PAGES.md`, "Loading speed"), so keep the URL and parameters identical between `wax.js` and `tools/generateReviewPages/generate.mjs`.
 - **Response**: JSON array directly (each item has `postBody`, `year`, `mfg`, `size`, `subsets`, `stars`, `formats`, `headerImg`, `headerImgName`, `footerImg`, `footerImgName`, `setName`, `author`, `now`). `Cache-Control: public, max-age=1800` (30 min) on the success response — the Lambda's own comment says "CloudFront cache," but no CloudFront actually sits in front of this endpoint (see the caching note above), so today this is browser-only. Bumped from an original `max-age=300` to `1800` on 2026-08-14, since a published set review essentially never changes and votes are tracked via the separate `castVoteHandler` endpoint, not this one.
 - **Lambda**: `Lambdas/getCardSetsByYear/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Queries the `blogCat-year-index` GSI, filtered to `blogStatus = "OK"`.
+
+### Get all live sets (public)
+- **URL**: `https://jlpd8ec14j.execute-api.us-east-2.amazonaws.com/prod`
+- **Method**: GET
+- **Query params**: none
+- **Called from**: `initBrowseBySet()` in `scripts/browseBySet.js` (used by `browseBySet.html`, as `BROWSE_SETS_URL`), `tools/generateReviewPages/generate.mjs` (the review-page generator every Amplify build runs: it builds the `/reviews/<slug>/` pages, `reviews/index.json` and `sitemap.xml` from it; it replaced `tools/generateSitemap` 2026-10-30) and `runReviewPagesCheck()` in `scripts/adminTools.js` (`GET_PUBLIC_CARD_SETS_URL`), and `loadWaxReviews()` in `scripts/cmsWaxPack.js` (`WAX_PACK_REVIEWS_URL`, the wax pack form's review-link dropdown).
+- **Response**: JSON array directly, one small object per live set: `{ setID, setName, blogCat, year, stars, hasChecklist, now, updatedAt, seoURLSlug, seoPageTitle, seoMetaDesc, seoTags, headerImg, headerImgName }` (`hasChecklist` is absent on a set that has never had a checklist; `updatedAt` is absent on a set not saved in the CMS since it was introduced; `now`, the publish date, and `updatedAt` feed the sitemap's `<lastmod>`; `stars` decides each year's default set and the generator refuses to run without it; the slug and SEO fields feed the generated pages; `browseBySet.html` uses only `setID`, `setName`, `blogCat`, `year`, `hasChecklist` and `seoURLSlug`). `Cache-Control: public, max-age=1800`, `Access-Control-Allow-Origin: *`. (A `?view=links` slim variant existed briefly on 2026-10-30 and was removed; public pages now read the static `reviews/index.json` instead.)
+- **`/reviews/index.json` is not an API** but a static file the Amplify build writes next to the generated pages (gitignored): `[{ setID, setName, blogCat, year, seoURLSlug, stars }]` for every set that has a page, loaded by `loadReviewLinks()` in `scripts/helper.js` to turn year and `setID` links into `/reviews/<slug>/` URLs. See `REVIEW_PAGES.md`.
+- **Lambda**: `Lambdas/getPublicCardSets/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Queries the `blogStatus-year-index` GSI for `blogStatus = "OK"` with a projection of just those fields, following `LastEvaluatedKey`. Public, no Cognito Authorizer. It exists because the CMS's "Get all live card sets" (below) is login-only and returns every review's full body; a public page can't use that, and calling "Get card sets by year" once per year per category would have meant about 50 requests, each carrying review bodies.
+
+### Get wax packs (public)
+- **URL**: `https://efh9lu4988.execute-api.us-east-2.amazonaws.com/prod`
+- **Method**: GET
+- **Query params**: none returns every pack; `?year=` (a whole number) returns one season. A non-integer `year` is a 400.
+- **Called from**: `initWaxMuseum()` in `scripts/waxMuseum.js` (`waxMuseum.html`) and `loadWaxPacks()` in `scripts/cmsWaxPack.js` (the CMS wax pack pages, fetched with `cache: "no-store"` so an edit shows at once).
+- **Response**: JSON array of `WaxPacks` items (see `DATA_MODEL.md`), sorted by year then `packKey`; the museum re-sorts for display. `Cache-Control: public, max-age=1800`, `Access-Control-Allow-Origin: *`.
+- **Lambda**: `Lambdas/getWaxPacks/`. A `Scan` (all) or a `Query` on `year`, following `LastEvaluatedKey`. Public, no auth by design, the same trust level as the other public reads.
 
 ### Cast a vote on a card set
 - **URL**: `https://lo07upgip8.execute-api.us-east-2.amazonaws.com/dev`
@@ -90,8 +123,8 @@ without changing that expectation first.
 - **Method**: GET
 - **Query params**: `q` (a player name or partial name, minimum 2 characters) **or** `audit=1` **or** `namesOnly=1` — mutually exclusive modes, see below.
 - **Called from**: `scripts/playerSearch.js` (used by `playerSearch.html`)
-- **Response** (`q` mode): `{ query, results: [{ setName, year, blogCat, cards: [{ cardNumberDisplay, playerName, notes, type, insertSetName }] }] }` — grouped by set, sorted alphabetically by `setName`. `year`/`blogCat` are `null` when no matching `Cards` item was found for that `setName` (the frontend shows the set name as plain text instead of a link in that case). `{ error }` with a 400 if `q` is missing or under 2 characters.
-- **Response** (`audit=1` mode): `{ totalDistinctSetNames, linkedCount, unlinkedSetNames }` — a data-integrity check, not part of the search feature itself; enumerates every distinct `setName` in `Checklists` and reports which have no matching `Cards` item. See `DATA_MODEL.md`'s "setName ↔ Cards.setName 1:1 assumption" note.
+- **Response** (`q` mode): `{ query, results: [{ setName, year, blogCat, setID, cards: [{ cardNumberDisplay, playerName, notes, type, insertSetName }] }] }` — grouped by set, sorted alphabetically by `setName`. `setID` comes from the same `Cards` item as `year`/`blogCat` and lets the frontend link to that exact set (it is absent when `year`/`blogCat` are `null`). `year`/`blogCat` are `null` when no matching `Cards` item was found for that `setName` (the frontend shows the set name as plain text instead of a link in that case). `{ error }` with a 400 if `q` is missing or under 2 characters.
+- **Response** (`audit=1` mode): `{ totalDistinctSetNames, linkedCount, unlinkedSetNames, orphans }` — a data-integrity check, not part of the search feature itself; enumerates every `setName` in `Checklists` and reports which have no matching `Cards` item (a staged review counts as a match). `orphans` is the same unlinked sets broken down to individual checklists: `[{ setName, insertSetName, type, count }]`, one per group (`insertSetName` is `""` for a set's main checklist, `type` is `main`, `insertSet` or `extendedSet`), sorted by set then group. The admin page lists and deletes from it; the first three fields are unchanged. The admin page requests it with `cache: "reload"`, since the response carries a 30-minute cache header. See `DATA_MODEL.md`'s "setName ↔ Cards.setName 1:1 assumption" note.
 - **Response** (`namesOnly=1` mode): `{ playerNames: [...] }` — every distinct `playerName` in `Checklists`, deduped and sorted alphabetically. Added 2026-09-14 to back the type-ahead dropdown on `playerSearch.html`: the frontend fetches this once (cached client-side, see `FRONTEND.md`'s "Player search" section) and filters it locally per keystroke, rather than hitting `q` mode's expensive `Scan` on every keystroke.
 - **Lambda**: `Lambdas/searchPlayerName/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Full paginated `Scan` of `Checklists` (no index on `playerName`), matched case-insensitively in code, plus a per-matched-set `Query` against `Cards`. Public, no Cognito Authorizer — same trust level as "Get checklist by set name" above; `Access-Control-Allow-Origin: "*"`.
 
@@ -99,7 +132,7 @@ without changing that expectation first.
 - **URL**: `https://kckdcdjqch.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
 - **Query params**: none in normal use. `date=YYYY-MM-DD` reads that day instead of today — a testing aid.
-- **Called from**: `refreshTickerLeague()` in `scripts/ticker.js` (the NHL section of the scores ticker under the masthead on Wax Reviews, Player Search, Lockout and The Junk Wax Years — see `FRONTEND.md`)
+- **Called from**: `refreshTickerLeague()` in `scripts/ticker.js` (the NHL section of the scores ticker under the masthead on Wax Reviews, Player Search, Lockout, The Junk Wax Years and Timeline — see `FRONTEND.md`)
 - **Response**: `{ date, games, previous, upcoming }` — today's games ("today" = the calendar date in Eastern time, not the NHL's own `/score/now`), plus the previous game day's finished and still-live games in `previous` until today's first game starts (`[]` after that). With no games today, `upcoming` is `{ kind: "season" | "next", startTimeUTC, games }` — the next game day, or the regular season's opener while it's still ahead — with every game that day; `null` when neither exists (summer) or the lookup fails. Each game is `{ id, state, startTimeUTC, period, periodType, clock, inIntermission, lastPeriodType, away: { abbrev, score, logo }, home: {...} }` — a shape of our own, not the NHL's raw one. `Cache-Control: public, max-age=30` while any game (today's or the previous day's) is live, `max-age=300` otherwise — never past midnight Eastern. On any upstream failure, `502 { error }` with `max-age=0`.
 - **Lambda**: `Lambdas/getNhlScores/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). The only endpoint on the site that reads from a third-party API rather than DynamoDB: it proxies the NHL's undocumented `api-web.nhle.com`, which sends no CORS headers — see `NHL_API.md`. Public, no Cognito Authorizer; `Access-Control-Allow-Origin: "*"`. Deployed to `dev`, like the rest of this section.
 
@@ -176,7 +209,7 @@ without changing that expectation first.
 - **Method**: POST
 - **Body**: `{ blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, postBody, mfg, headerImgName, footerImgName, blogCat, printRun }` — `printRun` is optional and only stored when non-blank.
 - **Called from**: `createCardSet()` in `scripts/cmsCardSet.js` (used by `cms/createCardSet.html`)
-- **Response**: `{ message }` on success; `{ error, details }` on failure (frontend reads `response.ok` to distinguish).
+- **Response**: `{ message }` on success; `{ error, details }` on failure (frontend reads `response.ok` to distinguish). Since 2026-10-30 a **400** `{ error }` comes back when `seoURLSlug` is missing or not lowercase letters, numbers and single hyphens, or (for `blogStatus` "OK") when another live set already uses the slug ("... is already used by the live set ..."); a **500** `{ error: "Could not check the SEO Friendly URL is unique" }` when that duplicate check itself fails (the Lambda's role needs `dynamodb:Query` on the `blogStatus-year-index` GSI). A live save also starts a site build through the `Cards` stream (`REVIEW_PAGES.md`).
 - **Lambda**: `Lambdas/createCardPost/` (source in this repo — note the AWS function name doesn't match the frontend's `createCardSet()` caller name; its own header comment calls itself `createCardSet Lambda Function`, see `LAMBDA_FUNCTIONS.md`). Generates `setID` via `Math.random().toString(36)` (not a UUID). Hardcodes the S3 image URL prefix (`headerImg`/`footerImg`) server-side — worth knowing if image hosting ever moves off direct S3 URLs (a CloudFront-fronted image bucket was explored and shelved around 2026-08-15).
 
 ### Update card set
@@ -184,6 +217,8 @@ without changing that expectation first.
 - **Method**: PUT
 - **Body**: `{ blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, postBody, headerImgName, footerImgName, mfg, printRun }` — `printRun` is three-way: a non-blank value is set, a blank one removes the attribute, and a body with no `printRun` key leaves it untouched (so an older cached CMS script can't wipe it).
 - **Called from**: `updateCardSet()` in `scripts/cmsCardSet.js` (used by `cms/setEdit.html`)
+- **Side effect**: the Lambda also sets `updatedAt` to the current time on every save (the request body doesn't carry it); the sitemap generator publishes it as the review's `<lastmod>`. Every save also changes `updatedAt`, so a save to a live set starts a site build via the `Cards` stream and `cardsRebuildTrigger` (`REVIEW_PAGES.md`).
+- **Validation (since 2026-10-30)**: **400** `{ error }` when `seoURLSlug` is missing or malformed, or (for `blogStatus` "OK") already used by another live set; the Lambda's role needs `dynamodb:Query` on the `blogStatus-year-index` GSI for that check, and without it every live save fails with the catch-all "Failed to update card set" 500.
 - **Response**: accepted in several shapes — a plain string, `{ message }`, or `{ body }` (itself either a JSON string to parse or plain text). See `updateCardSet()` in `scripts/cmsCardSet.js` for the exact unwrapping logic.
 - **Lambda**: `Lambdas/updateCardSet/` (source in this repo — see `LAMBDA_FUNCTIONS.md` for a real incident this Lambda caused on 2026-08-15: an unrelated CloudFront cache-invalidation side effect, sharing a try/catch with the actual DynamoDB update, started throwing 500s on every save after its target distribution was deleted — fixed by removing that side effect entirely).
 
@@ -200,7 +235,7 @@ without changing that expectation first.
 - **Method**: GET
 - **Called from**: `fetchAllCardSets()` in `scripts/cmsCardSet.js` (used by `cms/pickCardSet.html`), and `loadCardSetNameIndex()` in `scripts/checklistUpload.js` (the Set Name type-ahead on `cms/uploadChecklist.html`'s Delete Checklist modal, which keeps only items with `hasChecklist` set).
 - **Response**: tolerant of several shapes — a raw array, `{ body: "<json array>" }`, `{ body: [...] }`, or `{ Items: [...] }`.
-- **Lambda**: `Lambdas/getCardSets/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Queries the `blogStatus-year-index` GSI, `blogStatus = "OK"`, no projection (full items).
+- **Lambda**: `Lambdas/getCardSets/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Queries the `blogStatus-year-index` GSI, `blogStatus = "OK"`, projecting only `setName, setID, blogCat, hasChecklist, year` (it returned full items, including every review body, until the picker was slow enough to notice).
 
 ### Get all staged (draft) card sets
 - **URL**: `https://ecy21wzgkl.execute-api.us-east-2.amazonaws.com/dev`
@@ -209,6 +244,14 @@ without changing that expectation first.
 - **Response**: same tolerant unwrapping as above; items include `setID`, `setName`, `blogCat`, `year`, `hasChecklist`. `hasChecklist` was added to the projection (2026-09-30) so the type-ahead can offer only staged sets that have a checklist; it is absent on a set that has never had one, and `pickCardSet.html` ignores it. **Fixed 2026-08-14**: the `getStagedCardSets` Lambda's `ProjectionExpression` originally only requested `setName, setID` from the `blogStatus-year-index` GSI, so `blogCat`/`year` came back `undefined` on every item — this silently broke both category grouping (everything fell back to "Other") and sort order (`year` comparisons were `NaN`). Fixed by expanding the projection to `setName, setID, blogCat, #yr` with `year` aliased via `ExpressionAttributeNames` (`year` is a DynamoDB reserved word, can't appear unescaped in a `ProjectionExpression`). `fetchAllStagedCardSets()` in `scripts/cmsCardSet.js` also keeps a defensive fallback — a staged set with no `blogCat` but a `mfg` value is treated as `"reg"` — kept intentionally in case a record is ever created directly in DynamoDB without going through the CMS form.
 - **Lambda**: `Lambdas/getStagedCardSets/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Same GSI as `Lambdas/getCardSets/`, filtered to `blogStatus = "staged"`.
 
+### Generate an SEO meta description (Claude)
+- **URL**: `https://1el471sn04.execute-api.us-east-2.amazonaws.com/prod`
+- **Method**: POST (plus OPTIONS for CORS), Cognito Authorizer, bearer token in `Authorization`
+- **Body**: `{ setName, reviewText, mfg?, size?, stars?, subsets? }` — `setName` up to 200 characters, `reviewText` up to 20,000
+- **Called from**: `requestSeoDescription()` in `scripts/cmsFormUI.js`, via `generateSeoDescription()` (the "Generate with Claude" button on `cms/createCardSet.html` and `cms/setEdit.html`)
+- **Response**: `{ description }` (at most 160 characters) on success; `{ error }` with 400 for bad input or 502 when Bedrock fails or declines
+- **Lambda**: `Lambdas/generateSeoDescription/` (zip deploy, needs `@anthropic-ai/bedrock-sdk`). Calls Claude Haiku 4.5 on Amazon Bedrock. Full explanation in `SEO_DESCRIPTION_GENERATOR.md`.
+
 ### Get a single card set by ID
 - **URL**: `https://733bwunxq6.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: GET
@@ -216,6 +259,33 @@ without changing that expectation first.
 - **Called from**: `fetchCardSetByID()` in `scripts/cmsCardSet.js` (used by `cms/setEdit.html`)
 - **Response**: array of one item (again tolerant of `{items:[...]}` / raw array / `{body:...}` / `{Items:[...]}`), containing `blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, postBody, year, mfg, size, subsets, stars, formats, setName, headerImgName, footerImgName`.
 - **Lambda**: `Lambdas/getCardSetByID/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Converted 2026-09-04 from a PartiQL `SELECT * FROM Cards WHERE setID=?` (a non-key `WHERE` clause, so it forced a full-table Scan under the hood) to a `QueryCommand` against the `setID-index` GSI — a real efficiency win, not just a style change. See `DATA_MODEL.md`'s `Cards` GSI table.
+
+## CMS — wax packs (The Wax Museum)
+
+Both back the CMS wax pack pages (`newWaxPack.html`, `waxPackEdit.html`,
+via `scripts/cmsWaxPack.js`). Both send the Cognito ID token in an
+`Authorization` header (`getAuthToken()`), and each Lambda's CORS
+allows only `https://www.junkwaxhockey.com`. **Whether API Gateway
+enforces the token (a Cognito Authorizer on the method) has not been
+verified** the way the older CMS endpoints were: a no-token probe was
+blocked in the 2026-11-05 docs session. Check it with an unauthenticated
+request before relying on it. Reads use the public "Get wax packs" above.
+
+### Save a wax pack (create or edit)
+- **URL**: `https://b3qn1kny99.execute-api.us-east-2.amazonaws.com/prod`
+- **Method**: POST
+- **Body**: `{ year, name, manufacturer, packaging, type, numCards, price?, frontImg?, backImg?, notesFront?, notesBack?, reviewSlug?, packKey? }`. With no `packKey` it creates (the key is slugified from `name`); with a `packKey` it edits that item.
+- **Called from**: `submitWaxPack()` in `scripts/cmsWaxPack.js`.
+- **Response**: 200 `{ message, year, packKey }`; 400 naming the first invalid field; 409 if a create's key already exists for that year; 404 if an edit's item doesn't exist (both through a `ConditionExpression`).
+- **Lambda**: `Lambdas/saveWaxPack/` (`PutCommand` on `WaxPacks`).
+
+### Delete a wax pack
+- **URL**: `https://y4hs1e712l.execute-api.us-east-2.amazonaws.com/prod`
+- **Method**: DELETE
+- **Body**: `{ year, packKey }`
+- **Called from**: `deleteWaxPack()` in `scripts/cmsWaxPack.js` (after a `cmsConfirm()`).
+- **Response**: 200 `{ message }`; 400 for a missing key; 404 if no such pack.
+- **Lambda**: `Lambdas/deleteWaxPack/` (`DeleteCommand` with `attribute_exists(packKey)`).
 
 ## CMS — checklist upload
 
@@ -237,7 +307,7 @@ doesn't.
 ### Save a reviewed checklist
 - **URL**: `https://w46hwbexed.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: POST
-- **Body**: `{ setName, insertSetName, cards: [{ cardNumber, playerName, notes }] }` — the parsed result, after any hand-editing in the review table (add/delete rows, fix a name, etc). `insertSetName` is optional/empty for a main-set save.
+- **Body**: `{ setName, insertSetName, extended, cards: [{ cardNumber, playerName, notes }] }` — the parsed result, after any hand-editing in the review table (add/delete rows, fix a name, etc). `insertSetName` is optional/empty for a main-set save. `extended` is a boolean, honoured only when `insertSetName` is non-blank (and only when strictly `true`): it saves the group as an Extended Set (`type: "extendedSet"`) instead of an insert set.
 - **Called from**: `saveChecklist()` in `scripts/checklistUpload.js`
 - **Response**: `{ message }` on success (e.g. `"Replaced 0 existing card(s) with 264 new card(s) for \"...\" (main set)."`) — the message can also carry a `Warning:` suffix if the (non-fatal) Cards-table linking step failed or found no matching set, so the checklist itself still saved but won't show a checklist link on `waxReviews.html` yet. `{ error }` on a validation failure (400 — missing fields, or two cards sharing the same card number within this group; see `DATA_MODEL.md`'s "Sort-key collision guard") or a partial DynamoDB failure after retries (502).
 - **Lambda**: `Lambdas/saveChecklist/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Full-replace semantics, scoped to the exact group (main set, or one specific insert set) being saved — deletes every existing item in that group before writing the new set. Also flips `hasChecklist: true` on the matching `Cards` item — see `DATA_MODEL.md`.
@@ -246,7 +316,7 @@ doesn't.
 - **URL**: same as "Save a reviewed checklist" above — `https://w46hwbexed.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: POST
 - **Body**: `{ setName, insertSetName, cards: [], confirmDelete: true }` — `insertSetName` empty means the main set. `confirmDelete` must be strictly `true`; it's the only way past the endpoint's non-empty-`cards` guard, so an accidental empty submit still 400s rather than deleting anything.
-- **Called from**: `deleteChecklistGroup()` in `scripts/checklistUpload.js` (the Delete Checklist modal on `cms/uploadChecklist.html`)
+- **Called from**: `deleteChecklistGroup()` in `scripts/checklistUpload.js` (the Delete Checklist modal on `cms/uploadChecklist.html`), and `deleteChecklistGroupRequest()` in `scripts/adminTools.js` (the orphaned-checklist Delete on `cms/admin.html`, one call per ticked checklist, with the same bearer token)
 - **Response**: `{ message }` on success, naming the group (e.g. `Deleted the "Ice Gems" checklist from the 2023-24 Upper Deck Tim Hortons set.`), plus a note when the set's last group was removed and its `hasChecklist` link cleared. `{ error }` on **404** (no rows for that group — nothing was deleted), **400** (missing `setName`), or **502** (rows still unprocessed after retries, leaving the group partially removed).
 - **Lambda**: same `Lambdas/saveChecklist/`. Reuses that function rather than adding a `deleteChecklist` endpoint: it already holds every needed permission, and a new endpoint would mean standing up an API Gateway REST API, IAM policy, CORS and Cognito Authorizer by hand. Deleting the set's **last** group also clears `hasChecklist` on the matching `Cards` item; deleting one group of several leaves it set.
 - **Listing what's deletable**: the CMS enumerates a set's groups with the **public** "Get a checklist by set name" GET below — no auth, no new endpoint — grouping the returned items by `insertSetName` client-side.
@@ -270,7 +340,7 @@ doesn't.
 
 ## Autobus Messaging Platform (SMS)
 
-All three of these send an `Authorization` header carrying the raw
+All four of these send an `Authorization` header carrying the raw
 Cognito ID token from `getAuthToken()` (`scripts/auth.js`) — see
 `AUTH.md`. These are also the only endpoints on the whole site that do
 so.
@@ -280,7 +350,7 @@ so.
 - **Method**: POST
 - **Body**: `{ message, mode }` — `mode` is `"test"` or `"live"`. Per Confluence's "AMP SMS - Platform Core" page (the pre-repo doc for this Lambda), if `mode` is missing or anything other than `"live"` the Lambda defaults to `"test"` — a deliberate safeguard against an accidental live send, not just the frontend's Test Mode checkbox default.
 - **Called from**: `sendBroadcast()` in `scripts/adminSMS.js` (used by `cms/smsAdmin.html`)
-- **Response**: `{ results: [{ phone, firstName, status: "SUCCESS"|"FAILED", error }], mode }`
+- **Response**: `{ results: [{ phone, firstName, status: "SUCCESS"|"FAILED", error }], mode }`. `SUCCESS` means Twilio accepted the request, not that the text was delivered (delivery status lives in Twilio's own logs). When Twilio refuses a number because the recipient opted out (error 21610), that row is `FAILED` with `error` = `"Opted out with Twilio (21610) - marked unsubscribed"`, and the Lambda also sets that number's `status` to `unsubscribed` in the table the send used, so the next broadcast skips it (see `LAMBDA_FUNCTIONS.md`).
 - **Lambda**: `Lambdas/sendAlertHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Per the same Confluence page: `mode: "live"` scans `Subscribers`, `mode: "test"` scans `SubscribersTest`, and either way only records where `status = "subscribed"` are included. Sends are sequential (one SMS at a time, not parallel) with each send wrapped in its own try/catch, so one recipient's failure is recorded as `FAILED` in the `results` array without aborting the rest of the broadcast. The Lambda's configured timeout is 1 minute 3 seconds specifically to allow for Twilio's per-message send time across the whole batch.
 
 ### Bulk import subscribers
@@ -288,7 +358,7 @@ so.
 - **Method**: POST
 - **Body**: `{ csvContent: "<raw CSV text>" }` — the raw club sign-up CSV export, sent as-is (no client-side parsing or pre-processing, and no base64 encoding since CSV is plain text). The Lambda extracts the `Name`/`Your mobile number` columns itself — see `LAMBDA_FUNCTIONS.md`.
 - **Called from**: `uploadBtn` click handler in `scripts/adminSMS.js`
-- **Response**: `{ deletedCount, importedCount, skippedRows }` on success (200) — `skippedRows` is `[{ row, reason }]` for any CSV row skipped (missing name, unnormalizable phone number, or a duplicate phone number within the file), empty array if none. A structurally bad file (missing required headers, no data rows) returns 400 with `{ message, skippedRows }` and imports nothing. **Destructive**: a successful call deletes *all* existing subscribers before importing the new list (confirmed with the user via `cmsConfirm()` first — see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section) — but the whole CSV is parsed and validated *before* anything is deleted, so a bad file never leaves the table empty.
+- **Response**: `{ deletedCount, importedCount, skippedRows }` on success (200) — `skippedRows` is `[{ row, reason }]` for any CSV row skipped (missing name, unnormalizable phone number, or a duplicate phone number within the file), empty array if none. A structurally bad file (missing required headers, no data rows) returns 400 with `{ message, skippedRows }` and imports nothing. **Destructive**: a successful call deletes *all* existing subscribers before importing the new list (confirmed with the user via `cmsConfirm()` first — see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section) — but the whole CSV is parsed and validated *before* anything is deleted, so a bad file never leaves the table empty. Every imported row is written as `status: "subscribed"`, and the deleted records include anyone added by hand and anyone who had unsubscribed. The import does not touch Twilio, so a number that had texted STOP stays blocked by Twilio (a later broadcast gets error 21610 for it, and the broadcast Lambda re-marks it `unsubscribed`). The list is meant to be uploaded once per season, so in practice the import is the season's opt-in event: see `AMP_SMS_PLATFORM.md`'s "Subscriber lifecycle".
 - **Lambda**: `Lambdas/bulkSubscriberUpload/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Which table it truncates/imports into is set via `process.env.TABLE_NAME`, not hardcoded to `Subscribers`/`SubscribersTest` in the source — check the Lambda's environment config in the Console to confirm which one it currently targets.
 
 ### Add a single subscriber
@@ -299,10 +369,18 @@ so.
 - **Response**: 2xx on success; `{ error }` on failure (e.g. duplicate phone number, per the in-app copy). Per the same Confluence page's response-codes table, the exact shapes are: `200` → `{ ok: true, message, phoneNumber, firstName }`; `400` → `{ ok: false, error }`, either for a missing/invalid phone number or for a missing name (`error: "A name is required"`); `409` → `{ ok: false, error: "This phone number is already subscribed" }` on duplicate; `500` → `{ ok: false, error: "Internal server error" }` on unexpected failure.
 - **Lambda**: `Lambdas/subscribeHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). `ConditionExpression: attribute_not_exists(phoneNumber)` (409 on duplicate); sets `source: "web"` on the new record. Per Confluence, the full DynamoDB item written is `{ phoneNumber, firstName, status: "subscribed", source: "web", optInTimestamp }` — `firstName` here stores the full name as entered (the field is named `firstName` only for schema consistency with the bulk-import path, per that page's design-decisions note).
 
+### List all subscribers
+- **URL**: `https://05b6ofo7i1.execute-api.us-east-2.amazonaws.com/prod/subscribers/list` (same API as the two subscriber endpoints above; `prod` stage)
+- **Method**: GET
+- **Called from**: `openListSubscribersModal()` in `scripts/adminSMS.js` (the "...list all subscribers" link on `cms/smsAdmin.html`); fetched fresh on every open
+- **Response**: `{ ok: true, total, subscribers: [{ firstName, phoneNumber, status }] }`, sorted case-insensitively by name; `status` is `"subscribed"` or `"unsubscribed"`. `500 { ok: false, error: "Internal server error" }` on failure. No caching header.
+- **Auth**: Cognito Authorizer (`401` without a token). It returns phone numbers, so the authorizer is not optional.
+- **Lambda**: `Lambdas/listSubscribers/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Read-only `Scan` of the live `Subscribers` table only (never `SubscribersTest`), following `LastEvaluatedKey`. The `status` shown is our own record of who we ask Twilio to text, not Twilio's opt-out list.
+
 ### Inbound SMS webhook (not called from this frontend)
 - **URL**: not confirmed — see the note below.
 - **Method**: POST (Twilio's webhook convention)
 - **Called from**: nothing in this repo. This is the Twilio-to-us direction: the URL is configured directly in the Twilio Console as the phone number's inbound-message webhook, and Twilio calls it when a subscriber texts the number back. Discovered 2026-08-15 via the full Lambda inventory sync, not via the usual "grep frontend `fetch()` calls" method this whole document was built with — which is also why the URL isn't confirmed here; this codebase's AWS access covers Lambda source but not API Gateway config.
 - **Body**: Twilio's standard inbound-SMS webhook form-encoded payload (`From`, `Body`, etc.), validated via `X-Twilio-Signature`.
 - **Response**: TwiML XML, not JSON.
-- **Lambda**: `Lambdas/inboundSMSHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Handles `STOP`/`START`/`HELP` and related keywords for SMS opt-out/opt-in compliance.
+- **Lambda**: `Lambdas/inboundSMSHandler/` (source in this repo — see `LAMBDA_FUNCTIONS.md`). Handles `STOP`/`START`/`HELP` and related keywords for SMS opt-out/opt-in compliance (the opt-out words are Twilio's full default list, including `REVOKE` and `OPTOUT`). It only ever reads and writes the live **`Subscribers`** table: a STOP or START text never changes `SubscribersTest`.

@@ -1,18 +1,22 @@
 # Lambda Functions
 
-**28 of the 32 Lambda functions behind this site's API Gateway
-endpoints have their source checked into this repo**, under
-`Lambdas/` (as of 2026-08-15, one directory per function, named
-exactly after its AWS Lambda function name). `Lambdas/` holds 29
-directories, not 28: `amplifyBuildNotifier` (added 2026-09-29) sits
-behind EventBridge rather than API Gateway and isn't part of that
-count — it's the only function here no frontend code ever calls.
+**Every live Lambda function has its source checked into this repo**,
+under `Lambdas/`, one directory per function, named exactly after its
+AWS Lambda function name. As of 2026-11-05 `Lambdas/` holds 36
+directories: 34 sit behind API Gateway, and two don't —
+`amplifyBuildNotifier` (added 2026-09-29) runs off EventBridge, and
+`cardsRebuildTrigger` (added 2026-10-30) off a DynamoDB Stream; they are
+the only functions here no frontend code ever calls. The newest three,
+`getWaxPacks`, `saveWaxPack` and `deleteWaxPack` (2026-11-01, The Wax
+Museum), are covered in "Wax Museum Lambdas" below. (The history: on
+2026-08-15, 30 of the then-34 API Gateway functions were in the repo
+and the other 4 were found dead and removed.)
 Most were pulled directly
 from the live Console via `aws lambda get-function` using the
 `amplify-readonly-cli` credential (see `CLAUDE.md` — its actual IAM
 scope turned out to be broader than its name suggests: it can read
 full Lambda source, though not API Gateway config, and (confirmed
-2026-08-24) not DynamoDB or IAM policy introspection either). Eleven
+2026-08-24) not DynamoDB or IAM policy introspection either). Thirteen
 were already in the repo, hand-built here rather than pulled:
 `Lambdas/sendAlertHandler/`, `Lambdas/castVoteHandler/`,
 `Lambdas/deleteBlogHandler/`, `Lambdas/deleteCardSetHandler/`, and —
@@ -21,20 +25,23 @@ added later, for the checklist-upload feature and its front-end display —
 `Lambdas/getChecklistBySetName/`, and — for the player-search feature —
 `Lambdas/searchPlayerName/`, and — for the scores ticker and its game
 modal — `Lambdas/getNhlScores/`, `Lambdas/getNhlGameDetails/` and
-`Lambdas/getPwhlScores/`. The remaining 4 of the 32
+`Lambdas/getPwhlScores/`, and — for the Browse By Set page —
+`Lambdas/getPublicCardSets/`, and — for the SMS admin's subscriber
+list — `Lambdas/listSubscribers/`. The remaining 4 of the 34
 (`getCardIntro`, `getBlogIntro`, `fetchCardSetPreview`,
 `invalidateCache`) were pulled in the same pass, confirmed dead, and
 removed again the same day — see "Orphaned/dead Lambdas" below.
 
 Deployment is still entirely manual for every one of them, but the
-mechanics differ by function: the 27 with no real dependencies
+mechanics differ by function: the 33 with no real dependencies
 (`dependencies: {}` in `package.json`) just need the updated
 `index.mjs` pasted into the Lambda Console's inline code editor and
-Deploy clicked — no zip needed. Two need a full `npm install` + zip
+Deploy clicked — no zip needed. Three need a full `npm install` + zip
 (code + `node_modules`) + "Update from a .zip file" upload instead:
-`sendAlertHandler` (has `twilio`) and `parseChecklistPdf` (has
+`sendAlertHandler` (has `twilio`), `parseChecklistPdf` (has
 `pdf-parse`, pinned to its v1 major — see that section below for why)
-— see their sections for specifics. Per the header comment most files
+and `generateSeoDescription` (has `@anthropic-ai/bedrock-sdk`; see
+`SEO_DESCRIPTION_GENERATOR.md`) — see their sections for specifics. Per the header comment most files
 carry: **never edit any of them directly in the Console without also
 updating this repo** — this repo is now the source of truth, and a
 Console-only edit made after 2026-08-15 would silently drift out of
@@ -45,11 +52,8 @@ prose — either because they're hand-built/heavily modified in this
 session, or because pulling in their source revealed something
 notable — (2) a compact table of the remaining "plain CRUD" functions,
 and (3) the four dead ones, removed again after being briefly checked
-in. There's also a separate, older `Lambda Functions/` prototype
-directory (note the space in the name) referenced further down — it no
-longer exists in this repo (deleted 2026-08-06, unrelated to this
-session's work) but is still referenced by name in a few places below
-since that history predates this doc being kept current.
+in. An older prototype directory, `Lambda Functions/` (with a space),
+was deleted from the repo on 2026-08-06 and is no longer documented.
 
 ## `Lambdas/amplifyBuildNotifier/` — hand-built in this repo
 
@@ -194,7 +198,8 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
     "mode": "live"
   }
   ```
-  `error` is always present in each result entry — an empty string on `SUCCESS`, the caught Twilio error's `message` (or `"Unknown error"` as a fallback) on `FAILED`. An empty subscriber list (zero `status = "subscribed"` items in the target table) still returns `200` with `{ results: [], mode }`, not an error.
+  `error` is always present in each result entry — an empty string on `SUCCESS`, the caught Twilio error's `message` (or `"Unknown error"` as a fallback) on `FAILED`, except for Twilio error 21610, whose `error` text is fixed (next bullet). An empty subscriber list (zero `status = "subscribed"` items in the target table) still returns `200` with `{ results: [], mode }`, not an error.
+- **A Twilio opt-out refusal marks the subscriber `unsubscribed` (added 2026-10-27)**: Twilio, not our table, is the authority on who can be texted — it keeps its own opt-out list per sender number and checks it at send time, and it never learns about our `Subscribers` table. So the two can drift (for example a STOP-type word our inbound handler didn't recognise, or a record set back to `subscribed` by hand). When Twilio refuses a send with error **21610** ("attempt to send to unsubscribed recipient": the person replied STOP or another opt-out word, or the number was reassigned), the per-recipient `catch` calls `markUnsubscribed()`: an `UpdateItem` on the table **that send used** (`Subscribers` live, `SubscribersTest` test) setting `status = "unsubscribed"`, `unsubTimestamp` and `source = "twilio"` (so it can be told apart from `web` and `mobile`), guarded by `attribute_exists(phoneNumber) AND #s = :sub` so it never creates a record or overwrites a status that changed since the scan. The result row stays `FAILED` with `error` = `"Opted out with Twilio (21610) - marked unsubscribed"` (or `"... could not mark unsubscribed"` if the update failed). The marking is best effort: a failure (for example the role lacking `dynamodb:UpdateItem`) never stops the broadcast, and the log line carries only the error name, never a phone number. Because the record is now `unsubscribed`, the next broadcast no longer tries it. Other failures (an invalid number, a network error) never mark anyone. **Requires** `dynamodb:UpdateItem` on both tables on the Lambda's role (`sendAlertHandler-role-bjqsow9p`) in addition to `Scan`. Verified with a live test on 2026-10-27: the first send was refused and the number marked, the second send made no attempt at it, a record hand-reset to `subscribed` was refused and marked again (Twilio still blocked it), and texting START restored delivery. The deploy is the zip route (the `twilio` dependency).
 - **Related**: bulk subscriber import (`Lambdas/bulkSubscriberUpload/`) and single-subscriber add (`Lambdas/subscribeHandler/`) are separate Lambdas — see their own sections below. Inbound SMS replies (STOP/START/HELP) are handled by a completely different, previously-undocumented Lambda — see `Lambdas/inboundSMSHandler/` below.
 
 ## `Lambdas/castVoteHandler/` — hand-built in this repo
@@ -431,7 +436,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   the Lambda Node.js runtime.
 - **What it does**: backs `cms/uploadChecklist.html`'s save step, after
   the parsed result has been reviewed/corrected in the browser. Takes
-  `{ setName, insertSetName, cards }` and writes it to the `Checklists`
+  `{ setName, insertSetName, extended, cards }` and writes it to the `Checklists`
   table (see `DATA_MODEL.md`) — but as a **full replace, scoped to the
   exact group** (main set, or this one specific insert set), not a
   merge and not the whole `setName` partition: it first `Query`s
@@ -448,7 +453,12 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   (from throttling) are retried a few times with backoff on both the
   delete and write passes. Each written item also gets `type`,
   `insertSetName`, `cardNumberDisplay`, and `sortIndex` — see
-  `DATA_MODEL.md` for what each is for.
+  `DATA_MODEL.md` for what each is for. `type` is `"main"` with no name,
+  otherwise `"insertSet"`, or `"extendedSet"` when the body has
+  `extended: true` (an Extended Set: a mail-away or box set that belongs
+  with the main set). Both kinds use the same `INSERT#<name>#` prefix, so
+  a group is identified by its name alone and re-saving an insert group
+  as extended replaces its rows in place.
 - **`hasChecklist` linking (non-critical, but surfaced)**: after a
   successful save, it `Query`s the `Cards` table by the same `setName`
   (Cards' own partition key) and sets `hasChecklist: true` on the
@@ -581,8 +591,14 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   player appears in across the whole `Checklists` table, grouped by
   `setName`, each with a working link back to that set's review (via a
   `Cards` lookup — see below).
-- **Cards within a set are ordered main-before-insert, then by
-  `sortIndex`** — the same field/convention `getChecklistBySetName`'s
+- **Each result carries the review's `setID`.** The per-set `Cards`
+  query that supplies `year` and `blogCat` also projects `setID`, and it
+  is copied into the result, so `playerSearch.js` can link to that exact
+  set instead of the year's top-rated one (see `FRONTEND.md`'s "Linking
+  to one specific set"). A set with no matching `Cards` item has no
+  `year`, `blogCat` or `setID`, and is shown as "(set not reviewed)".
+- **Cards within a set are ordered main, then extended set, then insert
+  sets, then by `sortIndex`** — the same field/convention `getChecklistBySetName`'s
   items carry (see `DATA_MODEL.md`'s Checklists table), not raw `Scan`
   order and not a sort on `cardNumberDisplay` itself, which is a display
   string ("T-20", "NNO") that doesn't sort numerically. An earlier
@@ -622,7 +638,19 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   feature itself — reuses the same full-`Scan` machinery to enumerate
   every distinct `setName` in `Checklists` and report which ones have no
   matching `Cards` item at all (`{ totalDistinctSetNames, linkedCount,
-  unlinkedSetNames }`). Added 2026-08-24 specifically to verify the
+  unlinkedSetNames, orphans }`). `scanAllChecklistGroups()` does the
+  scan (projecting `setName`, `insertSetName` and `type`) and returns,
+  per set, each checklist group with its type and card count; a legacy
+  item with no `type` or `insertSetName` is classed `main`, or
+  `insertSet` when it has an insert name. `orphans` is the flat list of
+  those groups for just the unlinked sets: `{ setName, insertSetName,
+  type, count }` per **checklist**, sorted by set name then group name
+  with the main set (`insertSetName` of `""`) first. It exists so the
+  admin page can list, tick and delete individual orphaned checklists
+  (see `CMS_GUIDE.md`); the three older fields are unchanged, so
+  `playerSearch.html`'s own audit entry point is unaffected. One Query
+  per distinct `setName` against `Cards` decides "linked", since a
+  checklist's `setName` is its only link to a review. Added 2026-08-24 specifically to verify the
   assumed 1:1 `Checklists`↔`Cards` relationship holds across every
   already-uploaded checklist, not just whichever ones a given search
   happens to touch — see `DATA_MODEL.md` for what it found and how the
@@ -649,6 +677,52 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   `FRONTEND.md`'s "Player search" section for the frontend half of this
   (the caching, and the relevance ranking applied to the filtered
   results).
+
+## `Lambdas/getPublicCardSets/` — hand-built in this repo
+
+- **File**: `Lambdas/getPublicCardSets/index.mjs`. No real dependency —
+  inline-paste deployable, not zipped.
+- **Dependencies** (`package.json`): none listed — only uses
+  `@aws-sdk/client-dynamodb`/`@aws-sdk/lib-dynamodb`, which ship with
+  the Lambda Node.js runtime.
+- **What it does**: backs `browseBySet.html`, the review-page generator
+  (`tools/generateReviewPages`, run by every Amplify build) and the admin
+  Review Pages Check with a public list of every live card set:
+  `setID`, `setName`, `blogCat`, `year` and `hasChecklist`, plus `now`
+  (publish date) and `updatedAt` (last CMS save) for the sitemap's
+  `<lastmod>`, and, since 2026-10-30, `stars` (decides a year's default
+  set; the generator refuses to run without it), `seoURLSlug` (the page's
+  address), `seoPageTitle`, `seoMetaDesc`, `seoTags`, `headerImg` and
+  `headerImgName` (the generated page's head). Nothing else. A
+  `?view=links` slim variant was added and removed the same day (public
+  pages read the build's static `reviews/index.json` instead).
+- **Why a new Lambda**: the CMS's `getCardSets` returns the same sets
+  but as full items (including each review's `postBody`) and sits
+  behind the Cognito Authorizer. A public page needs neither the bodies
+  nor the login, and the alternative — `getCardSetsByYear` once per
+  year per category — would have been about 50 requests per page load,
+  each returning review bodies from the `Cards` table (which has had
+  throughput-cap incidents before).
+- **Query**: `blogStatus-year-index`, `blogStatus = "OK"`, with a
+  `ProjectionExpression` of `setID, setName, blogCat, #yr, stars,
+  hasChecklist, #now, updatedAt, seoURLSlug, seoPageTitle, seoMetaDesc,
+  seoTags, headerImg, headerImgName` (`year` is a DynamoDB reserved word, hence the
+  alias, and `now` is aliased too to be safe). It loops on
+  `LastEvaluatedKey` so the list can't be silently truncated at the 1 MB
+  page limit as the number of sets grows; an unpaginated read hitting
+  that limit is exactly the failure mode `listBlogsForUpdate` is
+  theoretically exposed to.
+- **Response**: JSON array, `Cache-Control: public, max-age=1800`,
+  `Access-Control-Allow-Origin: *`. A failure returns a 500 with a
+  generic message (details stay in the logs).
+- **AWS setup (manual, like every Lambda here)**: the execution role
+  needs `dynamodb:Query` on the `Cards` table and `Cards/index/*`; it is
+  exposed as a GET method on its own REST API (CORS on, no authorizer)
+  deployed to a stage named `prod`.
+- **Redeploying after a code change**: paste `index.mjs` into the
+  console's inline editor and Deploy. The projection change that added
+  `setID` was deployed this way; the page treats `setID` as optional, so
+  the code and the Lambda can be deployed in either order.
 
 ## `Lambdas/getNhlScores/` — hand-built in this repo
 
@@ -701,7 +775,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   every other endpoint here this is a browser-only cache — no API
   Gateway stage cache or CloudFront — so each new visitor still invokes
   the Lambda once. Fine at this site's traffic; the `dev` stage cache
-  is the lever now that the ticker is on four pages, since every
+  is the lever now that the ticker is on five pages, since every
   navigation between them fetches again (the browser cache absorbs
   repeats within its `max-age`).
 - **Errors**: any upstream failure (timeout, non-2xx, network) returns
@@ -799,7 +873,12 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   Lambda (see `API_ENDPOINTS.md`) — backs `updateCardSet()` in
   `scripts/cmsCardSet.js`, used by `cms/setEdit.html`.
 - **What it does**: a straightforward DynamoDB `UpdateCommand` on
-  `Cards`, keyed on `setName`+`year`, setting every editable field.
+  `Cards`, keyed on `setName`+`year`, setting every editable field and
+  stamping `updatedAt` with the current time (ISO) on every save — the
+  only "last edited" date the data has, which the sitemap generator
+  publishes as the review's `<lastmod>` (see `DATA_MODEL.md`; the create
+  Lambda writes no `updatedAt`, so a never-edited set falls back to its
+  publish date `now`).
   Also runs a TinyMCE cleanup pass on `postBody` before saving (strips
   empty `<p>&nbsp;</p>`-style junk TinyMCE tends to leave behind) —
   chiefly the pair `setEdit.html`'s old `selection.setContent()` insert
@@ -810,6 +889,20 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   payload with no `printRun` key leaves it untouched — so a browser
   still running an older cached `cmsCardSet.js` can't wipe a value it
   never displayed.
+- **Slug validation and duplicate check (2026-10-30)**: before writing, it
+  rejects (400) a missing or malformed `seoURLSlug` (lowercase letters,
+  numbers and single hyphens) and, when the save has `blogStatus` "OK", a
+  slug another live set already uses (`liveSetUsingSlug()` pages through
+  the `blogStatus-year-index` GSI, ignoring this set's own `setName`+`year`).
+  That query needs `dynamodb:Query` on
+  `arn:aws:dynamodb:us-east-2:339740904141:table/Cards/index/blogStatus-year-index`
+  added as an inline policy on the Lambda's role
+  (`updateCardSet-role-dxq1vucq`); without it every live save fails in the
+  catch-all with "Failed to update card set" (the CloudWatch line is an
+  `AccessDeniedException` naming the GSI — this happened on the first
+  save after the change). The 400s sit inside the existing `try`, so any
+  other failure still ends in that 500. A successful save also starts a
+  site build (stream to `cardsRebuildTrigger`).
 - **2026-08-15 incident, fixed**: this Lambda used to *also* fire a
   `CreateInvalidationCommand` against a CloudFront distribution
   (`E1ITD1S1KYPTFG`) after every successful save, inside the *same*
@@ -1007,8 +1100,12 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   "a message comes in" handler, called by Twilio itself when a
   subscriber texts back, not called from the site at all.
   Handles the SMS keywords that TCPA/carrier compliance requires:
-  `STOP`/`STOPALL`/`UNSUBSCRIBE`/`CANCEL`/`END`/`QUIT` (sets
-  `Subscribers.status = "unsubscribed"`), `START`/`YES`/`UNSTOP`
+  `STOP`/`STOPALL`/`UNSUBSCRIBE`/`CANCEL`/`END`/`QUIT`/`REVOKE`/`OPTOUT`
+  (sets `Subscribers.status = "unsubscribed"`; this is Twilio's full
+  default opt-out list — `REVOKE` and `OPTOUT` were added to the handler
+  2026-10-27, after Twilio added them to its own list in April 2025; before that a
+  text of either word left the record `subscribed` while Twilio blocked
+  the number, so broadcasts to it failed with error 21610), `START`/`YES`/`UNSTOP`
   (resubscribes an *existing* subscriber only — a stranger texting
   START to the number gets a "private channel, contact a Ride Leader"
   message rather than being silently added), and `HELP`. Responds with
@@ -1027,7 +1124,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   uppercased before comparison).
   | Keyword(s) | Condition | DynamoDB update | Exact reply text |
   |---|---|---|---|
-  | `STOP`, `STOPALL`, `UNSUBSCRIBE`, `CANCEL`, `END`, `QUIT` | — | `#s` → `"unsubscribed"`, `unsubTimestamp` set, `#src` → `"mobile"` | `"You have been unsubscribed. Reply START to resubscribe."` |
+  | `STOP`, `STOPALL`, `UNSUBSCRIBE`, `CANCEL`, `END`, `QUIT`, `REVOKE`, `OPTOUT` | — | `#s` → `"unsubscribed"`, `unsubTimestamp` set, `#src` → `"mobile"` | `"You have been unsubscribed. Reply START to resubscribe."` |
   | `START`, `YES`, `UNSTOP` | phone number **found** in `Subscribers` | `#s` → `"subscribed"`, `optInTimestamp` set, `#src` → `"mobile"` | `"You are now subscribed again."` |
   | `START`, `YES`, `UNSTOP` | phone number **not found** in `Subscribers` (a stranger texting in) | none — no write at all | `"This is a private communication channel for Autobus Cycling Club members only. If you are a member please contact a Ride Leader to be added."` |
   | `HELP` | — | none | `"Reply START to subscribe, STOP to unsubscribe."` |
@@ -1049,6 +1146,13 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   — `unsubTimestamp` on the STOP path, `optInTimestamp` on the START
   path — with `#s`/`#src` resolved via the aliases and the actual
   values passed through `ExpressionAttributeValues`.
+- **Only the live table**: the table name is hardcoded to `"Subscribers"`
+  in every branch, so a STOP or START text never changes
+  `SubscribersTest`. A test recipient who texts STOP therefore stays
+  `subscribed` in the test table until the next Test Mode broadcast,
+  where Twilio refuses it (error 21610) and `sendAlertHandler` marks it
+  (see that section). Likewise, texting START doesn't re-subscribe a test
+  record: set it back by hand in the DynamoDB console.
 - **Security**: validates the inbound request's `X-Twilio-Signature`
   header via HMAC-SHA1 against `process.env.TWILIO_AUTH_TOKEN` (env
   var, not hardcoded — no secret in the source) using
@@ -1074,6 +1178,112 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   `fetch()` calls like every other entry in `API_ENDPOINTS.md`. Worth
   adding the real URL to `API_ENDPOINTS.md` next time you're in the
   API Gateway console.
+
+## `Lambdas/listSubscribers/` — hand-built in this repo
+
+- **File**: `Lambdas/listSubscribers/index.mjs` (added 2026-10-25). No real
+  dependency (`dependencies: {}`), so deploy by pasting `index.mjs` into
+  the Console's inline code editor; the role needs `dynamodb:Scan` on
+  `Subscribers`.
+- **What it does**: backs the "...list all subscribers" modal on the SMS
+  admin page (`cms/smsAdmin.html`, `scripts/adminSMS.js`). A read-only
+  `Scan` of the **live `Subscribers` table only**, following
+  `LastEvaluatedKey` so a table over 1 MB isn't silently truncated, with a
+  `ProjectionExpression` of `phoneNumber, firstName, #s` (`status` is a
+  DynamoDB reserved word, so it is aliased). Returns
+  `{ ok: true, total, subscribers: [{ firstName, phoneNumber, status }] }`
+  sorted case-insensitively by name (the phone number breaks ties; a
+  record with no name sorts first and the page shows it as "(no name)"). On any
+  error it returns `500 { ok: false, error: "Internal server error" }`.
+- **Auth and exposure**: it returns phone numbers, so its API Gateway route
+  (`GET /subscribers/list` on the same API as `subscribeHandler`, stage
+  `prod`) sits behind the Cognito Authorizer; an unauthenticated request
+  gets `401`. The table name is fixed in the code and never read from the
+  request. CORS allows only `https://www.junkwaxhockey.com`
+  (`GET,OPTIONS`). No `Cache-Control` header: the list has to be current.
+- **Meaning of `status`**: it is *our* mirror of who we ask Twilio to text,
+  not Twilio's own opt-out list. See `AMP_SMS_PLATFORM.md`'s "Subscriber
+  lifecycle" for how the two stay in step.
+
+## `Lambdas/cardsRebuildTrigger/` — hand-built in this repo
+
+- **File**: `Lambdas/cardsRebuildTrigger/index.mjs` (added 2026-10-30). No
+  real dependency (`dependencies: {}`; `@aws-sdk/client-amplify` ships with
+  the Lambda Node.js runtime), so deploy by pasting `index.mjs` into the
+  Console's inline code editor. Runtime Node 24. Not behind API Gateway:
+  its trigger is the `Cards` table's DynamoDB Stream, and no frontend code
+  calls it.
+- **What it does**: starts an Amplify build whenever a live card set
+  changes in a way the generated site depends on, so a CMS save needs no
+  push and no manual step. It receives a batch of stream records (new and
+  old image of each changed item) and starts **one** release job
+  (`amplify:StartJob`, app `d20qsyoicusf3p`, branch `main`, job reason
+  "Card set change: <set names>") if any record counts.
+- **What counts** (`changesStaticOutput()`): an `INSERT` of a live item
+  (`blogStatus` "OK"); a `REMOVE` of one; or a `MODIFY` where the old or
+  new item is live and any of `blogStatus, setName, year, blogCat, setID,
+  stars, seoURLSlug, seoPageTitle, seoMetaDesc, seoTags, headerImg,
+  headerImgName, now, updatedAt` differ. Staged-only changes, vote counts
+  (`upvotes`/`downvotes`), `hasChecklist` flips and a body edit that
+  doesn't go through `updateCardSet` start nothing. Every `updateCardSet`
+  save moves `updatedAt`, so every CMS save of a live set does start a
+  build; that is deliberate, it keeps the sitemap's `<lastmod>` accurate.
+  Values are compared in DynamoDB's typed shape, so no unmarshalling.
+- **Failure behavior**: if `StartJob` throws the invocation fails and the
+  stream retries the batch (3 attempts); rebuilding is idempotent. A
+  batch with nothing that counts logs one line and does nothing.
+- **What the build does**: runs `tools/generateReviewPages/generate.mjs`
+  (`amplify.yml`), which writes the review pages, `reviews/index.json` and
+  `sitemap.xml`. See `REVIEW_PAGES.md`.
+- **AWS setup (manual, one time, done 2026-10-30)**:
+  1. DynamoDB, `Cards`, Exports and streams: turn on the stream, view type
+     **New and old images**.
+  2. Create the function, paste `index.mjs`. Role: attach the managed
+     policy `AWSLambdaDynamoDBExecutionRole` and add an inline policy
+     allowing `amplify:StartJob` on
+     `arn:aws:amplify:us-east-2:339740904141:apps/d20qsyoicusf3p/branches/main/jobs/*`.
+  3. Add a trigger: DynamoDB, the `Cards` stream, batch size 100, batch
+     window 60 seconds (so a burst of saves is one build), starting
+     position Latest, retry attempts 3.
+- **Verifying**: save a harmless change to a set's SEO description in the
+  CMS; within about a minute `aws amplify list-jobs --app-id
+  d20qsyoicusf3p --branch-name main --region us-east-2` shows a new job
+  (the read-only CLI user can't read this Lambda's logs or the trigger, so
+  check CloudWatch `/aws/lambda/cardsRebuildTrigger` in the Console: a
+  "Started Amplify job #N" line). Verified 2026-10-30: a save at 15:53 UTC
+  started build #3154 at 15:54:04.
+- **Cost**: the invocations and the stream reads are free or negligible;
+  the cost is the Amplify build minutes (see `REVIEW_PAGES.md`).
+
+## Wax Museum Lambdas — hand-built in this repo
+
+Three small functions behind The Wax Museum (`waxMuseum.html`) and its
+CMS pages, all on the `WaxPacks` table (`DATA_MODEL.md`), all on `prod`
+stages, all with no dependencies (paste-deploy). Full contracts are in
+`API_ENDPOINTS.md`.
+
+- **`getWaxPacks`** — public read: every pack (`Scan`) or one season
+  (`Query` on `year`), following `LastEvaluatedKey` so the list is never
+  cut at 1 MB, sorted by year then `packKey`. CORS `*`, cached 30
+  minutes.
+- **`saveWaxPack`** — create or edit, one `PutCommand`. It validates
+  every field (required name, manufacturer, packaging, `type` of `main`
+  or `fast food`, `numCards` 1 to 200, length caps, slug patterns) and
+  returns the first problem as a 400. A create slugifies the name into
+  `packKey` and is conditioned on `attribute_not_exists` (409 on a
+  duplicate); an edit keeps its `packKey` and is conditioned on
+  `attribute_exists` (404 if gone), so a rename never creates a second
+  item. It stopped writing the old single `notes` field (the CMS form
+  carries it into `notesFront`).
+- **`deleteWaxPack`** — `DeleteCommand` by `year` + `packKey`,
+  conditioned on `attribute_exists` so a stale key is a 404, not a
+  silent no-op.
+
+The save and delete calls send the Cognito token and their CORS allows
+only the site's origin; whether their API Gateway methods have a
+Cognito Authorizer hasn't been verified (see `API_ENDPOINTS.md`). Their
+roles need `PutItem`/`DeleteItem` on `WaxPacks`; `getWaxPacks` needs
+`Scan` and `Query`.
 
 ## Orphaned/dead Lambdas — removed from this repo
 
@@ -1133,29 +1343,10 @@ section title:
 | `Lambdas/updateBlogPost/` | Update blog post | Plain `UpdateCommand` keyed on `blogType`+`time`. |
 | `Lambdas/listBlogsForUpdate/` | Get all live blogs (for the edit picker) | **Note**: despite the doc's previous description, this does a full unfiltered `Scan` (`published = :p` where `:p = true`) with no `ProjectionExpression` — the response is full blog records under `{items: [...]}`, not just `{title, blogID, blogType}`. `API_ENDPOINTS.md` corrected 2026-08-15. |
 | `Lambdas/getStagedBlogsForUpdate/` | Get all staged (draft) blogs | Same correction as above, mirrored: full `Scan` on `published = false`, full records returned, not a narrow projection. |
-| `Lambdas/createCardPost/` | Create card set | Despite the AWS function name, this is the "create card set" Lambda (its own header comment calls itself `createCardSet Lambda Function`). Generates `setID` via `Math.random().toString(36)` (not a UUID). Hardcodes the S3 image URL prefix (`headerImg`/`footerImg`) server-side — see the CloudFront-migration discussion this repo's git history has around 2026-08-15 for why that matters if image hosting ever moves off direct S3 URLs. Stores the optional `printRun` only when non-blank, so sets without one get no empty attribute. |
+| `Lambdas/createCardPost/` | Create card set | Despite the AWS function name, this is the "create card set" Lambda (its own header comment calls itself `createCardSet Lambda Function`). Generates `setID` via `Math.random().toString(36)` (not a UUID). Hardcodes the S3 image URL prefix (`headerImg`/`footerImg`) server-side — see the CloudFront-migration discussion this repo's git history has around 2026-08-15 for why that matters if image hosting ever moves off direct S3 URLs. Stores the optional `printRun` only when non-blank, so sets without one get no empty attribute. Since 2026-10-30 it rejects (400) a missing or malformed `seoURLSlug` and, for `blogStatus` "OK", a slug another live set already uses (a `blogStatus-year-index` query via `liveSetUsingSlug()`; a failing check returns 500), so its role needs an inline `dynamodb:Query` policy on that GSI like `updateCardSet`'s. A live create also starts a site build through the `Cards` stream. |
 | `Lambdas/getCardSets/` | Get all live card sets (for the edit picker) | Queries the `blogStatus-year-index` GSI, `blogStatus = "OK"`. File has old commented-out `ProjectionExpression` variants left in as history of the 2026-08-14 `getStagedCardSets` projection bug fix (see below) — this one already returns full items. |
 | `Lambdas/getStagedCardSets/` | Get all staged (draft) card sets | Same GSI, `blogStatus = "staged"`. This is the Lambda whose `ProjectionExpression` bug (only requesting `setName, setID`, silently dropping `blogCat`/`year`) was found and fixed on 2026-08-14 — see `API_ENDPOINTS.md` for the full story. The fixed projection requests `setName, setID, blogCat, year`; `year` is aliased in the expression (e.g. `#y`) since it's a DynamoDB reserved word. It also projects `hasChecklist` (added 2026-09-30) so `cms/uploadChecklist.html`'s Set Name type-ahead can offer only staged sets that have a checklist; `getCardSets` needed no change since it returns full items. |
 | `Lambdas/getCardSetByID/` | Get a single card set by ID | Converted from PartiQL (`SELECT * FROM Cards WHERE setID=?`, which forced a full-table Scan since `setID` isn't the table's key) to a `QueryCommand` against the `setID-index` GSI on 2026-09-04 — a genuine performance win, not just a style change; see `DATA_MODEL.md`'s `Cards` GSI table. |
 | `Lambdas/getCardSetsByYear/` | Get card sets by year | Queries the `blogCat-year-index` GSI. Returns `Cache-Control: public, max-age=1800`; its own comment says "CloudFront cache" but no CloudFront actually sits in front of it (see `API_ENDPOINTS.md`'s caching note) — today this header is browser-only. |
 | `Lambdas/cmsImageUploader/` | Get S3 upload URL (presigned PUT) | `getSignedUrl()` for a `PutObjectCommand`, 300s expiry, sets `CacheControl: public, max-age=31536000, immutable` on the eventual S3 object. |
 | `Lambdas/cmsImagePicker/` | List images in the bucket | `ListObjectsV2Command` on the whole bucket, no prefix filter server-side (filtering happens client-side in `cmsImageBrowser.js`). |
-
-## `Lambda Functions/` — separate legacy/prototype code, still not confirmed current
-
-These look like early iterations built while following
-`Documentation/Creating A New Lambda.txt`, checked into a differently-
-named directory (`Lambda Functions/`, with a space) before the
-2026-08-15 sync above. **Now that the real, currently-deployed source
-for every live Lambda is checked in elsewhere in this repo (see
-above), this section is much less urgent to reconcile** — but the
-files themselves haven't been re-verified against the real ones, so
-the mismatches below are left as originally documented:
-
-- **`Lambda Functions/getBlogs/getBlogs.js`**: scans the entire `Blogs` table (`documentClient.scan()`) and returns everything, no filtering — despite the file's own header comment claiming it "fetches blog posts filtered using type param." Also contains a second, unreachable, dead `params` block below the first `return` referencing a table called `"blogTable"` that appears nowhere else in the codebase — looks like an abandoned edit.
-- **`getTechBlogs/getTechBlogs.js`**: near-identical to a variant of `getBlogs.js` but hardcodes `blogType: 1` (tech) via `query()` rather than accepting it as a parameter — i.e., not reusable for the other blog types, which the live `getBlogs` endpoint clearly now supports via a `blogType` query param (see `API_ENDPOINTS.md`).
-- **`Lambda Functions/createBlogPost/createBlogPost.js`**: writes to table `Blogs` with fields `blogType, time, title, author, postBody` — notably missing `published`, `img`, `imgCap`, `blogID`, all of which the current CMS create form sends and the edit/list flows depend on (see `DATA_MODEL.md`). This file is almost certainly stale relative to the real `Lambdas/createBlogPost/index.mjs` now checked in.
-- **`Lambda Functions/createCardSet/createCardPost.js`**: writes to table `Cards` with fields `setName, setID, size, subsets, mfg, year, headerImg, footerImg, status, postBody` — missing `stars`, `formats`, `blogCat`, `author`, the SEO fields, and `blogStatus` (uses `status` instead), all of which the current CMS create form sends (see `DATA_MODEL.md`). Also generates `setID` via `Math.random().toString(36)` — fine for low collision risk at this scale, but worth knowing it's not a UUID. (The real, currently-deployed version of this Lambda is `Lambdas/createCardPost/index.mjs`, checked in above — also generates `setID` the same way, so that detail at least held up.)
-- **`Lambda Functions/getCardSets/getCardSets.js`**: queries a `status-year-index` GSI on `Cards`, filtering to `status = "OK"` — the real deployed `Lambdas/getCardSets/index.mjs` uses `blogStatus-year-index` and `blogStatus = "OK"` instead, confirming this prototype's field/index names are stale.
-- **`Lambda Functions/getCardSets/getCardSets_v2.js`**: queries `Cards` by a **hardcoded** `setName`/`year` (`"1988-89 O-Pee-Chee Hockey"` / `1989`) — clearly a copy-pasted-and-half-edited debugging/scratch version, not something that could serve real traffic as-is.
-- **`Lambda Functions/getCardSets/getCardSet_FUTURE.js`**: queries a `setID-index` GSI on `Cards` by a **hardcoded** `setID` — this prototype had the right idea. **Resolved 2026-09-04**: the `setID-index` GSI is real and live (confirmed via the AWS Console), and the deployed `Lambdas/getCardSetByID/index.mjs` — which had been using PartiQL instead, not querying the GSI at all — was rewritten to query it directly. See `DATA_MODEL.md`'s `Cards` GSI table.

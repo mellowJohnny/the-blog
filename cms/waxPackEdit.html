@@ -1,0 +1,126 @@
+<!doctype html>
+<!-- Without this, mobile Safari renders at a wide desktop-width virtual
+     viewport and just zooms the page out to fit, so the @media
+     (max-width: 600px) rules in styles.css never trigger -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<html lang="en">
+  <head>
+    <script src="/scripts/auth.js"></script>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
+    <title>cardStack cms - wax pack edit</title>
+    <link
+      rel="icon"
+      href="/favicon.ico"
+      sizes="16x16 32x32 48x48">
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/images/icons/icon-192.png">
+    <link
+      rel="apple-touch-icon"
+      href="/images/icons/apple-touch-icon.png">
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+
+    <script src="/scripts/cmsWaxPack.js"></script>
+    <script src="/scripts/cmsImageBrowser.js"></script>
+    <script src="/scripts/waxPackImageProcessor.js"></script>
+    <script src="/scripts/cmsFormUI.js"></script>
+    <script src="/scripts/helper.js"></script>
+
+    <script>
+      window.addEventListener('load', () => {
+        fetchCopyrightYear();
+        initEditWaxPackPage();
+      });
+    </script>
+  </head>
+
+  <body>
+    <section>
+      <header class="cms-masthead">
+        <img src="/images/cms-masthead.webp" width="1500" height="200" alt="cardStack CMS">
+      </header>
+    </section>
+    <section>
+      <main>
+        <div>
+          <nav>
+            <table class="cms-top-nav">
+              <tr>
+                <td class="cms-nav-td"><a href="/index.html">...exit</a></td>
+                <td class="cms-nav-td">
+                  <a href="/cms/wlcms.html">...back to cms</a>
+                </td>
+              </tr>
+            </table>
+          </nav>
+        </div>
+        <div class="header-style">
+          <h1>...wax pack edit</h1>
+        </div>
+        <br>
+        <section>
+          <!-- The form is built by renderWaxPackForm() in cmsWaxPack.js, shared with newWaxPack.html -->
+          <div id="waxPackFormHost"></div>
+          <!-- This div is rendered if an error occurs... -->
+          <div id="errorDiv"></div>
+        </section>
+      </main>
+    </section>
+    <footer class="page-footer">
+      <!-- Insert the page copyright: populated by calling fetchCopyrightYear() on page load -->
+      <div id="copy"></div>
+    </footer>
+
+    <!-- S3 Image Browser Modal, driven by scripts/cmsImageBrowser.js -->
+    <div id="imageBrowserModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeImageBrowser()">&times;</span>
+
+        <h3>Select an Image</h3>
+        <h4>Or Upload A New One</h4>
+
+        <div
+          style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"
+        >
+          <label
+            for="uploadFileInput" class="input-button"
+          >
+            Choose Image
+          </label>
+
+          <input
+            type="file"
+            id="uploadFileInput"
+            accept="image/*"
+            style="display: none;">
+
+          <span id="selectedFileName" style="font-size: 14px; color: #333;"
+            >No file chosen</span
+          >
+
+          <button
+            type="button"
+            onclick="uploadNewImage()" class="input-button"
+          >
+            Upload
+          </button>
+        </div>
+        <div id="uploadStatus" style="font-size: 13px; color: #555;"></div>
+        <img id="uploadPreview" alt="Preview of the processed image" style="display: none; max-height: 260px; margin-top: 8px; border: 1px solid #ccc;">
+
+        <input
+          type="text"
+          id="imageSearch"
+          placeholder="Search images..."
+          oninput="filterImageList()"
+          style="width: 100%; padding: 6px; margin-top: 10px; margin-bottom: 10px; font-size: 14px; box-sizing: border-box;">
+
+        <div id="imageList"></div>
+      </div>
+    </div>
+  </body>
+</html>

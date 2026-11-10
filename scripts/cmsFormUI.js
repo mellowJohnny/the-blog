@@ -50,6 +50,27 @@ function initTinyEditor(selector = '#postBody', { cardImageBlocks = false } = {}
 }
 
 
+// Inline editor for the Preview modal's review text (cmsCardSet.js).
+// Text-only on purpose: the image picker and HTML-source dialog stay in the
+// main editor. The toolbar docks in the modal and menus open inside it, or
+// they would land behind the modal (z-index 9999).
+function initPreviewEditor(target, { uiContainer, toolbarContainer }) {
+  return tinymce.init({
+    target,
+    inline: true,
+    fixed_toolbar_container: toolbarContainer,
+    toolbar_persist: true,
+    plugins: ['lists', 'link'],
+    toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link',
+    menubar: false,
+    ui_container: uiContainer,
+    object_resizing: false,
+    browser_spellcheck: true,
+    contextmenu: false
+  }).then((editors) => editors[0]);
+}
+
+
 /**
  * Registers the two card-review image-insert buttons on a TinyMCE
  * instance. Each opens the existing S3 image browser (cmsImageBrowser.js,
@@ -125,18 +146,50 @@ function openMiddleImageDialog(editor, imageUrl) {
         { type: 'input', name: 'alt', label: 'Alt Text' }
       ]
     },
-    initialData: { alt: '' },
+    initialData: { alt: middleImageAltDefault() },
     buttons: [
       { type: 'cancel', text: 'Cancel' },
       { type: 'submit', text: 'Insert', primary: true }
     ],
-    onSubmit: (api) => {
+    onSubmit: async (api) => {
       const data = api.getData();
-      const html = `<img class="card-middle-img mceNonEditable" contenteditable="false" src="${imageUrl}" alt="${escapeHtml(data.alt)}">`;
+      // width/height let the browser reserve the image's space before it loads (no layout shift).
+      const size = await imageNaturalSize(imageUrl);
+      const sizeAttrs = size ? ` width="${size.width}" height="${size.height}"` : "";
+      const html = `<img class="card-middle-img mceNonEditable" contenteditable="false" src="${imageUrl}"${sizeAttrs} alt="${escapeHtml(data.alt)}">`;
       editor.insertContent(html);
       api.close();
     }
   });
+}
+
+// The image's real pixel size, or null if it can't be loaded within 10 seconds.
+function imageNaturalSize(url) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const timer = setTimeout(() => resolve(null), 10000);
+    img.onload = () => { clearTimeout(timer); resolve({ width: img.naturalWidth, height: img.naturalHeight }); };
+    img.onerror = () => { clearTimeout(timer); resolve(null); };
+    img.src = url;
+  });
+}
+
+// Middle images saved before the dialog recorded a size have none. Fill them in
+// as a set opens (a kept width gets a proportional height); Update then saves them.
+async function fillMiddleImageSizes(editor) {
+  const missing = [...editor.getBody().querySelectorAll("img.card-middle-img")]
+    .filter((img) => !img.getAttribute("width") || !img.getAttribute("height"));
+  for (const img of missing) {
+    const size = await imageNaturalSize(img.getAttribute("src"));
+    if (!size) continue;
+    const width = parseInt(img.getAttribute("width"), 10) || size.width;
+    const height = Math.round(width * size.height / size.width);
+    // ignore(): not an undo step, so Ctrl+Z can't strip it again.
+    editor.undoManager.ignore(() => {
+      editor.dom.setAttrib(img, "width", width);
+      editor.dom.setAttrib(img, "height", height);
+    });
+  }
 }
 
 // Strips the noneditable-block markers registerCardImageBlockButtons()
@@ -186,3 +239,211 @@ async function cmsCancelEdit(redirectTo) {
         document.getElementById('cmsSubmitButton').style.backgroundColor = "#256386";
         document.getElementById('cmsSubmitButton').innerHTML = "Update Post";
     }
+
+// --- SEO "Generate" buttons (createCardSet.html / setEdit.html) ---
+// Each fills its field from the set's own form values, except the description,
+// which Claude writes from the review (see generateSeoDescription).
+// A field that already has text asks first.
+
+const SEO_DESCRIPTION_API_URL = "https://1el471sn04.execute-api.us-east-2.amazonaws.com/prod"; // generateSeoDescription API
+
+function seoFormValue(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : "";
+}
+
+// "1991-92 Stadium Club" + maker Topps -> "1991-92 Topps Stadium Club Hockey".
+function seoSetLabel() {
+  const setName = seoFormValue("setName");
+  const mfg = seoFormValue("mfg");
+  const match = setName.match(/^(\d{4}-\d{2})\s+(.+)$/);
+  const brandedSet = /mcdonald|tim hortons/i.test(setName);
+  let label = setName;
+  if (match && mfg && !brandedSet && !match[2].toLowerCase().includes(mfg.toLowerCase())) {
+    label = `${match[1]} ${mfg} ${match[2]}`;
+  }
+  return /hockey/i.test(label) ? label : `${label} Hockey`;
+}
+
+function seoInsertNames() {
+  return seoFormValue("subsets").split(",").map((name) => name.trim())
+    .filter((name) => name && !/^(none|n\/a)$/i.test(name));
+}
+
+function buildSeoTitle() {
+  return `${seoSetLabel()} Card Set Review`;
+}
+
+// Base sentence, then each extra only if it still fits in 160 characters.
+function buildSeoDescription() {
+  const size = seoFormValue("size");
+  const stars = seoFormValue("stars");
+  const inserts = seoInsertNames();
+  const editor = typeof tinymce !== "undefined" ? tinymce.get("postBody") : null;
+  const firstParagraph = editor
+    ? editor.getContent({ format: "text" }).split(/\n+/).map((line) => line.trim()).find(Boolean) || ""
+    : "";
+  const firstSentence = (firstParagraph.match(/^.+?[.!?](?=\s|$)/) || [""])[0];
+
+  const facts = [];
+  if (size && inserts.length) facts.push(`${size} cards. Inserts: ${inserts.join(", ")}.`);
+  if (size) facts.push(`${size} cards.`);
+  if (!size && inserts.length) facts.push(`Inserts: ${inserts.join(", ")}.`);
+
+  let text = `${seoSetLabel()} card set review.`;
+  [facts, stars ? [`Rating: ${stars}/5.`] : [], firstSentence ? [firstSentence] : []].forEach((options) => {
+    const fit = options.find((option) => (text + " " + option).length <= 160);
+    if (fit) text += " " + fit;
+  });
+  return truncateAtWord(text, 160);
+}
+
+function buildSeoKeywords() {
+  const setName = seoFormValue("setName");
+  const year = (setName.match(/^\d{4}(-\d{2})?/) || [""])[0];
+  const terms = [seoSetLabel(), year && `${year} hockey cards`, seoFormValue("mfg"),
+    setName && `${setName} checklist`, "junk wax hockey", ...seoInsertNames()];
+  const seen = new Set();
+  return terms.filter((term) => term && !seen.has(term.toLowerCase()) && seen.add(term.toLowerCase()))
+    .slice(0, 12).join(", ");
+}
+
+function buildSeoSlug() {
+  return seoFormValue("setName").toLowerCase().replace(/['’]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+// The slug becomes the review's address (/reviews/<slug>/), so it must be
+// present and URL-safe: lowercase words joined by single hyphens.
+function seoSlugProblem(slug) {
+  if (!slug || !slug.trim()) return "SEO Friendly URL is required.";
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug.trim())) {
+    return "SEO Friendly URL can only use lowercase letters, numbers and single hyphens - click Generate.";
+  }
+  return "";
+}
+
+async function fillSeoField(fieldId, build) {
+  if (!seoFormValue("setName")) {
+    await cmsAlert("Enter the Set Name first - the generators build from the set's own details.");
+    return;
+  }
+  const field = document.getElementById(fieldId);
+  const value = build();
+  if (field.value.trim() && field.value.trim() !== value) {
+    if (!(await cmsConfirm(`Replace the current text in this field with this generated version?\n\n${value}`))) return;
+  }
+  field.value = value;
+  updateSeoCharCounts();
+}
+
+function generateSeoTitle() { return fillSeoField("seoPageTitle", buildSeoTitle); }
+function seoReviewText() {
+  const editor = typeof tinymce !== "undefined" ? tinymce.get("postBody") : null;
+  return editor ? editor.getContent({ format: "text" }).trim() : "";
+}
+
+// Asks Claude (via the Lambda) to read the review and write the description.
+async function requestSeoDescription(reviewText) {
+  const response = await fetch(SEO_DESCRIPTION_API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": await getAuthToken() },
+    body: JSON.stringify({
+      setName: seoFormValue("setName"), mfg: seoFormValue("mfg"), size: seoFormValue("size"),
+      stars: seoFormValue("stars"), subsets: seoInsertNames().join(", "), reviewText
+    })
+  });
+  const data = await response.json();
+  if (!response.ok || !data.description) throw new Error(data.error || `HTTP ${response.status}`);
+  return data.description;
+}
+
+// Falls back to the basic generated text, and says so, when Claude can't be used.
+async function generateSeoDescription() {
+  if (!seoFormValue("setName")) return fillSeoField("seoMetaDesc", buildSeoDescription);
+
+  const button = document.querySelector('[onclick="generateSeoDescription()"]');
+  const label = button.querySelector(".seo-generate-label");
+  const reviewText = seoReviewText();
+  let description = "";
+  let fallbackReason = "";
+
+  if (!SEO_DESCRIPTION_API_URL) {
+    description = buildSeoDescription();
+  } else if (!reviewText) {
+    fallbackReason = "Write the review first so Claude has something to read. The basic description was used instead.";
+  } else {
+    button.disabled = true;
+    label.textContent = "Generating...";
+    try {
+      description = await requestSeoDescription(reviewText);
+    } catch (error) {
+      console.log("SEO description error:", error);
+      fallbackReason = "Claude couldn't write the description, so the basic one was used instead.";
+    } finally {
+      button.disabled = false;
+      label.textContent = "Generate with Claude";
+    }
+  }
+
+  if (fallbackReason) {
+    description = buildSeoDescription();
+    await cmsAlert(fallbackReason);
+  }
+  return fillSeoField("seoMetaDesc", () => description);
+}
+function generateSeoKeywords() { return fillSeoField("seoTags", buildSeoKeywords); }
+function generateSeoSlug() { return fillSeoField("seoURLSlug", buildSeoSlug); }
+
+// Grows or shrinks a textarea to exactly fit its text (borders included). A
+// hidden box measures 0, so it keeps its CSS height until it can be measured.
+function autosizeTextarea(box) {
+  box.style.height = "auto";
+  if (box.scrollHeight) box.style.height = `${box.scrollHeight + box.offsetHeight - box.clientHeight}px`;
+}
+
+// "58 / 65": the length against the most a search result shows. Also refits
+// the two multi-line boxes, since every programmatic fill comes through here.
+function updateSeoCharCounts() {
+  ["seoMetaDesc", "seoTags"].forEach((id) => {
+    const box = document.getElementById(id);
+    if (box) autosizeTextarea(box);
+  });
+  [["seoPageTitle", 65], ["seoMetaDesc", 160]].forEach(([id, max]) => {
+    const input = document.getElementById(id);
+    const counter = document.getElementById(`${id}Count`);
+    if (!input || !counter) return;
+    counter.textContent = `${input.value.length} / ${max}`;
+    counter.classList.toggle("seo-count-over", input.value.length > max);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  ["seoPageTitle", "seoMetaDesc"].forEach((id) => {
+    const input = document.getElementById(id);
+    if (input) input.addEventListener("input", updateSeoCharCounts);
+  });
+  // The multi-line boxes are for room, not line breaks: Enter is blocked and a
+  // pasted break becomes a space, so a meta tag never contains one.
+  const lineBreaks = /\s*[\r\n]+\s*/g;
+  ["seoMetaDesc", "seoTags"].forEach((id) => {
+    const box = document.getElementById(id);
+    if (!box) return;
+    box.addEventListener("keydown", (event) => { if (event.key === "Enter") event.preventDefault(); });
+    box.addEventListener("input", () => {
+      if (/[\r\n]/.test(box.value)) {
+        const caret = box.value.slice(0, box.selectionStart).replace(lineBreaks, " ").length;
+        box.value = box.value.replace(lineBreaks, " ");
+        box.setSelectionRange(caret, caret);
+      }
+      updateSeoCharCounts();
+    });
+  });
+});
+
+// Middle images are shots of the set's cards, so alt can start from the set.
+function middleImageAltDefault() {
+  const year = seoFormValue("year");
+  const mfg = seoFormValue("mfg");
+  return year && mfg ? `Vintage hockey cards from the ${year} ${mfg} set` : "";
+}

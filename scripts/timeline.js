@@ -6,11 +6,12 @@
 const TIMELINE_MD_URL = "/timeline/timeline.md";
 
 // "###" is the title, each "####" starts a point, "-" bullets are its
-// content and a bullet indented two spaces nests under the one above.
+// content, and each two spaces of indent nests a bullet one level deeper,
+// under the nearest bullet above it that is shallower.
 function parseTimelineMarkdown(text) {
   const model = { title: "", points: [] };
   let point = null;
-  let parent = null;
+  let stack = [];
 
   text.split(/\r?\n/).forEach((raw) => {
     const line = raw.replace(/\s+$/, "");
@@ -19,7 +20,7 @@ function parseTimelineMarkdown(text) {
     if (line.startsWith("#### ")) {
       point = buildTimelinePoint(line.slice(5).trim());
       model.points.push(point);
-      parent = null;
+      stack = [];
       return;
     }
     if (line.startsWith("### ")) {
@@ -27,15 +28,14 @@ function parseTimelineMarkdown(text) {
       return;
     }
 
-    const bullet = line.match(/^(\s*)[-*]\s+(.*)$/);
+    const bullet = line.replace(/\t/g, "  ").match(/^(\s*)[-*]\s+(.*)$/);
     if (!bullet || !point) return;
     const item = { text: bullet[2].trim(), children: [] };
-    if (bullet[1].length >= 2 && parent) {
-      parent.children.push(item);
-    } else {
-      point.items.push(item);
-      parent = item;
-    }
+    const level = Math.floor(bullet[1].length / 2);
+    while (stack.length && stack[stack.length - 1].level >= level) stack.pop();
+    const siblings = stack.length ? stack[stack.length - 1].item.children : point.items;
+    siblings.push(item);
+    stack.push({ level, item });
   });
 
   return model;
@@ -80,6 +80,9 @@ function buildTimelineCard(point, index) {
   toggle.setAttribute("aria-expanded", "false");
   if (point.year) toggle.appendChild(timelineEl("span", "timeline-year", point.year));
   if (point.title) toggle.appendChild(timelineEl("span", "timeline-heading", point.title));
+  const hint = timelineEl("span", "timeline-hint", "Flip");
+  hint.setAttribute("aria-hidden", "true");
+  toggle.appendChild(hint);
   front.appendChild(toggle);
 
   // Back: the bullets. Clicking anywhere on it flips it shut; the title row
@@ -122,6 +125,15 @@ function markTimelineCardViewed(card, front) {
   front.querySelector(".timeline-toggle").appendChild(timelineEl("span", "timeline-sr", " (viewed)"));
 }
 
+// Closing a tall card leaves the page scrolled to where its bottom was, far
+// below the card. If the card's top is out of sight, scroll back up to it.
+function scrollTimelineCardIntoView(card) {
+  const top = card.getBoundingClientRect().top;
+  if (top >= 0 && top < window.innerHeight - 120) return;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({ top: window.scrollY + top - 80, behavior: reduced ? "auto" : "smooth" });
+}
+
 function setTimelineCardOpen(card, open, moveFocus = false) {
   const front = card.querySelector(".timeline-front");
   const back = card.querySelector(".timeline-back");
@@ -137,6 +149,7 @@ function setTimelineCardOpen(card, open, moveFocus = false) {
   if (!moveFocus) return;
   const target = open ? back.querySelector(".timeline-close") : front.querySelector(".timeline-toggle");
   target.focus({ preventScroll: true });
+  if (!open) scrollTimelineCardIntoView(card);
 }
 
 function renderTimeline(model, container) {

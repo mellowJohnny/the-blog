@@ -2,7 +2,7 @@
 
 None of this was read directly from the DynamoDB console — it's
 reverse-engineered from the fields the frontend sends/reads and from
-the query/scan code in `Lambda Functions/`. Field types are best
+the query/scan code in `Lambdas/`. Field types are best
 guesses. Verify against the actual table definitions when you get
 console access back.
 
@@ -32,7 +32,7 @@ key `blogID`, no sort key) — see above.
 | Field | Type | Notes |
 |---|---|---|
 | `blogID` | String | The item's human-facing identifier — used as the lookup key by `getBlogByID`, which queries the `blogID-index` GSI directly (see `API_ENDPOINTS.md`), but is *not* the DynamoDB table's own primary key (see above). Early sample data (`Documentation/BlogArchive.txt`) used a millisecond timestamp string as `id`, e.g. `"1640119360299"` — `blogID` is likely the same idea, possibly renamed. |
-| `blogType` | Number | Partition key. `1`=Tech, `2`=Hockey Cards (per the `createBlogPost.html` dropdown, though card content actually goes to the `Cards` table, not `Blogs`), `3`=Mach-E, `4`=SYNC Updates, `5`=Raspberry Pi, `99`=Home Page. See `BLOG_TYPE_LABELS` in `scripts/cmsBlog.js`. |
+| `blogType` | Number | Partition key. `1`=Tech, `2`=Hockey Cards (per the `createBlogPost.html` dropdown, though card content actually goes to the `Cards` table, not `Blogs`), `3`=Mach-E, `4`=SYNC Updates, `5`=Raspberry Pi, `98`=About (exactly one post, shown by `about.html`), `99`=Home Page (no longer read — `index.html` is static HTML now, so this post is inert and the CMS no longer offers the type for new posts). See `BLOG_TYPE_LABELS` in `scripts/cmsBlog.js`. |
 | `title` | String | Post title. |
 | `author` | String | Free text; CMS forms currently only offer "Christian Couillard". |
 | `postBody` | String | HTML content, authored via TinyMCE. |
@@ -40,8 +40,6 @@ key `blogID`, no sort key) — see above.
 | `imgCap` | String | Image caption, rendered under the image. |
 | `time` | String (ISO 8601) | Sort key. Creation timestamp, used for sort order (`getSortOrder()` in `scripts/helper.js`) and displayed via `fixDate()`. |
 | `published` | Boolean | `true` = live, `false` = staged/draft. Drives the "live blogs" vs "staged blogs" split in `cms/pickBlog.html`. |
-
-The two oldest prototype Lambdas in the repo (`Lambda Functions/getBlogs/getBlogs.js` and its sibling `getTechBlogs.js`) query this table with `KeyConditionExpression` on `blogType` alone — consistent with `blogType` being the confirmed partition key above (a partition-key-only query is normal; it just doesn't narrow to a single item without also supplying the sort key). Treat those two files as historical prototypes regardless — they predate the current CMS's `blogID`-based lookups.
 
 ## `Cards` table
 
@@ -70,23 +68,27 @@ queries):
 
 | Field | Type | Notes |
 |---|---|---|
-| `setID` | String | Randomly generated (`Math.random().toString(36)`) in `Lambdas/createCardPost/`; used as the lookup key by `getCardSetByID`, which queries the `setID-index` GSI directly (see the GSI table above). |
+| `setID` | String | Randomly generated (`Math.random().toString(36)`) in `Lambdas/createCardPost/`; used as the lookup key by `getCardSetByID`, which queries the `setID-index` GSI directly (see the GSI table above). It is also the public identifier in review URLs (`waxReviews.html?...&setID=`): `getCardSetsByYear` already returns it, and `getPublicCardSets` and `searchPlayerName` project it so Browse By Set and Player Search can link to one exact set. |
 | `upvotes` / `downvotes` | Number | Added for the thumbs up/down voting feature (`Lambdas/castVoteHandler/`). Not present on older items until the first vote is cast — DynamoDB creates the attribute on first `ADD`, no migration needed. |
 | `setName` | String | e.g. `"1991-92 Upper Deck Hockey"`. |
 | `year` | Number | Release year, e.g. `1991`. Drives the year-picker on `waxReviews.html` (`renderSetPicker()` in `scripts/helper.js`). |
 | `mfg` | String | Manufacturer — one of O-Pee-Chee, Topps, Upper Deck, Score, Pro Set, Fleer, Leaf, Pinnacle, Pacific (per the `createCardSet.html` dropdown). |
 | `size` | String/Number | Set size, e.g. "660 cards". |
 | `subsets` | String | Free-text description of inserts/subsets. |
-| `stars` | Number (1-5) | "Hella Rating" — rendered as star emoji, sortable via `getSortOrder()` (`scripts/helper.js`; consolidated from the formerly-separate `cardSetSorter()` on 2026-08-12). |
+| `stars` | Number (1-5) | The "Rating" shown on the review page (labelled "Hella Rating" until 2026-10-29) — rendered as star emoji, sortable via `getSortOrder()` (`scripts/helper.js`; consolidated from the formerly-separate `cardSetSorter()` on 2026-08-12). |
 | `formats` | String | e.g. "Wax, Rack, Cello". |
 | `blogCat` | String | `"reg"` (regular O-Pee-Chee/junk-wax sets), `"tims"` (Tim Hortons), `"mcd"` (McDonald's). Drives which nav/year-picker range applies (`renderSetPicker()`, `categoryRanges` in `scripts/helper.js`). |
-| `blogStatus` / `status` | String | `"OK"` = live, `"staged"` = draft. Note the field is named `status` in the older prototype Lambdas (`getCardSets.js`, which queries a `status-year-index` GSI) but `blogStatus` in the current CMS create/update forms — likely the same field, renamed at some point; confirm which name the live table actually uses. |
+| `blogStatus` | String | `"OK"` = live, `"staged"` = draft. Every live Lambda reads and writes it as `blogStatus` (`createCardPost`, `updateCardSet`, and the three that query the `blogStatus-year-index` GSI). The name `status` belonged to a prototype Lambda that has since been deleted. |
 | `postBody` | String | HTML review content, authored via TinyMCE. |
-| `headerImg` / `headerImgName` | String | Header image. The create-Lambda prototype (`createCardPost.js`) only ever writes the bucket *prefix* (`.../img/cards/`) into `headerImg`/`footerImg`, while the current CMS form collects a filename into `headerImgName`/`footerImgName` and the frontend concatenates prefix + filename at render time (`displayCardSet()` in `scripts/wax.js`) — another sign the live Lambda has evolved past this prototype. |
+| `headerImg` / `headerImgName` | String | Header image. `createCardPost` writes the fixed bucket *prefix* (`.../img/cards/`) into `headerImg`/`footerImg` server-side, and the filename the CMS form collects goes into `headerImgName`/`footerImgName`; the frontend concatenates prefix + filename at render time (`displayCardSet()` in `scripts/wax.js`). |
 | `footerImg` / `footerImgName` | String | Footer/"winners" image, same pattern as above. |
 | `author` | String | |
-| `seoPageTitle`, `seoMetaDesc`, `seoURLSlug`, `seoTags` | String | SEO metadata fields added to the create/edit forms; not currently read by any public page's `<head>` — likely intended for a future SEO pass. |
-| `now` / `date` | String | Passed through as `item.now` in `wax.js`'s `renderCardSetPage()` and used as the review's displayed date. |
+| `seoPageTitle`, `seoMetaDesc`, `seoTags` | String | SEO fields on the create/edit forms, filled by hand or with the form's **Generate** buttons (see `CMS_GUIDE.md`). `fetchPageTitle()` in `scripts/wax.js` reads `seoPageTitle` and `seoMetaDesc` for the review page's `<title>`, meta description and social tags, and `seoTags` for the keywords tag; an empty value falls back to a title/description built in code (`FRONTEND.md`, "SEO and social tags"). |
+| `seoURLSlug` | String | The review's **address**, `/reviews/<slug>/` (since 2026-10-30; before that it was stored but read by nothing). **Required** on the create and edit forms (the Generate button writes a slug of the set name) and enforced by `createCardPost` and `updateCardSet`: lowercase letters, numbers and single hyphens, and unique among live (`blogStatus` OK) sets. The page generator that every Amplify build runs (`tools/generateReviewPages`) writes one page per live set at this slug and refuses to run if any live set has none, an invalid one or a duplicate; the nav, year picker, Player Search and Browse By Set links, the canonical and the sitemap all use it. Changing it after publishing moves the set to a new address with no redirect from the old one. See `REVIEW_PAGES.md`. |
+| `now` / `date` | String | Passed through as `item.now` in `wax.js`'s `renderCardSetPage()` and used as the review's displayed date. It is the **publish** date (ISO timestamp, written once at create time) and is never changed by an edit. |
+| `updatedAt` | String | ISO timestamp, written by `updateCardSet` on every CMS save; absent on a set not saved since it was introduced (2026-10-29). The sitemap generator publishes it as the review's `<lastmod>`, falling back to `now` when absent. Returned, with `now`, by `getPublicCardSets` (see `API_ENDPOINTS.md`). Because it moves on every save, it is also one of the fields whose change makes `cardsRebuildTrigger` start a site build (see below). |
+
+**The `Cards` stream (2026-10-30).** `Cards` has a DynamoDB Stream (new and old images) whose only consumer is the `cardsRebuildTrigger` Lambda, which starts an Amplify build when a live item changes in a way that reaches the generated pages or sitemap: `blogStatus`, `setName`, `year`, `blogCat`, `setID`, `stars`, `seoURLSlug`, `seoPageTitle`, `seoMetaDesc`, `seoTags`, `headerImg`, `headerImgName`, `now` or `updatedAt`. `upvotes`/`downvotes` and `hasChecklist` writes are ignored. `stars` is also what decides a year's default set (the one a year link opens): highest first, ties by `setName`. See `REVIEW_PAGES.md`.
 | `hasChecklist` | Boolean | Set by `saveChecklist` (see the `Checklists` table below) the first time a checklist is successfully uploaded for this set's exact `setName` — not present at all until then. Drives the "Checklist" link on `waxReviews.html` (`displayCardSet()` in `scripts/wax.js`), which opens a modal fetching and displaying the full checklist — see `FRONTEND.md`. Not written by any CMS create/update form directly. |
 | `printRun` | String | Optional free text, e.g. "13.4 million packs" — only some sets have one (the Tim Hortons sets). Set from the Print Run field on `cms/createCardSet.html`/`cms/setEdit.html`: `createCardPost` stores it only when non-blank, and `updateCardSet` removes it when the field is cleared. When present, `buildCardSetMarkup()` (`scripts/helper.js`) adds a "Print Run" row under Set Size on `waxReviews.html`; missing or blank means no row at all. |
 
@@ -127,8 +129,8 @@ adds the sport name on the end (e.g. "...O-Pee-Chee Hockey"), which
 | `cardNumberDisplay` | String | The actual printed card number/designation, e.g. `"76"`, `"R1"`/`"PR-1"` (insert sets are commonly numbered with a letter prefix, sometimes hyphenated), `"165a"`, or `"NNO"` ("No Number" — a standard checklist designation for unnumbered cards; a set can have several distinct `NNO` cards, so this value alone is never treated as unique — see `saveChecklist` below). String rather than Number since these are often alphanumeric. **Not guaranteed unique within a group on its own** — see the sort-key collision note below. |
 | `playerName` | String | Searchable by name across every set via `playerSearch.html` — see `LAMBDA_FUNCTIONS.md`'s `searchPlayerName` entry. |
 | `notes` | String | Trailing markers from the source checklist (e.g. `"RC"`, `"UER"`, `"RC, UER"`, alphanumeric parallels like `"1000 PC"`/`"SN 250"` — `parseChecklistPdf` inserts a space at the digit/letter boundary of these even when the source has none), plus anything from a note that wrapped onto its own line in the source PDF instead of staying on the card's line (e.g. `"RDM"`, `"Long Shot RDM"`, or a checklist card's own range reference like `"PR-1 - PR-8 CL"` — `parseChecklistPdf` reattaches a non-matching line to the card immediately before it; see `LAMBDA_FUNCTIONS.md` for the full parsing-logic history). Empty string, not omitted, when there are none. |
-| `type` | String | `"main"` or `"insertSet"` — derived from whether the upload had an insert set name (see `insertSetName` below), not stored independently. What the checklist-display feature (`waxReviews.html`, see `FRONTEND.md`) groups by. |
-| `insertSetName` | String | The insert set's name (e.g. `"Predictors (Retail)"`), derived from the checklist PDF's filename — a comma splits it into base set name + insert set name (e.g. `"1994-95 Upper Deck,Predictors (Retail).pdf"`). Empty string for main-set cards. |
+| `type` | String | `"main"`, `"insertSet"` or `"extendedSet"`. `"main"` when the upload had no name (see `insertSetName` below); otherwise `"insertSet"`, or `"extendedSet"` when the CMS's "Extended Set" box was ticked (a mail-away or box set that belongs with the main set, not an insert). An item with no `extendedSet` type behaves as before, so existing checklists needed no migration. What the checklist-display feature (`waxReviews.html`, see `FRONTEND.md`) groups by. |
+| `insertSetName` | String | The insert set's name (e.g. `"Predictors (Retail)"`), derived from the checklist PDF's filename — a comma splits it into base set name + insert set name (e.g. `"1994-95 Upper Deck,Predictors (Retail).pdf"`). Also holds an Extended Set's name (e.g. `"Rookie and Traded"`), and shares the `INSERT#<name>#` sort-key prefix with insert sets, so a group is identified by its name alone and re-saving an insert group as extended replaces its rows in place. Empty string for main-set cards. |
 | `sortIndex` | Number | This card's position (0-based) in the reviewed table at save time, within its own group (main, or this one insert set) — the review table preserves the PDF's printed order, and rows can be freely reordered/added/deleted there before saving. Deliberately separate from the `cardNumber` sort key above, which doesn't sort numerically or group main-before-insert on its own (plain string comparison — `"INSERT#"` sorts before `"MAIN#"`, and `"10"` sorts before `"2"`). The checklist-display feature (`waxReviews.html`, see `FRONTEND.md`) groups by `type`/`insertSetName` then orders by this. |
 
 **Full-replace on every save, scoped to the group**: `saveChecklist`
@@ -155,8 +157,14 @@ string-matching convention, and a typo'd or pre-fix (missing the
 trailing-"Hockey" strip) filename at upload time can silently produce a
 `Checklists` partition with no matching `Cards` item. `searchPlayerName`'s
 `?audit=1` mode is the tool for checking this across every uploaded
-checklist at once - it enumerates every distinct `setName` in
-`Checklists` and reports any with zero matching `Cards` items. Two such
+checklist at once - it enumerates every `setName` in `Checklists` and
+reports any with zero matching `Cards` items (staged reviews live in
+the same `Cards` table, so a staged review counts as a match). Put
+another way, `setName` is the foreign key from `Checklists` to `Cards`
+without any enforcement: DynamoDB has no constraint, so a checklist can
+point at nothing. The audit's `orphans` list names each such checklist
+individually (set, group, type, card count) and is what the admin page's
+delete list is built from. Two such
 mismatches were found and fixed this way on 2026-08-24 (a hyphenation
 difference and a double-space filename typo, both requiring every item
 under that stale `setName` partition to be deleted, not just one row -
@@ -187,11 +195,62 @@ Back the Autobus SMS Messaging Platform (`cms/smsAdmin.html`).
 |---|---|---|
 | `phoneNumber` | String | Partition key (per `cms/smsAdmin.html`'s bulk-import instructions: "each record must already be in DynamoDB typed JSON format with `phoneNumber` as the partition key"). E.164 format. |
 | `firstName` | String | |
-| `status` | String | `sendAlertHandler`'s broadcast Lambda filters on `status = "subscribed"`. **Confirmed 2026-08-15** (via `Lambdas/inboundSMSHandler/`, the Twilio inbound-reply webhook — see `LAMBDA_FUNCTIONS.md`): the other value is `"unsubscribed"`, set when a subscriber texts STOP (also stamps `unsubTimestamp`); resubscribing via START sets it back to `"subscribed"` and stamps `optInTimestamp`. Both keyword-triggered writes set `source: "mobile"`; `Lambdas/subscribeHandler/`'s single-add endpoint instead sets `source: "web"` when a subscriber signs up through the site. |
+| `status` | String | `sendAlertHandler`'s broadcast Lambda filters on `status = "subscribed"`. **Confirmed 2026-08-15** (via `Lambdas/inboundSMSHandler/`, the Twilio inbound-reply webhook — see `LAMBDA_FUNCTIONS.md`): the other value is `"unsubscribed"`, set when a subscriber texts STOP (also stamps `unsubTimestamp`); resubscribing via START sets it back to `"subscribed"` and stamps `optInTimestamp`. Both keyword-triggered writes set `source: "mobile"`; `Lambdas/subscribeHandler/`'s single-add endpoint instead sets `source: "web"` when a subscriber signs up through the site, and so does the bulk import (every imported row is `subscribed`). A third writer, added 2026-10-27, is `sendAlertHandler`: when Twilio refuses a number with error 21610 (the recipient opted out with Twilio), it sets `status = "unsubscribed"`, stamps `unsubTimestamp` and sets `source: "twilio"`. |
+
+`status` is **our own record of who we ask Twilio to text**, not the
+source of truth on consent. Twilio keeps its own opt-out list per sending
+number and checks it at send time; it never learns about these tables.
+Twilio's list wins: a number can be `subscribed` here and still be
+refused. `AMP_SMS_PLATFORM.md`'s "Subscriber lifecycle" walks through the
+whole cycle.
 
 `Subscribers` is the live/production list; `SubscribersTest` is a
 parallel table used when "Test Mode" is checked in the SMS admin tool,
-so test broadcasts never reach real members.
+so test broadcasts never reach real members. **Opting out only affects
+`Subscribers`, never `SubscribersTest`:** the inbound-text Lambda
+(`inboundSMSHandler`) has the table name `Subscribers` hardcoded, so a
+STOP or START text changes only the live list. A test recipient who
+texts STOP stays `subscribed` in `SubscribersTest` until the next Test
+Mode broadcast, where Twilio refuses the number and `sendAlertHandler`
+marks that test record `unsubscribed`; texting START afterwards doesn't
+flip a test record back, so set it to `subscribed` by hand in the
+DynamoDB console.
+
+A record that is **deleted** (rather than marked `unsubscribed`) can't be
+brought back by texting START: the START handler only updates a number
+that already has a record, and replies "private communication channel"
+to strangers. A deleted subscriber has to be re-added with the SMS
+admin's "add subscriber" (or a new bulk import). To take someone off the
+list, set `status` to `unsubscribed` instead of deleting the item.
+
+## `WaxPacks` table
+
+Backs The Wax Museum (`waxMuseum.html`), added 2026-11-01 to 11-03; one
+item per wax pack, written from the CMS wax pack pages.
+
+**Keys** (as the Lambdas use them, not checked in the console):
+partition key `year` (Number, the season's first year), sort key
+`packKey` (String). `packKey` is a slug made once from the pack name at
+creation (`saveWaxPack`) and kept when the name is edited later, so a
+rename doesn't orphan the item.
+
+| Field | Type | Notes |
+|---|---|---|
+| `year` | Number | Partition key. 1900 to 2100. |
+| `packKey` | String | Sort key; lowercase letters, numbers and single hyphens. |
+| `name` | String | Required, up to 100 characters (for example "1992-93 Parkhurst Series 2 Jumbo"). The museum's sort reads the set, "Series N" and "Low"/"High" out of it. |
+| `manufacturer` | String | Required, up to 60. The CMS offers a fixed list (O-Pee-Chee, Topps, Upper Deck, Pinnacle, Score, Pro Set, Fleer, Leaf, Pacific). |
+| `packaging` | String | Required, up to 40. Fixed list: Wax Pack, Flow Pack, Jumbo Flow Pack, Foil Pack, Cello Pack, Blister Pack. |
+| `type` | String | Required: `main` or `fast food`. |
+| `numCards` | Number | Required, cards per pack, 1 to 200. |
+| `price` | String | Optional, up to 20 (as printed, for example "50¢"). |
+| `frontImg` / `backImg` | String | Optional file names under S3 `img/wax-packs/`. |
+| `notesFront` / `notesBack` | String | Optional, up to 1000 each. An older single `notes` field is no longer written; the edit form loads it into `notesFront`, so a save carries it over. |
+| `reviewSlug` | String | Optional: the `seoURLSlug` of the set's review, which the museum links to. |
+| `updatedAt` | String | ISO timestamp of the last save. |
+
+A "format" field existed briefly and was removed on 2026-11-03.
+Optional fields are omitted rather than stored empty.
 
 ## `BlogIntro` / `CardIntro` tables — dead, backing orphaned Lambdas
 
@@ -213,6 +272,7 @@ persistent store the site depends on:
 
 - `img/blog/` — blog post images.
 - `img/cards/` — card set header/footer/middle images, keyed loosely by convention as `{year}_hero.webp`, `{setSlug}_Middle.webp`, etc.
+- `img/wax-packs/` — Wax Museum pack images, front and back (`frontImg`/`backImg` in `WaxPacks`).
 - `img/cms/` — CMS-only UI assets (e.g. the Autobus nameplate logo).
 - root — favicons (`favicon.ico`, `favicon2.ico`, etc).
 

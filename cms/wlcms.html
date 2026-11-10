@@ -12,30 +12,17 @@
     <title>cardStack cms - home</title>
     <link
       rel="icon"
-      type="image/x-icon"
-      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
+      href="/favicon.ico"
+      sizes="16x16 32x32 48x48">
     <link
       rel="icon"
       type="image/png"
-      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+      sizes="192x192"
+      href="/images/icons/icon-192.png">
     <link
       rel="apple-touch-icon"
-      href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
+      href="/images/icons/apple-touch-icon.png">
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      rel="preload"
-      href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap"
-      as="style"
-      onload="this.rel='stylesheet'">
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Spicy+Rice&family=Nunito:wght@200&family=Special+Elite&family=Work+Sans:wght@400;700&family=Source+Sans+3:wght@200;400;700&family=Fira+Code:wght@300&display=swap">
-    </noscript>
 
     <script src="/scripts/helper.js"></script>
 
@@ -50,20 +37,9 @@
 
   <body>
     <section>
-      <table class="mast-table">
-        <tr>
-          <td width="80%">
-            <div>
-              <header class="masthead">card<i>Stack</i></header>
-            </div>
-          </td>
-          <td class="cms-logo">
-            <i>Content</i><br>
-            <strong>Management</strong><br>
-            <i>System</i><br>
-          </td>
-        </tr>
-      </table>
+      <header class="cms-masthead">
+        <img src="/images/cms-masthead.webp" width="1500" height="200" alt="cardStack CMS">
+      </header>
     </section>
     <section></section>
     <br>
@@ -90,6 +66,20 @@
                 <li>
                   <a href="/cms/uploadChecklist.html">...manage checklists</a>
                 </li>
+              </ul>
+            </li>
+            <li class="cms-nav-item">
+              <button
+                type="button"
+                class="cms-nav-parent"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                ...wax packs
+              </button>
+              <ul class="cms-nav-dropdown">
+                <li><a href="/cms/newWaxPack.html">...new wax pack</a></li>
+                <li><a href="/cms/pickWaxPack.html">...edit wax pack</a></li>
               </ul>
             </li>
             <li class="cms-nav-item">

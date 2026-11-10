@@ -15,7 +15,8 @@ changing layout CSS on these pages.
 
 ## HTML conventions for `/cms` pages
 
-All 10 pages under `/cms` were brought into a consistent structure on
+All the pages under `/cms` (10 at the time; 13 since the three wax pack
+pages were added in November 2026) were brought into a consistent structure on
 2026-09-03 (script placement, `<head>` element order, dead code). This
 is the convention to follow for any new `/cms` page or edit to an
 existing one. **This is scoped to `/cms` specifically** — the public
@@ -43,13 +44,18 @@ reference, e.g. `cms/admin.html`):
    Don't also add the older plain `favicon.ico`/`favicon.png` pair —
    every page used to carry both, which the cleanup pass removed as a
    duplicate.
-6. `<link rel="stylesheet" href="/styles/styles.css">`
-7. The Google Fonts preconnect/preload/noscript block (copy verbatim
-   from any current page — it's identical across all 10).
-8. Page-specific `<script>` tags, in this order: any external library
+6. `<link rel="stylesheet" href="/styles/styles.css">` — this also
+   brings the fonts: since 2026-11-05 every font is self-hosted and
+   declared in `styles.css`, so `/cms` pages no longer have a Google
+   Fonts block (it was removed from all 13). The CMS uses the site's
+   families only: Source Sans 3 for text (including the SMS masthead,
+   text areas, the SEO description box and the empty-list messages,
+   which used Arial, Consolas, Fira Code or `monospace` until then),
+   Nunito and Special Elite where the shared styles use them.
+7. Page-specific `<script>` tags, in this order: any external library
    (e.g. TinyMCE), then this site's own `<script src="/scripts/...">`
    tags, then any inline `<script>` block. All of it lives inside
-   `<head>` — none of these 10 pages should have a `<script>` tag
+   `<head>` — none of these pages should have a `<script>` tag
    after `</head>` or at the bottom of `<body>` anymore (`smsAdmin.html`
    and `wlcms.html` both used to do this before the cleanup).
 
@@ -67,11 +73,12 @@ already used for `fetchCopyrightYear()` on every page.
   not self-closed — no trailing `/>`. `smsAdmin.html` was the one
   holdout using XHTML-style self-closing tags; it's been normalized to
   match the other 9.
-- The masthead table cell (`<td><div><header class="masthead">...`)
-  needs an explicit closing `</div>` before `</td>`. Every page was
-  missing this — browsers silently recover, but it broke tooling (see
-  below) and is worth getting right in any new page copied from an
-  existing one.
+- Every page except `smsAdmin.html` opens with `<header class="cms-masthead">`
+  holding a single full-width `images/cms-masthead.webp` (1500x300,
+  edge to edge like the public Home banner; `.cms-masthead` in
+  `styles.css` cancels the body margin). `smsAdmin.html` keeps its own
+  separate Autobus masthead table. The CMS is only used at desktop
+  widths, so the banner has no narrow-screen handling.
 - No dead `<script src="...">` tags for scripts the page doesn't
   actually call into, no commented-out markup left in place "just in
   case," no `id="..."` attributes with no CSS rule or JS reference
@@ -85,8 +92,8 @@ JavaScript *inside* `onclick`/`onload` attribute values, which is out
 of scope for an HTML whitespace pass). Prettier's HTML parser is
 stricter than a browser and will hard-error on things browsers
 silently auto-correct (an unclosed `<div>`, a stray closing tag with
-no matching open tag) — that's a feature, not a nuisance: it's how the
-masthead `<div>` bug above and several stray closing tags were found
+no matching open tag) — that's a feature, not a nuisance: it's how an
+unclosed masthead `<div>` and several stray closing tags were found
 across these files. If Prettier errors on a `/cms` page, don't work
 around it — the underlying markup is genuinely broken and should be
 fixed the same way. Note Prettier self-closes void elements by
@@ -98,8 +105,10 @@ sed -E 's#<(meta|link|br|img|input|hr)([^>]*)\s*/>#<\1\2>#g'
 
 ## cardStack — blog & card set authoring
 
-Entry point: `cms/wlcms.html` — its centered nav is grouped into three
-dropdown/flyout menus (Cards, Blogs, Admin) plus a plain Exit link,
+Entry point: `cms/wlcms.html` — its centered nav is grouped into
+dropdown/flyout menus (Cards, Wax Packs, Blogs, Admin) plus a plain Exit
+link (the Wax Packs menu holds New and Edit only; its old link to the
+public museum page was removed on 2026-11-04),
 rather than one flat row of links. Each opens two ways, independently:
 a small inline script scoped to `#wlcms-top-nav` toggles an `open`
 class on click (this is what drives it on touch, where hover isn't
@@ -123,7 +132,10 @@ Grouped page links:
 | `cms/blogEdit.html` | Edit form for a single blog post, reached via `?blogID=&blogType=`. |
 | `cms/setEdit.html` | Edit form for a single card set, reached via `?setID=`. |
 | `cms/uploadChecklist.html` | Upload a card set checklist PDF, review/correct the parsed result, save to the `Checklists` table — see "Checklist upload" below. |
-| `cms/admin.html` | Self-service site-health checks (broken images, checklist-to-review linkage) — see "Admin Tools" below. |
+| `cms/admin.html` | Self-service site-health checks (broken images, review-image alt text and size, review pages deployed, orphaned checklists) — see "Admin Tools" below. |
+| `cms/newWaxPack.html` | Add a wax pack to The Wax Museum — see "Wax packs" below. |
+| `cms/pickWaxPack.html` | Every wax pack, as links to its edit page. |
+| `cms/waxPackEdit.html` | Edit or delete one wax pack, reached via `?year=&packKey=`. |
 
 All create/edit forms use a hosted **TinyMCE** WYSIWYG editor
 (`initTinyEditor()` in `scripts/cmsFormUI.js`) for the body text — the
@@ -221,13 +233,41 @@ mechanism behind this (including a real CSS specificity bug this was
 built around) and why the mobile scaling has to actually resize the
 image's box rather than just visually shrink it.
 
-**Middle image** (`.card-middle-img`, `styles.css`) — a simpler, fixed
-75%-width centered treatment with a border/drop-shadow, no float/size
-choice needed:
+**Middle image** (`.card-middle-img`, `styles.css`) — a simpler,
+centered treatment with a border/drop-shadow and no float/size choice:
+75% of the text column on desktop, and 100% of it on phones. The
+desktop 75% compounded on a phone, where the column is already narrow,
+and left the image (268px of a 354px column) visibly smaller than the
+header and footer images; the phone rule fixes that.
 
 ```html
-<img class="card-middle-img" src="..." alt="...">
+<img class="card-middle-img" src="..." width="750" height="278" alt="...">
 ```
+
+- **Alt Text starts filled in.** The Insert Middle Image dialog opens
+  with "Vintage hockey cards from the <year> <maker> set"
+  (`middleImageAltDefault()`, from the form's Release Year and
+  Manufacturer), the same wording the header and footer images use, so
+  an image isn't saved with no alt just because the box was left blank.
+  Edit it to say what the picture shows. The wrap-image (logo) dialog is
+  deliberately not prefilled: a logo isn't "hockey cards".
+- **`width` and `height` are recorded on insert.** The dialog loads the
+  picked image (`imageNaturalSize()`) and writes its real pixel size.
+  The CSS still scales the image by the column width and keeps its
+  proportions (`.set-details-author img` sets `height: auto`); the
+  attributes exist so the browser knows the image's shape before it
+  loads and reserves the space, instead of the text jumping down when
+  the picture arrives (layout shift, which search engines measure).
+- **Older middle images are filled in as a set is opened.** Images
+  saved before this have no size. When `setEdit.html` loads a set,
+  `fillMiddleImageSizes()` finds each `.card-middle-img` missing a
+  `width` or `height`, reads the real size and sets both (a width that
+  is already there is kept and the height made proportional). It
+  changes only the editor, not the saved set: click **Update Post** to
+  keep it. It is not an undo step, and it leaves images that already
+  have both attributes, wrap logos and unreachable images alone. The
+  admin page's Image Alt & Size Check lists which sets still need the
+  update.
 
 **Why non-editable, and why it has to be stripped before saving**: the
 toolbar buttons insert `contenteditable="false"` plus an
@@ -258,6 +298,81 @@ provided, picking (or uploading) an image calls it with
 the original header/footer-image flow (`targetFieldId` only, no
 callback) is unchanged.
 
+### SEO fields and their Generate buttons
+
+A card set has four SEO fields on `createCardSet.html`/`setEdit.html`:
+**SEO Title** (`seoPageTitle`), **SEO Meta Description** (`seoMetaDesc`),
+**SEO Friendly URL** (`seoURLSlug`, **required** since 2026-10-30, see
+below) and **SEO Keywords** (`seoTags`).
+The live review page uses the title, description and keywords directly
+in its `<title>`, meta tags and social previews (`FRONTEND.md`'s "SEO
+and social tags"); only when a field is empty does the page fall back
+to a generic version built in code. Hand-written values had come out
+thin ("1987-88 O-Pee-Chee Hockey", "A comprehensive review of the
+1987-88 O-Pee-Chee Hockey set"), so each field has a small **Generate**
+button (`generateSeoTitle()`, `generateSeoDescription()`,
+`generateSeoSlug()`, `generateSeoKeywords()` in `scripts/cmsFormUI.js`).
+
+The title, keywords and URL slug generators are deterministic
+templates, not AI, and use only what is already in the form, so they
+can't claim anything the form doesn't back up. The description button is
+different: **Generate with Claude** has Claude read the review and write
+it (see `SEO_DESCRIPTION_GENERATOR.md`), falling back to the template
+below if that fails:
+
+- **Title**: `<set> Card Set Review`, with the maker inserted after the
+  season when the set name lacks it ("1991-92 Stadium Club" plus Topps
+  gives "1991-92 Topps Stadium Club Hockey") and "Hockey" added when
+  missing. It used to end with " | Junk Wax Hockey" when that fit in 65
+  characters, which made titles inconsistent; since 2026-10-30 there is
+  no site-name suffix, and the page's own fallback title matches.
+- **Meta description (fallback template)**: a base sentence ("<set> card set review.") then
+  each of these only if it still fits in 160 characters: the size and
+  the inserts, the rating, and the first sentence of the review's
+  first paragraph (a paragraph with no sentence end contributes
+  nothing, rather than running into the next one).
+- **Keywords**: the set label, "<season> hockey cards", the maker,
+  "<set name> checklist", "junk wax hockey", then the insert names;
+  deduplicated, at most 12.
+- **URL slug**: the set name lowercased, apostrophes removed, other
+  symbols turned into hyphens. Since 2026-10-30 it is the review's
+  address, `/reviews/<slug>/`, and it is **required** (it was stored but
+  unused before). The rules: lowercase letters, numbers and single
+  hyphens. `seoSlugProblem()` (`cmsFormUI.js`) checks it before
+  `createCardSet()` and `updateCardSet()` send anything (an alert names
+  the problem and focuses the field; `updateCardSet()` had no
+  validation at all before), and `createCardPost` and `updateCardSet`
+  repeat the check server-side. When a set is saved live (status OK) the
+  Lambdas also reject a slug another live set already uses, naming that
+  set, because two pages can't share an address and the site build would
+  refuse. Changing a slug after publishing gives the set a new address
+  and the old one stops working (there are no redirects), so treat it as
+  fixed once live.
+
+A button needs the Set Name first (it says so through `cmsAlert()`
+otherwise) and, when the field already holds different text, asks
+through `cmsConfirm()` before replacing it. Title and description show
+a live count against 65 and 160 characters, turning red when over.
+Description and keywords are auto-sizing textareas
+(`autosizeTextarea()`, refit on typing and after every generate or
+load): they grow to fit and never scroll. Enter is blocked in them and
+a pasted line break becomes a single space, since a meta tag must not
+contain one.
+
+Existing sets keep their saved text until you open one, click the
+buttons and update it. Saving also stamps the set's `updatedAt`, which
+becomes its sitemap `<lastmod>`.
+
+**Saving starts a site build.** A save to a live set triggers an Amplify
+build (the `Cards` table's stream calls `cardsRebuildTrigger`), which
+regenerates the set's `/reviews/<slug>/` page, the sitemap and the link
+manifest; the change is live about three minutes later, with nothing to
+run or push. Vote counts and checklist uploads don't start one. A new set's
+page, and an edited set's title, description and social tags in the raw
+HTML, appear when the build finishes; the review text itself is always
+live (the page's JavaScript fetches it). See `REVIEW_PAGES.md`, and the
+**Review Pages Check** under "Admin Tools" if a page seems to be missing.
+
 ### Star Rating widget
 
 `createCardSet.html` and `setEdit.html` both use a row of five clickable
@@ -268,8 +383,8 @@ input (edit) — two different, unpolished representations of the same
 whatever's actually locked in if you move away without clicking);
 clicking locks it in, turning that star and every one before it gold.
 
-Uses the exact same 🌟 emoji as the public "Hella Rating" display
-(`wax.js`) for the lit/selected state — emoji ignore CSS `color`, so
+Uses the exact same 🌟 emoji as the public "Rating" display
+(`helper.js`) for the lit/selected state — emoji ignore CSS `color`, so
 rather than a second "empty star" icon, the unselected state is the
 same glyph desaturated and dimmed via `filter: grayscale(1) opacity(0.35)`
 (`.star-rating-icon`), with `filter: none` on `.selected`.
@@ -330,7 +445,11 @@ if you add a new required field to a create form, you must add a
 matching guard in its JS handler too, or a blank submission will sail
 straight through to the Lambda (this is exactly what caused a 500 on
 `createCardSet.html` before `setName` got a guard — see
-`API_ENDPOINTS.md`'s "Create card set" entry).
+`API_ENDPOINTS.md`'s "Create card set" entry). SEO Friendly URL
+(`seoURLSlug`) joined the required fields on 2026-10-30, checked by
+`seoSlugProblem()` in both `createCardSet()` and `updateCardSet()`
+(see "SEO fields and their Generate buttons" above); `updateCardSet()`,
+which had no client-side guards, is now `async` for that check.
 
 ### CMS alert / confirm modals
 
@@ -473,7 +592,29 @@ styling of everything inside it, so the real `.set-details-*` CSS
 applies to both. Change the review markup there, not in
 `renderPreview()` or `displayCardSet()` — see `FRONTEND.md`'s "Card set
 markup is shared with the CMS preview" for the details and pitfalls. `createBlogPost.html`/`blogEdit.html` don't currently have an equivalent preview.
-Sits in the horizontal middle of the Update/Cancel/Delete button row (a
+
+**Editing in place.** The review text inside the preview is editable:
+click it and a formatting bar docked at the top of the modal handles
+undo/redo, the Styles menu (headings and blocks), bold, italic,
+alignment, bullet/numbered lists and links. It is an inline TinyMCE
+editor (`initPreviewEditor()` in `cmsFormUI.js`, started by
+`startPreviewEditor()` in `cmsCardSet.js`) on the review body, which is
+wrapped in a `div#previewBody` at runtime because TinyMCE can't edit a
+table cell. Edits are copied into the main `#postBody` editor when the
+preview closes (× or Escape), so Update saves them as normal; the copy
+is one undo step in the main editor. Only the review text is editable
+(everything else comes from the form fields), and the preview editor
+has no image or HTML-source buttons — those stay in the main editor.
+Three details matter: the toolbar is docked with `fixed_toolbar_container`
+and its menus open inside the modal via `ui_container`, since TinyMCE's
+floating UI otherwise lands behind the modal (`z-index: 9999`);
+`undoManager.add()` runs before the copy-back, because the page loads the
+review text without an undo level and Ctrl+Z would otherwise land on a
+blank editor; and `createCardSet()`/`updateCardSet()` read the editor with
+`tinymce.get("postBody")`, not `tinymce.activeEditor`, which means
+"last focused" and could be the preview's editor.
+
+The Preview button sits in the horizontal middle of the Update/Cancel/Delete button row (a
 CSS Grid `1fr auto 1fr` row, not a flex `space-between` — the latter
 doesn't truly center a middle item when the two side groups are
 different widths, which Update+Cancel vs. Delete Set are).
@@ -507,9 +648,12 @@ create/edit form: **upload → review → save**.
    an empty table — usually a card-number format the parser doesn't
    support yet (see `LAMBDA_FUNCTIONS.md`).
 2. **Review**: on a successful parse, the modal closes and an editable
-   table appears on the page — a Set Name field, an optional Insert Set
-   Name field (blank for the base/main set; filled in when the PDF's
-   filename indicated one — see `LAMBDA_FUNCTIONS.md`), and one table
+   table appears on the page — a Set Name field, an optional Insert /
+   Extended Set Name field (blank for the base/main set; filled in when
+   the PDF's filename indicated one — see `LAMBDA_FUNCTIONS.md`), an
+   "Extended Set" checkbox (tick it for a mail-away or box set that
+   belongs with the main set rather than being an insert; it needs a
+   name, and it is cleared on every new parse), and one table
    row per card (`Card #` / `Player Name` / `Notes`), each cell a plain
    text input, with a delete button per row and an "+ Add Row" button.
    Nothing has been saved yet; this step exists because parsing
@@ -520,7 +664,7 @@ create/edit form: **upload → review → save**.
    (including any hand-edits) and sends it to `saveChecklist`, which
    fully replaces that group's rows in the `Checklists` table (see
    `DATA_MODEL.md`) — the main set, or the one specific insert set named
-   in the Insert Set Name field, not merging and not touching the
+   in the Insert / Extended Set Name field, not merging and not touching the
    table's other groups for that same base set. It also flips a
    `hasChecklist` flag on the matching `Cards` item, which is what makes
    the "Checklist" link appear on `waxReviews.html` (see
@@ -548,8 +692,8 @@ and opens a modal in the same `.bulk-*` design as the upload modal (Close
 in the bottom row, backdrop click closes, every open starts from an empty
 field). Pick a set from the type-ahead (or type the full name and press
 Enter), and it lists every checklist *group*
-stored for that set — the main set plus each insert set, with card
-counts — each with its own Delete button (`loadChecklistGroups()` /
+stored for that set — the main set plus each insert or extended set, with card
+counts (an extended set's row is marked "(extended set)") — each with its own Delete button (`loadChecklistGroups()` /
 `deleteChecklistGroup()`, `scripts/checklistUpload.js`). The listing
 comes from the **public** `getChecklistBySetName` endpoint, not a new
 one; no auth is needed to read, and the delete itself carries the usual
@@ -566,7 +710,10 @@ edit pickers already use — `getCardSets` (live) and `getStagedCardSets`
 suggestion has something to manage. It comes from `Cards` rather than
 `Checklists` on purpose: the point is managing the checklists of real
 card sets, and orphaned checklists (a `setName` matching no review) are
-already surfaced by the Checklist Integrity Check on `cms/admin.html`.
+already surfaced by the Checklist Integrity Check on `cms/admin.html`,
+which can also delete them (see "Admin Tools" below): that is the
+second route to the same `saveChecklist` delete, for checklists that
+this modal's type-ahead can't suggest.
 The field stays free text, so a set whose flag is stale — a checklist
 that saved but whose `Cards`-linking step failed (the `Warning:` case)
 — isn't suggested but can still be typed by hand. The index is fetched
@@ -610,12 +757,14 @@ section for that half of the feature.
 checks, run entirely client-side by `scripts/adminTools.js` against the
 site's existing public read APIs — no new backend endpoints, no auth
 needed for the checks themselves (they're just page-gated like every
-other `/cms` page). Each check is its own card on the page: a short
+other `/cms` page). The one exception is the orphaned-checklist Delete,
+which writes: it sends the Cognito token to `saveChecklist`, like the
+Upload Checklist page. Each check is its own card on the page: a short
 description, a "Run Check" button, a status line, and a results area.
 Adding a new one means adding a function to `adminTools.js` and a
 matching card here — not growing this into one do-everything script.
 
-Two checks exist today:
+Four checks exist today:
 
 - **Broken Image Check**: loads every image the *live* public site
   references — blog post `img` fields, card set `headerImgName`/
@@ -632,9 +781,88 @@ Two checks exist today:
   to, and any individual page fetch that failed outright (e.g. from
   DynamoDB throughput exhaustion — see `ARCHITECTURE.md`'s billing-mode
   note) is reported separately rather than aborting the whole check.
-- **Checklist Integrity Check**: a thin UI wrapper around
-  `searchPlayerName`'s `?audit=1` mode (see `LAMBDA_FUNCTIONS.md`) —
-  reports any uploaded checklist with no matching `Cards` review.
+- **Image Alt & Size Check**: looks only at the images *inside* each
+  live review's body (the ones the editor's Insert buttons add) and
+  flags an empty `<img>` with no `src`, missing alt text, alt text that
+  looks like a filename, a missing `width` or `height` (an attribute or
+  an inline style counts) and a non-WebP file. It exists because those
+  images are typed in by hand, so nothing else guarantees them an alt
+  (image search and accessibility) or a size (without one the page
+  jumps as the picture loads). Header and footer images are skipped:
+  `buildCardSetMarkup()` writes their markup. A GIF or SVG logo shows as
+  "not WebP" by design and is normally fine. Shares `fetchAllCardSets()`
+  with the Broken Image Check, so it makes one `getCardSetsByYear` call
+  per year (about 40) and takes about a minute.
+- **Review Pages Check** (added 2026-10-30): compares the live sets
+  with the pages actually deployed. It fetches `getPublicCardSets` once
+  and sends a `HEAD` request for `/reviews/<slug>/` for each set,
+  listing any set with no slug ("add one in the CMS") and any whose page
+  isn't there ("not deployed"). It exists because review pages are
+  generated by an Amplify build that a CMS save starts, so a missing page
+  right after a save is normal for about three minutes, but one that stays
+  missing means the build failed (the Amplify build email says why). Takes
+  a few seconds.
+- **Checklist Integrity Check**: finds **orphaned checklists** and lets
+  you delete them. A checklist's `setName` is the only link between the
+  `Checklists` and `Cards` tables (effectively a foreign key, though
+  DynamoDB doesn't enforce it), so a typo, a renamed review or a deleted
+  review leaves checklist rows whose `setName` matches no review: they
+  still feed Player Search but can never show a "Checklist" link. The
+  check is a UI over `searchPlayerName`'s `?audit=1` mode (see
+  `LAMBDA_FUNCTIONS.md`), which looks each stored `setName` up in
+  `Cards` (staged reviews count as a parent, so only a set with no
+  `Cards` item at all is orphaned) and returns an `orphans` list with
+  one entry per **checklist** — a set's main set, an insert set or an
+  extended set — not one per set. The page shows a checkbox row for
+  each ("1990-91 Topps - Team Scoring Leaders (21 cards)") and a
+  **Delete** button, disabled until something is ticked. It asks
+  through the red `cmsConfirm()` modal naming everything it will
+  remove ("This cannot be undone!"), then deletes only the ticked
+  checklists, one `saveChecklist` delete per checklist with the usual
+  Cognito token. A failure leaves that checklist listed, the others still
+  go, and the closing alert reports both. Check each row before
+  ticking: an unlinked checklist is sometimes deliberate (it lets
+  Player Search show players from a set that has no review yet), and
+  deleting it removes those players from search too. Nothing is
+  pre-ticked. The audit request skips the browser cache so a re-run
+  after a delete shows current data.
+
+### Wax packs (The Wax Museum)
+
+Three pages, all driven by `scripts/cmsWaxPack.js`, feed the public
+Wax Museum (`waxMuseum.html`, see `FRONTEND.md`) through the `WaxPacks`
+table (`DATA_MODEL.md`):
+
+- **New Wax Pack** (`newWaxPack.html`) and **Edit Wax Pack**
+  (`waxPackEdit.html?year=&packKey=`) share one form, built once by
+  `renderWaxPackForm()`: year, name, manufacturer, packaging, type
+  (Main / Fast Food), cards per pack, price, front and back image, front
+  and back notes, and an optional link to the set's review. Manufacturer,
+  packaging and type are fixed dropdowns (`WAX_PACK_MANUFACTURERS`,
+  `WAX_PACK_PACKAGING`, `WAX_PACK_TYPES`); add a value there, and the
+  `saveWaxPack` Lambda accepts any text for manufacturer and packaging
+  but only `main`/`fast food` for type. The review dropdown lists every
+  live set from `getPublicCardSets` and stores its `seoURLSlug`.
+- **Pick Wax Pack** (`pickWaxPack.html`) lists every pack as a link to
+  its edit page (the list is fetched without the browser cache, so a
+  fresh save shows at once).
+- **Save** sends the whole form to `saveWaxPack` with the Cognito token;
+  a new pack's key is made from its name once and kept through later
+  renames. **Delete** (edit page) asks through `cmsConfirm()` and calls
+  `deleteWaxPack`. Both return to the pick list.
+
+**Images.** Each side's Browse button opens the shared image browser
+(`cmsImageBrowser.js`) on the `img/wax-packs/` folder: `openImageBrowser()`
+takes an optional directory and an optional processor since this feature.
+Uploads go through `processWaxPackImage()` (`scripts/waxPackImageProcessor.js`)
+first, entirely in the browser: it finds the pack on its white backdrop,
+crops and centres it on a 900x1200 white canvas with a margin, whitens the
+backdrop, and encodes WebP (quality 0.82, dropping to 0.6 to stay under
+250 KB). The file name gets six hex characters from a hash of the image
+(`IMG_1234.JPG` becomes `img-1234-a1b2c3.webp`), so a different picture
+never reuses a name a browser may have cached. It needs a browser that
+can write WebP (Chrome, Edge, Firefox); an iPhone HEIC photo needs
+exporting as JPEG first.
 
 ## Autobus Messaging Platform — `cms/smsAdmin.html`
 
@@ -649,10 +877,14 @@ fullest first-party explanation of this tool, summarized here:
 - **Message box**: always starts pre-filled with `"Autobus Cycling Club:\n"` — you add the ride details after it.
 - **Live character/segment counter**: detects whether the message fits the **GSM-7** SMS character set (160 chars/segment) or has to fall back to **Unicode** (70 chars/segment, e.g. because of curly quotes or emoji) — messages over one segment's worth of characters get split (and billed) as multiple SMS segments by Twilio.
 - **GSM-Safe Mode** checkbox: auto-replaces smart-quotes/em-dashes/ellipses with plain-ASCII equivalents to keep the message in the cheaper GSM-7 encoding.
-- **Test Mode** checkbox (checked by default): sends only to the `SubscribersTest` table instead of the real `Subscribers` list — use this to sanity-check a message before going live. Unchecking it requires confirming a "LIVE MODE" warning (`cmsConfirm()` — see "CMS alert / confirm modals" above) before anything sends.
+- **Test Mode** checkbox (checked by default): sends only to the `SubscribersTest` table instead of the real `Subscribers` list — use this to sanity-check a message before going live. Unchecking it requires confirming a "LIVE MODE" warning (`cmsConfirm()` — see "CMS alert / confirm modals" above) before anything sends. **Opting out only affects `Subscribers`, never `SubscribersTest`:** a STOP or START text changes only the live list, so a test recipient who texts STOP stays `subscribed` in the test table until the next Test Mode send marks them (see `AMP_SMS_PLATFORM.md`'s "Subscriber lifecycle").
 - **Results panel**: per-recipient success/failure table plus a summary count, after a send.
 - **Bulk import** (nav link): replaces the *entire* subscriber list from an uploaded CSV — the club sign-up form's own export, uploaded directly, no pre-processing step (removed 2026-09-19; see below for what this replaced). This is destructive — it deletes all existing subscribers first, only once the whole file has been parsed and validated. Only the "Name" and "Your mobile number" columns are read; a row with a missing name or an unusable phone number is skipped and reported back rather than blocking the whole import. See `LAMBDA_FUNCTIONS.md`'s `bulkSubscriberUpload` section for the full parsing/validation mechanism.
-- **Add subscriber** (nav link): a small modal to add one subscriber by name + mobile number without doing a full bulk re-import.
+- **Add subscriber** (nav link): a small modal to add one subscriber by name + mobile number without doing a full bulk re-import. This is also how a subscriber whose record was **deleted** gets back on the list: texting START can't recreate a record (see the lifecycle notes below).
+- **List all subscribers** (nav link, added 2026-10-25): a read-only modal showing every record in the live `Subscribers` table: name, phone number and status (`subscribed` / `unsubscribed`), sorted by name, with a count summary. It fetches fresh on every open through `Lambdas/listSubscribers/` behind the Cognito Authorizer. The status is our own mirror of who we ask Twilio to text; Twilio's opt-out list is the authority.
+- **Opt-Outs & Re-subscribing** (user-guide section, added 2026-10-27): after the season's list is bulk uploaded, every number counts as opted in; the club's first welcome text of the year is each rider's chance to opt out, and they can opt out at any later point. Nothing is done on our side: opt-outs are handled by code, the record is marked `unsubscribed`, and texting START flips it back. After the first blast, the users manage the list. The guide's Test Mode section also notes that STOP/START only change the live list.
+
+**The full subscriber cycle** (season upload, opt-in, opt-out, re-subscribe, Twilio's role and what each system decides) is written up once in `AMP_SMS_PLATFORM.md`'s "Subscriber lifecycle".
 
 ### Bulk-import data prep — no longer needed (removed 2026-09-19)
 

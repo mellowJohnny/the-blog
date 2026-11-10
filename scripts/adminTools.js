@@ -5,6 +5,8 @@
 const GET_BLOGS_URL = "https://qeb63ean2e.execute-api.us-east-2.amazonaws.com/dev";
 const GET_CARD_SETS_BY_YEAR_URL = "https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev";
 const SEARCH_PLAYER_NAME_URL = "https://evlsyozjb0.execute-api.us-east-2.amazonaws.com/dev";
+const SAVE_CHECKLIST_URL = "https://w46hwbexed.execute-api.us-east-2.amazonaws.com/dev";
+const GET_PUBLIC_CARD_SETS_URL = "https://jlpd8ec14j.execute-api.us-east-2.amazonaws.com/prod";
 
 /* Broken Image Check - loads every image the public site references
    (blog/card-set images, inline postBody images) as a real <img> and
@@ -62,8 +64,9 @@ async function collectBlogImageCandidates(onProgress, fetchErrors) {
   return candidates;
 }
 
-async function collectCardSetImageCandidates(onProgress, fetchErrors) {
-  const candidates = [];
+// Every live card set, year by year; shared by the image checks below.
+async function fetchAllCardSets(onProgress, fetchErrors) {
+  const sets = [];
   for (const blogCat in categoryRanges) {
     for (const pageName in categoryRanges[blogCat]) {
       const range = categoryRanges[blogCat][pageName];
@@ -77,19 +80,25 @@ async function collectCardSetImageCandidates(onProgress, fetchErrors) {
           fetchErrors.push(`Card sets for ${year} (${blogCat}): ${body?.error || `HTTP ${res.status}`}`);
           continue;
         }
-        for (const set of body) {
-          const label = `Set: "${set.setName}" (${year})`;
-          if (set.headerImgName) {
-            candidates.push({ label, field: "header image", url: `${set.headerImg || ""}${set.headerImgName}` });
-          }
-          if (set.footerImgName) {
-            candidates.push({ label, field: "footer image", url: `${set.footerImg || ""}${set.footerImgName}` });
-          }
-          for (const url of extractImgUrlsFromHtml(set.postBody)) {
-            candidates.push({ label, field: "inline content image", url });
-          }
-        }
+        body.forEach((set) => sets.push({ set, year }));
       }
+    }
+  }
+  return sets;
+}
+
+async function collectCardSetImageCandidates(onProgress, fetchErrors) {
+  const candidates = [];
+  for (const { set, year } of await fetchAllCardSets(onProgress, fetchErrors)) {
+    const label = `Set: "${set.setName}" (${year})`;
+    if (set.headerImgName) {
+      candidates.push({ label, field: "header image", url: `${set.headerImg || ""}${set.headerImgName}` });
+    }
+    if (set.footerImgName) {
+      candidates.push({ label, field: "footer image", url: `${set.footerImg || ""}${set.footerImgName}` });
+    }
+    for (const url of extractImgUrlsFromHtml(set.postBody)) {
+      candidates.push({ label, field: "inline content image", url });
     }
   }
   return candidates;
@@ -181,9 +190,207 @@ async function runBrokenImageCheck() {
   }
 }
 
+/* Image Alt & Size Check - the images inside each review's body (the ones
+   the CMS editor inserts) must have real alt text and a width and height
+   (no layout shift), and should be WebP. Header/footer images are built by
+   buildCardSetMarkup() in helper.js, so they aren't looked at here. */
+
+function auditInlineImage(img) {
+  const issues = [];
+  const src = img.getAttribute("src") || "";
+  if (!src) return ["empty <img> tag (no src)"];
+
+  const alt = (img.getAttribute("alt") || "").trim();
+  if (!alt) issues.push("no alt text");
+  else if (/\.(webp|jpe?g|png|gif)$/i.test(alt) || /^(img|dsc|image)[-_ ]?\d+/i.test(alt)) issues.push("alt looks like a filename");
+
+  const style = img.getAttribute("style") || "";
+  const hasSize = (name) => img.hasAttribute(name) || new RegExp(`(^|;)\\s*${name}\\s*:`).test(style);
+  if (!hasSize("width") || !hasSize("height")) issues.push("missing width/height");
+
+  if (!/\.webp(\?|$)/i.test(src)) issues.push("not WebP");
+  return issues;
+}
+
+async function runImageAltCheck() {
+  const statusEl = document.getElementById("altCheckStatus");
+  const resultsEl = document.getElementById("altCheckResults");
+  const btn = document.getElementById("altCheckBtn");
+
+  btn.disabled = true;
+  resultsEl.innerHTML = "";
+  statusEl.textContent = "Starting...";
+
+  try {
+    const fetchErrors = [];
+    const sets = await fetchAllCardSets((msg) => { statusEl.textContent = msg; }, fetchErrors);
+    const flagged = [];
+    let imageCount = 0;
+
+    for (const { set, year } of sets) {
+      const doc = new DOMParser().parseFromString(set.postBody || "", "text/html");
+      doc.querySelectorAll("img").forEach((img) => {
+        imageCount += 1;
+        const issues = auditInlineImage(img);
+        if (issues.length) {
+          flagged.push({
+            set: `${set.setName} (${year})`,
+            image: (img.getAttribute("src") || "").split("/").pop() || "(no src)",
+            issues
+          });
+        }
+      });
+    }
+
+    const fetchErrorsHtml = fetchErrors.length > 0
+      ? `<p class="admin-status-msg">${fetchErrors.length} page fetch(es) failed and were skipped:</p>
+         <ul class="admin-results-list">${fetchErrors.map((e) => `<li>${escapeHtml(e)}</li>`).join("")}</ul>`
+      : "";
+
+    if (flagged.length === 0) {
+      statusEl.textContent = `Done — checked ${imageCount} image(s) across ${sets.length} set(s), no problems.`;
+      resultsEl.innerHTML = fetchErrorsHtml;
+      return;
+    }
+
+    statusEl.textContent = `Done — ${flagged.length} of ${imageCount} image(s) across ${sets.length} set(s) have a problem:`;
+    resultsEl.innerHTML = `
+      <table class="admin-results-table">
+        <thead><tr><th>Set</th><th>Image</th><th>Problem</th></tr></thead>
+        <tbody>
+          ${flagged.map((f) => `
+            <tr>
+              <td>${escapeHtml(f.set)}</td>
+              <td class="admin-results-url">${escapeHtml(f.image)}</td>
+              <td>${f.issues.map(escapeHtml).join("<br>")}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+      ${fetchErrorsHtml}
+    `;
+  } catch (err) {
+    statusEl.textContent = `Error: ${err.message}`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/* Review Pages Check - the /reviews/<slug>/ pages are generated by an Amplify
+   build that a change to a live set starts automatically. This compares the
+   live sets with the pages actually deployed, to catch a build that failed. */
+
+async function runReviewPagesCheck() {
+  const statusEl = document.getElementById("reviewPagesStatus");
+  const resultsEl = document.getElementById("reviewPagesResults");
+  const btn = document.getElementById("reviewPagesBtn");
+
+  btn.disabled = true;
+  resultsEl.innerHTML = "";
+  statusEl.textContent = "Fetching the live sets...";
+
+  try {
+    const res = await fetch(GET_PUBLIC_CARD_SETS_URL);
+    const sets = await res.json();
+    if (!res.ok || !Array.isArray(sets)) throw new Error(`The sets endpoint answered ${res.status}`);
+
+    const problems = [];
+    for (const set of sets.sort((a, b) => a.year - b.year || a.setName.localeCompare(b.setName))) {
+      const name = `${set.setName} (${set.year})`;
+      if (!set.seoURLSlug) {
+        problems.push({ set: name, page: "(no slug)", problem: "No SEO Friendly URL - add one in the CMS." });
+        continue;
+      }
+      statusEl.textContent = `Checking ${name}...`;
+      const page = `/reviews/${set.seoURLSlug}/`;
+      const pageRes = await fetch(page, { method: "HEAD" });
+      if (!pageRes.ok) problems.push({ set: name, page, problem: `Page not deployed (HTTP ${pageRes.status}) - a build starts when a set is saved; if this persists, check the Amplify build email.` });
+    }
+
+    if (problems.length === 0) {
+      statusEl.textContent = `Done — all ${sets.length} live set(s) have a review page.`;
+      return;
+    }
+
+    statusEl.textContent = `Done — ${problems.length} of ${sets.length} live set(s) have a problem:`;
+    resultsEl.innerHTML = `
+      <table class="admin-results-table">
+        <thead><tr><th>Set</th><th>Page</th><th>Problem</th></tr></thead>
+        <tbody>
+          ${problems.map((p) => `
+            <tr>
+              <td>${escapeHtml(p.set)}</td>
+              <td class="admin-results-url">${escapeHtml(p.page)}</td>
+              <td>${escapeHtml(p.problem)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+  } catch (err) {
+    statusEl.textContent = `Error: ${err.message}`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 /* Checklist Integrity Check - wires a button to searchPlayerName's
-   existing ?audit=1 mode, which finds every Checklists setName with
-   no matching Cards item (see DATA_MODEL.md). Nothing new to build. */
+   ?audit=1 mode, which finds every Checklists setName with no matching
+   Cards item (see DATA_MODEL.md). Its "orphans" list has one entry per
+   orphaned checklist (a set's main set, insert set or extended set),
+   each of which can be ticked and deleted on its own. */
+
+let checklistOrphans = [];
+
+// Checklist title as the Upload Checklist page words it: "<set> - <insert set>".
+function orphanLabel({ setName, insertSetName, type, count }) {
+  const group = insertSetName || "Main set";
+  const kind = type === "extendedSet" ? " (extended set)" : "";
+  return `${setName} - ${group}${kind} (${count} card${count === 1 ? "" : "s"})`;
+}
+
+function buildOrphanRow(orphan) {
+  const label = document.createElement("label");
+  label.className = "admin-orphan-row";
+  const box = document.createElement("input");
+  box.type = "checkbox";
+  box.dataset.setName = orphan.setName;
+  box.dataset.insertSetName = orphan.insertSetName;
+  box.addEventListener("change", updateChecklistDeleteBtn);
+  label.append(box, " ", orphanLabel(orphan));
+  return label;
+}
+
+function updateChecklistDeleteBtn() {
+  const deleteBtn = document.getElementById("checklistDeleteSelectedBtn");
+  if (!deleteBtn) return;
+  const anyTicked = document.querySelector("#checklistCheckResults input[type=checkbox]:checked");
+  deleteBtn.disabled = !anyTicked;
+}
+
+function renderChecklistOrphans() {
+  const statusEl = document.getElementById("checklistCheckStatus");
+  const resultsEl = document.getElementById("checklistCheckResults");
+  resultsEl.innerHTML = "";
+
+  if (checklistOrphans.length === 0) {
+    statusEl.textContent = "Done — no orphaned checklists.";
+    return;
+  }
+
+  const count = checklistOrphans.length;
+  statusEl.textContent = `Done — ${count} orphaned checklist${count === 1 ? "" : "s"} (no matching Cards review):`;
+  checklistOrphans.forEach((orphan) => resultsEl.appendChild(buildOrphanRow(orphan)));
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.type = "button";
+  deleteBtn.id = "checklistDeleteSelectedBtn";
+  deleteBtn.className = "input-button delete-btn";
+  deleteBtn.textContent = "Delete";
+  deleteBtn.disabled = true;
+  deleteBtn.addEventListener("click", deleteSelectedChecklists);
+  resultsEl.appendChild(deleteBtn);
+}
 
 async function runChecklistIntegrityCheck() {
   const statusEl = document.getElementById("checklistCheckStatus");
@@ -195,7 +402,8 @@ async function runChecklistIntegrityCheck() {
   statusEl.textContent = "Running audit...";
 
   try {
-    const res = await fetch(`${SEARCH_PLAYER_NAME_URL}?audit=1`);
+    // "reload" skips the endpoint's 30-min browser cache, so a re-run after a delete is fresh.
+    const res = await fetch(`${SEARCH_PLAYER_NAME_URL}?audit=1`, { cache: "reload" });
     const data = await res.json();
 
     if (!res.ok) {
@@ -203,22 +411,87 @@ async function runChecklistIntegrityCheck() {
       return;
     }
 
-    const { totalDistinctSetNames, unlinkedSetNames } = data;
+    const { totalDistinctSetNames, unlinkedSetNames, orphans } = data;
 
     if (unlinkedSetNames.length === 0) {
       statusEl.textContent = `Done — all ${totalDistinctSetNames} uploaded checklist(s) are correctly linked to a Cards review.`;
       return;
     }
 
-    statusEl.textContent = `Done — ${unlinkedSetNames.length} of ${totalDistinctSetNames} checklist(s) have no matching Cards review:`;
-    resultsEl.innerHTML = `
-      <ul class="admin-results-list">
-        ${unlinkedSetNames.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}
-      </ul>
-    `;
+    // Older searchPlayerName without "orphans": show the names, nothing to delete.
+    if (!Array.isArray(orphans)) {
+      statusEl.textContent = `Done — ${unlinkedSetNames.length} of ${totalDistinctSetNames} checklist(s) have no matching Cards review:`;
+      resultsEl.innerHTML = `
+        <ul class="admin-results-list">
+          ${unlinkedSetNames.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}
+        </ul>
+      `;
+      return;
+    }
+
+    checklistOrphans = orphans;
+    renderChecklistOrphans();
   } catch (err) {
     statusEl.textContent = `Error: ${err.message}`;
   } finally {
     btn.disabled = false;
   }
+}
+
+// Same delete call as deleteChecklistGroup() in checklistUpload.js: one
+// group per request, Cognito-authorized. Returns an error string or "".
+async function deleteChecklistGroupRequest(setName, insertSetName) {
+  try {
+    const token = await getAuthToken();
+    const response = await fetch(SAVE_CHECKLIST_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": token },
+      body: JSON.stringify({ setName, insertSetName, cards: [], confirmDelete: true })
+    });
+    if (response.ok) return "";
+    const data = await response.json().catch(() => ({}));
+    return data.error || `status ${response.status}`;
+  } catch (err) {
+    return err.message;
+  }
+}
+
+async function deleteSelectedChecklists() {
+  const statusEl = document.getElementById("checklistCheckStatus");
+  const checkBtn = document.getElementById("checklistCheckBtn");
+  const deleteBtn = document.getElementById("checklistDeleteSelectedBtn");
+
+  // Only the ticked checklists: each row is matched on its own set + group names.
+  const ticked = [...document.querySelectorAll("#checklistCheckResults input[type=checkbox]:checked")]
+    .map((box) => ({ setName: box.dataset.setName, insertSetName: box.dataset.insertSetName }));
+  const picked = checklistOrphans.filter((orphan) =>
+    ticked.some((t) => t.setName === orphan.setName && t.insertSetName === orphan.insertSetName));
+  if (picked.length === 0) return;
+
+  const cardTotal = picked.reduce((sum, o) => sum + o.count, 0);
+  const ok = await cmsConfirm(
+    `Delete ${picked.length} checklist${picked.length === 1 ? "" : "s"} (${cardTotal} cards): ${picked.map((o) => `"${orphanLabel(o)}"`).join("; ")}? This cannot be undone!`
+  );
+  if (!ok) return;
+
+  checkBtn.disabled = true;
+  deleteBtn.disabled = true;
+  const deleted = [];
+  const failed = [];
+
+  for (const [i, orphan] of picked.entries()) {
+    statusEl.textContent = `Deleting ${i + 1} of ${picked.length}...`;
+    const error = await deleteChecklistGroupRequest(orphan.setName, orphan.insertSetName);
+    if (error) failed.push(`${orphanLabel(orphan)} (${error})`);
+    else deleted.push(orphan);
+  }
+
+  checklistOrphans = checklistOrphans.filter((orphan) => !deleted.includes(orphan));
+  renderChecklistOrphans();
+  checkBtn.disabled = false;
+
+  const summary = `Deleted ${deleted.length} checklist${deleted.length === 1 ? "" : "s"}.`;
+  await cmsAlert(failed.length
+    ? `${summary} ${failed.length} failed and ${failed.length === 1 ? "is" : "are"} still listed, safe to retry: ${failed.join("; ")}`
+    : summary);
 }

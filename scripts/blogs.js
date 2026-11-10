@@ -13,25 +13,27 @@ function renderBlogIntro(blogType) {
 
   if (blogType === "1") {
     introHTML = `
-      <h1>the tech blog...</h1>
+      <h1>The Tech Blog</h1>
       <p>Just a couple of random throughts on Technology - from AI to using an iPad for development tasks, and whatever else strikes my fancy. Oh, and that .gif of a 727 in the top corner is the Internet's <i>very first</i>, created by Steve Wilhite in 1987 while working at CompuServe. And according to Steve, it's pronounced "jif"...</p>
     `;
   } else if (blogType === "3") {
     introHTML = `
-      <h1>the mach-e blog...</h1>
+      <h1>The Mach-E Blog</h1>
       <p>Thoughts and experiences with our first EV - the absolutely fabulous Ford Mustang Mach-E</p>
     `;
   } else if (blogType === "5") {
     introHTML = `
-      <h1>the Rasperry Pi Blog</h1>
+      <h1>The Raspberry Pi Blog</h1>
       <p>Thoughts and experiments with my Rasperry Pi rig. Nothing hard core, nothing ground-breaking, just a few thoughts while I play around with this remarkable little computer...</p>
     `;
   } else {
-    // blogType 99 or missing → fallback
+    // Missing or unrecognised type (e.g. tech.html?blogType=4) → generic fallback.
+    // index.html is static now and keeps its own copy of this text.
     introHTML = `
-      <h1>welcome to junk wax hockey!</h1>
-      <p>Late '80s and early '90s hockey cards - vintage and junk wax set reviews, full set checklists, and player search.</p>
-      <p>If you're looking for information about vintage or junk wax hockey cards, you're in the right place.  So as my Dad used to say, "Take your coat off and stay a while..." </p>
+      <h1>Welcome to Junk Wax Hockey</h1>
+      <p>Late '80s and early '90s hockey cards - junk wax and classic set reviews, vintage McDonald's and the latest Tim Hortons set reviews, plus full set checklists, and player search.</p>
+      <p>If you're looking for full reviews and historical information about junk wax hockey cards (and some modern Timmies sets thrown in for fun), you're in the right place.</p>
+      <p>As my Dad used to say, take your coat off and stay a while...</p>
     `;
   }
 
@@ -40,26 +42,26 @@ function renderBlogIntro(blogType) {
     introEl.innerHTML = introHTML;
   }
 
-  // tech.html only (index.html always passes "99" with its own static
-  // meta) - fixes tech.html having no meta description, and the same
+  // tech.html only (index.html and about.html are static and no longer call this) -
+  // fixes tech.html having no meta description, and the same
   // <title> duplicated across its 4 ?blogType= variants.
   if (blogType && blogType !== "99") {
     const metaByType = {
       "1": {
-        title: "the tech blog...at the hella files - AI, iPads & software",
+        title: "The Tech Blog - AI, iPads & software | Junk Wax Hockey",
         description: "Random thoughts on technology - from AI to using an iPad for development tasks, plus whatever else strikes my fancy on the tech side of the hella files."
       },
       "3": {
-        title: "the Mach-E blog at the hella files - our first EV",
+        title: "The Mach-E Blog - our first EV | Junk Wax Hockey",
         description: "Thoughts and experiences with our first EV, the Ford Mustang Mach-E - part of the hella files blog."
       },
       "5": {
-        title: "the Raspberry Pi blog...at the hella files",
+        title: "The Raspberry Pi Blog | Junk Wax Hockey",
         description: "Thoughts and experiments with a Raspberry Pi rig - part of the hella files blog."
       }
     };
     const meta = metaByType[blogType] || {
-      title: "the hella files...tech blog",
+      title: "Tech Blog | Junk Wax Hockey",
       description: "Posts from the tech side of the hella files blog."
     };
 
@@ -80,7 +82,7 @@ function renderBlogIntro(blogType) {
  /** 
     * This function calls an underlying AWS call used to FETCH ALL BLOG POSTS
     * AWS Lambda call - getBlogs end-point
-    * Called from the index.html page
+    * Called from the about.html and tech.html pages (index.html is static now)
   */
 
   function fetchBlogs(blogType) {

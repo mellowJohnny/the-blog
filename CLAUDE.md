@@ -6,10 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 "the hella files" (junkwaxhockey.com; mellowjohnny.cc redirects to it) —
 a hockey card site: an extensive vintage/junk-wax set review section
-with checklists, a player search and a live NHL/PWHL scores ticker,
-plus a private CMS and a small SMS broadcast tool for a cycling club.
-The original blog (Tech and Mustang Mach-E) is still in the code and
-database but no longer linked from the nav or home page. It also
+with checklists, a player search, The Wax Museum (a wax pack gallery),
+a Junk Wax timeline and a live NHL/PWHL scores ticker, plus a private
+CMS and a small SMS broadcast tool for a cycling club. The original
+blog (Tech and Mustang Mach-E) is still in the database, but its page
+(`tech.html`) is archived in `Old HTML Pages/` and not published. It also
 serves as the owner's AWS playground (Lambda, DynamoDB, Amplify), and
 a place to use Claude Code.
 
@@ -20,11 +21,42 @@ reference and this file as the short orientation on top of it.
 
 ## Commands
 
-There is no build step, package manager, linter, or test suite for the
-site itself — it's plain static HTML/CSS/JS with no bundler. Edit
-files directly and open them in a browser (or push to deploy — see
-below). There is nothing to `npm install` or `npm run` at the repo
-root.
+There is no linter or test suite for the site itself — it's plain static
+HTML/CSS/JS with no bundler. Edit files directly and open them in a
+browser (or push to deploy — see below). There is nothing to `npm install`
+or `npm run` for local development: the root `package.json` exists only for
+the Amplify build, whose `npm ci` installs one dev dependency (`esbuild`,
+pinned in `package-lock.json`). The build steps run only in Amplify, in this
+order (`amplify.yml`): (1) `node tools/generateReviewPages/generate.mjs`,
+which writes `reviews/<slug>/index.html` (one page per live card set),
+`reviews/index.json` and `sitemap.xml` into the build output, and
+pre-renders the nav, footer, year picker and Browse By Set columns into the
+build's copy of the pages; (2)
+`node tools/minifyAssets/minify.mjs`, which minifies the public scripts and
+`styles/styles.css` in place in the build's copy; (3) `rm -rf node_modules`,
+so the installed packages aren't published; (4) `rm -rf "Old HTML Pages"`,
+so archived pages aren't published either (everything else in the repo is,
+including `Documentation/`, `Lambdas/` and this file). The generated files are
+gitignored and never committed, so a local checkout has no `/reviews/` until
+you run the generator yourself (optional, for a preview). Full explanation:
+`Documentation/REVIEW_PAGES.md`.
+
+**Minified assets (added 2026-10-30)**: the repo always holds readable
+source; the deployed `scripts/{helper,wax,ticker,blogs,playerSearch,browseBySet,timeline,waxMuseum}.js`
+and `styles/styles.css` are minified copies with a linked source map
+(`x.js.map`) beside each, so a production console error shows minified
+lines unless dev tools are open. Never edit the minified output, and never
+run `minify.mjs` on a working copy: it overwrites files in place, so it
+refuses to run unless `AWS_APP_ID` (set by Amplify) or `--force-in-place`
+is given (`--root <dir>` points it at a scratch copy). A new public script
+or stylesheet must be added to the list in `tools/minifyAssets/minify.mjs`.
+Keep top-level `function`/`let`/`const`/`var` declarations at the start of a
+line: the tool checks that every such name survives minification (inline
+`onclick` handlers and cross-file calls depend on them) and fails the build
+otherwise, which leaves the previous deployment live. The minifier must run
+after the generator, which reads the readable `helper.js`. The CMS scripts
+and `scripts/fonts/*` are not minified. esbuild is pinned to 0.19.12 because
+that is the last line supporting the build image's Node 16.
 
 The exception is the **Lambdas** — every AWS Lambda function behind
 this site's API Gateway endpoints now has its source checked into this
@@ -32,20 +64,23 @@ repo (as of 2026-08-15), one directory per function, named exactly
 after its AWS Lambda function name (e.g. `Lambdas/sendAlertHandler/`,
 `Lambdas/getBlogs/`, `Lambdas/updateCardSet/`). One function there is
 *not* API-Gateway-backed: `amplifyBuildNotifier` runs off an
-EventBridge rule and emails Amplify build results — no frontend code
-calls it. Each has its own minimal
-`package.json` — two functions have a real dependency,
-`sendAlertHandler` (`twilio`) and `parseChecklistPdf` (`pdf-parse`,
+EventBridge rule and emails Amplify build results, and
+`cardsRebuildTrigger` runs off the `Cards` table's DynamoDB Stream and
+starts an Amplify build when a live card set changes — no frontend code
+calls either. Each has its own minimal
+`package.json` — three functions have a real dependency,
+`sendAlertHandler` (`twilio`), `parseChecklistPdf` (`pdf-parse`,
 deliberately pinned to its v1 major — see `Documentation/LAMBDA_FUNCTIONS.md`
-for why); every other function uses only `@aws-sdk/*` packages,
+for why) and `generateSeoDescription` (`@anthropic-ai/bedrock-sdk`); every
+other function uses only `@aws-sdk/*` packages,
 which ship with the Lambda Node.js runtime, so `dependencies` is
 empty. None of them is deployed via any command here — edit the code
 in this repo, then redeploy manually. **How you redeploy depends on
-whether the function has a real dependency**: the 27 with empty
+whether the function has a real dependency**: the 33 with empty
 `dependencies` just need the updated `index.mjs` pasted directly into
 the Lambda Console's inline code editor (Code tab) and Deploy clicked
-— no zip needed, since there's nothing to bundle. `sendAlertHandler`
-and `parseChecklistPdf` need the full zip treatment instead: `npm
+— no zip needed, since there's nothing to bundle. The three with a
+dependency need the full zip treatment instead: `npm
 install` inside their directory, zip the code plus `node_modules`,
 upload via Code tab → Update dropdown → "Update from a .zip file" —
 pasting just the code into the inline editor would break it (`Cannot
@@ -63,8 +98,47 @@ that file.
 **Deployment of the static site itself**: AWS Amplify Hosting
 auto-builds and deploys on every push to `main` — there is no staging
 branch or preview environment, so a push to `main` goes live as soon
-as Amplify's build finishes. Amplify emails on build completion. See
-`Documentation/ARCHITECTURE.md` for details.
+as Amplify's build finishes. Amplify emails on build completion. A save
+to a live card set in the CMS also starts a build (the `Cards` table's
+DynamoDB Stream calls the `cardsRebuildTrigger` Lambda, which calls
+`amplify:StartJob`), so new and edited sets reach the site with no push.
+See `Documentation/ARCHITECTURE.md` and `Documentation/REVIEW_PAGES.md`
+for details.
+
+**Review pages, the sitemap and the link manifest are generated, not
+committed, and never run by hand**: each Amplify build runs
+`tools/generateReviewPages/generate.mjs` (via `amplify.yml`), which reads
+the live `getPublicCardSets` endpoint and writes `reviews/<slug>/index.html`
+for every live set (using `waxReviews.html` as the template, between its
+`review-head` and `review-params` marker comments — keep those markers
+intact; it also fills `set-picker`, `nav` and `footer` markers there, the
+`nav`/`footer` markers of 8 static pages named by their `data-nav-page`,
+and the `browse-*` markers in `browseBySet.html`, by running the browser's
+own `navHtml()`/`footerHtml()`/`setPickerHtml()`/`browseColumnHtml()` in a
+sandbox, so keep the `// nav-block`/`// footer-block` sentinels in
+`helper.js` and those functions DOM-free; a local run also rewrites those
+tracked static pages, so discard that), `reviews/index.json` (what the nav, year picker and Player Search
+read to link to `/reviews/<slug>/` pages) and `sitemap.xml` (one URL per
+set, plus the static pages, each with a `<lastmod>`). `/reviews/` and
+`/sitemap.xml` are in `.gitignore`. The generator exits without writing,
+and so fails the build (Amplify then keeps the previous deployment), if
+a live set has a missing, invalid or duplicate `seoURLSlug`, if
+`getPublicCardSets` returns no `stars`, or if it can't find
+`categoryRanges` in `scripts/helper.js` (it reads the year ranges from
+there; keep that a plain object literal ending in `};`). It runs on
+Node 16 in the build image, so it uses `node:https`, not `fetch`. Each
+generated head also preloads the set's header image (the page's LCP) and
+the set-data request; the data URL is the `SETS_BY_YEAR_URL` constant in
+the generator and must stay identical to the one `fetchCardSetsByYear()`
+builds in `scripts/wax.js` (see `Documentation/REVIEW_PAGES.md`, "Loading
+speed").
+`seoURLSlug` is a required CMS field, enforced by `seoSlugProblem()` and
+by the `createCardPost`/`updateCardSet` Lambdas (which also reject a slug
+another live set uses; their roles need `dynamodb:Query` on the
+`blogStatus-year-index` GSI). The admin page's "Review Pages Check" lists
+live sets whose page isn't deployed. See `Documentation/REVIEW_PAGES.md`
+and `Documentation/FRONTEND.md` ("Sitemap", "Linking to one specific
+set").
 
 **Checking Amplify build status from the CLI**: AWS CLI v2 is
 installed, and a read-only IAM user (`amplify-readonly-cli`) is
@@ -133,14 +207,15 @@ real data.
 ## Architecture, in brief
 
 - **Domains**: `www.junkwaxhockey.com` is the Amplify app (the bare domain 301s to `www`). `mellowjohnny.cc` was moved off Amplify and 301s everything to the new domain through a CloudFront Function. The origin is hardcoded where it fails quietly - Cognito callback, 8 Lambdas' CORS plus API Gateway OPTIONS, S3 CORS, TinyMCE's approved domains - see `Documentation/ARCHITECTURE.md` ("Domains, DNS and redirects") before changing it again.
-- **Frontend**: one standalone `.html` file per page at the repo root and under `/cms`, no framework. Shared logic lives in `scripts/*.js` and is wired up per-page via `<script src>` tags. Pages coordinate via URL query params (`?year=`, `?blogType=`, `?pageName=`, `?blogCat=`) rather than client-side routing. Details: `Documentation/FRONTEND.md`.
+- **Frontend**: one standalone `.html` file per page at the repo root and under `/cms`, no framework. Shared logic lives in `scripts/*.js` and is wired up per-page via `<script src>` tags. Pages coordinate via URL query params (`?year=`, `?blogType=`, `?pageName=`, `?blogCat=`) rather than client-side routing, except card set reviews, which each also have a generated page at `/reviews/<slug>/` with those values fixed in the HTML (the old query-string URLs still work). Details: `Documentation/FRONTEND.md`, `Documentation/REVIEW_PAGES.md`.
 - **Backend**: "one Lambda + one API Gateway REST API per action" — there is no shared backend app/router. Every distinct operation (get blogs, create a blog post, get a card set by ID, get an S3 upload URL, send an SMS...) has its own hardcoded API Gateway URL, called directly from whichever `scripts/*.js` file needs it. Full inventory with request/response shapes: `Documentation/API_ENDPOINTS.md`.
 - **Every live Lambda's source is version-controlled**, under `Lambdas/` — one directory per function, matching its exact AWS Lambda function name; see the `## Commands` section above for the sync/deploy workflow. Four turned out to be dead/orphaned (not called by any live frontend code) when the full inventory was pulled in on 2026-08-15, and were removed again once confirmed — see `Documentation/LAMBDA_FUNCTIONS.md` for which. A separate, older prototype directory, `Lambda Functions/` (note the space — a different thing from the no-space `Lambdas/`), no longer exists in this repo at all (deleted 2026-08-06, unrelated to the 2026-08-15 sync) — some docs still reference specific files that used to live there for historical context, even though those files are gone. Details: `Documentation/LAMBDA_FUNCTIONS.md`.
-- **Data**: DynamoDB tables `Blogs` (all blog post types, including the hockey-card-adjacent ones, distinguished by `blogType`), `Cards` (card set reviews, distinguished by `blogCat`; a `hasChecklist` flag drives a "Checklist" link on `waxReviews.html` once a set has one, opening a modal that fetches and displays the full checklist via `getChecklistBySetName`), `Checklists` (full card-by-card checklists per set, one item per card, uploaded via `cms/uploadChecklist.html` — see `Documentation/CMS_GUIDE.md`; searchable by player name across every set via `playerSearch.html`/`searchPlayerName`), and `Subscribers`/`SubscribersTest` (SMS opt-in list, real vs. test). `Checklists` and `Cards` both run On-Demand billing with a maximum-throughput cap (see `Documentation/ARCHITECTURE.md`) after real Provisioned-throughput exhaustion incidents — worth knowing before assuming either table can absorb an unbounded burst of requests (e.g. a script hitting a public read endpoint in a tight loop). Field-naming is inconsistent across older and newer code paths (e.g. `img` vs `imgName`, `status` vs `blogStatus`) — see `Documentation/DATA_MODEL.md` before assuming a field name. The real source checklist PDFs (one per set/insert set — the actual files uploaded via `cms/uploadChecklist.html`) live in `checklists/` at the repo root — this is the source of truth for them, not any local Desktop folder.
-- **Images**: served from S3 bucket `mellowjohnny.cc.files` (`img/blog/`, `img/cards/`, `img/cms/`). The CMS uploads new images via a Lambda-issued presigned URL, PUT directly from the browser to S3.
-- **Auth**: Cognito Hosted UI gates page access to everything under `/cms` (`scripts/auth.js`). Note that this only gates the *page*. All three Autobus SMS endpoints, all 12 cardStack create/update/delete/list endpoints (blog posts, card sets — `scripts/cmsBlog.js` and `scripts/cmsCardSet.js`), and both checklist-upload endpoints (`scripts/checklistUpload.js`) attach a bearer token via `getAuthToken()`, and (confirmed 2026-08-20 for the first 15, checklist endpoints added after) genuinely enforce it server-side too, via a Cognito Authorizer on each of their API Gateway routes — not just a client-side courtesy. Image upload/list (`cmsImageUploader`, `cmsImagePicker`) are the one remaining *gap* — no token sent, no authorizer. `getChecklistBySetName` (public checklist display on `waxReviews.html`) and `searchPlayerName` (public player search, `playerSearch.html`, including its `?audit=1` data-integrity mode) also have no auth, but that's *by design*, not a gap — same public trust level as the other read-only public GETs (`getBlogs`, `getCardSetsByYear`), not a CMS endpoint. `robots.txt` + a `noindex, nofollow` meta tag on every `/cms` page reduce discoverability but don't affect any of the above. See `Documentation/AUTH.md`.
+- **Data**: DynamoDB tables `Blogs` (all blog post types, including the hockey-card-adjacent ones, distinguished by `blogType`), `Cards` (card set reviews, distinguished by `blogCat`; a `hasChecklist` flag drives a "Checklist" link on `waxReviews.html` once a set has one, opening a modal that fetches and displays the full checklist via `getChecklistBySetName`), `Checklists` (full card-by-card checklists per set, one item per card, uploaded via `cms/uploadChecklist.html` — see `Documentation/CMS_GUIDE.md`; searchable by player name across every set via `playerSearch.html`/`searchPlayerName`), `WaxPacks` (The Wax Museum's packs, keyed `year` + `packKey`, edited in the CMS wax pack pages, read by `getWaxPacks`), and `Subscribers`/`SubscribersTest` (SMS opt-in list, real vs. test). `Checklists` and `Cards` both run On-Demand billing with a maximum-throughput cap (see `Documentation/ARCHITECTURE.md`) after real Provisioned-throughput exhaustion incidents — worth knowing before assuming either table can absorb an unbounded burst of requests (e.g. a script hitting a public read endpoint in a tight loop). Field-naming is inconsistent across older and newer code paths (e.g. `img` vs `imgName`, `status` vs `blogStatus`) — see `Documentation/DATA_MODEL.md` before assuming a field name. The real source checklist PDFs (one per set/insert set — the actual files uploaded via `cms/uploadChecklist.html`) live in `checklists/` at the repo root — this is the source of truth for them, not any local Desktop folder.
+- **Images**: served from S3 bucket `mellowjohnny.cc.files` (`img/blog/`, `img/cards/`, `img/wax-packs/`, `img/cms/`). The CMS uploads new images via a Lambda-issued presigned URL, PUT directly from the browser to S3 (wax pack photos are cropped and converted to WebP in the browser first).
+- **Fonts**: four families, all self-hosted from `fonts/` and declared once at the top of `styles/styles.css` — Nunito (nav, footer, picker), Source Sans 3 (all text, with real italics), Bebas Neue (masthead), Special Elite (review set details). No page loads Google Fonts. `customHttp.yml` gives `.woff2` files a one-year immutable cache, so a font update needs a new filename. See `Documentation/FRONTEND.md` ("Typography / fonts").
+- **Auth**: Cognito Hosted UI gates page access to everything under `/cms` (`scripts/auth.js`). Note that this only gates the *page*. All four Autobus SMS endpoints, all 12 cardStack create/update/delete/list endpoints (blog posts, card sets — `scripts/cmsBlog.js` and `scripts/cmsCardSet.js`), and both checklist-upload endpoints (`scripts/checklistUpload.js`) attach a bearer token via `getAuthToken()`, and (confirmed 2026-08-20 for the first 15, checklist endpoints added after) genuinely enforce it server-side too, via a Cognito Authorizer on each of their API Gateway routes — not just a client-side courtesy. The wax pack save/delete endpoints (`scripts/cmsWaxPack.js`) also send the token, but their authorizer hasn't been verified. Image upload/list (`cmsImageUploader`, `cmsImagePicker`) are the one remaining *gap* — no token sent, no authorizer. `getChecklistBySetName` (public checklist display on `waxReviews.html`) and `searchPlayerName` (public player search, `playerSearch.html`, including its `?audit=1` data-integrity mode) also have no auth, but that's *by design*, not a gap — same public trust level as the other read-only public GETs (`getBlogs`, `getCardSetsByYear`), not a CMS endpoint. `robots.txt` + a `noindex, nofollow` meta tag on every `/cms` page reduce discoverability but don't affect any of the above. See `Documentation/AUTH.md`.
 - **Two unrelated tools share `/cms`**: the "cardStack" content CMS (blog posts + card set reviews, TinyMCE-based, plus a separate checklist-PDF-upload page not TinyMCE-based) and the "Autobus Messaging Platform" (Twilio SMS broadcast tool for a cycling club, nothing to do with blog/card content). A third page, `cms/admin.html`, holds a growing set of self-service site-health checks (broken images, checklist-to-review linkage) that run client-side against the site's own public read APIs — no new backend involved. See `Documentation/CMS_GUIDE.md`.
-- **`/cms` HTML page conventions**: all 10 pages under `/cms` follow a
+- **`/cms` HTML page conventions**: all 13 pages under `/cms` follow a
   consistent `<head>` element order, script-tag placement (everything
   in `<head>`, nothing after it or at the bottom of `<body>`), and
   markup hygiene (no dead script tags/commented-out markup/unused
@@ -153,7 +228,8 @@ real data.
 
 ## Legacy/orphaned files
 
-`Old HTML Pages/` and `example.html` are not reachable from current
-site navigation or read by any live code path — see
-`Documentation/FRONTEND.md` for what each one actually is before
-assuming it's dead weight to delete.
+`Old HTML Pages/` holds archived pages (including `tech.html` and
+`example.html` since 2026-11-05). The Amplify build deletes the folder
+before deploy, so nothing in it is published or read by any live code
+path — see `Documentation/FRONTEND.md` for what each one actually is
+before assuming it's dead weight to delete.

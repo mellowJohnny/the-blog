@@ -1,0 +1,8 @@
+# Amplify Hosting custom headers (read at build time).
+# Font files never change in place (a new version gets a new filename, see
+# fonts/README.md), so browsers may keep them for a year without re-checking.
+customHeaders:
+  - pattern: '**/*.woff2'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, immutable'

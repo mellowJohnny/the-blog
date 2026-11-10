@@ -1,0 +1,209 @@
+<!doctype html>
+
+<html lang="en-ca">
+  <head>
+    <meta charset="utf-8">
+    <!-- For mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link
+      rel="icon"
+      href="/favicon.ico"
+      sizes="16x16 32x32 48x48">
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/images/icons/icon-192.png">
+    <link
+      rel="apple-touch-icon"
+      href="/images/icons/apple-touch-icon.png">
+
+    <title>Browse By Set - every hockey card set reviewed | Junk Wax Hockey</title>
+
+    <meta
+      name="description"
+      content="Browse every hockey card set reviewed on Junk Wax Hockey, from classic 1980s releases to McDonald's and Tim Hortons sets, with a link to each review and checklist.">
+    <link rel="canonical" href="https://www.junkwaxhockey.com/browseBySet.html">
+    <!-- Social preview tags - static because Facebook, Discord, Reddit and X don't run JavaScript -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Browse By Set - every hockey card set reviewed | Junk Wax Hockey">
+    <meta property="og:description" content="Browse every hockey card set reviewed on Junk Wax Hockey, from classic 1980s releases to McDonald's and Tim Hortons sets, with a link to each review and checklist.">
+    <meta property="og:url" content="https://www.junkwaxhockey.com/browseBySet.html">
+    <meta property="og:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Browse By Set - every hockey card set reviewed | Junk Wax Hockey">
+    <meta name="twitter:description" content="Browse every hockey card set reviewed on Junk Wax Hockey, from classic 1980s releases to McDonald's and Tim Hortons sets, with a link to each review and checklist.">
+    <meta name="twitter:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
+    <!-- Fonts are self-hosted (@font-face in styles.css); the nav and footer use Nunito -->
+    <link rel="preload" href="/fonts/nunito-latin-v32.woff2" as="font" type="font/woff2" crossorigin>
+
+    <!-- Global site tag (gtag.js) - Load Google Analytics until later -->
+    <script>
+      window.addEventListener('load', function() {
+        var g = document.createElement('script');
+        g.src = 'https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX';
+        g.async = true;
+        document.head.appendChild(g);
+      });
+    </script>
+
+    <!-- The masthead uses Bebas Neue -->
+    <link rel="preload" href="/fonts/bebas-neue-latin-v16.woff2" as="font" type="font/woff2" crossorigin>
+
+    <!-- Load the stylesheet -->
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+
+    <noscript>
+      <style>.nhl-ticker { display: none; }</style>
+    </noscript>
+
+    <!-- Load the Hella Scripts (wax.js is here for the checklist modal) -->
+    <script src="/scripts/wax.js" defer></script>
+    <script src="/scripts/browseBySet.js" defer></script>
+    <script src="/scripts/ticker.js" defer></script>
+    <script src="/scripts/helper.js" defer></script>
+
+    <script>
+      // Let's do a bunch of stuff on page load...
+      window.addEventListener('load', (event) => {
+        fetchNav("browseBySet");
+        fetchFooterLinks();
+        fetchCopyrightYear();
+
+        // Fetch the live sets and build the two columns - browseBySet.js
+        initBrowseBySet();
+
+        // Masthead: random NHL team colors on every load - helper.js
+        applyRandomMastheadStyling();
+      });
+
+      // Google Analytics
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JMGVGK09QX');
+    </script>
+  </head>
+
+  <body>
+    <section>
+      <table class="wax-reviews-mast-table">
+        <tr>
+          <td>
+            <header class="wax-reviews-masthead">
+              <a href="index.html">Junk Wax Hockey</a>
+            </header>
+          </td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- NHL scores ticker - filled by initNhlTicker() in ticker.js. Visible (empty)
+         from first paint so it doesn't pop in; hidden again if there's nothing to show. -->
+    <div
+      id="nhlTicker"
+      class="nhl-ticker"
+      role="region"
+      aria-label="NHL scores"
+      aria-busy="true"
+      tabindex="0"
+    ></div>
+
+    <nav>
+      <!-- Hamberger menu for mobile in helper.js -->
+      <div class="nav-container" id="global-nav-placeholder">
+        <div class="hamburger" onclick="toggleMenu()">☰</div>
+        <div id="global-nav" class="nav-links" data-nav-page="browseBySet"><!-- nav:start --><!-- nav:end --></div>
+      </div>
+    </nav>
+    <main>
+      <section>
+        <div class="header-style">
+          <h1>Browse By Set</h1>
+        </div>
+
+        <p class="browse-status" id="browseStatus" role="status">
+          <noscript>The list of sets needs JavaScript to load. Please turn it on, or use the links above to browse by category.</noscript>
+        </p>
+
+        <!-- Not inside .flex-container: its "div" rule would force every nested div to 1000px -->
+        <div class="browse-columns" id="browseColumns">
+          <section class="browse-col">
+            <h2 class="browse-col-heading">Major Releases</h2>
+            <div id="browseMajor"><!-- browse-major:start --><!-- browse-major:end --></div>
+          </section>
+          <section class="browse-col">
+            <h2 class="browse-col-heading">Fast Food Sets</h2>
+            <div id="browseFastFood"><!-- browse-fastfood:start --><!-- browse-fastfood:end --></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <!-- Populated by fetchFooterLinks() in helper.js -->
+      <nav id="footer-links" aria-label="Footer"><!-- footer:start --><!-- footer:end --></nav>
+      <div id="copy"></div>
+      <!-- Populated by fetchCopyrightYear() in helper.js -->
+    </footer>
+
+    <!-- Checklist modal -->
+    <div id="checklistModalOverlay" class="checklist-modal-overlay">
+      <div class="checklist-modal-content">
+        <div class="checklist-modal-controls">
+          <button
+            type="button"
+            class="checklist-modal-print-btn"
+            onclick="window.print()"
+          >
+            🖨 Print
+          </button>
+          <button
+            type="button"
+            class="checklist-modal-pdf-btn"
+            onclick="exportChecklistPdf()"
+          >
+            ⬇ Download PDF
+          </button>
+          <span class="checklist-modal-close" onclick="closeChecklistModal()"
+            >&times;</span
+          >
+        </div>
+        <header class="checklist-modal-masthead">
+          <a href="index.html">Junk Wax Hockey.com</a>
+        </header>
+        <div class="checklist-modal-title-row">
+          <h2 id="checklistModalTitle" class="checklist-modal-title"></h2>
+          <div class="checklist-modal-filters">
+            <label
+              class="checklist-modal-filter"
+              id="checklistInsertFilterLabel"
+              hidden>
+              <input
+                type="checkbox"
+                id="checklistInsertFilter"
+                onchange="applyChecklistFilters()">
+              Inserts only
+            </label>
+            <label
+              class="checklist-modal-filter"
+              id="checklistRookieFilterLabel"
+              hidden>
+              <input
+                type="checkbox"
+                id="checklistRookieFilter"
+                onchange="applyChecklistFilters()">
+              Rookies only
+            </label>
+          </div>
+        </div>
+        <div id="checklistModalBody"></div>
+        <!-- Print-only -->
+        <div
+          id="checklistModalPrintFooter"
+          class="checklist-modal-print-footer"
+        ></div>
+      </div>
+    </div>
+  </body>
+</html>
