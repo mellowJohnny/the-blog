@@ -38,24 +38,23 @@
 
 
 #### 1990-91 Upper Deck Arrives
-- Pro Set, Pinnacle, and Upper Deck get NHL licences: hobby explodes from two sets to nine
-- Companies are allowed two sets each
+- The NHL issues new licenses to Pro Set, Pinnacle, and Upper Deck, with all companies allowed to produce two sets a year
+- Card sets jump from just two n '89-'90 to nine
 - Set sizes explode:
   - Pro Set's enormous 705-card set
   - Upper Deck's 550-card set 
-  - O-Pee-Chee's 528-card "main" set
-  - Score's 440 cards sets; one American, one Canadian, also in Factory Sets
-- Eric Lindros Score RC frenzy
-- First Upper Deck Young Guns cards
-- Premier sets the hobby world on fire, further stoking speculation
-- French set frenzy: Canada-only edition with reported lower production
-- Rampant Over-production 
-  - Upper Deck High Series packs were a mix of Low and High Series cards  
+  - O-Pee-Chee's 528-card main set
+  - Score's 440 cards sets
+- First Beckett hockey price guide helps drive speculation:
+  - Eric Lindros Score RC frenzy
+  - First Upper Deck Young Guns cards
+  - OPC Premier Roenick / Jagr / Fedorov RCs 
+  - French set frenzy
+  - Counterfeit Roy and Hull OPC cards begin to surface
+- Over-production: 
   - Upper Deck and Pro Set go back to the presses for multiple print runs 
   - Factory Sets from Score, Upper Deck, Topps & OPC  
-- First Beckett hockey price guide helps drive speculation
-- O-Pee-Chee Premier's "limited" print run and frenzy around the Jagr / Roenick / Fedorov RCs
-- Counterfeit Patrick Roy and Brett Hull OPC cards begin to surface
+
 
 
 #### 1991-92 More Sets, More Inserts
