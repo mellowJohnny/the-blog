@@ -114,7 +114,7 @@ function renderSportspickForm(mode) {
         <tr>
           <td colspan="2">
             <label>Release Year <sup>*</sup></label> <small>the year the figure came out, e.g. 1997</small><br>
-            <input type="number" id="spReleaseYear" min="1900" max="2100" required>
+            <input type="text" id="spReleaseYear" inputmode="numeric" maxlength="4" required>
           </td>
         </tr>
         <tr>
