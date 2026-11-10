@@ -309,6 +309,45 @@ function getMonthName(monthNum) {
   return months[monthNum] || null; // or "Invalid month"
 }
 
+// The card galleries (Wax Museum, McFarlane's Shelf): buildItem(item) cards in the three-up grid,
+// built 6 at a time; an empty sentinel below the grid loads the next batch as it nears the viewport.
+const LAZY_GRID_BATCH = 6;
+function renderLazyGrid(container, items, buildItem) {
+  container.replaceChildren();
+  const grid = document.createElement("div");
+  grid.className = "wax-museum-grid";
+  container.appendChild(grid);
+
+  let shown = 0;
+  const showNextBatch = () => {
+    items.slice(shown, shown + LAZY_GRID_BATCH).forEach((item) => grid.appendChild(buildItem(item)));
+    shown += LAZY_GRID_BATCH;
+  };
+  showNextBatch();
+  if (shown >= items.length) return;
+  if (!("IntersectionObserver" in window)) {
+    while (shown < items.length) showNextBatch();
+    return;
+  }
+
+  const sentinel = document.createElement("div");
+  sentinel.className = "wax-museum-sentinel";
+  container.appendChild(sentinel);
+  const observer = new IntersectionObserver((entries) => {
+    if (!entries.some((entry) => entry.isIntersecting)) return;
+    showNextBatch();
+    if (shown >= items.length) {
+      observer.disconnect();
+      sentinel.remove();
+    } else {
+      // Re-observing makes the browser report again, in case the sentinel is still in view (tall screens).
+      observer.unobserve(sentinel);
+      observer.observe(sentinel);
+    }
+  }, { rootMargin: "600px 0px" });
+  observer.observe(sentinel);
+}
+
 // One loading spinner for every public page: a small centred card, or inside `container`
 // (modals). It appears only after 500ms so fast loads never flash it; returns hide().
 let spinnerOverlayUsers = 0;
@@ -776,6 +815,8 @@ const NAV_MAP = {
   timeline: ["home", "major", "fastfood", "museum", "search"],
   browseBySet: ["home", "major", "fastfood", "museum", "timeline", "search"],
   waxMuseum: ["home", "major", "fastfood", "timeline", "search"],
+  // McFarlane's Shelf is dark-deployed at /cms/mcfarlanesShelf.html: nothing links to it yet.
+  mcfarlanesShelf: ["home", "major", "fastfood", "museum", "timeline", "search"],
   // about.html is footer-only, so nothing self-excludes.
   about: ["home", "major", "fastfood", "museum", "timeline", "search"]
 };

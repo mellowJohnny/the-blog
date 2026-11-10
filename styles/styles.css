@@ -5072,6 +5072,11 @@ body:has(.site-footer) {
   min-height: 223px;
 }
 
+/* McFarlane's Shelf reuses these cards; its captions are shorter than a pack's, so no height floor. */
+.mcfarlanes-shelf .wax-museum-front > .wax-museum-caption {
+  min-height: 0;
+}
+
 .wax-museum-name {
   margin: 0 0 8px;
   font-size: 18px;
