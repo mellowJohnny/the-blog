@@ -50,7 +50,7 @@
   - First Upper Deck Young Guns cards
   - OPC Premier Roenick / Jagr / Fedorov RCs 
   - French set frenzy
-  - Counterfeit Roy and Hull OPC cards begin to surface
+  - Counterfeit Roy and Hull OPC RCs begin to surface
 - Over-production: 
   - Upper Deck and Pro Set go back to the presses for multiple print runs 
   - Factory Sets from Score, Upper Deck, Topps & OPC  
