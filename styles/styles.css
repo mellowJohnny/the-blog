@@ -3638,7 +3638,7 @@ body:has(.site-footer) {
   flex-wrap: nowrap;
 }
 
-/* index.html's banner masthead, edge to edge at every width: the -8px margins
+/* about.html's banner masthead, edge to edge at every width: the -8px margins
    cancel the browser's default body margin, and the image scales with the window. */
 .home-masthead {
   position: relative;
@@ -3665,7 +3665,7 @@ body:has(.site-footer) {
 /* Wax-paper texture over the banner: a lit turbulence map (flat = neutral
    grey, so overlay only adds creases) plus fine grain. The mask is the
    banner image itself, so the rounded corners stay clear; keep it naming
-   the same file as index.html's img. */
+   the same file as about.html's img. */
 .home-masthead::before,
 .home-masthead::after {
   content: "";

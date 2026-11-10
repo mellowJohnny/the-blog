@@ -37,17 +37,11 @@
     <meta name="twitter:title" content="Junk Wax, Vintage and Tim Hortons Hockey Card Set Reviews | Junk Wax Hockey">
     <meta name="twitter:description" content="Junk wax, vintage, McDonald's and Tim Hortons hockey card set reviews, full set checklists, and a player search.">
     <meta name="twitter:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
-    <!-- Google Core Web Vitals image preload -->
-    <link
-      rel="preload"
-      as="image"
-      href="/images/masthead-v19.webp"
-      fetchpriority="high">
-
     <!-- Stylesheet -->
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
-    <!-- Fonts are self-hosted (@font-face in styles.css); the nav and footer use Nunito -->
+    <!-- Fonts are self-hosted (@font-face in styles.css); the masthead uses Bebas Neue, the nav and footer Nunito -->
+    <link rel="preload" href="/fonts/bebas-neue-latin-v16.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/nunito-latin-v32.woff2" as="font" type="font/woff2" crossorigin>
 
     <!-- Global site tag (gtag.js) - Load Google Analytics until later -->
@@ -80,9 +74,16 @@
 
   <body>
     <section>
-      <header class="home-masthead">
-        <img src="/images/masthead-v19.webp" width="1500" height="250" alt="Junk Wax Hockey">
-      </header>
+      <!-- Always Montreal: the masthead's CSS defaults, since this page doesn't call applyRandomMastheadStyling() (no team pick, no cheer label) -->
+      <table class="wax-reviews-mast-table">
+        <tr>
+          <td>
+            <header class="wax-reviews-masthead">
+              <a href="/index.html">Junk Wax Hockey</a>
+            </header>
+          </td>
+        </tr>
+      </table>
     </section>
     <nav>
       <!-- Dynamically fetch the Nav using fetchNav() in helper.js -->
