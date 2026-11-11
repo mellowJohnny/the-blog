@@ -7,6 +7,9 @@
 const SPORTSPICK_GET_URL = "https://j35hpf8jb8.execute-api.us-east-2.amazonaws.com/prod"; // getSportspicks API
 const SPORTSPICK_IMAGE_BASE = "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/sportspicks/";
 
+// The "Chase!" sticker's 24-point star (fill and stroke come from styles.css).
+const STARBURST_SVG = '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><polygon points="50,0 59.3,15.2 75,6.7 75.5,24.5 93.3,25 84.8,40.7 100,50 84.8,59.3 93.3,75 75.5,75.5 75,93.3 59.3,84.8 50,100 40.7,84.8 25,93.3 24.5,75.5 6.7,75 15.2,59.3 0,50 15.2,40.7 6.7,25 24.5,24.5 25,6.7 40.7,15.2"/></svg>';
+
 function shelfEl(tag, className, text) {
   const el = document.createElement(tag);
   if (className) el.className = className;
@@ -42,7 +45,10 @@ function buildFigureCard(figure) {
   if (figure.variant && String(figure.variant).trim()) {
     const burst = shelfEl("span", "mcfarlanes-variant");
     burst.tabIndex = 0;
-    burst.append(shelfEl("span", "mcfarlanes-variant-star", "Chase!"), shelfEl("span", "mcfarlanes-variant-tip", figure.variant));
+    const star = shelfEl("span", "mcfarlanes-variant-star");
+    star.innerHTML = STARBURST_SVG;
+    star.appendChild(shelfEl("span", "mcfarlanes-variant-text", "Chase!"));
+    burst.append(star, shelfEl("span", "mcfarlanes-variant-tip", figure.variant));
     front.appendChild(burst);
   }
 

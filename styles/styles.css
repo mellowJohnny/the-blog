@@ -5111,8 +5111,8 @@ body:has(.site-footer) {
   opacity: 1;
 }
 
-/* A 24-point star cut by clip-path on ::before, outlined and lifted by drop-shadows
-   (a clipped shape can't take a border). */
+/* A 24-point SVG star with a true stroke, so every tip keeps an even outline
+   (offset drop-shadows thin out on the angled points). */
 .mcfarlanes-variant-star {
   position: relative;
   display: flex;
@@ -5127,24 +5127,31 @@ body:has(.site-footer) {
   text-transform: uppercase;
   color: var(--color-red);
   transform: rotate(-12deg);
-  filter:
-    drop-shadow(2.5px 0 0 var(--color-text-dark))
-    drop-shadow(-2.5px 0 0 var(--color-text-dark))
-    drop-shadow(0 2.5px 0 var(--color-text-dark))
-    drop-shadow(0 -2.5px 0 var(--color-text-dark))
-    drop-shadow(2px 3px 0 rgba(0, 0, 0, 0.25));
+  filter: drop-shadow(2px 3px 0 rgba(0, 0, 0, 0.25));
 }
 
-.mcfarlanes-variant-star::before {
-  content: "";
+.mcfarlanes-variant-star svg {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: var(--color-starburst);
-  clip-path: polygon(50% 0%, 59.3% 15.2%, 75% 6.7%, 75.5% 24.5%, 93.3% 25%, 84.8% 40.7%,
-    100% 50%, 84.8% 59.3%, 93.3% 75%, 75.5% 75.5%, 75% 93.3%, 59.3% 84.8%, 50% 100%,
-    40.7% 84.8%, 25% 93.3%, 24.5% 75.5%, 6.7% 75%, 15.2% 59.3%, 0% 50%, 15.2% 40.7%,
-    6.7% 25%, 24.5% 24.5%, 25% 6.7%, 40.7% 15.2%);
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.mcfarlanes-variant-star polygon {
+  fill: var(--color-starburst);
+  stroke: var(--color-text-dark);
+  stroke-width: 4;
+  stroke-linejoin: miter;
+}
+
+.mcfarlanes-variant-text {
+  filter:
+    drop-shadow(1.5px 0 0 var(--color-text-dark))
+    drop-shadow(-1.5px 0 0 var(--color-text-dark))
+    drop-shadow(0 1.5px 0 var(--color-text-dark))
+    drop-shadow(0 -1.5px 0 var(--color-text-dark));
 }
 
 .wax-museum-name {
