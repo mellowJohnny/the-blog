@@ -1246,10 +1246,11 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   bottom: 4px;
   z-index: 1;
   margin: 0;
-  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  font-size: 28px;
-  font-style: italic;
-  font-weight: 700;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 34px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  transform: skewX(-8deg); /* Bebas Neue has no italic; a skew slants it the same in every browser */
   color: var(--color-masthead-text);
   text-shadow: 0 2px 3px rgba(0, 0, 0, 0.6);
   pointer-events: none;
@@ -1265,7 +1266,7 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 
   .masthead-tagline {
     bottom: 1px;
-    font-size: 20px;
+    font-size: 24px;
   }
 }
 
@@ -4188,7 +4189,7 @@ body:has(.site-footer) {
   .masthead-tagline {
     right: 10px;
     bottom: 2px;
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .nhl-ticker {
