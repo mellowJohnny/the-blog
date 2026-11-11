@@ -39,14 +39,14 @@
 
 #### 1990-91 Upper Deck Arrives
 - The NHL issues new licenses to Pro Set, Pinnacle, and Upper Deck, with all companies allowed to produce two sets a year
-- Card sets jump from just two n '89-'90 to nine
+- Card sets jump from just two in '89-'90 to nine
 - Set sizes explode:
   - Pro Set's enormous 705-card set
   - Upper Deck's 550-card set 
   - O-Pee-Chee's 528-card main set
   - Score's 440 cards sets
 - First Beckett hockey price guide helps drive speculation:
-  - Eric Lindros Score RC frenzy
+  - Eric Lindros Score RC 
   - First Upper Deck Young Guns cards
   - OPC Premier Roenick / Jagr / Fedorov RCs 
   - French set frenzy

@@ -1321,23 +1321,42 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   height: 150px;
   /* Varsity twill, like jersey numbers: a thick outline in the team's second colour
      (paint-order keeps it outside the letters), a ring in its main colour, a thin cream
-     edge, then a raised shadow. --mast-ring/-edge/-drop set the widths and shadow offset. */
+     edge, then a raised shadow. --mast-stroke/-ring/-edge/-drop set the widths. */
+  --mast-stroke: 10px;
   --mast-ring: 3px;
   --mast-edge: 1.5px;
   --mast-drop: 5px;
   letter-spacing: 3px;
-  -webkit-text-stroke: 10px var(--team-tertiary);
+  -webkit-text-stroke: var(--mast-stroke) var(--team-tertiary);
   paint-order: stroke fill;
-  filter:
-    drop-shadow(var(--mast-ring) 0 0 var(--team-primary))
-    drop-shadow(calc(-1 * var(--mast-ring)) 0 0 var(--team-primary))
-    drop-shadow(0 var(--mast-ring) 0 var(--team-primary))
-    drop-shadow(0 calc(-1 * var(--mast-ring)) 0 var(--team-primary))
-    drop-shadow(var(--mast-edge) 0 0 var(--color-masthead-text))
-    drop-shadow(calc(-1 * var(--mast-edge)) 0 0 var(--color-masthead-text))
-    drop-shadow(0 var(--mast-edge) 0 var(--color-masthead-text))
-    drop-shadow(0 calc(-1 * var(--mast-edge)) 0 var(--color-masthead-text))
-    drop-shadow(calc(var(--mast-drop) - 1px) var(--mast-drop) 0 rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(calc(var(--mast-drop) - 1px) var(--mast-drop) 0 rgba(0, 0, 0, 0.45));
+}
+
+/* The ring and the cream edge are real text strokes on two copies of the title behind it:
+   offset drop-shadows can't follow diagonals and points, which left the letters stepped.
+   Every masthead reads "Junk Wax Hockey"; the "/ ''" keeps screen readers from repeating it. */
+.wax-reviews-masthead a::before,
+.wax-reviews-masthead a::after {
+  content: "Junk Wax Hockey";
+  content: "Junk Wax Hockey" / "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: flex;
+  align-items: center;
+  padding-left: inherit;
+  paint-order: stroke fill;
+  pointer-events: none;
+}
+
+.wax-reviews-masthead a::before {
+  color: var(--color-masthead-text);
+  -webkit-text-stroke: calc(var(--mast-stroke) + 2 * (var(--mast-ring) + var(--mast-edge))) var(--color-masthead-text);
+}
+
+.wax-reviews-masthead a::after {
+  color: var(--team-primary);
+  -webkit-text-stroke: calc(var(--mast-stroke) + 2 * var(--mast-ring)) var(--team-primary);
 }
 
 /* Two-colour teams (Detroit, Tampa Bay, Toronto) would get the same colour for the
@@ -4185,7 +4204,7 @@ body:has(.site-footer) {
     --mast-edge: 1px;
     --mast-drop: 3px;
     letter-spacing: 1px;
-    -webkit-text-stroke-width: 5px;
+    --mast-stroke: 5px;
   }
 
   .wax-reviews-mast-table {
