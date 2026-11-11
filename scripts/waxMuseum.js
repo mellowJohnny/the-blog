@@ -182,5 +182,6 @@ async function initWaxMuseum() {
     status.textContent = "Couldn't load the wax packs. Please try again.";
   } finally {
     hideSpinner();
+    document.getElementById("waxMuseum").setAttribute("aria-busy", "false"); // drops the space reserved while loading
   }
 }

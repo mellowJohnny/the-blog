@@ -160,6 +160,12 @@ function renderTimeline(model, container) {
   model.points.forEach((point, i) => line.appendChild(buildTimelineCard(point, i)));
   container.replaceChildren(line);
 
+  // Size every card before the first paint, or they show at one line tall and then grow (layout shift).
+  // All reads first, then all writes, so this costs one layout rather than one per card.
+  const cards = [...container.querySelectorAll(".timeline-card")];
+  const heights = cards.map((card) => card.querySelector(card.classList.contains("is-flipped") ? ".timeline-back" : ".timeline-front").offsetHeight);
+  cards.forEach((card, i) => { card.style.height = `${heights[i]}px`; });
+
   // Wrapping changes with the window width and the web font loading.
   const observer = new ResizeObserver((entries) => {
     entries.forEach((entry) => syncTimelineCardHeight(entry.target.closest(".timeline-card")));
@@ -188,5 +194,6 @@ async function initTimeline() {
     status.textContent = "The timeline couldn't be loaded right now. Please try again later.";
   } finally {
     hideSpinner();
+    container.setAttribute("aria-busy", "false"); // drops the space reserved while loading
   }
 }

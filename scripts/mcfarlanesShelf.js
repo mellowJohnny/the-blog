@@ -100,5 +100,6 @@ async function initMcfarlanesShelf() {
     status.textContent = "Couldn't load the figures. Please try again.";
   } finally {
     hideSpinner();
+    document.getElementById("mcfarlanesShelf").setAttribute("aria-busy", "false"); // drops the space reserved while loading
   }
 }

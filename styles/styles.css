@@ -3629,7 +3629,12 @@ body:has(.site-footer) {
   font-size: 15px;
 }
 
-/* Breadcrumb trail above the set-review pages (renderBreadcrumbs() in helper.js). */
+/* Breadcrumb trail above the set-review pages (renderBreadcrumbs() in helper.js). Until it's filled,
+   the empty nav holds a one-line trail's height (ol padding 10 + 12, one 15px line), so the page doesn't drop. */
+.breadcrumbs:empty {
+  min-height: 43px;
+}
+
 .breadcrumbs ol {
   display: flex;
   flex-wrap: wrap;
@@ -5032,6 +5037,20 @@ body:has(.site-footer) {
 .wax-museum-status {
   text-align: center;
   color: var(--color-text-dark);
+}
+
+/* Holds a screenful while a gallery or the timeline loads (aria-busy, cleared by its script), so the
+   footer isn't drawn at the top and then pushed away by the cards - that move was a 0.2-0.37 layout shift. */
+.wax-museum[aria-busy="true"],
+#timeline[aria-busy="true"] {
+  min-height: 100vh;
+}
+
+@media (scripting: none) {
+  .wax-museum[aria-busy="true"],
+  #timeline[aria-busy="true"] {
+    min-height: 0;
+  }
 }
 
 .wax-museum-grid {
