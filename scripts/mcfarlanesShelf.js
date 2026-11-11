@@ -38,9 +38,9 @@ function buildFigureCard(figure) {
   const card = shelfEl("div", "wax-museum-card");
   const front = shelfEl("div", "wax-museum-face wax-museum-front");
 
-  // Comic-style "Variant!" starburst on the top corner; the variant's name shows on hover
+  // Comic-style "Chase!" starburst on the top corner; the variant's name shows on hover
   if (figure.variant && String(figure.variant).trim()) {
-    const burst = shelfEl("span", "mcfarlanes-variant", "Variant!");
+    const burst = shelfEl("span", "mcfarlanes-variant", "Chase!");
     burst.title = figure.variant;
     front.appendChild(burst);
   }

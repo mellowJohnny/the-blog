@@ -5079,7 +5079,7 @@ body:has(.site-footer) {
   padding: 2px 0;
 }
 
-/* The comic-style "Variant!" starburst: a 24-point star cut by clip-path on ::before,
+/* The comic-style "Chase!" starburst: a 24-point star cut by clip-path on ::before,
    outlined and lifted by drop-shadows on the badge (a clipped shape can't take a border). */
 .mcfarlanes-variant {
   position: absolute;

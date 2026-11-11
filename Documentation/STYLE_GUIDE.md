@@ -41,7 +41,7 @@ Use the `:root` tokens in `styles.css`. Don't type a colour value into a rule.
 | `--color-grey` | `#666` | Muted text: notes, breadcrumb separators and current page, disabled links, viewed cards |
 | `--color-grey-light` | `#ccc` | Light borders and dividers |
 | `--color-surface-muted` | `#eceff1` | Muted backgrounds: viewed Timeline cards, missing-image placeholders |
-| `--color-starburst` | `#ffd23f` (comic yellow) | McFarlane's Shelf "Variant!" starburst only (owner-approved 2026-11-10) |
+| `--color-starburst` | `#ffd23f` (comic yellow) | McFarlane's Shelf "Chase!" starburst only (owner-approved 2026-11-10) |
 - **Body text** is black (`--color-text`) everywhere, in the content boxes
   as well as on the page background.
 - **Three greys only.** Pick dark, mid or light; don't add an in-between
