@@ -5053,6 +5053,101 @@ body:has(.site-footer) {
   }
 }
 
+/* Floating back-to-top button (Wax Museum, Timeline, McFarlane's Shelf): a navy circle that shows once
+   the page is scrolled. A CSS scroll-state query where supported; elsewhere initBackToTop() (helper.js)
+   toggles classes on <html>. Visible by default, so it still works with neither. */
+.back-to-top-sentinel {
+  position: absolute;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+
+.back-to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  box-sizing: border-box;
+  border: 1.5px solid rgba(255, 255, 255, 0.7); /* keeps the circle visible over the navy footer */
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(--color-text-dark) 70%, transparent);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: visibility 0.3s, opacity 0.3s ease, translate 0.3s ease, background-color 0.2s;
+}
+
+/* :link/:visited, or the global a:link colour would turn the arrow link-blue */
+.back-to-top:link,
+.back-to-top:visited {
+  color: var(--color-white);
+}
+
+.back-to-top:hover {
+  background-color: color-mix(in srgb, var(--color-text-dark) 90%, transparent);
+}
+
+.back-to-top:focus-visible {
+  outline: 3px solid var(--color-link);
+  outline-offset: 3px;
+}
+
+html.back-to-top-pending .back-to-top {
+  visibility: hidden;
+  opacity: 0;
+  translate: 0 20px;
+}
+
+html.back-to-top-pending.back-to-top-scrolled .back-to-top {
+  visibility: visible;
+  opacity: 1;
+  translate: 0 0;
+}
+
+@supports (container-type: scroll-state) {
+  html:has(.back-to-top) {
+    container-type: scroll-state;
+  }
+
+  .back-to-top {
+    visibility: hidden;
+    opacity: 0;
+    translate: 0 20px;
+  }
+
+  /* The page can scroll back up, so the visitor has scrolled down */
+  @container scroll-state(scrollable: top) {
+    .back-to-top {
+      visibility: visible;
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.back-to-top) {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back-to-top {
+    transition: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .back-to-top {
+    right: 16px;
+    bottom: 16px;
+  }
+}
+
 .wax-museum-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

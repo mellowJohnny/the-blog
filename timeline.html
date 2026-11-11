@@ -105,6 +105,8 @@
   </head>
 
   <body>
+    <!-- Back-to-top target, and the marker the button's fallback watches (initBackToTop(), helper.js) -->
+    <span id="top" class="back-to-top-sentinel"></span>
     <section>
       <table class="wax-reviews-mast-table">
         <tr>
@@ -166,5 +168,9 @@
       <div id="copy"></div>
       <!-- Populated by fetchCopyrightYear() in helper.js -->
     </footer>
+
+    <a href="#top" class="back-to-top" aria-label="Back to top">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
   </body>
 </html>

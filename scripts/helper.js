@@ -371,6 +371,17 @@ function enableDialogLightDismiss(dialog) {
   dialog.addEventListener("pointerup", (event) => { if (pressedOutside && outside(event)) dialog.close(); });
 }
 
+// Back-to-top button fallback, for browsers without CSS scroll-state queries (styles.css shows it there by
+// itself): hide it, then show it whenever the zero-size sentinel at the top of the page is out of view.
+function initBackToTop() {
+  const sentinel = document.querySelector(".back-to-top-sentinel");
+  if (!sentinel || !document.querySelector(".back-to-top") || CSS.supports("container-type", "scroll-state") || !("IntersectionObserver" in window)) return;
+  const root = document.documentElement;
+  root.classList.add("back-to-top-pending");
+  new IntersectionObserver(([entry]) => root.classList.toggle("back-to-top-scrolled", !entry.isIntersecting)).observe(sentinel);
+}
+document.addEventListener("DOMContentLoaded", initBackToTop);
+
 // One loading spinner for every public page: a small centred card, or inside `container`
 // (modals). It appears only after 500ms so fast loads never flash it; returns hide().
 let spinnerOverlayUsers = 0;
