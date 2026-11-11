@@ -5146,14 +5146,6 @@ body:has(.site-footer) {
   stroke-linejoin: miter;
 }
 
-.mcfarlanes-variant-text {
-  filter:
-    drop-shadow(1.5px 0 0 var(--color-text-dark))
-    drop-shadow(-1.5px 0 0 var(--color-text-dark))
-    drop-shadow(0 1.5px 0 var(--color-text-dark))
-    drop-shadow(0 -1.5px 0 var(--color-text-dark));
-}
-
 .wax-museum-name {
   margin: 0 0 8px;
   font-size: 18px;

@@ -47,7 +47,7 @@ function buildFigureCard(figure) {
     burst.tabIndex = 0;
     const star = shelfEl("span", "mcfarlanes-variant-star");
     star.innerHTML = STARBURST_SVG;
-    star.appendChild(shelfEl("span", "mcfarlanes-variant-text", "Chase!"));
+    star.append("Chase!");
     burst.append(star, shelfEl("span", "mcfarlanes-variant-tip", figure.variant));
     front.appendChild(burst);
   }
