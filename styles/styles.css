@@ -1243,16 +1243,30 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 .masthead-tagline {
   position: absolute;
   right: 16px;
-  bottom: 10px;
+  bottom: 4px;
   z-index: 1;
   margin: 0;
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 28px;
   font-style: italic;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--color-masthead-text);
   text-shadow: 0 2px 3px rgba(0, 0, 0, 0.6);
   pointer-events: none;
+}
+
+/* Tablet widths: the title reaches the tagline's corner, so lift the title and
+   tuck a smaller tagline underneath it. */
+@media (min-width: 601px) and (max-width: 1100px) {
+  .masthead-has-tagline .wax-reviews-masthead a {
+    box-sizing: border-box;
+    padding-bottom: 20px;
+  }
+
+  .masthead-tagline {
+    bottom: 1px;
+    font-size: 20px;
+  }
 }
 
 /* "Loud" pop-in effect (renderLoudText(), helper.js): each character of
@@ -1292,7 +1306,9 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
 .wax-reviews-masthead a {
   font-family: Bebas Neue;
   font-weight: 400;
-  font-size: 128px;
+  /* 15vw shrinks it below ~850px so it never wraps (the phone rule takes over at 600px) */
+  font-size: min(128px, 15vw);
+  white-space: nowrap;
   position: relative;
   z-index: 1; /* keeps text above the blur */
   text-transform: uppercase;
@@ -4171,7 +4187,7 @@ body:has(.site-footer) {
 
   .masthead-tagline {
     right: 10px;
-    bottom: 4px;
+    bottom: 2px;
     font-size: 14px;
   }
 
