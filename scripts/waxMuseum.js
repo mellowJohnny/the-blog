@@ -4,6 +4,7 @@
  */
 
 // Same values as in cmsWaxPack.js (the CMS script can't load on a public page).
+// waxMuseum.html preloads this exact URL so the request starts with the HTML; keep the two identical.
 const WAX_PACK_GET_URL = "https://efh9lu4988.execute-api.us-east-2.amazonaws.com/prod"; // getWaxPacks API
 const WAX_PACK_IMAGE_BASE = "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/wax-packs/";
 
@@ -14,14 +15,17 @@ function waxMuseumEl(tag, className, text) {
   return el;
 }
 
-function waxMuseumImage(fileName, alt, className) {
+// index: the card's place in the grid. The first row's fronts load eagerly and the very first one at high
+// priority (it's the page's LCP); backs and later cards stay lazy. Omit it for an image that's never on screen at load.
+function waxMuseumImage(fileName, alt, className, index = Infinity) {
   const img = waxMuseumEl("img", className);
-  img.src = WAX_PACK_IMAGE_BASE + encodeURIComponent(fileName);
+  if (index >= LAZY_GRID_EAGER) img.loading = "lazy"; // helper.js; set before src, which starts the request
+  if (index === 0) img.fetchPriority = "high";
+  img.decoding = "async";
   img.alt = alt;
   img.width = 900;
   img.height = 1200;
-  img.loading = "lazy";
-  img.decoding = "async";
+  img.src = WAX_PACK_IMAGE_BASE + encodeURIComponent(fileName);
   return img;
 }
 
@@ -92,13 +96,13 @@ function buildWaxPackCaption(pack) {
   return caption;
 }
 
-function buildWaxPackCard(pack) {
+function buildWaxPackCard(pack, index) {
   const item = waxMuseumEl("article", "wax-museum-item");
   const card = waxMuseumEl("div", "wax-museum-card");
 
   const front = waxMuseumEl("div", "wax-museum-face wax-museum-front");
   if (pack.frontImg) {
-    const picture = waxMuseumImage(pack.frontImg, `${pack.name} wax pack, front`, "wax-museum-img");
+    const picture = waxMuseumImage(pack.frontImg, `${pack.name} wax pack, front`, "wax-museum-img", index);
     if (pack.backImg) {
       const flip = waxMuseumEl("button", "wax-museum-flip");
       flip.type = "button";

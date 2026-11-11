@@ -36,7 +36,7 @@ function figureDetails(figure) {
   ].filter(([, value]) => value !== undefined && value !== null && String(value).trim() !== "");
 }
 
-function buildFigureCard(figure) {
+function buildFigureCard(figure, index) {
   const item = shelfEl("article", "wax-museum-item");
   const card = shelfEl("div", "wax-museum-card");
   const front = shelfEl("div", "wax-museum-face wax-museum-front");
@@ -54,12 +54,15 @@ function buildFigureCard(figure) {
 
   if (figure.image) {
     const img = shelfEl("img", "wax-museum-img");
-    img.src = SPORTSPICK_IMAGE_BASE + encodeURIComponent(figure.image);
+    // The first row is on screen at load: eager, the very first at high priority (the LCP). helper.js
+    // Set before src, which starts the request.
+    if (index >= LAZY_GRID_EAGER) img.loading = "lazy";
+    if (index === 0) img.fetchPriority = "high";
+    img.decoding = "async";
     img.alt = `${figure.playerName} McFarlane Sportspicks figure, ${figure.series}${figure.variant ? `, ${figure.variant}` : ""}`;
     img.width = 900;
     img.height = 1200;
-    img.loading = "lazy";
-    img.decoding = "async";
+    img.src = SPORTSPICK_IMAGE_BASE + encodeURIComponent(figure.image);
     front.appendChild(img);
   } else {
     front.appendChild(shelfEl("div", "wax-museum-noimg", "No image yet"));

@@ -35,6 +35,11 @@
     <meta name="twitter:description" content="A gallery of vintage and junk wax era hockey card wax packs, from O-Pee-Chee and Topps to Score and Upper Deck. Flip each pack to see the back, with the manufacturer, packaging, cards per pack and price.">
     <meta name="twitter:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/hellaFilesArch.webp">
 
+    <!-- Start the pack list request with the HTML, not after the scripts: the first pack image is the
+         page's LCP and waits on it. Must match WAX_PACK_GET_URL in waxMuseum.js exactly. -->
+    <link rel="preload" as="fetch" crossorigin href="https://efh9lu4988.execute-api.us-east-2.amazonaws.com/prod">
+    <link rel="preconnect" href="https://s3.us-east-2.amazonaws.com">
+
     <!-- Fonts are self-hosted (@font-face in styles.css); the masthead uses Bebas Neue -->
     <link rel="preload" href="/fonts/bebas-neue-latin-v16.woff2" as="font" type="font/woff2" crossorigin>
 

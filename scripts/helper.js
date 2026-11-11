@@ -317,8 +317,10 @@ function getMonthName(monthNum) {
   return months[monthNum] || null; // or "Invalid month"
 }
 
-// The card galleries (Wax Museum, McFarlane's Shelf): buildItem(item) cards in the three-up grid,
+// The card galleries (Wax Museum, McFarlane's Shelf): buildItem(item, index) cards in the three-up grid,
 // built 6 at a time; an empty sentinel below the grid loads the next batch as it nears the viewport.
+// The first row is on screen at load (its first image is the LCP), so builders load it eagerly.
+const LAZY_GRID_EAGER = 3;
 const LAZY_GRID_BATCH = 6;
 function renderLazyGrid(container, items, buildItem) {
   container.replaceChildren();
@@ -328,7 +330,7 @@ function renderLazyGrid(container, items, buildItem) {
 
   let shown = 0;
   const showNextBatch = () => {
-    items.slice(shown, shown + LAZY_GRID_BATCH).forEach((item) => grid.appendChild(buildItem(item)));
+    items.slice(shown, shown + LAZY_GRID_BATCH).forEach((item, i) => grid.appendChild(buildItem(item, shown + i)));
     shown += LAZY_GRID_BATCH;
   };
   showNextBatch();
