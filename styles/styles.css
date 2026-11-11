@@ -5079,13 +5079,42 @@ body:has(.site-footer) {
   padding: 2px 0;
 }
 
-/* The comic-style "Chase!" starburst: a 24-point star cut by clip-path on ::before,
-   outlined and lifted by drop-shadows on the badge (a clipped shape can't take a border). */
+/* The "Chase!" sticker; hovering, focusing or tapping it shows the variant's name below it.
+   The star is a separate span so its rotation and outline don't apply to the name. */
 .mcfarlanes-variant {
   position: absolute;
-  top: 24px;
-  right: 24px;
+  top: 40px;
+  right: 40px;
   z-index: 1;
+  cursor: help;
+}
+
+.mcfarlanes-variant-tip {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--color-text-dark);
+  color: var(--color-white);
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  font-size: 14px;
+  white-space: nowrap;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.mcfarlanes-variant:hover .mcfarlanes-variant-tip,
+.mcfarlanes-variant:focus .mcfarlanes-variant-tip {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* A 24-point star cut by clip-path on ::before, outlined and lifted by drop-shadows
+   (a clipped shape can't take a border). */
+.mcfarlanes-variant-star {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5104,10 +5133,9 @@ body:has(.site-footer) {
     drop-shadow(0 1.5px 0 var(--color-text-dark))
     drop-shadow(0 -1.5px 0 var(--color-text-dark))
     drop-shadow(2px 3px 0 rgba(0, 0, 0, 0.25));
-  cursor: default;
 }
 
-.mcfarlanes-variant::before {
+.mcfarlanes-variant-star::before {
   content: "";
   position: absolute;
   inset: 0;
