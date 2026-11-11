@@ -1238,6 +1238,23 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   pointer-events: none;
 }
 
+/* Home page tagline, in the masthead's bottom-right corner (the spot the cheer label
+   takes on other pages). Unlike that label it stays on phones, shrunk. */
+.masthead-tagline {
+  position: absolute;
+  right: 16px;
+  bottom: 10px;
+  z-index: 1;
+  margin: 0;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  font-size: 28px;
+  font-style: italic;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
 /* "Loud" pop-in effect (renderLoudText(), helper.js): each character of
    the cheer label is its own span, staggered via animation-delay set in
    JS, so the text appears to pop in letter by letter on load. */
@@ -4150,6 +4167,12 @@ body:has(.site-footer) {
      hidden on mobile per the site owner, not just shrunk. */
   .masthead-team-label {
     display: none;
+  }
+
+  .masthead-tagline {
+    right: 10px;
+    bottom: 4px;
+    font-size: 14px;
   }
 
   .nhl-ticker {
