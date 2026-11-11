@@ -2092,7 +2092,19 @@ body:has(.site-footer) .header-style + .flex-container > .intro > p:last-child {
     font-weight: 400; /* Light */
     text-align: left;
     padding: 10px; /* changing to 10px */
-} 
+}
+
+/* Wider sides than the generic .flex-container div padding, so long lines don't run to
+   the box edge; border-box keeps the box its old 1030px, so the text narrows instead.
+   Phones keep their own 10px (this rule is desktop/tablet only). */
+@media (min-width: 601px) {
+  .flex-container .blog-entry {
+    box-sizing: border-box;
+    width: min(1030px, calc(100% - 10px));
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+}
 
 /* One standard for section headings (h2) and sub-headings (h3) on the public pages;
    each class keeps its own margins and alignment further down. */
