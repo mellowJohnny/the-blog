@@ -252,6 +252,37 @@ rename doesn't orphan the item.
 A "format" field existed briefly and was removed on 2026-11-03.
 Optional fields are omitted rather than stored empty.
 
+## `Sportspicks` table
+
+Backs McFarlane's Shelf (`cms/mcfarlanesShelf.html`, dark-deployed),
+added 2026-11-09; one item per McFarlane Sportspicks figure, written from
+the CMS Sportspicks pages. Modelled on `WaxPacks`.
+
+**Keys** (as the Lambdas use them, not checked in the console):
+partition key `releaseYear` (Number), sort key `figureKey` (String).
+`figureKey` is a slug made once at creation from series, player and
+variant (`saveSportspick`) and kept when any of them is edited later, so
+an edit doesn't orphan the item. The release year can't change after
+creation: the edit form locks it, because it's the partition key. The
+slug keeps only `a-z` and `0-9`, so an accented letter becomes a hyphen
+("Giguère" gives `jean-sebastien-gigu-re`). That's harmless, since the
+key is never shown, but don't expect to rebuild a key from a name.
+
+| Field | Type | Notes |
+|---|---|---|
+| `releaseYear` | Number | Partition key; the year the figure came out. 1900 to 2100. |
+| `figureKey` | String | Sort key; lowercase letters, numbers and single hyphens (for example `series-1-patrick-roy-nhlpa-repaint`). |
+| `playerName` | String | Required, up to 100 characters. |
+| `series` | String | Required, up to 100 (for example "Series 1"). The shelf sorts it numeric-aware. |
+| `variant` | String | Optional, up to 60. Any value gives the figure the "Chase!" sticker on the shelf. |
+| `image` | String | Optional file name under S3 `img/sportspicks/`. |
+| `notes` | String | Optional, up to 1000. The shelf caption assumes two lines at most. |
+| `updatedAt` | String | ISO timestamp of the last save. |
+
+Optional fields are omitted rather than stored empty. A create that
+would reuse an existing year and key (same series, player and variant)
+is refused with a 409.
+
 ## `BlogIntro` / `CardIntro` tables — dead, backing orphaned Lambdas
 
 Discovered 2026-08-15 while briefly pulling the full Lambda inventory
@@ -273,8 +304,9 @@ persistent store the site depends on:
 - `img/blog/` — blog post images.
 - `img/cards/` — card set header/footer/middle images, keyed loosely by convention as `{year}_hero.webp`, `{setSlug}_Middle.webp`, etc.
 - `img/wax-packs/` — Wax Museum pack images, front and back (`frontImg`/`backImg` in `WaxPacks`).
+- `img/sportspicks/` — McFarlane's Shelf figure images (`image` in `Sportspicks`): 900x1200 WebPs with a transparent background.
 - `img/cms/` — CMS-only UI assets (e.g. the Autobus nameplate logo).
-- root — favicons (`favicon.ico`, `favicon2.ico`, etc).
+- `img/favicon2.ico` — the CMS's old favicon, no longer linked. The site's favicons, CMS included, are in the repo, not S3 (see `FRONTEND.md`'s "Favicons and home-screen icons").
 
 Uploads happen via the browser doing a direct `PUT` to a presigned URL
 obtained from a Lambda (see `API_ENDPOINTS.md` → "Get S3 upload URL").

@@ -35,15 +35,13 @@ reference, e.g. `cms/admin.html`):
 4. `<title>` — inside `<head>`, not floated between `<html>` and
    `<head>` (that pattern existed on 9 of the 10 pages pre-cleanup;
    it's invalid HTML even though browsers tolerate it).
-5. Favicon block — exactly one, using the `favicon2` set only:
-   ```html
-   <link rel="icon" type="image/x-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.ico">
-   <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-   <link rel="apple-touch-icon" href="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/favicon2.png">
-   ```
-   Don't also add the older plain `favicon.ico`/`favicon.png` pair —
-   every page used to carry both, which the cleanup pass removed as a
-   duplicate.
+5. Favicon block — exactly one, the same three links as the public
+   pages (`/favicon.ico` with `sizes="16x16 32x32 48x48"`,
+   `/images/icons/icon-192.png`, `/images/icons/apple-touch-icon.png`;
+   see `FRONTEND.md`'s "Favicons and home-screen icons"). Copy it from
+   any existing `/cms` page. The CMS used to load a separate `favicon2`
+   set from S3 (`img/favicon2.ico` is still there, unused); all 17 pages
+   now use the repo's files.
 6. `<link rel="stylesheet" href="/styles/styles.css">` — this also
    brings the fonts: since 2026-11-05 every font is self-hosted and
    declared in `styles.css`, so `/cms` pages no longer have a Google
@@ -106,9 +104,11 @@ sed -E 's#<(meta|link|br|img|input|hr)([^>]*)\s*/>#<\1\2>#g'
 ## cardStack — blog & card set authoring
 
 Entry point: `cms/wlcms.html` — its centered nav is grouped into
-dropdown/flyout menus (Cards, Wax Packs, Blogs, Admin) plus a plain Exit
-link (the Wax Packs menu holds New and Edit only; its old link to the
-public museum page was removed on 2026-11-04),
+dropdown/flyout menus (Cards, Wax Packs, Sportspicks, Blogs, Admin) plus
+a plain Exit link (the Wax Packs menu holds New and Edit only; its old
+link to the public museum page was removed on 2026-11-04. Sportspicks
+holds New, Edit and "...preview shelf", the only way to reach the
+dark-deployed McFarlane's Shelf),
 rather than one flat row of links. Each opens two ways, independently:
 a small inline script scoped to `#wlcms-top-nav` toggles an `open`
 class on click (this is what drives it on touch, where hover isn't
@@ -854,8 +854,9 @@ table (`DATA_MODEL.md`):
 **Images.** Each side's Browse button opens the shared image browser
 (`cmsImageBrowser.js`) on the `img/wax-packs/` folder: `openImageBrowser()`
 takes an optional directory and an optional processor since this feature.
-Uploads go through `processWaxPackImage()` (`scripts/waxPackImageProcessor.js`)
-first, entirely in the browser: it finds the pack on its white backdrop,
+Uploads go through `processWaxPackImage()` (`scripts/cmsImageProcessor.js`,
+shared with the Sportspicks figures since 2026-11-09) first, entirely in
+the browser: it finds the pack on its white backdrop,
 crops and centres it on a 900x1200 white canvas with a margin, whitens the
 backdrop, and encodes WebP (quality 0.82, dropping to 0.6 to stay under
 250 KB). The file name gets six hex characters from a hash of the image
@@ -863,6 +864,47 @@ backdrop, and encodes WebP (quality 0.82, dropping to 0.6 to stay under
 never reuses a name a browser may have cached. It needs a browser that
 can write WebP (Chrome, Edge, Firefox); an iPhone HEIC photo needs
 exporting as JPEG first.
+
+### Sportspicks figures (McFarlane's Shelf)
+
+Three pages, all driven by `scripts/cmsSportspicks.js`, fill the
+`Sportspicks` table (`DATA_MODEL.md`) that the dark-deployed McFarlane's
+Shelf (`cms/mcfarlanesShelf.html`, see `FRONTEND.md`) shows. They are
+under the CMS menu's "...sportspicks" dropdown, with "...preview shelf"
+as the third link.
+
+- **New Figure** (`newSportspick.html`) and **Edit Figure**
+  (`sportspickEdit.html?releaseYear=&figureKey=`) share one form, built
+  by `renderSportspickForm()`, in this order: Release Year, Series,
+  Player Name and Variant side by side, Image, Notes. Year, series and
+  player are required. Series is free text with a `<datalist>` of every
+  series already saved (`fillSportspickSeriesList()`), so new figures
+  reuse the same spelling. On the edit page only the release year is
+  locked, because it is the table's partition key.
+- **Pick Figure** (`pickSportspick.html`) lists every figure as a link
+  to its edit page, grouped under a heading per release year. Like every
+  figure load in the CMS it fetches with `cache: "no-store"`, because the
+  public endpoint is browser-cached for 30 minutes.
+- **Save** (`submitSportspick()`) sends the form to `saveSportspick`
+  with the Cognito token. A new figure's `figureKey` is a slug of
+  series, player and variant, made once at creation and kept through
+  later edits. A new figure returns to the CMS home, an edit to the pick
+  list. **Delete** (edit page) asks through `cmsConfirm()` and calls
+  `deleteSportspick`.
+- **The Variant field** is what puts the yellow "Chase!" sticker on the
+  figure's card on the shelf; the text itself shows on hover.
+
+**Images.** Browse opens the shared image browser on `img/sportspicks/`
+with `processSportspickImage()` (`cmsImageProcessor.js`) as the
+processor. The source must already have its background removed: an
+image with less than 1% see-through pixels is refused, with a message
+saying so. The figure is found by its alpha channel, cropped, centred on
+a transparent 900x1200 canvas with the same margin as the wax packs, and
+encoded as WebP under the same 250 KB limit and hashed file name. The
+transparency is kept, so figures sit on the card's own background. The
+canvas is fixed at 900x1200, so short packages leave empty space above
+and below them on the shelf. Cropping each figure to its own shape would
+remove that space, but every existing image would need re-uploading.
 
 ## Autobus Messaging Platform — `cms/smsAdmin.html`
 

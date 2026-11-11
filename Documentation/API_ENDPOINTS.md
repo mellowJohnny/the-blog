@@ -102,6 +102,14 @@ To check an endpoint: `curl -s -D - -o /dev/null -H "Accept-Encoding: gzip"
 - **Response**: JSON array of `WaxPacks` items (see `DATA_MODEL.md`), sorted by year then `packKey`; the museum re-sorts for display. `Cache-Control: public, max-age=1800`, `Access-Control-Allow-Origin: *`.
 - **Lambda**: `Lambdas/getWaxPacks/`. A `Scan` (all) or a `Query` on `year`, following `LastEvaluatedKey`. Public, no auth by design, the same trust level as the other public reads.
 
+### Get sportspicks (public)
+- **URL**: `https://j35hpf8jb8.execute-api.us-east-2.amazonaws.com/prod`
+- **Method**: GET
+- **Query params**: none returns every figure; `?releaseYear=` (a whole number) returns one year. A non-integer `releaseYear` is a 400.
+- **Called from**: `initMcfarlanesShelf()` in `scripts/mcfarlanesShelf.js` (the dark-deployed `cms/mcfarlanesShelf.html`) and `loadSportspicks()` in `scripts/cmsSportspicks.js` (the CMS Sportspicks pages). Both fetch with `cache: "no-store"` for now, so a save shows at once; the shelf should drop it when it goes public.
+- **Response**: JSON array of `Sportspicks` items (see `DATA_MODEL.md`), sorted by `releaseYear` then `figureKey`; the shelf re-sorts for display. `Cache-Control: public, max-age=1800`, `Access-Control-Allow-Origin: *`.
+- **Lambda**: `Lambdas/getSportspicks/`. A `Scan` (all) or a `Query` on `releaseYear`, following `LastEvaluatedKey`. Public, no auth by design, like "Get wax packs".
+
 ### Cast a vote on a card set
 - **URL**: `https://lo07upgip8.execute-api.us-east-2.amazonaws.com/dev`
 - **Method**: POST
@@ -265,11 +273,11 @@ To check an endpoint: `curl -s -D - -o /dev/null -H "Accept-Encoding: gzip"
 Both back the CMS wax pack pages (`newWaxPack.html`, `waxPackEdit.html`,
 via `scripts/cmsWaxPack.js`). Both send the Cognito ID token in an
 `Authorization` header (`getAuthToken()`), and each Lambda's CORS
-allows only `https://www.junkwaxhockey.com`. **Whether API Gateway
-enforces the token (a Cognito Authorizer on the method) has not been
-verified** the way the older CMS endpoints were: a no-token probe was
-blocked in the 2026-11-05 docs session. Check it with an unauthenticated
-request before relying on it. Reads use the public "Get wax packs" above.
+allows only `https://www.junkwaxhockey.com`. API Gateway enforces the
+token (verified 2026-11-10; it had been unverified since a no-token
+probe was blocked in the 2026-11-05 docs session): a request with no
+token gets API Gateway's own 401 `{"message":"Unauthorized"}` before the
+Lambda runs, on both. Reads use the public "Get wax packs" above.
 
 ### Save a wax pack (create or edit)
 - **URL**: `https://b3qn1kny99.execute-api.us-east-2.amazonaws.com/prod`
@@ -286,6 +294,32 @@ request before relying on it. Reads use the public "Get wax packs" above.
 - **Called from**: `deleteWaxPack()` in `scripts/cmsWaxPack.js` (after a `cmsConfirm()`).
 - **Response**: 200 `{ message }`; 400 for a missing key; 404 if no such pack.
 - **Lambda**: `Lambdas/deleteWaxPack/` (`DeleteCommand` with `attribute_exists(packKey)`).
+
+## CMS — Sportspicks (McFarlane's Shelf)
+
+Both back the CMS Sportspicks pages (`newSportspick.html`,
+`sportspickEdit.html`, via `scripts/cmsSportspicks.js`). Both send the
+Cognito ID token in an `Authorization` header (`getAuthToken()`), and
+each Lambda's CORS allows only `https://www.junkwaxhockey.com`. API
+Gateway enforces the token (verified 2026-11-10): a request with no
+token gets a 401 `{"message":"Unauthorized"}` before the Lambda runs.
+Reads use the public "Get sportspicks" above.
+
+### Save a sportspick (create or edit)
+- **URL**: `https://ogga6wveok.execute-api.us-east-2.amazonaws.com/prod`
+- **Method**: POST
+- **Body**: `{ releaseYear, playerName, series, variant?, image?, notes?, figureKey? }`. With no `figureKey` it creates (the key is slugified from series, player and variant); with a `figureKey` it edits that item.
+- **Called from**: `submitSportspick()` in `scripts/cmsSportspicks.js`.
+- **Response**: 200 `{ message, releaseYear, figureKey }`; 400 naming the first invalid field; 409 if a create's key already exists for that year; 404 if an edit's item doesn't exist (both through a `ConditionExpression`).
+- **Lambda**: `Lambdas/saveSportspick/` (`PutCommand` on `Sportspicks`).
+
+### Delete a sportspick
+- **URL**: `https://4ucf8sbc65.execute-api.us-east-2.amazonaws.com/prod`
+- **Method**: DELETE
+- **Body**: `{ releaseYear, figureKey }`
+- **Called from**: `deleteSportspick()` in `scripts/cmsSportspicks.js` (after a `cmsConfirm()`).
+- **Response**: 200 `{ message }`; 400 for a missing key; 404 if no such figure.
+- **Lambda**: `Lambdas/deleteSportspick/` (`DeleteCommand` with `attribute_exists(figureKey)`).
 
 ## CMS — checklist upload
 

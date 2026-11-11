@@ -2,13 +2,15 @@
 
 **Every live Lambda function has its source checked into this repo**,
 under `Lambdas/`, one directory per function, named exactly after its
-AWS Lambda function name. As of 2026-11-05 `Lambdas/` holds 36
-directories: 34 sit behind API Gateway, and two don't —
+AWS Lambda function name. As of 2026-11-10 `Lambdas/` holds 39
+directories: 37 sit behind API Gateway, and two don't —
 `amplifyBuildNotifier` (added 2026-09-29) runs off EventBridge, and
 `cardsRebuildTrigger` (added 2026-10-30) off a DynamoDB Stream; they are
-the only functions here no frontend code ever calls. The newest three,
+the only functions here no frontend code ever calls. The newest are
 `getWaxPacks`, `saveWaxPack` and `deleteWaxPack` (2026-11-01, The Wax
-Museum), are covered in "Wax Museum Lambdas" below. (The history: on
+Museum) and `getSportspicks`, `saveSportspick` and `deleteSportspick`
+(2026-11-09, McFarlane's Shelf), covered in "Wax Museum Lambdas" and
+"Sportspicks Lambdas" below. (The history: on
 2026-08-15, 30 of the then-34 API Gateway functions were in the repo
 and the other 4 were found dead and removed.)
 Most were pulled directly
@@ -33,7 +35,7 @@ list — `Lambdas/listSubscribers/`. The remaining 4 of the 34
 removed again the same day — see "Orphaned/dead Lambdas" below.
 
 Deployment is still entirely manual for every one of them, but the
-mechanics differ by function: the 33 with no real dependencies
+mechanics differ by function: the 36 with no real dependencies
 (`dependencies: {}` in `package.json`) just need the updated
 `index.mjs` pasted into the Lambda Console's inline code editor and
 Deploy clicked — no zip needed. Three need a full `npm install` + zip
@@ -1280,10 +1282,40 @@ stages, all with no dependencies (paste-deploy). Full contracts are in
   silent no-op.
 
 The save and delete calls send the Cognito token and their CORS allows
-only the site's origin; whether their API Gateway methods have a
-Cognito Authorizer hasn't been verified (see `API_ENDPOINTS.md`). Their
-roles need `PutItem`/`DeleteItem` on `WaxPacks`; `getWaxPacks` needs
-`Scan` and `Query`.
+only the site's origin; their API Gateway methods enforce the token
+(a no-token request gets a 401, verified 2026-11-10; see
+`API_ENDPOINTS.md`). Their roles need `PutItem`/`DeleteItem` on
+`WaxPacks`; `getWaxPacks` needs `Scan` and `Query`.
+
+## Sportspicks Lambdas — hand-built in this repo
+
+Three functions behind McFarlane's Shelf (`cms/mcfarlanesShelf.html`,
+dark-deployed) and the CMS Sportspicks pages, added 2026-11-09. They are
+the Wax Museum trio copied onto the `Sportspicks` table (`DATA_MODEL.md`):
+same shape, same `prod` stages, no dependencies (paste-deploy). Full
+contracts are in `API_ENDPOINTS.md`.
+
+- **`getSportspicks`** — public read: every figure (`Scan`) or one year
+  (`Query` on `releaseYear`), following `LastEvaluatedKey`, sorted by
+  year then `figureKey`. CORS `*`, cached 30 minutes.
+- **`saveSportspick`** — create or edit, one `PutCommand`. It validates
+  the fields (whole `releaseYear` 1900 to 2100, required `playerName`
+  and `series` up to 100 characters, `variant` up to 60, `image` up to
+  200, `notes` up to 1000, and the `figureKey` slug pattern on an edit)
+  and returns the first problem as a 400. A create slugifies series,
+  player and variant into `figureKey` and is conditioned on
+  `attribute_not_exists` (409 on a duplicate); an edit keeps its
+  `figureKey` and is conditioned on `attribute_exists` (404 if gone).
+  Empty optional fields are left off the item.
+- **`deleteSportspick`** — `DeleteCommand` by `releaseYear` +
+  `figureKey`, conditioned on `attribute_exists` so a stale key is a
+  404.
+
+Save and delete send the Cognito token, their CORS allows only the
+site's origin, and their API Gateway methods enforce the token (401
+without one, verified 2026-11-10). Their roles need
+`PutItem`/`DeleteItem` on `Sportspicks`; `getSportspicks` needs `Scan`
+and `Query`.
 
 ## Orphaned/dead Lambdas — removed from this repo
 

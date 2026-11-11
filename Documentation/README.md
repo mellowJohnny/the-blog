@@ -16,7 +16,9 @@ an extensive hobby section reviewing vintage and "junk wax" era hockey
 card sets (O-Pee-Chee, Upper Deck, Score, McDonald's, Tim Hortons,
 etc) with full checklists, a player search, The Wax Museum (a gallery
 of wax packs, front and back), a Junk Wax timeline and a live NHL/PWHL
-scores ticker. It also hosts a couple of small utility pages and a private
+scores ticker. McFarlane's Shelf, a gallery of McFarlane Sportspicks
+figures, is built but dark-deployed behind the CMS login (see
+`FRONTEND.md`). It also hosts a couple of small utility pages and a private
 CMS ("cardStack") used to author/edit content, plus a small SMS
 broadcast tool ("Autobus Messaging Platform") for a cycling club. The
 site doubles as a personal playground for AWS services — API Gateway,

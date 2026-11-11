@@ -16,7 +16,7 @@ inline in the `<head>`.
 
 | Page | Purpose | Key query params | Scripts used |
 |---|---|---|---|
-| `index.html` | Homepage — an edge-to-edge image banner (`.home-masthead`; its -8px margins cancel the browser's default 8px body margin, and it scales with the window at every width — see "Home page banner" below) over static intro and post cards written straight into the HTML (see "Home page content" below). **No scores ticker, by design.** No weather widget (its only page, `tech.html`, is archived). Its canonical, Open Graph and Twitter tags are static in the `<head>` — see "SEO and social tags". | — | `helper.js` |
+| `index.html` | Homepage — the shared Bebas Neue masthead, always in Montreal colours with the "Rippin' Packs Since '81" tagline in its corner (see "Home page masthead and the About banner" below), over static intro and post cards written straight into the HTML (see "Home page content" below). **No scores ticker, by design.** No weather widget (its only page, `tech.html`, is archived). Its canonical, Open Graph and Twitter tags are static in the `<head>` — see "SEO and social tags". | — | `helper.js` |
 | `waxReviews.html` | Card set review stream — the main hockey card content. Since 2026-10-30 it is two things: the **template** the generator copies into one page per set (`/reviews/<slug>/`, with that set's head tags and `year`/`pageName`/`blogCat`/`setID` fixed in the HTML), and the page that still serves the **old query-string URLs**, which rewrite their own address to the slug page once the set loads. See "Linking to one specific set" below and `REVIEW_PAGES.md`. The title, description, canonical, Open Graph/Twitter tags, JSON-LD and breadcrumb are written by JavaScript for every set (a generated page already has the first four in its HTML) — see "SEO and social tags". | `year`, `pageName`, `blogCat`, `sortOrder`, `setID` (all fixed in a generated page) | `wax.js`, `ticker.js`, `helper.js` |
 | `reviews/<slug>/index.html` | **Generated, not in git** (gitignored): one page per live set, written by every Amplify build from `waxReviews.html`, plus `reviews/index.json` (the link manifest). See "Sitemap" below and `REVIEW_PAGES.md`. | — | same as `waxReviews.html` |
 | `playerSearch.html` | Player search — find every set a player appears in, across all uploaded checklists, with links to each set's review. See "Player search" below. | — | `playerSearch.js`, `ticker.js`, `helper.js` |
@@ -341,6 +341,16 @@ Without that band the review pages scrolled sideways between 601px and
 about 1060px, because `.flex-container div` applies to every nested
 div, not just the outer wrapper.
 
+The light-blue content box (`.blog-entry`, on the review pages, Home,
+About and Lockout) gets wider sides than that shared 15px: 28px left and
+right above 600px (since 2026-11-10), so a long line no longer runs to
+the box's edge. Its rule also sets `box-sizing: border-box` with
+`width: min(1030px, calc(100% - 10px))`. Without that, the extra padding
+would add to the desktop rule's 1000px content width and make the box
+26px wider, which was the first attempt's mistake. With it, the box keeps
+its old outer size at every width and the text narrows instead (1000px to
+974px on desktop). Phones keep their own 10px.
+
 The global nav has its own breakpoint at 1220px. At 1220px and below
 the hamburger menu stays active (normally phone-only), and from 1221px
 the full `<table class="nav-table">` (one `<td>` per top-level item,
@@ -619,6 +629,18 @@ issues in the mobile section above — don't hand-tune spacing to
 values drift out of sync differently at each screen size.
 
 **Random team colors + cheer label + pop-in animation**: `applyRandomMastheadStyling()` (`helper.js`) runs on load on all 7 pages using this masthead (`waxReviews.html`, `lockout.html`, `playerSearch.html`, `theJunkWaxYears.html`, `timeline.html`, `browseBySet.html`, `waxMuseum.html`) — picks one of 32 NHL teams at random from `NHL_TEAM_COLORS`, sets `--team-primary`/`--team-tertiary` CSS custom properties that drive `.wax-reviews-mast-table`'s gradient (a simpler solid+stripe design via `.masthead-two-color` for genuinely two-color teams), and creates/reuses a `.masthead-team-label` span in the bottom-right corner showing that team's cheer text (e.g. "Go Canucks Go!") so the random pick is visually verifiable. That label's text is rendered via `renderLoudText()`, which wraps each character in its own `.loud-char` span with a staggered `animation-delay` — `styles.css`'s `loudPopIn` keyframes then pop/rotate each letter in on a delay, purely because a CSS `animation` on an element plays automatically the moment that element exists in the DOM (no JS trigger needed, since the label is fully torn down and rebuilt on every load rather than reused in place). `prefers-reduced-motion: reduce` skips the animation and shows the finished text immediately.
+
+Home (`index.html`) also has this masthead since 2026-11-10 but doesn't call `applyRandomMastheadStyling()`; see "Home page masthead and the About banner". The dark-deployed `cms/mcfarlanesShelf.html` does call it.
+
+**Varsity lettering (2026-11-10).** The title is styled like twill jersey numbers in the team's colours, all in CSS on `.wax-reviews-masthead a`:
+
+- a thick outline in `--team-tertiary` from `-webkit-text-stroke`, with `paint-order: stroke fill` so the stroke sits outside the cream letters instead of eating into them;
+- a ring in `--team-primary`, then a thin cream edge, each made of four one-direction `drop-shadow()`s (up, down, left, right) stacked in `filter`;
+- a final offset `drop-shadow()` that lifts the whole word off the stripes.
+
+The widths are three custom properties, `--mast-ring`, `--mast-edge` and `--mast-drop`, and the phone rule only resets those and the stroke width. The outline wraps whole words; outlining each letter separately was tried and rejected. For the two-colour teams (`.masthead-two-color`) the primary and tertiary colours are the same, so the outline would vanish into the ring; their stroke is black (`--color-text`) instead.
+
+**The title never wraps.** Its size is `min(128px, 15vw)` with `white-space: nowrap`, so below about 850px it shrinks with the window. It used to stay at 128px until the phone rule took over at 600px, which wrapped "JUNK WAX HOCKEY" onto two lines between about 601px and 850px wide, with half of each line clipped by the masthead.
 
 ## Page speed decisions (review pages)
 
@@ -1367,12 +1389,39 @@ late-arriving content and would only add dead space here. The old
 blog-stream machinery in `blogs.js` is still used by `about.html`
 (`tech.html`, its other user, is archived).
 
-## Home page banner
+## Home page masthead and the About banner
 
-`index.html`'s masthead (and `about.html`'s, which uses the same
-banner markup) is an image, `images/masthead-v19.webp` (1500x250, a 6:1
-strip), inside a `.home-masthead` wrapper. The wrapper has three jobs,
-each done in CSS so the page needs no script:
+**Home (since 2026-11-10).** `index.html` uses the same
+`.wax-reviews-mast-table` masthead as the review pages, so the site's
+header looks the same everywhere. Two differences, both deliberate:
+
+- **Always Montreal.** Home doesn't call `applyRandomMastheadStyling()`,
+  so the masthead keeps the CSS defaults of `--team-primary` and
+  `--team-tertiary` (Canadiens red and navy) and gets no cheer label.
+- **The tagline.** "Rippin' Packs Since '81" sits in the bottom-right
+  corner, in a `<p class="masthead-tagline">`, where the cheer label
+  goes on other pages. It is written with `&rsquo;` so both apostrophes
+  curl the right way: a typed `'` in front of a number often gets
+  "smartened" into an opening quote. It is Bebas Neue in the masthead's
+  cream, slanted with `transform: skewX(-8deg)`. Bebas Neue has no
+  italic, so `font-style: italic` would make each browser fake its own
+  slant; the skew looks the same everywhere. Sizes: 34px on desktop,
+  16px on phones.
+- **Tablet widths (601 to 1100px).** Here the title reaches the
+  tagline's corner. The table carries an extra class,
+  `masthead-has-tagline`, so one rule can give Home's title a 20px
+  `padding-bottom` (`border-box`), which lifts it, and drop the tagline
+  to 24px underneath. No other masthead page has the class.
+
+The Home `<head>` preloads Bebas Neue instead of the old banner image.
+
+**About.** `about.html` still uses the image banner described below. It
+is the last page that does: switching it to the shared masthead would
+let `images/masthead-v19.webp` and the `.home-masthead` CSS go.
+
+`about.html`'s masthead is an image, `images/masthead-v19.webp`
+(1500x250, a 6:1 strip), inside a `.home-masthead` wrapper. The wrapper
+has three jobs, each done in CSS so the page needs no script:
 
 - **Edge to edge, at every width.** Its -8px margins cancel the
   browser's default 8px body margin and the image scales with the
@@ -1394,11 +1443,13 @@ each done in CSS so the page needs no script:
   adds a gloss sheen and worn edges. Both use the banner file itself as
   a `mask-image`, so the texture follows the artwork's shape. That means
   the mask URL in `styles.css` has to name the same file as the `<img>`
-  in `index.html` (and its preload); swapping the banner means changing
+  in `about.html` (and its preload); swapping the banner means changing
   all three together. The wrapper uses `isolation: isolate` so the blend
   mode only affects the banner, not the page behind it.
 
-Older banner variants stay in `images/` but nothing references them.
+The 18 older banner variants were deleted from `images/` on 2026-11-10;
+`masthead-v19.webp` (About) and `cms-masthead.webp` (the CMS) are what's
+left.
 
 ## Junk Wax timeline (`timeline.html`)
 
@@ -1660,8 +1711,12 @@ Grouping by set (`waxPackSet()`) ignores "Low", "High" and "Jumbo"
 (Jumbo since 2026-11-05), so "Topps Low", "Topps High" and "Parkhurst
 Series 2 Jumbo" sit with the rest of their set. The API's own order is by key, which isn't the name's order.
 
-**Rendering.** Cards render six at a time (`WAX_MUSEUM_BATCH`) as the
-visitor scrolls, and images load lazily. Flipping is a click or Enter;
+**Rendering.** Cards render six at a time as the visitor scrolls, and
+images load lazily. The batching lives in `renderLazyGrid(container,
+items, buildItem)` in `helper.js` (`LAZY_GRID_BATCH`), shared with
+McFarlane's Shelf: it builds the `.wax-museum-grid` and watches an empty
+`.wax-museum-sentinel` below it with an `IntersectionObserver`. Without
+IntersectionObserver it renders everything at once. Flipping is a click or Enter;
 `setWaxPackCardFlipped()` keeps focus and the hidden face's
 accessibility state in step.
 
@@ -1669,9 +1724,88 @@ accessibility state in step.
 Wax Pack; see `CMS_GUIDE.md`). The museum page itself isn't linked from
 the CMS menu.
 
+## McFarlane's Shelf (`cms/mcfarlanesShelf.html`, dark-deployed)
+
+A gallery of McFarlane Sportspicks hockey figures, built 2026-11-09 to
+11-10 and **not public yet**. It sits under `/cms/`, so `auth.js` and
+Cognito gate it like every CMS page, and it has `noindex`. Nothing on the
+public site links to it; the only way in is the CMS menu's
+"...sportspicks" → "...preview shelf". Its body is a public page's
+(masthead with `applyRandomMastheadStyling()`, the real nav from a
+`mcfarlanesShelf` `NAV_MAP` entry, footer) so the preview looks exactly
+like the page will once it goes public. Its script,
+`scripts/mcfarlanesShelf.js`, is not in the minifier list yet.
+
+**Data.** `initMcfarlanesShelf()` fetches every figure from
+`getSportspicks` (`API_ENDPOINTS.md`), from the `Sportspicks` table
+(`DATA_MODEL.md`), with `cache: "no-store"` so a figure saved a moment
+ago appears. Images are 900x1200 transparent WebPs under S3
+`img/sportspicks/`. `sortFigures()` orders by release year, then series
+(numeric-aware, so "Series 2" comes before "Series 10"), player and
+variant.
+
+**Cards.** `buildFigureCard()` reuses the Wax Museum's card classes with
+one face and no flip, rendered through `renderLazyGrid()`. The caption
+is the player's name, then Series and Released on one row, then Notes.
+Rules scoped to `.mcfarlanes-shelf` drop the museum's caption
+`min-height` and tighten its padding, because a figure has fewer fields
+than a pack.
+
+**The "Chase!" sticker.** A figure with a `variant` gets a yellow comic
+starburst on the top corner of the card instead of a Variant row.
+Hovering over it, focusing it or tapping it shows the variant's name in a
+navy label below it (`.mcfarlanes-variant-tip`). The variant is also
+added to the image's alt text. Three details:
+
+- **The star is an inline SVG polygon** (`STARBURST_SVG` in the script),
+  filled with `--color-starburst` and stroked navy in CSS. The first
+  version cut the star with `clip-path` and drew its outline with four
+  offset `drop-shadow()`s. Offset shadows only reach straight up, down,
+  left and right, so the angled tips got a thin, broken outline. An SVG
+  stroke is even on every point.
+- **The sticker is a focusable `<span>` with two children**: the
+  rotated star, and the label beside it. That way the star's
+  `rotate(-12deg)` and drop shadow don't apply to the label. A native
+  `title` tooltip was tried first and dropped. It appears only after
+  about a second of holding the mouse still, and never on touch screens,
+  so it looked as if hovering did nothing.
+- **Why "-tip" and not "-name".** `tools/styleCheck` treats any class
+  ending in `-title`, `-heading` or `-name` as a heading and flags its
+  colour and size, so the label's class is `mcfarlanes-variant-tip`.
+
+**Going public** (not done): move the page to the site root and drop
+`auth.js` and `noindex`; add the public head (description, canonical,
+Open Graph tags, analytics); add a `NAV_ITEMS` link and put it in the
+other pages' `NAV_MAP` lists; add it to the generator's `STATIC_PAGES`
+(sitemap) and nav pre-render list; add `mcfarlanesShelf` to
+`tools/minifyAssets/minify.mjs` and `tools/styleCheck/config.json`; and
+drop `no-store` so the 30-minute cache applies.
+
+## Favicons and home-screen icons
+
+Since 2026-11-10 the icon is a black hockey puck with "JW" in Bebas
+Neue, styled like the masthead: cream letters, a red outline and a cream
+edge. The puck is drawn with only a slight tilt, which leaves more room
+for the letters. "JWH" turned to mush at 16px, so it's "JW" at every
+size. The files keep their old names, so no page's `<link>` tags changed:
+
+| File | What |
+|---|---|
+| `/favicon.ico` | 16, 32 and 48px PNGs in one ICO, transparent |
+| `/images/icons/icon-192.png` | 192px, transparent |
+| `/images/icons/apple-touch-icon.png` | 180px on a solid Montreal navy square (`#001E62`): iOS fills transparency with black, which would hide a black puck |
+| `/images/icons/master-large-512.png` | 512px master, transparent (the old `master-tab-512.png` was removed) |
+
+They were rendered from an SVG in a headless browser, which is why the
+letters come out right. The generator script isn't in the repo; to
+change the icon, redraw it and replace the four files. Browsers cache
+favicons hard, so a new one can take a while to show. The `/cms` pages
+link the same three files, so they get the new icon too.
+
 ## About page (`about.html`)
 
-The Home page's layout (same banner, nav, footer and scripts)
+The Home page's layout (same nav, footer and scripts; it keeps the
+image banner Home dropped on 2026-11-10)
 showing the blog post(s) of `blogType` 98. Unlike the Home page, which
 is static, it still fetches its content: `fetchBlogs('98')`, plus
 `fetchNav("about")`, because the About post is meant to be edited
@@ -1780,7 +1914,7 @@ uploaded checklists, with a link to each set's review. Added
   deploy) still links to the year page. See "Linking to one specific
   set".
 - **Masthead**: uses the same `waxReviews.html`/`lockout.html` masthead
-  treatment (Bebas Neue) rather than the Home page's image banner - see
+  treatment (Bebas Neue) rather than About's image banner - see
   "Typography / fonts" above.
 - **Rookie cards called out**: a card whose `notes` contain `RC` as a
   whole word (`\bRC\b` - so it won't match `RC` as a substring inside

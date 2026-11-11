@@ -36,8 +36,10 @@ changes.
 **What loads**: `scripts/helper.js` (`defer`) and one inline `window
 load` handler. `blogs.js` is not loaded. Analytics uses the same loader
 as every public page (`gtag/js` injected on `window` `load`; see
-`STYLE_GUIDE.md`'s "Analytics"). The masthead is the
-edge-to-edge image banner (see `FRONTEND.md`'s "Home page banner"). The
+`STYLE_GUIDE.md`'s "Analytics"). The masthead is the shared Bebas Neue
+one, in fixed Montreal colours with the "Rippin' Packs Since '81"
+tagline; the `load` handler does not call `applyRandomMastheadStyling()`
+(see `FRONTEND.md`'s "Home page masthead and the About banner"). The
 Home page has no scores ticker, by design.
 
 **What is in the HTML**: the intro card (`#blog-intro`: the page's one
@@ -649,7 +651,7 @@ flow).
   consistent wherever they appear across the site.
 
 **Notable**: this page's masthead uses the same Bebas Neue treatment as
-`waxReviews.html`/`lockout.html` (not the Home page's image banner) — see
+`waxReviews.html`/`lockout.html` (not About's image banner) — see
 `FRONTEND.md`'s "Typography / fonts" section.
 
 ## Junk Wax Timeline - `timeline.html`
@@ -788,7 +790,8 @@ The About page uses the same blog-stream machinery as the Tech pages
 `fetchBlogs()` call with `'98'`. **Get all blogs of a given type**
 (`?blogType=98`) is fronted by the same `getBlogs` Lambda, which reads
 the `Blogs` table by partition key, so no backend change was needed.
-Its layout is the Home page's (same banner, nav and footer),
+Its layout is the Home page's (same nav and footer; it keeps the image
+banner Home dropped on 2026-11-10),
 but unlike the Home page its content is still fetched, because the About
 post is meant to be edited through the CMS. The heading ("How This Site
 Comes Together" since 2026-11-04) is written into the HTML (a script used to inject it with
