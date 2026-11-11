@@ -5128,10 +5128,10 @@ body:has(.site-footer) {
   color: var(--color-red);
   transform: rotate(-12deg);
   filter:
-    drop-shadow(1.5px 0 0 var(--color-text-dark))
-    drop-shadow(-1.5px 0 0 var(--color-text-dark))
-    drop-shadow(0 1.5px 0 var(--color-text-dark))
-    drop-shadow(0 -1.5px 0 var(--color-text-dark))
+    drop-shadow(2.5px 0 0 var(--color-text-dark))
+    drop-shadow(-2.5px 0 0 var(--color-text-dark))
+    drop-shadow(0 2.5px 0 var(--color-text-dark))
+    drop-shadow(0 -2.5px 0 var(--color-text-dark))
     drop-shadow(2px 3px 0 rgba(0, 0, 0, 0.25));
 }
 
