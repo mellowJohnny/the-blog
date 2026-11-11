@@ -251,17 +251,21 @@ function renderBreadcrumbs(pageName, currentLabel, currentUrl) {
     ? `<li><a href="${escapeHtml(step.url)}" aria-current="page">${escapeHtml(step.name)}</a></li>`
     : `<li><a href="${escapeHtml(step.url)}"${step.attrs || ""}>${escapeHtml(step.name)}</a></li>`);
   nav.innerHTML = `<ol>${items.join("")}</ol>`;
-  applyReviewLinks();
 
-  setJsonLd("jsonld-breadcrumbs", {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": trail.map((step, i) => ({
-      "@type": "ListItem",
-      "position": i + 1,
-      "name": step.name,
-      "item": absolute(step.url)
-    }))
+  // Written once applyReviewLinks() has swapped the category link to its /reviews/ page, so the
+  // JSON-LD names the same URLs as the visible links (a failed manifest fetch keeps the query form).
+  applyReviewLinks().then(() => {
+    const hrefs = [...nav.querySelectorAll("a")].map((link) => link.getAttribute("href"));
+    setJsonLd("jsonld-breadcrumbs", {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": trail.map((step, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "name": step.name,
+        "item": absolute(hrefs[i] || step.url)
+      }))
+    });
   });
 }
 
