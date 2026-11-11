@@ -238,7 +238,7 @@ function renderBreadcrumbs(pageName, currentLabel, currentUrl) {
   if (!nav) return;
 
   const category = NAV_ITEMS[BREADCRUMB_CATEGORY_IDS[pageName]];
-  const trail = [{ name: NAV_ITEMS.home.label, url: "/index.html" }];
+  const trail = [{ name: NAV_ITEMS.home.label, url: "/" }];
   if (category) trail.push({ name: category.label, url: category.href, attrs: reviewLinkAttrs(category) });
   trail.push({ name: currentLabel, url: currentUrl || window.location.href });
   const absolute = (url) => (url.startsWith("http") ? url : SITE_ORIGIN + url);
@@ -772,7 +772,7 @@ function reviewLinkAttrs(item) {
 // nav-block:start (tools/generateReviewPages runs this block to pre-render the nav)
 // Step 1: Define the navigation items as data
 const NAV_ITEMS = {
-  home: { label: "Home", href: "/index.html" },
+  home: { label: "Home", href: "/" },
   junk: { label: "90s Junk Wax", href: "/waxReviews.html?year=1987&pageName=junkWax&blogCat=reg", review: { cat: "reg", year: 1987 } },
   classic: { label: "Classic 80s Sets", href: "/waxReviews.html?year=1981&pageName=classicWax&blogCat=reg", review: { cat: "reg", year: 1981 } },
   timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2019&pageName=timmies&blogCat=tims", review: { cat: "tims", year: 2019 } },
