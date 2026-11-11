@@ -21,6 +21,10 @@
 let resolveTinyEditorReady;
 const tinyEditorReady = new Promise((resolve) => { resolveTinyEditorReady = resolve; });
 
+// TinyMCE rewrites links relative to the editing page (/cms/...), so /reviews/x/ was saved as
+// ../reviews/x/, which breaks on the /reviews/<slug>/ pages. These keep links root-relative.
+const SITE_LINK_URLS = { relative_urls: false, remove_script_host: true };
+
 function initTinyEditor(selector = '#postBody', { cardImageBlocks = false } = {}) {
   // Card set pages swap the native image button/plugin for the two
   // custom ones above - no reason to offer both ways to insert an image.
@@ -45,6 +49,7 @@ function initTinyEditor(selector = '#postBody', { cardImageBlocks = false } = {}
     contextmenu: false,
     min_height: 400, // The starting/minimum height
     max_height: 500, // The maximum limit before a scrollbar appears
+    ...SITE_LINK_URLS,
     setup: cardImageBlocks ? registerCardImageBlockButtons : undefined
   }).then((editors) => resolveTinyEditorReady(editors[0]));
 }
@@ -66,7 +71,8 @@ function initPreviewEditor(target, { uiContainer, toolbarContainer }) {
     ui_container: uiContainer,
     object_resizing: false,
     browser_spellcheck: true,
-    contextmenu: false
+    contextmenu: false,
+    ...SITE_LINK_URLS
   }).then((editors) => editors[0]);
 }
 
