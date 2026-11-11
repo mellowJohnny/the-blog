@@ -391,7 +391,7 @@ let currentChecklistItems = [];
 
 function openChecklistModal(link) {
   const setName = link.dataset.setName;
-  const overlay = document.getElementById("checklistModalOverlay");
+  const dialog = document.getElementById("checklistModal");
   const title = document.getElementById("checklistModalTitle");
   const body = document.getElementById("checklistModalBody");
   const insertFilter = document.getElementById("checklistInsertFilter");
@@ -401,7 +401,13 @@ function openChecklistModal(link) {
   // The plain set name, so applyChecklistFilters() can add/remove the filter suffix.
   title.dataset.setName = setName;
   const hideSpinner = showSpinner(body); // helper.js
-  overlay.style.display = "block";
+  // A modal <dialog>: the browser handles focus, Esc, the back gesture and the inert page behind.
+  if (!dialog.dataset.closeHooked) {
+    dialog.dataset.closeHooked = "on";
+    dialog.addEventListener("close", onChecklistModalClosed);
+    enableDialogLightDismiss(dialog); // helper.js
+  }
+  if (!dialog.open) dialog.showModal();
   // Scopes the @media print rules to print only the modal - without
   // this, printing the page normally (modal closed) would print
   // nothing, since those rules would apply unconditionally.
@@ -488,17 +494,13 @@ function applyChecklistFilters() {
 }
 
 function closeChecklistModal() {
-  document.getElementById("checklistModalOverlay").style.display = "none";
-  document.body.classList.remove("checklist-modal-open");
+  document.getElementById("checklistModal").close();
 }
 
-// Clicking the dark backdrop (not the content box itself) also closes it
-document.addEventListener("click", (event) => {
-  const overlay = document.getElementById("checklistModalOverlay");
-  if (overlay && event.target === overlay) {
-    closeChecklistModal();
-  }
-});
+// Runs however the dialog closed: the × button, Esc, the back gesture or a click outside.
+function onChecklistModalClosed() {
+  document.body.classList.remove("checklist-modal-open");
+}
 
 // Print-only footer text (hidden on screen - see .checklist-modal-print-footer,
 // styles.css). Set once here rather than on every openChecklistModal()

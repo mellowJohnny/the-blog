@@ -600,17 +600,19 @@ let nhlGameRequestId = 0;
 
 // Built here, not in each page's HTML, so a page only needs the rail div.
 const NHL_GAME_MODAL_HTML = `
-  <div id="nhlGameModalOverlay" class="checklist-modal-overlay">
-    <div
-      class="checklist-modal-content nhl-game-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-label="NHL game details"
-    >
+  <dialog
+    id="nhlGameModal"
+    class="checklist-modal-content nhl-game-modal"
+    aria-label="NHL game details"
+    closedby="any"
+  >
       <div class="checklist-modal-controls">
-        <span class="checklist-modal-close" onclick="closeNhlGameModal()"
-          >&times;</span
-        >
+        <button
+          type="button"
+          class="checklist-modal-close"
+          aria-label="Close"
+          onclick="closeNhlGameModal()"
+        >&times;</button>
       </div>
       <div id="nhlGameHeader" class="nhl-game-header"></div>
       <div class="nhl-game-tabs" role="tablist">
@@ -664,26 +666,24 @@ const NHL_GAME_MODAL_HTML = `
         aria-labelledby="nhlGameTabRecap"
         hidden
       ></div>
-    </div>
-  </div>
+  </dialog>
 `;
 
+// A modal <dialog>: the browser handles focus, Esc, the back gesture and the inert page behind.
 function initNhlGameModal() {
-  if (!document.getElementById("nhlGameModalOverlay")) document.body.insertAdjacentHTML("beforeend", NHL_GAME_MODAL_HTML);
-  const overlay = document.getElementById("nhlGameModalOverlay");
-  if (!overlay) return;
+  if (!document.getElementById("nhlGameModal")) document.body.insertAdjacentHTML("beforeend", NHL_GAME_MODAL_HTML);
+  const dialog = document.getElementById("nhlGameModal");
+  if (!dialog) return;
 
-  overlay.addEventListener("click", (event) => {
-    if (event.target === overlay) closeNhlGameModal();
+  dialog.addEventListener("click", (event) => {
     const poster = event.target.closest(".nhl-video-poster");
     if (poster) playNhlGameVideo(poster);
   });
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && overlay.style.display === "block") closeNhlGameModal();
-  });
+  dialog.addEventListener("close", onNhlGameModalClosed);
+  enableDialogLightDismiss(dialog); // helper.js
 
   // Tabs: click to switch, arrow keys move between them.
-  const tabs = [...overlay.querySelectorAll('[role="tab"]')];
+  const tabs = [...dialog.querySelectorAll('[role="tab"]')];
   tabs.forEach((tab, i) => {
     tab.addEventListener("click", () => selectNhlGameTab(tab));
     tab.addEventListener("keydown", (event) => {
@@ -706,7 +706,7 @@ function selectNhlGameTab(tab) {
 }
 
 async function openNhlGameModal(gameId) {
-  const overlay = document.getElementById("nhlGameModalOverlay");
+  const dialog = document.getElementById("nhlGameModal");
   const summary = document.getElementById("nhlGameSummary");
   const requestId = ++nhlGameRequestId;
 
@@ -714,9 +714,9 @@ async function openNhlGameModal(gameId) {
     document.getElementById(id).innerHTML = "";
   });
   const hideSpinner = showSpinner(summary); // helper.js
-  const firstTab = overlay.querySelector('[role="tab"]');
+  const firstTab = dialog.querySelector('[role="tab"]');
   selectNhlGameTab(firstTab);
-  overlay.style.display = "block";
+  if (!dialog.open) dialog.showModal();
   firstTab.focus();
 
   let game;
@@ -741,10 +741,13 @@ async function openNhlGameModal(gameId) {
 }
 
 function closeNhlGameModal() {
+  document.getElementById("nhlGameModal").close();
+}
+
+// Runs however the dialog closed (× button, Esc, back gesture, click outside). Emptying the
+// Recap panel removes a playing video's iframe, so its audio stops with the modal.
+function onNhlGameModalClosed() {
   nhlGameRequestId++;
-  document.getElementById("nhlGameModalOverlay").style.display = "none";
-  // Emptying the Recap panel removes a playing video's iframe, so its
-  // audio stops with the modal.
   document.getElementById("nhlGameRecap").innerHTML = "";
 }
 

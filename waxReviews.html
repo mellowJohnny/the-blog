@@ -206,9 +206,12 @@
       <!-- fetchCopyrightYear() is called from fetchCardSetsByYear() on page load -->
     </footer>
 
-    <!-- Checklist modal -->
-    <div id="checklistModalOverlay" class="checklist-modal-overlay">
-      <div class="checklist-modal-content">
+    <!-- Checklist modal: a native dialog, opened with showModal() in wax.js -->
+    <dialog
+      id="checklistModal"
+      class="checklist-modal-content"
+      aria-labelledby="checklistModalTitle"
+      closedby="any">
         <div class="checklist-modal-controls">
           <button
             type="button"
@@ -224,9 +227,12 @@
           >
             ⬇ Download PDF
           </button>
-          <span class="checklist-modal-close" onclick="closeChecklistModal()"
-            >&times;</span
-          >
+          <button
+            type="button"
+            class="checklist-modal-close"
+            aria-label="Close"
+            onclick="closeChecklistModal()"
+          >&times;</button>
         </div>
         <header class="checklist-modal-masthead">
           <a href="/">Junk Wax Hockey.com</a>
@@ -262,7 +268,6 @@
           id="checklistModalPrintFooter"
           class="checklist-modal-print-footer"
         ></div>
-      </div>
-    </div>
+    </dialog>
   </body>
 </html>

@@ -348,6 +348,21 @@ function renderLazyGrid(container, items, buildItem) {
   observer.observe(sentinel);
 }
 
+// Click-outside-to-close for a modal <dialog closedby="any">, for browsers without closedby (Safari).
+// It tests the pointer against the box, not event.target, which is the dialog for its own padding
+// too; press and release must both be outside, so a text-selection drag doesn't close it.
+function enableDialogLightDismiss(dialog) {
+  if (!dialog || "closedBy" in HTMLDialogElement.prototype || dialog.dataset.lightDismiss) return;
+  dialog.dataset.lightDismiss = "on";
+  const outside = (event) => {
+    const box = dialog.getBoundingClientRect();
+    return event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom;
+  };
+  let pressedOutside = false;
+  dialog.addEventListener("pointerdown", (event) => { pressedOutside = outside(event); });
+  dialog.addEventListener("pointerup", (event) => { if (pressedOutside && outside(event)) dialog.close(); });
+}
+
 // One loading spinner for every public page: a small centred card, or inside `container`
 // (modals). It appears only after 500ms so fast loads never flash it; returns hide().
 let spinnerOverlayUsers = 0;
