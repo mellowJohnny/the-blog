@@ -635,10 +635,12 @@ Home (`index.html`) also has this masthead since 2026-11-10 but doesn't call `ap
 **Varsity lettering (2026-11-10).** The title is styled like twill jersey numbers in the team's colours, all in CSS on `.wax-reviews-masthead a`:
 
 - a thick outline in `--team-tertiary` from `-webkit-text-stroke`, with `paint-order: stroke fill` so the stroke sits outside the cream letters instead of eating into them;
-- a ring in `--team-primary`, then a thin cream edge, each made of four one-direction `drop-shadow()`s (up, down, left, right) stacked in `filter`;
-- a final offset `drop-shadow()` that lifts the whole word off the stripes.
+- a ring in `--team-primary`, then a thin cream edge, each a real text stroke on a copy of the title behind it: `::after` carries the ring (stroke `--mast-stroke + 2 × --mast-ring`) and `::before` the edge (2 × `--mast-edge` wider again), both absolutely positioned over the link with `z-index: -1`;
+- a final offset `drop-shadow()` on the link that lifts the whole word off the stripes.
 
-The widths are three custom properties, `--mast-ring`, `--mast-edge` and `--mast-drop`, and the phone rule only resets those and the stroke width. The outline wraps whole words; outlining each letter separately was tried and rejected. For the two-colour teams (`.masthead-two-color`) the primary and tertiary colours are the same, so the outline would vanish into the ring; their stroke is black (`--color-text`) instead.
+The two copies take their text from CSS, `content: "Junk Wax Hockey" / ""`: every masthead page has that exact title, and the empty alternative text stops screen readers reading it three times. **Changing the masthead title means changing it there too.** The ring and edge were first made of four one-direction `drop-shadow()`s each (up, down, left, right). Offset shadows can't follow diagonals or points, so the J's hook and the K and X notches came out stepped. A stroke follows every angle, which is the same fix the McFarlane's Shelf sticker needed.
+
+The widths are four custom properties, `--mast-stroke`, `--mast-ring`, `--mast-edge` and `--mast-drop`, and the phone rule only resets those. The outline wraps whole words; outlining each letter separately was tried and rejected. For the two-colour teams (`.masthead-two-color`) the primary and tertiary colours are the same, so the outline would vanish into the ring; their stroke is black (`--color-text`) instead.
 
 **The title never wraps.** Its size is `min(128px, 15vw)` with `white-space: nowrap`, so below about 850px it shrinks with the window. It used to stay at 128px until the phone rule took over at 600px, which wrapped "JUNK WAX HOCKEY" onto two lines between about 601px and 850px wide, with half of each line clipped by the masthead.
 
@@ -1595,8 +1597,9 @@ What matters for the front end:
   confirmed by a spike page). A `<slug>.html` layout would have needed a
   console rewrite rule per set.
 - **Absolute links.** A generated page sits one folder deeper, so the
-  masthead and checklist-modal links in `waxReviews.html` are
-  `/index.html`, not `index.html`.
+  masthead and checklist-modal links in `waxReviews.html` are root-relative.
+  Since 2026-11-10 every link to Home, on every page, is `/` rather than
+  `/index.html`, so the address bar shows the bare domain.
 - **Old URLs keep working.** `waxReviews.html?year=...` is still served as
   is, with its generic head. When the set loads, `syncSetIdInUrl()`
   replaces the address bar with `/reviews/<slug>/` and the canonical

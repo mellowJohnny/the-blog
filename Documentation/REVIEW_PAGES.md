@@ -145,7 +145,7 @@ URLs.
    `params.get("setID")`; that one change is what let the generator fix
    the value. The masthead and checklist-modal links went from
    `index.html` to `/index.html`, because a page now sits one folder
-   deeper.
+   deeper, and on 2026-11-10 to `/`, so Home shows as the bare domain.
 2. **It still serves old URLs.** Served as-is, with its generic head and
    globals read from the query string. When the set loads, JavaScript
    sets the metadata and replaces the address bar with

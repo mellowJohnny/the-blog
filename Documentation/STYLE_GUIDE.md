@@ -129,7 +129,8 @@ other family, and no Google Fonts link.
 - **No `<i>`, `<b>` or `<font>` for looks.** Use a class, or `<em>`/`<strong>`
   when the meaning is emphasis.
 - **Absolute links to site pages.** Every link (`href`) to a page on this
-  site starts with `/`: `/index.html`, `/theJunkWaxYears.html`,
+  site starts with `/`: `/` for Home (never `/index.html`, which puts
+  the file name in the address bar), `/theJunkWaxYears.html`,
   `/reviews/<slug>/`, never `index.html` or `../index.html`. This applies to
   static HTML and to links built in scripts; script, stylesheet and image
   paths (`src`, `<link href>`) use the same `/…` form. Generated review pages sit one
