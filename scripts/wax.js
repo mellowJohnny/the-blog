@@ -201,10 +201,10 @@ function fetchPageTitle(item)
   const pageTitle = (seoPageTitle && seoPageTitle.trim()) || `${setName} Hockey Card Set Review`;
   document.title = pageTitle;
 
-  // The on-page H1 always shows the real set name, never seoPageTitle -
-  // that field is for <title>/social previews specifically.
-  const pageHeaderEl = document.getElementById("pageHeader");
-  if (pageHeaderEl) pageHeaderEl.textContent = setName;
+  // The visible H1 is the set name in the set details (buildCardSetMarkup()); the hidden one the build
+  // writes for crawlers that don't run JavaScript goes, so the rendered page has exactly one H1. Only the
+  // h1: its hidden wrapper stays, because a .header-style + .flex-container rule spaces the intro below it.
+  document.querySelector(".wax-set-name-header h1")?.remove();
 
   const image = `${headerImg}${headerImgName}`;
   const description = (seoMetaDesc && seoMetaDesc.trim())

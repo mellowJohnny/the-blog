@@ -289,6 +289,10 @@ function buildPage(template, set, categoryRanges, warnings, pickerHtml, navMarku
   html = replaceBetween(html, "review-params", paramsBlock(set, categoryRanges));
   html = replaceBetween(html, "set-picker", pickerHtml, "waxReviews.html", true);
   html = fillNav(html, pageNameFor(set, categoryRanges), navMarkup, footerMarkup, "waxReviews.html");
+  // The set name as the raw HTML's H1, for crawlers that don't run JavaScript (wax.js swaps in the visible one).
+  const emptyH1 = '<h1 id="pageHeader"></h1>';
+  if (html.split(emptyH1).length !== 2) throw new Error(`waxReviews.html must contain "${emptyH1}" exactly once`);
+  html = html.replace(emptyH1, `<h1 id="pageHeader">${escapeAttr(set.setName)}</h1>`);
   const doctypeEnd = html.indexOf(">") + 1;
   if (!/^<!doctype html>/i.test(html)) throw new Error("waxReviews.html must start with <!doctype html>");
   return `${html.slice(0, doctypeEnd)}\n${BANNER}${html.slice(doctypeEnd)}`;

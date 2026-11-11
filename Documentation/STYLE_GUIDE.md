@@ -96,8 +96,13 @@ other family, and no Google Fonts link.
   rule; give it its own rule only for margins and alignment. Never give a
   heading its own font size or colour. The approved card and modal titles
   above are the only exceptions; a new one is approved here first.
-- The review page intro h2 is 34px on purpose: the real h1 (the set name) is
-  hidden, so the intro heading is the visible page title.
+- On a review page the h1 is the set name in the set details,
+  `h1.set-details-name`: 20px Special Elite, bold, not the 34px page-title
+  style, so the set details look as they always have (owner-approved
+  2026-11-11). The category intro above it stays a 34px h2 on purpose. The
+  build also writes the set name into a hidden `#pageHeader` h1 for crawlers
+  that don't run JavaScript; `wax.js` removes that one when the set loads, so
+  the rendered page has exactly one h1.
 
 ## Headings
 

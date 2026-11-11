@@ -2300,10 +2300,15 @@ body:has(.site-footer) .header-style + .flex-container > .intro > p:last-child {
   width: 100%;
 }
 
+/* The review page's H1. margin, line-height and weight undo the global h1 rule and the
+   browser's h1 defaults, so it looks as it did as a div; the <strong> inside keeps the bold. */
 .set-details-name {
   grid-area: name;
+  margin: 0;
   font-family: 'Special Elite', sans-serif;
   font-size: 20px;
+  font-weight: 400;
+  line-height: normal;
   padding: 2px 4px;
 }
 
@@ -3638,6 +3643,7 @@ body:has(.site-footer) {
 
 .breadcrumbs li + li::before {
   content: "\203A";
+  content: "\203A" / ""; /* decorative: kept out of the accessibility tree */
   margin-right: 6px;
   color: var(--color-grey);
 }
@@ -3651,8 +3657,10 @@ body:has(.site-footer) {
   text-decoration: underline;
 }
 
-.breadcrumbs li[aria-current] {
+.breadcrumbs a[aria-current],
+.breadcrumbs a[aria-current]:hover {
   color: var(--color-grey);
+  text-decoration: none;
 }
 
 /* Multi-line SEO fields (description, keywords): same look as the text inputs

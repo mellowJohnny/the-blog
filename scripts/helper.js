@@ -112,13 +112,16 @@ function buildCardSetMarkup({
     ? `<div class="set-detail-row"><strong>Print Run:</strong> ${escapeHtml(printRunText)}</div>`
     : "";
 
+  // Images in the review text all sit below the header image (the page's LCP), so lazy-load any without a loading attribute.
+  const bodyHtml = String(postBody ?? "").replace(/<img(?![^>]*\bloading=)/gi, '<img loading="lazy"');
+
   // CSS Gridz: Grid areas let mobile restack name -> image -> list
-  // instead of desktop's side-by-side.
+  // instead of desktop's side-by-side. The set name is the page's one visible H1.
   return `
         <div class="set-details-grid">
-            <div class="set-details-name">
+            <h1 class="set-details-name">
                 <strong>${setName}</strong>
-            </div>
+            </h1>
             <div class="set-details-image">
                 <img src="${headerImgUrl}"
                 class="table-header-img"
@@ -147,7 +150,7 @@ function buildCardSetMarkup({
             </td>
           </tr>
           <tr>
-            <td>${postBody}</td>
+            <td>${bodyHtml}</td>
           </tr>
         </table>
 
@@ -243,8 +246,9 @@ function renderBreadcrumbs(pageName, currentLabel, currentUrl) {
   trail.push({ name: currentLabel, url: currentUrl || window.location.href });
   const absolute = (url) => (url.startsWith("http") ? url : SITE_ORIGIN + url);
 
+  // The current page stays a link (marked aria-current) so every step has the same structure.
   const items = trail.map((step, i) => i === trail.length - 1
-    ? `<li aria-current="page">${escapeHtml(step.name)}</li>`
+    ? `<li><a href="${escapeHtml(step.url)}" aria-current="page">${escapeHtml(step.name)}</a></li>`
     : `<li><a href="${escapeHtml(step.url)}"${step.attrs || ""}>${escapeHtml(step.name)}</a></li>`);
   nav.innerHTML = `<ol>${items.join("")}</ol>`;
   applyReviewLinks();
