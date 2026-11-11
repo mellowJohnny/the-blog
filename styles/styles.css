@@ -5083,16 +5083,16 @@ body:has(.site-footer) {
    outlined and lifted by drop-shadows on the badge (a clipped shape can't take a border). */
 .mcfarlanes-variant {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 24px;
+  right: 24px;
   z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 92px;
-  height: 92px;
+  width: 76px;
+  height: 76px;
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  font-size: 14px;
+  font-size: 12px;
   font-style: italic;
   font-weight: 700;
   text-transform: uppercase;
