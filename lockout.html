@@ -67,6 +67,19 @@
     <!-- Load the stylesheet -->
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
+    <!-- Chrome/Edge fetch a same-site page's HTML when a link is hovered or pressed, so the click opens faster -->
+    <script type="speculationrules">
+      {
+        "prefetch": [{
+          "where": { "and": [
+            { "href_matches": "/*" },
+            { "not": { "href_matches": "/cms/*" } }
+          ] },
+          "eagerness": "moderate"
+        }]
+      }
+    </script>
+
     <noscript>
       <style>.nhl-ticker { display: none; }</style>
     </noscript>

@@ -40,6 +40,19 @@
     <!-- Stylesheet -->
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
+    <!-- Chrome/Edge fetch a same-site page's HTML when a link is hovered or pressed, so the click opens faster -->
+    <script type="speculationrules">
+      {
+        "prefetch": [{
+          "where": { "and": [
+            { "href_matches": "/*" },
+            { "not": { "href_matches": "/cms/*" } }
+          ] },
+          "eagerness": "moderate"
+        }]
+      }
+    </script>
+
     <!-- Fonts are self-hosted (@font-face in styles.css); the masthead uses Bebas Neue, the nav and footer Nunito -->
     <link rel="preload" href="/fonts/bebas-neue-latin-v16.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/nunito-latin-v32.woff2" as="font" type="font/woff2" crossorigin>
