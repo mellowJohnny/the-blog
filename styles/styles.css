@@ -5369,6 +5369,24 @@ html.back-to-top-pending.back-to-top-scrolled .back-to-top {
   padding: 2px 0;
 }
 
+/* The figure's series, a navy band across the card top like the label on its box (buildFigureCard()). */
+.mcfarlanes-series {
+  margin: 0;
+  padding: 8px 16px;
+  border-radius: 8px 8px 0 0;
+  background: var(--color-text-dark);
+  color: var(--color-white);
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Keep the "Chase!" starburst where it was on the photo: its 40px plus the band's 38px. */
+.mcfarlanes-series ~ .mcfarlanes-variant {
+  top: 78px;
+}
+
 /* The "Chase!" sticker; hovering, focusing or tapping it shows the variant's name below it.
    The star is a separate span so its rotation and outline don't apply to the name. */
 .mcfarlanes-variant {

@@ -41,6 +41,9 @@ function buildFigureCard(figure, index) {
   const card = shelfEl("div", "wax-museum-card");
   const front = shelfEl("div", "wax-museum-face wax-museum-front");
 
+  // The series as a navy band across the top, like the label on the figure's box (plain text: the name is the heading)
+  if (figure.series && String(figure.series).trim()) front.appendChild(shelfEl("p", "mcfarlanes-series", figure.series));
+
   // Comic-style "Chase!" starburst on the top corner; focusable so a tap shows the variant's name too
   if (figure.variant && String(figure.variant).trim()) {
     const burst = shelfEl("span", "mcfarlanes-variant");
