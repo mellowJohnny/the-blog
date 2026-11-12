@@ -151,14 +151,19 @@
       <section>
         <div class="flex-container">
           <div id="player-search-form">
+            <search>
             <form onsubmit="event.preventDefault(); runPlayerSearch(document.getElementById('playerSearchInput').value);">
               <label for="playerSearchInput">Player name</label><br>
               <div class="player-search-input-wrap">
-                <input type="text" id="playerSearchInput" placeholder="e.g. Gretzky" autocomplete="off">
-                <ul id="playerSearchSuggestions" class="player-search-suggestions" role="listbox"></ul>
+                <input type="text" id="playerSearchInput" placeholder="e.g. Gretzky" autocomplete="off"
+                  role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="playerSearchSuggestions">
+                <ul id="playerSearchSuggestions" class="player-search-suggestions" role="listbox" aria-label="Player name suggestions"></ul>
               </div><br>
               <button type="submit" class="input-button">Search</button>
             </form>
+            <!-- Screen-reader announcements: suggestion counts and search results (announcePlayerSearch(), playerSearch.js) -->
+            <p id="playerSearchStatus" class="player-search-sr" role="status"></p>
+            </search>
           </div>
         </div>
       </section>

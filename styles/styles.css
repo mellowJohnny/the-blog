@@ -4870,8 +4870,9 @@ body:has(.site-footer) {
   color: var(--color-grey-dark);
 }
 
-/* Text for screen readers only (the "viewed" cue). */
-.timeline-sr {
+/* Text for screen readers only (the Timeline's "viewed" cue, Player Search's announcements). */
+.timeline-sr,
+.player-search-sr {
   position: absolute;
   width: 1px;
   height: 1px;

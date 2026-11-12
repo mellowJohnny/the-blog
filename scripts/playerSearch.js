@@ -61,22 +61,42 @@ function loadPlayerNameIndex() {
 
 let currentSuggestions = [];
 let activeSuggestionIndex = -1;
+let suggestionAnnounceTimer;
+
+// Says text through the page's polite status region (#playerSearchStatus), the one place screen readers hear updates.
+function announcePlayerSearch(text) {
+  const status = document.getElementById("playerSearchStatus");
+  if (status) status.textContent = text;
+}
+
+// The input is the combobox: aria-expanded mirrors the list, and the highlighted option is cleared whenever it changes.
+function setSuggestionsExpanded(expanded) {
+  const input = document.getElementById("playerSearchInput");
+  input.setAttribute("aria-expanded", String(expanded));
+  input.removeAttribute("aria-activedescendant");
+}
 
 function renderSuggestions(matches) {
   const list = document.getElementById("playerSearchSuggestions");
   currentSuggestions = matches;
   activeSuggestionIndex = -1;
+  clearTimeout(suggestionAnnounceTimer);
 
   if (matches.length === 0) {
     list.style.display = "none";
     list.innerHTML = "";
+    setSuggestionsExpanded(false);
     return;
   }
 
   list.innerHTML = matches.map((name, i) =>
-    `<li class="player-search-suggestion" role="option" id="player-search-suggestion-${i}">${escapeHtml(name)}</li>`
+    `<li class="player-search-suggestion" role="option" aria-selected="false" id="player-search-suggestion-${i}">${escapeHtml(name)}</li>`
   ).join("");
   list.style.display = "block";
+  setSuggestionsExpanded(true);
+  // Only once typing pauses, so a screen reader isn't handed a new count on every keystroke.
+  suggestionAnnounceTimer = setTimeout(() => announcePlayerSearch(
+    `${matches.length} suggestion${matches.length === 1 ? "" : "s"}. Use the up and down arrows to choose.`), 600);
 }
 
 function hideSuggestions() {
@@ -85,6 +105,8 @@ function hideSuggestions() {
   list.innerHTML = "";
   currentSuggestions = [];
   activeSuggestionIndex = -1;
+  clearTimeout(suggestionAnnounceTimer);
+  setSuggestionsExpanded(false);
 }
 
 function selectSuggestion(name) {
@@ -101,8 +123,12 @@ function moveSuggestionActive(delta) {
   activeSuggestionIndex = (activeSuggestionIndex + delta + currentSuggestions.length) % currentSuggestions.length;
   document.querySelectorAll(".player-search-suggestion").forEach((el, i) => {
     el.classList.toggle("active", i === activeSuggestionIndex);
+    el.setAttribute("aria-selected", String(i === activeSuggestionIndex));
   });
-  document.getElementById(`player-search-suggestion-${activeSuggestionIndex}`)?.scrollIntoView({ block: "nearest" });
+  const activeId = `player-search-suggestion-${activeSuggestionIndex}`;
+  // Focus stays in the input; aria-activedescendant tells a screen reader which option the arrows reached
+  document.getElementById("playerSearchInput").setAttribute("aria-activedescendant", activeId);
+  document.getElementById(activeId)?.scrollIntoView({ block: "nearest" });
 }
 
 // Ranks a matched player name for relevance to `query` (lower is
@@ -192,6 +218,7 @@ function initPlayerSearchTypeahead() {
 function renderPlayerSearchMessage(message) {
   const container = document.getElementById("playerSearchResults");
   container.innerHTML = `<p class="player-search-message">${escapeHtml(message)}</p>`;
+  announcePlayerSearch(message);
 }
 
 function renderPlayerSearchResults(query, results) {
@@ -236,10 +263,12 @@ function renderPlayerSearchResults(query, results) {
     `;
   }).join("");
 
+  const summary = `Found ${results.length} set${results.length === 1 ? "" : "s"} matching "${query}"`;
   container.innerHTML = `
-    <p class="player-search-summary">Found ${results.length} set${results.length === 1 ? "" : "s"} matching "${escapeHtml(query)}":</p>
+    <p class="player-search-summary">${escapeHtml(summary)}:</p>
     ${groups}
   `;
+  announcePlayerSearch(`${summary}.`);
   applyReviewLinks(); // helper.js
 }
 
