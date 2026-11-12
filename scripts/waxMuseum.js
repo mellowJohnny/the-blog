@@ -15,6 +15,26 @@ function waxMuseumEl(tag, className, text) {
   return el;
 }
 
+// Resolves once the first pack's front (the LCP) has painted. Every other image waits for it, so none of them
+// shares its bandwidth; PageSpeed's mobile estimate counts any request that starts before that paint.
+let waxMuseumFirstPainted = null;
+
+/** Resolves when the browser reports img as painted (its LCP entry), or 1 s after it loads or fails (hidden tab, not the LCP). */
+function waxMuseumAfterPaint(img) {
+  const loaded = img.decode().catch(() => {});
+  if (!PerformanceObserver.supportedEntryTypes?.includes("largest-contentful-paint")) {
+    return loaded.then(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
+  }
+  let observer;
+  return new Promise((done) => {
+    observer = new PerformanceObserver((list) => {
+      if (list.getEntries().some((entry) => entry.element === img)) done();
+    });
+    observer.observe({ type: "largest-contentful-paint", buffered: true });
+    loaded.then(() => setTimeout(done, 1000));
+  }).then(() => observer.disconnect());
+}
+
 // index: the card's place in the grid. The first row's fronts load eagerly and the very first one at high
 // priority (it's the page's LCP); backs and later cards stay lazy. Omit it for an image that's never on screen at load.
 function waxMuseumImage(fileName, alt, className, index = Infinity) {
@@ -25,7 +45,15 @@ function waxMuseumImage(fileName, alt, className, index = Infinity) {
   img.alt = alt;
   img.width = 900;
   img.height = 1200;
-  img.src = WAX_PACK_IMAGE_BASE + encodeURIComponent(fileName);
+  const src = WAX_PACK_IMAGE_BASE + encodeURIComponent(fileName);
+  if (index === 0) {
+    img.src = src;
+    waxMuseumFirstPainted = waxMuseumAfterPaint(img);
+  } else if (waxMuseumFirstPainted) {
+    waxMuseumFirstPainted.then(() => { img.src = src; });
+  } else {
+    img.src = src;
+  }
   return img;
 }
 
