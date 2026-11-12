@@ -938,26 +938,32 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") closeNavGroups();
+  if (event.key !== "Escape") return;
+  closeNavGroups();
+  closeMenu(true);
 });
 
-// Hamberger Menu Toggle
+// Phone/tablet menu: the ☰ button opens #global-nav; aria-expanded tells screen readers whether it's open.
 function toggleMenu() {
-  const nav = document.getElementById("global-nav");
-  nav.classList.toggle("open");
+  const open = document.getElementById("global-nav").classList.toggle("open");
+  document.querySelector(".hamburger").setAttribute("aria-expanded", String(open));
 }
 
-// Close the mobile menu when tapping/clicking anywhere outside it (the
-// hamburger icon itself is inside #global-nav-placeholder too, so this
-// doesn't fight with toggleMenu() re-opening it on the same click)
+// returnFocus: Escape from inside the menu puts focus back on the button, since the link it was on is now hidden.
+function closeMenu(returnFocus) {
+  const nav = document.getElementById("global-nav");
+  const button = document.querySelector(".hamburger");
+  if (!nav || !button || !nav.classList.contains("open")) return;
+  const hadFocus = nav.contains(document.activeElement);
+  nav.classList.remove("open");
+  button.setAttribute("aria-expanded", "false");
+  if (returnFocus && hadFocus) button.focus();
+}
+
+// Close the menu on a click anywhere outside it (the button is inside the placeholder, so its own click still toggles)
 document.addEventListener("click", (event) => {
   const navPlaceholder = document.getElementById("global-nav-placeholder");
-  const nav = document.getElementById("global-nav");
-  if (!navPlaceholder || !nav) return;
-
-  if (nav.classList.contains("open") && !navPlaceholder.contains(event.target)) {
-    nav.classList.remove("open");
-  }
+  if (navPlaceholder && !navPlaceholder.contains(event.target)) closeMenu(false);
 });
 
 

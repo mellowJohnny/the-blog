@@ -88,7 +88,7 @@
     <nav>
       <!-- Dynamically fetch the Nav using fetchNav() in helper.js -->
       <div class="nav-container" id="global-nav-placeholder">
-        <div class="hamburger" onclick="toggleMenu()">☰</div>
+        <button type="button" class="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="global-nav" onclick="toggleMenu()"><span aria-hidden="true">☰</span></button>
         <div id="global-nav" class="nav-links" data-nav-page="about"><!-- nav:start --><!-- nav:end --></div>
       </div>
     </nav>

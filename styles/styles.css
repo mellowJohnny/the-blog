@@ -4486,6 +4486,15 @@ body:has(.site-footer) {
     padding: 10px;
     color: var(--color-link);
     display: block;
+    margin: 0;
+    background: none;
+    border: 0;
+  }
+
+  .hamburger:focus-visible {
+    outline: 2px solid var(--color-button);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 
   /* The 70px base value (styles.css, non-mobile-scoped) is sized for
