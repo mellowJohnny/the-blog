@@ -271,8 +271,27 @@ function buildTickerScroller(ticker) {
   const entry = document.createElement("div");
   entry.className = "nhl-ticker-entry";
   entry.appendChild(scroller);
-  ticker.replaceChildren(entry);
+  ticker.replaceChildren(entry, buildTickerPauseButton(ticker));
   return scroller;
+}
+
+// Pause/play for touch screens (CSS shows it only there): touch has no hover to pause the strip on.
+// A toggle button: the name stays "Pause scores" and aria-pressed says whether it's paused.
+function buildTickerPauseButton(ticker) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "nhl-ticker-pause";
+  button.setAttribute("aria-label", "Pause scores");
+  button.setAttribute("aria-pressed", "false");
+  button.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">'
+    + '<path class="nhl-ticker-pause-icon" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/>'
+    + '<path class="nhl-ticker-play-icon" d="M8 5l11 7-11 7z"/></svg>';
+  button.addEventListener("click", () => {
+    const paused = button.getAttribute("aria-pressed") !== "true";
+    button.setAttribute("aria-pressed", String(paused));
+    ticker.classList.toggle("nhl-ticker-paused", paused);
+  });
+  return button;
 }
 
 // Swaps a league's section in both copies without a visible jump: waits

@@ -1402,10 +1402,66 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   animation: nhlTickerScroll 60s linear infinite;
 }
 
-/* Pause on hover/keyboard focus so a score can actually be read. */
-.nhl-ticker:hover .nhl-ticker-scroller,
-.nhl-ticker:focus-within .nhl-ticker-scroller {
+/* Pause on hover/keyboard focus so a score can actually be read. Hover only where the pointer really
+   hovers (a tap leaves a sticky :hover on phones), and not for focus on the pause button itself, or
+   pressing play couldn't restart the strip. Touch screens use the button (.nhl-ticker-paused). */
+@media (hover: hover) {
+  .nhl-ticker:hover .nhl-ticker-scroller {
+    animation-play-state: paused;
+  }
+}
+
+.nhl-ticker:focus-within:not(:has(.nhl-ticker-pause:focus)) .nhl-ticker-scroller,
+.nhl-ticker-paused .nhl-ticker-scroller,
+.nhl-ticker-paused .nhl-ticker-entry {
   animation-play-state: paused;
+}
+
+/* Touch screens only: a square at the strip's right end, chips sliding under a short fade. */
+.nhl-ticker-pause {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .nhl-ticker {
+    position: relative;
+  }
+
+  .nhl-ticker-pause {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: #1b1b1b;
+    box-shadow: -12px 0 10px -2px #1b1b1b;
+    color: #f2f2f2;
+    cursor: pointer;
+  }
+
+  .nhl-ticker-pause svg {
+    fill: currentColor;
+  }
+
+  .nhl-ticker-pause:focus-visible {
+    outline: 2px solid var(--color-link);
+    outline-offset: -2px;
+  }
+
+  .nhl-ticker-pause .nhl-ticker-play-icon,
+  .nhl-ticker-pause[aria-pressed="true"] .nhl-ticker-pause-icon {
+    display: none;
+  }
+
+  .nhl-ticker-pause[aria-pressed="true"] .nhl-ticker-play-icon {
+    display: inline;
+  }
 }
 
 @keyframes nhlTickerScroll {
@@ -1429,8 +1485,13 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   animation-play-state: paused;
 }
 
-.nhl-ticker:hover .nhl-ticker-entry,
-.nhl-ticker:focus-within .nhl-ticker-entry {
+@media (hover: hover) {
+  .nhl-ticker:hover .nhl-ticker-entry {
+    animation-play-state: paused;
+  }
+}
+
+.nhl-ticker:focus-within:not(:has(.nhl-ticker-pause:focus)) .nhl-ticker-entry {
   animation-play-state: paused;
 }
 
@@ -1964,7 +2025,8 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   .nhl-ticker:empty::after {
     display: none;
   }
-  .nhl-ticker-track-copy {
+  .nhl-ticker-track-copy,
+  .nhl-ticker-pause {
     display: none;
   }
   .ticker-league-entering {
