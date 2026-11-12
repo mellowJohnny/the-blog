@@ -41,6 +41,7 @@ const HELPER_PATH = path.join(REPO_ROOT, "scripts", "helper.js");
 const WAX_PATH = path.join(REPO_ROOT, "scripts", "wax.js");
 const BROWSE_PAGE_PATH = path.join(REPO_ROOT, "browseBySet.html");
 const BROWSE_SCRIPT_PATH = path.join(REPO_ROOT, "scripts", "browseBySet.js");
+const WAX_MUSEUM_SCRIPT_PATH = path.join(REPO_ROOT, "scripts", "waxMuseum.js");
 // The set-data endpoint fetchCardSetsByYear() calls in scripts/wax.js; the preload below must use
 // the identical URL or the browser fetches it twice.
 const SETS_BY_YEAR_URL = "https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev";
@@ -94,6 +95,30 @@ async function fetchLiveSets() {
     }
   }
   throw lastError;
+}
+
+// The Wax Museum's phone LCP is its first pack's front image, which the page only names after fetching the
+// pack list. This writes a preload for it into waxMuseum.html, using the page's own sort and URL from
+// scripts/waxMuseum.js. Optional: any failure leaves the marker empty with a warning, never fails the build.
+async function waxLcpPreload(page, warnings) {
+  try {
+    const context = {};
+    vm.createContext(context);
+    const museum = vm.runInContext(`${fs.readFileSync(WAX_MUSEUM_SCRIPT_PATH, "utf8")}
+      ;({ sortWaxPacks, WAX_PACK_IMAGE_BASE, WAX_PACK_GET_URL })`, context);
+    const fetchPreload = page.match(/<link rel="preload" as="fetch" crossorigin href="([^"]+)">/);
+    if (!fetchPreload || fetchPreload[1] !== museum.WAX_PACK_GET_URL) {
+      warnings.push("waxMuseum.html's pack-list preload doesn't match WAX_PACK_GET_URL in scripts/waxMuseum.js");
+    }
+    const packs = await getJson(museum.WAX_PACK_GET_URL);
+    const first = Array.isArray(packs) ? museum.sortWaxPacks(packs)[0] : null;
+    if (!first || !first.frontImg) throw new Error("no first pack with a front image");
+    const href = museum.WAX_PACK_IMAGE_BASE + encodeURIComponent(first.frontImg);
+    return `<link rel="preload" as="image" href="${escapeAttr(href)}" fetchpriority="high">`;
+  } catch (err) {
+    warnings.push(`Wax Museum LCP preload left out: ${err.message}`);
+    return "";
+  }
 }
 
 // categoryRanges is a plain object literal in scripts/helper.js (a browser
@@ -360,12 +385,13 @@ try {
     const pickerHtml = setPickerHtml(set.year, set.blogCat, pageName, pickerHrefFor(set, sets, compareSetsForDefault));
     return { set, html: buildPage(template, set, categoryRanges, warnings, pickerHtml, navHtml(pageName, undefined, navLinkFor), footerMarkup) };
   });
-  const navPages = NAV_PAGE_FILES.map((file) => {
-    const source = file === "browseBySet.html" ? buildBrowsePage(liveSets, browseColumnHtml) : fs.readFileSync(path.join(REPO_ROOT, file), "utf8");
+  const navPages = await Promise.all(NAV_PAGE_FILES.map(async (file) => {
+    let source = file === "browseBySet.html" ? buildBrowsePage(liveSets, browseColumnHtml) : fs.readFileSync(path.join(REPO_ROOT, file), "utf8");
+    if (file === "waxMuseum.html") source = replaceBetween(source, "wax-lcp", await waxLcpPreload(source, warnings), file, true);
     const match = source.match(/id="global-nav"[^>]*data-nav-page="([^"]+)"/);
     if (!match) throw new Error(`${file} needs data-nav-page on #global-nav`);
     return { file: path.join(REPO_ROOT, file), html: fillNav(source, match[1], navHtml(match[1], undefined, navLinkFor), footerMarkup, file) };
-  });
+  }));
   const urls = buildUrls(sets);
 
   let written = 0;

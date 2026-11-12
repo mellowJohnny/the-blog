@@ -39,6 +39,8 @@
          page's LCP and waits on it. Must match WAX_PACK_GET_URL in waxMuseum.js exactly. -->
     <link rel="preload" as="fetch" crossorigin href="https://efh9lu4988.execute-api.us-east-2.amazonaws.com/prod">
     <link rel="preconnect" href="https://s3.us-east-2.amazonaws.com">
+    <!-- The build fills this with a preload of the first pack's front image (the phone LCP); see tools/generateReviewPages -->
+    <!-- wax-lcp:start --><!-- wax-lcp:end -->
 
     <!-- Fonts are self-hosted (@font-face in styles.css); the masthead uses Bebas Neue -->
     <link rel="preload" href="/fonts/bebas-neue-latin-v16.woff2" as="font" type="font/woff2" crossorigin>
