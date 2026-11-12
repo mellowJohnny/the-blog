@@ -5049,6 +5049,25 @@ body:has(.site-footer) {
   }
 }
 
+/* "Skip to content" (first in <body> on every public page): looks like .input-button, sits above the
+   viewport until keyboard focus brings it in over the masthead. Moved, not display:none, so Tab can reach it. */
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1001; /* above the open phone menu (1000) */
+  translate: 0 -200%;
+}
+
+.skip-link:focus {
+  translate: none;
+}
+
+.skip-link:link,
+.skip-link:visited {
+  color: var(--color-white);
+}
+
 /* Floating back-to-top button (Wax Museum, Timeline, McFarlane's Shelf): a navy circle that shows once
    the page is scrolled. A CSS scroll-state query where supported; elsewhere initBackToTop() (helper.js)
    toggles classes on <html>. Visible by default, so it still works with neither. */
