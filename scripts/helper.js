@@ -319,8 +319,11 @@ function getMonthName(monthNum) {
 
 // The card galleries (Wax Museum, McFarlane's Shelf): buildItem(item, index) cards in the three-up grid,
 // built 6 at a time; an empty sentinel below the grid loads the next batch as it nears the viewport.
-// The first row is on screen at load (its first image is the LCP), so builders load it eagerly.
-const LAZY_GRID_EAGER = 3;
+// The first row is on screen at load (its first image is the LCP), so builders load it eagerly: three
+// cards, or one where the grid is a single column (700px and below, as in styles.css), so cards below the fold don't take the LCP's bandwidth.
+function lazyGridEagerCount() {
+  return window.matchMedia("(max-width: 700px)").matches ? 1 : 3;
+}
 const LAZY_GRID_BATCH = 6;
 function renderLazyGrid(container, items, buildItem) {
   container.replaceChildren();

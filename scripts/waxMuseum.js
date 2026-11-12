@@ -19,7 +19,7 @@ function waxMuseumEl(tag, className, text) {
 // priority (it's the page's LCP); backs and later cards stay lazy. Omit it for an image that's never on screen at load.
 function waxMuseumImage(fileName, alt, className, index = Infinity) {
   const img = waxMuseumEl("img", className);
-  if (index >= LAZY_GRID_EAGER) img.loading = "lazy"; // helper.js; set before src, which starts the request
+  if (index >= lazyGridEagerCount()) img.loading = "lazy"; // helper.js; set before src, which starts the request
   if (index === 0) img.fetchPriority = "high";
   img.decoding = "async";
   img.alt = alt;

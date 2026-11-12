@@ -56,7 +56,7 @@ function buildFigureCard(figure, index) {
     const img = shelfEl("img", "wax-museum-img");
     // The first row is on screen at load: eager, the very first at high priority (the LCP). helper.js
     // Set before src, which starts the request.
-    if (index >= LAZY_GRID_EAGER) img.loading = "lazy";
+    if (index >= lazyGridEagerCount()) img.loading = "lazy";
     if (index === 0) img.fetchPriority = "high";
     img.decoding = "async";
     img.alt = `${figure.playerName} McFarlane Sportspicks figure, ${figure.series}${figure.variant ? `, ${figure.variant}` : ""}`;
