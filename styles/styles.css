@@ -1114,20 +1114,9 @@ label sup {
   background-color: #c5cdd3;
 }
 
-.cms-masthead {
-  margin: -8px -8px 0; /* cancel the body margin: edge to edge, like the home banner */
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
-}
-
-/* Everything on a cardStack CMS page except the banner's section gets a left margin (wlcms.html uses the Home banner). */
-body:has(.cms-masthead, .cms-mast-table) > :not(:has(.cms-masthead, .cms-mast-table)) {
+/* Everything on a cardStack CMS page except the banner's section (the Home banner, .cms-mast-table) gets a left margin. */
+body:has(.cms-mast-table) > :not(:has(.cms-mast-table)) {
   margin-left: 25px;
-}
-
-.cms-masthead img {
-  display: block;
-  width: 100%;
-  height: auto;
 }
 
 .autobus-mast-table {
@@ -4111,7 +4100,7 @@ body:has(.site-footer) {
    cardStack CMS SHARED CHROME (wlcms.html, createBlogPost.html,
    createCardSet.html, blogEdit.html, setEdit.html, pickBlog.html,
    pickCardSet.html) - also tech.html for the .masthead rules, since it
-   reuses that class (the CMS pages themselves now use .cms-masthead)
+   reuses that class (the CMS pages themselves now use the Home banner, .cms-mast-table)
    ============================ */
 
   /* Set picker */
