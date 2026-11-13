@@ -42,6 +42,7 @@
         fetchAllStagedCardSets();
         // *** Dynamically display the copyright year
         fetchCopyrightYear();
+        fetchCmsNav("pickCardSet");
        });
     </script>
   </head>
@@ -59,20 +60,16 @@
         </tr>
       </table>
     </section>
+    <div>
+      <nav aria-label="Main">
+        <div class="nav-container" id="global-nav-placeholder">
+          <button type="button" class="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="global-nav" onclick="toggleMenu()"><span aria-hidden="true">☰</span></button>
+          <div id="global-nav" class="nav-links"></div>
+        </div>
+      </nav>
+    </div>
     <section>
       <main>
-        <div>
-          <nav>
-            <table class="cms-top-nav">
-              <tr>
-                <td class="cms-nav-td"><a href="/">...exit</a></td>
-                <td class="cms-nav-td">
-                  <a href="/cms/wlcms.html">...back to cms</a>
-                </td>
-              </tr>
-            </table>
-          </nav>
-        </div>
         <table class="cms-set-picker">
           <tr>
             <td>

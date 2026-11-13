@@ -868,10 +868,11 @@ function buildNavCell(item, hrefFor) {
   return `<td class="nav-td"><a href="${href}"${reviewLinkAttrs(item)}>${item.label}</a></td>`;
 }
 
-function buildNavGroupCell(group, selfId, hrefFor) {
+// items: where the group's ids are looked up (the CMS nav passes its own).
+function buildNavGroupCell(group, selfId, hrefFor, items = NAV_ITEMS) {
   const links = group.items.filter(id => id !== selfId)
     .map(id => {
-      const item = NAV_ITEMS[id];
+      const item = items[id];
       const href = (hrefFor && hrefFor(item)) || item.href;
       return `<li><a href="${href}"${reviewLinkAttrs(item)}>${item.label}</a></li>`;
     })
@@ -1086,37 +1087,40 @@ function setCookie(cookieName, cookieValue, exp) {
     document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
   }
 
-/**
- * Click-toggle flyouts for the wlcms.html top nav dropdowns (not
- * CSS :hover) so this behaves the same on touch and desktop. Scoped to
- * #wlcms-top-nav only. Call once on page load.
- */
-function initWlcmsNav() {
-  const nav = document.getElementById('wlcms-top-nav');
-  if (!nav) return;
+// cardStack CMS nav: the public nav's markup and behaviour with CMS links. Ids are page names,
+// so a page leaves its own link out of its dropdown.
+const CMS_NAV_ITEMS = {
+  wlcms: { label: "CMS Home", href: "/cms/wlcms.html" },
+  createCardSet: { label: "New Card Set", href: "/cms/createCardSet.html" },
+  pickCardSet: { label: "Edit a Card Set", href: "/cms/pickCardSet.html" },
+  uploadChecklist: { label: "Manage Checklists", href: "/cms/uploadChecklist.html" },
+  newWaxPack: { label: "New Wax Pack", href: "/cms/newWaxPack.html" },
+  pickWaxPack: { label: "Edit a Wax Pack", href: "/cms/pickWaxPack.html" },
+  newSportspick: { label: "New Figure", href: "/cms/newSportspick.html" },
+  pickSportspick: { label: "Edit a Figure", href: "/cms/pickSportspick.html" },
+  mcfarlanesShelf: { label: "Preview Shelf", href: "/cms/mcfarlanesShelf.html" },
+  createBlogPost: { label: "New Blog Post", href: "/cms/createBlogPost.html" },
+  pickBlog: { label: "Edit a Blog Post", href: "/cms/pickBlog.html" },
+  admin: { label: "Admin Tools", href: "/cms/admin.html" },
+  smsAdmin: { label: "AMP SMS", href: "/cms/smsAdmin.html" },
+  exit: { label: "Exit", href: "/" }
+};
 
-  function closeAll(except) {
-    nav.querySelectorAll('.cms-nav-item.open').forEach((item) => {
-      if (item === except) return;
-      item.classList.remove('open');
-      const btn = item.querySelector('.cms-nav-parent');
-      if (btn) btn.setAttribute('aria-expanded', 'false');
-    });
-  }
+const CMS_NAV_GROUPS = {
+  cards: { label: "Cards", items: ["createCardSet", "pickCardSet", "uploadChecklist"] },
+  waxPacks: { label: "Wax Packs", items: ["newWaxPack", "pickWaxPack"] },
+  sportspicks: { label: "Sportspicks", items: ["newSportspick", "pickSportspick", "mcfarlanesShelf"] },
+  blogs: { label: "Blogs", items: ["createBlogPost", "pickBlog"] },
+  adminTools: { label: "Admin", items: ["admin", "smsAdmin"] }
+};
 
-  nav.querySelectorAll('.cms-nav-parent').forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const item = btn.closest('.cms-nav-item');
-      const isOpen = item.classList.contains('open');
-      closeAll();
-      item.classList.toggle('open', !isOpen);
-      btn.setAttribute('aria-expanded', String(!isOpen));
-    });
-  });
+const CMS_NAV_ORDER = ["wlcms", "cards", "waxPacks", "sportspicks", "blogs", "adminTools", "exit"];
 
-  document.addEventListener('click', () => closeAll());
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeAll();
-  });
+function fetchCmsNav(pageName) {
+  const cells = CMS_NAV_ORDER.filter(id => id !== pageName)
+    .map(id => CMS_NAV_GROUPS[id]
+      ? buildNavGroupCell(CMS_NAV_GROUPS[id], pageName, null, CMS_NAV_ITEMS)
+      : buildNavCell(CMS_NAV_ITEMS[id]))
+    .join("");
+  document.getElementById("global-nav").innerHTML = `<table class="top-nav nav-table"><tr>${cells}</tr></table>`;
 }

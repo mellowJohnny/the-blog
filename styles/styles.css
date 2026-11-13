@@ -767,135 +767,6 @@ h1 {
   z-index: 1000;
 }
 
-.cms-nav-td {
-  display: block;
-  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  font-size: 24px;
-  color:var(--color-text-dark);
-  margin: 0;
-  padding: 12px 16px;
-}
-
-/* Shared by wlcms.html and smsAdmin.html - flex-wrap so a row of nav
-   links wraps instead of overflowing, on both desktop and mobile */
-.cms-top-nav {
-  display: block;
-  width: 100%;
-  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  font-size: 36px;
-  color:var(--color-text-dark);
-  margin: 15px 0;
-  padding: 20px 0;
-}
-
-.cms-top-nav tr {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  width: 100%;
-}
-
-/* wlcms.html's dropdown/flyout main nav - Cards / Blogs / Admin parents
-   each reveal a flyout of links; "Exit" has no flyout. Opens via click
-   (a small inline script in wlcms.html toggles an "open" class - this
-   is what drives it on mobile/touch, where hover isn't meaningful) OR
-   via CSS :hover on real pointer devices (below) - the two mechanisms
-   are independent and don't conflict, since either one alone is enough
-   to satisfy the "show the dropdown" selectors. A separate component
-   from the plain .cms-top-nav breadcrumb table used by every other
-   cms/*.html page. */
-.cms-dropdown-nav {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 12px;
-  list-style: none;
-  width: 100%;
-  margin: 0;
-  padding: 8px 0;
-  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-}
-
-.cms-nav-item {
-  position: relative;
-  margin: 0;
-}
-
-.cms-nav-parent,
-.cms-nav-item-plain > a {
-  display: block;
-  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  font-size: 24px;
-  color: var(--color-link);
-  background: none;
-  border: none;
-  margin: 0;
-  padding: 12px 16px;
-  cursor: pointer;
-}
-
-.cms-nav-parent::after {
-  content: "\25BE";
-  font-size: 0.6em;
-  margin-left: 8px;
-  display: inline-block;
-}
-
-.cms-nav-item.open > .cms-nav-parent::after {
-  content: "\25B4";
-}
-
-.cms-nav-dropdown {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  min-width: 240px;
-  list-style: none;
-  margin: 0;
-  padding: 8px 0;
-  background-color: var(--color-page-bg);
-  border-radius: 6px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-}
-
-.cms-nav-item.open > .cms-nav-dropdown {
-  display: block;
-}
-
-.cms-nav-dropdown li {
-  margin: 0;
-}
-
-.cms-nav-dropdown a {
-  display: block;
-  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
-  font-size: 20px;
-  color: var(--color-text-dark);
-  padding: 10px 16px;
-  white-space: nowrap;
-}
-
-.cms-nav-dropdown a:hover {
-  background-color: #fff;
-}
-
-/* Hover-to-open, desktop/trackpad only - excluded on touch so a tap
-   doesn't leave a dropdown stuck open via a "phantom" hover state with
-   no mouseleave to clear it. Mobile keeps the click-toggle above. */
-@media (hover: hover) and (pointer: fine) {
-  .cms-nav-item:hover > .cms-nav-dropdown {
-    display: block;
-  }
-
-  .cms-nav-item:hover > .cms-nav-parent::after {
-    content: "\25B4";
-  }
-}
-
 .cms-form-table {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 18px;
@@ -1114,8 +985,8 @@ label sup {
   background-color: #c5cdd3;
 }
 
-/* Everything on a cardStack CMS page except the banner's section (the Home banner, .cms-mast-table) gets a left margin. */
-body:has(.cms-mast-table) > :not(:has(.cms-mast-table)) {
+/* Everything on a cardStack CMS page except the banner (.cms-mast-table) and the nav bar gets a left margin. */
+body:has(.cms-mast-table) > :not(:has(.cms-mast-table, .nav-container)) {
   margin-left: 25px;
 }
 
@@ -4107,58 +3978,6 @@ body:has(.site-footer) {
   .cms-set-picker {
     width: 100%;
     margin-left: 0;
-  }
-
-  /* cardStack/Autobus CMS top nav (wlcms.html, smsAdmin.html) */
-  .cms-top-nav {
-    font-size: 20px;
-    margin: 10px 0;
-    padding: 10px 0;
-  }
-
-  .cms-top-nav tr {
-    gap: 8px;
-  }
-
-  .cms-nav-td {
-    font-size: 16px;
-    padding: 10px 14px;
-  }
-
-  /* wlcms.html dropdown/flyout nav - stack the parents full-width and
-     turn each flyout into an inline accordion instead of an absolutely
-     positioned overlay, which doesn't have room to sit next to its
-     parent at mobile widths */
-  .cms-dropdown-nav {
-    flex-direction: column;
-    gap: 0;
-    margin: 10px 0;
-    padding: 10px 0;
-  }
-
-  .cms-nav-item {
-    width: 100%;
-  }
-
-  .cms-nav-parent,
-  .cms-nav-item-plain > a {
-    font-size: 18px;
-    padding: 10px 14px;
-  }
-
-  .cms-nav-dropdown {
-    position: static;
-    width: auto;
-    min-width: 0;
-    margin-left: 14px;
-    border-left: 3px solid var(--color-input-border);
-    border-radius: 0;
-    box-shadow: none;
-  }
-
-  .cms-nav-dropdown a {
-    font-size: 18px;
-    padding: 8px 14px;
   }
 
   .masthead {

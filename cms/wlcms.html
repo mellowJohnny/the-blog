@@ -30,7 +30,7 @@
       window.addEventListener('load', (event) => {
         // *** Dynamically display the copyright year
         fetchCopyrightYear();
-        initWlcmsNav();
+        fetchCmsNav("wlcms");
       });
     </script>
   </head>
@@ -48,95 +48,18 @@
         </tr>
       </table>
     </section>
-    <section></section>
-    <br>
-    <div class="header-style">
-      <h1>...what would you like to do?</h1>
+    <div>
+      <nav aria-label="Main">
+        <div class="nav-container" id="global-nav-placeholder">
+          <button type="button" class="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="global-nav" onclick="toggleMenu()"><span aria-hidden="true">☰</span></button>
+          <div id="global-nav" class="nav-links"></div>
+        </div>
+      </nav>
     </div>
 
     <main>
-      <div>
-        <nav>
-          <ul class="cms-dropdown-nav" id="wlcms-top-nav">
-            <li class="cms-nav-item">
-              <button
-                type="button"
-                class="cms-nav-parent"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                ...cards
-              </button>
-              <ul class="cms-nav-dropdown">
-                <li><a href="/cms/createCardSet.html">...new card set</a></li>
-                <li><a href="/cms/pickCardSet.html">...edit a card set</a></li>
-                <li>
-                  <a href="/cms/uploadChecklist.html">...manage checklists</a>
-                </li>
-              </ul>
-            </li>
-            <li class="cms-nav-item">
-              <button
-                type="button"
-                class="cms-nav-parent"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                ...wax packs
-              </button>
-              <ul class="cms-nav-dropdown">
-                <li><a href="/cms/newWaxPack.html">...new wax pack</a></li>
-                <li><a href="/cms/pickWaxPack.html">...edit wax pack</a></li>
-              </ul>
-            </li>
-            <li class="cms-nav-item">
-              <button
-                type="button"
-                class="cms-nav-parent"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                ...sportspicks
-              </button>
-              <ul class="cms-nav-dropdown">
-                <li><a href="/cms/newSportspick.html">...new figure</a></li>
-                <li><a href="/cms/pickSportspick.html">...edit figure</a></li>
-                <li><a href="/cms/mcfarlanesShelf.html">...preview shelf</a></li>
-              </ul>
-            </li>
-            <li class="cms-nav-item">
-              <button
-                type="button"
-                class="cms-nav-parent"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                ...blogs
-              </button>
-              <ul class="cms-nav-dropdown">
-                <li><a href="/cms/createBlogPost.html">...new blog post</a></li>
-                <li><a href="/cms/pickBlog.html">...edit a blog post</a></li>
-              </ul>
-            </li>
-            <li class="cms-nav-item">
-              <button
-                type="button"
-                class="cms-nav-parent"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                ...admin
-              </button>
-              <ul class="cms-nav-dropdown">
-                <li><a href="/cms/admin.html">...admin tools</a></li>
-                <li><a href="/cms/smsAdmin.html">AMP SMS</a></li>
-              </ul>
-            </li>
-            <li class="cms-nav-item cms-nav-item-plain">
-              <a href="/">...exit</a>
-            </li>
-          </ul>
-        </nav>
+      <div class="header-style">
+        <h1>...what would you like to do?</h1>
       </div>
     </main>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
