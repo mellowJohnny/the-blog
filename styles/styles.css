@@ -1120,8 +1120,8 @@ label sup {
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
 }
 
-/* Everything on a cardStack CMS page except the banner's section gets a left margin. */
-body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
+/* Everything on a cardStack CMS page except the banner's section gets a left margin (wlcms.html uses the Home banner). */
+body:has(.cms-masthead, .cms-mast-table) > :not(:has(.cms-masthead, .cms-mast-table)) {
   margin-left: 25px;
 }
 
@@ -1334,6 +1334,13 @@ body:has(.cms-masthead) > :not(:has(.cms-masthead)) {
   box-sizing: inherit;
   paint-order: stroke fill;
   pointer-events: none;
+}
+
+/* The CMS home (cms/wlcms.html) reuses the banner with its own name. */
+.cms-mast-table .wax-reviews-masthead a::before,
+.cms-mast-table .wax-reviews-masthead a::after {
+  content: "CardStack CMS";
+  content: "CardStack CMS" / "";
 }
 
 .wax-reviews-masthead a::before {
