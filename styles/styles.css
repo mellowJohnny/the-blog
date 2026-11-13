@@ -492,8 +492,7 @@ h1 {
 /* --- Overlay --- */
 .bulk-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  inset: 0; /* transparent: still catches clicks outside the box, but no grey wash (CMS modals) */
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -2907,8 +2906,7 @@ body:has(.site-footer) {
   display: none;
   position: fixed;
   z-index: 10000;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.6);
+  inset: 0; /* transparent, like the other CMS modal overlays */
   overflow-y: auto;
   align-items: flex-start;
   justify-content: center;
@@ -3395,9 +3393,7 @@ body:has(.site-footer) {
   top: 0;
   width: 100%; /* Full width */
   height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  overflow: auto; /* Enable scroll if needed; transparent, like the other CMS modal overlays */
 }
 
 /* Modal Content/Box */
@@ -3861,8 +3857,7 @@ body:has(.site-footer) {
   display: none;               /* Hidden by default */
   position: fixed;
   z-index: 9999;
-  inset: 0;                    /* shorthand for top/left/right/bottom: 0 */
-  background-color: rgba(0,0,0,0.6);
+  inset: 0;                    /* shorthand for top/left/right/bottom: 0; transparent, like the other CMS overlays */
   overflow-y: auto;
   padding-top: 40px;
 }
