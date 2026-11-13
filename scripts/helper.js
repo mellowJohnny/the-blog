@@ -1109,7 +1109,7 @@ const CMS_NAV_ITEMS = {
 const CMS_NAV_GROUPS = {
   cards: { label: "Cards", items: ["createCardSet", "pickCardSet", "uploadChecklist"] },
   waxPacks: { label: "Wax Packs", items: ["newWaxPack", "pickWaxPack"] },
-  sportspicks: { label: "Sportspicks", items: ["newSportspick", "pickSportspick", "mcfarlanesShelf"] },
+  sportspicks: { label: "Sports Picks", items: ["newSportspick", "pickSportspick", "mcfarlanesShelf"] },
   blogs: { label: "Blogs", items: ["createBlogPost", "pickBlog"] },
   adminTools: { label: "Admin", items: ["admin", "smsAdmin"] }
 };
