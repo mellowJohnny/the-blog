@@ -990,6 +990,15 @@ body:has(.cms-mast-table) > :not(:has(.cms-mast-table, .nav-container)) {
   margin-left: 25px;
 }
 
+/* The CMS home (wlcms.html) centres its nav under the page's question, which keeps a gap below the banner. */
+.cms-home-nav .top-nav {
+  margin-inline: auto;
+}
+
+main:has(+ .cms-home-nav) {
+  margin-top: 32px;
+}
+
 .autobus-mast-table {
   border-collapse: collapse;
   width: 100%;
