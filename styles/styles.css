@@ -3602,7 +3602,7 @@ body:has(.site-footer) {
   overflow: hidden;
 }
 
-/* Small "Generate" button beside a CMS SEO field, and its length counter. */
+/* Small "Generate" button beside a CMS SEO field. */
 .seo-generate-btn {
   margin-left: 8px;
   padding: 4px 12px;
@@ -3629,13 +3629,14 @@ body:has(.site-footer) {
   transform: translateY(-50%);
 }
 
-.seo-char-count {
+/* A CMS field's length counter against its soft limit (updateCharCount(), cmsFormUI.js): SEO fields and notes. */
+.char-count {
   margin-left: 8px;
   font-size: 12px;
   color: #555;
 }
 
-.seo-char-count.seo-count-over {
+.char-count.char-count-over {
   color: #a83232;
   font-weight: bold;
 }

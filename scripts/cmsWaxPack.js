@@ -9,7 +9,10 @@ const WAX_PACK_IMAGE_DIR = "img/wax-packs/";
 const WAX_PACK_IMAGE_BASE = `https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/${WAX_PACK_IMAGE_DIR}`;
 const WAX_PACK_PICKER_URL = "/cms/pickWaxPack.html";
 const WAX_PACK_HOME_URL = "/cms/wlcms.html";
-const WAX_PACK_TYPE_LABELS = { "main": "Main", "fast food": "Fast Food" };
+// Soft limits for the notes (initCharCount(), cmsFormUI.js): the front's fill two lines of a desktop card, the back has about six
+const WAX_PACK_NOTES_FRONT_SOFT_MAX = 110;
+const WAX_PACK_NOTES_BACK_SOFT_MAX = 300;
+const WAX_PACK_TYPE_LABELS ={ "main": "Main", "fast food": "Fast Food" };
 
 // The form's fixed dropdown lists, as [value, label]. Manufacturer and packaging keep the owner's chosen order; type is A to Z.
 const WAX_PACK_MANUFACTURERS = ["O-Pee-Chee", "Topps", "Upper Deck", "Pinnacle", "Score", "Pro Set", "Fleer", "Leaf", "Pacific"].map((name) => [name, name]);
@@ -186,11 +189,13 @@ function renderWaxPackForm(mode) {
         </tr>
         <tr>
           <td>
-            <label>Notes - Pack Front</label><br>
+            <label for="wpNotesFront">Notes - Pack Front</label>
+            <span class="char-count" id="wpNotesFrontCount"></span><br>
             <textarea id="wpNotesFront" class="seo-textarea" rows="2"></textarea>
           </td>
           <td>
-            <label>Notes - Pack Reverse</label><br>
+            <label for="wpNotesBack">Notes - Pack Reverse</label>
+            <span class="char-count" id="wpNotesBackCount"></span><br>
             <textarea id="wpNotesBack" class="seo-textarea" rows="2"></textarea>
           </td>
         </tr>
@@ -199,6 +204,8 @@ function renderWaxPackForm(mode) {
         </tr>
       </table>
     </form>`;
+  initCharCount("wpNotesFront", WAX_PACK_NOTES_FRONT_SOFT_MAX);
+  initCharCount("wpNotesBack", WAX_PACK_NOTES_BACK_SOFT_MAX);
 }
 
 /** Fills every dropdown: the fixed lists, and the live reviews (alphabetical, "None" first). */
@@ -242,6 +249,7 @@ function populateWaxPackForm(pack) {
   // Packs saved before the notes were split have only "notes", which counts as the front note.
   waxPackField("wpNotesFront").value = pack.notesFront || pack.notes || "";
   waxPackField("wpNotesBack").value = pack.notesBack || "";
+  refreshCharCounts();
 
   waxPackField("wpYear").disabled = true;
   showWaxPackImage("Front");

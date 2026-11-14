@@ -8,6 +8,7 @@ const SPORTSPICK_IMAGE_DIR = "img/sportspicks/";
 const SPORTSPICK_IMAGE_BASE = `https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/${SPORTSPICK_IMAGE_DIR}`;
 const SPORTSPICK_PICKER_URL = "/cms/pickSportspick.html";
 const SPORTSPICK_HOME_URL = "/cms/wlcms.html";
+const SPORTSPICK_NOTES_SOFT_MAX = 110; // fills two lines of a desktop shelf card (initCharCount(), cmsFormUI.js)
 
 let _sportspicks = [];
 let _sportspickBeingEdited = null;
@@ -144,7 +145,8 @@ function renderSportspickForm(mode) {
         </tr>
         <tr>
           <td colspan="2">
-            <label>Notes</label><br>
+            <label for="spNotes">Notes</label>
+            <span class="char-count" id="spNotesCount"></span><br>
             <textarea id="spNotes" class="seo-textarea" rows="3"></textarea>
           </td>
         </tr>
@@ -153,6 +155,7 @@ function renderSportspickForm(mode) {
         </tr>
       </table>
     </form>`;
+  initCharCount("spNotes", SPORTSPICK_NOTES_SOFT_MAX);
 }
 
 /** Suggests every series already saved, A to Z, so new figures reuse the same spelling. */
@@ -174,6 +177,7 @@ function populateSportspickForm(figure) {
   sportspickField("spSeries").value = figure.series;
   sportspickField("spImage").value = figure.image || "";
   sportspickField("spNotes").value = figure.notes || "";
+  refreshCharCounts();
 
   sportspickField("spReleaseYear").disabled = true;
   showSportspickImage();

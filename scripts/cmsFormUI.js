@@ -417,11 +417,30 @@ function updateSeoCharCounts() {
   });
   [["seoPageTitle", 65], ["seoMetaDesc", 160]].forEach(([id, max]) => {
     const input = document.getElementById(id);
-    const counter = document.getElementById(`${id}Count`);
-    if (!input || !counter) return;
-    counter.textContent = `${input.value.length} / ${max}`;
-    counter.classList.toggle("seo-count-over", input.value.length > max);
+    if (input) updateCharCount(input, max);
   });
+}
+
+// "87 / 110" in the field's #<id>Count span, red once past the limit. A soft limit: nothing stops the save.
+function updateCharCount(input, max) {
+  const counter = document.getElementById(`${input.id}Count`);
+  if (!counter) return;
+  counter.textContent = `${input.value.length} / ${max}`;
+  counter.classList.toggle("char-count-over", input.value.length > max);
+}
+
+/** Gives a form field a live counter against a soft limit (the limit is kept on the field for refreshCharCounts()). */
+function initCharCount(id, max) {
+  const input = document.getElementById(id);
+  if (!input) return;
+  input.dataset.softMax = max;
+  input.addEventListener("input", () => updateCharCount(input, max));
+  updateCharCount(input, max);
+}
+
+/** Re-counts every counted field, after code fills a form (setting .value fires no input event). */
+function refreshCharCounts() {
+  document.querySelectorAll("[data-soft-max]").forEach((input) => updateCharCount(input, Number(input.dataset.softMax)));
 }
 
 document.addEventListener("DOMContentLoaded", () => {
