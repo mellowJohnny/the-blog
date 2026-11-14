@@ -17,12 +17,18 @@ function shelfEl(tag, className, text) {
   return el;
 }
 
-/** Oldest release first, then series ("Series 2" before "Series 10"), player and variant. */
+/** A player's last name (the name's last word), for sorting: "Wayne Gretzky" is "Gretzky". */
+function figureLastName(figure) {
+  return (figure.playerName || "").trim().split(/\s+/).pop();
+}
+
+/** Oldest release first, then series ("Series 2" before "Series 10"), then A to Z by last name, full name and variant. */
 function sortFigures(figures) {
   const compare = (a, b) => (a || "").localeCompare(b || "", undefined, { sensitivity: "base", numeric: true });
   return [...figures].sort((a, b) =>
     a.releaseYear - b.releaseYear ||
     compare(a.series, b.series) ||
+    compare(figureLastName(a), figureLastName(b)) ||
     compare(a.playerName, b.playerName) ||
     compare(a.variant, b.variant));
 }
