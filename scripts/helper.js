@@ -376,11 +376,20 @@ function enableDialogLightDismiss(dialog) {
   dialog.addEventListener("pointerup", (event) => { if (pressedOutside && outside(event)) dialog.close(); });
 }
 
-// Back-to-top button fallback, for browsers without CSS scroll-state queries (styles.css shows it there by
-// itself): hide it, then show it whenever the zero-size sentinel at the top of the page is out of view.
+// Back-to-top button. A click scrolls up without following its #top link, which would add a history entry
+// (Back would then return to the bottom of the page). Then the fallback for browsers without CSS scroll-state
+// queries: hide the button, and show it whenever the zero-size sentinel at the top of the page is out of view.
 function initBackToTop() {
   const sentinel = document.querySelector(".back-to-top-sentinel");
-  if (!sentinel || !document.querySelector(".back-to-top") || CSS.supports("container-type", "scroll-state") || !("IntersectionObserver" in window)) return;
+  const button = document.querySelector(".back-to-top");
+  if (!sentinel || !button) return;
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
+    window.scrollTo({ top: 0 }); // smooth via styles.css, unless the visitor reduces motion
+    sentinel.tabIndex = -1;
+    sentinel.focus({ preventScroll: true }); // keyboard users carry on from the top, as the link did
+  });
+  if (CSS.supports("container-type", "scroll-state") || !("IntersectionObserver" in window)) return;
   const root = document.documentElement;
   root.classList.add("back-to-top-pending");
   new IntersectionObserver(([entry]) => root.classList.toggle("back-to-top-scrolled", !entry.isIntersecting)).observe(sentinel);
