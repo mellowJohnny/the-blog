@@ -5200,19 +5200,30 @@ html.back-to-top-pending.back-to-top-scrolled .back-to-top {
 .checklist-modal-content.figure-modal {
   width: fit-content;
   max-width: calc(100vw - 32px);
-  padding: 16px;
+  max-height: calc(100dvh - 32px);
+  padding: 8px;
 }
 
+/* The × floats over the photo's corner instead of taking a row, so the photo gets that height. */
 .figure-modal .checklist-modal-controls {
-  margin-bottom: 8px;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  margin: 0;
 }
 
+.figure-modal .checklist-modal-close {
+  border-radius: 50%;
+  background: var(--color-white);
+}
+
+/* width: auto never goes past the file's own 900 x 1200, so it's as big as the screen allows without stretching. */
 .figure-modal-img {
   display: block;
   width: auto;
   max-width: 100%;
   height: auto;
-  max-height: calc(100dvh - 160px);
+  max-height: calc(100dvh - 48px);
   margin: 0 auto;
 }
 
