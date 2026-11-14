@@ -106,8 +106,8 @@ To check an endpoint: `curl -s -D - -o /dev/null -H "Accept-Encoding: gzip"
 - **URL**: `https://j35hpf8jb8.execute-api.us-east-2.amazonaws.com/prod`
 - **Method**: GET
 - **Query params**: none returns every figure; `?releaseYear=` (a whole number) returns one year. A non-integer `releaseYear` is a 400.
-- **Called from**: `initMcfarlanesShelf()` in `scripts/mcfarlanesShelf.js` (the dark-deployed `cms/mcfarlanesShelf.html`) and `loadSportspicks()` in `scripts/cmsSportspicks.js` (the CMS Sportspicks pages). Both fetch with `cache: "no-store"` for now, so a save shows at once; the shelf should drop it when it goes public.
-- **Response**: JSON array of `Sportspicks` items (see `DATA_MODEL.md`), sorted by `releaseYear` then `figureKey`; the shelf re-sorts for display. `Cache-Control: public, max-age=1800`, `Access-Control-Allow-Origin: *`.
+- **Called from**: `initMcfarlanesGarage()` in `scripts/mcfarlanesGarage.js` (the public `mcfarlanesGarage.html`, which also preloads this URL in its head) and `loadSportspicks()` in `scripts/cmsSportspicks.js` (the CMS Sportspicks pages). The Garage fetches normally, so it uses the 30-minute cache below; the CMS fetches with `cache: "no-store"`, so a save shows there at once.
+- **Response**: JSON array of `Sportspicks` items (see `DATA_MODEL.md`), sorted by `releaseYear` then `figureKey`; the Garage re-sorts for display. `Cache-Control: public, max-age=1800`, `Access-Control-Allow-Origin: *`.
 - **Lambda**: `Lambdas/getSportspicks/`. A `Scan` (all) or a `Query` on `releaseYear`, following `LastEvaluatedKey`. Public, no auth by design, like "Get wax packs".
 
 ### Cast a vote on a card set
@@ -295,7 +295,7 @@ Lambda runs, on both. Reads use the public "Get wax packs" above.
 - **Response**: 200 `{ message }`; 400 for a missing key; 404 if no such pack.
 - **Lambda**: `Lambdas/deleteWaxPack/` (`DeleteCommand` with `attribute_exists(packKey)`).
 
-## CMS — Sportspicks (McFarlane's Shelf)
+## CMS — Sportspicks (McFarlane's Garage)
 
 Both back the CMS Sportspicks pages (`newSportspick.html`,
 `sportspickEdit.html`, via `scripts/cmsSportspicks.js`). Both send the

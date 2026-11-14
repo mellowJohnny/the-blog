@@ -25,6 +25,7 @@ inline in the `<head>`.
 | `timeline.html` | Interactive timeline of the Junk Wax era — one flip card per season, built in the browser from a markdown file. See "Junk Wax timeline" below. | — | `timeline.js`, `ticker.js`, `helper.js` |
 | `browseBySet.html` | Every live set in two columns (Major Releases; Fast Food Sets), grouped by season, each with Review and Checklist links, plus an `ItemList` JSON-LD block of the same links. Since 2026-11-05 the build pre-renders both columns into the HTML, so it is the one page whose raw HTML links to every `/reviews/<slug>/` page. Carries the scores ticker. Linked from the nav (last item under Major Releases) and footer as "All Sets". See "Browse By Set" below. | — | `browseBySet.js`, `wax.js`, `ticker.js`, `helper.js` |
 | `waxMuseum.html` | The Wax Museum: a gallery of wax packs, one flip card per pack (front: pack image, set, details; back: the pack's back image and notes). Data comes from the `WaxPacks` table via `getWaxPacks`, entered in the CMS's wax pack pages. Masthead, nav and footer like the other pages; no scores ticker. See "The Wax Museum" below. | — | `waxMuseum.js`, `helper.js` |
+| `mcfarlanesGarage.html` | McFarlane's Garage: a gallery of McFarlane Sportspicks hockey figures, one card per figure, with a full-size photo pop-up. Data comes from the `Sportspicks` table via `getSportspicks`, entered in the CMS's Sports Picks pages. Masthead, nav and footer like the other pages; no scores ticker. See "McFarlane's Garage" below. | — | `mcfarlanesGarage.js`, `helper.js` |
 | `about.html` | The About page: the Home page's layout, but its single `blogType` 98 post is fetched, so it stays editable in the CMS. Its H1 is static in the HTML, as are its social tags. Footer link only. See "About page" below. | — | `blogs.js`, `helper.js` |
 
 **No longer live**: `cards.html` (the "what is Junk Wax" essay) and `cardChecker.html` (the "Card-O-Matic" slot calculator) were both moved to `Old HTML Pages/` on 2026-08-15, and `tech.html` (the old Tech / Mach-E / Raspberry Pi blog stream, the only page with the weather widget) and `example.html` (a reCAPTCHA demo) followed on 2026-11-05. Since that date the build deletes `Old HTML Pages/` from the deployed copy (`amplify.yml`), so none of them is reachable any more; they stay in git. See "Orphaned / legacy files" below.
@@ -114,7 +115,7 @@ by a CMS save.
 The files described below are the **readable source**. Since 2026-10-30 the
 Amplify build overwrites its own copies of the public ones (`helper.js`,
 `wax.js`, `ticker.js`, `blogs.js`, `playerSearch.js`, `browseBySet.js`,
-`timeline.js`, `waxMuseum.js`) and `styles/styles.css` with minified versions, each with a
+`timeline.js`, `waxMuseum.js`, `mcfarlanesGarage.js`) and `styles/styles.css` with minified versions, each with a
 linked source map (`x.js.map`) beside it, so the live site serves about half
 the bytes (roughly 67 KB to 34.5 KB over the wire, since the CDN already
 compresses with Brotli). The URLs are unchanged and nothing is committed
@@ -136,6 +137,7 @@ are open, which load the source map and show the real file and line.
 | `timeline.js` | `timeline.html` only: fetches `/timeline/timeline.md`, parses it (`parseTimelineMarkdown()`) and builds the flip cards (`renderTimeline()`, `buildTimelineCard()`). Entry point is `initTimeline()`. See "Junk Wax timeline" below. |
 | `browseBySet.js` | `browseBySet.html` only: fetches the live set list once from `getPublicCardSets` (`BROWSE_SETS_URL`), splits it into the two columns, groups by season and builds the Review/Checklist links (`initBrowseBySet()`; `browseReviewUrl()` builds a set's review URL for both the links and the `ItemList` JSON-LD from `setBrowseItemListJsonLd()`: its `/reviews/<slug>/` page when the set has a slug, else the old query-string form). Checklist clicks hand off to `openChecklistModal()` in `wax.js`. The column markup comes from `browseColumnHtml(sets)`, a pure function the build generator also runs (in a Node sandbox) to pre-render the columns into the page, so the two can't drift. See "Browse By Set" below. |
 | `waxMuseum.js` | `waxMuseum.html` only: fetches every pack once from `getWaxPacks`, sorts them (`sortWaxPacks()`: oldest year first, then one set at a time A to Z, then series order, then "Low" before "High" packs, then name) and renders the flip cards in batches of six as the visitor scrolls (`renderWaxMuseum()`, `buildWaxPackCard()`). Entry point is `initWaxMuseum()`. See "The Wax Museum" below. |
+| `mcfarlanesGarage.js` | `mcfarlanesGarage.html` only: fetches every figure once from `getSportspicks`, sorts them (`sortFigures()`: oldest year first, then series, then A to Z by last name) and renders the cards in batches of six as the visitor scrolls (`buildFigureCard()`), plus the full-size photo pop-up (`openFigureModal()`). Entry point is `initMcfarlanesGarage()`. See "McFarlane's Garage" below. |
 | `cmsWaxPack.js` | The three CMS wax pack pages (`newWaxPack.html`, `pickWaxPack.html`, `waxPackEdit.html`): the shared form, its fixed manufacturer/packaging/type dropdowns, the front/back image pickers (S3 `img/wax-packs/`), the review-link dropdown (from `getPublicCardSets`), and the save and delete calls, which send the Cognito token. See `CMS_GUIDE.md`. |
 | `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `truncateAtWord(text, max)` (cuts plain text at a word boundary and adds "..." only when it cut — shared by `wax.js`'s description fallback and the CMS SEO generators), `renderBreadcrumbs(pageName, label, url)` with `SITE_ORIGIN` and `BREADCRUMB_CATEGORY_IDS` (the visible breadcrumb nav plus its `BreadcrumbList` JSON-LD), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top nav (`NAV_ITEMS`/`NAV_GROUPS`/`NAV_SELF`/`NAV_MAP`, the pure `navHtml()` and the thin `fetchNav()`; see "Navigation system"), `resolveBlogCat()` (the category for an old review URL that has `pageName` but no `blogCat`), the review-link upgrade (`loadReviewLinks()` fetches `/reviews/index.json`, the manifest each build writes, as soon as `helper.js` runs on any non-CMS page; `applyReviewLinks()` swaps the `href` of every link carrying `data-review-cat`/`data-review-year` or `data-review-setid` to its `/reviews/<slug>/` page, called after the nav, footer, breadcrumb, year picker and Player Search results render; `reviewLinkAttrs()` adds those attributes for a `NAV_ITEMS` entry with a `review` year; `compareSetsForDefault()` is the one rule for which set a bare-year link opens — highest `stars`, ties by `setName` — shared with `wax.js`'s sort; see "Linking to one specific set"), the "set-o-matic" year-picker builder (the pure `setPickerHtml()` plus the thin `renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time; since 2026-10-30 `tools/generateReviewPages/generate.mjs` also reads this literal straight out of the file, so keep it a plain object literal ending in `};` at the start of a line), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — now used only by `waxReviews.html`, whose values depend on data (it also served the archived `tech.html`); the static pages carry those tags in their HTML instead, see "SEO and social tags") and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `applyImgWrapSmSizing()` (sets `--wrap-w`/`--wrap-h` custom properties on every `.img-wrap-sm`/`.img-wrap-md` image in a rendered `postBody`, read from the image's own inline style size, not its `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped/middle images in review body content"; called once from `wax.js`'s `renderCardSetPage()` after each page's sets have rendered), `buildCardSetMarkup()` (the single source of truth for a card set review's HTML, shared by the live site's `displayCardSet()` and the CMS preview modal's `renderPreview()` — added 2026-09-28 to end the drift between two hand-maintained copies; see "Card set markup is shared with the CMS preview" below), the one loading spinner every public page uses (`showSpinner(container)` — see "Loading spinner" below), hamburger menu toggle, cookie helper, the copyright-year footer line (`fetchCopyrightYear()`) and the public-page footer's link columns (`FOOTER_SECTIONS`, the pure `footerHtml()` and the thin `fetchFooterLinks()` — see "Site footer" below). The nav block and the footer block are each wrapped in `// nav-block:start`/`:end` and `// footer-block:start`/`:end` comments: the build generator runs exactly those slices (plus a few single functions it lifts by name) to pre-render the same markup, so keep the comments and keep those functions free of DOM access. |
 | `playerSearch.js` | `playerSearch.html` support code: submits a player-name search to `searchPlayerName`, renders results grouped by set (linked via `getPageNameForYear()` in `helper.js` where a matching `Cards` item exists, plain text otherwise; each link carries `data-review-setid` and `applyReviewLinks()` upgrades it to the set's `/reviews/<slug>/` page); also the type-ahead dropdown (`initPlayerSearchTypeahead()`/`loadPlayerNameIndex()`/`rankPlayerNameMatch()`) that suggests player names client-side from a once-fetched, cached name index. See "Player search" below. |
@@ -165,7 +167,7 @@ the page is shared. The rules below follow from that.
 
 **Static pages** (`index.html`, `about.html`, `browseBySet.html`,
 `playerSearch.html`, `theJunkWaxYears.html`, `timeline.html`,
-`waxMuseum.html`, `lockout.html`) hold their `<title>`, meta description, `canonical`, the
+`waxMuseum.html`, `mcfarlanesGarage.html`, `lockout.html`) hold their `<title>`, meta description, `canonical`, the
 `og:` tags (type, title, description, url, image) and the `twitter:`
 tags (card, title, description, image) directly in the `<head>`. The
 HTML is the only source: their old `setPageMeta()` calls were removed so
@@ -275,9 +277,9 @@ Sets) · **Fast Food Releases ▾** (McDonald's Hockey, Tim Hortons Hockey)
 The data lives in four objects in `helper.js`:
 
 - `NAV_ITEMS` — every link (label + href). The footer reads the same labels, so renaming a link renames it in both places. `"about"` is defined here but in no nav list: the About page is reached from the footer only.
-- `NAV_GROUPS` — the two dropdowns (`major`, `fastfood`): a label and the `NAV_ITEMS` ids inside, in order. A group id sits in a page's list like an item id.
-- `NAV_SELF` — the grouped item a page leaves out of its own dropdown (for example `browseBySet` → `browse`); a group left with no links isn't drawn.
-- `NAV_MAP` — per-page key (`"index"`, `"junkWax"`, `"waxMuseum"`, ...) → ordered list of top-level ids. Player Search is always last, with The Wax Museum and the Junk Wax Timeline just before it, and each of those three is left out of its own page's list. The Home page leaves out "Home" (the masthead links there). Adding a page to the nav means adding one `NAV_MAP` entry (and a `NAV_SELF` entry if it is a grouped item); a new destination means one `NAV_ITEMS` entry.
+- `NAV_GROUPS` — the three dropdowns (`major`, `fastfood`, and `galleries`: The Wax Museum and McFarlane's Garage): a label and the `NAV_ITEMS` ids inside, in order. A group id sits in a page's list like an item id. The galleries share one dropdown because seven top-level items didn't fit on one line at laptop widths (about 1221 to 1400px): every label wrapped and the bar grew from 64px to 88px.
+- `NAV_SELF` — the grouped item a page leaves out of its own dropdown (for example `browseBySet` → `browse`, `waxMuseum` → `museum`); a group left with no links isn't drawn.
+- `NAV_MAP` — per-page key (`"index"`, `"junkWax"`, `"waxMuseum"`, ...) → ordered list of top-level ids. Player Search is always last, with the Junk Wax Timeline just before it, and each of those two is left out of its own page's list. The Home page leaves out "Home" (the masthead links there). Adding a page to the nav means adding one `NAV_MAP` entry (and a `NAV_SELF` entry if it is a grouped item); a new destination means one `NAV_ITEMS` entry.
 
 `navHtml(pageName, blogType, hrefFor)` builds the table as a string
 (`buildNavCell()`, `buildNavGroupCell()`) and `fetchNav()` writes it into
@@ -628,9 +630,9 @@ issues in the mobile section above — don't hand-tune spacing to
 "assist" a centering mechanism that's already doing the job; the two
 values drift out of sync differently at each screen size.
 
-**Random team colors + cheer label + pop-in animation**: `applyRandomMastheadStyling()` (`helper.js`) runs on load on all 7 pages using this masthead (`waxReviews.html`, `lockout.html`, `playerSearch.html`, `theJunkWaxYears.html`, `timeline.html`, `browseBySet.html`, `waxMuseum.html`) — picks one of 32 NHL teams at random from `NHL_TEAM_COLORS`, sets `--team-primary`/`--team-tertiary` CSS custom properties that drive `.wax-reviews-mast-table`'s gradient (a simpler solid+stripe design via `.masthead-two-color` for genuinely two-color teams), and creates/reuses a `.masthead-team-label` span in the bottom-right corner showing that team's cheer text (e.g. "Go Canucks Go!") so the random pick is visually verifiable. That label's text is rendered via `renderLoudText()`, which wraps each character in its own `.loud-char` span with a staggered `animation-delay` — `styles.css`'s `loudPopIn` keyframes then pop/rotate each letter in on a delay, purely because a CSS `animation` on an element plays automatically the moment that element exists in the DOM (no JS trigger needed, since the label is fully torn down and rebuilt on every load rather than reused in place). `prefers-reduced-motion: reduce` skips the animation and shows the finished text immediately.
+**Random team colors + cheer label + pop-in animation**: `applyRandomMastheadStyling()` (`helper.js`) runs on load on all 8 pages using this masthead (`waxReviews.html`, `lockout.html`, `playerSearch.html`, `theJunkWaxYears.html`, `timeline.html`, `browseBySet.html`, `waxMuseum.html`, `mcfarlanesGarage.html`) — picks one of 32 NHL teams at random from `NHL_TEAM_COLORS`, sets `--team-primary`/`--team-tertiary` CSS custom properties that drive `.wax-reviews-mast-table`'s gradient (a simpler solid+stripe design via `.masthead-two-color` for genuinely two-color teams), and creates/reuses a `.masthead-team-label` span in the bottom-right corner showing that team's cheer text (e.g. "Go Canucks Go!") so the random pick is visually verifiable. That label's text is rendered via `renderLoudText()`, which wraps each character in its own `.loud-char` span with a staggered `animation-delay` — `styles.css`'s `loudPopIn` keyframes then pop/rotate each letter in on a delay, purely because a CSS `animation` on an element plays automatically the moment that element exists in the DOM (no JS trigger needed, since the label is fully torn down and rebuilt on every load rather than reused in place). `prefers-reduced-motion: reduce` skips the animation and shows the finished text immediately.
 
-Home (`index.html`) also has this masthead since 2026-11-10 but doesn't call `applyRandomMastheadStyling()`; see "Home page masthead and the About banner". The dark-deployed `cms/mcfarlanesShelf.html` does call it.
+Home (`index.html`) also has this masthead since 2026-11-10 but doesn't call `applyRandomMastheadStyling()`; see "Home page masthead and the About banner".
 
 **Varsity lettering (2026-11-10).** The title is styled like twill jersey numbers in the team's colours, all in CSS on `.wax-reviews-masthead a`:
 
@@ -638,7 +640,7 @@ Home (`index.html`) also has this masthead since 2026-11-10 but doesn't call `ap
 - a ring in `--team-primary`, then a thin cream edge, each a real text stroke on a copy of the title behind it: `::after` carries the ring (stroke `--mast-stroke + 2 × --mast-ring`) and `::before` the edge (2 × `--mast-edge` wider again), both absolutely positioned over the link with `z-index: -1`;
 - a final offset `drop-shadow()` on the link that lifts the whole word off the stripes.
 
-The two copies take their text from CSS, `content: "Junk Wax Hockey" / ""`: every masthead page has that exact title, and the empty alternative text stops screen readers reading it three times. **Changing the masthead title means changing it there too.** The ring and edge were first made of four one-direction `drop-shadow()`s each (up, down, left, right). Offset shadows can't follow diagonals or points, so the J's hook and the K and X notches came out stepped. A stroke follows every angle, which is the same fix the McFarlane's Shelf sticker needed.
+The two copies take their text from CSS, `content: "Junk Wax Hockey" / ""`: every masthead page has that exact title, and the empty alternative text stops screen readers reading it three times. **Changing the masthead title means changing it there too.** The ring and edge were first made of four one-direction `drop-shadow()`s each (up, down, left, right). Offset shadows can't follow diagonals or points, so the J's hook and the K and X notches came out stepped. A stroke follows every angle, which is the same fix the McFarlane's Garage sticker needed.
 
 The widths are four custom properties, `--mast-stroke`, `--mast-ring`, `--mast-edge` and `--mast-drop`, and the phone rule only resets those. The outline wraps whole words; outlining each letter separately was tried and rejected. For the two-colour teams (`.masthead-two-color`) the primary and tertiary colours are the same, so the outline would vanish into the ring; their stroke is black (`--color-text`) instead.
 
@@ -1717,7 +1719,7 @@ Series 2 Jumbo" sit with the rest of their set. The API's own order is by key, w
 **Rendering.** Cards render six at a time as the visitor scrolls, and
 images load lazily. The batching lives in `renderLazyGrid(container,
 items, buildItem)` in `helper.js` (`LAZY_GRID_BATCH`), shared with
-McFarlane's Shelf: it builds the `.wax-museum-grid` and watches an empty
+McFarlane's Garage: it builds the `.wax-museum-grid` and watches an empty
 `.wax-museum-sentinel` below it with an `IntersectionObserver`. Without
 IntersectionObserver it renders everything at once. Flipping is a click or Enter;
 `setWaxPackCardFlipped()` keeps focus and the hidden face's
@@ -1727,32 +1729,49 @@ accessibility state in step.
 Wax Pack; see `CMS_GUIDE.md`). The museum page itself isn't linked from
 the CMS menu.
 
-## McFarlane's Shelf (`cms/mcfarlanesShelf.html`, dark-deployed)
+## McFarlane's Garage (`mcfarlanesGarage.html`)
 
-A gallery of McFarlane Sportspicks hockey figures, built 2026-11-09 to
-11-10 and **not public yet**. It sits under `/cms/`, so `auth.js` and
-Cognito gate it like every CMS page, and it has `noindex`. Nothing on the
-public site links to it; the only way in is the CMS menu's
-"...sportspicks" → "...preview shelf". Its body is a public page's
-(masthead with `applyRandomMastheadStyling()`, the real nav from a
-`mcfarlanesShelf` `NAV_MAP` entry, footer) so the preview looks exactly
-like the page will once it goes public. Its script,
-`scripts/mcfarlanesShelf.js`, is not in the minifier list yet.
+A gallery of McFarlane Sportspicks hockey figures. It was built
+2026-11-09 to 11-10 as a dark-deployed preview behind the CMS login
+(`cms/mcfarlanesShelf.html`, "McFarlane's Shelf") and went public at the
+site root on 2026-11-14 under its new name. The nav reaches it through
+the Galleries dropdown (with The Wax Museum), the footer's Explore
+column links it, and the CMS menu's Sports Picks dropdown has "View
+Garage". The head is a public page's (description, canonical, Open
+Graph and Twitter tags, analytics, a preload of the figure list), and
+the build pre-renders its nav and footer, minifies its script and lists
+it in the sitemap like the other static pages.
 
-**Data.** `initMcfarlanesShelf()` fetches every figure from
+**Data.** `initMcfarlanesGarage()` fetches every figure from
 `getSportspicks` (`API_ENDPOINTS.md`), from the `Sportspicks` table
-(`DATA_MODEL.md`), with `cache: "no-store"` so a figure saved a moment
-ago appears. Images are 900x1200 transparent WebPs under S3
-`img/sportspicks/`. `sortFigures()` orders by release year, then series
-(numeric-aware, so "Series 2" comes before "Series 10"), player and
-variant.
+(`DATA_MODEL.md`), as a plain request so it matches the page's preload.
+It therefore uses the 30-minute cache: a figure saved in the CMS can
+take that long to appear (the preview used `cache: "no-store"`). Images
+are 900x1200 transparent WebPs under S3 `img/sportspicks/`.
+`sortFigures()` orders by release year, then series (numeric-aware, so
+"Series 2" comes before "Series 10"), then A to Z by last name (the
+name's last word, `figureLastName()`), then full name and variant.
 
 **Cards.** `buildFigureCard()` reuses the Wax Museum's card classes with
-one face and no flip, rendered through `renderLazyGrid()`. The caption
-is the player's name, then Series and Released on one row, then Notes.
-Rules scoped to `.mcfarlanes-shelf` drop the museum's caption
-`min-height` and tighten its padding, because a figure has fewer fields
-than a pack.
+one face and no flip, rendered through `renderLazyGrid()`. The series is
+the navy band across the top (`.wax-museum-band`, a plain `<p>`, since
+the player's name is the card's heading). The caption is the player's
+name, then Series and Released on one row, then Notes, which the CMS
+counts against a soft limit of 110 characters (two lines). A rule
+scoped to `.mcfarlanes-garage` drops the museum's caption `min-height`,
+because a figure has fewer fields than a pack.
+
+**Full-size photo.** The photo is a button (the museum's flip-button
+style) with a "+" pill in its corner. A click, anywhere on the photo,
+opens it in a native `<dialog>` (`openFigureModal()`), built on first
+use and reusing the checklist modal's box and × button. It shows the
+same file the card loaded, so nothing new downloads, at up to its
+900x1200 and never stretched: `width: auto` with `max-height:
+calc(100dvh - 48px)`, and `width: fit-content` on the dialog, since a
+modal dialog is pinned to all four screen edges and `width: auto` would
+stretch it across the window. The × floats over the photo's corner so
+the photo gets the height. `closedby="any"` closes it on an outside
+click, with `enableDialogLightDismiss()` (`helper.js`) covering Safari.
 
 **The "Chase!" sticker.** A figure with a `variant` gets a yellow comic
 starburst on the top corner of the card instead of a Variant row.
@@ -1775,14 +1794,6 @@ added to the image's alt text. Three details:
 - **Why "-tip" and not "-name".** `tools/styleCheck` treats any class
   ending in `-title`, `-heading` or `-name` as a heading and flags its
   colour and size, so the label's class is `mcfarlanes-variant-tip`.
-
-**Going public** (not done): move the page to the site root and drop
-`auth.js` and `noindex`; add the public head (description, canonical,
-Open Graph tags, analytics); add a `NAV_ITEMS` link and put it in the
-other pages' `NAV_MAP` lists; add it to the generator's `STATIC_PAGES`
-(sitemap) and nav pre-render list; add `mcfarlanesShelf` to
-`tools/minifyAssets/minify.mjs` and `tools/styleCheck/config.json`; and
-drop `no-store` so the 30-minute cache applies.
 
 ## Favicons and home-screen icons
 

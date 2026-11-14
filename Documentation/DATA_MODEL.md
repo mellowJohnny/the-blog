@@ -254,8 +254,8 @@ Optional fields are omitted rather than stored empty.
 
 ## `Sportspicks` table
 
-Backs McFarlane's Shelf (`cms/mcfarlanesShelf.html`, dark-deployed),
-added 2026-11-09; one item per McFarlane Sportspicks figure, written from
+Backs McFarlane's Garage (`mcfarlanesGarage.html`, public since
+2026-11-14), added 2026-11-09; one item per McFarlane Sportspicks figure, written from
 the CMS Sportspicks pages. Modelled on `WaxPacks`.
 
 **Keys** (as the Lambdas use them, not checked in the console):
@@ -273,10 +273,10 @@ key is never shown, but don't expect to rebuild a key from a name.
 | `releaseYear` | Number | Partition key; the year the figure came out. 1900 to 2100. |
 | `figureKey` | String | Sort key; lowercase letters, numbers and single hyphens (for example `series-1-patrick-roy-nhlpa-repaint`). |
 | `playerName` | String | Required, up to 100 characters. |
-| `series` | String | Required, up to 100 (for example "Series 1"). The shelf sorts it numeric-aware. |
-| `variant` | String | Optional, up to 60. Any value gives the figure the "Chase!" sticker on the shelf. |
+| `series` | String | Required, up to 100 (for example "Series 1"). The Garage sorts it numeric-aware. |
+| `variant` | String | Optional, up to 60. Any value gives the figure the "Chase!" sticker in the Garage. |
 | `image` | String | Optional file name under S3 `img/sportspicks/`. |
-| `notes` | String | Optional, up to 1000. The shelf caption assumes two lines at most. |
+| `notes` | String | Optional, up to 1000. The Garage card fits two lines, about 110 characters, which the CMS counts as a soft limit. |
 | `updatedAt` | String | ISO timestamp of the last save. |
 
 Optional fields are omitted rather than stored empty. A create that
@@ -304,7 +304,7 @@ persistent store the site depends on:
 - `img/blog/` — blog post images.
 - `img/cards/` — card set header/footer/middle images, keyed loosely by convention as `{year}_hero.webp`, `{setSlug}_Middle.webp`, etc.
 - `img/wax-packs/` — Wax Museum pack images, front and back (`frontImg`/`backImg` in `WaxPacks`).
-- `img/sportspicks/` — McFarlane's Shelf figure images (`image` in `Sportspicks`): 900x1200 WebPs with a transparent background.
+- `img/sportspicks/` — McFarlane's Garage figure images (`image` in `Sportspicks`): 900x1200 WebPs with a transparent background.
 - `img/cms/` — CMS-only UI assets (e.g. the Autobus nameplate logo).
 - `img/favicon2.ico` — the CMS's old favicon, no longer linked. The site's favicons, CMS included, are in the repo, not S3 (see `FRONTEND.md`'s "Favicons and home-screen icons").
 

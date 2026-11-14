@@ -69,8 +69,9 @@ See `FRONTEND.md`'s "SEO and social tags".
   nav. Every public page makes this one call, so only this page spells it
   out; see `FRONTEND.md`'s "Site footer".
 - `fetchNav("index")` (`helper.js`) — the top nav. `NAV_MAP["index"]`
-  is `major, fastfood, museum, timeline, search` (two dropdown groups,
-  then The Wax Museum, the Junk Wax Timeline and Player Search; no
+  is `major, fastfood, galleries, timeline, search` (three dropdown groups,
+  the last holding The Wax Museum and McFarlane's Garage, then the Junk
+  Wax Timeline and Player Search; no
   "Home" link, since the masthead already is one). Since 2026-11-05 the
   build has already written this nav, with final `/reviews/<slug>/`
   links, between marker comments in `#global-nav` (the page names its
@@ -290,8 +291,8 @@ everything else the visitor can see or navigate to on this page.
 - `fetchNav(pageName)` (`helper.js`) — builds the top nav bar.
   `waxReviews.html`'s `pageName` values (`junkWax`, `classicWax`,
   `timmies`, `mcd`) each map to a `NAV_MAP` entry: Home, the Major
-  Releases and Fast Food Releases dropdowns, The Wax Museum, the Junk
-  Wax Timeline and Player Search (always last). The page's own category
+  Releases, Fast Food Releases and Galleries dropdowns, the Junk Wax
+  Timeline and Player Search (always last). The page's own category
   is left out of its dropdown through `NAV_SELF`.
 - `renderSetPicker(year, blogCat, pageName)` (`helper.js`, run on
   `DOMContentLoaded` — see above) — builds the
@@ -761,7 +762,7 @@ while the packs load.
 - `fetchCopyrightYear()`, `fetchNav("waxMuseum")` and
   `fetchFooterLinks()` (`helper.js`) — the chrome, as elsewhere (the nav
   and footer are pre-rendered by the build, so the last two find them in
-  place). The Wax Museum is left out of its own nav.
+  place). The Wax Museum is left out of its own Galleries dropdown.
 - `applyRandomMastheadStyling()` (`helper.js`) — the masthead colours.
 - `initWaxMuseum()` (`waxMuseum.js`) — the content. It calls **Get wax
   packs (public)** once, fronted by the `getWaxPacks` Lambda
@@ -781,6 +782,46 @@ accessibility state with it.
 
 If the endpoint fails, `#waxMuseumStatus` says so; with JavaScript off,
 its `noscript` text explains the gallery needs it.
+
+## McFarlane's Garage - `mcfarlanesGarage.html`
+
+A gallery of McFarlane Sportspicks hockey figures, the Wax Museum's
+sibling: one list of figures becomes a grid of cards, in release order,
+each photo opening full size. It was dark-deployed behind the CMS login
+as `cms/mcfarlanesShelf.html` until it went public on 2026-11-14.
+
+**What loads**: `scripts/mcfarlanesGarage.js` and `scripts/helper.js`
+(both `defer`) and one inline `window load` handler. No scores ticker.
+The head preloads the figure list request, so it starts with the HTML
+instead of waiting for the scripts. The site's loading spinner
+(`showSpinner()`) covers the page while the figures load.
+
+**On `window load`**:
+- `fetchCopyrightYear()`, `fetchNav("mcfarlanesGarage")` and
+  `fetchFooterLinks()` (`helper.js`) — the chrome, pre-rendered by the
+  build as on the other static pages. McFarlane's Garage is left out of
+  its own Galleries dropdown.
+- `applyRandomMastheadStyling()` (`helper.js`) — the masthead colours.
+- `initMcfarlanesGarage()` (`mcfarlanesGarage.js`) — the content. It
+  calls **Get sportspicks (public)** once, fronted by the
+  `getSportspicks` Lambda (`Lambdas/getSportspicks/`), which scans the
+  `Sportspicks` table (cached 30 minutes, so a figure saved in the CMS
+  can take that long to appear). `sortFigures()` orders them: year,
+  series, then A to Z by last name. `renderLazyGrid()` draws the first
+  six cards (`buildFigureCard()`: the series band, the photo with a "+"
+  pill, the player's name, Series, Released and Notes, and a "Chase!"
+  sticker for a variant) and the next six each time the visitor nears
+  the bottom. Images come from S3 `img/sportspicks/` and load lazily.
+
+**User interactions**: clicking a photo (or Enter on it) opens it full
+size in a native `<dialog>` (`openFigureModal()`), using the file the
+card already loaded; the ×, Escape or a click outside closes it.
+Hovering, focusing or tapping a "Chase!" sticker shows the variant's
+name. One click listener on the grid handles every card, including the
+ones the lazy grid adds later.
+
+If the endpoint fails, `#mcfarlanesGarageStatus` says so; with
+JavaScript off, its `noscript` text explains the gallery needs it.
 
 ## About - `about.html`
 

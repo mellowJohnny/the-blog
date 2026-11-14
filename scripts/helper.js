@@ -317,7 +317,7 @@ function getMonthName(monthNum) {
   return months[monthNum] || null; // or "Invalid month"
 }
 
-// The card galleries (Wax Museum, McFarlane's Shelf): buildItem(item, index) cards in the three-up grid,
+// The card galleries (Wax Museum, McFarlane's Garage): buildItem(item, index) cards in the three-up grid,
 // built 6 at a time; an empty sentinel below the grid loads the next batch as it nears the viewport.
 // The first row is on screen at load (its first image is the LCP), so builders load it eagerly: three
 // cards, or one where the grid is a single column (700px and below, as in styles.css), so cards below the fold don't take the LCP's bandwidth.
@@ -514,7 +514,7 @@ if (!window.location.pathname.startsWith("/cms/")) {
 const FOOTER_SECTIONS = [
   { heading: "Major Releases", links: [{ id: "classic", label: "Classic '80s" }, { id: "junk" }] },
   { heading: "Fast Food Releases", links: [{ id: "mcd" }, { id: "timmies" }] },
-  { heading: "Explore", links: [{ id: "timeline" }, { id: "search" }, { id: "browse" }, { id: "museum" }] },
+  { heading: "Explore", links: [{ id: "timeline" }, { id: "search" }, { id: "browse" }, { id: "museum" }, { id: "garage" }] },
   { links: [{ id: "home" }, { id: "about" }] }
 ];
 
@@ -830,43 +830,44 @@ const NAV_ITEMS = {
   // The footer shares this label. "about" is linked from the footer only.
   browse: { label: "All Sets", href: "/browseBySet.html" },
   museum: { label: "The Wax Museum", href: "/waxMuseum.html" },
-  about: { label: "About", href: "/about.html" }
+  garage: { label: "McFarlane's Garage", href: "/mcfarlanesGarage.html" },
+  about:{ label: "About", href: "/about.html" }
 };
 
 // Step 2: Group some items into dropdowns. A group id sits in NAV_MAP like
 // an item id; its links are the NAV_ITEMS ids listed here, in order.
 const NAV_GROUPS = {
   major: { label: "Major Releases", items: ["classic", "junk", "browse"] },
-  fastfood: { label: "Fast Food Releases", items: ["mcd", "timmies"] }
+  fastfood: { label: "Fast Food Releases", items: ["mcd", "timmies"] },
+  galleries: { label: "Galleries", items: ["museum", "garage"] }
 };
 
 // The grouped item a page leaves out of its own dropdown.
-const NAV_SELF = { classicWax: "classic", junkWax: "junk", mcd: "mcd", timmies: "timmies", browseBySet: "browse" };
+const NAV_SELF = { classicWax: "classic", junkWax: "junk", mcd: "mcd", timmies: "timmies", browseBySet: "browse", waxMuseum: "museum", mcfarlanesGarage: "garage" };
 
 // Step 3: Define which pages show which top-level items
 // The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
   // "search" (Player Search) is on every page except playerSearch itself,
-  // always last; "museum" (Wax Museum) and "timeline" sit just before it,
-  // and each of those three self-excludes from its own page. The grouped
-  // set links (including "browse", All Sets) self-exclude through NAV_SELF.
+  // always last; "timeline" sits just before it, and both self-exclude from their own page.
+  // The grouped links (the sets, "browse" All Sets, and the Wax Museum and McFarlane's
+  // Garage under "galleries") self-exclude through NAV_SELF.
   // index.html is Home, so it leaves out its own "Home" link as redundant.
-  index: ["major", "fastfood", "museum", "timeline", "search"],
-  junkWax: ["home", "major", "fastfood", "museum", "timeline", "search"],
-  classicWax: ["home", "major", "fastfood", "museum", "timeline", "search"],
-  timmies: ["home", "major", "fastfood", "museum", "timeline", "search"],
-  mcd: ["home", "major", "fastfood", "museum", "timeline", "search"],
-  playerSearch: ["home", "major", "fastfood", "museum", "timeline"],
+  index: ["major", "fastfood", "galleries", "timeline", "search"],
+  junkWax: ["home", "major", "fastfood", "galleries", "timeline", "search"],
+  classicWax: ["home", "major", "fastfood", "galleries", "timeline", "search"],
+  timmies: ["home", "major", "fastfood", "galleries", "timeline", "search"],
+  mcd: ["home", "major", "fastfood", "galleries", "timeline", "search"],
+  playerSearch: ["home", "major", "fastfood", "galleries", "timeline"],
   // theJunkWaxYears.html is a static essay, not one of the junkWax/
   // classicWax/mcd/timmies review pages itself, so nothing self-excludes.
-  junkWaxYears: ["home", "major", "fastfood", "museum", "timeline", "search"],
-  timeline: ["home", "major", "fastfood", "museum", "search"],
-  browseBySet: ["home", "major", "fastfood", "museum", "timeline", "search"],
-  waxMuseum: ["home", "major", "fastfood", "timeline", "search"],
-  // McFarlane's Shelf is dark-deployed at /cms/mcfarlanesShelf.html: nothing links to it yet.
-  mcfarlanesShelf: ["home", "major", "fastfood", "museum", "timeline", "search"],
+  junkWaxYears: ["home", "major", "fastfood", "galleries", "timeline", "search"],
+  timeline: ["home", "major", "fastfood", "galleries", "search"],
+  browseBySet: ["home", "major", "fastfood", "galleries", "timeline", "search"],
+  waxMuseum: ["home", "major", "fastfood", "galleries", "timeline", "search"],
+  mcfarlanesGarage: ["home", "major", "fastfood", "galleries", "timeline", "search"],
   // about.html is footer-only, so nothing self-excludes.
-  about: ["home", "major", "fastfood", "museum", "timeline", "search"]
+  about: ["home", "major", "fastfood", "galleries", "timeline", "search"]
 };
 
 // Step 4: Build a dynamic table generator. hrefFor(item), when given, returns
@@ -1107,7 +1108,7 @@ const CMS_NAV_ITEMS = {
   pickWaxPack: { label: "Edit a Wax Pack", href: "/cms/pickWaxPack.html" },
   newSportspick: { label: "New Figure", href: "/cms/newSportspick.html" },
   pickSportspick: { label: "Edit a Figure", href: "/cms/pickSportspick.html" },
-  mcfarlanesShelf: { label: "Preview Shelf", href: "/cms/mcfarlanesShelf.html" },
+  mcfarlanesGarage: { label: "View Garage", href: "/mcfarlanesGarage.html" },
   createBlogPost: { label: "New Blog Post", href: "/cms/createBlogPost.html" },
   pickBlog: { label: "Edit a Blog Post", href: "/cms/pickBlog.html" },
   admin: { label: "Admin Tools", href: "/cms/admin.html" },
@@ -1118,7 +1119,7 @@ const CMS_NAV_ITEMS = {
 const CMS_NAV_GROUPS = {
   cards: { label: "Cards", items: ["createCardSet", "pickCardSet", "uploadChecklist"] },
   waxPacks: { label: "Wax Packs", items: ["newWaxPack", "pickWaxPack"] },
-  sportspicks: { label: "Sports Picks", items: ["newSportspick", "pickSportspick", "mcfarlanesShelf"] },
+  sportspicks: { label: "Sports Picks", items: ["newSportspick", "pickSportspick", "mcfarlanesGarage"] },
   blogs: { label: "Blogs", items: ["createBlogPost", "pickBlog"] },
   adminTools: { label: "Admin", items: ["admin", "smsAdmin"] }
 };

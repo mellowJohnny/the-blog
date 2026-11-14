@@ -4951,7 +4951,7 @@ body:has(.site-footer) {
   color: var(--color-white);
 }
 
-/* Floating back-to-top button (Wax Museum, Timeline, McFarlane's Shelf): a navy circle that shows once
+/* Floating back-to-top button (Wax Museum, Timeline, McFarlane's Garage): a navy circle that shows once
    the page is scrolled. A CSS scroll-state query where supported; elsewhere initBackToTop() (helper.js)
    toggles classes on <html>. Visible by default, so it still works with neither. */
 .back-to-top-sentinel {
@@ -5159,7 +5159,7 @@ html.back-to-top-pending.back-to-top-scrolled .back-to-top {
 }
 
 /* The navy band across a card's top, like the label on a box: the pack's name (an h2) on both faces of a
-   Wax Museum card, so a flip doesn't move the photo, and the figure's series on McFarlane's Shelf. */
+   Wax Museum card, so a flip doesn't move the photo, and the figure's series on McFarlane's Garage. */
 .wax-museum-band {
   margin: 0;
   padding: 8px 16px;
@@ -5186,17 +5186,17 @@ html.back-to-top-pending.back-to-top-scrolled .back-to-top {
   min-height: 198px;
 }
 
-/* McFarlane's Shelf reuses these cards. A figure's caption is only a name, one row of
+/* McFarlane's Garage reuses these cards. A figure's caption is only a name, one row of
    details and up to two lines of notes, so it has no height floor. */
-.mcfarlanes-shelf .wax-museum-front {
+.mcfarlanes-garage .wax-museum-front {
   position: relative; /* anchors the variant starburst */
 }
 
-.mcfarlanes-shelf .wax-museum-front > .wax-museum-caption {
+.mcfarlanes-garage .wax-museum-front > .wax-museum-caption {
   min-height: 0;
 }
 
-.mcfarlanes-shelf .wax-museum-name {
+.mcfarlanes-garage .wax-museum-name {
   margin-bottom: 4px;
 }
 

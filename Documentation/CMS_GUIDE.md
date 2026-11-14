@@ -107,8 +107,8 @@ Entry point: `cms/wlcms.html` — its centered nav is grouped into
 dropdown/flyout menus (Cards, Wax Packs, Sportspicks, Blogs, Admin) plus
 a plain Exit link (the Wax Packs menu holds New and Edit only; its old
 link to the public museum page was removed on 2026-11-04. Sportspicks
-holds New, Edit and "...preview shelf", the only way to reach the
-dark-deployed McFarlane's Shelf),
+holds New, Edit and "View Garage", a link to the public McFarlane's
+Garage page),
 rather than one flat row of links. Each opens two ways, independently:
 a small inline script scoped to `#wlcms-top-nav` toggles an `open`
 class on click (this is what drives it on touch, where hover isn't
@@ -865,13 +865,14 @@ never reuses a name a browser may have cached. It needs a browser that
 can write WebP (Chrome, Edge, Firefox); an iPhone HEIC photo needs
 exporting as JPEG first.
 
-### Sportspicks figures (McFarlane's Shelf)
+### Sportspicks figures (McFarlane's Garage)
 
 Three pages, all driven by `scripts/cmsSportspicks.js`, fill the
-`Sportspicks` table (`DATA_MODEL.md`) that the dark-deployed McFarlane's
-Shelf (`cms/mcfarlanesShelf.html`, see `FRONTEND.md`) shows. They are
-under the CMS menu's "...sportspicks" dropdown, with "...preview shelf"
-as the third link.
+`Sportspicks` table (`DATA_MODEL.md`) that the public McFarlane's Garage
+(`mcfarlanesGarage.html`, see `FRONTEND.md`) shows. They are under the
+CMS menu's Sports Picks dropdown, with "View Garage" (the public page)
+as the third link. The Garage reads the figures through the 30-minute
+public cache, so a save can take that long to show there.
 
 - **New Figure** (`newSportspick.html`) and **Edit Figure**
   (`sportspickEdit.html?releaseYear=&figureKey=`) share one form, built
@@ -892,7 +893,11 @@ as the third link.
   list. **Delete** (edit page) asks through `cmsConfirm()` and calls
   `deleteSportspick`.
 - **The Variant field** is what puts the yellow "Chase!" sticker on the
-  figure's card on the shelf; the text itself shows on hover.
+  figure's card in the Garage; the text itself shows on hover.
+- **Notes** has a counter beside its label against a soft limit of 110
+  characters, the most that fits on two lines of a desktop card. It
+  turns red past the limit but never blocks the save (`initCharCount()`
+  in `cmsFormUI.js`, shared with the SEO fields and the wax pack notes).
 
 **Images.** Browse opens the shared image browser on `img/sportspicks/`
 with `processSportspickImage()` (`cmsImageProcessor.js`) as the
@@ -903,7 +908,7 @@ a transparent 900x1200 canvas with the same margin as the wax packs, and
 encoded as WebP under the same 250 KB limit and hashed file name. The
 transparency is kept, so figures sit on the card's own background. The
 canvas is fixed at 900x1200, so short packages leave empty space above
-and below them on the shelf. Cropping each figure to its own shape would
+and below them on the card. Cropping each figure to its own shape would
 remove that space, but every existing image would need re-uploading.
 
 ## Autobus Messaging Platform — `cms/smsAdmin.html`

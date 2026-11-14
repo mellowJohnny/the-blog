@@ -1,5 +1,5 @@
 /**
- * McFarlane's Shelf (cms/mcfarlanesShelf.html, dark-deployed): one card per Sportspicks figure, in the Wax Museum's
+ * McFarlane's Garage (mcfarlanesGarage.html): one card per Sportspicks figure, in the Wax Museum's
  * three-up grid, oldest release first. Same card style as the museum's packs, with one face (figures don't flip).
  */
 
@@ -10,7 +10,7 @@ const SPORTSPICK_IMAGE_BASE = "https://s3.us-east-2.amazonaws.com/mellowjohnny.c
 // The "Chase!" sticker's 24-point star (fill and stroke come from styles.css).
 const STARBURST_SVG = '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><polygon points="50,0 59.3,15.2 75,6.7 75.5,24.5 93.3,25 84.8,40.7 100,50 84.8,59.3 93.3,75 75.5,75.5 75,93.3 59.3,84.8 50,100 40.7,84.8 25,93.3 24.5,75.5 6.7,75 15.2,59.3 0,50 15.2,40.7 6.7,25 24.5,24.5 25,6.7 40.7,15.2"/></svg>';
 
-function shelfEl(tag, className, text) {
+function garageEl(tag, className, text) {
   const el = document.createElement(tag);
   if (className) el.className = className;
   if (text !== undefined) el.textContent = text;
@@ -43,26 +43,26 @@ function figureDetails(figure) {
 }
 
 function buildFigureCard(figure, index) {
-  const item = shelfEl("article", "wax-museum-item");
-  const card = shelfEl("div", "wax-museum-card");
-  const front = shelfEl("div", "wax-museum-face wax-museum-front");
+  const item = garageEl("article", "wax-museum-item");
+  const card = garageEl("div", "wax-museum-card");
+  const front = garageEl("div", "wax-museum-face wax-museum-front");
 
   // The series as a navy band across the top, like the label on the figure's box (plain text: the name is the heading)
-  if (figure.series && String(figure.series).trim()) front.appendChild(shelfEl("p", "wax-museum-band", figure.series));
+  if (figure.series && String(figure.series).trim()) front.appendChild(garageEl("p", "wax-museum-band", figure.series));
 
   // Comic-style "Chase!" starburst on the top corner; focusable so a tap shows the variant's name too
   if (figure.variant && String(figure.variant).trim()) {
-    const burst = shelfEl("span", "mcfarlanes-variant");
+    const burst = garageEl("span", "mcfarlanes-variant");
     burst.tabIndex = 0;
-    const star = shelfEl("span", "mcfarlanes-variant-star");
+    const star = garageEl("span", "mcfarlanes-variant-star");
     star.innerHTML = STARBURST_SVG;
     star.append("Chase!");
-    burst.append(star, shelfEl("span", "mcfarlanes-variant-tip", figure.variant));
+    burst.append(star, garageEl("span", "mcfarlanes-variant-tip", figure.variant));
     front.appendChild(burst);
   }
 
   if (figure.image) {
-    const img = shelfEl("img", "wax-museum-img");
+    const img = garageEl("img", "wax-museum-img");
     // The first row is on screen at load: eager, the very first at high priority (the LCP). helper.js
     // Set before src, which starts the request.
     if (index >= lazyGridEagerCount()) img.loading = "lazy";
@@ -73,23 +73,23 @@ function buildFigureCard(figure, index) {
     img.height = 1200;
     img.src = SPORTSPICK_IMAGE_BASE + encodeURIComponent(figure.image);
     // The photo is a button (the Wax Museum's flip-button style) that opens it full size; the "+" pill is the cue
-    const zoom = shelfEl("button", "wax-museum-flip mcfarlanes-zoom");
+    const zoom = garageEl("button", "wax-museum-flip mcfarlanes-zoom");
     zoom.type = "button";
     zoom.setAttribute("aria-label", `View a larger photo of ${figure.playerName}`);
-    const plus = shelfEl("span", "wax-museum-hint", "+");
+    const plus = garageEl("span", "wax-museum-hint", "+");
     plus.setAttribute("aria-hidden", "true");
     zoom.append(img, plus);
     front.appendChild(zoom);
   } else {
-    front.appendChild(shelfEl("div", "wax-museum-noimg", "No image yet"));
+    front.appendChild(garageEl("div", "wax-museum-noimg", "No image yet"));
   }
 
-  const caption = shelfEl("div", "wax-museum-caption");
-  caption.appendChild(shelfEl("h2", "wax-museum-name", figure.playerName));
-  const list = shelfEl("dl", "wax-museum-details");
+  const caption = garageEl("div", "wax-museum-caption");
+  caption.appendChild(garageEl("h2", "wax-museum-name", figure.playerName));
+  const list = garageEl("dl", "wax-museum-details");
   figureDetails(figure).forEach(([label, value]) => {
-    const row = shelfEl("div", label === "Notes" ? "wax-museum-detail wax-museum-detail-wide" : "wax-museum-detail");
-    row.append(shelfEl("dt", "", label), shelfEl("dd", "", String(value)));
+    const row = garageEl("div", label === "Notes" ? "wax-museum-detail wax-museum-detail-wide" : "wax-museum-detail");
+    row.append(garageEl("dt", "", label), garageEl("dd", "", String(value)));
     list.appendChild(row);
   });
   caption.appendChild(list);
@@ -127,31 +127,31 @@ function closeFigureModal() {
   document.getElementById("figureModal").close();
 }
 
-async function initMcfarlanesShelf() {
-  const status = document.getElementById("mcfarlanesShelfStatus");
+async function initMcfarlanesGarage() {
+  const status = document.getElementById("mcfarlanesGarageStatus");
   const hideSpinner = showSpinner(); // helper.js
   try {
-    // no-store while dark, so a figure saved a moment ago shows up; drop it at go-live to use the 30-minute cache.
-    const response = await fetch(SPORTSPICK_GET_URL, { cache: "no-store" });
+    // A plain request, so it matches the page's preload and uses the 30-minute cache (a new figure can take that long to show)
+    const response = await fetch(SPORTSPICK_GET_URL);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const figures = await response.json();
     if (!Array.isArray(figures) || !figures.length) {
       status.textContent = "No figures yet.";
       return;
     }
-    const shelf = document.getElementById("mcfarlanesShelf");
-    renderLazyGrid(shelf, sortFigures(figures), buildFigureCard); // helper.js
+    const garage = document.getElementById("mcfarlanesGarage");
+    renderLazyGrid(garage, sortFigures(figures), buildFigureCard); // helper.js
     // One listener for every card, including those the lazy grid adds later
-    shelf.addEventListener("click", (event) => {
+    garage.addEventListener("click", (event) => {
       const zoom = event.target.closest(".mcfarlanes-zoom");
       if (zoom) openFigureModal(zoom);
     });
     status.textContent = "";
   } catch (error) {
-    console.log("McFarlane's Shelf load error:", error);
+    console.log("McFarlane's Garage load error:", error);
     status.textContent = "Couldn't load the figures. Please try again.";
   } finally {
     hideSpinner();
-    document.getElementById("mcfarlanesShelf").setAttribute("aria-busy", "false"); // drops the space reserved while loading
+    document.getElementById("mcfarlanesGarage").setAttribute("aria-busy", "false"); // drops the space reserved while loading
   }
 }

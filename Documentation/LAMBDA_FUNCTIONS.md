@@ -9,7 +9,7 @@ directories: 37 sit behind API Gateway, and two don't —
 the only functions here no frontend code ever calls. The newest are
 `getWaxPacks`, `saveWaxPack` and `deleteWaxPack` (2026-11-01, The Wax
 Museum) and `getSportspicks`, `saveSportspick` and `deleteSportspick`
-(2026-11-09, McFarlane's Shelf), covered in "Wax Museum Lambdas" and
+(2026-11-09, McFarlane's Garage), covered in "Wax Museum Lambdas" and
 "Sportspicks Lambdas" below. (The history: on
 2026-08-15, 30 of the then-34 API Gateway functions were in the repo
 and the other 4 were found dead and removed.)
@@ -1289,8 +1289,8 @@ only the site's origin; their API Gateway methods enforce the token
 
 ## Sportspicks Lambdas — hand-built in this repo
 
-Three functions behind McFarlane's Shelf (`cms/mcfarlanesShelf.html`,
-dark-deployed) and the CMS Sportspicks pages, added 2026-11-09. They are
+Three functions behind McFarlane's Garage (`mcfarlanesGarage.html`,
+public) and the CMS Sportspicks pages, added 2026-11-09. They are
 the Wax Museum trio copied onto the `Sportspicks` table (`DATA_MODEL.md`):
 same shape, same `prod` stages, no dependencies (paste-deploy). Full
 contracts are in `API_ENDPOINTS.md`.

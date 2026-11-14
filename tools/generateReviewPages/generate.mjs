@@ -61,6 +61,7 @@ const STATIC_PAGES = [
   "/timeline.html",
   "/browseBySet.html",
   "/waxMuseum.html",
+  "/mcfarlanesGarage.html",
   "/about.html"
 ];
 
@@ -242,7 +243,7 @@ function navHrefFor(sets, compareSetsForDefault) {
 // names its NAV_MAP key in data-nav-page on #global-nav.
 const NAV_PAGE_FILES = [
   "index.html", "about.html", "playerSearch.html", "timeline.html", "theJunkWaxYears.html",
-  "browseBySet.html", "waxMuseum.html", "lockout.html"
+  "browseBySet.html", "waxMuseum.html", "mcfarlanesGarage.html", "lockout.html"
 ];
 
 // html with its nav and footer markers filled (navHtml(pageName, ...), footerHtml(...)).

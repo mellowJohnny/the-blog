@@ -48,7 +48,7 @@ purpose is routing rather than reading or writing any data.
   description.
 - Every link inside a dropdown (`...new card set`, `...edit a card
   set`, `...upload a checklist`, `...new wax pack`, `...edit wax pack`,
-  `...new figure`, `...edit figure`, `...preview shelf`,
+  `...new figure`, `...edit figure`, `View Garage` (the public McFarlane's Garage page),
   `...new blog post`, `...edit a blog post`, `...admin tools`, `AMP SMS`)
   and the plain `...exit` link are
   all ordinary `<a href>` navigations to another page — no JS, no API
@@ -991,14 +991,17 @@ pickers. Field rules and the image processing are in `CMS_GUIDE.md`'s
   `img/wax-packs/`; a new upload is cropped, whitened and converted to
   WebP in the browser before the presigned upload.
 
-## Sportspicks pages — `cms/newSportspick.html`, `cms/pickSportspick.html`, `cms/sportspickEdit.html`, `cms/mcfarlanesShelf.html`
+## Sportspicks pages — `cms/newSportspick.html`, `cms/pickSportspick.html`, `cms/sportspickEdit.html`
 
-The first three keep the `Sportspicks` table filled; the fourth is the
-dark-deployed McFarlane's Shelf that shows it. The three form and list
-pages load `scripts/cmsSportspicks.js` and `helper.js`. The two form
-pages add `cmsImageBrowser.js` and `cmsImageProcessor.js`, and the edit
-page also loads `cmsFormUI.js` for its Cancel button. Field rules and the
-image processing are in `CMS_GUIDE.md`'s "Sportspicks figures".
+These three keep the `Sportspicks` table filled. The public page that
+shows it, McFarlane's Garage (`mcfarlanesGarage.html`), is in
+`PUBLIC_PAGE_FLOWS.md`; it was a fourth CMS page, the dark-deployed
+`cms/mcfarlanesShelf.html`, until it went public on 2026-11-14. The
+three pages load `scripts/cmsSportspicks.js` and `helper.js`. The two
+form pages add `cmsImageBrowser.js`, `cmsImageProcessor.js` and
+`cmsFormUI.js` (the Notes counter, and the edit page's Cancel button).
+Field rules and the image processing are in `CMS_GUIDE.md`'s
+"Sportspicks figures".
 
 - **`pickSportspick.html`** — `initPickSportspickPage()` calls **Get
   sportspicks (public)** (`getSportspicks` Lambda, a `Scan` of
@@ -1018,10 +1021,3 @@ image processing are in `CMS_GUIDE.md`'s "Sportspicks figures".
   update that 404s if the figure is gone; **Delete**
   (`deleteSportspick()`, after `cmsConfirm()`) calls **Delete a
   sportspick** (`deleteSportspick` Lambda). Both return to the pick list.
-- **`mcfarlanesShelf.html`** — loads `auth.js`, `mcfarlanesShelf.js` and
-  `helper.js`. On `window` `load` it calls `fetchCopyrightYear()`,
-  `fetchNav("mcfarlanesShelf")`, `fetchFooterLinks()`,
-  `applyRandomMastheadStyling()` and `initMcfarlanesShelf()`. The last
-  one calls **Get sportspicks (public)** with `cache: "no-store"`, sorts
-  the figures and renders them six at a time through `renderLazyGrid()`.
-  It makes no write calls. See `FRONTEND.md`'s "McFarlane's Shelf".

@@ -1,7 +1,7 @@
 {
   "pages": ["index.html", "about.html", "waxReviews.html", "playerSearch.html", "lockout.html",
-            "theJunkWaxYears.html", "timeline.html", "browseBySet.html", "waxMuseum.html"],
-  "scripts": ["helper", "wax", "ticker", "blogs", "playerSearch", "browseBySet", "timeline", "waxMuseum"],
+            "theJunkWaxYears.html", "timeline.html", "browseBySet.html", "waxMuseum.html", "mcfarlanesGarage.html"],
+  "scripts": ["helper", "wax", "ticker", "blogs", "playerSearch", "browseBySet", "timeline", "waxMuseum", "mcfarlanesGarage"],
   "stylesheet": "styles/styles.css",
   "cmsSelectorPrefixes": [".cms-", ".autobus-", "#autobus-", ".admin-", ".bulk-", "#previewContainer", ".preview-modal",
                           ".star-rating", "#wlcms", ".pick-", ".checklist-upload", ".checklist-review",

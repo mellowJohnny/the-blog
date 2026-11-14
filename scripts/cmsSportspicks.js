@@ -8,7 +8,7 @@ const SPORTSPICK_IMAGE_DIR = "img/sportspicks/";
 const SPORTSPICK_IMAGE_BASE = `https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/${SPORTSPICK_IMAGE_DIR}`;
 const SPORTSPICK_PICKER_URL = "/cms/pickSportspick.html";
 const SPORTSPICK_HOME_URL = "/cms/wlcms.html";
-const SPORTSPICK_NOTES_SOFT_MAX = 110; // fills two lines of a desktop shelf card (initCharCount(), cmsFormUI.js)
+const SPORTSPICK_NOTES_SOFT_MAX = 110; // fills two lines of a desktop McFarlane's Garage card (initCharCount(), cmsFormUI.js)
 
 let _sportspicks = [];
 let _sportspickBeingEdited = null;
