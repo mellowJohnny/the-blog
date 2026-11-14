@@ -54,7 +54,7 @@ offers Home Page as a type for new posts).
 
 **In the HTML itself**: `<title>`, the meta description, the canonical
 (`https://www.junkwaxhockey.com/`, matching `sitemap.xml`'s root entry)
-and the Open Graph/Twitter Card tags, with `hellaFilesArch.webp` as the
+and the Open Graph/Twitter Card tags, with `waxPacks_Home.webp` (the pile of wax packs) as the
 social-share image. They are static, not set by a script, because
 Facebook, Discord, Reddit and X read only the raw HTML and don't run
 JavaScript; the page used to call `setPageMeta()` for the same values,

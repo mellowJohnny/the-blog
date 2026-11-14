@@ -172,7 +172,7 @@ the page is shared. The rules below follow from that.
 tags (card, title, description, image) directly in the `<head>`. The
 HTML is the only source: their old `setPageMeta()` calls were removed so
 the values can't drift between a file and a script. The image on every
-one is the site-wide `hellaFilesArch.webp`. `playerSearch.html`'s
+one is the site-wide `img/blog/waxPacks_Home.webp`, the pile of wax packs on the Home page (since 2026-11-14; before that, the `hellaFilesArch.webp` architecture sketch). The generator's `DEFAULT_IMAGE`, for a review page whose set has no header image, is the same file. `playerSearch.html`'s
 canonical is always the bare page, so a `?q=` search never becomes its
 own indexed URL. `about.html` and `lockout.html` also hold their H1 in
 the HTML (a crawler that doesn't run JS finds no heading otherwise), and
