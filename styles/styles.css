@@ -5189,6 +5189,18 @@ html.back-to-top-pending.back-to-top-scrolled .back-to-top {
   padding: 2px 0;
 }
 
+/* Hovering a card zooms its figure a little. Mouse users only, and not when motion is reduced;
+   the 900 x 1200 photos have the resolution to scale up without blurring. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .mcfarlanes-shelf .wax-museum-img {
+    transition: transform 0.3s ease;
+  }
+
+  .mcfarlanes-shelf .wax-museum-front:hover > .wax-museum-img {
+    transform: scale(1.08);
+  }
+}
+
 /* The figure's series, a navy band across the card top like the label on its box (buildFigureCard()). */
 .mcfarlanes-series {
   margin: 0;
