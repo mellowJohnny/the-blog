@@ -1108,7 +1108,6 @@ const CMS_NAV_ITEMS = {
   pickWaxPack: { label: "Edit a Wax Pack", href: "/cms/pickWaxPack.html" },
   newSportspick: { label: "New Figure", href: "/cms/newSportspick.html" },
   pickSportspick: { label: "Edit a Figure", href: "/cms/pickSportspick.html" },
-  mcfarlanesGarage: { label: "View Garage", href: "/mcfarlanesGarage.html" },
   createBlogPost: { label: "New Blog Post", href: "/cms/createBlogPost.html" },
   pickBlog: { label: "Edit a Blog Post", href: "/cms/pickBlog.html" },
   admin: { label: "Admin Tools", href: "/cms/admin.html" },
@@ -1119,7 +1118,7 @@ const CMS_NAV_ITEMS = {
 const CMS_NAV_GROUPS = {
   cards: { label: "Cards", items: ["createCardSet", "pickCardSet", "uploadChecklist"] },
   waxPacks: { label: "Wax Packs", items: ["newWaxPack", "pickWaxPack"] },
-  sportspicks: { label: "Sports Picks", items: ["newSportspick", "pickSportspick", "mcfarlanesGarage"] },
+  sportspicks: { label: "Sports Picks", items: ["newSportspick", "pickSportspick"] },
   blogs: { label: "Blogs", items: ["createBlogPost", "pickBlog"] },
   adminTools: { label: "Admin", items: ["admin", "smsAdmin"] }
 };

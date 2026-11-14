@@ -107,7 +107,7 @@ Entry point: `cms/wlcms.html` — its centered nav is grouped into
 dropdown/flyout menus (Cards, Wax Packs, Sportspicks, Blogs, Admin) plus
 a plain Exit link (the Wax Packs menu holds New and Edit only; its old
 link to the public museum page was removed on 2026-11-04. Sportspicks
-holds New, Edit and "View Garage", a link to the public McFarlane's
+likewise holds New and Edit only, with no link to the public McFarlane's
 Garage page),
 rather than one flat row of links. Each opens two ways, independently:
 a small inline script scoped to `#wlcms-top-nav` toggles an `open`
@@ -869,9 +869,9 @@ exporting as JPEG first.
 
 Three pages, all driven by `scripts/cmsSportspicks.js`, fill the
 `Sportspicks` table (`DATA_MODEL.md`) that the public McFarlane's Garage
-(`mcfarlanesGarage.html`, see `FRONTEND.md`) shows. They are under the
-CMS menu's Sports Picks dropdown, with "View Garage" (the public page)
-as the third link. The Garage reads the figures through the 30-minute
+(`mcfarlanesGarage.html`, see `FRONTEND.md`) shows. New and Edit are
+under the CMS menu's Sports Picks dropdown; the menu doesn't link to the
+public page. The Garage reads the figures through the 30-minute
 public cache, so a save can take that long to show there.
 
 - **New Figure** (`newSportspick.html`) and **Edit Figure**

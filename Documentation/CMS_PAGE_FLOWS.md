@@ -48,7 +48,7 @@ purpose is routing rather than reading or writing any data.
   description.
 - Every link inside a dropdown (`...new card set`, `...edit a card
   set`, `...upload a checklist`, `...new wax pack`, `...edit wax pack`,
-  `...new figure`, `...edit figure`, `View Garage` (the public McFarlane's Garage page),
+  `...new figure`, `...edit figure`,
   `...new blog post`, `...edit a blog post`, `...admin tools`, `AMP SMS`)
   and the plain `...exit` link are
   all ordinary `<a href>` navigations to another page — no JS, no API

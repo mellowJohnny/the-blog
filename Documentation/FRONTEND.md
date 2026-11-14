@@ -1735,9 +1735,9 @@ A gallery of McFarlane Sportspicks hockey figures. It was built
 2026-11-09 to 11-10 as a dark-deployed preview behind the CMS login
 (`cms/mcfarlanesShelf.html`, "McFarlane's Shelf") and went public at the
 site root on 2026-11-14 under its new name. The nav reaches it through
-the Galleries dropdown (with The Wax Museum), the footer's Explore
-column links it, and the CMS menu's Sports Picks dropdown has "View
-Garage". The head is a public page's (description, canonical, Open
+the Galleries dropdown (with The Wax Museum) and the footer's Explore
+column links it; like the museum, it isn't linked from the CMS menu.
+The head is a public page's (description, canonical, Open
 Graph and Twitter tags, analytics, a preload of the figure list), and
 the build pre-renders its nav and footer, minifies its script and lists
 it in the sitemap like the other static pages.
