@@ -5189,16 +5189,31 @@ html.back-to-top-pending.back-to-top-scrolled .back-to-top {
   padding: 2px 0;
 }
 
-/* Hovering a card zooms its figure a little. Mouse users only, and not when motion is reduced;
-   the 900 x 1200 photos have the resolution to scale up without blurring. */
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .mcfarlanes-shelf .wax-museum-img {
-    transition: transform 0.3s ease;
-  }
+/* The figure photo is a button that opens it full size (openFigureModal()); a bigger "+" than the Flip pill's text. */
+.mcfarlanes-zoom .wax-museum-hint {
+  font-size: 16px;
+  line-height: 1.2;
+}
 
-  .mcfarlanes-shelf .wax-museum-front:hover > .wax-museum-img {
-    transform: scale(1.08);
-  }
+/* The full-size photo modal: the checklist modal's box, shrunk to the photo. The photo shows at its
+   900 x 1200 or smaller, never stretched, and fits the screen's height with the × row. */
+.checklist-modal-content.figure-modal {
+  width: fit-content;
+  max-width: calc(100vw - 32px);
+  padding: 16px;
+}
+
+.figure-modal .checklist-modal-controls {
+  margin-bottom: 8px;
+}
+
+.figure-modal-img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: calc(100dvh - 160px);
+  margin: 0 auto;
 }
 
 /* The figure's series, a navy band across the card top like the label on its box (buildFigureCard()). */

@@ -66,7 +66,14 @@ function buildFigureCard(figure, index) {
     img.width = 900;
     img.height = 1200;
     img.src = SPORTSPICK_IMAGE_BASE + encodeURIComponent(figure.image);
-    front.appendChild(img);
+    // The photo is a button (the Wax Museum's flip-button style) that opens it full size; the "+" pill is the cue
+    const zoom = shelfEl("button", "wax-museum-flip mcfarlanes-zoom");
+    zoom.type = "button";
+    zoom.setAttribute("aria-label", `View a larger photo of ${figure.playerName}`);
+    const plus = shelfEl("span", "wax-museum-hint", "+");
+    plus.setAttribute("aria-hidden", "true");
+    zoom.append(img, plus);
+    front.appendChild(zoom);
   } else {
     front.appendChild(shelfEl("div", "wax-museum-noimg", "No image yet"));
   }
@@ -87,6 +94,33 @@ function buildFigureCard(figure, index) {
   return item;
 }
 
+// The full-size photo modal: the checklist modal's box and × button, built on first open like ticker.js's game modal.
+const FIGURE_MODAL_HTML = `
+  <dialog id="figureModal" class="checklist-modal-content figure-modal" closedby="any">
+    <div class="checklist-modal-controls">
+      <button type="button" class="checklist-modal-close" aria-label="Close" onclick="closeFigureModal()">&times;</button>
+    </div>
+    <img class="figure-modal-img" width="900" height="1200" alt="">
+  </dialog>
+`;
+
+/** Shows a card's photo at its full 900 x 1200 (smaller if the screen is). Same file, so it's already loaded. */
+function openFigureModal(zoomButton) {
+  if (!document.getElementById("figureModal")) document.body.insertAdjacentHTML("beforeend", FIGURE_MODAL_HTML);
+  const dialog = document.getElementById("figureModal");
+  const cardImg = zoomButton.querySelector("img");
+  const img = dialog.querySelector(".figure-modal-img");
+  img.src = cardImg.currentSrc || cardImg.src;
+  img.alt = cardImg.alt;
+  dialog.setAttribute("aria-label", cardImg.alt);
+  enableDialogLightDismiss(dialog); // helper.js: click-outside where closedby is missing (Safari)
+  dialog.showModal();
+}
+
+function closeFigureModal() {
+  document.getElementById("figureModal").close();
+}
+
 async function initMcfarlanesShelf() {
   const status = document.getElementById("mcfarlanesShelfStatus");
   const hideSpinner = showSpinner(); // helper.js
@@ -99,7 +133,13 @@ async function initMcfarlanesShelf() {
       status.textContent = "No figures yet.";
       return;
     }
-    renderLazyGrid(document.getElementById("mcfarlanesShelf"), sortFigures(figures), buildFigureCard); // helper.js
+    const shelf = document.getElementById("mcfarlanesShelf");
+    renderLazyGrid(shelf, sortFigures(figures), buildFigureCard); // helper.js
+    // One listener for every card, including those the lazy grid adds later
+    shelf.addEventListener("click", (event) => {
+      const zoom = event.target.closest(".mcfarlanes-zoom");
+      if (zoom) openFigureModal(zoom);
+    });
     status.textContent = "";
   } catch (error) {
     console.log("McFarlane's Shelf load error:", error);
