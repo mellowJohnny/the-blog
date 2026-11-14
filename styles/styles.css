@@ -5176,32 +5176,27 @@ html.back-to-top-pending.back-to-top-scrolled .back-to-top {
   display: flex;
   flex: 1; /* fills the card below the photo so the review link can sit at the bottom */
   flex-direction: column;
-  padding: 14px 16px 16px;
+  padding: 4px 16px 12px;
 }
 
-/* Every card is as tall as the 1983-84 O-Pee-Chee one (224px below the photo: details and two lines of notes; the name is in the band). Notes must stay within two lines. */
+/* Every card is as tall as the 1983-84 O-Pee-Chee one (198px below the photo: details and two lines of notes; the name is in the band). Notes must stay within two lines. */
 .wax-museum-front > .wax-museum-caption {
   box-sizing: border-box;
-  min-height: 224px;
+  min-height: 198px;
 }
 
 /* McFarlane's Shelf reuses these cards. A figure's caption is only a name, one row of
-   details and up to two lines of notes, so it has no height floor and less padding. */
+   details and up to two lines of notes, so it has no height floor. */
 .mcfarlanes-shelf .wax-museum-front {
   position: relative; /* anchors the variant starburst */
 }
 
 .mcfarlanes-shelf .wax-museum-front > .wax-museum-caption {
   min-height: 0;
-  padding: 4px 16px 12px;
 }
 
 .mcfarlanes-shelf .wax-museum-name {
   margin-bottom: 4px;
-}
-
-.mcfarlanes-shelf .wax-museum-detail {
-  padding: 2px 0;
 }
 
 /* The figure photo is a button that opens it full size (openFigureModal()); a bigger "+" than the Flip pill's text. */
@@ -5335,7 +5330,7 @@ html.back-to-top-pending.back-to-top-scrolled .back-to-top {
 }
 
 .wax-museum-detail {
-  padding: 4px 0;
+  padding: 2px 0;
 }
 
 .wax-museum-detail dt {
