@@ -82,7 +82,7 @@ other family, and no Google Fonts link.
 | h1 page title | 34px | One per page. Black. Shared rule `.intro h1, .header-style h1, #card-intro h2`. |
 | h2 section heading | 26px, 22px at 600px and below | Navy. Shared rule `.blog-title, #timelineTitle, .browse-col-heading`. |
 | h3 sub-heading | 20px | Navy. Shared rule `.player-search-set-name, .browse-season-heading`. |
-| Card title | 16–18px | Navy, inside small cards and modals only. Approved: `.wax-museum-name`, `.timeline-back-title`, `.timeline-heading`, `.checklist-modal-title` (22px, the modal's own title), `.checklist-modal-group-title`, `.set-details-name`. |
+| Card title | 16–18px | Navy, inside small cards and modals only. Approved: `.wax-museum-name`, `.timeline-back-title`, `.timeline-heading`, `.checklist-modal-title` (22px, the modal's own title), `.checklist-modal-group-title`, `.set-details-name`. One exception to navy: `.wax-museum-band` (16px Nunito, white on a navy band across the card top), the Wax Museum pack name; McFarlane's Shelf uses the same band, as a plain `<p>`, for the series (owner-approved 2026-11-14). |
 | Body text | 18px | Intros, review and post bodies. |
 | Small text | 16px | Bylines and captions may use it; details lists. |
 | Secondary text | 15px | Footer links, breadcrumbs, checklist cards, Timeline lists. |

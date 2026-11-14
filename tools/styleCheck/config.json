@@ -23,6 +23,6 @@
   "colourKeywordsAllowed": ["transparent", "currentcolor", "inherit", "none", "initial", "unset"],
   "sharedHeadingSelectors": [".intro h1", ".header-style h1", "#card-intro h2", ".blog-title", "#timelineTitle",
                              ".browse-col-heading", ".player-search-set-name", ".browse-season-heading"],
-  "approvedHeadingSelectors": [".wax-museum-name", ".timeline-back-title", ".checklist-modal-title", ".set-details-name",
+  "approvedHeadingSelectors": [".wax-museum-name", ".wax-museum-band",".timeline-back-title", ".checklist-modal-title", ".set-details-name",
                                ".footer-heading", ".browse-set-name", ".timeline-heading", ".checklist-modal-group-title"]
 }

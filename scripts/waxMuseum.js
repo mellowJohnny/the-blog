@@ -78,8 +78,6 @@ function waxPackDetails(pack) {
 
 function buildWaxPackCaption(pack) {
   const caption = waxMuseumEl("div", "wax-museum-caption");
-  caption.appendChild(waxMuseumEl("h2", "wax-museum-name", pack.name));
-
   const list = waxMuseumEl("dl", "wax-museum-details");
   waxPackDetails(pack).forEach(([label, value]) => {
     const row = waxMuseumEl("div", label === "Notes" ? "wax-museum-detail wax-museum-detail-wide" : "wax-museum-detail");
@@ -100,7 +98,9 @@ function buildWaxPackCard(pack, index) {
   const item = waxMuseumEl("article", "wax-museum-item");
   const card = waxMuseumEl("div", "wax-museum-card");
 
+  // The pack's name in a navy band across the top: the card's heading on the front, repeated on the back so the photo doesn't move on a flip
   const front = waxMuseumEl("div", "wax-museum-face wax-museum-front");
+  front.appendChild(waxMuseumEl("h2", "wax-museum-band", pack.name));
   if (pack.frontImg) {
     const picture = waxMuseumImage(pack.frontImg, `${pack.name} wax pack, front`, "wax-museum-img", index);
     if (pack.backImg) {
@@ -122,6 +122,7 @@ function buildWaxPackCard(pack, index) {
   // A pack with no back photo simply doesn't flip.
   if (pack.backImg) {
     const back = waxMuseumEl("div", "wax-museum-face wax-museum-back");
+    back.appendChild(waxMuseumEl("p", "wax-museum-band", pack.name));
     const close = waxMuseumEl("button", "wax-museum-flip");
     close.type = "button";
     close.setAttribute("aria-label", `Show the front of the ${pack.name} pack`);

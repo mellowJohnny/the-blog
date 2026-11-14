@@ -5157,6 +5157,21 @@ html.back-to-top-pending.back-to-top-scrolled .back-to-top {
   color: var(--color-grey);
 }
 
+/* The navy band across a card's top, like the label on a box: the pack's name (an h2) on both faces of a
+   Wax Museum card, so a flip doesn't move the photo, and the figure's series on McFarlane's Shelf. */
+.wax-museum-band {
+  margin: 0;
+  padding: 8px 16px;
+  border-radius: 8px 8px 0 0;
+  background: var(--color-text-dark);
+  color: var(--color-white);
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.375;
+  text-align: center;
+}
+
 .wax-museum-caption {
   display: flex;
   flex: 1; /* fills the card below the photo so the review link can sit at the bottom */
@@ -5164,10 +5179,10 @@ html.back-to-top-pending.back-to-top-scrolled .back-to-top {
   padding: 14px 16px 16px;
 }
 
-/* Every card is as tall as the 1983-84 O-Pee-Chee one (223px below the photo: name, details and two lines of notes). Notes must stay within two lines. */
+/* Every card is as tall as the 1983-84 O-Pee-Chee one (224px below the photo: details and two lines of notes; the name is in the band). Notes must stay within two lines. */
 .wax-museum-front > .wax-museum-caption {
   box-sizing: border-box;
-  min-height: 223px;
+  min-height: 224px;
 }
 
 /* McFarlane's Shelf reuses these cards. A figure's caption is only a name, one row of
@@ -5227,21 +5242,8 @@ html.back-to-top-pending.back-to-top-scrolled .back-to-top {
   margin: 0 auto;
 }
 
-/* The figure's series, a navy band across the card top like the label on its box (buildFigureCard()). */
-.mcfarlanes-series {
-  margin: 0;
-  padding: 8px 16px;
-  border-radius: 8px 8px 0 0;
-  background: var(--color-text-dark);
-  color: var(--color-white);
-  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  text-align: center;
-}
-
 /* Keep the "Chase!" starburst where it was on the photo: its 40px plus the band's 38px. */
-.mcfarlanes-series ~ .mcfarlanes-variant {
+.wax-museum-band ~ .mcfarlanes-variant {
   top: 78px;
 }
 
