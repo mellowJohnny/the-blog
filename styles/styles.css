@@ -168,7 +168,8 @@ messing up the layout with white borders and scoll bars
   /* Breathing room above a card set review's details block. Shared so
      the live site and the CMS preview can't drift apart on it. */
   --set-details-top-pad: 24px;
-  --color-link: #3FA7D6;
+  --color-link: #176693; /* 5:1 or better on the light backgrounds */
+  --color-link-light: #3FA7D6; /* the old link blue: highlights on dark backgrounds and the nav's hover lift */
   --color-text-dark: rgb(11, 62, 100);
   --color-heading-outline: rgb(2, 70, 153);
   --color-masthead-bg: rgb(44, 82, 137);
@@ -1268,7 +1269,7 @@ main:has(+ .cms-home-nav) {
 }
 
 .nhl-ticker:focus-visible {
-  outline: 2px solid var(--color-link);
+  outline: 2px solid var(--color-link-light);
   outline-offset: -2px;
 }
 
@@ -1326,7 +1327,7 @@ main:has(+ .cms-home-nav) {
   }
 
   .nhl-ticker-pause:focus-visible {
-    outline: 2px solid var(--color-link);
+    outline: 2px solid var(--color-link-light);
     outline-offset: -2px;
   }
 
@@ -1468,7 +1469,7 @@ main:has(+ .cms-home-nav) {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--color-link);
+  color: var(--color-link-light);
   white-space: nowrap;
 }
 
@@ -1494,7 +1495,7 @@ main:has(+ .cms-home-nav) {
 }
 
 .nhl-chip:focus-visible {
-  outline: 2px solid var(--color-link);
+  outline: 2px solid var(--color-link-light);
   outline-offset: -2px;
 }
 
@@ -2483,7 +2484,7 @@ body:has(.site-footer) {
 
 #footer-links a:hover,
 #footer-links a:focus-visible {
-  color: var(--color-link);
+  color: var(--color-link-light);
 }
 
 /* Pages that don't exist yet: visible, but not links. */
@@ -4486,11 +4487,11 @@ body:has(.site-footer) {
     display: block;
   }
 
-  /* Desktop bar: links go to the lighter site-link blue on hover or keyboard
+  /* Desktop bar: links go to the light blue (--color-link-light) on hover or keyboard
      focus. The phone/tablet menu (white on blue) is left alone. */
   .nav-td a:hover,
   .nav-td a:focus-visible {
-    color: var(--color-link);
+    color: var(--color-link-light);
   }
 
   /* Tight gaps between links on every page, so even the eight-link bar
@@ -4527,7 +4528,7 @@ body:has(.site-footer) {
   .nav-group:hover .nav-group-btn,
   .nav-group-btn:focus-visible,
   .nav-group.open .nav-group-btn {
-    color: var(--color-link);
+    color: var(--color-link-light);
   }
 
   .nav-dropdown {
@@ -4561,7 +4562,7 @@ body:has(.site-footer) {
 
   .nav-dropdown a:hover,
   .nav-dropdown a:focus-visible {
-    color: var(--color-link);
+    color: var(--color-link-light);
   }
 }
 
