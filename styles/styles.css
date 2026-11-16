@@ -725,7 +725,7 @@ h1 {
 /* Same type as the footer: Nunito semi-bold, spaced capitals. */
 .nav-td {
   font-family: 'Nunito', 'Nunito Fallback', sans-serif;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -4494,10 +4494,10 @@ body:has(.site-footer) {
     color: var(--color-link-light);
   }
 
-  /* Tight gaps between links on every page, so even the eight-link bar
-     (about 1185px) fits from 1221px up and under the home banner. */
+  /* Tight gaps between links, so the widest bar (six items at 20px, about 1204px)
+     fits on one line from 1221px up and under the home banner. */
   .nav-td {
-    padding: 20px 12px;
+    padding: 20px 10px;
   }
 
   /* Dropdown groups: a button styled like the links, with a panel under
