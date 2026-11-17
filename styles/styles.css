@@ -3309,6 +3309,14 @@ body:has(.site-footer) {
   margin: 8px 0 20px 0;
 }
 
+/* The row above and the vote buttons fill the review box instead of taking
+   .flex-container div's fixed 1000px, which pushed them ~30px past its edge. */
+#cardSetDiv .pagination-controls,
+#cardSetDiv .vote-widget {
+  width: auto;
+  box-sizing: border-box;
+}
+
 /*************************************** Pagination Styles... ********************************/
 .pagination-link {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
@@ -3338,23 +3346,16 @@ body:has(.site-footer) {
   color: var(--color-grey-dark);
 }
 
-/* The season's sets listed left of the review (renderSetNav(), wax.js): the pagination's links
-   as a list, the shown set marked. Desktop only; smaller screens keep just the pagination. */
+/* The season's sets listed in the left margin beside the review (renderSetNav(), wax.js):
+   the pagination's links as a list, the shown set marked. The review keeps its width, so the
+   list only fits where the margin can hold it; smaller screens keep just the pagination. */
 .set-nav {
-  flex: 0 0 220px;
-  align-self: flex-start;
-  position: sticky;
-  top: 16px;
-  box-sizing: border-box;
-  margin: 5px 24px 5px 5px;
-  padding: 12px 0;
-  border-radius: 3px;
-  background: var(--color-content-bg);
+  display: none;
 }
 
 .set-nav-label {
   margin: 0 0 6px;
-  padding: 0 16px;
+  padding: 0 0 0 16px;
   font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   font-size: 14px;
   font-weight: 600;
@@ -3371,7 +3372,7 @@ body:has(.site-footer) {
 
 .set-nav-list a {
   display: block;
-  padding: 6px 16px 6px 13px;
+  padding: 6px 8px 6px 13px;
   border-left: 3px solid transparent;
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-size: 16px;
@@ -3389,24 +3390,31 @@ body:has(.site-footer) {
   color: var(--color-text-dark);
 }
 
-/* With the list showing, the review narrows to sit beside it. Its inner divs follow the
-   tablet rule's width; :where() keeps this at .flex-container div's weight, so the
-   #cardSetDiv rules for the set details still win. */
-@media (min-width: 1221px) {
-  .review-layout:has(> .set-nav:not([hidden])) > #cardSetDiv {
-    width: 760px;
+/* From 1400px the margin beside the 1040px review box holds the 160px list. A three-column grid
+   keeps the review centred where it was and puts the list at the right edge of the left margin. */
+@media (min-width: 1400px) {
+  .review-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   }
 
-  :where(.review-layout:has(> .set-nav:not([hidden]))) #cardSetDiv div {
-    width: calc(100% - 10px);
-    max-width: none;
-    box-sizing: border-box;
+  /* A fixed width: the usual min(1030px, 100% - 10px) can't resolve in an auto grid column
+     and would take the whole row. It is always 1030px at these widths anyway. */
+  .review-layout > #cardSetDiv {
+    grid-column: 2;
+    width: 1030px;
   }
-}
 
-@media (max-width: 1220px) {
-  .set-nav {
-    display: none;
+  .set-nav:not([hidden]) {
+    display: block;
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: end;
+    align-self: start;
+    position: sticky;
+    top: 16px;
+    width: 160px;
+    margin: 5px 12px 0 0;
   }
 }
 
