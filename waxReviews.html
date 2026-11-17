@@ -95,13 +95,24 @@
     <!-- Load the stylesheet -->
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
-    <!-- Chrome/Edge fetch a same-site page's HTML when a link is hovered or pressed, so the click opens faster -->
+    <!-- Chrome/Edge fetch a same-site page's HTML when a link is hovered or pressed, so the click opens faster.
+         Other reviews (left set nav, pagination, year picker) are fully prerendered on hover instead, so a
+         click shows the new set at once, already loaded and at #year-picker, with no flash of the banner. -->
     <script type="speculationrules">
       {
+        "prerender": [{
+          "where": { "or": [
+            { "href_matches": "/reviews/*" },
+            { "href_matches": "/waxReviews.html*" }
+          ] },
+          "eagerness": "moderate"
+        }],
         "prefetch": [{
           "where": { "and": [
             { "href_matches": "/*" },
-            { "not": { "href_matches": "/cms/*" } }
+            { "not": { "href_matches": "/cms/*" } },
+            { "not": { "href_matches": "/reviews/*" } },
+            { "not": { "href_matches": "/waxReviews.html*" } }
           ] },
           "eagerness": "moderate"
         }]
