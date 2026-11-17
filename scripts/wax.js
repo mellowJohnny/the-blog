@@ -478,10 +478,12 @@ function filterChecklistItems(items) {
     .filter(item => !rookies || (item.notes && /\bRC\b/.test(item.notes)));
 }
 
-// Names the filters in the title so a printed or downloaded list says it's filtered.
+// Names the filters in the title so a printed or downloaded list says it's filtered;
+// the rookie filter adds how many cards it found, e.g. " - Rookies (23)".
 function checklistFilterSuffix() {
   const { inserts, rookies } = getChecklistFilterState();
-  return (inserts ? " - Inserts" : "") + (rookies ? " - Rookies" : "");
+  const rookieCount = rookies ? ` (${filterChecklistItems(currentChecklistItems).length})` : "";
+  return (inserts ? " - Inserts" : "") + (rookies ? ` - Rookies${rookieCount}` : "");
 }
 
 function applyChecklistFilters() {
