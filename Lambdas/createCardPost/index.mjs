@@ -67,7 +67,8 @@ export const handler = async (event) => {
     let seoURLSlug = payload.seoURLSlug;
     let seoTags = payload.seoTags;
     let author = payload.author;
-    let setName = payload.setName;
+    // Trimmed: setName is half the key and must match its checklist's name exactly
+    let setName = typeof payload.setName === "string" ? payload.setName.trim() : payload.setName;
     let postBody = payload.postBody;
     let mfg = payload.mfg;
     let size = payload.size;

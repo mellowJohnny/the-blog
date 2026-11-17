@@ -33,6 +33,9 @@ const CARDSET_CATEGORY_LABELS = {
     document.getElementById("setName").focus();
     return;
   }
+  // Saved trimmed: a stray space would stop the set matching its checklist (looked up by exact name).
+  // Only here: the name is part of the set's key, so an edit can't change it.
+  setName = setName.trim();
 
   if (!year || !String(year).trim()) {
     await cmsAlert("Release Year is required.");
