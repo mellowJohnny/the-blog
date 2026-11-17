@@ -3338,6 +3338,78 @@ body:has(.site-footer) {
   color: var(--color-grey-dark);
 }
 
+/* The season's sets listed left of the review (renderSetNav(), wax.js): the pagination's links
+   as a list, the shown set marked. Desktop only; smaller screens keep just the pagination. */
+.set-nav {
+  flex: 0 0 220px;
+  align-self: flex-start;
+  position: sticky;
+  top: 16px;
+  box-sizing: border-box;
+  margin: 5px 24px 5px 5px;
+  padding: 12px 0;
+  border-radius: 3px;
+  background: var(--color-content-bg);
+}
+
+.set-nav-label {
+  margin: 0 0 6px;
+  padding: 0 16px;
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-dark);
+}
+
+.set-nav-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.set-nav-list a {
+  display: block;
+  padding: 6px 16px 6px 13px;
+  border-left: 3px solid transparent;
+  font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
+  font-size: 16px;
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+.set-nav-list a:hover {
+  text-decoration: underline;
+}
+
+.set-nav-list a[aria-current="page"] {
+  border-left-color: var(--color-text-dark);
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+/* With the list showing, the review narrows to sit beside it. Its inner divs follow the
+   tablet rule's width; :where() keeps this at .flex-container div's weight, so the
+   #cardSetDiv rules for the set details still win. */
+@media (min-width: 1221px) {
+  .review-layout:has(> .set-nav:not([hidden])) > #cardSetDiv {
+    width: 760px;
+  }
+
+  :where(.review-layout:has(> .set-nav:not([hidden]))) #cardSetDiv div {
+    width: calc(100% - 10px);
+    max-width: none;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 1220px) {
+  .set-nav {
+    display: none;
+  }
+}
+
 /*************************************** Vote Widget Styles... ********************************/
 .vote-widget {
   display: flex;

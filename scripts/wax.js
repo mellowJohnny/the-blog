@@ -153,6 +153,27 @@ function renderCardSetPage() {
   applyImgWrapSmSizing();
 
   renderPaginationControls();
+  renderSetNav();
+}
+
+// The left-hand list of the season's sets: the pagination's order, links and labels,
+// with the shown set marked. Hidden for a one-set season (CSS hides it below 1221px).
+function renderSetNav() {
+  const nav = document.getElementById("setNav");
+  if (!nav) return;
+  if (allCardSets.length < 2) {
+    nav.hidden = true;
+    nav.innerHTML = "";
+    return;
+  }
+  const current = allCardSets[currentPage - 1];
+  const season = (current.setName.match(/^\d{4}(-\d{2,4})?/) || [String(current.year)])[0];
+  const links = allCardSets.map((set) => {
+    const here = set === current ? ' aria-current="page"' : "";
+    return `<li><a href="${reviewHref(set)}"${here}>${escapeHtml(stripYearFromSetName(set.setName))}</a></li>`;
+  }).join("");
+  nav.innerHTML = `<p class="set-nav-label">${escapeHtml(season)} sets</p><ul class="set-nav-list">${links}</ul>`;
+  nav.hidden = false;
 }
 
 // A review's own page, generated per set by tools/generateReviewPages.
