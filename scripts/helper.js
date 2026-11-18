@@ -83,6 +83,36 @@ function estimateReadingTime(htmlString) {
  * its onclick, since openChecklistModal() lives in wax.js and
  * setEdit.html doesn't load it. The markup is otherwise identical.
  */
+// The phone copy of a CMS-processed card image (img/cards/v2/x.webp -> x-sm.webp), or null for older
+// images that have none. tools/generateReviewPages uses this same function for the header preload.
+function phoneImageUrl(url) {
+  const match = /^(.*\/img\/cards\/v2\/.+?)(?<!-sm)\.webp$/.exec(String(url || ""));
+  return match ? `${match[1]}-sm.webp` : null;
+}
+
+// An <img> wrapped in a <picture> that gives phones (600px and below) the image's phone copy. If that copy
+// is missing (a v2 image uploaded before phone copies existed), usePhoneFallback() drops back to the full image.
+function withPhoneSource(url, imgHtml) {
+  const phone = phoneImageUrl(url);
+  if (!phone) return imgHtml;
+  return `<picture><source media="(max-width: 600px)" srcset="${phone}">${imgHtml.replace(/^<img\b/, '<img onerror="usePhoneFallback(this)"')}</picture>`;
+}
+
+// Removes a failed phone <source> so its <img> loads its own (full-size) src instead; runs once per image.
+function usePhoneFallback(img) {
+  img.onerror = null;
+  const source = img.parentNode && img.parentNode.tagName === "PICTURE" ? img.parentNode.querySelector("source") : null;
+  if (source) source.remove();
+}
+
+// The same fallback for <picture> images in a review's text: TinyMCE strips their onerror attribute when saving.
+function attachPhoneFallbacks(root) {
+  root.querySelectorAll("picture > img:not([onerror])").forEach((img) => {
+    if (img.complete && img.naturalWidth === 0 && img.currentSrc) usePhoneFallback(img);
+    else img.addEventListener("error", () => usePhoneFallback(img), { once: true });
+  });
+}
+
 function buildCardSetMarkup({
   setName, year, mfg, size, subsets, stars, formats,
   headerImgUrl, footerImgUrl,
@@ -123,12 +153,12 @@ function buildCardSetMarkup({
                 <strong>${setName}</strong>
             </h1>
             <div class="set-details-image">
-                <img src="${headerImgUrl}"
+                ${withPhoneSource(headerImgUrl, `<img src="${headerImgUrl}"
                 class="table-header-img"
                 fetchpriority="high"
                 alt="Vintage hockey cards from the ${year} ${mfg} set"
                 width="620"
-                height="294">
+                height="294">`)}
             </div>
             <div class="set-details-list">
                 <div class="set-detail-row"><strong>Set Size:</strong> ${size}</div>
@@ -157,12 +187,12 @@ function buildCardSetMarkup({
         <div class="set-footer-table-style">
             
             <div class="set-footer-image">
-                <img src="${footerImgUrl}"
+                ${withPhoneSource(footerImgUrl, `<img src="${footerImgUrl}"
                 class="table-footer-img"
                 loading="lazy"
                 alt="Vintage hockey cards from the ${year} ${mfg} set"
                 width="890"
-                height="325">
+                height="325">`)}
             </div>
         </div>
   `;

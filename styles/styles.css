@@ -2248,6 +2248,14 @@ body:has(.site-footer) .header-style + .flex-container > .intro > p:last-child {
   min-height: 285px;
 }
 
+/* The <picture> that gives phones a card image's phone copy (withPhoneSource(), helper.js) adds no box of its
+   own, so the <img> inside lays out exactly as it does without one. */
+.set-details-image picture,
+.set-footer-image picture,
+.set-details-author picture {
+  display: contents;
+}
+
 /* The base rule's 8px top margin would push the image below true
    centre here; the grid cell handles its spacing instead. */
 .set-details-image .table-header-img {

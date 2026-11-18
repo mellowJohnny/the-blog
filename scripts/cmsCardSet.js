@@ -731,6 +731,7 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
     <hr/>
     <br><br>
   `;
+  attachPhoneFallbacks(container); // helper.js, as on the live page
 }
 
 function closePreview() {

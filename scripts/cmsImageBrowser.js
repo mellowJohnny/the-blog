@@ -6,6 +6,24 @@
 
 /* ------------------------------------------------ IMAGE PICKER -------------------------------------*/
 
+/** One file to S3: an upload URL from the cmsImageUploader Lambda, then a PUT. Resolves true when it landed. */
+async function putCmsImageFile(fileName, directory, contentType, body) {
+  try {
+    const response = await fetch("https://k95rdenpn5.execute-api.us-east-2.amazonaws.com/dev", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fileName, directory, contentType })
+    });
+    const data = await response.json();
+    if (!data.uploadUrl) return false;
+    const put = await fetch(data.uploadUrl, { method: "PUT", headers: { "Content-Type": contentType }, body });
+    return put.ok;
+  } catch (error) {
+    console.log("Image upload error:", error);
+    return false;
+  }
+}
+
 /**
  *  Image Upload Function
  */
@@ -43,6 +61,15 @@ async function uploadNewImage() {
   } else {
     status.textContent = "Error: No active image picker.";
     return;
+  }
+
+  // Extra files (a card image's phone copy) go first, so a main image never exists without them
+  for (const extra of (_imageBrowserProcessor && _imageBrowserProcessed.extras) || []) {
+    status.textContent = `Uploading ${extra.fileName}...`;
+    if (!(await putCmsImageFile(extra.fileName, directory, extra.contentType, extra.blob))) {
+      status.textContent = `Upload failed for ${extra.fileName}; nothing else was uploaded.`;
+      return;
+    }
   }
 
   status.textContent = "Requesting upload URL...";
@@ -258,7 +285,7 @@ function processChosenImage(file) {
       preview.src = URL.createObjectURL(result.blob);
       preview.style.display = "";
     }
-    status.textContent = `${result.fileName} - ${result.width} x ${result.height}, ${Math.round(result.blob.size / 1024)} KB${result.warning ? ` - ${result.warning}` : ""}`;
+    status.textContent = `${result.fileName} - ${result.width} x ${result.height}, ${Math.round(result.blob.size / 1024)} KB${result.note ? `, ${result.note}` : ""}${result.warning ? ` - ${result.warning}` : ""}`;
   }).catch((error) => {
     if (token === _imageBrowserProcessToken) status.textContent = error.message;
   });

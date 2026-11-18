@@ -165,8 +165,8 @@ function openMiddleImageDialog(editor, imageUrl) {
       // width/height let the browser reserve the image's space before it loads (no layout shift).
       const size = await imageNaturalSize(imageUrl);
       const sizeAttrs = size ? ` width="${size.width}" height="${size.height}"` : "";
-      const html = `<img class="card-middle-img mceNonEditable" contenteditable="false" src="${imageUrl}"${sizeAttrs} alt="${escapeHtml(data.alt)}">`;
-      editor.insertContent(html);
+      const img = `<img class="card-middle-img mceNonEditable" contenteditable="false" src="${imageUrl}"${sizeAttrs} alt="${escapeHtml(data.alt)}">`;
+      editor.insertContent(withPhoneSource(imageUrl, img)); // helper.js: phones get the image's phone copy
       api.close();
     }
   });

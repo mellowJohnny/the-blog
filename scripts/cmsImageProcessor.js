@@ -12,10 +12,12 @@ const SPORTSPICK_IMG_MIN_ALPHA = 16;
 
 // Card set images, saved at twice the width they're shown at on a desktop review (sharp on Retina screens).
 // width: the saved width (or long side, for a logo); maxBytes: the size cap the quality steps down to meet.
+// phoneWidth: a phone copy saved beside it as <name>-sm.webp (phoneImageUrl(), helper.js), shown up to 600px wide.
+const CARD_SET_PHONE = { phoneWidth: 750, phoneMaxBytes: 90 * 1024 };
 const CARD_SET_IMAGE_SLOTS = {
-  header: { label: "header", width: 1250, maxBytes: 200 * 1024 }, // shown ~622px; the page's largest paint, so kept lean
-  middle: { label: "middle image", width: 1500, maxBytes: 300 * 1024 }, // shown ~733px
-  footer: { label: "footer", width: 1800, maxBytes: 300 * 1024 }, // shown ~879px
+  header: { label: "header", width: 1250, maxBytes: 200 * 1024, ...CARD_SET_PHONE }, // shown ~622px; the LCP, so kept lean
+  middle: { label: "middle image", width: 1500, maxBytes: 300 * 1024, ...CARD_SET_PHONE }, // shown ~733px
+  footer: { label: "footer", width: 1800, maxBytes: 300 * 1024, ...CARD_SET_PHONE }, // shown ~879px
   wrap: { label: "wrap logo", width: 300, maxBytes: 80 * 1024, longSide: true } // shown at 150px
 };
 const CMS_SHARPEN_AMOUNT = 0.35;
@@ -131,30 +133,56 @@ async function processSportspickImage(file) {
 
 /************************************* Card set images: resized, never cropped *************************************/
 
-/** Same result shape as processWaxPackImage. Scales down to the slot's width (never up), sharpens lightly, keeps transparency. */
+/** Same result shape as processWaxPackImage. Scales down to the slot's width (never up), sharpens lightly, keeps
+ * transparency. extras holds the phone copy (<name>-sm.webp), which uploadNewImage() sends first. */
 async function processCardSetImage(file, slotName) {
   const slot = CARD_SET_IMAGE_SLOTS[slotName];
   const bitmap = await decodeCmsImage(file);
   const side = slot.longSide ? Math.max(bitmap.width, bitmap.height) : bitmap.width;
-  const scale = Math.min(1, slot.width / side);
-  const dw = Math.max(1, Math.round(bitmap.width * scale));
-  const dh = Math.max(1, Math.round(bitmap.height * scale));
-
-  const canvas = document.createElement("canvas");
-  canvas.width = dw;
-  canvas.height = dh;
-  const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  ctx.imageSmoothingQuality = "high";
-  ctx.drawImage(halveCmsImage(bitmap, { x: 0, y: 0, w: bitmap.width, h: bitmap.height }, dw, dh), 0, 0, dw, dh);
-  if (scale < 1) sharpenCmsCanvas(ctx, dw, dh);
+  const canvas = renderCardSetCanvas(bitmap, slot.width / side);
 
   const warning = side < slot.width
     ? `This image is ${side}px ${slot.longSide ? "on its long side" : "wide"}; a sharp ${slot.label} needs ${slot.width}px.`
     : "";
   const blob = await encodeCmsWebp(canvas, slot.maxBytes);
   const result = await cmsProcessedImage(blob, file.name, slotName, warning, canvas);
-  result.fileName = CARD_SET_IMAGE_FOLDER + result.fileName;
+  result.fileName = CARD_SET_IMAGE_FOLDER + cardSetImageName(file.name, slotName, await cmsImageContentCode(blob));
+  result.extras = [];
+
+  // A phone copy only when the main image is wider than one: a narrower image is already phone-sized.
+  if (slot.phoneWidth && canvas.width > slot.phoneWidth) {
+    const phone = renderCardSetCanvas(bitmap, slot.phoneWidth / bitmap.width);
+    const phoneBlob = await encodeCmsWebp(phone, slot.phoneMaxBytes);
+    result.extras.push({ blob: phoneBlob, fileName: result.fileName.replace(/\.webp$/, "-sm.webp"), contentType: "image/webp" });
+    result.note = `phone copy ${phone.width} x ${phone.height}, ${Math.round(phoneBlob.size / 1024)} KB`;
+  }
   return result;
+}
+
+/** Set name + slot + content code: "1990-91 Pro Set" header -> 1990-91_Pro_Set_header_a1b2c3.webp. The code keeps a
+ * re-upload from reusing a year-cached name. With no set name typed yet, the original file name stands in. */
+function cardSetImageName(originalName, slotName, code) {
+  const setName = (document.getElementById("setName")?.value || "").trim();
+  const base = (setName || originalName.replace(/\.[^.]+$/, ""))
+    .replace(/'/g, "")
+    .replace(/[^A-Za-z0-9-]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return `${base || "card"}_${slotName}_${code}.webp`;
+}
+
+/** The whole image drawn at scale (never above 1), with the stepped downscale and, when shrunk, the light sharpen. */
+function renderCardSetCanvas(bitmap, scale) {
+  const s = Math.min(1, scale);
+  const dw = Math.max(1, Math.round(bitmap.width * s));
+  const dh = Math.max(1, Math.round(bitmap.height * s));
+  const canvas = document.createElement("canvas");
+  canvas.width = dw;
+  canvas.height = dh;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(halveCmsImage(bitmap, { x: 0, y: 0, w: bitmap.width, h: bitmap.height }, dw, dh), 0, 0, dw, dh);
+  if (s < 1) sharpenCmsCanvas(ctx, dw, dh);
+  return canvas;
 }
 
 /** A light unsharp mask (centre up, four neighbours down) that restores the edge crispness downscaling softens. */

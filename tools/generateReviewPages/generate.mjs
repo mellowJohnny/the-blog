@@ -209,12 +209,13 @@ function loadBrowserFunctions(categoryRanges) {
     liftFunction(helperSource, "setPickerHtml", "scripts/helper.js"),
     liftFunction(helperSource, "compareSetsForDefault", "scripts/helper.js"),
     liftFunction(helperSource, "reviewLinkAttrs", "scripts/helper.js"),
+    liftFunction(helperSource, "phoneImageUrl", "scripts/helper.js"),
     liftBlock(helperSource, "nav-block", "scripts/helper.js"),
     liftBlock(helperSource, "footer-block", "scripts/helper.js"),
     liftFunction(waxSource, "stripYearFromSetName", "scripts/wax.js"),
     fs.readFileSync(BROWSE_SCRIPT_PATH, "utf8")
   ].join("\n"), context);
-  for (const name of ["browseColumnHtml", "setPickerHtml", "compareSetsForDefault", "navHtml", "footerHtml"]) {
+  for (const name of ["browseColumnHtml", "setPickerHtml", "compareSetsForDefault", "navHtml", "footerHtml", "phoneImageUrl"]) {
     if (typeof context[name] !== "function") throw new Error(`${name}() did not load from the browser scripts`);
   }
   return context;
@@ -262,6 +263,20 @@ function buildBrowsePage(sets, browseColumnHtml) {
   return replaceBetween(withMajor, "browse-fastfood", fastFood, "browseBySet.html", true);
 }
 
+// phoneImageUrl() from scripts/helper.js, set once the browser functions load (loadBrowserFunctions()).
+let phoneImageUrl = () => null;
+
+// The header preload: one image, or, when it has a phone copy, each device's own file, matching
+// the <picture> buildCardSetMarkup() (helper.js) writes, so a phone never preloads the large one.
+function headerPreloads(image) {
+  const phone = phoneImageUrl(image);
+  if (!phone) return [`<link rel="preload" as="image" href="${escapeAttr(image)}" fetchpriority="high">`];
+  return [
+    `<link rel="preload" as="image" href="${escapeAttr(phone)}" media="(max-width: 600px)" fetchpriority="high">`,
+    `<link rel="preload" as="image" href="${escapeAttr(image)}" media="(min-width: 601px)" fetchpriority="high">`
+  ];
+}
+
 // Mirrors the title/description/image fallbacks in fetchPageTitle() (scripts/wax.js),
 // except the description: the review text isn't in the public list.
 function headBlock(set, url, warnings) {
@@ -290,7 +305,7 @@ function headBlock(set, url, warnings) {
     `<meta name="twitter:image" content="${escapeAttr(image)}">`,
     // The header image is the page's LCP, but wax.js only adds its <img> after the data
     // fetch; this lets the download start with the HTML. No crossorigin, to match the <img>.
-    ...(hasHeaderImage ? [`<link rel="preload" as="image" href="${escapeAttr(image)}" fetchpriority="high">`] : []),
+    ...(hasHeaderImage ? headerPreloads(image) : []),
     // Starts the set-data request with the HTML instead of after the deferred scripts have
     // loaded; wax.js's plain fetch() of the same URL picks it up. crossorigin = CORS fetch.
     `<link rel="preload" as="fetch" crossorigin href="${escapeAttr(`${SETS_BY_YEAR_URL}?year=${set.year}&blogCat=${set.blogCat}`)}">`
@@ -378,7 +393,9 @@ try {
   const template = fs.readFileSync(TEMPLATE_PATH, "utf8");
   const categoryRanges = loadCategoryRanges();
   const warnings = [];
-  const { browseColumnHtml, setPickerHtml, compareSetsForDefault, navHtml, footerHtml } = loadBrowserFunctions(categoryRanges);
+  const browser = loadBrowserFunctions(categoryRanges);
+  const { browseColumnHtml, setPickerHtml, compareSetsForDefault, navHtml, footerHtml } = browser;
+  phoneImageUrl = browser.phoneImageUrl;
   const navLinkFor = navHrefFor(sets, compareSetsForDefault);
   const footerMarkup = footerHtml(navLinkFor);
   const pages = sets.map((set) => {
