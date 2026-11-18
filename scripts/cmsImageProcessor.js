@@ -1,4 +1,5 @@
-/** In-browser processing for the CMS image browser: a wax pack photo or a Sportspicks figure becomes a 900 x 1200 WebP. */
+/** In-browser processing for the CMS image browser: a wax pack photo or a Sportspicks figure becomes a 900 x 1200 WebP;
+ * a card set image (header, middle, footer, wrap logo) becomes a WebP at twice its display width, uncropped. */
 
 const CMS_IMG_W = 900;
 const CMS_IMG_H = 1200;
@@ -8,6 +9,19 @@ const CMS_IMG_MAX_BYTES = 250 * 1024;
 const WAX_PACK_IMG_DIFF = 45;
 const WAX_PACK_IMG_MIN_BACKDROP = 150; // an underexposed white backdrop reads about 175-215, so 200 left it grey
 const SPORTSPICK_IMG_MIN_ALPHA = 16;
+
+// Card set images, saved at twice the width they're shown at on a desktop review (sharp on Retina screens).
+// width: the saved width (or long side, for a logo); maxBytes: the size cap the quality steps down to meet.
+const CARD_SET_IMAGE_SLOTS = {
+  header: { label: "header", width: 1250, maxBytes: 200 * 1024 }, // shown ~622px; the page's largest paint, so kept lean
+  middle: { label: "middle image", width: 1500, maxBytes: 300 * 1024 }, // shown ~733px
+  footer: { label: "footer", width: 1800, maxBytes: 300 * 1024 }, // shown ~879px
+  wrap: { label: "wrap logo", width: 300, maxBytes: 80 * 1024, longSide: true } // shown at 150px
+};
+const CMS_SHARPEN_AMOUNT = 0.35;
+// New card set images go in img/cards/v2/; old ones stay in img/cards/ until replaced. The prefix rides on the file
+// name, so the stored header/footer name is "v2/x.webp" under the set's unchanged img/cards/ base.
+const CARD_SET_IMAGE_FOLDER = "v2/";
 
 /************************************* Wax packs: photo on a white backdrop *************************************/
 
@@ -115,6 +129,52 @@ async function processSportspickImage(file) {
   return await cmsProcessedImage(blob, file.name, "figure", "");
 }
 
+/************************************* Card set images: resized, never cropped *************************************/
+
+/** Same result shape as processWaxPackImage. Scales down to the slot's width (never up), sharpens lightly, keeps transparency. */
+async function processCardSetImage(file, slotName) {
+  const slot = CARD_SET_IMAGE_SLOTS[slotName];
+  const bitmap = await decodeCmsImage(file);
+  const side = slot.longSide ? Math.max(bitmap.width, bitmap.height) : bitmap.width;
+  const scale = Math.min(1, slot.width / side);
+  const dw = Math.max(1, Math.round(bitmap.width * scale));
+  const dh = Math.max(1, Math.round(bitmap.height * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = dw;
+  canvas.height = dh;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(halveCmsImage(bitmap, { x: 0, y: 0, w: bitmap.width, h: bitmap.height }, dw, dh), 0, 0, dw, dh);
+  if (scale < 1) sharpenCmsCanvas(ctx, dw, dh);
+
+  const warning = side < slot.width
+    ? `This image is ${side}px ${slot.longSide ? "on its long side" : "wide"}; a sharp ${slot.label} needs ${slot.width}px.`
+    : "";
+  const blob = await encodeCmsWebp(canvas, slot.maxBytes);
+  const result = await cmsProcessedImage(blob, file.name, slotName, warning, canvas);
+  result.fileName = CARD_SET_IMAGE_FOLDER + result.fileName;
+  return result;
+}
+
+/** A light unsharp mask (centre up, four neighbours down) that restores the edge crispness downscaling softens. */
+function sharpenCmsCanvas(ctx, w, h) {
+  const image = ctx.getImageData(0, 0, w, h);
+  const src = new Uint8ClampedArray(image.data);
+  const out = image.data;
+  const a = CMS_SHARPEN_AMOUNT;
+  for (let y = 1; y < h - 1; y++) {
+    for (let x = 1; x < w - 1; x++) {
+      const i = (y * w + x) * 4;
+      for (let c = 0; c < 3; c++) {
+        const k = i + c;
+        out[k] = src[k] * (1 + 4 * a) - a * (src[k - 4] + src[k + 4] + src[k - w * 4] + src[k + w * 4]);
+      }
+    }
+  }
+  ctx.putImageData(image, 0, 0);
+}
+
 /************************************* Shared steps *************************************/
 
 async function decodeCmsImage(file) {
@@ -205,26 +265,27 @@ function halveCmsImage(source, crop, dw, dh) {
 }
 
 /** WebP at quality 0.82, stepping down until it is under the size limit; rejects if the browser can't write WebP. */
-async function encodeCmsWebp(canvas) {
+async function encodeCmsWebp(canvas, maxBytes = CMS_IMG_MAX_BYTES) {
   let blob = null;
   for (const quality of [0.82, 0.7, 0.6]) {
     blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/webp", quality));
     if (!blob || blob.type !== "image/webp") {
       throw new Error("This browser can't save WebP images. Use Chrome, Edge or Firefox.");
     }
-    if (blob.size <= CMS_IMG_MAX_BYTES) break;
+    if (blob.size <= maxBytes) break;
   }
   return blob;
 }
 
-/** The result the image browser expects; fallback names the file when the original name has no letters or numbers. */
-async function cmsProcessedImage(blob, originalName, fallback, warning) {
+/** The result the image browser expects; fallback names the file when the original name has no letters or numbers.
+ * canvas gives the real size; without it, the wax pack / Sportspicks 900 x 1200. */
+async function cmsProcessedImage(blob, originalName, fallback, warning, canvas = null) {
   return {
     blob,
     fileName: cmsImageName(originalName, await cmsImageContentCode(blob), fallback),
     contentType: "image/webp",
-    width: CMS_IMG_W,
-    height: CMS_IMG_H,
+    width: canvas ? canvas.width : CMS_IMG_W,
+    height: canvas ? canvas.height : CMS_IMG_H,
     warning
   };
 }

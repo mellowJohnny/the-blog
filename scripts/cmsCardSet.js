@@ -15,6 +15,12 @@ const CARDSET_CATEGORY_LABELS = {
   mcd:  "McDonald's Sets"
 };
 
+/** The Header/Footer Browse buttons: the image browser, with a new upload resized for its slot
+ * ("header" or "footer") by processCardSetImage() in cmsImageProcessor.js. */
+function browseCardSetImage(fieldId, slot) {
+  openImageBrowser(fieldId, null, "img/cards/", (file) => processCardSetImage(file, slot));
+}
+
 //*------------------------------------------ Create New Card Set --------------------------------------*
 
   /**

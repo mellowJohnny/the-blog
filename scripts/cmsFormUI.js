@@ -90,7 +90,9 @@ function registerCardImageBlockButtons(editor) {
     icon: 'image',
     tooltip: 'Insert wrap image',
     onAction: () => {
-      openImageBrowser(null, (fileName, imageUrl) => openWrapImageDialog(editor, imageUrl));
+      // A new upload is resized for its slot first (processCardSetImage(), cmsImageProcessor.js)
+      openImageBrowser(null, (fileName, imageUrl) => openWrapImageDialog(editor, imageUrl), "img/cards/",
+        (file) => processCardSetImage(file, "wrap"));
     }
   });
 
@@ -98,7 +100,8 @@ function registerCardImageBlockButtons(editor) {
     icon: 'image',
     tooltip: 'Insert middle image',
     onAction: () => {
-      openImageBrowser(null, (fileName, imageUrl) => openMiddleImageDialog(editor, imageUrl));
+      openImageBrowser(null, (fileName, imageUrl) => openMiddleImageDialog(editor, imageUrl), "img/cards/",
+        (file) => processCardSetImage(file, "middle"));
     }
   });
 }
