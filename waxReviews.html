@@ -96,7 +96,7 @@
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
 
     <!-- Chrome/Edge fetch a same-site page's HTML when a link is hovered or pressed, so the click opens faster.
-         Other reviews (left set nav, pagination, year picker) are fully prerendered on hover instead, so a
+         Other reviews (pagination, year picker) are fully prerendered on hover instead, so a
          click shows the new set at once, already loaded and at #year-picker, with no flash of the banner. -->
     <script type="speculationrules">
       {
@@ -206,7 +206,7 @@
           <div class="intro" id="card-intro"></div>
         </div>
 
-        <!-- The left set nav's links jump here (#year-picker), so a new set opens at the picker -->
+        <!-- The Back/Next pagination links jump here (#year-picker), so a new set opens at the picker -->
         <div class="set-o-matic-picker" id="year-picker">the set-o-matic year picker</div>
 
         <div class="flex-container">
@@ -215,10 +215,9 @@
         </div>
       </section>
 
-      <!-- The review, with the season's other sets listed on its left (renderSetNav() in wax.js, desktop only) -->
+      <!-- The review, drawn by fetchCardSetsByYear() in wax.js -->
       <section>
-        <div class="flex-container review-layout">
-          <nav id="setNav" class="set-nav" aria-label="Sets this season" hidden></nav>
+        <div class="flex-container">
           <div class="blog-entry" id="cardSetDiv"></div>
         </div>
       </section>

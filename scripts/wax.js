@@ -153,28 +153,6 @@ function renderCardSetPage() {
   applyImgWrapSmSizing();
 
   renderPaginationControls();
-  renderSetNav();
-}
-
-// The left-hand list of the season's sets: the pagination's order, links and labels, with the shown
-// set marked; each link opens at the year picker (#year-picker), not the page top. Hidden for a
-// one-set season (CSS hides it below 1400px).
-function renderSetNav() {
-  const nav = document.getElementById("setNav");
-  if (!nav) return;
-  if (allCardSets.length < 2) {
-    nav.hidden = true;
-    nav.innerHTML = "";
-    return;
-  }
-  const current = allCardSets[currentPage - 1];
-  const season = (current.setName.match(/^\d{4}(-\d{2,4})?/) || [String(current.year)])[0];
-  const links = allCardSets.map((set) => {
-    const here = set === current ? ' aria-current="page"' : "";
-    return `<li><a href="${reviewHref(set)}#year-picker"${here}>${escapeHtml(stripYearFromSetName(set.setName))}</a></li>`;
-  }).join("");
-  nav.innerHTML = `<p class="set-nav-label">${escapeHtml(season)} sets</p><ul class="set-nav-list">${links}</ul>`;
-  nav.hidden = false;
 }
 
 // A review's own page, generated per set by tools/generateReviewPages.
@@ -974,7 +952,7 @@ function renderPaginationControls() {
     : "Next →";
 
   // Real links to the neighbouring sets' own pages, like the nav, so crawlers can follow them and
-  // Back works; they open at the year picker (#year-picker), like the left set nav. The end of
+  // Back works; they open at the year picker (#year-picker), not the page top. The end of
   // the list is plain text, not a link.
   const prevLink = prevSet ? `
     <a href="${reviewHref(prevSet)}#year-picker" class="pagination-link">
