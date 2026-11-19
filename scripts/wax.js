@@ -9,6 +9,13 @@ const pageSize = 1; // how many blogs to display at a time
  */
 
 function renderCardIntro(pageName) {
+  const introEl = document.getElementById("card-intro");
+  // A generated /reviews/ page ships it pre-rendered; redrawing it would only repeat the same text.
+  if (introEl && !introEl.firstElementChild) introEl.innerHTML = cardIntroHtml(pageName);
+}
+
+// DOM-free, so tools/generateReviewPages pre-renders the same intro into each review page.
+function cardIntroHtml(pageName) {
 
   let introHTML = "";
 
@@ -34,11 +41,8 @@ function renderCardIntro(pageName) {
       Early sets were small All-Star game retrospectives, but slowly grew in size and dropped the All-Star focus, eventually becoming "regular" hockey sets, pushing over 100 cards. A sign of things to come for the Tim Hortons sets which ultimately replaced them. </p>
     `;
   }
-    const introEl = document.getElementById("card-intro");
-      if (introEl) {
-        introEl.innerHTML = introHTML;
-      }
-  }// end renderCardIntro()
+  return introHTML;
+}
 
  // One retry after a pause: a single dropped or throttled request (a non-OK
  // reply counts) shouldn't leave a visitor or a crawler with an error page.
@@ -54,15 +58,20 @@ function renderCardIntro(pageName) {
 
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
 
-    const hideSpinner = showSpinner(); // helper.js
+    // A generated /reviews/ page ships its review already rendered (tools/generateReviewPages): no
+    // spinner over it, and a failed or empty reply leaves it showing. The redraw below is identical.
+    const prerendered = Boolean(document.querySelector("#cardSetDiv .set-details-grid"));
+    const hideSpinner = prerendered ? () => {} : showSpinner(); // helper.js
     fetchJsonWithRetry(urlToFetch)
         .finally(hideSpinner)
         .then(data => {
 
             // Lambda returns an array, not { Items: [...] }
             if (!Array.isArray(data) || data.length === 0) {
-                document.getElementById("cardSetDiv").innerHTML =
-                    "...coming soon - this set is not in my collection yet";
+                if (!prerendered) {
+                    document.getElementById("cardSetDiv").innerHTML =
+                        "...coming soon - this set is not in my collection yet";
+                }
                 return;
             }
 
@@ -81,8 +90,10 @@ function renderCardIntro(pageName) {
             renderCardSetPage();
         })
         .catch(err => {
-            document.getElementById("cardSetDiv").innerHTML =
-                "...Ah, Houston, we've had a problem...";
+            if (!prerendered) {
+                document.getElementById("cardSetDiv").innerHTML =
+                    "...Ah, Houston, we've had a problem...";
+            }
             console.log("Something went wrong:", err);
         });
 
@@ -148,9 +159,6 @@ function renderCardSetPage() {
 
   });
 
-  // Size any hand-inserted .img-wrap-sm logos in the postBody content
-  // just rendered above - helper.js
-  applyImgWrapSmSizing();
   attachPhoneFallbacks(container); // helper.js: a missing phone copy falls back to the full image
 
   renderPaginationControls();
@@ -230,7 +238,12 @@ function fetchPageTitle(item)
   // Fixed id (not derived from setName): only one set is ever shown per
   // page at a time (pageSize is 1), so each pagination click should
   // replace this same block, not accumulate a new one alongside it.
-  setJsonLd("jsonld-cardset", {
+  setJsonLd("jsonld-cardset", cardSetJsonLd(item, description, image, keywords));
+}
+
+// A set's Product/Review structured data. DOM-free: tools/generateReviewPages writes it into each page's HTML too.
+function cardSetJsonLd({ setName, author, now, stars }, description, image, keywords) {
+  return {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": setName,
@@ -247,7 +260,7 @@ function fetchPageTitle(item)
         "bestRating": 5
       }
     }
-  });
+  };
 }
 
 /**

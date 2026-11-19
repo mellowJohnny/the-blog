@@ -192,18 +192,18 @@
       </div>
     </nav>
     <main id="main">
-      <!-- Filled by renderBreadcrumbs() in helper.js, once the set loads -->
-      <nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb"></nav>
+      <!-- Filled by renderBreadcrumbs() in helper.js, once the set loads; a generated page ships it pre-rendered -->
+      <nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb"><!-- breadcrumbs:start --><!-- breadcrumbs:end --></nav>
       <section>
         <div class="header-style wax-set-name-header">
           <h1 id="pageHeader"></h1>
-          <!-- The build writes the set name in here for crawlers that don't run
-               JavaScript; hidden on every breakpoint, and removed by wax.js once the
-               set loads, since the visible H1 is the set name in the set details. -->
+          <!-- Hidden on every breakpoint; the visible H1 is the set name in the set details. The build
+               drops it when it pre-renders the review, else fills it with the set name for crawlers
+               that don't run JavaScript; wax.js removes it once the set loads. -->
         </div>
 
         <div class="flex-container">
-          <div class="intro" id="card-intro"></div>
+          <div class="intro" id="card-intro"><!-- card-intro:start --><!-- card-intro:end --></div>
         </div>
 
         <!-- The Back/Next pagination links jump here (#year-picker), so a new set opens at the picker -->
@@ -215,10 +215,11 @@
         </div>
       </section>
 
-      <!-- The review, drawn by fetchCardSetsByYear() in wax.js -->
+      <!-- The review, drawn by fetchCardSetsByYear() in wax.js; a generated page ships it pre-rendered -->
+      <!-- (tools/generateReviewPages) and wax.js redraws the same markup, adding pagination and votes -->
       <section>
         <div class="flex-container">
-          <div class="blog-entry" id="cardSetDiv"></div>
+          <div class="blog-entry" id="cardSetDiv"><!-- review-body:start --><!-- review-body:end --></div>
         </div>
       </section>
     </main>

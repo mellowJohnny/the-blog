@@ -2413,9 +2413,9 @@ body:has(.site-footer) .header-style + .flex-container > .intro > p:last-child {
      <img class="img-wrap-left img-wrap-sm" style="width: 214px; height: 117px;" ...>
    .img-wrap-sm -> half size on mobile; .img-wrap-md -> 65% size on
    mobile, for images where half is too aggressive a shrink.
-   applyImgWrapSmSizing() (helper.js, called from wax.js once each
-   set's postBody renders) reads the image's own width/height attribute
-   and sets --wrap-w/--wrap-h custom properties from it. The mobile
+   withWrapSizes() (helper.js, run by buildCardSetMarkup() on each
+   set's postBody) reads the image's own width/height and writes
+   --wrap-w/--wrap-h custom properties into its style. The mobile
    rules below (main mobile media query, GLOBAL / SITE-WIDE section)
    then resize the actual box off those - a real layout resize, not
    just a visual transform, so wrapped text reflows in tight to the
@@ -3914,7 +3914,7 @@ body:has(.site-footer) {
   /* Wrap images opted into .img-wrap-sm/.img-wrap-md render at half or
      65% of their desktop size on mobile - see the base rule
      near .img-wrap-left. --wrap-w/--wrap-h are set by
-     applyImgWrapSmSizing() (helper.js) from each image's own
+     withWrapSizes() (helper.js) from each image's own
      width/height attribute, so this is a real box resize (text
      reflows in tight) rather than a visual-only transform: scale(),
      which left the original full-size box reserved and an

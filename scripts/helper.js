@@ -31,17 +31,22 @@ function truncateAtWord(text, max) {
   return base.replace(/[\s,;:-]+$/, "") + "...";
 }
 
-/**
- * .img-wrap-sm/.img-wrap-md images opt into smaller mobile sizing -
- * reads each image's actual width/height (inline style preferred over
- * a possibly-stale attribute) into --wrap-w/--wrap-h for styles.css.
- */
-function applyImgWrapSmSizing() {
-  document.querySelectorAll("img.img-wrap-sm, img.img-wrap-md").forEach(img => {
-    const w = parseFloat(img.style.width) || parseFloat(img.getAttribute("width"));
-    const h = parseFloat(img.style.height) || parseFloat(img.getAttribute("height"));
-    if (w) img.style.setProperty("--wrap-w", `${w}px`);
-    if (h) img.style.setProperty("--wrap-h", `${h}px`);
+// .img-wrap-sm/.img-wrap-md images get their own size (inline style over a possibly-stale attribute) as
+// --wrap-w/--wrap-h, which styles.css shrinks on mobile. In the markup (buildCardSetMarkup()), so a
+// pre-rendered review is sized right from the first paint.
+function withWrapSizes(html) {
+  return html.replace(/<img\b[^>]*>/gi, (tag) => {
+    // Only added to the style TinyMCE already writes on these images (it sets their size there).
+    const style = (tag.match(/\bstyle="([^"]*)"/i) || [])[1];
+    if (!style || !/\bclass="[^"]*\bimg-wrap-(sm|md)\b/i.test(tag) || style.includes("--wrap-w")) return tag;
+    const size = (prop) => parseFloat((style.match(new RegExp(`(?:^|;)\\s*${prop}\\s*:\\s*([\\d.]+)`, "i")) || [])[1])
+      || parseFloat((tag.match(new RegExp(`\\s${prop}="([\\d.]+)`, "i")) || [])[1]);
+    const w = size("width");
+    const h = size("height");
+    const vars = [w && `--wrap-w: ${w}px;`, h && `--wrap-h: ${h}px;`].filter(Boolean).join(" ");
+    if (!vars) return tag;
+    const base = style.trim();
+    return tag.replace(/\bstyle="[^"]*"/i, `style="${base}${base.endsWith(";") ? "" : ";"} ${vars}"`);
   });
 }
 
@@ -143,7 +148,7 @@ function buildCardSetMarkup({
     : "";
 
   // Images in the review text all sit below the header image (the page's LCP), so lazy-load any without a loading attribute.
-  const bodyHtml = String(postBody ?? "").replace(/<img(?![^>]*\bloading=)/gi, '<img loading="lazy"');
+  const bodyHtml = withWrapSizes(String(postBody ?? "").replace(/<img(?![^>]*\bloading=)/gi, '<img loading="lazy"'));
 
   // CSS Gridz: Grid areas let mobile restack name -> image -> list
   // instead of desktop's side-by-side. The set name is the page's one visible H1.
@@ -263,52 +268,62 @@ function setJsonLd(id, data) {
 // Breadcrumbs for the set-review pages: Home > category > this page, as the
 // visible #breadcrumbs nav and matching BreadcrumbList JSON-LD. The middle
 // step is the real nav category (NAV_ITEMS) the page's pageName belongs to.
-const BREADCRUMB_CATEGORY_IDS = { classicWax: "classic", junkWax: "junk", mcd: "mcd", timmies: "timmies" };
 const SITE_ORIGIN = "https://www.junkwaxhockey.com";
+
+// The steps, DOM-free so the build can pre-render them. linkFor (as in navHtml()) gives the
+// category's /reviews/ page at build time; in the browser applyReviewLinks() swaps it in later.
+function breadcrumbTrail(pageName, currentLabel, currentUrl, linkFor = () => null) {
+  const categoryIds = { classicWax: "classic", junkWax: "junk", mcd: "mcd", timmies: "timmies" };
+  const category = NAV_ITEMS[categoryIds[pageName]];
+  const trail = [{ name: NAV_ITEMS.home.label, url: "/" }];
+  if (category) trail.push({ name: category.label, url: linkFor(category) || category.href, attrs: reviewLinkAttrs(category) });
+  trail.push({ name: currentLabel, url: currentUrl });
+  return trail;
+}
+
+// The current page stays a link (marked aria-current) so every step has the same structure.
+function breadcrumbHtml(trail) {
+  const items = trail.map((step, i) => i === trail.length - 1
+    ? `<li><a href="${escapeHtml(step.url)}" aria-current="page">${escapeHtml(step.name)}</a></li>`
+    : `<li><a href="${escapeHtml(step.url)}"${step.attrs || ""}>${escapeHtml(step.name)}</a></li>`);
+  return `<ol>${items.join("")}</ol>`;
+}
+
+// hrefs: the visible links' final hrefs, when they differ from the trail's own URLs.
+function breadcrumbJsonLd(trail, hrefs = []) {
+  const absolute = (url) => (url.startsWith("http") ? url : SITE_ORIGIN + url);
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": trail.map((step, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "name": step.name,
+      "item": absolute(hrefs[i] || step.url)
+    }))
+  };
+}
 
 function renderBreadcrumbs(pageName, currentLabel, currentUrl) {
   const nav = document.getElementById("breadcrumbs");
   if (!nav) return;
 
-  const category = NAV_ITEMS[BREADCRUMB_CATEGORY_IDS[pageName]];
-  const trail = [{ name: NAV_ITEMS.home.label, url: "/" }];
-  if (category) trail.push({ name: category.label, url: category.href, attrs: reviewLinkAttrs(category) });
-  trail.push({ name: currentLabel, url: currentUrl || window.location.href });
-  const absolute = (url) => (url.startsWith("http") ? url : SITE_ORIGIN + url);
-
-  // The current page stays a link (marked aria-current) so every step has the same structure.
-  const items = trail.map((step, i) => i === trail.length - 1
-    ? `<li><a href="${escapeHtml(step.url)}" aria-current="page">${escapeHtml(step.name)}</a></li>`
-    : `<li><a href="${escapeHtml(step.url)}"${step.attrs || ""}>${escapeHtml(step.name)}</a></li>`);
-  nav.innerHTML = `<ol>${items.join("")}</ol>`;
+  const trail = breadcrumbTrail(pageName, currentLabel, currentUrl || window.location.href);
+  nav.innerHTML = breadcrumbHtml(trail);
 
   // Written once applyReviewLinks() has swapped the category link to its /reviews/ page, so the
   // JSON-LD names the same URLs as the visible links (a failed manifest fetch keeps the query form).
   applyReviewLinks().then(() => {
     const hrefs = [...nav.querySelectorAll("a")].map((link) => link.getAttribute("href"));
-    setJsonLd("jsonld-breadcrumbs", {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": trail.map((step, i) => ({
-        "@type": "ListItem",
-        "position": i + 1,
-        "name": step.name,
-        "item": absolute(hrefs[i] || step.url)
-      }))
-    });
+    setJsonLd("jsonld-breadcrumbs", breadcrumbJsonLd(trail, hrefs));
   });
 }
 
 
-   // ----------------------------- Date Helper Functions ----------------------------
+// ----------------------------- Date Helper Functions ----------------------------
 
-   /**
-    * Formats our Raw Date object coming back from the JSON response
-    * @param {*} date 
-    * @returns 
-    */
-
-   function fixDate(date){
+// Formats a raw date from the API as "Month D, YYYY".
+function fixDate(date){
     const d = new Date(date);
 
     // Get the month as an Integer, convert it to the name

@@ -7,7 +7,9 @@
 // script (between its review-params markers) are swapped for that set's own
 // values, so crawlers that don't run JavaScript get a per-set preview. The year
 // picker (set-picker markers) is pre-rendered with /reviews/<slug>/ links too.
-// The page's JS still renders the review itself.
+// So are the review itself (review-body markers, buildCardSetMarkup() in helper.js),
+// the breadcrumbs and both JSON-LD blocks, from each set's full record (fetchFullSets());
+// the page's JS still fetches the set and redraws the same markup, adding pagination and votes.
 //
 // Amplify runs this on every build (amplify.yml), and a change to a live set
 // in the CMS starts a build (Lambdas/cardsRebuildTrigger), so none of the
@@ -80,22 +82,51 @@ function getJson(url) {
 }
 
 // A dropped or throttled request shouldn't fail a build: three tries, then give up.
-async function fetchLiveSets() {
+async function withRetries(task) {
   let lastError;
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      const sets = await getJson(SETS_URL);
-      if (!Array.isArray(sets) || sets.length === 0) throw new Error("The sets endpoint returned no sets");
-      if (!sets.some((set) => set.stars !== undefined)) {
-        throw new Error("The sets endpoint does not return stars - redeploy Lambdas/getPublicCardSets");
-      }
-      return sets;
+      return await task();
     } catch (err) {
       lastError = err;
       if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   }
   throw lastError;
+}
+
+function fetchLiveSets() {
+  return withRetries(async () => {
+    const sets = await getJson(SETS_URL);
+    if (!Array.isArray(sets) || sets.length === 0) throw new Error("The sets endpoint returned no sets");
+    if (!sets.some((set) => set.stars !== undefined)) {
+      throw new Error("The sets endpoint does not return stars - redeploy Lambdas/getPublicCardSets");
+    }
+    return sets;
+  });
+}
+
+// Each set's full record (review text, details), by setID, from the same per-year request the page
+// makes. Four requests at a time, for the Cards table's throughput cap. A year that still fails
+// after its retries only costs its pages their pre-rendered review (a warning), not the build.
+async function fetchFullSets(sets, warnings) {
+  const groups = [...new Set(sets.map((set) => `${set.year}|${set.blogCat}`))];
+  const records = new Map();
+  let next = 0;
+  async function worker() {
+    while (next < groups.length) {
+      const [year, blogCat] = groups[next++].split("|");
+      try {
+        const items = await withRetries(() => getJson(`${SETS_BY_YEAR_URL}?year=${year}&blogCat=${blogCat}`));
+        if (!Array.isArray(items)) throw new Error("not an array");
+        items.forEach((item) => records.set(item.setID, item));
+      } catch (err) {
+        warnings.push(`${year} ${blogCat}: review text not pre-rendered (${err.message})`);
+      }
+    }
+  }
+  await Promise.all([1, 2, 3, 4].map(worker));
+  return records;
 }
 
 // The Wax Museum's phone LCP is its first pack's front image, which the page only names after fetching the
@@ -176,9 +207,10 @@ function replaceBetween(html, name, replacement, file = "waxReviews.html", keepM
     : html.slice(0, from) + replacement + html.slice(to);
 }
 
-// The source text of a top-level function in a browser script, by name.
+// The source text of a top-level function in a browser script, by name: up to the first
+// line that is only "}" (a multi-line parameter list ending "}) {" doesn't count).
 function liftFunction(source, name, file) {
-  const match = source.match(new RegExp(`^function ${name}\\([\\s\\S]*?\\n\\}`, "m"));
+  const match = source.match(new RegExp(`^function ${name}\\([\\s\\S]*?\\n\\}[ \\t]*$`, "m"));
   if (!match) throw new Error(`Could not find function ${name}() in ${file}`);
   return match[0];
 }
@@ -190,6 +222,12 @@ function liftBlock(source, name, file) {
   if (start < 0 || end < start) throw new Error(`Could not find the "${name}" block in ${file}`);
   return source.slice(start, end);
 }
+
+// The helper.js functions the review, its breadcrumbs and their JSON-LD are pre-rendered with.
+const REVIEW_HELPERS = [
+  "stripHtmlTags", "truncateAtWord", "estimateReadingTime", "fixDate", "getMonthName", "withPhoneSource", "withWrapSizes",
+  "buildCardSetMarkup", "breadcrumbTrail", "breadcrumbHtml", "breadcrumbJsonLd"
+];
 
 // The browser functions the pages are pre-rendered with (browseColumnHtml() in
 // scripts/browseBySet.js; setPickerHtml(), compareSetsForDefault() and navHtml()
@@ -210,12 +248,15 @@ function loadBrowserFunctions(categoryRanges) {
     liftFunction(helperSource, "compareSetsForDefault", "scripts/helper.js"),
     liftFunction(helperSource, "reviewLinkAttrs", "scripts/helper.js"),
     liftFunction(helperSource, "phoneImageUrl", "scripts/helper.js"),
+    ...REVIEW_HELPERS.map((name) => liftFunction(helperSource, name, "scripts/helper.js")),
     liftBlock(helperSource, "nav-block", "scripts/helper.js"),
     liftBlock(helperSource, "footer-block", "scripts/helper.js"),
     liftFunction(waxSource, "stripYearFromSetName", "scripts/wax.js"),
+    liftFunction(waxSource, "cardSetJsonLd", "scripts/wax.js"),
+    liftFunction(waxSource, "cardIntroHtml", "scripts/wax.js"),
     fs.readFileSync(BROWSE_SCRIPT_PATH, "utf8")
   ].join("\n"), context);
-  for (const name of ["browseColumnHtml", "setPickerHtml", "compareSetsForDefault", "navHtml", "footerHtml", "phoneImageUrl"]) {
+  for (const name of ["browseColumnHtml", "setPickerHtml", "compareSetsForDefault", "navHtml", "footerHtml", "phoneImageUrl", ...REVIEW_HELPERS, "cardSetJsonLd", "cardIntroHtml"]) {
     if (typeof context[name] !== "function") throw new Error(`${name}() did not load from the browser scripts`);
   }
   return context;
@@ -324,16 +365,53 @@ function paramsBlock(set, categoryRanges) {
     </script>`;
 }
 
-function buildPage(template, set, categoryRanges, warnings, pickerHtml, navMarkup, footerMarkup) {
-  const url = `${SITE_ORIGIN}/reviews/${set.seoURLSlug}/`;
-  let html = replaceBetween(template, "review-head", headBlock(set, url, warnings));
+const reviewUrl = (set) => `${SITE_ORIGIN}/reviews/${set.seoURLSlug}/`;
+
+// What wax.js draws: the category intro (renderCardIntro()), the review (displayCardSet()'s buildCardSetMarkup()
+// call), the breadcrumbs (renderBreadcrumbs()) and both JSON-LD blocks (fetchPageTitle()), from the same
+// functions and fields. Without the set's full record (fetchFullSets()), no review or Product JSON-LD.
+function prerenderReview(browser, set, record, pageName, linkFor) {
+  const trail = browser.breadcrumbTrail(pageName, set.setName, reviewUrl(set), linkFor);
+  const jsonLd = [["jsonld-breadcrumbs", browser.breadcrumbJsonLd(trail)]];
+  let body = "";
+  if (record) {
+    const image = `${record.headerImg}${record.headerImgName}`;
+    const description = (record.seoMetaDesc && record.seoMetaDesc.trim())
+      || browser.truncateAtWord(browser.stripHtmlTags(String(record.postBody || "")), 155);
+    const keywords = (record.seoTags && record.seoTags.trim()) || undefined;
+    jsonLd.unshift(["jsonld-cardset", browser.cardSetJsonLd(record, description, image, keywords)]);
+    body = browser.buildCardSetMarkup({
+      setName: record.setName, year: record.year, mfg: record.mfg, size: record.size, subsets: record.subsets,
+      stars: record.stars, formats: record.formats,
+      headerImgUrl: image,
+      footerImgUrl: `${record.footerImg}${record.footerImgName}`,
+      author: record.author, date: record.now, postBody: record.postBody,
+      hasChecklist: record.hasChecklist, printRun: record.printRun
+    });
+  }
+  return { body, crumbs: browser.breadcrumbHtml(trail), jsonLd, intro: browser.cardIntroHtml(pageName) };
+}
+
+// A JSON-LD block, with the id setJsonLd() (helper.js) replaces; "<" escaped so text can't close the tag.
+function jsonLdTag([id, data]) {
+  return `<script type="application/ld+json" id="${id}">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`;
+}
+
+function buildPage(template, set, categoryRanges, warnings, pickerHtml, navMarkup, footerMarkup, review) {
+  const url = reviewUrl(set);
+  const head = [headBlock(set, url, warnings), ...review.jsonLd.map(jsonLdTag)].join("\n    ");
+  let html = replaceBetween(template, "review-head", head);
   html = replaceBetween(html, "review-params", paramsBlock(set, categoryRanges));
   html = replaceBetween(html, "set-picker", pickerHtml, "waxReviews.html", true);
+  html = replaceBetween(html, "breadcrumbs", review.crumbs);
+  html = replaceBetween(html, "card-intro", review.intro.trim());
+  html = replaceBetween(html, "review-body", review.body);
   html = fillNav(html, pageNameFor(set, categoryRanges), navMarkup, footerMarkup, "waxReviews.html");
-  // The set name as the raw HTML's H1, for crawlers that don't run JavaScript (wax.js swaps in the visible one).
+  // The hidden crawler-only H1: dropped when the review (whose set name is the visible H1) is
+  // pre-rendered, so the page has one; otherwise the set name, for crawlers that don't run JavaScript.
   const emptyH1 = '<h1 id="pageHeader"></h1>';
   if (html.split(emptyH1).length !== 2) throw new Error(`waxReviews.html must contain "${emptyH1}" exactly once`);
-  html = html.replace(emptyH1, `<h1 id="pageHeader">${escapeAttr(set.setName)}</h1>`);
+  html = html.replace(emptyH1, review.body ? "" : `<h1 id="pageHeader">${escapeAttr(set.setName)}</h1>`);
   const doctypeEnd = html.indexOf(">") + 1;
   if (!/^<!doctype html>/i.test(html)) throw new Error("waxReviews.html must start with <!doctype html>");
   return `${html.slice(0, doctypeEnd)}\n${BANNER}${html.slice(doctypeEnd)}`;
@@ -398,10 +476,16 @@ try {
   phoneImageUrl = browser.phoneImageUrl;
   const navLinkFor = navHrefFor(sets, compareSetsForDefault);
   const footerMarkup = footerHtml(navLinkFor);
+  const records = await fetchFullSets(sets, warnings);
+  let prerendered = 0;
   const pages = sets.map((set) => {
     const pageName = pageNameFor(set, categoryRanges);
     const pickerHtml = setPickerHtml(set.year, set.blogCat, pageName, pickerHrefFor(set, sets, compareSetsForDefault));
-    return { set, html: buildPage(template, set, categoryRanges, warnings, pickerHtml, navHtml(pageName, undefined, navLinkFor), footerMarkup) };
+    const record = records.get(set.setID);
+    if (record) prerendered++;
+    else if (!warnings.some((w) => w.startsWith(`${set.year} ${set.blogCat}:`))) warnings.push(`"${set.setName}": review text not pre-rendered (not in its year's reply)`);
+    const review = prerenderReview(browser, set, record, pageName, navLinkFor);
+    return { set, html: buildPage(template, set, categoryRanges, warnings, pickerHtml, navHtml(pageName, undefined, navLinkFor), footerMarkup, review) };
   });
   const navPages = await Promise.all(NAV_PAGE_FILES.map(async (file) => {
     let source = file === "browseBySet.html" ? buildBrowsePage(liveSets, browseColumnHtml) : fs.readFileSync(path.join(REPO_ROOT, file), "utf8");
@@ -421,7 +505,7 @@ try {
   for (const { file, html } of navPages) writeIfChanged(file, html);
 
   warnings.forEach((warning) => console.warn(`warning: ${warning}`));
-  console.log(`${sets.length} review pages (${written} written), the link manifest and ${urls.length} sitemap URLs.`);
+  console.log(`${sets.length} review pages (${written} written, ${prerendered} with the review pre-rendered), the link manifest and ${urls.length} sitemap URLs.`);
 } catch (err) {
   console.error(`Nothing changed: ${err.message}`);
   process.exit(1);
