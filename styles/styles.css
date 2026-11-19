@@ -785,6 +785,17 @@ h1 {
   white-space: normal;
 }
 
+/* The header/footer image under its field on the card set forms (showCardSetImagePreview(), cmsCardSet.js).
+   :not([hidden]) so the display rule doesn't override the hidden attribute. */
+.cms-card-img-preview:not([hidden]) {
+  display: block;
+  max-width: 280px;
+  max-height: 160px;
+  margin-top: 6px;
+  border: 1px solid var(--color-grey-light);
+  border-radius: 4px;
+}
+
 /* Plain divs (not a <table>), so flex-wrap/justify-content behave
    predictably everywhere - wraps onto as many lines as the current total
    needs, at any viewport width, with no JS split to maintain as ranges

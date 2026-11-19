@@ -15,11 +15,41 @@ const CARDSET_CATEGORY_LABELS = {
   mcd:  "McDonald's Sets"
 };
 
+// Where a set's header/footer image names live (a set stores the name, e.g. "v2/x.webp", under this base).
+const CARD_SET_IMAGE_BASE = "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cards/";
+
 /** The Header/Footer Browse buttons: the image browser, with a new upload resized for its slot
- * ("header" or "footer") by processCardSetImage() in cmsImageProcessor.js. */
+ * ("header" or "footer") by processCardSetImage() in cmsImageProcessor.js. A pick or upload fills the
+ * field and refreshes its preview. */
 function browseCardSetImage(fieldId, slot) {
-  openImageBrowser(fieldId, null, "img/cards/", (file) => processCardSetImage(file, slot));
+  openImageBrowser(fieldId, (fileName) => {
+    document.getElementById(fieldId).value = fileName;
+    showCardSetImagePreview(fieldId);
+  }, "img/cards/", (file) => processCardSetImage(file, slot));
 }
+
+/** Shows the field's image under it (#<fieldId>Preview), or hides it when empty or the name doesn't load. */
+function showCardSetImagePreview(fieldId) {
+  const img = document.getElementById(`${fieldId}Preview`);
+  if (!img) return;
+  const name = document.getElementById(fieldId).value.trim();
+  img.onerror = () => { img.hidden = true; };
+  img.onload = () => { img.hidden = false; };
+  if (!name) {
+    img.hidden = true;
+    img.removeAttribute("src");
+    return;
+  }
+  img.src = CARD_SET_IMAGE_BASE + name;
+}
+
+// Typing or pasting a name updates its preview too.
+document.addEventListener("DOMContentLoaded", () => {
+  ["headerImgName", "footerImgName"].forEach((id) => {
+    const field = document.getElementById(id);
+    if (field) field.addEventListener("input", () => showCardSetImagePreview(id));
+  });
+});
 
 //*------------------------------------------ Create New Card Set --------------------------------------*
 
@@ -633,6 +663,8 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
   document.getElementById("setName").value = setName;
   document.getElementById("headerImgName").value = headerImgName;
   document.getElementById("footerImgName").value = footerImgName;
+  showCardSetImagePreview("headerImgName");
+  showCardSetImagePreview("footerImgName");
   // Optional attribute - most sets don't have one, so avoid "undefined".
   document.getElementById("printRun").value = printRun || "";
 
@@ -714,12 +746,10 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
   // Same builder the live site uses (helper.js), so the preview can't
   // drift from production. interactive:false leaves the Checklist link
   // inert - openChecklistModal() lives in wax.js, not loaded here.
-  const CARD_IMG_BASE = "https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/cards/";
-
   container.innerHTML += buildCardSetMarkup({
     setName, year, mfg, size, subsets, stars, formats,
-    headerImgUrl: `${CARD_IMG_BASE}${headerImg}`,
-    footerImgUrl: `${CARD_IMG_BASE}${footerImg}`,
+    headerImgUrl: `${CARD_SET_IMAGE_BASE}${headerImg}`,
+    footerImgUrl: `${CARD_SET_IMAGE_BASE}${footerImg}`,
     author,
     date: _loadedSetDate || Date.now(),
     postBody: body,
