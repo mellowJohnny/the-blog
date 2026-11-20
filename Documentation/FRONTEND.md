@@ -977,7 +977,7 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
   on the `isMemorabilia` flag reorders the two categories as a block
   without disturbing either category's own internal order.
 - **Checklist filters ("Inserts only" and "Rookies only")**: two
-  badge-style checkboxes (`.checklist-modal-filter`, wrapped in
+  plain checkboxes with bold navy labels (`.checklist-modal-filter`, wrapped in
   `.checklist-modal-filters`) on the same row as the set-name title,
   right-justified. Filters client-side only — `openChecklistModal()`
   caches the fetched items in a module-level `currentChecklistItems`,
@@ -991,7 +991,7 @@ from `getChecklistBySetName` — see `LAMBDA_FUNCTIONS.md` and
   read in one place, `getChecklistFilterState()`, shared by the screen
   render and `exportChecklistPdf()` so a download always matches what
   is showing. "Inserts only" is hidden (`hidden` attribute, with a
-  `[hidden]` rule in `styles.css` because the pill's `display: flex`
+  `[hidden]` rule in `styles.css` because the label's `display: flex`
   would otherwise override it) when the loaded checklist has no insert
   cards, which is 13 of the 62 sets. "Rookies only" is hidden the same way
 unless the *main* set has at least one card whose notes contain `RC`

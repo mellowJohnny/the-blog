@@ -24,7 +24,7 @@ Use the `:root` tokens in `styles.css`. Don't type a colour value into a rule.
 |---|---|---|
 | `--color-page-bg` | `rgb(228, 241, 250)` | Page background |
 | `--color-text` | `#000` (black) | Body text: intros, review and post bodies |
-| `--color-text-dark` | `rgb(11, 62, 100)` (navy) | h2 and h3 headings, card titles, modal titles |
+| `--color-text-dark` | `rgb(11, 62, 100)` (navy) | h2 and h3 headings, card titles, modal titles, the checklist filter labels |
 | `--color-heading-outline` | `rgb(2, 70, 153)` | Nav links, footer band, masthead text outline |
 | `--color-link` | `#176693` | Links in content, and focus outlines on the light page. 5:1 or better on every light background; the old `#3FA7D6` was only 2.2:1 (owner-approved 2026-11-14) |
 | `--color-link-light` | `#3FA7D6` | The old link blue, kept for highlights on dark backgrounds (the scores ticker's label and focus outlines, footer link hover) and the desktop nav's hover/focus lift, where a dark blue would vanish or barely change the navy (owner-approved 2026-11-14) |
@@ -34,7 +34,7 @@ Use the `:root` tokens in `styles.css`. Don't type a colour value into a rule.
 | `--color-masthead-bg` | `rgb(44, 82, 137)` | Masthead fallback background |
 | `--color-accent-hover` | `#e551f5` | Link hover accent |
 | `--color-white` | `#fff` | Text on dark backgrounds (footer, phone menu, buttons, Flip pills); card, modal and dropdown backgrounds |
-| `--color-button` | `#256386` | Button fills, checklist filter pills, breadcrumb links |
+| `--color-button` | `#256386` | Button fills, breadcrumb links |
 | `--color-red` | `#a83232` | The site's one red: rookie-card notes (the CMS also uses it for required marks and delete buttons) |
 | `--color-content-bg` | `rgb(212, 233, 241)` | The `.blog-entry` content box |
 | `--color-masthead-text` | `rgb(252, 252, 245)` (cream) | "Junk Wax Hockey" masthead text, page and checklist modal |
