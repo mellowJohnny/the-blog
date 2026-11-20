@@ -1025,13 +1025,13 @@ sit in insert sets doesn't show it. Group headers disappear on their
   export reads it for its header; the PDF filename is built separately
   from `data-set-name` so it comes out as e.g.
   `...-Inserts-Rookies-checklist.pdf`.
-- **Groups that are not insert sets**: `CHECKLIST_NO_SUFFIX_GROUPS` in
-  `wax.js` lists `"<setName>|<insertSetName>"` keys whose group title
-  skips the " - Insert Set" suffix. The Tembec test run in 1989-90
-  O-Pee-Chee (132 cards that were never sold) stays there on purpose and
-  still counts as an insert group for the "Inserts only" filter. Box and
-  mail-away sets that belong with a main set are Extended Sets instead
-  (above), not entries here.
+- **Groups that are not insert sets** are saved as Extended Sets (the
+  upload page's **Extended Set** checkbox; see above), so "Inserts only"
+  leaves them out. The checkbox, not the "Insert / Extended Set Name"
+  field, decides which a group is. The 1989-90 O-Pee-Chee Tembec Test Run
+  (132 cards that were never sold) is one; until 2026-11-20 it was an
+  insert group with a hard-coded exception (`CHECKLIST_NO_SUFFIX_GROUPS`)
+  that only dropped its " - Insert Set" suffix.
 - **Print**: a "🖨 Print" button in the modal calls `window.print()`.
   The masthead inside the modal (`.checklist-modal-masthead`) mirrors
   `waxReviews.html`'s real masthead treatment (scaled-down Bebas Neue)
