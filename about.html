@@ -37,12 +37,22 @@
     <meta name="twitter:title" content="How This Site Comes Together | Junk Wax Hockey">
     <meta name="twitter:description" content="About Junk Wax Hockey - who is behind this vintage and junk wax hockey card site, and what you'll find here.">
     <meta name="twitter:image" content="https://s3.us-east-2.amazonaws.com/mellowjohnny.cc.files/img/blog/waxPacks_Home.webp">
-    <!-- Google Core Web Vitals image preload -->
-    <link
-      rel="preload"
-      as="image"
-      href="/images/masthead-v19.webp"
-      fetchpriority="high">
+    <!-- The reviews' author: each review's Review JSON-LD links its author here (cardSetJsonLd() in wax.js) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "AboutPage",
+        "url": "https://www.junkwaxhockey.com/about.html",
+        "mainEntity": {
+          "@type": "Person",
+          "name": "Christian Couillard",
+          "url": "https://www.junkwaxhockey.com/about.html"
+        },
+        "isPartOf": { "@type": "WebSite", "name": "Junk Wax Hockey", "url": "https://www.junkwaxhockey.com/" }
+      }
+    </script>
+    <!-- The masthead uses Bebas Neue -->
+    <link rel="preload" href="/fonts/bebas-neue-latin-v16.woff2" as="font" type="font/woff2" crossorigin>
 
     <!-- Stylesheet -->
     <link rel="stylesheet" type="text/css" href="/styles/styles.css">
@@ -83,6 +93,8 @@
         fetchCopyrightYear();
         fetchNav("about");
         fetchFooterLinks();
+        // Masthead: random NHL team colors on every load - helper.js
+        applyRandomMastheadStyling();
       });
 
       window.dataLayer = window.dataLayer || [];
@@ -95,9 +107,15 @@
   <body>
     <a class="skip-link input-button" href="#main">Skip to content</a>
     <section>
-      <header class="home-masthead">
-        <img src="/images/masthead-v19.webp" width="1500" height="250" alt="Junk Wax Hockey">
-      </header>
+      <table class="wax-reviews-mast-table">
+        <tr>
+          <td>
+            <header class="wax-reviews-masthead">
+              <a href="/">Junk Wax Hockey</a>
+            </header>
+          </td>
+        </tr>
+      </table>
     </section>
     <nav aria-label="Main">
       <!-- Dynamically fetch the Nav using fetchNav() in helper.js -->

@@ -227,7 +227,7 @@ function fetchPageTitle(item)
     keywords: keywords,
     image: image,
     url: buildReviewCanonicalUrl(item),
-    type: "website"
+    type: "article" // as the generated page's head (tools/generateReviewPages)
   });
 
   renderBreadcrumbs(
@@ -243,17 +243,21 @@ function fetchPageTitle(item)
 }
 
 // A set's Product/Review structured data. DOM-free: tools/generateReviewPages writes it into each page's HTML too.
-function cardSetJsonLd({ setName, author, now, stars }, description, image, keywords) {
+// The author links to the About page (which describes the same Person); SITE_ORIGIN: helper.js.
+function cardSetJsonLd({ setName, author, now, updatedAt, stars, mfg }, description, image, keywords) {
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": setName,
     "image": image,
+    ...(mfg ? { "brand": { "@type": "Brand", "name": mfg } } : {}),
     ...(keywords ? { "keywords": keywords } : {}),
     "review": {
       "@type": "Review",
-      "author": { "@type": "Person", "name": author },
+      "author": { "@type": "Person", "name": author, "url": `${SITE_ORIGIN}/about.html` },
+      "publisher": { "@type": "Organization", "name": "Junk Wax Hockey", "url": SITE_ORIGIN },
       "datePublished": now,
+      "dateModified": updatedAt || now,
       "reviewBody": description,
       "reviewRating": {
         "@type": "Rating",

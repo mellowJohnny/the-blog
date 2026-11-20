@@ -367,7 +367,11 @@ function headBlock(set, url, warnings) {
     `<meta name="description" content="${escapeAttr(description)}">`,
     ...(keywords ? [`<meta name="keywords" content="${escapeAttr(keywords)}">`] : []),
     `<link rel="canonical" href="${url}">`,
-    `<meta property="og:type" content="website">`,
+    // A review is an article: its publish and edit dates, and its author's About page.
+    `<meta property="og:type" content="article">`,
+    ...(set.now ? [`<meta property="article:published_time" content="${escapeAttr(set.now)}">`] : []),
+    ...(set.updatedAt ? [`<meta property="article:modified_time" content="${escapeAttr(set.updatedAt)}">`] : []),
+    `<meta property="article:author" content="${SITE_ORIGIN}/about.html">`,
     `<meta property="og:url" content="${url}">`,
     `<meta property="og:title" content="${escapeAttr(title)}">`,
     `<meta property="og:description" content="${escapeAttr(description)}">`,
