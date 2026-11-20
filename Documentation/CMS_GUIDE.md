@@ -204,10 +204,13 @@ changes when an old review is reopened.
   not derived from the image. An earlier version read the picked file's
   `naturalWidth`/`naturalHeight` via a throwaway `Image()` load; that
   was removed once wrap images settled on a standard size.
-  `applyImgWrapSmSizing()` (`helper.js`) reads the inline *style*, not
-  the `width`/`height` HTML attributes, to compute the mobile size —
-  older hand-typed content sometimes has the two out of sync (a stale
-  attribute left behind after the style was hand-edited).
+  `withWrapSizes()` (`helper.js`, run by `buildCardSetMarkup()`) reads
+  the inline *style*, not the `width`/`height` HTML attributes, to
+  compute the mobile size, and writes it into that style as
+  `--wrap-w`/`--wrap-h` — older hand-typed content sometimes has the two
+  out of sync (a stale attribute left behind after the style was
+  hand-edited). It only adds to an existing `style` (TinyMCE always
+  writes one on these images), so keep the size in the style.
 
 **Sizing convention for published content** (settled 2026-09-30, after
 auditing every wrap image on the site). The rule is *never upscale* —
@@ -451,6 +454,12 @@ straight through to the Lambda (this is exactly what caused a 500 on
 (see "SEO fields and their Generate buttons" above); `updateCardSet()`,
 which had no client-side guards, is now `async` for that check.
 
+**The set name is trimmed on create** (2026-11-18): `createCardSet()`
+strips leading and trailing spaces after its required check, and
+`createCardPost` does the same server-side. A set saved as
+`"1990-91 Pro Set "` didn't match its checklist, whose `setName` (the
+only link between the two tables) had no trailing space.
+
 ### CMS alert / confirm modals
 
 Every validation/success/error message across the CMS (`cmsBlog.js`,
@@ -562,6 +571,62 @@ Browse when it's first created, not from its edit form:
 3. Or, upload a brand-new file: pick a file → requests a presigned S3 PUT URL from a Lambda → uploads the raw file directly to S3 from the browser → refreshes the image list and auto-selects the new file.
 
 See `API_ENDPOINTS.md` → "CMS — image management" for the exact calls.
+
+**Card set images are processed before upload** (since 2026-11-18).
+The header and footer Browse buttons (`browseCardSetImage(fieldId,
+slot)`, `cmsCardSet.js`) and the editor's Insert wrap image / Insert
+middle image buttons hand every upload to `processCardSetImage(file,
+slot)` (`scripts/cmsImageProcessor.js`, the same file as the wax pack and
+figure processing), entirely in the browser. One original photo works
+for every slot; the slot decides the size:
+
+| Slot | Width | Size cap | Phone copy |
+| --- | --- | --- | --- |
+| Header (the page's LCP) | 1250px | 200 KB | 750px, 90 KB |
+| Middle image | 1500px | 300 KB | 750px, 90 KB |
+| Footer | 1800px | 300 KB | 750px, 90 KB |
+| Wrap logo | 300px on the long side | 80 KB | none |
+
+Each width is about twice the size the image is shown at, so it stays
+sharp on high-density screens. The image is scaled down in halving
+steps (`halveCmsImage()`), which keeps fine detail that a single big
+jump would lose, then lightly sharpened (`CMS_SHARPEN_AMOUNT`, 0.35)
+and encoded as WebP at quality 0.82, stepping down to 0.7 and 0.6 until
+it fits under the cap. A smaller original is never enlarged. The modal
+shows the processed result (`#uploadPreview`) and its size before you
+upload.
+
+- **Where they go.** Processed images are written to `img/cards/v2/`,
+  so new images sit apart from the older hand-made ones in `img/cards/`,
+  which can be replaced one set at a time and then deleted. The form
+  field stores `v2/<name>`, concatenated with the `img/cards/` prefix as
+  before.
+- **File names.** `<set name>_<slot>_<code>.webp`, for example
+  `1990-91_Pro_Set_header_edf20e.webp`: the set name from the form (`'`
+  dropped, anything else that isn't a letter, digit or hyphen turned
+  into `_`), the slot, and six hex characters from a hash of the image.
+  The images are served with a one-year immutable cache header, so a new
+  picture must never reuse an old name; the hash guarantees that.
+- **Phone copies.** Header, middle and footer images also get a 750px
+  copy, `<name>-sm.webp`, uploaded first (`putCmsImageFile()` in
+  `cmsImageBrowser.js`); if it fails, nothing else is uploaded. The live
+  page serves it to screens 600px wide and below through a `<picture>`
+  (`withPhoneSource()`, `helper.js`), and the review page's header
+  preload picks the right file per device, so a phone's largest image is
+  about a third of the desktop one. See `FRONTEND.md`, "Card set markup
+  is shared with the CMS preview".
+- **The image list** shows `v2/` files with the rest of `img/cards/`. It
+  uses one unpaginated S3 listing, so it tops out at 1,000 objects (436
+  in the bucket when this was built); phone copies count too.
+- **Previews.** On `createCardSet.html` and `setEdit.html` a preview of
+  the header and footer image (up to 280x160px) sits under each field
+  (`showCardSetImagePreview()`, `cmsCardSet.js`). It follows the field:
+  picking or uploading an image, the edit page loading a set, and typing
+  or pasting a name all update it, and it hides when the field is empty
+  or the name doesn't load.
+- **Browser support.** Like the wax pack processing, it needs a browser
+  that can write WebP (Chrome, Edge, Firefox), and an iPhone HEIC photo
+  needs exporting as JPEG first.
 
 **Card sets vs. blog posts pick different things**, and it matters if
 you're touching this code: card set forms (`openImageBrowser()`) write
@@ -846,6 +911,10 @@ table (`DATA_MODEL.md`):
 - **Pick Wax Pack** (`pickWaxPack.html`) lists every pack as a link to
   its edit page (the list is fetched without the browser cache, so a
   fresh save shows at once).
+- **Notes counters.** The front and back notes each show a character
+  counter against a soft limit (110 for the front, which fills two lines
+  of a desktop card; 300 for the back, about six). It turns red past the
+  limit but never blocks the save (`initCharCount()` in `cmsFormUI.js`).
 - **Save** sends the whole form to `saveWaxPack` with the Cognito token;
   a new pack's key is made from its name once and kept through later
   renames. **Delete** (edit page) asks through `cmsConfirm()` and calls

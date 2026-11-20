@@ -465,7 +465,12 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   successful save, it `Query`s the `Cards` table by the same `setName`
   (Cards' own partition key) and sets `hasChecklist: true` on the
   matching item(s) — this is what `waxReviews.html` checks to show a
-  "Full Checklist" row (see `FRONTEND.md`). This step has its own
+  "Full Checklist" row (see `FRONTEND.md`). The same update also sets
+  `checklistUpdatedAt` (an ISO timestamp, since 2026-11-19): it changes
+  on every save, so the `Cards` stream always starts a site build
+  (`cardsRebuildTrigger`), which rewrites the set's checklist page and
+  its sitemap date. Setting `hasChecklist: true` again on a set that
+  already had it changed nothing, so it started no build. This step has its own
   try/catch, same design principle as `updateCardSet`'s TinyMCE cleanup
   pass below — its failure never fails the checklist save itself, which
   already fully succeeded by this point. It's not silent, though: if
@@ -510,10 +515,12 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   for an operation this function already had every permission to perform.
 - **`hasChecklist` is cleared only when a set's last group is deleted.**
   After a successful delete the Lambda Querys the partition (`Limit: 1`,
-  `hasAnyChecklistRows()`); if nothing remains it sets `hasChecklist`
-  false on the matching `Cards` item, which removes the "Checklist" link
-  from `waxReviews.html`. Deleting one group of several leaves the flag
-  alone, since the set still has a checklist to show. `flagCardsHasChecklist()`
+  `hasAnyChecklistRows()`) and writes the result to the matching `Cards`
+  item: `hasChecklist` false if nothing remains, which removes the
+  "Checklist" link from `waxReviews.html` and the set's checklist page
+  from the next build, or true if other groups remain. It writes either
+  way (since 2026-11-19), so `checklistUpdatedAt` moves and the build
+  rewrites the checklist page without the deleted group. `flagCardsHasChecklist()`
   was generalised to `setCardsHasChecklist(setName, value)` for this —
   before it, nothing anywhere ever set the flag back to false, so a
   deleted checklist would have left a link opening an empty modal.
@@ -695,7 +702,10 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   `<lastmod>`, and, since 2026-10-30, `stars` (decides a year's default
   set; the generator refuses to run without it), `seoURLSlug` (the page's
   address), `seoPageTitle`, `seoMetaDesc`, `seoTags`, `headerImg` and
-  `headerImgName` (the generated page's head). Nothing else. A
+  `headerImgName` (the generated page's head), and, since 2026-11-19,
+  `checklistUpdatedAt` (the checklist page's sitemap date; written by
+  `saveChecklist`). Nothing else: the generator gets each review's text
+  from `getCardSetsByYear`, one request per year and category. A
   `?view=links` slim variant was added and removed the same day (public
   pages read the build's static `reviews/index.json` instead).
 - **Why a new Lambda**: the CMS's `getCardSets` returns the same sets
@@ -707,7 +717,7 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   throughput-cap incidents before).
 - **Query**: `blogStatus-year-index`, `blogStatus = "OK"`, with a
   `ProjectionExpression` of `setID, setName, blogCat, #yr, stars,
-  hasChecklist, #now, updatedAt, seoURLSlug, seoPageTitle, seoMetaDesc,
+  hasChecklist, checklistUpdatedAt, #now, updatedAt, seoURLSlug, seoPageTitle, seoMetaDesc,
   seoTags, headerImg, headerImgName` (`year` is a DynamoDB reserved word, hence the
   alias, and `now` is aliased too to be safe). It loops on
   `LastEvaluatedKey` so the list can't be silently truncated at the 1 MB
@@ -1225,9 +1235,12 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   (`blogStatus` "OK"); a `REMOVE` of one; or a `MODIFY` where the old or
   new item is live and any of `blogStatus, setName, year, blogCat, setID,
   stars, seoURLSlug, seoPageTitle, seoMetaDesc, seoTags, headerImg,
-  headerImgName, now, updatedAt` differ. Staged-only changes, vote counts
-  (`upvotes`/`downvotes`), `hasChecklist` flips and a body edit that
-  doesn't go through `updateCardSet` start nothing. Every `updateCardSet`
+  headerImgName, now, updatedAt` differ, or, since 2026-11-19 (when the
+  generator began pre-rendering the review and the checklist pages),
+  any of `postBody, size, subsets, formats, mfg, author, footerImg,
+  footerImgName, printRun, hasChecklist, checklistUpdatedAt`.
+  Staged-only changes and vote counts (`upvotes`/`downvotes`) start
+  nothing. Every `updateCardSet`
   save moves `updatedAt`, so every CMS save of a live set does start a
   build; that is deliberate, it keeps the sitemap's `<lastmod>` accurate.
   Values are compared in DynamoDB's typed shape, so no unmarshalling.
@@ -1235,8 +1248,8 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   stream retries the batch (3 attempts); rebuilding is idempotent. A
   batch with nothing that counts logs one line and does nothing.
 - **What the build does**: runs `tools/generateReviewPages/generate.mjs`
-  (`amplify.yml`), which writes the review pages, `reviews/index.json` and
-  `sitemap.xml`. See `REVIEW_PAGES.md`.
+  (`amplify.yml`), which writes the review pages, the checklist pages,
+  `reviews/index.json` and `sitemap.xml`. See `REVIEW_PAGES.md`.
 - **AWS setup (manual, one time, done 2026-10-30)**:
   1. DynamoDB, `Cards`, Exports and streams: turn on the stream, view type
      **New and old images**.
@@ -1375,7 +1388,7 @@ section title:
 | `Lambdas/updateBlogPost/` | Update blog post | Plain `UpdateCommand` keyed on `blogType`+`time`. |
 | `Lambdas/listBlogsForUpdate/` | Get all live blogs (for the edit picker) | **Note**: despite the doc's previous description, this does a full unfiltered `Scan` (`published = :p` where `:p = true`) with no `ProjectionExpression` — the response is full blog records under `{items: [...]}`, not just `{title, blogID, blogType}`. `API_ENDPOINTS.md` corrected 2026-08-15. |
 | `Lambdas/getStagedBlogsForUpdate/` | Get all staged (draft) blogs | Same correction as above, mirrored: full `Scan` on `published = false`, full records returned, not a narrow projection. |
-| `Lambdas/createCardPost/` | Create card set | Despite the AWS function name, this is the "create card set" Lambda (its own header comment calls itself `createCardSet Lambda Function`). Generates `setID` via `Math.random().toString(36)` (not a UUID). Hardcodes the S3 image URL prefix (`headerImg`/`footerImg`) server-side — see the CloudFront-migration discussion this repo's git history has around 2026-08-15 for why that matters if image hosting ever moves off direct S3 URLs. Stores the optional `printRun` only when non-blank, so sets without one get no empty attribute. Since 2026-10-30 it rejects (400) a missing or malformed `seoURLSlug` and, for `blogStatus` "OK", a slug another live set already uses (a `blogStatus-year-index` query via `liveSetUsingSlug()`; a failing check returns 500), so its role needs an inline `dynamodb:Query` policy on that GSI like `updateCardSet`'s. A live create also starts a site build through the `Cards` stream. |
+| `Lambdas/createCardPost/` | Create card set | Despite the AWS function name, this is the "create card set" Lambda (its own header comment calls itself `createCardSet Lambda Function`). Generates `setID` via `Math.random().toString(36)` (not a UUID). Hardcodes the S3 image URL prefix (`headerImg`/`footerImg`) server-side — see the CloudFront-migration discussion this repo's git history has around 2026-08-15 for why that matters if image hosting ever moves off direct S3 URLs. Stores the optional `printRun` only when non-blank, so sets without one get no empty attribute. Since 2026-10-30 it rejects (400) a missing or malformed `seoURLSlug` and, for `blogStatus` "OK", a slug another live set already uses (a `blogStatus-year-index` query via `liveSetUsingSlug()`; a failing check returns 500), so its role needs an inline `dynamodb:Query` policy on that GSI like `updateCardSet`'s. A live create also starts a site build through the `Cards` stream. Since 2026-11-18 it trims `setName` (a trailing space broke the exact match with the set's checklist), as `createCardSet()` does in the browser. |
 | `Lambdas/getCardSets/` | Get all live card sets (for the edit picker) | Queries the `blogStatus-year-index` GSI, `blogStatus = "OK"`. File has old commented-out `ProjectionExpression` variants left in as history of the 2026-08-14 `getStagedCardSets` projection bug fix (see below) — this one already returns full items. |
 | `Lambdas/getStagedCardSets/` | Get all staged (draft) card sets | Same GSI, `blogStatus = "staged"`. This is the Lambda whose `ProjectionExpression` bug (only requesting `setName, setID`, silently dropping `blogCat`/`year`) was found and fixed on 2026-08-14 — see `API_ENDPOINTS.md` for the full story. The fixed projection requests `setName, setID, blogCat, year`; `year` is aliased in the expression (e.g. `#y`) since it's a DynamoDB reserved word. It also projects `hasChecklist` (added 2026-09-30) so `cms/uploadChecklist.html`'s Set Name type-ahead can offer only staged sets that have a checklist; `getCardSets` needed no change since it returns full items. |
 | `Lambdas/getCardSetByID/` | Get a single card set by ID | Converted from PartiQL (`SELECT * FROM Cards WHERE setID=?`, which forced a full-table Scan since `setID` isn't the table's key) to a `QueryCommand` against the `setID-index` GSI on 2026-09-04 — a genuine performance win, not just a style change; see `DATA_MODEL.md`'s `Cards` GSI table. |

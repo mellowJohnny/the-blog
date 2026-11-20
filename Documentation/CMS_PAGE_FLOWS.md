@@ -149,10 +149,10 @@ SEO fields, etc.) since a card set review carries more structured
 metadata than a blog post does.
 
 **What loads**: `auth.js` and the TinyMCE CDN script in `<head>`; then
-`cmsCardSet.js`, `cmsImageBrowser.js`, `cmsFormUI.js`, `helper.js` (in
-that order, all in `<head>`), followed by the inline `window load`
-block. `wax.js` is **not** loaded — this page never called anything in
-it.
+`cmsCardSet.js`, `cmsImageBrowser.js`, `cmsImageProcessor.js`,
+`cmsFormUI.js`, `helper.js` (in that order, all in `<head>`), followed
+by the inline `window load` block. `wax.js` is **not** loaded — this
+page never called anything in it.
 
 **On `window load`**: `fetchCopyrightYear()`, then
 `initTinyEditor('#postBody', { cardImageBlocks: true })` — unlike
@@ -164,25 +164,42 @@ review body content".
 
 **User interactions**:
 - "Browse" buttons next to Header/Footer Image Name →
-  `openImageBrowser('headerImgName')` / `openImageBrowser('footerImgName')`
-  (`cmsImageBrowser.js`) — calls `fetchImageList()`, the same **List
-  images in the bucket** call (same `cmsImagePicker` Lambda) as the
-  blog picker uses, filtered client-side to the `img/cards/` prefix
+  `browseCardSetImage('headerImgName', 'header')` /
+  `browseCardSetImage('footerImgName', 'footer')` (`cmsCardSet.js`),
+  which opens `openImageBrowser()` (`cmsImageBrowser.js`) on
+  `img/cards/` with that slot's processor
+  (`processCardSetImage(file, slot)`, `cmsImageProcessor.js`) and a
+  callback. `openImageBrowser()` calls `fetchImageList()`, the same
+  **List images in the bucket** call (same `cmsImagePicker` Lambda) as
+  the blog picker uses, filtered client-side to the `img/cards/` prefix
   this time. `renderImageList()` draws the thumbnail grid. Clicking a
-  thumbnail writes just the bare **filename** into the target field —
-  not a full URL, since the `Cards` table stores the S3 prefix
-  separately and `wax.js`'s `displayCardSet()` concatenates the two at
-  render time on the live site (see `createBlogPost.html`'s "Notable"
-  note above for why this differs from the blog form).
+  thumbnail writes the **filename** (relative to `img/cards/`, so
+  `v2/<name>` for a processed image) into the target field — not a
+  full URL, since the `Cards` table stores the S3 prefix separately and
+  `wax.js`'s `displayCardSet()` concatenates the two at render time on
+  the live site (see `createBlogPost.html`'s "Notable" note above for
+  why this differs from the blog form) — and the callback refreshes the
+  field's preview.
+- **Image previews** → under each Browse button, an `<img>`
+  (`#headerImgNamePreview`, `#footerImgNamePreview`, class
+  `.cms-card-img-preview`) shows the field's image, filled by
+  `showCardSetImagePreview(fieldId)` (`cmsCardSet.js`): after a pick or
+  an upload (the browse callback), and as the name is typed or pasted
+  (an `input` listener added on `DOMContentLoaded`). It hides when the
+  field is empty or the image doesn't load. There so the author can see
+  which image a filename is without opening the live page.
 - Image search box (`oninput="filterImageList()"`) — correctly wired
   on this page, since `openImageBrowser()` is what actually populated
   the state `filterImageList()` reads.
 - **Insert wrap image / Insert middle image** — the two TinyMCE toolbar
   buttons `initTinyEditor`'s `cardImageBlocks` flag adds
   (`registerCardImageBlockButtons()`, `cmsFormUI.js`). Each opens the
-  same `openImageBrowser()` picker as the Browse buttons above, but in
+  same `openImageBrowser()` picker as the Browse buttons above, with
+  the "wrap" or "middle" processor for uploads, but in
   its callback mode (`openImageBrowser(null, onSelect)`) rather than
-  writing to a form field — the picked image goes into a small TinyMCE
+  writing to a form field. A processed middle image is inserted inside
+  a `<picture>` with its phone copy (`withPhoneSource()`, `helper.js`) —
+  the picked image goes into a small TinyMCE
   dialog instead (Float/Logo Type/Alt Text for the wrap image; just
   Alt Text for the middle image, since `.card-middle-img` has no
   float/size choice), then gets inserted at the cursor as one atomic,
@@ -223,11 +240,18 @@ review body content".
   `CMS_GUIDE.md` and `REVIEW_PAGES.md`.
 - "Upload" button → `uploadNewImage()` (`cmsImageBrowser.js`) — same
   function and same `cmsImageUploader` Lambda as `createBlogPost.html`'s
-  upload; here `_imageBrowserTargetFieldId` is the one set, so it
-  resolves to `img/cards/`, re-runs `fetchImageList()`/
-  `renderImageList()`, and sets the target field to the bare `fileName`
-  (not `finalUrl`) on success, matching the filename-only convention
-  above.
+  upload, but the chosen file has already been through the slot's
+  processor when it was picked: resized, sharpened and encoded as WebP,
+  named `v2/<set name>_<slot>_<code>.webp` and, for a header, middle or
+  footer image, given a 750px phone copy. Processing happens in the
+  browser because the upload is a presigned PUT straight to S3, with no
+  server step to do it. It uploads the phone copy first
+  (`putCmsImageFile()`; one presigned URL per file) and stops if that
+  fails, so a desktop image never goes live without its phone copy. It
+  then re-runs `fetchImageList()`/`renderImageList()` and sets the
+  target field to the `fileName` (not `finalUrl`) on success, matching
+  the filename-only convention above. See `CMS_GUIDE.md`'s "Image picker
+  / uploader" for sizes and naming.
 - Close (`×`) → `closeImageBrowser()` (`cmsImageBrowser.js`).
 - "Submit Post" button → `createCardSet(blogStatus, seoPageTitle,
   seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets,
@@ -238,7 +262,9 @@ review body content".
   `year` non-blank, the SEO Friendly URL present and URL-safe
   (`seoSlugProblem()`), then the TinyMCE body non-blank, so the two fields
   that form the table's actual key (`setName`+`year`) can never be
-  submitted empty. The `createCardPost` Lambda repeats the slug check and
+  submitted empty. The set name is then trimmed, as `createCardPost`
+  also does server-side, because a trailing space breaks the exact
+  `setName` match its checklist relies on. The `createCardPost` Lambda repeats the slug check and
   also refuses a live set whose slug another live set already uses. Sets the submit button's "Crossing Fingers..."
   state, then calls **Create card set**, fronted by the
   `createCardPost` Lambda (`Lambdas/createCardPost/` — note the AWS
@@ -411,9 +437,10 @@ data, let the editor change it, save/delete — plus a client-side
 Preview feature blog posts don't have (see below).
 
 **What loads**: `auth.js` and the TinyMCE CDN script in `<head>`; then
-`cmsCardSet.js`, `cmsImageBrowser.js`, `cmsFormUI.js`, `helper.js` (in
-that order, all in `<head>`). `wax.js` is **not** loaded, which is
-why the Preview renders its Checklist link inert (see below). The `setID` extraction and `window load` listener
+`cmsCardSet.js`, `cmsImageBrowser.js`, `cmsImageProcessor.js`,
+`cmsFormUI.js`, `helper.js` (in that order, all in `<head>`). `wax.js`
+is **not** loaded, which is why the Preview renders its Checklist link
+inert (see below). The `setID` extraction and `window load` listener
 are together in that same `<head>` block, after those script tags
 (unlike `blogEdit.html`'s equivalent block, which sits after
 `</head>`).
@@ -463,10 +490,14 @@ guided flow.
 
 **User interactions**:
 - "Browse" buttons (Header/Footer Image Name) → same
-  `openImageBrowser()`/`fetchImageList()`/`renderImageList()`/
-  `uploadNewImage()` flow, same `cmsImagePicker`/`cmsImageUploader`
-  Lambdas, as `createCardSet.html` (`cmsImageBrowser.js`), writing a
-  bare filename into the target field.
+  `browseCardSetImage()`/`openImageBrowser()`/`fetchImageList()`/
+  `renderImageList()`/`uploadNewImage()` flow, with the same processing
+  and the same `cmsImagePicker`/`cmsImageUploader` Lambdas, as
+  `createCardSet.html` (`cmsImageBrowser.js`), writing the filename into
+  the target field.
+- **Image previews** — same as `createCardSet.html` above; here
+  `populateCardSet()` also calls `showCardSetImagePreview()` for both
+  fields once the set loads, so the current images show straight away.
 - **Insert wrap image / Insert middle image** — same toolbar buttons
   and flow as `createCardSet.html` above.
 - **SEO Generate buttons, length counters and textareas** — identical
@@ -967,7 +998,8 @@ These three pages exist to keep the `WaxPacks` table filled, which is
 everything The Wax Museum (`waxMuseum.html`) shows. All load
 `scripts/cmsWaxPack.js` and `helper.js`; the two form pages also load
 `cmsImageBrowser.js` and `cmsImageProcessor.js` for the image
-pickers. Field rules and the image processing are in `CMS_GUIDE.md`'s
+pickers, and `cmsFormUI.js` for the notes counters (`initCharCount()`,
+refreshed by `refreshCharCounts()` when the edit page fills the form). Field rules and the image processing are in `CMS_GUIDE.md`'s
 "Wax packs".
 
 - **`pickWaxPack.html`** — `initPickWaxPackPage()` calls **Get wax packs

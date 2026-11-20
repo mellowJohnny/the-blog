@@ -256,9 +256,17 @@ way: `REVIEW_PAGES.md`.
 On a generated page the nav, footer and year picker are already in the
 HTML (the build pre-renders them with final `/reviews/<slug>/` links;
 `REVIEW_PAGES.md`, "Links"), so `fetchNav()`, `fetchFooterLinks()` and
-`renderSetPicker()` each see their block and return without drawing. On
-an old query-string URL those blocks are empty in the HTML and the calls
-build them as described below.
+`renderSetPicker()` each see their block and return without drawing.
+Since 2026-11-19 so are the category intro (`renderCardIntro()` then
+skips it too), the breadcrumbs, the review itself and both JSON-LD
+blocks: the build runs the same functions with each set's full record
+(`REVIEW_PAGES.md`, "The review, pre-rendered"), so a crawler that
+doesn't run JavaScript reads the whole review. `fetchCardSetsByYear()`
+still runs and redraws the identical review, adding the pagination and
+vote buttons; it shows no spinner there, and a failed or empty reply
+leaves the pre-rendered review in place. On an old query-string URL all
+of those blocks are empty in the HTML and the calls build them as
+described below.
 
 The `<head>` of a generated page also carries two preloads, for the set's
 header image and for the set-data request, so both downloads start with
@@ -336,20 +344,20 @@ everything else the visitor can see or navigate to on this page.
   `renderCardSetPage()`, which slices out
   one set (`pageSize` is `1` — most years have exactly one set anyway;
   see "Notable" below) and calls the big `displayCardSet(...)` render
-  function (18 positional params — `postBody`, `year`, `mfg`, `size`,
+  function (19 positional params — `postBody`, `year`, `mfg`, `size`,
   `subsets`, `stars`, `formats`, `headerImg`/`headerImgName`,
   `footerImg`/`footerImgName`, `setName`, `author`, `date`, `upvotes`,
-  `downvotes`, `hasChecklist`, `printRun`) plus `fetchPageTitle(item)` for each —
+  `downvotes`, `hasChecklist`, `printRun`, and the Checklist link's
+  `checklistHref`) plus `fetchPageTitle(item)` for each —
   despite the name, this now does all of this page's per-set SEO work
   in one place, not just the title: it sets `document.title` to
   the set's CMS SEO title (`seoPageTitle`), or `<setName> Hockey Card
   Set Review` when that field is empty (so the browser
   tab/bookmark reflect the specific set, not a generic page title),
-  writes the set name into the
-  previously-empty `<h1 id="pageHeader">` (this element used to have a
-  stale comment claiming `displayCardSet()` populated it — nothing
-  actually did, on either `waxReviews.html` or `lockout.html`, until
-  this fix), calls `setPageMeta({...})` (`helper.js`) with that title, the
+  removes the hidden crawler-only `<h1 id="pageHeader">` if it is
+  there (the set name in the set details is the page's one visible H1;
+  a pre-rendered page has no hidden one), calls `setPageMeta({...})`
+  (`helper.js`, with `type: "article"`) with that title, the
   set's CMS description (`seoMetaDesc`) or, when empty, the review text
   with HTML stripped by `stripHtmlTags()` and cut at a word boundary
   near 155 characters by `truncateAtWord()` (both `helper.js`), the
@@ -357,9 +365,11 @@ everything else the visitor can see or navigate to on this page.
   social-share image, and a canonical built from the set's own data by
   `buildReviewCanonicalUrl()` (the set's `/reviews/<slug>/` page, so stray
   query parameters can't create duplicate canonicals; the query form with
-  `year`, `pageName`, `blogCat` and `setID` only for a set with no slug) — and writes a `Product`+`Review` JSON-LD block (`name`/`image` on the
-  `Product`, `author`/`datePublished`/`reviewRating` — out of 5, from
-  `stars` — and a stripped-text `reviewBody` on the nested `Review`) via
+  `year`, `pageName`, `blogCat` and `setID` only for a set with no slug) — and writes a `Product`+`Review` JSON-LD block, built by
+  `cardSetJsonLd()` (`name`/`image`/`brand` on the `Product`;
+  `author` with a `url` to the About page, `publisher`,
+  `datePublished`/`dateModified`, `reviewRating` — out of 5, from
+  `stars` — and the description as `reviewBody` on the nested `Review`) via
   `setJsonLd("jsonld-cardset", ...)`, a fixed id for the same
   one-set-at-a-time reason the Tech pages' `jsonld-blogpost` block uses.
   It also calls `renderBreadcrumbs()` (`helper.js`), which fills the
@@ -469,7 +479,10 @@ everything else the visitor can see or navigate to on this page.
   out of retrying.
 - "Checklist" link (only rendered when `hasChecklist` is true) exists
   because not every set has had its full card-by-card checklist
-  uploaded yet — `openChecklistModal(this)` (`wax.js`) reads `setName`
+  uploaded yet. Its `href` is the set's checklist page
+  (`/reviews/<slug>/checklist/`, see "Checklist page" below), for
+  crawlers and new tabs; a click runs `openChecklistModal(this)` instead
+  and returns false — `openChecklistModal(this)` (`wax.js`) reads `setName`
   off `data-set-name`, shows `#checklistModalOverlay` with the site's
   loading spinner inline in its body, resets both filter checkboxes,
   then calls **Get checklist by set name**,
@@ -515,9 +528,10 @@ everything else the visitor can see or navigate to on this page.
   the file, so a download taken with a filter on only contains the
   filtered cards. The PDF is
   built entirely client-side via jsPDF (cdnjs, pinned to `4.2.1`) plus
-  3 small embedded font files (`scripts/fonts/bebasNeue-normal.js`,
-  `scripts/fonts/sourceSans3-normal.js`,
-  `scripts/fonts/sourceSans3-bold.js`) — no backend call at all for the
+  3 small embedded font files (`/scripts/fonts/bebasNeue-normal.js`,
+  `/scripts/fonts/sourceSans3-normal.js`,
+  `/scripts/fonts/sourceSans3-bold.js`, root-relative so they load from
+  a `/reviews/<slug>/` page) — no backend call at all for the
   PDF itself, since the data's already in memory from the earlier
   checklist fetch. All four scripts are injected lazily on first click
   via a small `loadJsPdf()` loader and cached, not loaded as static
@@ -548,6 +562,48 @@ which would otherwise represent the cancelled 2004-05 NHL lockout
 season) and, if matched, immediately redirects to `lockout.html?...`
 with the same params before any of the rest of the page's scripts run
 — see `FRONTEND.md`.
+
+## Checklist page - `/reviews/<slug>/checklist/`
+
+Each set with a checklist has its own page, generated by every build
+(`REVIEW_PAGES.md`, "Checklist pages"). It exists so search engines can
+index a checklist, which the modal can't offer since it loads only on a
+click, and so a collector who lands from a "<set> checklist" search gets
+the whole list with the same tools as the modal. The review page's
+Checklist link points here for crawlers, and Browse By Set links here
+directly.
+
+**Already in the HTML**: the title ("<set> Hockey Card Checklist"),
+description, canonical, social tags, breadcrumbs (Home, category, the
+review, Checklist) and their `BreadcrumbList` JSON-LD, the nav and
+footer, and the full list, grouped as in the modal. The build loaded
+the cards from **Get checklist by set name** (the `getChecklistBySetName`
+Lambda, a `Query` on the `Checklists` table) and ran the modal's own
+`renderChecklistGroups()` on them, so a crawler reads every player name.
+Which filter checkboxes show was decided at build time the same way the
+modal decides (`checklistFilterAvailability()`).
+
+**What loads**: `scripts/wax.js` and `scripts/helper.js` (both `defer`)
+and two inline handlers.
+
+- **On `DOMContentLoaded`** → `initChecklistPage()` (`wax.js`). The
+  filters and Download PDF work from the card data in memory, which the
+  HTML doesn't carry, so they start disabled. This fetches the same
+  **Get checklist by set name** the modal uses, stores the cards in
+  `currentChecklistItems`, calls `applyChecklistFilters()` (which
+  redraws the identical list and sets the title, "<set> Checklist"), and
+  enables the controls. If the fetch fails, the static list stays and
+  the controls stay off.
+- **On `window load`** → `fetchNav()`, `fetchFooterLinks()`,
+  `fetchCopyrightYear()` and `applyRandomMastheadStyling()`, as on the
+  other pages (the nav and footer are already in the HTML, so the first
+  two return without drawing).
+
+**What the visitor can trigger**: the filters (`applyChecklistFilters()`,
+the title gains " - Rookies (N)" and so on), Print (`window.print()`,
+with print rules that print only the list, with its masthead and
+footer) and Download PDF (`exportChecklistPdf()`), all exactly as in the
+modal on the review page above. There is no ticker on this page.
 
 ## Player Search Page - `playerSearch.html`
 
@@ -699,7 +755,7 @@ A catalogue of everything the site has reviewed: its whole job is to
 turn one small list of sets into two columns of links. It is reached
 from the nav and footer as "All Sets".
 
-**What loads**: `scripts/wax.js` (for the checklist modal only),
+**What loads**: `scripts/wax.js` (only for `stripYearFromSetName()`),
 `scripts/browseBySet.js` and `scripts/helper.js` (all `defer`), and one
 inline `window load` handler. `scripts/ticker.js` is loaded too and
 starts the scores ticker by itself.
@@ -723,10 +779,11 @@ starts the scores ticker by itself.
   Each entry's **Review** link goes to the set's `/reviews/<slug>/` page
   (built from `seoURLSlug`; the old `getPageNameForYear()` + `setID`
   query form only for a set with no slug), so it opens that exact set; its title drops the
-  season because the heading above already shows it. A single click
-  listener handles the **Checklist** links (they are rebuilt on every
-  render) and calls `openChecklistModal()`, which fetches the checklist
-  through **Get checklist by set name** as it does on the review page.
+  season because the heading above already shows it. Each **Checklist**
+  link is a plain link to the set's checklist page,
+  `/reviews/<slug>/checklist/` (see "Checklist page" above); until
+  2026-11-19 it opened the checklist modal, which this page no longer
+  carries.
   Once the columns are rendered, `setBrowseItemListJsonLd()` writes an
   `ItemList` JSON-LD block of the same sets and review URLs (built by
   the same `browseReviewUrl()`), so the machine-readable list always
@@ -831,14 +888,17 @@ The About page uses the same blog-stream machinery as the Tech pages
 `fetchBlogs()` call with `'98'`. **Get all blogs of a given type**
 (`?blogType=98`) is fronted by the same `getBlogs` Lambda, which reads
 the `Blogs` table by partition key, so no backend change was needed.
-Its layout is the Home page's (same nav and footer; it keeps the image
-banner Home dropped on 2026-11-10),
-but unlike the Home page its content is still fetched, because the About
+Its layout is the Home page's (same nav and footer; since 2026-11-19
+the shared masthead, painted by `applyRandomMastheadStyling()` on
+`window load` like the other inner pages, in place of the old image
+banner), but unlike the Home page its content is still fetched, because the About
 post is meant to be edited through the CMS. The heading ("How This Site
 Comes Together" since 2026-11-04) is written into the HTML (a script used to inject it with
 `renderBlogIntro('98')`, which left the raw HTML with no H1; that call
 and its branch are gone), and the post below it carries the content,
 with the usual byline. The site's loading spinner covers the fetch. The title, description, canonical and share tags
 are static in the HTML too, so the page never inherits the tech-blog
-metadata `renderBlogIntro()` writes for the Tech pages. It is
+metadata `renderBlogIntro()` writes for the Tech pages. So is an
+`AboutPage`/`Person` JSON-LD block naming the reviews' author: each
+review's structured data links its author to this page. It is
 footer-only (not in the nav) and has no hidden WLCMS link.

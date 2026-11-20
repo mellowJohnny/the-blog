@@ -18,10 +18,16 @@ records how it got here.
   DynamoDB Stream on that table calls the `cardsRebuildTrigger` Lambda,
   which starts an Amplify build. About three minutes later the new page
   is live.
-- The generated page is the old `waxReviews.html` with its `<head>` and
-  its few global variables filled in for one set. Everything else (the
-  review itself, the checklist, votes, the ticker) is still drawn in the
-  browser by `wax.js` from the API.
+- The generated page is the old `waxReviews.html` with its `<head>`, its
+  few global variables and, since 2026-11-19, the review itself filled in
+  for one set: the set details, the review text, the images, the category
+  intro, the breadcrumbs and both JSON-LD blocks are in the HTML (see
+  "The review, pre-rendered"). `wax.js` still fetches the set and redraws
+  the same markup, adding pagination and votes; the checklist modal and
+  the ticker stay browser-only.
+- Each set with a checklist also gets its own page,
+  `/reviews/<slug>/checklist/`, with the full list in the HTML (see
+  "Checklist pages").
 - Old query-string URLs (`waxReviews.html?year=1991&...`) keep working.
 - Since 2026-11-05 the generator also pre-renders the shared blocks
   whose links point at review pages: the nav and footer (every public
@@ -35,7 +41,7 @@ records how it got here.
 ## The pipeline
 
 ```
-CMS save (createCardPost / updateCardSet / delete)
+CMS save (createCardPost / updateCardSet / delete; saveChecklist stamps the set too)
         |
         v
 DynamoDB Cards table --- stream (new + old images)
@@ -48,9 +54,12 @@ Amplify build (amplify.yml)
    npm ci                                    (installs esbuild only)
    node tools/generateReviewPages/generate.mjs
         reads getPublicCardSets (live sets, stars, SEO fields)
-        template: waxReviews.html
-        writes: reviews/<slug>/index.html (one per set, nav/footer/picker filled in)
-                reviews/index.json        (link manifest)
+              getCardSetsByYear (each year's full records: review text, details)
+              getChecklistBySetName (each set's checklist)
+        templates: waxReviews.html, tools/generateReviewPages/checklistTemplate.html
+        writes: reviews/<slug>/index.html           (one per set, review pre-rendered)
+                reviews/<slug>/checklist/index.html (one per set with a checklist)
+                reviews/index.json                  (link manifest)
                 sitemap.xml
         fills in place: the nav and footer of 8 static pages,
                         browseBySet.html's two columns
@@ -72,11 +81,16 @@ content changes share one path.
    only acts when something that reaches the output changed on a set
    that is, or was, live (`blogStatus` "OK"): `blogStatus`, `setName`,
    `year`, `blogCat`, `setID`, `stars`, the SEO fields, the header
-   image, `now` and `updatedAt`. Vote counts and the `hasChecklist` flag
-   do not start a build, because the page's own JavaScript shows them
-   live. Every CMS save moves `updatedAt`, so every CMS save does start
-   one; that is deliberate, it keeps the sitemap's `<lastmod>` honest.
-   A burst of saves inside the 60 second batch window becomes one build.
+   image, `now` and `updatedAt`, and since 2026-11-19 everything the
+   pre-rendered review shows (`postBody`, `size`, `subsets`, `formats`,
+   `mfg`, `author`, the footer image, `printRun`), `hasChecklist` and
+   `checklistUpdatedAt`. Only vote counts don't start a build, because
+   the page's own JavaScript shows them live. Every CMS save moves
+   `updatedAt`, so every CMS save does start one; that is deliberate, it
+   keeps the sitemap's `<lastmod>` honest. A checklist save or delete
+   (`saveChecklist`) writes `checklistUpdatedAt` on the set's `Cards`
+   item, so it starts one too, which rebuilds that checklist page. A
+   burst of saves inside the 60 second batch window becomes one build.
 3. **Build.** `amplify.yml` runs `npm ci`, then the generator, then the
    asset minifier (see "The rest of the build: minified assets"), then
    deletes `node_modules`, all before the artifact is zipped. The build
@@ -84,11 +98,15 @@ content changes share one path.
    log), which has no global `fetch`, so the generator uses `node:https`
    and retries three times. Git history is complete, so the static pages'
    `<lastmod>` (their last commit date) works.
-4. **Generator.** For each live set it takes `waxReviews.html` as a
-   template, replaces two marked blocks (below) and fills three more
-   (nav, footer, year picker), then writes the page. It also writes the
-   manifest and the sitemap, and fills the nav and footer markers of the
-   static pages and the Browse By Set columns in the build's copy.
+4. **Generator.** It fetches each year's full set records (37 requests,
+   four at a time) and each checklist (64, two at a time); the whole run
+   takes about 15 seconds. For each live set it takes `waxReviews.html`
+   as a template, replaces two marked blocks (below) and fills the rest
+   (nav, footer, year picker, breadcrumbs, intro, the review), then
+   writes the page, and writes the set's checklist page from
+   `checklistTemplate.html`. It also writes the manifest and the sitemap,
+   and fills the nav and footer markers of the static pages and the
+   Browse By Set columns in the build's copy.
 5. **Deploy and notify.** Amplify deploys the artifact. The existing
    `amplifyBuildNotifier` emails the result, including the failing
    step's log link if the build failed.
@@ -100,22 +118,34 @@ Nothing is written unless every live set passes:
 - a `seoURLSlug` that is present, lowercase letters, numbers and single
   hyphens, and unique among live sets;
 - every marker pair found exactly once: `review-head`, `review-params`,
-  `set-picker`, `nav` and `footer` in `waxReviews.html`; `nav` and
-  `footer` in each static page, which must also name a known `NAV_MAP`
-  key in `data-nav-page`; `browse-major` and `browse-fastfood` in
-  `browseBySet.html`;
+  `set-picker`, `breadcrumbs`, `card-intro`, `review-body`, `nav` and
+  `footer` in `waxReviews.html`; `checklist-head`, `breadcrumbs`, `nav`
+  and `footer` (plus its `__TOKEN__` placeholders) in
+  `checklistTemplate.html`; `nav` and `footer` in each static page, which
+  must also name a known `NAV_MAP` key in `data-nav-page`;
+  `browse-major` and `browse-fastfood` in `browseBySet.html`;
 - the browser functions it runs (below) found and loadable: the
-  `nav-block` and `footer-block` slices of `helper.js`, `setPickerHtml`,
-  `compareSetsForDefault` and friends, and `browseColumnHtml` in
-  `browseBySet.js`;
+  `nav-block` and `footer-block` slices of `helper.js` and the
+  `checklist-block` slice of `wax.js`, `setPickerHtml`,
+  `buildCardSetMarkup`, `cardSetJsonLd`, `cardIntroHtml` and friends, and
+  `browseColumnHtml` in `browseBySet.js`;
+- every checklist loaded (`CHECKLIST_API_URL`, read from `wax.js`): the
+  review pages and Browse By Set link to every checklist page, so a
+  checklist that still fails after three tries fails the build rather
+  than ship a link to a missing page;
 - `stars` present in the API response (otherwise `getPublicCardSets` has
   not been redeployed with it);
 - `categoryRanges` readable from `scripts/helper.js`, and a range that
   covers each set's year (that is where each set's `pageName` comes
   from, so a new season only needs `helper.js` extended).
 
-A missing meta description is a warning, not an error: the page gets a
-generic one. The one year-and-category combination with no review
+Warnings, not errors: a missing meta description (the page gets a
+generic one); a year whose full records still fail to load (its pages
+are written without the pre-rendered review, as before 2026-11-19, and
+the browser draws it); and a set flagged `hasChecklist` whose checklist
+comes back empty (its checklist page shows the "No checklist data" text,
+is `noindex` and stays out of the sitemap). The one year-and-category
+combination with no review
 (2004-05 McDonald's, the lockout season) is skipped.
 
 If any check fails the generator exits non-zero, the **build fails**,
@@ -153,22 +183,22 @@ URLs.
    and shared links keep working, and search engines consolidate them
    onto the slug page without any redirect rules.
 
-What a generated page does when opened: the head and globals are
-already correct in the HTML; the same scripts run; `fetchCardSetsByYear`
-loads the year and opens the set whose `setID` matches; `fetchPageTitle`
-sets the same title and tags again plus breadcrumbs and the Product
-structured data; the year picker is drawn on `DOMContentLoaded` (it only
-needs the URL values); on `window.load` the nav, footer and masthead
-render and the links are upgraded (below).
+What a generated page does when opened: the head, globals, intro, year
+picker, breadcrumbs and review are already in the HTML; the same scripts
+run; `fetchCardSetsByYear` loads the year (no spinner, since the review
+is already showing) and redraws the set whose `setID` matches, with the
+pagination and vote buttons; `fetchPageTitle` sets the same title, tags,
+breadcrumbs and structured data again; on `window.load` the nav, footer
+and masthead render and the links are upgraded (below).
 
 ## Loading speed: what a generated head preloads
 
-On a phone the page's largest element is the set's header image, but its
-`<img>` only exists once `wax.js` has downloaded, run, fetched the year's
-data and drawn the set. Left alone, the browser can't even see the image
-until then. So the generator puts two preloads in each generated head
-(`headBlock()` in `generate.mjs`), which let the browser start both
-downloads straight from the HTML:
+On a phone the page's largest element is the set's header image. Until
+2026-11-19 its `<img>` only existed once `wax.js` had downloaded, run,
+fetched the year's data and drawn the set; it is now in the pre-rendered
+HTML, but the preloads below still start both downloads from the
+`<head>`, before the browser reaches the body. The generator puts them in
+each generated head (`headBlock()` in `generate.mjs`):
 
 - **The header image**, a high-priority image preload of the set's
   `headerImg` + `headerImgName` (the same URL `buildCardSetMarkup()` uses,
@@ -184,10 +214,12 @@ downloads straight from the HTML:
   differ the preload is just wasted and the page still works, but the
   speed-up is lost.
 
-Why not simply move the `<img>` into the HTML: that would also need the
-set's other fields at build time, which the public list doesn't carry
-(that is the larger step noted under "Why this is only a partial static
-site"). Two related details: the API preconnect in the template has
+A header image uploaded since the CMS's image processing (an
+`img/cards/v2/` file) has a phone copy, `<name>-sm.webp`: the header
+preload is then two media-scoped preloads, one per device, matching the
+`<picture>` that `buildCardSetMarkup()` writes (`phoneImageUrl()` in
+`helper.js`, run by the generator too), so a phone never downloads the
+large file. Two related details: the API preconnect in the template has
 `crossorigin`, because CORS fetches use a different connection pool from
 credentialed ones; and the old inline script that preloaded a
 `<year>_hero.webp` file was removed, since the page never used that file
@@ -216,7 +248,8 @@ in a `node:vm` sandbox: it lifts the `// nav-block:start`/`:end` and
 `// footer-block:start`/`:end` slices of `helper.js`, a few single
 functions by name (`escapeHtml`, `getPageNameForYear`, `setPickerHtml`,
 `compareSetsForDefault`, `reviewLinkAttrs`, and `stripYearFromSetName`
-from `wax.js`), and all of `browseBySet.js`. It passes each function an
+from `wax.js`; the review's own functions are listed under "The review,
+pre-rendered"), and all of `browseBySet.js`. It passes each function an
 `hrefFor` resolver that returns a link's final `/reviews/<slug>/` URL
 (the year's default set, by `compareSetsForDefault()`, exactly what
 `applyReviewLinks()` would pick), and writes the result between marker
@@ -252,6 +285,85 @@ rated, ties broken by set name A to Z. `compareSetsForDefault()` in
 `helper.js` is that rule, and `wax.js` sorts a year's sets with the same
 function, so the year links and the old bare-year URLs agree. (Before
 2026-10-30 ties followed DynamoDB's order, which is arbitrary.)
+
+## The review, pre-rendered
+
+**Why (2026-11-19).** The raw HTML of a review page held only its head,
+H1 and links: the 600 to 1,500-word review, the set details, the images,
+the breadcrumbs and the structured data all came from the API through
+`wax.js`. Google reads that only in a later, lower-priority rendering
+pass, and Bing, AI crawlers and link previews mostly don't run
+JavaScript, so to them each review was empty.
+
+**How.** The same way as the links: the generator runs the browser's own
+functions in its sandbox, with each set's full record. The public list
+doesn't carry the review text, so `fetchFullSets()` requests the
+year-by-category endpoint the page itself uses (`SETS_BY_YEAR_URL`, so
+the records are identical), once per year and category, four at a time.
+Into `waxReviews.html`'s markers it writes:
+
+- `review-body` (inside `#cardSetDiv`): `buildCardSetMarkup()` with the
+  same fields `displayCardSet()` passes, including the Checklist link's
+  `href` (the set's checklist page);
+- `card-intro`: `cardIntroHtml(pageName)` (`wax.js`), the category intro
+  ("Classic '80s Sets..."), which also stops the page jumping when it
+  used to arrive after the first paint;
+- `breadcrumbs`: `breadcrumbTrail()` and `breadcrumbHtml()` (`helper.js`),
+  with the category link already resolved to its `/reviews/` page;
+- in `review-head`, both JSON-LD blocks, `jsonld-cardset`
+  (`cardSetJsonLd()`, `wax.js`) and `jsonld-breadcrumbs`
+  (`breadcrumbJsonLd()`), with the ids `setJsonLd()` replaces, so the
+  browser never duplicates them.
+
+The hidden crawler-only `#pageHeader` H1 is dropped when the review is
+pre-rendered (the set name in the set details is the page's one H1), and
+still filled for a page whose year failed to load. The small wrapped
+logos in a review (`.img-wrap-sm`/`.img-wrap-md`) get their phone size
+in the markup itself (`withWrapSizes()`, run by `buildCardSetMarkup()`),
+where it used to be set by script after the review rendered, so they are
+the right size from the first paint.
+
+**In the browser.** `wax.js` still fetches the year and redraws the set:
+the redraw is identical (checked on all three test pages), happens in
+the same frame, and adds the pagination and vote buttons below, so
+votes and fresh content keep working. A pre-rendered page shows no
+loading spinner, and a failed or empty reply leaves the pre-rendered
+review in place instead of the error text. Layout shift measured 0 to
+0.001 on desktop.
+
+Dates: `fixDate()` formats the byline in the build's time zone (UTC), so
+a review published late in the evening (Eastern) shows the next day in
+the raw HTML; a visitor sees their local date after the redraw.
+
+## Checklist pages
+
+**Why (2026-11-19).** "<set> checklist" is one of the commonest
+collector searches, but every checklist lived only in the modal, which
+loads after a click. Each set with a checklist now has a page at
+`/reviews/<slug>/checklist/`, titled "<set> Hockey Card Checklist", with
+a description built from the data ("all 759 cards, including 1 insert
+set, with rookie cards marked"), its canonical, social tags, breadcrumbs
+(Home, category, the review, Checklist) and their JSON-LD.
+
+**How.** `fetchChecklists()` loads each set's checklist from
+`getChecklistBySetName` (two requests at a time, for the `Checklists`
+table's throughput cap). `buildChecklistPage()` fills
+`tools/generateReviewPages/checklistTemplate.html` (a `noindex` page
+when unfilled): the list is `renderChecklistGroups()`, lifted with the
+rest of the modal's rendering code from the `// checklist-block` slice
+of `wax.js`, and `checklistFilterAvailability()` decides which filter
+checkboxes show. The page is the modal's own parts laid out as a page
+(`.checklist-page-panel`): Print, Download PDF, the Inserts / Rookies
+filters, the list and the print-only masthead and footer. The filters
+and Download PDF start disabled; `initChecklistPage()` (`wax.js`) loads
+the cards they work from, redraws the identical list and turns them on.
+Printing a checklist page prints only the list, as the modal does.
+
+**Links.** On a review page the Checklist link's `href` is the checklist
+page, so crawlers follow it, but a click still opens the modal. Browse
+By Set links straight to the checklist pages. Every checklist URL is in
+the sitemap; its `<lastmod>` is the later of the set's date and its last
+checklist save (`checklistUpdatedAt`).
 
 ## URL design
 
@@ -362,16 +474,17 @@ data, a fixed random seed and fonts) were pixel-identical. On production
 upgraded, the checklist modal working, the `.map` files served and
 `/node_modules/` returning 404.
 
-## Why this is only a partial static site
+## How static the site is now
 
-The generated HTML contains the metadata but not the review. The review
-text, the star and detail widgets, the checklist, the vote buttons and
-the ticker are still fetched and drawn in the browser. That is enough for
-what was needed: social crawlers only read the head, and Google runs
-JavaScript and indexes the rendered body. It leaves two gaps: crawlers
-that do not run JavaScript see no review text, and a visitor waits for
-the API call before the review appears (the earlier "Houston" capture in
-Search Console was a symptom of that dependence).
+Until 2026-11-19 the generated HTML held the metadata but not the
+review. Now the review, its details, images, breadcrumbs and structured
+data, and every checklist, are in the HTML, so crawlers that don't run
+JavaScript see the full text and a visitor sees the review without
+waiting for the API. What stays browser-only: the vote buttons and
+pagination, the checklist modal on a review page, the checklist page's
+filters and PDF export, and the ticker. The browser also redraws each
+review from the API after load, so an edit shows up there before the
+build that bakes it in has finished.
 
 ### Compared with an enterprise headless-CMS static setup
 
@@ -391,13 +504,13 @@ delivery API, and static output goes to a CDN.
 
 Where the enterprise version goes further:
 
-- **Full prerendering.** The whole page, content included, is built
-  ahead of time and the browser only adds interactivity. Here only the
-  head is.
+- **Hydration.** A framework attaches its scripts to the prerendered
+  markup. Here the browser redraws the review from the API instead, which
+  costs one request per page view.
 - **Incremental builds.** On-demand revalidation rebuilds just the changed
-  page in seconds. Here every build regenerates all of the roughly 63
-  pages and takes about two and a half minutes, which is fine at this size
-  but would not scale to thousands of pages.
+  page in seconds. Here every build regenerates all of the roughly 128
+  pages and takes about three minutes, which is fine at this size but
+  would not scale to thousands of pages.
 - **Content workflow.** Versioning and rollback, scheduled publishing,
   roles, audit logs, references between entries and localisation. Here a
   set is live or staged, with no history.
@@ -407,14 +520,9 @@ Where the enterprise version goes further:
 - **Templating.** Components, typed routing, image optimisation. Here one
   HTML file with marker comments that the generator checks for.
 
-**Path to a full static setup.** The review markup comes from one shared
-function, `buildCardSetMarkup()` in `helper.js`. The generator could run
-it at build time with each set's full text and write the review into the
-page, leaving the browser JavaScript to handle only votes, the checklist
-modal and the ticker. That removes the API wait and gives non-JavaScript
-crawlers the text. It needs a build-time source for the full review text
-(the public list does not carry it) and that function running cleanly in
-Node. Not planned.
+The step this section once listed as "not planned", running
+`buildCardSetMarkup()` at build time with each set's full text, is the
+2026-11-19 change described under "The review, pre-rendered".
 
 ## Failure modes and safeguards
 
@@ -427,6 +535,10 @@ Node. Not planned.
   fails the same way, the previous deployment stays live and the notifier
   emails the log. A CMS save starts a build, so until it is fixed new
   content doesn't reach the site either.
+- **A checklist fails to load during the build:** after three tries the
+  build fails, the same way, so no page links to a missing checklist
+  page. A year's full records failing only costs its pages the
+  pre-rendered review (a warning in the log).
 - **Duplicate or invalid slug:** rejected at save time by the CMS Lambdas,
   so the generator's own check should never trip.
 - **Build in progress or failed:** a freshly saved set's page does not
@@ -434,9 +546,11 @@ Node. Not planned.
   link points at it before it exists. The admin page's **Review Pages
   Check** (`cms/admin.html`) requests every live set's page and lists any
   that are missing; a miss that persists means a failed build.
-- **Stale static head** (a title or description changed but the build has
-  not finished, or failed): affects only the raw-HTML social preview.
-  The page's JavaScript corrects the tags for browsers and Google.
+- **Stale static page** (a set changed but the build has not finished, or
+  failed): the raw HTML (social previews, crawlers that don't run
+  JavaScript) shows the old version. The page's JavaScript redraws the
+  review and corrects the tags for browsers and Google. A checklist page
+  has no such redraw of its text until its data loads.
 - **Trigger not firing:** check `/aws/lambda/cardsRebuildTrigger` in
   CloudWatch, and `aws amplify list-jobs --app-id d20qsyoicusf3p
   --branch-name main --region us-east-2` for a recent job.
@@ -456,7 +570,12 @@ Node. Not planned.
    policy allowing `dynamodb:Query` on
    `arn:aws:dynamodb:us-east-2:339740904141:table/Cards/index/blogStatus-year-index`
    (for the duplicate-slug check; without it every live save fails).
-5. `getPublicCardSets` must be the version that returns `stars`.
+5. `getPublicCardSets` must be the version that returns `stars` (and,
+   since 2026-11-19, `checklistUpdatedAt`).
+6. Since 2026-11-19, `saveChecklist` writes `checklistUpdatedAt` on the
+   `Cards` item and `cardsRebuildTrigger` watches it and the review
+   fields; until both are redeployed, a checklist or review-text change
+   reaches the static pages only with the next build.
 
 ## Cost
 
@@ -466,14 +585,34 @@ time of writing; check current pricing), so roughly $0.02 to $0.03 a
 build, under $1 a month at around 30 saves, and inside the 1,000 free
 build minutes a month while the account is within its free tier.
 Reading a DynamoDB Stream from Lambda is free, the trigger Lambda and the
-duplicate-slug query are negligible, and hosting grows by about 63 small
-files. There are no standing charges. The manifest also removed the
+duplicate-slug query are negligible, and hosting grows by about 128 small
+files. The generator's API reads (37 year requests and 64 checklists per
+build, about one Player Search's worth of `Checklists` reads) add about
+15 seconds and negligible DynamoDB cost. There are no standing charges. The manifest also removed the
 per-page-view API call an earlier design needed. Installing esbuild and
 minifying add about a second to a build (the log showed `npm ci` at 0.4 s
 and the minifier at 0.1 s), so the build minutes don't change.
 
 ## Change log
 
+- **2026-11-19** — Full content in the HTML.
+  - The review, category intro, breadcrumbs and both JSON-LD blocks are
+    pre-rendered into each review page (see "The review, pre-rendered");
+    wrapped logos sized in the markup (`withWrapSizes()` replaced
+    `applyImgWrapSmSizing()`).
+  - New checklist pages, `/reviews/<slug>/checklist/`, in the sitemap;
+    the review's Checklist link points there (a click still opens the
+    modal) and Browse By Set links there (its modal removed).
+  - Structured data: the Review gained `dateModified`, a `publisher` and
+    an author `url` (the About page, which now carries a matching Person
+    block); the Product gained a `brand` (the manufacturer); review pages'
+    `og:type` became `article`, with `article:published_time`,
+    `article:modified_time` and `article:author`.
+  - `cardsRebuildTrigger` watches the review fields, `hasChecklist` and
+    `checklistUpdatedAt`; `saveChecklist` writes `checklistUpdatedAt`;
+    `getPublicCardSets` returns it.
+  - Fixed: Download PDF on every `/reviews/` page, whose font scripts
+    were loaded by relative path.
 - **2026-11-05** — Links in the raw HTML, archived pages unpublished.
   - Fixed the old URLs Google had indexed: `resolveBlogCat()` serves links
     that have `pageName` but no `blogCat`.
