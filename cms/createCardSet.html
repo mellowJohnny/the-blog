@@ -167,8 +167,7 @@
                 <!-- 6th Row - two SEO fields -->
                 <td>
                   <label>SEO Title</label>
-                  <span class="char-count" id="seoPageTitleCount"></span><br>
-                  <input type="text" id="seoPageTitle" placeholder="Leave blank for the automatic title">
+                  <p class="cms-field-note">Set automatically by the build from the set name and its checklist ("Key Rookies" when it has rookie cards).</p>
                 </td>
                 <td>
                   <label>SEO Meta Description</label>
@@ -273,7 +272,6 @@
                     id="cmsSubmitButton"
                     onclick="createCardSet(
             document.getElementById('blogStatus').value,
-            document.getElementById('seoPageTitle').value,
             document.getElementById('seoMetaDesc').value,
             document.getElementById('seoURLSlug').value,
             document.getElementById('seoTags').value,

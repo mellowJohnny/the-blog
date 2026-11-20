@@ -303,30 +303,31 @@ callback) is unchanged.
 
 ### SEO fields and their Generate buttons
 
-A card set has four SEO fields on `createCardSet.html`/`setEdit.html`:
-**SEO Title** (`seoPageTitle`), **SEO Meta Description** (`seoMetaDesc`),
-**SEO Friendly URL** (`seoURLSlug`, **required** since 2026-10-30, see
-below) and **SEO Keywords** (`seoTags`).
+A card set has three SEO fields on `createCardSet.html`/`setEdit.html`:
+**SEO Meta Description** (`seoMetaDesc`), **SEO Friendly URL**
+(`seoURLSlug`, **required** since 2026-10-30, see below) and **SEO
+Keywords** (`seoTags`). The title is set by the build (below).
 The live review page uses the description and keywords directly in its
 meta tags and social previews (`FRONTEND.md`'s "SEO and social tags");
 only when a field is empty does the page fall back to a generic version
 built in code.
 
-**SEO Title is an override, blank by default** (since 2026-11-19). A
-blank field gives the page its automatic title, built by the build from
-the set's own data (`reviewPageTitle()`, `helper.js`): "<set> Hockey
-Card Review: Key Rookies & Checklist" when the set's main checklist has
-RC cards, "<set> Hockey Card Review & Checklist" when it has none (most
-fast-food sets), "<set> Hockey Card Review" with no checklist. Fill the
-field only to replace that for one set; it keeps its 65-character
-counter and a "Leave blank for the automatic title" placeholder. It has
-no Generate button: a generated title would be stored and freeze, while
-the automatic one follows the checklist. The 64 titles stored before
-this were all cleared once, so every set uses the automatic title.
+**The SEO Title is not a form field** (since 2026-11-19). The build
+writes every review's title from the set's own data
+(`reviewPageTitle()`, `helper.js`): "<set> Hockey Card Review: Key
+Rookies & Checklist" when the set's main checklist has RC cards, "<set>
+Hockey Card Review & Checklist" when it has none (most fast-food sets),
+"<set> Hockey Card Review" with no checklist. The forms show a short
+read-only note (`.cms-field-note`) where the field was, and every save
+sends `seoPageTitle: ""`. A hand-written or generated title would freeze,
+while the automatic one follows the checklist. The build still honours
+a non-blank `seoPageTitle` as an override, so one could be brought back
+without data work; every stored value is blank (the 64 were cleared
+once).
 
 Hand-written values had come out thin ("1987-88 O-Pee-Chee Hockey", "A
 comprehensive review of the 1987-88 O-Pee-Chee Hockey set"), so the
-other three fields each have a small **Generate** button
+three fields each have a small **Generate** button
 (`generateSeoDescription()`, `generateSeoSlug()`, `generateSeoKeywords()`
 in `scripts/cmsFormUI.js`).
 

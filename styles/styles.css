@@ -796,6 +796,13 @@ h1 {
   border-radius: 4px;
 }
 
+/* A read-only explanation in place of a field (the card set forms' SEO Title, which the build sets) */
+.cms-field-note {
+  margin: 6px 0 0 0;
+  font-size: 14px;
+  color: var(--color-grey);
+}
+
 /* Plain divs (not a <table>), so flex-wrap/justify-content behave
    predictably everywhere - wraps onto as many lines as the current total
    needs, at any viewport width, with no JS split to maintain as ranges

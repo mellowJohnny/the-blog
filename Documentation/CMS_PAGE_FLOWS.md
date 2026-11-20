@@ -215,10 +215,10 @@ review body content".
   full mechanism,
   including why this needed `stripEditorOnlyMarkup()` before every
   save/preview.
-- **SEO fields and their Generate buttons.** SEO Title is an optional
-  override with no button: left blank (its placeholder says so), the
-  page gets the build's automatic title (`reviewPageTitle()`,
-  `helper.js`; see `CMS_GUIDE.md`). SEO Meta Description, SEO Friendly
+- **SEO fields and their Generate buttons.** There is no SEO Title
+  field, only a read-only note saying the build sets it (`reviewPageTitle()`,
+  `helper.js`; see `CMS_GUIDE.md`); `createCardSet()` sends
+  `seoPageTitle: ""`. SEO Meta Description, SEO Friendly
   URL and SEO Keywords each have a small **Generate** button
   (`generateSeoDescription()`, `generateSeoSlug()`,
   `generateSeoKeywords()`, `cmsFormUI.js`) that
@@ -230,9 +230,9 @@ review body content".
   `FRONTEND.md`'s "SEO and social tags"), and hand-written values had
   come out thin. A button needs the Set Name first (`cmsAlert()`
   otherwise) and, if the field already holds different text, asks
-  through `cmsConfirm()` before replacing it. Title and description show
-  a live length counter (`updateSeoCharCounts()`, against 65 and 160
-  characters, red when over). Description and keywords are
+  through `cmsConfirm()` before replacing it. The description shows a
+  live length counter (`updateSeoCharCounts()`, against 160 characters,
+  red when over). Description and keywords are
   auto-sizing textareas (`autosizeTextarea()`): they grow to fit,
   Enter does nothing, and a pasted line break becomes a space, since a
   meta tag must not contain one. Since 2026-10-30 the SEO Friendly URL
@@ -255,7 +255,7 @@ review body content".
   the filename-only convention above. See `CMS_GUIDE.md`'s "Image picker
   / uploader" for sizes and naming.
 - Close (`×`) → `closeImageBrowser()` (`cmsImageBrowser.js`).
-- "Submit Post" button → `createCardSet(blogStatus, seoPageTitle,
+- "Submit Post" button → `createCardSet(blogStatus,
   seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets,
   stars, formats, year, headerImgName, footerImgName, mfg, blogCat,
   printRun)`
@@ -455,7 +455,7 @@ GSI (converted from a PartiQL `WHERE setID=?` scan on 2026-09-04 — see
 `DATA_MODEL.md`), tolerantly unwraps the response the same way
 `fetchAllCardSets()` does, and takes `items[0]`. Empty result shows
 "these aren't the Droids you're looking for..." in `#errorDiv`;
-otherwise calls `populateCardSet(...)` (17 positional args, internal to
+otherwise calls `populateCardSet(...)` (16 positional args, internal to
 `cmsCardSet.js`), which rebuilds the `blogStatus` `<select>`'s options with the correct one
 marked `selected`, and fills every other field directly (`setName` and
 `year` are populated but `disabled`/`readonly` in the HTML, since
@@ -507,7 +507,7 @@ guided flow.
   and read the form by element id, so both pages share them). Here the
   Set Name and Release Year boxes are read-only but still have values,
   so the generators work as soon as the set loads.
-- "Update Post" button → `updateCardSet(blogStatus, seoPageTitle,
+- "Update Post" button → `updateCardSet(blogStatus,
   seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets,
   stars, formats, year, headerImgName, footerImgName, mfg, printRun)`
   (`cmsCardSet.js`) — an `async` function whose only client-side check,

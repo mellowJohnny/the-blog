@@ -407,14 +407,14 @@ function autosizeTextarea(box) {
   if (box.scrollHeight) box.style.height = `${box.scrollHeight + box.offsetHeight - box.clientHeight}px`;
 }
 
-// "58 / 65": the length against the most a search result shows. Also refits
+// "142 / 160": the description's length against the most a search result shows. Also refits
 // the two multi-line boxes, since every programmatic fill comes through here.
 function updateSeoCharCounts() {
   ["seoMetaDesc", "seoTags"].forEach((id) => {
     const box = document.getElementById(id);
     if (box) autosizeTextarea(box);
   });
-  [["seoPageTitle", 65], ["seoMetaDesc", 160]].forEach(([id, max]) => {
+  [["seoMetaDesc", 160]].forEach(([id, max]) => {
     const input = document.getElementById(id);
     if (input) updateCharCount(input, max);
   });
@@ -443,10 +443,8 @@ function refreshCharCounts() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  ["seoPageTitle", "seoMetaDesc"].forEach((id) => {
-    const input = document.getElementById(id);
-    if (input) input.addEventListener("input", updateSeoCharCounts);
-  });
+  const metaDesc = document.getElementById("seoMetaDesc");
+  if (metaDesc) metaDesc.addEventListener("input", updateSeoCharCounts);
   // The multi-line boxes are for room, not line breaks: Enter is blocked and a
   // pasted break becomes a space, so a meta tag never contains one.
   const lineBreaks = /\s*[\r\n]+\s*/g;

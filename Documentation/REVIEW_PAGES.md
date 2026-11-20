@@ -372,8 +372,7 @@ checklist save (`checklistUpdatedAt`).
 the results. Every review was "<set> Hockey Card Set Review", which says
 nothing about what the page offers.
 
-**How.** A review's title is its CMS SEO Title when that is filled, and
-otherwise `reviewPageTitle()` (`helper.js`), run by the generator with
+**How.** A review's title is `reviewPageTitle()` (`helper.js`), run by the generator with
 the set's checklist (fetched before the review pages are built, for
 this): "<set> Hockey Card Review: Key Rookies & Checklist" when the main
 set has RC cards (the rule the modal's Rookies filter uses,
@@ -387,11 +386,10 @@ head alone, since it can't see the checklist; an old query-string URL
 gets the template without the rookies part. Checklist pages are "<set>
 Hockey Card Checklist (N Cards)".
 
-The CMS SEO Title is an optional override (blank by default, no
-Generate button; see `CMS_GUIDE.md`). The 64 titles stored before this
-were cleared once, with a one-off script, so every set uses the
-template; each clear went through the `Cards` stream and the resulting
-builds.
+The CMS has no SEO Title field (see `CMS_GUIDE.md`): every save sends
+it blank. The 64 titles stored before this were cleared once, so every
+set uses the template. The generator still honours a non-blank
+`seoPageTitle`, so an override field could come back without data work.
 
 ## URL design
 
@@ -643,8 +641,8 @@ and the minifier at 0.1 s), so the build minutes don't change.
     were loaded by relative path.
   - Titles from a template (see "Titles"): "Key Rookies & Checklist"
     from the checklist data, checklist pages with their card count; the
-    CMS SEO Title became an optional override and lost its Generate
-    button.
+    CMS SEO Title field was removed (the build still honours a stored
+    value as an override; all are blank).
 - **2026-11-05** — Links in the raw HTML, archived pages unpublished.
   - Fixed the old URLs Google had indexed: `resolveBlogCat()` serves links
     that have `pageName` but no `blogCat`.

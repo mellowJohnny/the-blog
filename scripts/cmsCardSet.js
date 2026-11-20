@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
    */
 
   // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
-  async function createCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, blogCat, printRun) {
+  async function createCardSet(blogStatus, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, blogCat, printRun) {
 
   // Basic client-side validation - setName and year are marked required in
   // the HTML, but the Submit button is type="button" (not type="submit"),
@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const payload = {
     blogStatus,
-    seoPageTitle,
+    seoPageTitle: "", // no form field: blank gives the build's automatic title (reviewPageTitle(), helper.js)
     seoMetaDesc,
     seoURLSlug,
     seoTags,
@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
  * Updates an existing card set review via the updateCardSet API.
  */
 
-async function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, printRun)
+async function updateCardSet(blogStatus, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, printRun)
 {
   const slugProblem = seoSlugProblem(seoURLSlug); // cmsFormUI.js
   if (slugProblem) {
@@ -186,7 +186,7 @@ async function updateCardSet(blogStatus, seoPageTitle, seoMetaDesc, seoURLSlug, 
 
   const payload = {
     blogStatus,
-    seoPageTitle,
+    seoPageTitle: "", // no form field: blank gives the build's automatic title (reviewPageTitle(), helper.js)
     seoMetaDesc,
     seoURLSlug,
     seoTags,
@@ -541,7 +541,6 @@ async function deleteCardSet(setID, setName, year) {
 
       populateCardSet(
         set.blogStatus,
-        set.seoPageTitle,
         set.seoMetaDesc,
         set.seoURLSlug,
         set.seoTags,
@@ -612,7 +611,6 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
    */
   function populateCardSet(
   blogStatus,
-  seoPageTitle,
   seoMetaDesc,
   seoURLSlug,
   seoTags,
@@ -646,8 +644,6 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
 
   // Populate the rest of the fields
   document.getElementById("year").value = year;
-  // Blank means the automatic title, so a missing value must not show (and save back) as "undefined"
-  document.getElementById("seoPageTitle").value = seoPageTitle || "";
   document.getElementById("seoMetaDesc").value = seoMetaDesc;
   document.getElementById("seoURLSlug").value = seoURLSlug;
   document.getElementById("seoTags").value = seoTags;

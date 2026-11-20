@@ -31,7 +31,7 @@ inline in the `<head>`.
 
 **No longer live**: `cards.html` (the "what is Junk Wax" essay) and `cardChecker.html` (the "Card-O-Matic" slot calculator) were both moved to `Old HTML Pages/` on 2026-08-15, and `tech.html` (the old Tech / Mach-E / Raspberry Pi blog stream, the only page with the weather widget) and `example.html` (a reCAPTCHA demo) followed on 2026-11-05. Since that date the build deletes `Old HTML Pages/` from the deployed copy (`amplify.yml`), so none of them is reachable any more; they stay in git. See "Orphaned / legacy files" below.
 
-**Page titles** follow one pattern: `Heading - short description | Junk Wax Hockey` (for example "The Wax Museum - vintage and junk wax hockey card wax packs, front and back | Junk Wax Hockey"), in `<title>` and the matching `og:title`/`twitter:title`. Review pages follow their own template, from the set's data (`reviewPageTitle()`, `helper.js`): "<set> Hockey Card Review: Key Rookies & Checklist", or "... Review & Checklist" when the checklist has no rookie cards; the CMS SEO Title overrides it for one set. Checklist pages are "<set> Hockey Card Checklist (N Cards)". See "SEO and social tags".
+**Page titles** follow one pattern: `Heading - short description | Junk Wax Hockey` (for example "The Wax Museum - vintage and junk wax hockey card wax packs, front and back | Junk Wax Hockey"), in `<title>` and the matching `og:title`/`twitter:title`. Review pages follow their own template, from the set's data (`reviewPageTitle()`, `helper.js`): "<set> Hockey Card Review: Key Rookies & Checklist", or "... Review & Checklist" when the checklist has no rookie cards (the CMS has no title field). Checklist pages are "<set> Hockey Card Checklist (N Cards)". See "SEO and social tags".
 
 **Page headings** share one size: the intro `h1`s (Home, About, The Junk Wax Years), the `.header-style h1`s (Player Search, Timeline, Browse By Set, The Wax Museum, Lockout) and the review pages' intro `h2` are all 34px (one rule in `styles.css`). On the public pages the `.header-style` block is also sized and padded to start exactly where the `.intro` text column does, at every width (a `body:has(.site-footer)` rule, so the `/cms` pages, which share the class, keep their layout). The title sits 13px below the nav (25px below the breadcrumbs, from the trail's bottom padding) with about 23px down to the intro text, the same on every page; the intro block's own padding is one shared rule rather than one per page.
 
@@ -201,9 +201,10 @@ and `og:url` built by `buildReviewCanonicalUrl()` — the set's
 `/reviews/<slug>/` page, or the query form for a set with no slug. On a
 generated page it leaves the head alone (`REVIEW_PRERENDERED`, read when
 `wax.js` runs): the build's title depends on the checklist, which the
-browser doesn't load. **Titles** (since 2026-11-19): the CMS SEO Title
-when it's filled, otherwise the automatic `reviewPageTitle()`
-(`helper.js`), which the build runs with the set's checklist: "<set>
+browser doesn't load. **Titles** (since 2026-11-19): the automatic
+`reviewPageTitle()` (`helper.js`; a stored `seoPageTitle` would
+override it, but the CMS has no field for one and all are blank), which
+the build runs with the set's checklist: "<set>
 Hockey Card Review: Key Rookies & Checklist" when the main set has RC
 cards, "<set> Hockey Card Review & Checklist" when it has none, "<set>
 Hockey Card Review" with no checklist. Searchers see the title in
