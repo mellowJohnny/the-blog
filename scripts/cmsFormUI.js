@@ -279,10 +279,6 @@ function seoInsertNames() {
     .filter((name) => name && !/^(none|n\/a)$/i.test(name));
 }
 
-function buildSeoTitle() {
-  return `${seoSetLabel()} Card Set Review`;
-}
-
 // Base sentence, then each extra only if it still fits in 160 characters.
 function buildSeoDescription() {
   const size = seoFormValue("size");
@@ -346,7 +342,7 @@ async function fillSeoField(fieldId, build) {
   updateSeoCharCounts();
 }
 
-function generateSeoTitle() { return fillSeoField("seoPageTitle", buildSeoTitle); }
+// No title generator: a blank SEO Title gets the build's automatic one (reviewPageTitle(), helper.js).
 function seoReviewText() {
   const editor = typeof tinymce !== "undefined" ? tinymce.get("postBody") : null;
   return editor ? editor.getContent({ format: "text" }).trim() : "";

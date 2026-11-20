@@ -646,7 +646,8 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
 
   // Populate the rest of the fields
   document.getElementById("year").value = year;
-  document.getElementById("seoPageTitle").value = seoPageTitle;
+  // Blank means the automatic title, so a missing value must not show (and save back) as "undefined"
+  document.getElementById("seoPageTitle").value = seoPageTitle || "";
   document.getElementById("seoMetaDesc").value = seoMetaDesc;
   document.getElementById("seoURLSlug").value = seoURLSlug;
   document.getElementById("seoTags").value = seoTags;

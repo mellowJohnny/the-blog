@@ -31,6 +31,13 @@ function truncateAtWord(text, max) {
   return base.replace(/[\s,;:-]+$/, "") + "...";
 }
 
+// A review page's automatic title (the CMS SEO Title field overrides it). It names only what the page has:
+// the checklist, and key rookies when its main set has RC cards. Run by tools/generateReviewPages too.
+function reviewPageTitle(setName, { hasChecklist = false, hasRookies = false } = {}) {
+  if (!hasChecklist) return `${setName} Hockey Card Review`;
+  return hasRookies ? `${setName} Hockey Card Review: Key Rookies & Checklist` : `${setName} Hockey Card Review & Checklist`;
+}
+
 // .img-wrap-sm/.img-wrap-md images get their own size (inline style over a possibly-stale attribute) as
 // --wrap-w/--wrap-h, which styles.css shrinks on mobile. In the markup (buildCardSetMarkup()), so a
 // pre-rendered review is sized right from the first paint.

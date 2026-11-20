@@ -3,6 +3,10 @@ let allCardSets = []; // Used in pagination - holds all the Card Sets so we can 
 let currentPage = 1; // Which Card Set to start with
 const pageSize = 1; // how many blogs to display at a time
 
+// A generated /reviews/ page ships its review, title and tags already in the HTML (tools/generateReviewPages).
+// Read once as the script runs (deferred, so the page is parsed), before anything redraws the review.
+const REVIEW_PRERENDERED = Boolean(document.querySelector("#cardSetDiv .set-details-grid"));
+
 /** **
  * Card Intro Text Render-O-Matic
  * Moved to a static design because it's fatser than calling an API for such a small piece on content which never changes...
@@ -58,9 +62,9 @@ function cardIntroHtml(pageName) {
 
     const urlToFetch = `https://a92dwyl3ic.execute-api.us-east-2.amazonaws.com/dev?year=${year}&blogCat=${blogCat}`;
 
-    // A generated /reviews/ page ships its review already rendered (tools/generateReviewPages): no
-    // spinner over it, and a failed or empty reply leaves it showing. The redraw below is identical.
-    const prerendered = Boolean(document.querySelector("#cardSetDiv .set-details-grid"));
+    // On a generated page (REVIEW_PRERENDERED): no spinner over the review, and a failed or empty
+    // reply leaves it showing. The redraw below is identical.
+    const prerendered = REVIEW_PRERENDERED;
     const hideSpinner = prerendered ? () => {} : showSpinner(); // helper.js
     fetchJsonWithRetry(urlToFetch)
         .finally(hideSpinner)
@@ -206,10 +210,10 @@ function fetchPageTitle(item)
     seoPageTitle, seoMetaDesc, seoTags
   } = item;
 
-  // Prefer the CMS-authored SEO fields when present, falling back to
-  // the generic derivation for sets that don't have them set.
-  const pageTitle = (seoPageTitle && seoPageTitle.trim()) || `${setName} Hockey Card Set Review`;
-  document.title = pageTitle;
+  // The CMS SEO Title overrides the automatic title. Only an old query-string page sets it here: a generated
+  // page's head already has the build's title and tags, whose rookie wording needs the checklist data.
+  const pageTitle = (seoPageTitle && seoPageTitle.trim()) || reviewPageTitle(setName, { hasChecklist: Boolean(item.hasChecklist) });
+  if (!REVIEW_PRERENDERED) document.title = pageTitle;
 
   // The visible H1 is the set name in the set details (buildCardSetMarkup()); the hidden one the build
   // writes for crawlers that don't run JavaScript goes, so the rendered page has exactly one H1. Only the
@@ -221,14 +225,16 @@ function fetchPageTitle(item)
     || truncateAtWord(stripHtmlTags(postBody), 155); // helper.js
   const keywords = (seoTags && seoTags.trim()) || undefined;
 
-  setPageMeta({
-    title: pageTitle,
-    description: description,
-    keywords: keywords,
-    image: image,
-    url: buildReviewCanonicalUrl(item),
-    type: "article" // as the generated page's head (tools/generateReviewPages)
-  });
+  if (!REVIEW_PRERENDERED) {
+    setPageMeta({
+      title: pageTitle,
+      description: description,
+      keywords: keywords,
+      image: image,
+      url: buildReviewCanonicalUrl(item),
+      type: "article" // as the generated page's head (tools/generateReviewPages)
+    });
+  }
 
   renderBreadcrumbs(
     getPageNameForYear(item.blogCat, item.year) || new URLSearchParams(window.location.search).get("pageName"),

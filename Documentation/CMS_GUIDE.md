@@ -307,34 +307,45 @@ A card set has four SEO fields on `createCardSet.html`/`setEdit.html`:
 **SEO Title** (`seoPageTitle`), **SEO Meta Description** (`seoMetaDesc`),
 **SEO Friendly URL** (`seoURLSlug`, **required** since 2026-10-30, see
 below) and **SEO Keywords** (`seoTags`).
-The live review page uses the title, description and keywords directly
-in its `<title>`, meta tags and social previews (`FRONTEND.md`'s "SEO
-and social tags"); only when a field is empty does the page fall back
-to a generic version built in code. Hand-written values had come out
-thin ("1987-88 O-Pee-Chee Hockey", "A comprehensive review of the
-1987-88 O-Pee-Chee Hockey set"), so each field has a small **Generate**
-button (`generateSeoTitle()`, `generateSeoDescription()`,
-`generateSeoSlug()`, `generateSeoKeywords()` in `scripts/cmsFormUI.js`).
+The live review page uses the description and keywords directly in its
+meta tags and social previews (`FRONTEND.md`'s "SEO and social tags");
+only when a field is empty does the page fall back to a generic version
+built in code.
 
-The title, keywords and URL slug generators are deterministic
+**SEO Title is an override, blank by default** (since 2026-11-19). A
+blank field gives the page its automatic title, built by the build from
+the set's own data (`reviewPageTitle()`, `helper.js`): "<set> Hockey
+Card Review: Key Rookies & Checklist" when the set's main checklist has
+RC cards, "<set> Hockey Card Review & Checklist" when it has none (most
+fast-food sets), "<set> Hockey Card Review" with no checklist. Fill the
+field only to replace that for one set; it keeps its 65-character
+counter and a "Leave blank for the automatic title" placeholder. It has
+no Generate button: a generated title would be stored and freeze, while
+the automatic one follows the checklist. The 64 titles stored before
+this were all cleared once, so every set uses the automatic title.
+
+Hand-written values had come out thin ("1987-88 O-Pee-Chee Hockey", "A
+comprehensive review of the 1987-88 O-Pee-Chee Hockey set"), so the
+other three fields each have a small **Generate** button
+(`generateSeoDescription()`, `generateSeoSlug()`, `generateSeoKeywords()`
+in `scripts/cmsFormUI.js`).
+
+The keywords and URL slug generators are deterministic
 templates, not AI, and use only what is already in the form, so they
 can't claim anything the form doesn't back up. The description button is
 different: **Generate with Claude** has Claude read the review and write
 it (see `SEO_DESCRIPTION_GENERATOR.md`), falling back to the template
 below if that fails:
 
-- **Title**: `<set> Card Set Review`, with the maker inserted after the
-  season when the set name lacks it ("1991-92 Stadium Club" plus Topps
-  gives "1991-92 Topps Stadium Club Hockey") and "Hockey" added when
-  missing. It used to end with " | Junk Wax Hockey" when that fit in 65
-  characters, which made titles inconsistent; since 2026-10-30 there is
-  no site-name suffix, and the page's own fallback title matches.
 - **Meta description (fallback template)**: a base sentence ("<set> card set review.") then
   each of these only if it still fits in 160 characters: the size and
   the inserts, the rating, and the first sentence of the review's
   first paragraph (a paragraph with no sentence end contributes
   nothing, rather than running into the next one).
-- **Keywords**: the set label, "<season> hockey cards", the maker,
+- **Keywords**: the set label (the set name with the maker inserted
+  after the season when the name lacks it, "1991-92 Stadium Club" plus
+  Topps giving "1991-92 Topps Stadium Club Hockey", and "Hockey" added
+  when missing), "<season> hockey cards", the maker,
   "<set name> checklist", "junk wax hockey", then the insert names;
   deduplicated, at most 12.
 - **URL slug**: the set name lowercased, apostrophes removed, other

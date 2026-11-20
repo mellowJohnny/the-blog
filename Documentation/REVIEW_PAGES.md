@@ -187,8 +187,9 @@ What a generated page does when opened: the head, globals, intro, year
 picker, breadcrumbs and review are already in the HTML; the same scripts
 run; `fetchCardSetsByYear` loads the year (no spinner, since the review
 is already showing) and redraws the set whose `setID` matches, with the
-pagination and vote buttons; `fetchPageTitle` sets the same title, tags,
-breadcrumbs and structured data again; on `window.load` the nav, footer
+pagination and vote buttons; `fetchPageTitle` writes the breadcrumbs and
+structured data again but leaves the build's title and tags alone (see
+"Titles"); on `window.load` the nav, footer
 and masthead render and the links are upgraded (below).
 
 ## Loading speed: what a generated head preloads
@@ -340,7 +341,7 @@ the raw HTML; a visitor sees their local date after the redraw.
 **Why (2026-11-19).** "<set> checklist" is one of the commonest
 collector searches, but every checklist lived only in the modal, which
 loads after a click. Each set with a checklist now has a page at
-`/reviews/<slug>/checklist/`, titled "<set> Hockey Card Checklist", with
+`/reviews/<slug>/checklist/`, titled "<set> Hockey Card Checklist (N Cards)", with
 a description built from the data ("all 759 cards, including 1 insert
 set, with rookie cards marked"), its canonical, social tags, breadcrumbs
 (Home, category, the review, Checklist) and their JSON-LD.
@@ -364,6 +365,33 @@ page, so crawlers follow it, but a click still opens the modal. Browse
 By Set links straight to the checklist pages. Every checklist URL is in
 the sitemap; its `<lastmod>` is the later of the set's date and its last
 checklist save (`checklistUpdatedAt`).
+
+## Titles
+
+**Why (2026-11-19).** The title is what a searcher sees and clicks in
+the results. Every review was "<set> Hockey Card Set Review", which says
+nothing about what the page offers.
+
+**How.** A review's title is its CMS SEO Title when that is filled, and
+otherwise `reviewPageTitle()` (`helper.js`), run by the generator with
+the set's checklist (fetched before the review pages are built, for
+this): "<set> Hockey Card Review: Key Rookies & Checklist" when the main
+set has RC cards (the rule the modal's Rookies filter uses,
+`checklistFilterAvailability()`), "<set> Hockey Card Review & Checklist"
+when it has none (most fast-food sets), "<set> Hockey Card Review" with
+no checklist. So it never promises something a set lacks. The same
+value goes into `<title>`, `og:title` and `twitter:title`. The set name
+comes first because Google shows about 60 characters; longer names lose
+the tail. In the browser, `fetchPageTitle()` leaves a generated page's
+head alone, since it can't see the checklist; an old query-string URL
+gets the template without the rookies part. Checklist pages are "<set>
+Hockey Card Checklist (N Cards)".
+
+The CMS SEO Title is an optional override (blank by default, no
+Generate button; see `CMS_GUIDE.md`). The 64 titles stored before this
+were cleared once, with a one-off script, so every set uses the
+template; each clear went through the `Cards` stream and the resulting
+builds.
 
 ## URL design
 
@@ -613,6 +641,10 @@ and the minifier at 0.1 s), so the build minutes don't change.
     `getPublicCardSets` returns it.
   - Fixed: Download PDF on every `/reviews/` page, whose font scripts
     were loaded by relative path.
+  - Titles from a template (see "Titles"): "Key Rookies & Checklist"
+    from the checklist data, checklist pages with their card count; the
+    CMS SEO Title became an optional override and lost its Generate
+    button.
 - **2026-11-05** — Links in the raw HTML, archived pages unpublished.
   - Fixed the old URLs Google had indexed: `resolveBlogCat()` serves links
     that have `pageName` but no `blogCat`.

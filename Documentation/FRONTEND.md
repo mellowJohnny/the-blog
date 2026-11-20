@@ -31,7 +31,7 @@ inline in the `<head>`.
 
 **No longer live**: `cards.html` (the "what is Junk Wax" essay) and `cardChecker.html` (the "Card-O-Matic" slot calculator) were both moved to `Old HTML Pages/` on 2026-08-15, and `tech.html` (the old Tech / Mach-E / Raspberry Pi blog stream, the only page with the weather widget) and `example.html` (a reCAPTCHA demo) followed on 2026-11-05. Since that date the build deletes `Old HTML Pages/` from the deployed copy (`amplify.yml`), so none of them is reachable any more; they stay in git. See "Orphaned / legacy files" below.
 
-**Page titles** follow one pattern: `Heading - short description | Junk Wax Hockey` (for example "The Wax Museum - vintage and junk wax hockey card wax packs, front and back | Junk Wax Hockey"), in `<title>` and the matching `og:title`/`twitter:title`. Review pages take theirs from the set's CMS SEO fields instead.
+**Page titles** follow one pattern: `Heading - short description | Junk Wax Hockey` (for example "The Wax Museum - vintage and junk wax hockey card wax packs, front and back | Junk Wax Hockey"), in `<title>` and the matching `og:title`/`twitter:title`. Review pages follow their own template, from the set's data (`reviewPageTitle()`, `helper.js`): "<set> Hockey Card Review: Key Rookies & Checklist", or "... Review & Checklist" when the checklist has no rookie cards; the CMS SEO Title overrides it for one set. Checklist pages are "<set> Hockey Card Checklist (N Cards)". See "SEO and social tags".
 
 **Page headings** share one size: the intro `h1`s (Home, About, The Junk Wax Years), the `.header-style h1`s (Player Search, Timeline, Browse By Set, The Wax Museum, Lockout) and the review pages' intro `h2` are all 34px (one rule in `styles.css`). On the public pages the `.header-style` block is also sized and padded to start exactly where the `.intro` text column does, at every width (a `body:has(.site-footer)` rule, so the `/cms` pages, which share the class, keep their layout). The title sits 13px below the nav (25px below the breadcrumbs, from the trail's bottom padding) with about 23px down to the intro text, the same on every page; the intro block's own padding is one shared rule rather than one per page.
 
@@ -195,15 +195,22 @@ hold a correct canonical or title for any one set (it serves every one),
 so its HTML carries only *generic* `og:` and `twitter:` fallbacks (title,
 description, the site image) and **deliberately no canonical and no
 `og:url`**: a fixed one would point all of them at the same page. For
-both, once a set loads, `fetchPageTitle()` (`wax.js`) calls
-`setPageMeta()`, which writes the set's values again (a no-op change on
-a generated page) and, on an old URL, adds the canonical and `og:url`
-built by `buildReviewCanonicalUrl()` — the set's `/reviews/<slug>/` page,
-or the query form for a set with no slug. The title and description
-come from the set's CMS fields (`seoPageTitle`, `seoMetaDesc`); only
-when a field is empty does the code fall back to
-`<set name> Hockey Card Set Review` (no site-name suffix since
-2026-10-30, the same as the CMS Generate button) and to the first ~155
+an old URL, once a set loads, `fetchPageTitle()` (`wax.js`) calls
+`setPageMeta()`, which writes the set's values and adds the canonical
+and `og:url` built by `buildReviewCanonicalUrl()` — the set's
+`/reviews/<slug>/` page, or the query form for a set with no slug. On a
+generated page it leaves the head alone (`REVIEW_PRERENDERED`, read when
+`wax.js` runs): the build's title depends on the checklist, which the
+browser doesn't load. **Titles** (since 2026-11-19): the CMS SEO Title
+when it's filled, otherwise the automatic `reviewPageTitle()`
+(`helper.js`), which the build runs with the set's checklist: "<set>
+Hockey Card Review: Key Rookies & Checklist" when the main set has RC
+cards, "<set> Hockey Card Review & Checklist" when it has none, "<set>
+Hockey Card Review" with no checklist. Searchers see the title in
+results, so it names what the page actually has; the set name comes
+first, since Google shows about 60 characters. An old URL gets the same
+template without the rookies part. The description comes from the
+set's `seoMetaDesc`, or falls back to the first ~155
 characters of the review text cut at a word boundary (`truncateAtWord()`;
 the generator can't see the review text, so a generated page with no
 description gets "<set name> hockey card set review from Junk Wax
@@ -216,7 +223,7 @@ body too; the browser redraws the same markup once its fetch returns
 (see `REVIEW_PAGES.md`, "The review, pre-rendered"). A generated review
 page's `og:type` is `article`, with `article:published_time` (`now`),
 `article:modified_time` (`updatedAt`) and `article:author` (the About
-page); `setPageMeta()` keeps the type `article` when it rewrites the tags.
+page); on an old URL `setPageMeta()` writes the type `article` too.
 
 **Why the review fetch starts on `DOMContentLoaded` and retries.** One
 Search Console snapshot of a review page held the error text from the

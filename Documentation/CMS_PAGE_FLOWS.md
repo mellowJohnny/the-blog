@@ -215,10 +215,13 @@ review body content".
   full mechanism,
   including why this needed `stripEditorOnlyMarkup()` before every
   save/preview.
-- **SEO fields and their Generate buttons.** SEO Title, SEO Meta
-  Description, SEO Friendly URL and SEO Keywords each have a small
-  **Generate** button (`generateSeoTitle()`, `generateSeoDescription()`,
-  `generateSeoSlug()`, `generateSeoKeywords()`, `cmsFormUI.js`) that
+- **SEO fields and their Generate buttons.** SEO Title is an optional
+  override with no button: left blank (its placeholder says so), the
+  page gets the build's automatic title (`reviewPageTitle()`,
+  `helper.js`; see `CMS_GUIDE.md`). SEO Meta Description, SEO Friendly
+  URL and SEO Keywords each have a small **Generate** button
+  (`generateSeoDescription()`, `generateSeoSlug()`,
+  `generateSeoKeywords()`, `cmsFormUI.js`) that
   fills the field from this form's own values (set name, maker, year,
   size, inserts, rating, and the first sentence of the review) with
   deterministic templates, not AI, so it never states anything the form
@@ -235,8 +238,7 @@ review body content".
   meta tag must not contain one. Since 2026-10-30 the SEO Friendly URL
   is also **required** (marked `*`): it is the review's address,
   `/reviews/<slug>/`, so `seoSlugProblem()` (`cmsFormUI.js`) rejects a
-  blank or malformed slug before the form is sent, and the title
-  generator no longer adds a " | Junk Wax Hockey" suffix. See
+  blank or malformed slug before the form is sent. See
   `CMS_GUIDE.md` and `REVIEW_PAGES.md`.
 - "Upload" button → `uploadNewImage()` (`cmsImageBrowser.js`) — same
   function and same `cmsImageUploader` Lambda as `createBlogPost.html`'s

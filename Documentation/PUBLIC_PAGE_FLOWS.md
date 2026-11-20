@@ -350,13 +350,17 @@ everything else the visitor can see or navigate to on this page.
   `downvotes`, `hasChecklist`, `printRun`, and the Checklist link's
   `checklistHref`) plus `fetchPageTitle(item)` for each —
   despite the name, this now does all of this page's per-set SEO work
-  in one place, not just the title: it sets `document.title` to
-  the set's CMS SEO title (`seoPageTitle`), or `<setName> Hockey Card
-  Set Review` when that field is empty (so the browser
-  tab/bookmark reflect the specific set, not a generic page title),
-  removes the hidden crawler-only `<h1 id="pageHeader">` if it is
-  there (the set name in the set details is the page's one visible H1;
-  a pre-rendered page has no hidden one), calls `setPageMeta({...})`
+  in one place, not just the title. On an old query-string URL it sets
+  `document.title` to the set's CMS SEO title (`seoPageTitle`), or the
+  automatic `reviewPageTitle()` (`helper.js`; "<set> Hockey Card Review
+  & Checklist") when that field is blank, so the browser tab and
+  bookmark name the specific set. A generated page already has the
+  build's title and tags (which say "Key Rookies" when the checklist
+  has RC cards, something the browser can't see), so there it leaves
+  the head alone (`REVIEW_PRERENDERED`). It also removes the hidden
+  crawler-only `<h1 id="pageHeader">` if it is there (the set name in
+  the set details is the page's one visible H1; a pre-rendered page has
+  no hidden one), and on an old URL calls `setPageMeta({...})`
   (`helper.js`, with `type: "article"`) with that title, the
   set's CMS description (`seoMetaDesc`) or, when empty, the review text
   with HTML stripped by `stripHtmlTags()` and cut at a word boundary

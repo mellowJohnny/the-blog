@@ -256,7 +256,7 @@ function liftBlock(source, name, file) {
 // The helper.js functions the review, its breadcrumbs and their JSON-LD are pre-rendered with.
 const REVIEW_HELPERS = [
   "stripHtmlTags", "truncateAtWord", "estimateReadingTime", "fixDate", "getMonthName", "withPhoneSource", "withWrapSizes",
-  "buildCardSetMarkup", "breadcrumbTrail", "breadcrumbHtml", "breadcrumbJsonLd"
+  "buildCardSetMarkup", "breadcrumbTrail", "breadcrumbHtml", "breadcrumbJsonLd", "reviewPageTitle"
 ];
 
 // The browser functions the pages are pre-rendered with (browseColumnHtml() in
@@ -350,10 +350,9 @@ function headerPreloads(image) {
   ];
 }
 
-// Mirrors the title/description/image fallbacks in fetchPageTitle() (scripts/wax.js),
-// except the description: the review text isn't in the public list.
-function headBlock(set, url, warnings) {
-  const title = (set.seoPageTitle || "").trim() || `${set.setName} Hockey Card Set Review`;
+// The generated head: title from prerenderReview(); description and image fallbacks as in fetchPageTitle()
+// (scripts/wax.js), except the description, since the review text isn't in the public list.
+function headBlock(set, url, warnings, title) {
   let description = (set.seoMetaDesc || "").trim();
   if (!description) {
     description = `${set.setName} hockey card set review from Junk Wax Hockey.`;
@@ -407,8 +406,13 @@ const checklistPath = (set) => `/reviews/${set.seoURLSlug}/checklist/`;
 
 // What wax.js draws: the category intro (renderCardIntro()), the review (displayCardSet()'s buildCardSetMarkup()
 // call), the breadcrumbs (renderBreadcrumbs()) and both JSON-LD blocks (fetchPageTitle()), from the same
-// functions and fields. Without the set's full record (fetchFullSets()), no review or Product JSON-LD.
-function prerenderReview(browser, set, record, pageName, linkFor) {
+// functions and fields. Without the set's full record (fetchFullSets()), no review or Product JSON-LD. The title:
+// the CMS SEO Title when filled, else reviewPageTitle() (helper.js) from the set's checklist (fetchChecklists()).
+function prerenderReview(browser, set, record, pageName, linkFor, checklistItems = []) {
+  const title = (set.seoPageTitle || "").trim() || browser.reviewPageTitle(set.setName, {
+    hasChecklist: checklistItems.length > 0,
+    hasRookies: browser.checklistFilterAvailability(checklistItems).rookies
+  });
   const trail = browser.breadcrumbTrail(pageName, set.setName, reviewUrl(set), linkFor);
   const jsonLd = [["jsonld-breadcrumbs", browser.breadcrumbJsonLd(trail)]];
   let body = "";
@@ -428,7 +432,7 @@ function prerenderReview(browser, set, record, pageName, linkFor) {
       checklistHref: checklistPath(set)
     });
   }
-  return { body, crumbs: browser.breadcrumbHtml(trail), jsonLd, intro: browser.cardIntroHtml(pageName) };
+  return { title, body, crumbs: browser.breadcrumbHtml(trail), jsonLd, intro: browser.cardIntroHtml(pageName) };
 }
 
 // A JSON-LD block, with the id setJsonLd() (helper.js) replaces; "<" escaped so text can't close the tag.
@@ -438,7 +442,7 @@ function jsonLdTag([id, data]) {
 
 function buildPage(template, set, categoryRanges, warnings, pickerHtml, navMarkup, footerMarkup, review) {
   const url = reviewUrl(set);
-  const head = [headBlock(set, url, warnings), ...review.jsonLd.map(jsonLdTag)].join("\n    ");
+  const head = [headBlock(set, url, warnings, review.title), ...review.jsonLd.map(jsonLdTag)].join("\n    ");
   let html = replaceBetween(template, "review-head", head);
   html = replaceBetween(html, "review-params", paramsBlock(set, categoryRanges));
   html = replaceBetween(html, "set-picker", pickerHtml, "waxReviews.html", true);
@@ -481,7 +485,7 @@ function buildChecklistPage(template, set, items, pageName, browser, linkFor, na
   const offered = browser.checklistFilterAvailability(items);
   const summary = checklistSummary(items, offered);
   if (items.length === 0) warnings.push(`"${set.setName}" has hasChecklist but no checklist cards - its checklist page is noindex`);
-  const title = `${set.setName} Hockey Card Checklist`;
+  const title = `${set.setName} Hockey Card Checklist${items.length ? ` (${items.length} Card${items.length === 1 ? "" : "s"})` : ""}`;
   const description = `Complete ${set.setName} hockey card checklist: ${summary}. Print it or download a PDF.`;
   const image = set.headerImg && set.headerImgName ? `${set.headerImg}${set.headerImgName}` : DEFAULT_IMAGE;
   const trail = [
@@ -595,6 +599,8 @@ try {
   const navLinkFor = navHrefFor(sets, compareSetsForDefault);
   const footerMarkup = footerHtml(navLinkFor);
   const records = await fetchFullSets(sets, warnings);
+  // Before the review pages: each review's title says whether its checklist has rookies.
+  const checklists = await fetchChecklists(sets);
   let prerendered = 0;
   const pages = sets.map((set) => {
     const pageName = pageNameFor(set, categoryRanges);
@@ -602,11 +608,10 @@ try {
     const record = records.get(set.setID);
     if (record) prerendered++;
     else if (!warnings.some((w) => w.startsWith(`${set.year} ${set.blogCat}:`))) warnings.push(`"${set.setName}": review text not pre-rendered (not in its year's reply)`);
-    const review = prerenderReview(browser, set, record, pageName, navLinkFor);
+    const review = prerenderReview(browser, set, record, pageName, navLinkFor, checklists.get(set.setID));
     return { set, html: buildPage(template, set, categoryRanges, warnings, pickerHtml, navHtml(pageName, undefined, navLinkFor), footerMarkup, review) };
   });
   const checklistTemplate = fs.readFileSync(CHECKLIST_TEMPLATE_PATH, "utf8");
-  const checklists = await fetchChecklists(sets);
   const checklistPages = [...checklists].map(([setID, items]) => {
     const set = sets.find((s) => s.setID === setID);
     const pageName = pageNameFor(set, categoryRanges);
