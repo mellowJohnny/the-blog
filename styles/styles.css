@@ -2949,7 +2949,7 @@ body:has(.site-footer) {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 20px;
   flex-shrink: 0;
 }
 
@@ -2961,10 +2961,7 @@ body:has(.site-footer) {
   font-family: 'Source Sans 3', 'Source Sans 3 Fallback', sans-serif;
   font-weight: 700;
   font-size: 16px;
-  color: var(--color-white);
-  background-color: var(--color-button);
-  border-radius: 20px;
-  padding: 8px 16px;
+  color: var(--color-text-dark);
   cursor: pointer;
 }
 
