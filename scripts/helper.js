@@ -124,7 +124,8 @@ function buildCardSetMarkup({
   author, date, postBody,
   hasChecklist = false,
   interactive = true,
-  printRun = ""
+  printRun = "",
+  checklistHref = "#"
 }) {
   let cleanStars = "";
   for (let i = 0; i < parseInt(stars); i++) {
@@ -133,11 +134,11 @@ function buildCardSetMarkup({
 
   const readingStats = estimateReadingTime(postBody);
 
-  // set-detail-row-checklist lets mobile CSS reorder it. setName goes
-  // via data-set-name, not inline onclick, since it can contain
-  // apostrophes.
+  // set-detail-row-checklist lets mobile CSS reorder it. setName goes via data-set-name, not inline
+  // onclick, since it can contain apostrophes. The href is the set's checklist page, for crawlers
+  // and new tabs; a plain click opens the modal instead.
   const checklistRow = hasChecklist
-    ? `<div class="set-detail-row set-detail-row-checklist"><a href="#" class="checklist-view-link" data-set-name="${escapeHtml(setName)}"${interactive ? ' onclick="openChecklistModal(this); return false;"' : ''}>Checklist</a></div>`
+    ? `<div class="set-detail-row set-detail-row-checklist"><a href="${escapeHtml(checklistHref)}" class="checklist-view-link" data-set-name="${escapeHtml(setName)}"${interactive ? ' onclick="openChecklistModal(this); return false;"' : ''}>Checklist</a></div>`
     : "";
 
   // Optional - only some sets (the Tim Hortons ones) have a print run,

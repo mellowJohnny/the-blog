@@ -52,12 +52,12 @@ function setBrowseItemListJsonLd(sets) {
 
 function buildBrowseSetEntry(set) {
   const url = browseReviewUrl(set);
-  // The season heading above already shows the year, so the title drops it;
-  // data-set-name below keeps the full name, which the checklist lookup needs.
+  // The season heading above already shows the year, so the title drops it. Checklist: the set's
+  // own checklist page (tools/generateReviewPages builds one per set with a slug and a checklist).
   const links = [];
   if (url) links.push(`<a href="${url}">Review</a>`);
-  if (set.hasChecklist) {
-    links.push(`<a href="#" class="browse-checklist-link" data-set-name="${escapeHtml(set.setName)}">Checklist</a>`);
+  if (set.hasChecklist && set.seoURLSlug) {
+    links.push(`<a href="/reviews/${set.seoURLSlug}/checklist/">Checklist</a>`);
   }
   return `
     <div class="browse-set">
@@ -82,14 +82,6 @@ function renderBrowseColumn(containerId, sets) {
 async function initBrowseBySet() {
   const status = document.getElementById("browseStatus");
   if (!status) return;
-
-  // The Checklist links are rebuilt on every render, so listen once on the page.
-  document.getElementById("browseColumns").addEventListener("click", (event) => {
-    const link = event.target.closest(".browse-checklist-link");
-    if (!link) return;
-    event.preventDefault();
-    openChecklistModal(link);
-  });
 
   // A pre-rendered list (every deploy) refreshes silently; only an empty page waits on a spinner.
   const preRendered = document.querySelector("#browseColumns .browse-set-name");

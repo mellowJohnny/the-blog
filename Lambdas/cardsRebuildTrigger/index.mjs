@@ -20,13 +20,15 @@ const amplify = new AmplifyClient({ region: "us-east-2" });
 const APP_ID = "d20qsyoicusf3p";
 const BRANCH_NAME = "main";
 
-// Fields that reach the generated pages, manifest or sitemap. Vote counts,
-// hasChecklist and the review text are deliberately absent: the page's own
-// JS renders those live, so changing them needs no build.
+// Fields that reach the generated pages, manifest or sitemap: the review itself is pre-rendered,
+// and checklistUpdatedAt (set by saveChecklist on every checklist save or delete) rebuilds the
+// set's checklist page. Vote counts are absent: the page's own JS renders those live.
 const STATIC_OUTPUT_FIELDS = [
   "blogStatus", "setName", "year", "blogCat", "setID", "stars",
   "seoURLSlug", "seoPageTitle", "seoMetaDesc", "seoTags",
-  "headerImg", "headerImgName", "now", "updatedAt"
+  "headerImg", "headerImgName", "now", "updatedAt",
+  "postBody", "size", "subsets", "formats", "mfg", "author", "footerImg", "footerImgName", "printRun",
+  "hasChecklist", "checklistUpdatedAt"
 ];
 
 const isLive = (image) => image?.blogStatus?.S === "OK";

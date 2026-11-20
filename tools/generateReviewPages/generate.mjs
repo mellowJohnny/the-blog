@@ -10,6 +10,8 @@
 // So are the review itself (review-body markers, buildCardSetMarkup() in helper.js),
 // the breadcrumbs and both JSON-LD blocks, from each set's full record (fetchFullSets());
 // the page's JS still fetches the set and redraws the same markup, adding pagination and votes.
+// Each set with a checklist also gets reviews/<slug>/checklist/index.html (checklistTemplate.html beside
+// this file), its list pre-rendered by the checklist modal's own functions in scripts/wax.js.
 //
 // Amplify runs this on every build (amplify.yml), and a change to a live set
 // in the CMS starts a build (Lambdas/cardsRebuildTrigger), so none of the
@@ -39,6 +41,7 @@ const SETS_URL = "https://jlpd8ec14j.execute-api.us-east-2.amazonaws.com/prod";
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const REVIEWS_DIR = path.join(REPO_ROOT, "reviews");
 const TEMPLATE_PATH = path.join(REPO_ROOT, "waxReviews.html");
+const CHECKLIST_TEMPLATE_PATH = path.join(REPO_ROOT, "tools", "generateReviewPages", "checklistTemplate.html");
 const HELPER_PATH = path.join(REPO_ROOT, "scripts", "helper.js");
 const WAX_PATH = path.join(REPO_ROOT, "scripts", "wax.js");
 const BROWSE_PAGE_PATH = path.join(REPO_ROOT, "browseBySet.html");
@@ -127,6 +130,33 @@ async function fetchFullSets(sets, warnings) {
   }
   await Promise.all([1, 2, 3, 4].map(worker));
   return records;
+}
+
+// The checklist endpoint openChecklistModal() calls, read from scripts/wax.js so the two can't drift.
+function loadChecklistApiUrl() {
+  const match = fs.readFileSync(WAX_PATH, "utf8").match(/^const CHECKLIST_API_URL = "([^"]+)";/m);
+  if (!match) throw new Error("Could not find CHECKLIST_API_URL in scripts/wax.js");
+  return match[1];
+}
+
+// Each checklist's cards, by setID, two requests at a time (the Checklists table's throughput cap).
+// A failure fails the build: the review pages and Browse By Set link to every one of these pages.
+async function fetchChecklists(sets) {
+  const apiUrl = loadChecklistApiUrl();
+  const queue = sets.filter((set) => set.hasChecklist);
+  const checklists = new Map();
+  let next = 0;
+  async function worker() {
+    while (next < queue.length) {
+      const set = queue[next++];
+      const items = await withRetries(() => getJson(`${apiUrl}?setName=${encodeURIComponent(set.setName)}`))
+        .catch((err) => { throw new Error(`The "${set.setName}" checklist didn't load: ${err.message}`); });
+      if (!Array.isArray(items)) throw new Error(`The "${set.setName}" checklist reply isn't a list`);
+      checklists.set(set.setID, items);
+    }
+  }
+  await Promise.all([1, 2].map(worker));
+  return checklists;
 }
 
 // The Wax Museum's phone LCP is its first pack's front image, which the page only names after fetching the
@@ -254,9 +284,11 @@ function loadBrowserFunctions(categoryRanges) {
     liftFunction(waxSource, "stripYearFromSetName", "scripts/wax.js"),
     liftFunction(waxSource, "cardSetJsonLd", "scripts/wax.js"),
     liftFunction(waxSource, "cardIntroHtml", "scripts/wax.js"),
+    liftBlock(waxSource, "checklist-block", "scripts/wax.js"),
     fs.readFileSync(BROWSE_SCRIPT_PATH, "utf8")
   ].join("\n"), context);
-  for (const name of ["browseColumnHtml", "setPickerHtml", "compareSetsForDefault", "navHtml", "footerHtml", "phoneImageUrl", ...REVIEW_HELPERS, "cardSetJsonLd", "cardIntroHtml"]) {
+  for (const name of ["browseColumnHtml", "setPickerHtml", "compareSetsForDefault", "navHtml", "footerHtml", "phoneImageUrl", ...REVIEW_HELPERS, "cardSetJsonLd", "cardIntroHtml",
+    "renderChecklistGroups", "checklistFilterAvailability"]) {
     if (typeof context[name] !== "function") throw new Error(`${name}() did not load from the browser scripts`);
   }
   return context;
@@ -366,6 +398,8 @@ function paramsBlock(set, categoryRanges) {
 }
 
 const reviewUrl = (set) => `${SITE_ORIGIN}/reviews/${set.seoURLSlug}/`;
+// The same href renderCardSetPage() (wax.js) and buildBrowseSetEntry() (browseBySet.js) give the Checklist link.
+const checklistPath = (set) => `/reviews/${set.seoURLSlug}/checklist/`;
 
 // What wax.js draws: the category intro (renderCardIntro()), the review (displayCardSet()'s buildCardSetMarkup()
 // call), the breadcrumbs (renderBreadcrumbs()) and both JSON-LD blocks (fetchPageTitle()), from the same
@@ -386,7 +420,8 @@ function prerenderReview(browser, set, record, pageName, linkFor) {
       headerImgUrl: image,
       footerImgUrl: `${record.footerImg}${record.footerImgName}`,
       author: record.author, date: record.now, postBody: record.postBody,
-      hasChecklist: record.hasChecklist, printRun: record.printRun
+      hasChecklist: record.hasChecklist, printRun: record.printRun,
+      checklistHref: checklistPath(set)
     });
   }
   return { body, crumbs: browser.breadcrumbHtml(trail), jsonLd, intro: browser.cardIntroHtml(pageName) };
@@ -417,6 +452,73 @@ function buildPage(template, set, categoryRanges, warnings, pickerHtml, navMarku
   return `${html.slice(0, doctypeEnd)}\n${BANNER}${html.slice(doctypeEnd)}`;
 }
 
+// Replaces every __KEY__ in html with its value; each key must occur at least once.
+function fillTokens(html, tokens, file) {
+  return Object.entries(tokens).reduce((out, [key, value]) => {
+    const token = `__${key}__`;
+    if (!out.includes(token)) throw new Error(`${file} has no ${token}`);
+    return out.split(token).join(value);
+  }, html);
+}
+
+// The checklist's size in words: "759 cards, including 3 insert sets, with rookie cards marked".
+function checklistSummary(items, offered) {
+  const insertSets = new Set(items.filter((item) => item.type === "insertSet").map((item) => item.insertSetName)).size;
+  const inserts = insertSets ? `, including ${insertSets} insert set${insertSets === 1 ? "" : "s"}` : "";
+  return `${items.length} card${items.length === 1 ? "" : "s"}${inserts}${offered.rookies ? ", with rookie cards marked" : ""}`;
+}
+
+// A set's own checklist page, reviews/<slug>/checklist/index.html: the list renderChecklistGroups() (wax.js)
+// draws in the modal, pre-rendered, with its own title, description and breadcrumbs. An empty checklist
+// gets the modal's empty message and stays out of search.
+function buildChecklistPage(template, set, items, pageName, browser, linkFor, navMarkup, footerMarkup, warnings) {
+  const file = "tools/generateReviewPages/checklistTemplate.html";
+  const url = `${SITE_ORIGIN}${checklistPath(set)}`;
+  const offered = browser.checklistFilterAvailability(items);
+  const summary = checklistSummary(items, offered);
+  if (items.length === 0) warnings.push(`"${set.setName}" has hasChecklist but no checklist cards - its checklist page is noindex`);
+  const title = `${set.setName} Hockey Card Checklist`;
+  const description = `Complete ${set.setName} hockey card checklist: ${summary}. Print it or download a PDF.`;
+  const image = set.headerImg && set.headerImgName ? `${set.headerImg}${set.headerImgName}` : DEFAULT_IMAGE;
+  const trail = [
+    ...browser.breadcrumbTrail(pageName, set.setName, `/reviews/${set.seoURLSlug}/`, linkFor),
+    { name: "Checklist", url }
+  ];
+  const head = [
+    `<title>${escapeAttr(title)}</title>`,
+    `<meta name="description" content="${escapeAttr(description)}">`,
+    ...(items.length === 0 ? ['<meta name="robots" content="noindex">'] : []),
+    `<link rel="canonical" href="${url}">`,
+    `<meta property="og:type" content="website">`,
+    `<meta property="og:url" content="${url}">`,
+    `<meta property="og:title" content="${escapeAttr(title)}">`,
+    `<meta property="og:description" content="${escapeAttr(description)}">`,
+    `<meta property="og:image" content="${escapeAttr(image)}">`,
+    `<meta name="twitter:card" content="summary_large_image">`,
+    `<meta name="twitter:title" content="${escapeAttr(title)}">`,
+    `<meta name="twitter:description" content="${escapeAttr(description)}">`,
+    `<meta name="twitter:image" content="${escapeAttr(image)}">`,
+    jsonLdTag(["jsonld-breadcrumbs", browser.breadcrumbJsonLd(trail)])
+  ].join("\n    ");
+  const intro = items.length
+    ? `All ${summary}. <a href="/reviews/${set.seoURLSlug}/">Read the ${escapeAttr(set.setName)} review</a>.`
+    : `<a href="/reviews/${set.seoURLSlug}/">Read the ${escapeAttr(set.setName)} review</a>.`;
+
+  let html = replaceBetween(template, "checklist-head", head, file);
+  html = replaceBetween(html, "breadcrumbs", browser.breadcrumbHtml(trail), file);
+  html = replaceBetween(replaceBetween(html, "nav", navMarkup, file, true), "footer", footerMarkup, file, true);
+  html = fillTokens(html, {
+    PAGE_NAME: pageName,
+    SET_NAME: escapeAttr(set.setName),
+    INSERTS_HIDDEN: offered.inserts ? "" : " hidden",
+    ROOKIES_HIDDEN: offered.rookies ? "" : " hidden",
+    INTRO: intro,
+    CHECKLIST: browser.renderChecklistGroups(items)
+  }, file);
+  const doctypeEnd = html.indexOf(">") + 1;
+  return `${html.slice(0, doctypeEnd)}\n${BANNER.replace("waxReviews.html", "checklistTemplate.html")}${html.slice(doctypeEnd)}`;
+}
+
 // <lastmod> for a review: the date it was last edited (updatedAt, written by
 // updateCardSet) or, for sets never edited since, its publish date (now).
 function setLastmod(set) {
@@ -435,11 +537,23 @@ function pageLastmod(page) {
   }
 }
 
-function buildUrls(sets) {
+// <lastmod> for a checklist page: the later of its set's date and its last checklist save (checklistUpdatedAt,
+// written by Lambdas/saveChecklist). Same-format YYYY-MM-DD strings compare in date order.
+function checklistLastmod(set) {
+  const saved = /^\d{4}-\d{2}-\d{2}/.test(set.checklistUpdatedAt || "") ? set.checklistUpdatedAt.slice(0, 10) : undefined;
+  const own = setLastmod(set);
+  return [own, saved].filter(Boolean).sort().pop();
+}
+
+// indexedChecklists: the setIDs whose checklist page has cards (an empty one is noindex, so left out).
+function buildUrls(sets, indexedChecklists) {
   const urls = STATIC_PAGES.map((page) => ({ loc: `${SITE_ORIGIN}${page}`, lastmod: pageLastmod(page) }));
   const ordered = [...sets].sort((a, b) =>
     a.blogCat.localeCompare(b.blogCat) || a.year - b.year || a.setName.localeCompare(b.setName));
-  for (const set of ordered) urls.push({ loc: `${SITE_ORIGIN}/reviews/${set.seoURLSlug}/`, lastmod: setLastmod(set) });
+  for (const set of ordered) {
+    urls.push({ loc: `${SITE_ORIGIN}/reviews/${set.seoURLSlug}/`, lastmod: setLastmod(set) });
+    if (indexedChecklists.has(set.setID)) urls.push({ loc: `${SITE_ORIGIN}${checklistPath(set)}`, lastmod: checklistLastmod(set) });
+  }
   return urls;
 }
 
@@ -487,6 +601,15 @@ try {
     const review = prerenderReview(browser, set, record, pageName, navLinkFor);
     return { set, html: buildPage(template, set, categoryRanges, warnings, pickerHtml, navHtml(pageName, undefined, navLinkFor), footerMarkup, review) };
   });
+  const checklistTemplate = fs.readFileSync(CHECKLIST_TEMPLATE_PATH, "utf8");
+  const checklists = await fetchChecklists(sets);
+  const checklistPages = [...checklists].map(([setID, items]) => {
+    const set = sets.find((s) => s.setID === setID);
+    const pageName = pageNameFor(set, categoryRanges);
+    return { set, items, html: buildChecklistPage(checklistTemplate, set, items, pageName, browser, navLinkFor,
+      navHtml(pageName, undefined, navLinkFor), footerMarkup, warnings) };
+  });
+  const indexedChecklists = new Set(checklistPages.filter((page) => page.items.length).map((page) => page.set.setID));
   const navPages = await Promise.all(NAV_PAGE_FILES.map(async (file) => {
     let source = file === "browseBySet.html" ? buildBrowsePage(liveSets, browseColumnHtml) : fs.readFileSync(path.join(REPO_ROOT, file), "utf8");
     if (file === "waxMuseum.html") source = replaceBetween(source, "wax-lcp", await waxLcpPreload(source, warnings), file, true);
@@ -494,18 +617,22 @@ try {
     if (!match) throw new Error(`${file} needs data-nav-page on #global-nav`);
     return { file: path.join(REPO_ROOT, file), html: fillNav(source, match[1], navHtml(match[1], undefined, navLinkFor), footerMarkup, file) };
   }));
-  const urls = buildUrls(sets);
+  const urls = buildUrls(sets, indexedChecklists);
 
   let written = 0;
   for (const { set, html } of pages) {
     if (writeIfChanged(path.join(REVIEWS_DIR, set.seoURLSlug, "index.html"), html)) written++;
+  }
+  for (const { set, html } of checklistPages) {
+    if (writeIfChanged(path.join(REVIEWS_DIR, set.seoURLSlug, "checklist", "index.html"), html)) written++;
   }
   writeIfChanged(path.join(REVIEWS_DIR, "index.json"), buildManifest(sets));
   writeIfChanged(path.join(REPO_ROOT, "sitemap.xml"), buildSitemapXml(urls));
   for (const { file, html } of navPages) writeIfChanged(file, html);
 
   warnings.forEach((warning) => console.warn(`warning: ${warning}`));
-  console.log(`${sets.length} review pages (${written} written, ${prerendered} with the review pre-rendered), the link manifest and ${urls.length} sitemap URLs.`);
+  console.log(`${sets.length} review pages (${prerendered} with the review pre-rendered), ${checklistPages.length} checklist pages ` +
+    `(${written} pages written), the link manifest and ${urls.length} sitemap URLs.`);
 } catch (err) {
   console.error(`Nothing changed: ${err.message}`);
   process.exit(1);

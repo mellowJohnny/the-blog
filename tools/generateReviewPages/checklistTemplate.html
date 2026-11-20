@@ -1,0 +1,171 @@
+<!doctype html>
+
+<html lang="en-ca">
+  <head>
+    <meta charset="utf-8">
+    <!-- For mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link
+      rel="icon"
+      href="/favicon.ico"
+      sizes="16x16 32x32 48x48">
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/images/icons/icon-192.png">
+    <link
+      rel="apple-touch-icon"
+      href="/images/icons/apple-touch-icon.png">
+
+    <!-- The template for each set's checklist page, reviews/<slug>/checklist/index.html: tools/generateReviewPages
+         fills the checklist-head markers and the double-underscore tokens below. Unfilled, it stays out of search. -->
+    <!-- checklist-head:start -->
+    <title>Hockey Card Checklist | Junk Wax Hockey</title>
+    <meta name="robots" content="noindex">
+    <!-- checklist-head:end -->
+
+    <!-- Global site tag (gtag.js) - Load Google Analytics until later -->
+    <script>
+      window.addEventListener('load', function() {
+        var g = document.createElement('script');
+        g.src = 'https://www.googletagmanager.com/gtag/js?id=G-JMGVGK09QX';
+        g.async = true;
+        document.head.appendChild(g);
+      });
+    </script>
+
+    <!-- Fonts are self-hosted (@font-face in styles.css): masthead, list text, nav -->
+    <link rel="preload" href="/fonts/bebas-neue-latin-v16.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/source-sans-3-latin-v20.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/nunito-latin-v32.woff2" as="font" type="font/woff2" crossorigin>
+
+    <!-- Load the stylesheet -->
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css">
+
+    <!-- Chrome/Edge fetch a same-site page's HTML when a link is hovered or pressed, so the click opens faster -->
+    <script type="speculationrules">
+      {
+        "prefetch": [{
+          "where": { "and": [
+            { "href_matches": "/*" },
+            { "not": { "href_matches": "/cms/*" } }
+          ] },
+          "eagerness": "moderate"
+        }]
+      }
+    </script>
+
+    <!-- Load the Hella Scripts (wax.js: the checklist filters, print and PDF) -->
+    <script src="/scripts/wax.js" defer></script>
+    <script src="/scripts/helper.js" defer></script>
+
+    <script>
+      // The list ships pre-rendered; this loads the data its filters and PDF use - wax.js
+      document.addEventListener("DOMContentLoaded", () => initChecklistPage());
+
+      window.addEventListener('load', (event) => {
+        fetchNav("__PAGE_NAME__");
+        fetchFooterLinks();
+        fetchCopyrightYear();
+        // Masthead: random NHL team colors on every load - helper.js
+        applyRandomMastheadStyling();
+      });
+
+      // Google Analytics
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JMGVGK09QX');
+    </script>
+  </head>
+
+  <body class="checklist-page">
+    <a class="skip-link input-button" href="#main">Skip to content</a>
+    <section>
+      <table class="wax-reviews-mast-table">
+        <tr>
+          <td>
+            <header class="wax-reviews-masthead">
+              <a href="/">Junk Wax Hockey</a>
+            </header>
+          </td>
+        </tr>
+      </table>
+    </section>
+
+    <nav aria-label="Main">
+      <!-- Hamberger menu for mobile in helper.js -->
+      <div class="nav-container" id="global-nav-placeholder">
+        <button type="button" class="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="global-nav" onclick="toggleMenu()"><span aria-hidden="true">☰</span></button>
+        <div id="global-nav" class="nav-links"><!-- nav:start --><!-- nav:end --></div>
+      </div>
+    </nav>
+    <main id="main">
+      <nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb"><!-- breadcrumbs:start --><!-- breadcrumbs:end --></nav>
+
+      <!-- The modal's own parts (wax.js and its styles), laid out as a page; the filters
+           and Download PDF stay disabled until initChecklistPage() has the data -->
+      <div class="checklist-modal-content checklist-page-panel" id="checklistPanel">
+        <div class="checklist-modal-controls">
+          <button
+            type="button"
+            class="checklist-modal-print-btn"
+            onclick="window.print()"
+          >
+            🖨 Print
+          </button>
+          <button
+            type="button"
+            class="checklist-modal-pdf-btn"
+            onclick="exportChecklistPdf()"
+            disabled
+          >
+            ⬇ Download PDF
+          </button>
+        </div>
+        <!-- Print-only here: the printed list keeps its branding -->
+        <header class="checklist-modal-masthead">
+          <a href="/">Junk Wax Hockey.com</a>
+        </header>
+        <div class="checklist-modal-title-row">
+          <h1 id="checklistModalTitle" class="checklist-modal-title" data-set-name="__SET_NAME__" data-label=" Checklist">__SET_NAME__ Checklist</h1>
+          <div class="checklist-modal-filters">
+            <label
+              class="checklist-modal-filter"
+              id="checklistInsertFilterLabel"__INSERTS_HIDDEN__>
+              <input
+                type="checkbox"
+                id="checklistInsertFilter"
+                onchange="applyChecklistFilters()"
+                disabled>
+              Inserts only
+            </label>
+            <label
+              class="checklist-modal-filter"
+              id="checklistRookieFilterLabel"__ROOKIES_HIDDEN__>
+              <input
+                type="checkbox"
+                id="checklistRookieFilter"
+                onchange="applyChecklistFilters()"
+                disabled>
+              Rookies only
+            </label>
+          </div>
+        </div>
+        <p class="checklist-page-intro">__INTRO__</p>
+        <div id="checklistModalBody">__CHECKLIST__</div>
+        <!-- Print-only -->
+        <div
+          id="checklistModalPrintFooter"
+          class="checklist-modal-print-footer"
+        ></div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <nav id="footer-links" aria-label="Footer"><!-- footer:start --><!-- footer:end --></nav>
+      <div id="copy"></div>
+    </footer>
+  </body>
+</html>

@@ -3,7 +3,7 @@
  *  Public list of every live card set for browseBySet.html - names only.
  *  The CMS's getCardSets returns full items (review bodies) behind a login,
  *  so it can't serve a public page; this one projects a few small fields
- *  (now/updatedAt feed the sitemap's <lastmod>; the slug, rating and SEO
+ *  (now/updatedAt/checklistUpdatedAt feed the sitemap's <lastmod>; the slug, rating and SEO
  *  fields feed the review-page generator that every Amplify build runs).
  *
  *  Source of truth is this repo - don't edit it only in the AWS Console.
@@ -31,7 +31,7 @@ export const handler = async () => {
         IndexName: "blogStatus-year-index",
         KeyConditionExpression: "blogStatus = :status",
         // year is a DynamoDB reserved word, so it has to be aliased.
-        ProjectionExpression: "setID, setName, blogCat, #yr, stars, hasChecklist, #now, updatedAt, seoURLSlug, seoPageTitle, seoMetaDesc, seoTags, headerImg, headerImgName",
+        ProjectionExpression: "setID, setName, blogCat, #yr, stars, hasChecklist, checklistUpdatedAt, #now, updatedAt, seoURLSlug, seoPageTitle, seoMetaDesc, seoTags, headerImg, headerImgName",
         ExpressionAttributeNames: { "#yr": "year", "#now": "now" },
         ExpressionAttributeValues: { ":status": "OK" },
         ExclusiveStartKey: lastKey

@@ -155,13 +155,15 @@ async function setCardsHasChecklist(setName, value) {
     ExpressionAttributeNames: { "#yr": "year" }
   }));
 
+  // checklistUpdatedAt changes on every save, so the Cards stream always starts a site build
+  // (cardsRebuildTrigger), which rewrites the set's checklist page and its sitemap date.
   const items = result.Items || [];
   for (const item of items) {
     await db.send(new UpdateCommand({
       TableName: CARDS_TABLE_NAME,
       Key: { setName: item.setName, year: item.year },
-      UpdateExpression: "SET hasChecklist = :value",
-      ExpressionAttributeValues: { ":value": value }
+      UpdateExpression: "SET hasChecklist = :value, checklistUpdatedAt = :now",
+      ExpressionAttributeValues: { ":value": value, ":now": new Date().toISOString() }
     }));
   }
 
@@ -234,16 +236,15 @@ export const handler = async (event) => {
         };
       }
 
-      // Only the set's LAST remaining group should clear the flag - a set
-      // with other groups left still needs its waxReviews.html link.
+      // Only the set's LAST remaining group clears the flag - a set with other groups left still
+      // needs its link. Written either way, so checklistUpdatedAt starts a build of its checklist page.
       let clearedFlag = false;
-      if (!(await hasAnyChecklistRows(setName))) {
-        try {
-          await setCardsHasChecklist(setName, false);
-          clearedFlag = true;
-        } catch (err) {
-          console.error("Failed to clear hasChecklist on Cards item:", err);
-        }
+      try {
+        const rowsLeft = await hasAnyChecklistRows(setName);
+        await setCardsHasChecklist(setName, rowsLeft);
+        clearedFlag = !rowsLeft;
+      } catch (err) {
+        console.error("Failed to update hasChecklist on Cards item:", err);
       }
 
       return {

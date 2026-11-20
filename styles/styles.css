@@ -3269,6 +3269,58 @@ body:has(.site-footer) {
   }
 }
 
+/* A set's checklist page (/reviews/<slug>/checklist/): the checklist modal's box, laid out
+   as a page panel - no height cap or inner scroll, the review box's width, 16px gutters. */
+.checklist-page-panel {
+  max-height: none;
+  overflow: visible;
+  width: min(1030px, calc(100% - 32px));
+  margin: 16px auto 32px auto;
+}
+
+/* The site masthead is right above it on screen; this one is for the printout */
+.checklist-page-panel .checklist-modal-masthead {
+  display: none;
+}
+
+.checklist-page-intro {
+  margin: 8px 0 16px 0;
+}
+
+/* The filters and Download PDF until initChecklistPage() (wax.js) has the data */
+.checklist-page-panel [disabled] {
+  cursor: progress;
+}
+
+/* Print only the panel, as the modal prints (see the rules above) */
+@media print {
+  body.checklist-page > :not(main),
+  body.checklist-page main > :not(#checklistPanel),
+  body.checklist-page .checklist-page-intro {
+    display: none !important;
+  }
+
+  body.checklist-page #checklistPanel {
+    box-shadow: none;
+    border-radius: 0;
+    width: auto;
+    max-width: none;
+    margin: 8px;
+    padding: 0;
+  }
+
+  body.checklist-page .checklist-modal-masthead {
+    display: block;
+    margin: 0 0 16px 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body.checklist-page .checklist-modal-cards {
+    columns: 2;
+  }
+}
+
 /**********************************************************
 *********************** S3 BUCKET MODAL *******************
 ***********************************************************/

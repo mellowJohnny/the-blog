@@ -152,7 +152,8 @@ function renderCardSetPage() {
       item.upvotes,
       item.downvotes,
       item.hasChecklist,
-      item.printRun
+      item.printRun,
+      item.seoURLSlug ? `${reviewPath(item)}checklist/` : "#"
     );
     // Populate the page title, meta tags, and structured data
     fetchPageTitle(item);
@@ -267,7 +268,7 @@ function cardSetJsonLd({ setName, author, now, stars }, description, image, keyw
  * Function to FORMAT & DISPLAY card sets
  */
 
-   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date,upvotes,downvotes,hasChecklist,printRun)
+   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date,upvotes,downvotes,hasChecklist,printRun,checklistHref)
    {
 
     // Voting - keyed by setName+year (Cards table's key). voteKey
@@ -288,7 +289,7 @@ function cardSetJsonLd({ setName, author, now, stars }, description, image, keyw
         setName, year, mfg, size, subsets, stars, formats,
         headerImgUrl: `${headerImg}${headerImgName}`,
         footerImgUrl: `${footerImg}${footerImgName}`,
-        author, date, postBody, hasChecklist, printRun
+        author, date, postBody, hasChecklist, printRun, checklistHref
     }) + `
         <br>
         <hr/>
@@ -485,17 +486,13 @@ function applyChecklistFilters() {
   const { inserts, rookies } = getChecklistFilterState();
   const items = filterChecklistItems(currentChecklistItems);
 
-  // Offer "Inserts only" only when this checklist has insert cards at all.
-  if (insertLabel) insertLabel.hidden = !currentChecklistItems.some(item => item.type === "insertSet");
-
-  // Offer "Rookies only" only when the main set has an RC card.
+  const offered = checklistFilterAvailability(currentChecklistItems);
+  if (insertLabel) insertLabel.hidden = !offered.inserts;
   const rookieLabel = document.getElementById("checklistRookieFilterLabel");
-  if (rookieLabel) {
-    rookieLabel.hidden = !currentChecklistItems.some(item =>
-      item.type !== "insertSet" && item.type !== "extendedSet" && /\bRC\b/.test(item.notes || ""));
-  }
+  if (rookieLabel) rookieLabel.hidden = !offered.rookies;
 
-  if (title.dataset.setName) title.textContent = title.dataset.setName + checklistFilterSuffix();
+  // data-label: the checklist page's " Checklist" after the set name (the modal has none).
+  if (title.dataset.setName) title.textContent = title.dataset.setName + (title.dataset.label || "") + checklistFilterSuffix();
 
   // renderChecklistGroups()'s own empty-state message ("No checklist
   // data found for this set") would be misleading here - a filtered
@@ -518,6 +515,25 @@ function onChecklistModalClosed() {
   document.body.classList.remove("checklist-modal-open");
 }
 
+// A set's own checklist page (/reviews/<slug>/checklist/, built by tools/generateReviewPages): the list ships
+// pre-rendered; this loads the cards the filters and PDF work from, redraws the same list and turns them on.
+function initChecklistPage() {
+  const title = document.getElementById("checklistModalTitle");
+  if (!title || !title.dataset.setName) return;
+  fetch(`${CHECKLIST_API_URL}?setName=${encodeURIComponent(title.dataset.setName)}`)
+    .then(response => {
+      if (!response.ok) throw new Error(`Checklist request failed: ${response.status}`);
+      return response.json();
+    })
+    .then(items => {
+      if (!Array.isArray(items) || items.length === 0) return;
+      currentChecklistItems = items;
+      applyChecklistFilters();
+      document.querySelectorAll("#checklistPanel [disabled]").forEach(control => { control.disabled = false; });
+    })
+    .catch(err => console.log("Checklist fetch failed:", err)); // the pre-rendered list stays, tools off
+}
+
 // Print-only footer text (hidden on screen - see .checklist-modal-print-footer,
 // styles.css). Set once here rather than on every openChecklistModal()
 // call since the year won't change mid-session.
@@ -527,6 +543,18 @@ function onChecklistModalClosed() {
     printFooter.textContent = `© ${new Date().getFullYear()} www.junkwaxhockey.com`;
   }
 })();
+
+// checklist-block:start (tools/generateReviewPages runs this block to pre-render each checklist page; keep it DOM-free)
+
+// Which filters a checklist offers: "Inserts only" when it has insert cards at all,
+// "Rookies only" when the main set has an RC card.
+function checklistFilterAvailability(items) {
+  return {
+    inserts: items.some(item => item.type === "insertSet"),
+    rookies: items.some(item =>
+      item.type !== "insertSet" && item.type !== "extendedSet" && /\bRC\b/.test(item.notes || ""))
+  };
+}
 
 // Groups/sorts/labels a checklist's items - shared by the HTML
 // renderer and the PDF exporter so both stay in sync. Returns
@@ -622,6 +650,8 @@ function renderChecklistCard(item) {
   return `<div class="checklist-modal-card"><span class="checklist-modal-card-checkbox"></span><span class="checklist-modal-card-num">${escapeHtml(item.cardNumberDisplay)}</span> ${escapeHtml(item.playerName)}${notes}</div>`;
 }
 
+// checklist-block:end
+
 /**
  * "Download PDF" - alternative to the Print button, using jsPDF +
  * embedded fonts loaded lazily on first use (not static <script> tags),
@@ -648,9 +678,9 @@ function loadJsPdf() {
   // parallel rather than a slower sequential chain.
   const sources = [
     "https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.2.1/jspdf.umd.min.js",
-    "scripts/fonts/bebasNeue-normal.js",
-    "scripts/fonts/sourceSans3-normal.js",
-    "scripts/fonts/sourceSans3-bold.js"
+    "/scripts/fonts/bebasNeue-normal.js",
+    "/scripts/fonts/sourceSans3-normal.js",
+    "/scripts/fonts/sourceSans3-bold.js"
   ];
 
   jsPdfLoadPromise = Promise.all(sources.map(loadScript));

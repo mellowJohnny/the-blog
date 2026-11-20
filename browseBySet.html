@@ -70,7 +70,7 @@
       <style>.nhl-ticker { display: none; }</style>
     </noscript>
 
-    <!-- Load the Hella Scripts (wax.js is here for the checklist modal) -->
+    <!-- Load the Hella Scripts (wax.js is here for stripYearFromSetName()) -->
     <script src="/scripts/wax.js" defer></script>
     <script src="/scripts/browseBySet.js" defer></script>
     <script src="/scripts/ticker.js" defer></script>
@@ -160,69 +160,5 @@
       <div id="copy"></div>
       <!-- Populated by fetchCopyrightYear() in helper.js -->
     </footer>
-
-    <!-- Checklist modal: a native dialog, opened with showModal() in wax.js -->
-    <dialog
-      id="checklistModal"
-      class="checklist-modal-content"
-      aria-labelledby="checklistModalTitle"
-      closedby="any">
-        <div class="checklist-modal-controls">
-          <button
-            type="button"
-            class="checklist-modal-print-btn"
-            onclick="window.print()"
-          >
-            🖨 Print
-          </button>
-          <button
-            type="button"
-            class="checklist-modal-pdf-btn"
-            onclick="exportChecklistPdf()"
-          >
-            ⬇ Download PDF
-          </button>
-          <button
-            type="button"
-            class="checklist-modal-close"
-            aria-label="Close"
-            onclick="closeChecklistModal()"
-          >&times;</button>
-        </div>
-        <header class="checklist-modal-masthead">
-          <a href="/">Junk Wax Hockey.com</a>
-        </header>
-        <div class="checklist-modal-title-row">
-          <h2 id="checklistModalTitle" class="checklist-modal-title"></h2>
-          <div class="checklist-modal-filters">
-            <label
-              class="checklist-modal-filter"
-              id="checklistInsertFilterLabel"
-              hidden>
-              <input
-                type="checkbox"
-                id="checklistInsertFilter"
-                onchange="applyChecklistFilters()">
-              Inserts only
-            </label>
-            <label
-              class="checklist-modal-filter"
-              id="checklistRookieFilterLabel"
-              hidden>
-              <input
-                type="checkbox"
-                id="checklistRookieFilter"
-                onchange="applyChecklistFilters()">
-              Rookies only
-            </label>
-          </div>
-        </div>
-        <div id="checklistModalBody"></div>
-        <!-- Print-only -->
-        <div
-          id="checklistModalPrintFooter"
-          class="checklist-modal-print-footer"
-        ></div>
-    </dialog>
   </body>
 </html>
