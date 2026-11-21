@@ -819,6 +819,7 @@ h1 {
 .rink-runner-help,
 .rink-runner-status {
   margin: 8px 0 0 0;
+  font-family: "Source Sans 3", "Source Sans 3 Fallback", sans-serif;
   font-size: 14px;
   color: var(--color-grey);
 }

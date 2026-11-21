@@ -109,6 +109,7 @@ const RINK_OBSTACLES = ["puck", "net", "referee", "goalie", "zamboni", "sticks"]
 const RINK_PIXEL = 2;                          // each grid cell is a 2x2 block on the 600x180 canvas
 const RINK_REACH = 32;                         // grid columns from the skater's back to his glove; the stick beyond doesn't collide
 const RINK_W = 600, RINK_H = 180, RINK_ICE_Y = 165;
+const RINK_MIN_GAP = 36;                       // frames; a simulation of back-to-back jumps fails below about 27
 const RINK_BEST_KEY = "rinkRunnerBest";
 const RINK_MUSIC_KEY = "rinkRunnerMusic";
 const RINK_MUSIC_REST = 8;                     // seconds of quiet between one "Charge!" and the next build-up
@@ -264,11 +265,14 @@ function initRinkRunner(canvasId) {
     if (skater.y === 0) skater.vy = 7.5;   // y counts up from the ice
   }
 
-  // Obstacles come at random, each far enough after the last to be jumpable at the current speed.
+  // Obstacles come at random, closer together as the speed rises, but never nearer than
+  // RINK_MIN_GAP frames after the skater has passed the last one, so any two in a row can be jumped.
   function spawn() {
     const kind = RINK_OBSTACLES[Math.floor(Math.random() * RINK_OBSTACLES.length)];
     obstacles.push({ kind, x: RINK_W + 10, img: art[kind] });
-    nextGap = speed * (40 + Math.random() * 45) + art[kind].width;
+    const pace = (speed - 5) / 6;                                     // 0 at the start, 1 at top speed
+    const frames = RINK_MIN_GAP + 4 * (1 - pace) + Math.random() * (45 - 30 * pace);
+    nextGap = speed * frames + RINK_REACH * RINK_PIXEL + art[kind].width;
   }
 
   // Forgiving boxes: a few pixels in from each sprite's edge, and the stick out front doesn't count.
