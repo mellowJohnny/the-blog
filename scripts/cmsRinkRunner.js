@@ -55,8 +55,7 @@ const RINK_SPRITES = {
     "......kTTTTVTk.kTTTTVTk..............kNPPPPPk", ".......kkkkkk...kkkkkk................kkkkkk."
   ],
   puck: [
-    "...kkkkkk...", ".kkQQQQQQkk.", "kQQRRRRRRQQk", "kQSRRRRRSSSk",
-    ".kkQSSSSSkk.", "...kkkkkk..."
+    ".kkkkkkkkkkk.", "kQQQQQQQQQQQk", "kRRRRRRRRRRRk", "kSSSSSSSSSSSk", ".kkkkkkkkkkk."
   ],
   // A real net is 6' wide and 4' tall, so the frame keeps that 3:2 shape.
   net: [
@@ -76,13 +75,13 @@ const RINK_SPRITES = {
     ".kQSSSSSSSSSSSk", "..kkTkkTkkTkkTk", "...kTTTVkkTTTVk", "...kTVVVkkTVVVk", "....kkkk..kkkk."
   ],
   goalie: [
-    "............kkkkk............", "...........kGGGGGk..kk.......", "..........kGHHHHHGkkNNk......",
-    "..........kGIIHIIIkkNPNk.....", "..........kGIQGIQGk.kkNNk....", "........kkkGIQGIQGkk..kNNkk..",
-    ".......kDDAAGGIIGAADkk.kNNNk.", "......kDEFABAAGAACDEDDkkkNPNk", "....kkDEFFABBBABBBADEEDWWWWk.",
-    ".kkkDDEFFACCCCCCCCCADEFWXXXWk", "kGGGGDFFGGGGGGGGGGGGkDFWXXYYk", "kGHHIDkAAAAAAAAAAAAAkkkWXYYk.",
-    "kGHHIkkACCCCCCCCCCCCGGkkWYkk.", "kGHIIGGGGGAGGkkkGGAGHHGGAGGGk", "kGHIAGHHHIAGIk.kGIAGHHHIAGHIk",
-    "kGHIAGHHHIAGIk.kGIAGHHHIAGHIk", "kGHIAGHHHIAGIk.kGIAGHHHIAGHIk", "kGIIAGIIIIAGIk.kGIAGIIIIAGIIk",
-    ".kkkkkkkkkkkk...kkkkkkkkkkkk."
+    "...........kkkk...........", "..........kGGGGk..........", ".........kGHHHHGk.........", ".........kGIIIIIGk........",
+    ".........kGIQGQQGk........", ".........kGIQGQSGk........", "......kkkkGIQGQSkkk.......", ".....kAAAAAGGIGAAAAkk.....",
+    "....kDDDABBAAAABBCDDDk....", "...kDEFFABBBBBBBBCDEEDk...", "...kDEFABBBBBBBBBBADFFDk..", ".kkDFFFACCCCCCCCCCCADWWWk.",
+    "kGGGGDGGGGGGGGGGGGGAWXXXWk", "kGHHIkAAAAAAAAAAAAACWXXXYk", "kGHHIABBBBBBBBBBBBBCWXXXYk", "kGHHIACCCCCCCCCCCCCCkWYYYk",
+    "kGIIIkDDDDDDDDDDDDDk.kkkk.", "kGNNGkDFFFFEEFFFFFFk......", ".kNPkGGGGGGDFFGGGGGGk.....", ".kNPkGIIIIIkkkGIIIIIk.....",
+    "..kNkAAAAAAk.kAAAAAAk.....", "..kNNACCCCCk.kACCCCCk.....", "..kNPGGGGGGk.kGGGGGGk.....", "..kNPAAAAAAkkkAAAAAAk.....",
+    "..kNONNNNNNNNkGGGGGGk.....", "...kNPPPPPPPPkTTTTTTk.....", "....kkkkkkkkk.kkkkkk......"
   ],
   // Side view, driving left: the snow tank up front, the seat and wheel behind it, and the
   // conditioner box trailing on the ice at the back.
