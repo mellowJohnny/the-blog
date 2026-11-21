@@ -338,6 +338,22 @@ capitalisation (`text-transform: none`, normal letter spacing) and are
 20px on desktop (the nearest type-scale size, `STYLE_GUIDE.md`), since
 mixed case reads smaller than the bar's capitals.
 
+**The desktop shelf (since 2026-11-21).** At 1221px and up a group opens as
+a full-width shelf under the bar, not a floating card, so the menu reads as
+part of the bar: the bar tints to `--color-nav-shelf` (a shade deeper than
+the page) through a `:has()` rule on `#global-nav-placeholder`, a short
+`--color-link-light` underline grows under the open parent, the shelf slides
+down (`clip-path`, about 0.3s) and its links fade in from the left in one
+row. `.nav-group` is `position: static`, so the shelf is placed against
+`#global-nav-placeholder`. Each row starts under its parent and runs right:
+`alignNavShelves()` (`helper.js`) sets its `--shelf-start` to the button's
+left edge, pulled left only as far as the row needs to fit the bar. It runs
+after the nav is drawn (`fetchNav()`, `fetchCmsNav()`), on resize, and when
+a web font finishes loading, since the font changes the widths. The pointer
+can move straight down from the word into the shelf without it closing. The
+CMS nav uses the same markup, so it has the shelf too; the phone and tablet
+menu is unchanged; reduced motion turns the animation off.
+
 The "set-o-matic" year picker works the same way: `categoryRanges` maps
 `blogCat` → `{start, end}` year ranges per page, and the pure
 `setPickerHtml(year, blogCat, pageName, hrefFor)` builds one flat list of

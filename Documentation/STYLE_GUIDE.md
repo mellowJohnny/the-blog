@@ -23,6 +23,7 @@ Use the `:root` tokens in `styles.css`. Don't type a colour value into a rule.
 | Token | Value | Use |
 |---|---|---|
 | `--color-page-bg` | `rgb(228, 241, 250)` | Page background |
+| `--color-nav-shelf` | `rgb(211, 232, 247)` | The desktop nav while a menu is open: the bar's tint and the full-width shelf under it (owner-approved 2026-11-21) |
 | `--color-text` | `#000` (black) | Body text: intros, review and post bodies |
 | `--color-text-dark` | `rgb(11, 62, 100)` (navy) | h2 and h3 headings, card titles, modal titles, the checklist filter labels |
 | `--color-heading-outline` | `rgb(2, 70, 153)` | Nav links, footer band, masthead text outline |
@@ -33,7 +34,7 @@ Use the `:root` tokens in `styles.css`. Don't type a colour value into a rule.
 | `--color-image-border` | `rgb(22, 86, 138)` | Image borders |
 | `--color-masthead-bg` | `rgb(44, 82, 137)` | Masthead fallback background |
 | `--color-accent-hover` | `#e551f5` | Link hover accent |
-| `--color-white` | `#fff` | Text on dark backgrounds (footer, phone menu, buttons, Flip pills); card, modal and dropdown backgrounds |
+| `--color-white` | `#fff` | Text on dark backgrounds (footer, phone menu, buttons, Flip pills); card, modal and menu backgrounds |
 | `--color-button` | `#256386` | Button fills, breadcrumb links |
 | `--color-red` | `#a83232` | The site's one red: rookie-card notes (the CMS also uses it for required marks and delete buttons) |
 | `--color-content-bg` | `rgb(212, 233, 241)` | The `.blog-entry` content box |

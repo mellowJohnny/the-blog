@@ -177,6 +177,7 @@ messing up the layout with white borders and scoll bars
   --color-input-border: rgb(85, 174, 233);
   --color-accent-hover: #e551f5;
   --color-page-bg: rgb(228, 241, 250);
+  --color-nav-shelf: rgb(211, 232, 247); /* the desktop nav's open shelf, a shade deeper than the page */
   --color-byline: #555;
   --color-text: #000;
   --color-white: #fff;
@@ -4525,13 +4526,24 @@ body:has(.site-footer) {
     padding: 20px 10px;
   }
 
-  /* Dropdown groups: a button styled like the links, with a panel under
-     it that opens on hover, keyboard focus or click (.open). */
+  /* Dropdown groups: a button styled like the links, opening a full-width shelf under the bar on hover,
+     keyboard focus or click (.open). static, so the shelf is placed against #global-nav-placeholder. */
   .nav-group {
-    position: relative;
+    position: static;
+  }
+
+  /* The bar tints to the shelf colour while a menu is open, so bar and shelf read as one piece */
+  #global-nav-placeholder {
+    border-radius: 6px 6px 0 0;
+    transition: background-color 0.25s ease;
+  }
+
+  #global-nav-placeholder:has(.nav-group:hover, .nav-group:focus-within, .nav-group.open) {
+    background-color: var(--color-nav-shelf);
   }
 
   .nav-group-btn {
+    position: relative;
     font: inherit;
     letter-spacing: inherit;
     text-transform: inherit;
@@ -4541,6 +4553,27 @@ body:has(.site-footer) {
     padding: 0;
     cursor: pointer;
     transition: color 0.15s ease;
+  }
+
+  /* A short underline under the open parent: the shelf's row starts here */
+  .nav-group-btn::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 3px;
+    border-radius: 3px;
+    background-color: var(--color-link-light);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+
+  .nav-group:hover .nav-group-btn::before,
+  .nav-group:focus-within .nav-group-btn::before,
+  .nav-group.open .nav-group-btn::before {
+    transform: scaleX(1);
   }
 
   .nav-group-btn::after {
@@ -4556,38 +4589,69 @@ body:has(.site-footer) {
     color: var(--color-link-light);
   }
 
+  /* The shelf: one row of links, starting under its parent (--shelf-start, set by alignNavShelves() in
+     helper.js) and running right. clip-path reveals it top-down; visibility keeps a closed shelf out of tab order. */
   .nav-dropdown {
-    display: none;
+    display: flex;
     position: absolute;
     top: 100%;
     left: 0;
-    min-width: 100%;
+    right: 0;
     box-sizing: border-box;
     list-style: none;
     margin: 0;
-    padding: 8px 0;
+    padding: 0 0 6px var(--shelf-start, 0px);
     white-space: nowrap;
     text-align: left;
-    background-color: var(--color-page-bg);
-    border-radius: 6px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    background-color: var(--color-nav-shelf);
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 14px 22px -16px rgba(11, 62, 100, 0.45);
     z-index: 1000;
+    visibility: hidden;
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 0.3s cubic-bezier(.3, .7, .2, 1), visibility 0s linear 0.3s;
   }
 
   .nav-group:hover .nav-dropdown,
+  .nav-group:focus-within .nav-dropdown,
   .nav-group.open .nav-dropdown {
-    display: block;
+    visibility: visible;
+    clip-path: inset(0 0 -30px 0); /* the negative bottom keeps the shadow */
+    transition: clip-path 0.3s cubic-bezier(.3, .7, .2, 1), visibility 0s;
   }
 
   .nav-dropdown a {
     display: block;
-    padding: 8px 20px;
+    padding: 10px 24px 12px 0;
     font-size: 20px; /* mixed case reads smaller than the bar's capitals */
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.2s ease, transform 0.2s ease, color 0.15s ease;
   }
+
+  .nav-group:hover .nav-dropdown a,
+  .nav-group:focus-within .nav-dropdown a,
+  .nav-group.open .nav-dropdown a {
+    opacity: 1;
+    transform: none;
+  }
+
+  .nav-dropdown li:nth-child(2) a { transition-delay: 0.05s; }
+  .nav-dropdown li:nth-child(3) a { transition-delay: 0.1s; }
 
   .nav-dropdown a:hover,
   .nav-dropdown a:focus-visible {
     color: var(--color-link-light);
+  }
+}
+
+/* The shelf opens without sliding or fading for anyone who has asked for less motion */
+@media (min-width: 1221px) and (prefers-reduced-motion: reduce) {
+  #global-nav-placeholder,
+  .nav-group-btn::before,
+  .nav-dropdown,
+  .nav-dropdown a {
+    transition: none !important;
   }
 }
 

@@ -970,13 +970,41 @@ function navHtml(pageName, blogType, hrefFor) {
 function fetchNav(pageName, blogType) {
   const nav = document.getElementById("global-nav");
   // A built page already ships its nav with final links.
-  if (nav.querySelector(".top-nav")) return;
+  if (!nav.querySelector(".top-nav")) {
+    const html = navHtml(pageName, blogType);
+    if (!html) return;
+    nav.innerHTML = html;
+    applyReviewLinks();
+  }
+  alignNavShelves();
+}
 
-  const html = navHtml(pageName, blogType);
-  if (!html) return;
+// Desktop shelf (styles.css, 1221px and up): each group's row starts under its button and runs right,
+// pulled left only as far as it must to fit in the bar. Phones show every group expanded, so it only runs wide.
+function alignNavShelves() {
+  const bar = document.getElementById("global-nav-placeholder");
+  if (!bar || !window.matchMedia("(min-width: 1221px)").matches) return;
+  const barLeft = bar.getBoundingClientRect().left;
+  bar.querySelectorAll(".nav-group").forEach((group) => {
+    const button = group.querySelector(".nav-group-btn");
+    const shelf = group.querySelector(".nav-dropdown");
+    if (!button || !shelf) return;
+    const start = button.getBoundingClientRect().left - barLeft;
+    const rowWidth = [...shelf.children].reduce((width, item) => width + item.getBoundingClientRect().width, 0);
+    shelf.style.setProperty("--shelf-start", `${Math.max(0, Math.min(start, bar.clientWidth - rowWidth))}px`);
+  });
+}
 
-  nav.innerHTML = html;
-  applyReviewLinks();
+let navShelfResizeTimer;
+window.addEventListener("resize", () => {
+  clearTimeout(navShelfResizeTimer);
+  navShelfResizeTimer = setTimeout(alignNavShelves, 150);
+});
+// The web font changes the widths: re-align once it has loaded, including when it only starts
+// loading after a script draws the nav (the CMS), by which time fonts.ready has already resolved.
+if (document.fonts) {
+  document.fonts.ready.then(alignNavShelves);
+  document.fonts.addEventListener("loadingdone", alignNavShelves);
 }
 
 // Dropdown groups: open one on click/tap (hover and focus work in CSS),
@@ -1186,4 +1214,5 @@ function fetchCmsNav(pageName) {
       : buildNavCell(CMS_NAV_ITEMS[id]))
     .join("");
   document.getElementById("global-nav").innerHTML = `<table class="top-nav nav-table"><tr>${cells}</tr></table>`;
+  alignNavShelves();
 }
