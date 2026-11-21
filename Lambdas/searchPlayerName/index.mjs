@@ -101,11 +101,15 @@ async function scanAllChecklistGroups() {
 }
 
 // Same full paginated Scan as the others, but collects every distinct
-// playerName instead - backs the ?namesOnly=1 type-ahead index so the
-// frontend can filter suggestions client-side without a Scan per
-// keystroke (see playerSearch.js's loadPlayerNameIndex()).
-async function scanAllDistinctPlayerNames() {
-  const names = new Set();
+// playerName and how many cards it's on - backs the ?namesOnly=1
+// type-ahead index (see playerSearch.js's loadPlayerNameIndex()), which
+// ranks suggestions by that count. A combo card ("Nick Suzuki / Cole
+// Caufield") also counts for each player on it who has a card of their
+// own, so popularity includes combo cards. Returns sorted
+// { playerNames, playerCounts } as parallel arrays.
+async function scanPlayerNameCounts() {
+  const exact = new Map();
+  const comboCredit = new Map();
   let lastEvaluatedKey;
 
   do {
@@ -116,13 +120,31 @@ async function scanAllDistinctPlayerNames() {
     }));
 
     for (const item of result.Items || []) {
-      if (typeof item.playerName === "string" && item.playerName) names.add(item.playerName);
+      tallyPlayerName(item.playerName, exact, comboCredit);
     }
 
     lastEvaluatedKey = result.LastEvaluatedKey;
   } while (lastEvaluatedKey);
 
-  return [...names].sort();
+  return playerNameCountArrays(exact, comboCredit);
+}
+
+// One card's name: +1 for the exact name, and +1 combo credit for each
+// player on a combo card.
+function tallyPlayerName(playerName, exact, comboCredit) {
+  if (typeof playerName !== "string" || !playerName) return;
+  exact.set(playerName, (exact.get(playerName) || 0) + 1);
+  const players = playerName.split("/").map((name) => name.trim()).filter(Boolean);
+  if (players.length < 2) return;
+  for (const name of players) comboCredit.set(name, (comboCredit.get(name) || 0) + 1);
+}
+
+// Combo credit only counts for a name that also has a card of its own,
+// so the index lists exactly the same names as before.
+function playerNameCountArrays(exact, comboCredit) {
+  const playerNames = [...exact.keys()].sort();
+  const playerCounts = playerNames.map((name) => exact.get(name) + (comboCredit.get(name) || 0));
+  return { playerNames, playerCounts };
 }
 
 // Cards' key is setName (partition) + year (sort) - loop in case a
@@ -151,16 +173,16 @@ const CORS_HEADERS = {
 export const handler = async (event) => {
   try {
     // Type-ahead index (?namesOnly=1) - not part of the search itself.
-    // Returns every distinct playerName in Checklists once, so the
-    // frontend can filter suggestions client-side per keystroke
-    // instead of re-Scanning the table on every one. See
-    // scanAllDistinctPlayerNames() above.
+    // Returns every distinct playerName in Checklists once, with its
+    // card count, so the frontend can filter and rank suggestions
+    // client-side per keystroke instead of re-Scanning the table on
+    // every one. See scanPlayerNameCounts() above.
     if (event?.queryStringParameters?.namesOnly === "1") {
-      const playerNames = await scanAllDistinctPlayerNames();
+      const { playerNames, playerCounts } = await scanPlayerNameCounts();
       return {
         statusCode: 200,
         headers: CORS_HEADERS,
-        body: JSON.stringify({ playerNames })
+        body: JSON.stringify({ playerNames, playerCounts })
       };
     }
 

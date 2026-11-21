@@ -4,23 +4,25 @@
 
 const PLAYER_SEARCH_API_URL = "https://evlsyozjb0.execute-api.us-east-2.amazonaws.com/dev";
 
-// Type-ahead: the full distinct-player-name list (searchPlayerName's
-// ?namesOnly=1 mode). Persisted in localStorage (30min TTL, matching
-// that endpoint's own Cache-Control) so a fresh page load reads from
-// cache instead of re-fetching - only a cold/expired cache ever hits
-// the network. Within a single page load, the promise itself is also
-// cached, so calling this from both the page's `load` prefetch and the
-// first keystroke never double-fetches - they share the one in-flight
-// (or already-resolved) promise.
-const PLAYER_NAME_INDEX_STORAGE_KEY = "playerNameIndexCache";
+// Type-ahead index: every player name and its card count (searchPlayerName's ?namesOnly=1), kept in
+// localStorage for 30 minutes like the endpoint's own Cache-Control. The promise is shared, so the
+// page's load prefetch and the first keystroke never fetch twice.
+const PLAYER_NAME_INDEX_STORAGE_KEY = "playerNameIndexCache2";   // "2": now carries card counts
 const PLAYER_NAME_INDEX_TTL_MS = 30 * 60 * 1000;
 let playerNameIndexPromise = null;
+
+// { names, counts: Map(name -> cards) }; a response without counts (an older Lambda) counts every name as 0.
+function playerNameIndexFrom(names, counts) {
+  const list = Array.isArray(names) ? names : [];
+  const tally = Array.isArray(counts) ? counts : [];
+  return { names: list, counts: new Map(list.map((name, i) => [name, tally[i] || 0])) };
+}
 
 function readCachedPlayerNameIndex() {
   try {
     const cached = JSON.parse(localStorage.getItem(PLAYER_NAME_INDEX_STORAGE_KEY) || "null");
     if (cached && Array.isArray(cached.names) && Date.now() - cached.fetchedAt < PLAYER_NAME_INDEX_TTL_MS) {
-      return cached.names;
+      return playerNameIndexFrom(cached.names, cached.counts);
     }
   } catch {
     // Corrupt/unreadable cache - fall through to a real fetch
@@ -28,9 +30,9 @@ function readCachedPlayerNameIndex() {
   return null;
 }
 
-function writeCachedPlayerNameIndex(names) {
+function writeCachedPlayerNameIndex(names, counts) {
   try {
-    localStorage.setItem(PLAYER_NAME_INDEX_STORAGE_KEY, JSON.stringify({ names, fetchedAt: Date.now() }));
+    localStorage.setItem(PLAYER_NAME_INDEX_STORAGE_KEY, JSON.stringify({ names, counts, fetchedAt: Date.now() }));
   } catch {
     // Storage full/unavailable (e.g. private browsing) - not fatal
   }
@@ -44,15 +46,14 @@ function loadPlayerNameIndex() {
     } else {
       playerNameIndexPromise = fetch(`${PLAYER_SEARCH_API_URL}?namesOnly=1`)
         .then((response) => response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`)))
-        .then((data) => data.playerNames || [])
-        .then((names) => {
-          writeCachedPlayerNameIndex(names);
-          return names;
+        .then((data) => {
+          writeCachedPlayerNameIndex(data.playerNames || [], data.playerCounts || []);
+          return playerNameIndexFrom(data.playerNames, data.playerCounts);
         })
         .catch((err) => {
           console.log("Player name index fetch failed:", err);
           playerNameIndexPromise = null; // allow a retry on the next call
-          return [];
+          return playerNameIndexFrom([], []);
         });
     }
   }
@@ -155,18 +156,22 @@ async function onPlayerSearchInputChanged() {
     return;
   }
 
-  const names = await loadPlayerNameIndex();
+  const { names, counts } = await loadPlayerNameIndex();
   // The input may have changed (or emptied) while the very first
   // index fetch was still in flight - don't render a stale result.
   if (input.value.trim().toLowerCase() !== query) return;
 
-  // Rank first, then shorter/closer matches within the same rank (a
-  // plain "Wayne Gretzky" over a longer combo card mentioning him).
+  // Match quality, then single players before combo cards ("Nick Suzuki / Cole Caufield"), then more
+  // cards first (Cole Caufield before Jay Caufield), then the shorter name.
   const matches = names
     .filter((name) => name.toLowerCase().includes(query))
     .sort((a, b) => {
       const rankDiff = rankPlayerNameMatch(a.toLowerCase(), query) - rankPlayerNameMatch(b.toLowerCase(), query);
       if (rankDiff !== 0) return rankDiff;
+      const comboDiff = Number(a.includes("/")) - Number(b.includes("/"));
+      if (comboDiff !== 0) return comboDiff;
+      const countDiff = (counts.get(b) || 0) - (counts.get(a) || 0);
+      if (countDiff !== 0) return countDiff;
       if (a.length !== b.length) return a.length - b.length;
       return a.localeCompare(b);
     })
