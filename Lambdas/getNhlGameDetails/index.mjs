@@ -1,4 +1,4 @@
-// index.mjs
+// getNhlGameDetails Lambda function - one NHL game's details for the ticker's game modal
 // *** NEVER Change this code in the AWS Console
 // ONLY change in VS Code, then redeploy by pasting the updated code into
 // the Console's inline Code tab and clicking Deploy (no real dependency,

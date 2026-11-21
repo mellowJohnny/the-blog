@@ -1,3 +1,5 @@
+// updateCardSet Lambda function - saves edits to a card set review (CMS setEdit)
+
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { UpdateCommand, QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 

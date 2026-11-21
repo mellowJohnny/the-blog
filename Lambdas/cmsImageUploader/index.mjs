@@ -1,3 +1,5 @@
+// cmsImageUploader Lambda function - issues a presigned S3 upload URL for a CMS image
+
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 

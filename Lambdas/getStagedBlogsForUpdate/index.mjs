@@ -1,3 +1,5 @@
+// getStagedBlogsForUpdate Lambda function - lists staged (draft) blog posts (CMS)
+
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { ScanCommand } from "@aws-sdk/lib-dynamodb";
 

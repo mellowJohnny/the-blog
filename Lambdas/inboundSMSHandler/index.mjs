@@ -1,5 +1,5 @@
-// This is the Twilio inbound webhook, called when a subscriber replies to a text message
-// with the keywords STOP, START, or HELP
+// inboundSMSHandler Lambda function - the Twilio inbound webhook, called when a subscriber replies
+// to a text message with the keywords STOP, START, or HELP
 
 import { DynamoDBClient, UpdateItemCommand, GetItemCommand } from "@aws-sdk/client-dynamodb";
 import crypto from "crypto";

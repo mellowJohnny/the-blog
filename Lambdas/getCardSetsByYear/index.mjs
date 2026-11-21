@@ -1,3 +1,5 @@
+// getCardSetsByYear Lambda function - public card set reviews for one year and category
+
 /**
  * The MAIN Lambda function used to fetch card sets on the front-end
  * Changed Jan. 29, 2026 to use a new Global Search Index on 'blogCat' and 'year'

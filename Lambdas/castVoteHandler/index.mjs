@@ -1,4 +1,4 @@
-// index.mjs
+// castVoteHandler Lambda function - casts a thumbs up/down vote on a card set review
 // *** NEVER Change this code in the AWS Console
 // ONLY change in VS Code, then redeploy by uploading the new .zip file
 // in the Console -> Code tab -> Update dropdown -> Update from a .zip file

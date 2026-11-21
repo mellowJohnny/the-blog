@@ -1,4 +1,4 @@
-// index.mjs
+// listSubscribers Lambda function - lists every live SMS subscriber (Autobus admin page)
 // *** NEVER Change this code in the AWS Console
 // ONLY change in VS Code, then redeploy by pasting the updated code into
 // the Console's inline Code tab and clicking Deploy (no real dependency,

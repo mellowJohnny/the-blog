@@ -1,4 +1,4 @@
-// index.mjs
+// sendAlertHandler Lambda function - sends an Autobus SMS broadcast through Twilio
 // *** NEVER Change this code in the AWS Console
 // ONLY change in VS Code, then redeploy by uploading the new .zip file 
 // in the Console -> Code tab -> Update dropdown -> Update from a .zip file

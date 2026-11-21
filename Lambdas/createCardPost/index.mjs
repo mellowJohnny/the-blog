@@ -1,5 +1,5 @@
 /*
-*  createCardSet Lambda Function
+*  createCardPost Lambda Function
 *  Used by the CMS page to create a new card set
 */
 

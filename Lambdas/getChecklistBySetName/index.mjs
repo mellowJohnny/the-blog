@@ -1,4 +1,4 @@
-// index.mjs
+// getChecklistBySetName Lambda function - returns one set's full checklist (public review pages)
 // *** NEVER Change this code in the AWS Console
 // ONLY change in VS Code, then redeploy by pasting the updated code into
 // the Console's inline Code tab and clicking Deploy (no real dependency,

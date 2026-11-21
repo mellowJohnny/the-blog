@@ -1,3 +1,5 @@
+// getBlogs Lambda function - public list of live blog posts of one type
+
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb";
 

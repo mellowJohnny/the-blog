@@ -1,3 +1,5 @@
+// bulkSubscriberUpload Lambda function - bulk-imports SMS subscribers (Autobus admin page)
+
 import { DynamoDBClient, BatchWriteItemCommand, ScanCommand } from "@aws-sdk/client-dynamodb";
 
 const client = new DynamoDBClient({});

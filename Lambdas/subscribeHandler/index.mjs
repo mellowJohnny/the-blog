@@ -1,3 +1,5 @@
+// subscribeHandler Lambda function - adds an SMS subscriber (Autobus)
+
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 
 const db = new DynamoDBClient({ region: "us-east-2" });

@@ -1,4 +1,4 @@
-// index.mjs
+// getPwhlScores Lambda function - PWHL scores for the public scores ticker
 // *** NEVER Change this code in the AWS Console
 // ONLY change in VS Code, then redeploy by pasting the updated code into
 // the Console's inline Code tab and clicking Deploy (no real dependency,

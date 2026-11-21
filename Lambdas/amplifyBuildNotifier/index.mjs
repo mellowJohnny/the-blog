@@ -1,4 +1,4 @@
-// index.mjs
+// amplifyBuildNotifier Lambda function - emails a summary when an Amplify build finishes
 // *** NEVER Change this code in the AWS Console
 // ONLY change it here in VS Code, then redeploy by pasting this file
 // into the Console -> Code tab inline editor and clicking Deploy

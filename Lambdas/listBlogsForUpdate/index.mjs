@@ -1,3 +1,5 @@
+// listBlogsForUpdate Lambda function - lists live blog posts for the CMS edit picker
+
 /**
  * IMPORTANT NOTE: PartiQL can be used on this table for queries the way I expect.
  * REASON: PartiQL internally coerces the partition key into a STRING during evaluation.

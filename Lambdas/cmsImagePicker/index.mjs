@@ -1,3 +1,5 @@
+// cmsImagePicker Lambda function - lists the site's S3 images for the CMS image browser
+
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
 
 const s3 = new S3Client({ region: "us-east-2" });

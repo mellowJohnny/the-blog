@@ -1,4 +1,4 @@
-// index.mjs
+// cardsRebuildTrigger Lambda function - starts an Amplify build when a live card set changes
 // *** NEVER Change this code in the AWS Console
 // ONLY change it here in VS Code, then redeploy by pasting this file
 // into the Console -> Code tab inline editor and clicking Deploy

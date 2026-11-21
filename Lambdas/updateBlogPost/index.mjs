@@ -1,3 +1,5 @@
+// updateBlogPost Lambda function - saves edits to a blog post (CMS)
+
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 

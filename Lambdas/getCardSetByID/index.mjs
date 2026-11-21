@@ -1,3 +1,5 @@
+// getCardSetByID Lambda function - loads one card set review for editing (CMS setEdit)
+
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
