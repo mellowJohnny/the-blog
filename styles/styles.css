@@ -1030,8 +1030,9 @@ label sup {
   background-color: #c5cdd3;
 }
 
-/* Everything on a cardStack CMS page except the banner (.cms-mast-table) and the nav bar gets a left margin. */
-body:has(.cms-mast-table) > :not(:has(.cms-mast-table, .nav-container)) {
+/* Everything on a cardStack CMS page except the banner (.cms-mast-table), the nav bar and the
+   centred Rink Runner game gets a left margin. */
+body:has(.cms-mast-table) > :not(:has(.cms-mast-table, .nav-container), .rink-runner) {
   margin-left: 25px;
 }
 
