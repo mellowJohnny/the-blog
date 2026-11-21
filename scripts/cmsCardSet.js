@@ -167,9 +167,8 @@ async function onWaxPackSearchInput() {
       const bStarts = b.name.toLowerCase().startsWith(query);
       if (aStarts !== bStarts) return aStarts ? -1 : 1;
       return a.year - b.year || a.name.localeCompare(b.name);
-    })
-    .slice(0, 8);
-  renderWaxPackSuggestions(matches);
+    });
+  renderWaxPackSuggestions(matches);   // every match: the list scrolls (max-height in .checklist-typeahead-suggestions)
 }
 
 document.addEventListener("DOMContentLoaded", () => {
