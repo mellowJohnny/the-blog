@@ -145,6 +145,7 @@ const RINK_SPRITES = {
 };
 
 const RINK_OBSTACLES = ["puck", "net", "referee", "goalie", "zamboni", "sticks", "mascot", "popcorn", "hotdog", "hats", "hole"];
+const RINK_LOW_OBSTACLES = ["puck", "net", "sticks", "hotdog", "hats", "hole"];   // 38px tall or less: these cluster
 const RINK_SINK = { hole: 10 };                // pixels a sprite sits below the ice line (the hole is cut into it)
 const RINK_TOP_SPEED = 20;                     // the speed keeps rising to here, reached at a score of about 2700
 const RINK_PIXEL = 2;                          // each grid cell is a 2x2 block on the 600x180 canvas
@@ -388,13 +389,24 @@ function initRinkRunner(canvasId) {
 
   // Obstacles come at random, closer together as the speed rises, but never nearer than
   // RINK_MIN_GAP frames after the skater has passed the last one, so any two in a row can be jumped.
+  // Past speed 11, low ones also come in clusters of two or three that one held jump clears.
   function spawn() {
-    const kind = RINK_OBSTACLES[Math.floor(Math.random() * RINK_OBSTACLES.length)];
-    obstacles.push({ kind, x: RINK_W + 10, img: art[kind] });
+    const pick = (list) => list[Math.floor(Math.random() * list.length)];
+    const fast = Math.max(0, Math.min(1, (speed - 11) / 9));         // 0 up to speed 11, 1 at top speed
+    const size = Math.random() < (fast > 0 ? 0.15 + 0.5 * fast : 0) ? (fast > 0.5 && Math.random() < 0.5 ? 3 : 2) : 1;
+    const room = speed * 24 - RINK_REACH * RINK_PIXEL;              // what one held jump clears at this speed
+    let x = RINK_W + 10, end = x;
+    for (let i = 0; i < size; i++) {
+      const kind = pick(size === 1 ? RINK_OBSTACLES : RINK_LOW_OBSTACLES);
+      if (i > 0 && x + art[kind].width - (RINK_W + 10) > room) break;
+      obstacles.push({ kind, x, img: art[kind] });
+      end = x + art[kind].width;
+      x = end + 8 + Math.random() * 16;
+    }
     const pace = Math.min(1, (speed - 5) / 6);                        // 0 at the start, 1 from speed 11 on
     const floor = RINK_MIN_GAP + 1.4 * Math.max(0, speed - 11);          // past 11 the safe gap widens a little
-    const frames = floor + 4 * (1 - pace) + Math.random() * (45 - 30 * pace);
-    nextGap = speed * frames + RINK_REACH * RINK_PIXEL + art[kind].width;
+    const frames = floor + 4 * (1 - pace) + Math.random() * (45 - 30 * pace) * (1 - 0.6 * fast);
+    nextGap = speed * frames + RINK_REACH * RINK_PIXEL + (end - (RINK_W + 10));
   }
 
   // Forgiving boxes: a few pixels in from each sprite's edge, and the stick out front doesn't count.
