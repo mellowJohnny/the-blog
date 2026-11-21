@@ -29,9 +29,20 @@ after Cognito login, and exists purely to route the logged-in user to
 whichever of the other pages they actually want, via a dropdown nav.
 Nothing here needs to know about blogs, card sets, or subscribers.
 
-**What loads**: `auth.js`, `helper.js`.
+**What loads**: `auth.js`, `helper.js`, `cmsRinkRunner.js`.
 
-**On `window load`**: `fetchCopyrightYear()` (`helper.js`).
+**On `window load`**: `fetchCopyrightYear()` (`helper.js`),
+`fetchCmsNav("wlcms")` (`helper.js`) and
+`initRinkRunner("rinkRunnerCanvas")` (`cmsRinkRunner.js`).
+
+**Rink Runner**: the centre of the page is a small 8-bit hockey runner
+game drawn on a `<canvas>`, purely for fun. The skater jumps (Space, Up
+arrow or a click; hold for a higher jump) over pucks, nets, referees,
+goalies, crossed sticks and the Zamboni, and speeds up with distance.
+Nothing runs until the first key press, it pauses when the tab is
+hidden, and it ignores keys typed into form fields. The best score is
+kept in this browser's `localStorage` (`rinkRunnerBest`); the sprites
+are pixel grids in the script, so there are no image files.
 
 **No API calls happen on this page at all** — it's a pure navigation
 hub, the only CMS page with that property, precisely because its whole

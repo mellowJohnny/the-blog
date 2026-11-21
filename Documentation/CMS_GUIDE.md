@@ -121,6 +121,12 @@ room to sit beside its parent at that width). Its link color
 that didn't match the light blue (`--color-link`) every other `/cms`
 page's plain `.cms-top-nav` breadcrumb uses — fixed to use
 `--color-link` too, so this nav is visually consistent with the rest.
+Under the nav, the home page holds **Rink Runner**, an 8-bit hockey
+runner game (`scripts/cmsRinkRunner.js`, styled by `.rink-runner` in
+`styles.css`): jump over hockey obstacles, with the best score kept in
+this browser. It's there for fun and touches no data; see
+`CMS_PAGE_FLOWS.md` for how it behaves.
+
 Grouped page links:
 
 | Page | Purpose |

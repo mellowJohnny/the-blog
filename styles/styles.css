@@ -798,6 +798,33 @@ h1 {
 }
 
 /* A read-only explanation in place of a field (the card set forms' SEO Title, which the build sets) */
+/* Rink Runner, the CMS home's 8-bit game (scripts/cmsRinkRunner.js): a 600x180 canvas scaled up
+   without smoothing (pixelated), so the pixel art stays crisp at any width */
+.rink-runner {
+  max-width: 720px;
+  margin: 60px auto 80px auto;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.rink-runner canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 10 / 3;
+  image-rendering: pixelated;
+  border: 2px solid var(--color-text-dark);
+  border-radius: 6px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.rink-runner-help,
+.rink-runner-status {
+  margin: 8px 0 0 0;
+  font-size: 14px;
+  color: var(--color-grey);
+}
+
 .cms-field-note {
   margin: 6px 0 0 0;
   font-size: 14px;
