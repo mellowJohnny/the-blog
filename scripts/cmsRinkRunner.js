@@ -8,17 +8,21 @@ const RINK_INK = "#535353";
 const RINK_CUTOUTS = "So";
 
 const RINK_SPRITES = {
+  // Side view, leaning into the stride, stick out in front with the blade on the ice.
+  // A: back leg pushing out behind. B: legs gathered under him for the next push.
   skaterA: [
-    "....BBBB......", "...BBBBBB.....", "...BBSSSS.....", "....SSSKS.....", "....SSSS......",
-    "...RRRRRR.....", "..RRooooRR....", "..RRRRRRRRS...", "..RRRRRRR.SK..", "..WWWWWWW...K.",
-    "...BBBBBB....K", "...BBBBBB....K", "...RR..RR....K", "...RR..RR....K", "...WW..WW...KK",
-    "...KK..KK.....", "..GGGG.GGGG..."
+    ".............KKK........", "............KKKKK.......", "............KKKSS.......", ".............KSSS.......",
+    "..........KKKK..........", ".........KKKKK..........", "........KKKKKoKK........", ".......KKKKKKKoKK.......",
+    "......KKKKKKK..KKK......", ".....KKKKKKK....KK......", ".....KKKKKKK......K.....", ".....KKKKKKKK.....K.....",
+    "....KKKKKKKKK......K....", "...KKK....KKK.......K...", "..KKK......KK.......K...", "..KK.......KK........K..",
+    "KKK......KKKKKK......KKK"
   ],
   skaterB: [
-    "....BBBB......", "...BBBBBB.....", "...BBSSSS.....", "....SSSKS.....", "....SSSS......",
-    "...RRRRRR.....", "..RRooooRR....", "..RRRRRRRRS...", "..RRRRRRR.SK..", "..WWWWWWW...K.",
-    "...BBBBBB....K", "...BBBBBB....K", "..RR....RR...K", ".RR......RR..K", ".WW......WW.KK",
-    ".KK.......KK..", "GGGG.....GGGG."
+    ".............KKK........", "............KKKKK.......", "............KKKSS.......", ".............KSSS.......",
+    "..........KKKK..........", ".........KKKKK..........", "........KKKKKoKK........", ".......KKKKKKKoKK.......",
+    "......KKKKKKK..KKK......", ".....KKKKKKK....KK......", ".....KKKKKK.......K.....", ".....KKKKKKK......K.....",
+    ".....KKKKKKK.......K....", ".....KK..KKK........K...", "....KKK..KKK........K...", "....KK...KK..........K..",
+    "..KKKKKKKKKKK........KKK"
   ],
   puck: [".KKKKKK.", "KKKKKKKK", ".KKKKKK."],
   net: [
@@ -120,9 +124,9 @@ function initRinkRunner(canvasId) {
     nextGap = speed * (40 + Math.random() * 45) + art[kind].width;
   }
 
-  // Forgiving boxes: a few pixels in from each sprite's edge.
+  // Forgiving boxes: a few pixels in from each sprite's edge, and the stick out front doesn't count.
   function hits(o) {
-    const sx = skater.x + 6, sw = skater.w - 12, sTop = RINK_ICE_Y - skater.y - skater.h + 4;
+    const sx = skater.x + 6, sw = skater.w - 6 - 7 * RINK_PIXEL, sTop = RINK_ICE_Y - skater.y - skater.h + 4;
     const ox = o.x + 3, ow = o.img.width - 6, oTop = RINK_ICE_Y - o.img.height + 3;
     return sx < ox + ow && sx + sw > ox && RINK_ICE_Y - skater.y > oTop && sTop < RINK_ICE_Y;
   }
