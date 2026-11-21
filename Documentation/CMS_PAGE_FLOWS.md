@@ -38,11 +38,29 @@ Nothing here needs to know about blogs, card sets, or subscribers.
 **Rink Runner**: the centre of the page is a small 8-bit hockey runner
 game drawn on a `<canvas>`, purely for fun. The skater jumps (Space, Up
 arrow or a click; hold for a higher jump) over pucks, nets, referees,
-goalies, crossed sticks and the Zamboni, and speeds up with distance.
-Nothing runs until the first key press, it pauses when the tab is
-hidden, and it ignores keys typed into form fields. The best score is
-kept in this browser's `localStorage` (`rinkRunnerBest`); the sprites
-are pixel grids in the script, so there are no image files.
+goalies, crossed sticks, the team mascot, popcorn, hot dogs, a heap of
+hat-trick hats, holes in the ice and the Zamboni. The speed keeps rising
+until a score of about 2,700, and past speed 11 obstacles come closer
+together and low ones arrive in clusters of two or three. Spacing is
+never tighter than a held jump can handle: `RINK_MIN_GAP` (widening a
+little past speed 11) keeps any two separate obstacles jumpable, and a
+cluster is never wider than one held jump clears at the current speed;
+both limits came from simulating the jump physics.
+
+The score and best score show on a centre-hung arena scoreboard drawn in
+amber bulbs (`drawRinkScoreboard()`), with the canvas tall enough that
+the highest jump stays clear of it. While a run is going, synthesized
+organ music plays "Charge!" in a loop: a build-up that speeds up from
+120 to 250 beats a minute, then the fanfare. It's made with the Web
+Audio API (`rinkChargeCycle()`, notes in `RINK_CHARGE_BARS`), so there
+are no audio files, and the audio only starts on the player's first key
+or click, as browsers require. M turns the music on or off.
+
+Nothing runs until the first key press, it pauses (music included) when
+the tab is hidden, and it ignores keys typed into form fields. The best
+score (`rinkRunnerBest`) and the music setting (`rinkRunnerMusic`) are
+kept in this browser's `localStorage`; the sprites are pixel grids in
+the script, so there are no image files.
 
 **No API calls happen on this page at all** — it's a pure navigation
 hub, the only CMS page with that property, precisely because its whole

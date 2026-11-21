@@ -123,9 +123,10 @@ page's plain `.cms-top-nav` breadcrumb uses — fixed to use
 `--color-link` too, so this nav is visually consistent with the rest.
 Under the nav, the home page holds **Rink Runner**, an 8-bit hockey
 runner game (`scripts/cmsRinkRunner.js`, styled by `.rink-runner` in
-`styles.css`): jump over hockey obstacles, with the best score kept in
-this browser. It's there for fun and touches no data; see
-`CMS_PAGE_FLOWS.md` for how it behaves.
+`styles.css`): jump over hockey and arena obstacles as the game speeds
+up, with an arena scoreboard, "Charge!" organ music (M turns it off) and
+the best score kept in this browser. It's there for fun and touches no
+data; see `CMS_PAGE_FLOWS.md` for how it behaves.
 
 Grouped page links:
 

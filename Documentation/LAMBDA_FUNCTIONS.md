@@ -674,10 +674,17 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   the same reasons: no cookies/auth in play (no CSRF/session risk), and
   it returns data that's already public elsewhere.
 - **`?namesOnly=1` mode**: type-ahead index for `playerSearch.html`'s
-  search box, added 2026-09-14 — `scanAllDistinctPlayerNames()` reuses
-  the same full-`Scan` machinery (projecting just `playerName` this
-  time) to return `{ playerNames: [...] }`, every distinct name in
-  `Checklists`, deduped and sorted. This is just as expensive a `Scan`
+  search box — `scanPlayerNameCounts()` reuses the same full-`Scan`
+  machinery (projecting just `playerName` this time) to return
+  `{ playerNames: [...], playerCounts: [...] }`: every distinct name in
+  `Checklists`, deduped and sorted, and a parallel array of how many
+  cards each is on, which the frontend ranks suggestions by.
+  `tallyPlayerName()` adds 1 to each card's exact name and, for a combo
+  card split on "/", 1 combo credit to each player on it;
+  `playerNameCountArrays()` adds that credit only to names that also
+  have a card of their own, so combo-only players never become new
+  suggestions. The counts come from the same `Scan`, so they add no
+  read cost, and no separate lookup table is needed. This is just as expensive a `Scan`
   as `q` mode itself — the point isn't that it's cheap, it's that the
   frontend only ever calls it **once** (cached in `localStorage`, 30min
   TTL matching this Lambda's own `Cache-Control`) and filters that list

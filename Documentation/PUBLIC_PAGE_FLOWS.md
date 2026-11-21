@@ -646,19 +646,22 @@ flow).
   into `#playerSearchInput`, a dropdown (`#playerSearchSuggestions`)
   suggests matching player names — without hitting the expensive `q`
   mode `Scan` per keystroke. `loadPlayerNameIndex()` fetches the full
-  distinct-player-name list exactly once per browser (`namesOnly=1`
-  mode, see below), caching it in `localStorage` (30min TTL) so even a
-  fresh page load in a later visit skips the network call entirely;
-  within a page load, an in-memory promise cache means the fetch (kicked
-  off on `window load`, not lazily on first keystroke, so it's usually
-  already resolved by the time the visitor finishes typing) is never
-  duplicated either. Every keystroke after that just filters the cached
-  list client-side via `rankPlayerNameMatch()`, which ranks an exact or
-  whole-word match (e.g. "gretzky" matching "Wayne **Gretzky**") above a
-  match buried in a longer multi-player card name (e.g. "Brett Hull /
-  Wayne Gretzky") — a plain alphabetical `.slice()` had been burying the
-  single most relevant result under less-relevant combo-card matches
-  that happened to sort earlier. Arrow keys move a highlighted
+  distinct-player-name list, with each name's card count, exactly once
+  per browser (`namesOnly=1` mode, see below), caching it in
+  `localStorage` (`playerNameIndexCache2`, 30min TTL) so even a fresh
+  page load in a later visit skips the network call entirely; within a
+  page load, an in-memory promise cache means the fetch (kicked off on
+  `window load`, not lazily on first keystroke, so it's usually already
+  resolved by the time the visitor finishes typing) is never duplicated
+  either. Every keystroke after that just filters the cached list
+  client-side and sorts the matches by, in order: match quality
+  (`rankPlayerNameMatch()`: an exact or whole-word match, e.g. "gretzky"
+  matching "Wayne **Gretzky**", beats a match buried in a longer name);
+  single players before multi-player combo cards ("Brett Hull / Wayne
+  Gretzky"); more cards first, so a player with many cards beats one
+  with few (Cole Caufield before Jay Caufield); then the shorter name.
+  The top 8 are shown. If the response has no counts, every count is 0
+  and the order falls back to match quality and length. Arrow keys move a highlighted
   selection, Enter selects it (or, with nothing highlighted, falls
   through to a normal form submit), Escape or an outside click closes
   the dropdown, and clicking a suggestion fills the input and runs the
