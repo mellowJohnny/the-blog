@@ -810,7 +810,7 @@ h1 {
 .rink-runner canvas {
   display: block;
   width: 100%;
-  aspect-ratio: 10 / 3;
+  aspect-ratio: 15 / 7;
   image-rendering: pixelated;
   cursor: pointer;
   touch-action: manipulation;

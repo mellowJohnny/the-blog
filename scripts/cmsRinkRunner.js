@@ -14,7 +14,8 @@ const RINK_PALETTE = {
   f: "#4a4b55", g: "#2b2c33", h: "#18191e", i: "#ffe45c", j: "#f5c518", l: "#c4940a",
   m: "#e2774f", n: "#b9472b", o: "#7c2a16", k: "#1a1420"
 };
-const RINK_INK = "#535353";                    // the ice line, scratches and score text
+const RINK_INK = "#535353";                    // the on-screen messages
+const RINK_ICE = "#4f9fd8";                    // the ice line and the skate scratches under it
 
 const RINK_SPRITES = {
   // Side view, leaning into the stride, stick out in front with the blade on the ice.
@@ -139,7 +140,7 @@ const RINK_SPRITES = {
 const RINK_OBSTACLES = ["puck", "net", "referee", "goalie", "zamboni", "sticks", "mascot", "popcorn", "hotdog", "hats"];
 const RINK_PIXEL = 2;                          // each grid cell is a 2x2 block on the 600x180 canvas
 const RINK_REACH = 32;                         // grid columns from the skater's back to his glove; the stick beyond doesn't collide
-const RINK_W = 600, RINK_H = 180, RINK_ICE_Y = 165;
+const RINK_W = 600, RINK_H = 280, RINK_ICE_Y = 265;   // tall enough for the scoreboard to hang clear of the highest jump
 const RINK_MIN_GAP = 36;                       // frames; a simulation of back-to-back jumps fails below about 27
 const RINK_BEST_KEY = "rinkRunnerBest";
 const RINK_MUSIC_KEY = "rinkRunnerMusic";
@@ -260,13 +261,13 @@ function rinkBulbWord(ctx, word, cx, y, pitch, colour) {
   });
 }
 
-// The scoreboard hangs from the rafters in the top-right corner: the game's name on the blue strip,
+// The scoreboard hangs from the rafters over centre ice: the game's name on the blue strip,
 // then SCORE and BEST in amber, five digits each on their own black panel.
 function drawRinkScoreboard(ctx, score, best) {
   const digitW = 6 * RINK_BULB, numberW = 5 * digitW - RINK_BULB, inset = 4, strip = 5 * RINK_BULB + 4;
   const panelW = numberW + 8, panelH = 5 * RINK_BULB + 5 + 7 * RINK_BULB + 8;
   const w = inset * 3 + panelW * 2, h = inset + strip + inset + panelH + inset;
-  const x = RINK_W - w - 10, y = 10;
+  const x = Math.round((RINK_W - w) / 2), y = 10;
   ctx.fillStyle = RINK_BOARD.cable;
   ctx.fillRect(x + 24, 0, 2, y); ctx.fillRect(x + w - 26, 0, 2, y);
   ctx.fillStyle = RINK_BOARD.edge;
@@ -284,7 +285,6 @@ function drawRinkScoreboard(ctx, score, best) {
     [...String(Math.min(value, 99999)).padStart(5, "0")].forEach((d, j) =>
       rinkBulbs(ctx, RINK_BOARD_DIGITS[d], px + 4 + j * digitW, py + 4 + 5 * RINK_BULB + 5, RINK_BULB, RINK_BOARD.amber));
   });
-  return x - 2;                                // the board's left edge, frame included
 }
 
 function rinkBest() {
@@ -421,7 +421,7 @@ function initRinkRunner(canvasId) {
   // No scenery: a transparent canvas with one ice line and the scratches scrolling beneath it.
   function drawIce() {
     ctx.clearRect(0, 0, RINK_W, RINK_H);
-    ctx.fillStyle = RINK_INK;
+    ctx.fillStyle = RINK_ICE;
     ctx.fillRect(0, RINK_ICE_Y, RINK_W, 2);
     const offset = (distance || 0) % RINK_W;
     scratches.forEach((s) => {
@@ -454,13 +454,13 @@ function initRinkRunner(canvasId) {
       ctx.drawImage(frame, skater.x, Math.round(top));
     }
     const score = Math.floor((distance || 0) / 10);
-    const middle = drawRinkScoreboard(ctx, score, best) / 2;     // messages centre in the space left of the board
+    drawRinkScoreboard(ctx, score, best);
     drawText(musicOn ? "MUSIC ON" : "MUSIC OFF", 10, 20);
-    if (state === "ready") drawText("PRESS SPACE TO SKATE", middle, 80, "center", 16);
-    if (state === "paused") drawText("PAUSED: PRESS SPACE", middle, 80, "center", 16);
+    if (state === "ready") drawText("PRESS SPACE TO SKATE", RINK_W / 2, 140, "center", 16);   // under the board
+    if (state === "paused") drawText("PAUSED: PRESS SPACE", RINK_W / 2, 140, "center", 16);
     if (state === "over") {
-      drawText("GAME OVER", middle, 70, "center", 18);
-      drawText("PRESS SPACE TO GO AGAIN", middle, 92, "center", 12);
+      drawText("GAME OVER", RINK_W / 2, 132, "center", 18);
+      drawText("PRESS SPACE TO GO AGAIN", RINK_W / 2, 154, "center", 12);
     }
   }
 
