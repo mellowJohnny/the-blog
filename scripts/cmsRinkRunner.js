@@ -110,6 +110,55 @@ const RINK_PIXEL = 2;                          // each grid cell is a 2x2 block 
 const RINK_REACH = 32;                         // grid columns from the skater's back to his glove; the stick beyond doesn't collide
 const RINK_W = 600, RINK_H = 180, RINK_ICE_Y = 165;
 const RINK_BEST_KEY = "rinkRunnerBest";
+const RINK_MUSIC_KEY = "rinkRunnerMusic";
+const RINK_MUSIC_REST = 8;                     // seconds of quiet between one "Charge!" and the next build-up
+
+// One organ note: the pitch plus its octave and twelfth (like a Hammond's drawbars), with a little
+// vibrato and a quick attack and release. Times are on the audio clock, in seconds.
+function rinkOrganNote(audio, out, freq, start, length, level) {
+  const env = audio.createGain();
+  env.gain.setValueAtTime(0, start);
+  env.gain.linearRampToValueAtTime(level, start + 0.012);
+  env.gain.setValueAtTime(level, Math.max(start + 0.012, start + length - 0.04));
+  env.gain.linearRampToValueAtTime(0, start + length);
+  env.connect(out);
+  const lfo = audio.createOscillator(), depth = audio.createGain();
+  lfo.frequency.value = 6.5;
+  depth.gain.value = freq * 0.004;
+  lfo.connect(depth);
+  [[1, 0.56], [2, 0.28], [3, 0.16]].forEach(([harmonic, mix]) => {
+    const osc = audio.createOscillator(), amp = audio.createGain();
+    osc.frequency.value = freq * harmonic;
+    depth.connect(osc.frequency);
+    amp.gain.value = mix;
+    osc.connect(amp).connect(env);
+    osc.start(start); osc.stop(start + length + 0.05);
+  });
+  lfo.start(start); lfo.stop(start + length + 0.05);
+}
+
+// One cycle of the arena classic: a climb that gets quicker and louder, then "da da da DUM, da DUM!"
+// and a full chord for the crowd's "Charge!". Returns the cycle's length in seconds.
+function rinkChargeCycle(audio, out, start) {
+  const hz = (midi) => 440 * 2 ** ((midi - 69) / 12);
+  let t = start;
+  for (let step = 0; step <= 12; step++) {                       // G3 up a semitone at a time to G4
+    const beat = 0.5 - step * 0.016, level = 0.12 + step * 0.019;
+    [0, beat / 2].forEach((offset) => {
+      rinkOrganNote(audio, out, hz(55 + step), t + offset, beat * 0.35, level);
+      rinkOrganNote(audio, out, hz(67 + step), t + offset, beat * 0.35, level * 0.7);
+    });
+    t += beat;
+  }
+  t += 0.25;
+  [[67, 0, 0.13], [72, 0.15, 0.13], [76, 0.3, 0.13], [79, 0.45, 0.45], [76, 0.95, 0.15], [79, 1.12, 0.8]]
+    .forEach(([note, at, length]) => {
+      rinkOrganNote(audio, out, hz(note), t + at, length, 0.4);
+      rinkOrganNote(audio, out, hz(note - 12), t + at, length, 0.18);
+    });
+  [48, 60, 64, 67, 72].forEach((note) => rinkOrganNote(audio, out, hz(note), t + 2.1, 0.6, 0.2));   // Charge!
+  return t + 2.7 - start;
+}
 
 // A grid turned into an offscreen canvas once, drawn from then on with drawImage.
 function rinkSprite(rows) {
@@ -131,6 +180,14 @@ function rinkBest() {
 
 function saveRinkBest(score) {
   try { localStorage.setItem(RINK_BEST_KEY, String(score)); } catch { /* private window: keep it for this visit only */ }
+}
+
+function rinkMusicOn() {
+  try { return localStorage.getItem(RINK_MUSIC_KEY) !== "off"; } catch { return true; }
+}
+
+function saveRinkMusic(on) {
+  try { localStorage.setItem(RINK_MUSIC_KEY, on ? "on" : "off"); } catch { /* private window: this visit only */ }
 }
 
 function initRinkRunner(canvasId) {
@@ -157,9 +214,53 @@ function initRinkRunner(canvasId) {
 
   function say(text) { if (status) status.textContent = text; }
 
+  // The organ plays only during a run. The AudioContext is made on the player's first key or click,
+  // since browsers won't start sound before that; each cycle gets its own gain so it can fade out.
+  let musicOn = rinkMusicOn(), audio = null, musicGain = null, musicTimer = null;
+
+  function startMusic() {
+    stopMusic();
+    if (!musicOn) return;
+    if (!audio) {
+      const Context = window.AudioContext || window.webkitAudioContext;
+      if (!Context) return;
+      audio = new Context();
+    }
+    audio.resume();
+    const cycle = () => {
+      if (musicGain) musicGain.disconnect();                     // the last cycle finished during the rest
+      musicGain = audio.createGain();
+      musicGain.gain.value = 0.5;
+      musicGain.connect(audio.destination);
+      const length = rinkChargeCycle(audio, musicGain, audio.currentTime + 0.05);
+      musicTimer = setTimeout(cycle, (length + RINK_MUSIC_REST) * 1000);
+    };
+    cycle();
+  }
+
+  function stopMusic() {
+    clearTimeout(musicTimer);
+    musicTimer = null;
+    if (!musicGain) return;
+    const fading = musicGain, now = audio.currentTime;
+    fading.gain.cancelScheduledValues(now);
+    fading.gain.setValueAtTime(fading.gain.value, now);
+    fading.gain.linearRampToValueAtTime(0, now + 0.15);
+    setTimeout(() => fading.disconnect(), 300);
+    musicGain = null;
+  }
+
+  function toggleMusic() {
+    musicOn = !musicOn;
+    saveRinkMusic(musicOn);
+    if (musicOn && state === "running") startMusic(); else stopMusic();
+  }
+
   function jump() {
-    if (state === "ready" || state === "over") { reset(); state = "running"; say("Skating. Space or click to jump."); return; }
-    if (state === "paused") { state = "running"; return; }
+    if (state === "ready" || state === "over") {
+      reset(); state = "running"; say("Skating. Space or click to jump."); startMusic(); return;
+    }
+    if (state === "paused") { state = "running"; startMusic(); return; }
     if (skater.y === 0) skater.vy = 7.5;   // y counts up from the ice
   }
 
@@ -194,6 +295,7 @@ function initRinkRunner(canvasId) {
     stride += speed * step;
     if (obstacles.some(hits)) {
       state = "over";
+      stopMusic();
       const score = Math.floor(distance / 10);
       if (score > best) { best = score; saveRinkBest(best); }
       say(`Game over. Score ${score}, best ${best}. Space or click to go again.`);
@@ -237,6 +339,7 @@ function initRinkRunner(canvasId) {
     }
     const score = Math.floor((distance || 0) / 10);
     drawText(`HI ${String(best).padStart(5, "0")}  ${String(score).padStart(5, "0")}`, RINK_W - 10, 20, "right");
+    drawText(musicOn ? "MUSIC ON" : "MUSIC OFF", 10, 20);
     if (state === "ready") drawText("PRESS SPACE TO SKATE", RINK_W / 2, 80, "center", 16);
     if (state === "paused") drawText("PAUSED: PRESS SPACE", RINK_W / 2, 80, "center", 16);
     if (state === "over") {
@@ -253,10 +356,12 @@ function initRinkRunner(canvasId) {
     requestAnimationFrame(loop);
   }
 
-  // Keys only count when they aren't meant for a form field, and only Space/Up are taken from the page.
+  // Keys only count when they aren't meant for a form field; Space/Up jump and M toggles the music.
   const typing = (el) => el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(el.tagName));
   document.addEventListener("keydown", (event) => {
-    if ((event.code !== "Space" && event.code !== "ArrowUp") || typing(event.target)) return;
+    if (typing(event.target)) return;
+    if (event.code === "KeyM" && !event.repeat && !event.metaKey && !event.ctrlKey && !event.altKey) { toggleMusic(); return; }
+    if (event.code !== "Space" && event.code !== "ArrowUp") return;
     event.preventDefault();
     if (!event.repeat) jump();
     held = true;
@@ -265,7 +370,7 @@ function initRinkRunner(canvasId) {
   canvas.addEventListener("pointerdown", (event) => { event.preventDefault(); jump(); held = true; });
   window.addEventListener("pointerup", () => { held = false; });
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden && state === "running") state = "paused";
+    if (document.hidden && state === "running") { state = "paused"; stopMusic(); }
     last = null;
   });
 
