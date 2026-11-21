@@ -58,43 +58,51 @@ const RINK_SPRITES = {
     "...kkkkkk...", ".kkQQQQQQkk.", "kQQRRRRRRQQk", "kQSRRRRRSSSk",
     ".kkQSSSSSkk.", "...kkkkkk..."
   ],
+  // A real net is 6' wide and 4' tall, so the frame keeps that 3:2 shape.
   net: [
-    ".kkkkkkkkkkkkkkkk.", "kAAAAAAAAAAAAAAAAk", "kACCCCCCCCCCCCCBCk", "kACccGccGccGcccACk",
-    "kACceGceGceGceeACk", "kACGGIGGIGGIGGGACk", "kACccGccGccGcccACk", "kACceGceGceGceeACk",
-    "kACGGIGGIGGIGGGACk", "kACccGccGccGcccACk", "kACceGceGceGceeACk", "kACGGIGGIGGIGGGACk",
-    "kACccGccGccGcccACk", "kACkkkkkkkkkkkkACk", ".kk............kk."
+    ".kkkkkkkkkkkkkkkkkkkkkkkkkk.", "kAAAAAAAAAAAAAAAAAAAAAAAAAAk", "kACCCCCCCCCCCCCCCCCCCCCCCBCk",
+    "kACcccGccGccGccGccGccGcccACk", "kACcdeGceGceGceGceGceGcdeACk", "kACceeGceGceGceGceGceGceeACk",
+    "kACGGGIGGIGGIGGIGGIGGIGGGACk", "kACcccGccGccGccGccGccGcccACk", "kACceeGceGceGceGceGceGceeACk",
+    "kACGGGIGGIGGIGGIGGIGGIGGGACk", "kACcccGccGccGccGccGccGcccACk", "kACceeGceGceGceGceGceGceeACk",
+    "kACGGGIGGIGGIGGIGGIGGIGGGACk", "kACcccGccGccGccGccGccGcccACk", "kACceeGceGceGceGceGceGceeACk",
+    "kACGGGIGGIGGIGGIGGIGGIGGGACk", "kACcccGccGccGccGccGccGcccACk", "kACkkkkkkkkkkkkkkkkkkkkkkACk",
+    ".kk......................kk."
   ],
   referee: [
-    "....kkkkk....", "...kQQQQQk...", "...kQRRRSk...", "...kQSSSSk...",
-    "...kJJJJkk...", "...kJLLMJk...", "...kkJMMkk...", "..kGQGQGQGk..",
-    ".kGIGIQGGHGk.", "kZZGQGQGQGIk.", ".kGIQGQGQGIk.", "kGHIQGQGQGHGk",
-    "kGIIQGQGQGIIk", "kJkGQGQGQGkJk", ".kkGQGQGQGkk.", "..kGQGQGQGk..",
-    "...kQQkQSk...", "..kQRSkQRQk..", "..kQRSkQRSkk.", ".kQRRRQRRRQQk",
-    ".kQSSSSSSSSSk", "..kTkkTkTkkTk", "..kTTTVkTTTVk", "...kkkk.kkkk."
+    "......kkkk.....", "....kkQQQQk....", "...kQQRRRRQk...", "...kQSRRRSSk...", "....kJQSSSJk...", "....kJJJJJkk...",
+    "....kJLLLMJk...", "....kJMLMMkk...", "...kGQGJMGQGk..", "..kGIQGQGHGIk..", ".kkGIQGQGIIHGk.", "kZZZGQGQGIQGIk.",
+    ".kGGIQGQGIQGHGk", ".kGHIQGQGIQGHIk", "kGIIIQGQGIQGHIk", "kGIkGQGQGIQGIIk", "kJkkGQGQGIQGkJk", ".k.kGQGQGIQGkk.",
+    "...kGQGQGIQGk..", "...kQRQkQQSk...", "...kQRSkQRSk...", "...kQRSkQRRQk..", "..kkQRSkkQRSkk.", ".kQQRRRQQRRRQQk",
+    ".kQSSSSSSSSSSSk", "..kkTkkTkkTkkTk", "...kTTTVkkTTTVk", "...kTVVVkkTVVVk", "....kkkk..kkkk."
   ],
   goalie: [
-    "..........kkkk..........", ".........kGGGGk..k......", "........kGIIIIGkkNkk....",
-    "........kGIQGQGk.kNNk...", ".......kkGIQGQGkk.kNNk..", ".....kkDAAGGIGAADkkkNNk.",
-    "....kDDFDAAAAACDEDDkWWNk", ".kkkDEFFACCCCCCADEFWXXWk", "kGGGDFFGGGGGGGGGGDFWXXYk",
-    "kGHIDFAAAAAAAAAAAkkWXYYk", "kGHIkkACCCCCCCCCCGkkWYk.", "kGIIGGGGAGGkkGGAGHGGAGGk",
-    "kGIAGHHIAGIkkGIAGHHIAGIk", "kGIAGHHIAGIkkGIAGHHIAGIk", "kGIAGIIIAGIkkGIAGIIIAGIk",
-    ".kkkkkkkkkk..kkkkkkkkkk."
+    "............kkkkk............", "...........kGGGGGk..kk.......", "..........kGHHHHHGkkNNk......",
+    "..........kGIIHIIIkkNPNk.....", "..........kGIQGIQGk.kkNNk....", "........kkkGIQGIQGkk..kNNkk..",
+    ".......kDDAAGGIIGAADkk.kNNNk.", "......kDEFABAAGAACDEDDkkkNPNk", "....kkDEFFABBBABBBADEEDWWWWk.",
+    ".kkkDDEFFACCCCCCCCCADEFWXXXWk", "kGGGGDFFGGGGGGGGGGGGkDFWXXYYk", "kGHHIDkAAAAAAAAAAAAAkkkWXYYk.",
+    "kGHHIkkACCCCCCCCCCCCGGkkWYkk.", "kGHIIGGGGGAGGkkkGGAGHHGGAGGGk", "kGHIAGHHHIAGIk.kGIAGHHHIAGHIk",
+    "kGHIAGHHHIAGIk.kGIAGHHHIAGHIk", "kGHIAGHHHIAGIk.kGIAGHHHIAGHIk", "kGIIAGIIIIAGIk.kGIAGIIIIAGIIk",
+    ".kkkkkkkkkkkk...kkkkkkkkkkkk."
   ],
   // Side view, driving left: the snow tank up front, the seat and wheel behind it, and the
   // conditioner box trailing on the ice at the back.
   zamboni: [
-    ".kkkkkkkkkkkkkkkkkkkkk.....kQQk...", "kGGGGGGGGGGGGGGGGGGGGGkk..kkQSk...", "kGHHHHHHHHHHHHHHHHHHHHGQkkQQRSk...",
-    "kGHHHHHHHHHHHHHHHHHHHHIQkDQSSSk...", "kGHHHHHHHHHHHHHHHHHHHHIkQDDkkk....", "kGIIIIIIIIIIIIIIIIIIIIIGQDFkkk....",
-    "kDDDDDDDDDDDDDDDDDDDDDDDDEEDDDk...", "kDEEEEEEEEEEEEEEEEEEEEEEEEEEEFk...", "kDEEEEEEEEEEEEEEEEEEEEEEEEEEEFk...",
-    "kDEFFFFFFEEEEEEEEEFFFFFFEEEEEFk...", "kDEFfffffDEEEEEEEEFfffffDEEEEFk...", "kDFFfhhhhDFFFFFFFFFfhhhhDFFFFFkkk.",
-    ".kkfhTTTffkkkkkkkkfhTTTffkkQQQQQQk", "..kfhTVVfhk......kfhTVVfhkkQRRRRSk", "...kffffhk........kffffhk.kQSSSSSk",
-    "...kfhhhhk........kfhhhhk.kTTTTTTk", "....kkkkk..........kkkkk...kkkkkk."
+    "..kkkkkkkkkkkkkkkkkkkkkkkkk......kQQk....", ".kGGGGGGGGGGGGGGGGGGGGGGGGGkk..kkkQSk....",
+    "kGHHHHHHHHHHHHHHHHHHHHHHHHIkQkkQQQRSk....", "kGHHHHHHHHHHHHHHHHHHHHHHHHIkQkkQRRRSk....",
+    "kGHHHHHHHHHHHHHHHHHHHHHHHHHGQkDQSSSSk....", "kGHHHHHHHHHHHHHHHHHHHHHHHHHIQQDDkkkk.....",
+    "kGIIIIIIIIIIIIIIIIIIIIIIIIIIGQDFkkkk.....", "kDDDDDDDDDDDDDDDDDDDDDDDDDDDDDEEDDDDk....",
+    "kDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFk....", "kDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFk....",
+    "kDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFk....", "kDEEFFFFFFEEEEEEEEEEEEFFFFFFEEEEEEEFk....",
+    "kDEFFfffffDEEEEEEEEEEFFfffffDEEEEEEFk....", "kDFFfghhhgfDFFFFFFFFFFfghhhgfDFFFFFFkkkk.",
+    ".kkkfhhTTfgfkkkkkkkkkkfhhTTfgfkkQQQQQQQQk", "...kfhTUVfghk........kfhTUVfghkkQRRRRRRSk",
+    "...kfgfTVfhhk........kfgfTVfhhkkQRRRRRRSk", "...kfggffhhk.........kfggffhhk.kQSSSSSSSk",
+    "....kfhhhhk...........kfhhhhk..kTTTTTTTTk", ".....kkfkk.............kkfkk....kkkkkkkk."
   ],
   sticks: [
-    ".kQQk.......kQQk.", ".kQSk.......kQSk.", "..kNNk.....kNNk..", "...kNNk...kNPk...",
-    "....kNNk.kNPk....", ".....kNNkNPk.....", "......kNNPk......", "......kNPPk......",
-    ".....kNPkNNk.....", "....kNPk.kNNk....", ".kkkNPk...kNNkkk.", "kNNNOPk...kNONNNk",
-    "kNPPPPk...kNPPPPk", ".kkkkk.....kkkkk."
+    ".kQQQk.........kQQk.", ".kQSSk.........kQSk.", "..kNNk........kNNk..", "...kNNk......kNPk...", "....kNNk....kNPk....",
+    ".....kNNk..kNPk.....", "......kNNkkNPPk.....", ".......kNNNPPk......", "........kNOPk.......", ".......kNPPPk.......",
+    "......kNPPkNNk......", ".....kNPPk.kNNk.....", ".kkkkNPPk...kNNkkkk.", "kNNNNOPk....kNONNNNk", "kNOOOOPk....kNOOOOPk",
+    "kNPPPPPk....kNPPPPPk", ".kkkkkk......kkkkkk."
   ]
 };
 
