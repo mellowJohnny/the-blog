@@ -177,6 +177,22 @@ written before this feature (raw hand-typed `<img>` HTML) still work
 and still edit exactly as they always have; nothing retroactively
 changes when an old review is reopened.
 
+**Review skeleton and the awards table** (2026-11-20). Every review ends
+with a "Best of The Set Awards:" caption and a table, which used to be
+pasted in by hand. A third toolbar button, **Insert Best of The Set
+Awards** (table icon, `insertawards`), inserts that caption and a
+`card-table-style` table with the four most common awards (Best Card,
+Worst Card, Best Goalie Card, Best Looking Rookie Card) and blank value
+cells. Unlike the image blocks it is ordinary editable content: rename,
+add or delete rows freely. `createCardSet.html` also opens with a
+skeleton body (`initTinyEditor`'s `reviewStarter` option,
+`reviewStarterHtml()`): an empty paragraph for the intro, the "on to the
+set review..." caption, another empty paragraph, then the awards block.
+Submitting the skeleton untouched is refused like an empty body
+(`reviewStarterText`, checked in `createCardSet()`). TinyMCE's own
+template feature isn't used: its free plugin was removed in TinyMCE 7
+and the replacement is a paid premium plugin.
+
 **Wrap image** (`.img-wrap-left`/`.img-wrap-right` +
 `.img-wrap-sm`/`.img-wrap-md`, `styles.css`):
 

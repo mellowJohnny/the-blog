@@ -8,11 +8,9 @@
  * -------------------------------------------- TinyMCE GLOBAL config!
  *
  * This function is called from every CMS page, allowing for a single place to contol the WYSIWYG editor.
- * cardImageBlocks (card set create/edit pages only) adds two toolbar
- * buttons for inserting the site's two recurring review images (a
- * small floated wrap image, a centered middle image) as structured,
- * non-editable blocks instead of hand-typed <img> HTML - see
- * registerCardImageBlockButtons() below.
+ * cardImageBlocks (card set create/edit pages only) adds the wrap and middle image buttons and the
+ * Best of The Set Awards button (registerCardImageBlockButtons()); reviewStarter (createCardSet.html)
+ * opens an empty editor with the review skeleton (reviewStarterHtml()).
  */
 
 // Resolves with the editor once tinymce.init() finishes. Edit pages fetch
@@ -25,7 +23,23 @@ const tinyEditorReady = new Promise((resolve) => { resolveTinyEditorReady = reso
 // ../reviews/x/, which breaks on the /reviews/<slug>/ pages. These keep links root-relative.
 const SITE_LINK_URLS = { relative_urls: false, remove_script_host: true };
 
-function initTinyEditor(selector = '#postBody', { cardImageBlocks = false } = {}) {
+// The "Best of The Set Awards" block every review ends with: its caption and a table of the most common
+// awards, values blank. Plain editable content (rename, add or drop rows); the toolbar button inserts it.
+const AWARDS_ROWS = ["Best Card:", "Worst Card:", "Best Goalie Card:", "Best Looking Rookie Card:"];
+function awardsBlockHtml() {
+  const rows = AWARDS_ROWS.map((label) => `<tr><td><strong>${label}</strong></td><td>&nbsp;</td></tr>`).join("");
+  return `<p class="caption">Best of The Set Awards:</p><table class="card-table-style"><tbody>${rows}</tbody></table>`;
+}
+
+// A new review's starting body (createCardSet.html): room for the intro, the set review lead-in, the awards.
+function reviewStarterHtml() {
+  return `<p>&nbsp;</p><p class="caption">on to the set review...</p><p>&nbsp;</p>${awardsBlockHtml()}`;
+}
+
+// The starter's own text, so createCardSet() can refuse a body nobody has written in yet.
+let reviewStarterText = null;
+
+function initTinyEditor(selector = '#postBody', { cardImageBlocks = false, reviewStarter = false } = {}) {
   // Card set pages swap the native image button/plugin for the two
   // custom ones above - no reason to offer both ways to insert an image.
   // (No 'noneditable' plugin needed - it 404s on this TinyMCE 8 build/
@@ -35,7 +49,7 @@ function initTinyEditor(selector = '#postBody', { cardImageBlocks = false } = {}
   const plugins = ['lists', 'link', 'code', 'autoresize'];
   if (!cardImageBlocks) plugins.push('image');
 
-  const imageToolbarGroup = cardImageBlocks ? 'insertwrapimage insertmiddleimage' : 'image';
+  const imageToolbarGroup = cardImageBlocks ? 'insertwrapimage insertmiddleimage insertawards' : 'image';
   const toolbar = `undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link ${imageToolbarGroup} lists code | wordcount`;
 
   tinymce.init({
@@ -51,7 +65,15 @@ function initTinyEditor(selector = '#postBody', { cardImageBlocks = false } = {}
     max_height: 500, // The maximum limit before a scrollbar appears
     ...SITE_LINK_URLS,
     setup: cardImageBlocks ? registerCardImageBlockButtons : undefined
-  }).then((editors) => resolveTinyEditorReady(editors[0]));
+  }).then((editors) => {
+    const editor = editors[0];
+    if (reviewStarter && editor && !editor.getContent({ format: "text" }).trim()) {
+      editor.setContent(reviewStarterHtml());
+      reviewStarterText = editor.getContent({ format: "text" }).trim();
+      editor.undoManager.clear(); // Undo shouldn't empty the starter back out
+    }
+    resolveTinyEditorReady(editor);
+  });
 }
 
 
@@ -103,6 +125,12 @@ function registerCardImageBlockButtons(editor) {
       openImageBrowser(null, (fileName, imageUrl) => openMiddleImageDialog(editor, imageUrl), "img/cards/",
         (file) => processCardSetImage(file, "middle"));
     }
+  });
+
+  editor.ui.registry.addButton('insertawards', {
+    icon: 'table',
+    tooltip: 'Insert Best of The Set Awards',
+    onAction: () => editor.insertContent(awardsBlockHtml())
   });
 }
 

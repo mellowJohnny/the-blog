@@ -155,12 +155,16 @@ by the inline `window load` block. `wax.js` is **not** loaded — this
 page never called anything in it.
 
 **On `window load`**: `fetchCopyrightYear()`, then
-`initTinyEditor('#postBody', { cardImageBlocks: true })` — unlike
+`initTinyEditor('#postBody', { cardImageBlocks: true, reviewStarter: true })` — unlike
 `createBlogPost.html`'s plain call, this swaps TinyMCE's native image
 button/plugin for two custom ones (see below) that insert this site's
 recurring wrap/middle review images as structured blocks instead of
-hand-typed HTML — see `CMS_GUIDE.md`'s "Wrapped/middle images in
-review body content".
+hand-typed HTML, adds an **Insert Best of The Set Awards** button, and
+opens the editor with the review skeleton (intro space, "on to the set
+review...", the awards caption and table) so the fixed parts aren't
+pasted in each time — see `CMS_GUIDE.md`'s "Wrapped/middle images in
+review body content". `createCardSet()` refuses the skeleton if it is
+submitted unchanged.
 
 **User interactions**:
 - "Browse" buttons next to Header/Footer Image Name →
@@ -500,8 +504,9 @@ guided flow.
 - **Image previews** — same as `createCardSet.html` above; here
   `populateCardSet()` also calls `showCardSetImagePreview()` for both
   fields once the set loads, so the current images show straight away.
-- **Insert wrap image / Insert middle image** — same toolbar buttons
-  and flow as `createCardSet.html` above.
+- **Insert wrap image / Insert middle image / Insert Best of The Set
+  Awards** — same toolbar buttons and flow as `createCardSet.html`
+  above. The edit page has no skeleton: a loaded review keeps its own text.
 - **SEO Generate buttons, length counters and textareas** — identical
   to `createCardSet.html` above (the functions live in `cmsFormUI.js`
   and read the form by element id, so both pages share them). Here the

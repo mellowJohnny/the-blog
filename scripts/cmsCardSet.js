@@ -92,7 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const tinyBody = stripEditorOnlyMarkup(tinymce.get("postBody").getContent());
   const tinyBodyText = tinymce.get("postBody").getContent({ format: "text" }).trim();
 
-  if (!tinyBodyText) {
+  // The untouched starter body (reviewStarterText, cmsFormUI.js) counts as empty
+  if (!tinyBodyText || tinyBodyText === reviewStarterText) {
     await cmsAlert("Set Review Text is required.");
     tinymce.get("postBody").focus();
     return;
