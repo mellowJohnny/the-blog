@@ -4,7 +4,7 @@
 
 // Full-colour sprites: one character per pixel, "." is transparent. Each colour has a light, mid
 // and dark tone (red A-C, blue D-F, white G-I, skin J-M, wood N-P, black Q-S, steel T-V, glove W-Y,
-// orange Z-b, net c-e, tyre f-h, mustard i-l, sausage m-o), and "k" is the dark outline around every sprite.
+// orange Z-b, net c-e, tyre f-h, mustard i-l, sausage m-o, water p-r), and "k" outlines every sprite.
 const RINK_PALETTE = {
   A: "#e8444b", B: "#b8182e", C: "#7c0f22", D: "#4f78e0", E: "#2a45a8", F: "#19296b",
   G: "#ffffff", H: "#e3e7ef", I: "#a9b2c4", J: "#ffd8ad", L: "#f2b27e", M: "#c97f4e",
@@ -12,7 +12,7 @@ const RINK_PALETTE = {
   T: "#ffffff", U: "#c5ccd6", V: "#8792a3", W: "#8a5a3c", X: "#5e3a26", Y: "#3d2418",
   Z: "#ffb347", a: "#f28c1e", b: "#b85f0c", c: "#ffffff", d: "#f1f3f7", e: "#cfd5df",
   f: "#4a4b55", g: "#2b2c33", h: "#18191e", i: "#ffe45c", j: "#f5c518", l: "#c4940a",
-  m: "#e2774f", n: "#b9472b", o: "#7c2a16", k: "#1a1420"
+  m: "#e2774f", n: "#b9472b", o: "#7c2a16", p: "#3f86c9", q: "#173d73", r: "#0b1f40", k: "#1a1420"
 };
 const RINK_INK = "#535353";                    // the on-screen messages
 const RINK_ICE = "#4f9fd8";                    // the ice line and the skate scratches under it
@@ -134,14 +134,23 @@ const RINK_SPRITES = {
     "............kDFGGDEEDDk.................", ".....kkkkkkkDEFGIDFFEFk.....kk..........", "...kkAGGDDDDEEFDDFZZDFk...kkGAkkk.......",
     "..kAABAAAADFFFFQQQQQQQk..kGGHGGGGk......", ".kABBBBCGGAkkkQSSZQRRRQkkGHHHIIAGGk.....", "kABBBBBCGIAkkQRSZbZQRRSkGHHHHIACAGkkkkk.",
     "kACCCCCCAQQQQRRSQZQSSSSQGIIIIIGGGHGGGGGk", ".kkkkkkkkQSSSSSSkkkkkkkkkkkkkkkkGIIIIIIk", ".........kkkkkkk................kkkkkkk."
+  ],
+  // A hole broken through the ice: dark water ringed with chipped ice, drawn half below the ice line.
+  hole: [
+    ".....k..kkkckkkkkkkkckkk..k.....", "....kckkcccdccccccccdccckkck....", ".kkkcecceeeeeppppppceeeeccdckkk.",
+    "kccceepppppppqqqqqqpppppppceccck", "kcepppqqrGGGpqqqqqqqqqqqqqpppcek", "kcepqqqqqpppqqqqqqqrrrqqqqqrrcek",
+    ".kccprrrrqqqqqqqqqqrGGprrrrrcek.", "..kccccccprrrrrrrrrrpprcccccek..", "...kkkkkcccccccccccccccekkkkk...",
+    "........kkkkkkkckkkkkkkk........"
   ]
 };
 
-const RINK_OBSTACLES = ["puck", "net", "referee", "goalie", "zamboni", "sticks", "mascot", "popcorn", "hotdog", "hats"];
+const RINK_OBSTACLES = ["puck", "net", "referee", "goalie", "zamboni", "sticks", "mascot", "popcorn", "hotdog", "hats", "hole"];
+const RINK_SINK = { hole: 10 };                // pixels a sprite sits below the ice line (the hole is cut into it)
+const RINK_TOP_SPEED = 20;                     // the speed keeps rising to here, reached at a score of about 2700
 const RINK_PIXEL = 2;                          // each grid cell is a 2x2 block on the 600x180 canvas
 const RINK_REACH = 32;                         // grid columns from the skater's back to his glove; the stick beyond doesn't collide
 const RINK_W = 600, RINK_H = 280, RINK_ICE_Y = 265;   // tall enough for the scoreboard to hang clear of the highest jump
-const RINK_MIN_GAP = 36;                       // frames; a simulation of back-to-back jumps fails below about 27
+const RINK_MIN_GAP = 36;                       // frames; simulated back-to-back jumps fail below ~27 (speed 11), ~39 (speed 20)
 const RINK_BEST_KEY = "rinkRunnerBest";
 const RINK_MUSIC_KEY = "rinkRunnerMusic";
 const RINK_MUSIC_REST = 8;                     // seconds of quiet between one "Charge!" and the next build-up
@@ -382,21 +391,24 @@ function initRinkRunner(canvasId) {
   function spawn() {
     const kind = RINK_OBSTACLES[Math.floor(Math.random() * RINK_OBSTACLES.length)];
     obstacles.push({ kind, x: RINK_W + 10, img: art[kind] });
-    const pace = (speed - 5) / 6;                                     // 0 at the start, 1 at top speed
-    const frames = RINK_MIN_GAP + 4 * (1 - pace) + Math.random() * (45 - 30 * pace);
+    const pace = Math.min(1, (speed - 5) / 6);                        // 0 at the start, 1 from speed 11 on
+    const floor = RINK_MIN_GAP + 1.4 * Math.max(0, speed - 11);          // past 11 the safe gap widens a little
+    const frames = floor + 4 * (1 - pace) + Math.random() * (45 - 30 * pace);
     nextGap = speed * frames + RINK_REACH * RINK_PIXEL + art[kind].width;
   }
 
   // Forgiving boxes: a few pixels in from each sprite's edge, and the stick out front doesn't count.
+  // A hole sits half below the ice line and only counts over its open water.
   function hits(o) {
     const sx = skater.x + 6, sw = RINK_REACH * RINK_PIXEL - 12, sTop = RINK_ICE_Y - skater.y - skater.h + 4;
-    const ox = o.x + 3, ow = o.img.width - 6, oTop = RINK_ICE_Y - o.img.height + 3;
+    const sink = RINK_SINK[o.kind] || 0, inset = o.kind === "hole" ? 12 : 3;
+    const ox = o.x + inset, ow = o.img.width - inset * 2, oTop = RINK_ICE_Y - o.img.height + sink + 3;
     return sx < ox + ow && sx + sw > ox && RINK_ICE_Y - skater.y > oTop && sTop < RINK_ICE_Y;
   }
 
   function update(step) {
     distance += speed * step;
-    speed = Math.min(11, 5 + distance / 2500);
+    speed = Math.min(RINK_TOP_SPEED, 5 + distance / 1800);
     // Holding the key while rising means less gravity, so a longer press jumps higher.
     const gravity = held && skater.vy > 0 ? 0.3 : 0.55;
     if (skater.y > 0 || skater.vy > 0) {
@@ -439,7 +451,7 @@ function initRinkRunner(canvasId) {
 
   function draw() {
     drawIce();
-    obstacles.forEach((o) => ctx.drawImage(o.img, Math.round(o.x), RINK_ICE_Y - o.img.height));
+    obstacles.forEach((o) => ctx.drawImage(o.img, Math.round(o.x), RINK_ICE_Y - o.img.height + (RINK_SINK[o.kind] || 0)));
     const frame = skater.y > 0 || state !== "running" ? art.skaterA : (Math.floor(stride / 40) % 2 ? art.skaterB : art.skaterA);
     const top = RINK_ICE_Y - skater.y - skater.h;
     if (state === "over") {                                                       // tripped: tipped forward over his toes
