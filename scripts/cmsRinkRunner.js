@@ -160,7 +160,7 @@ function initRinkRunner(canvasId) {
   function jump() {
     if (state === "ready" || state === "over") { reset(); state = "running"; say("Skating. Space or click to jump."); return; }
     if (state === "paused") { state = "running"; return; }
-    if (skater.y === 0) skater.vy = 8;   // y counts up from the ice
+    if (skater.y === 0) skater.vy = 7.5;   // y counts up from the ice
   }
 
   // Obstacles come at random, each far enough after the last to be jumpable at the current speed.
@@ -181,7 +181,7 @@ function initRinkRunner(canvasId) {
     distance += speed * step;
     speed = Math.min(11, 5 + distance / 2500);
     // Holding the key while rising means less gravity, so a longer press jumps higher.
-    const gravity = held && skater.vy > 0 ? 0.38 : 0.7;
+    const gravity = held && skater.vy > 0 ? 0.3 : 0.55;
     if (skater.y > 0 || skater.vy > 0) {
       skater.vy -= gravity * step;
       skater.y = Math.max(0, skater.y + skater.vy * step);
