@@ -51,6 +51,155 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+//*------------------------------------------ Wax Pack link (type-ahead) --------------------------------------*
+// A set can link to its pack in The Wax Museum; the review then opens that pack in a modal (wax.js).
+// Stored as "<year>-<packKey>" in the hidden #waxPack; the visible field only searches and shows the name.
+
+const CARD_SET_WAX_PACKS_URL = "https://efh9lu4988.execute-api.us-east-2.amazonaws.com/prod"; // getWaxPacks
+let waxPackIndexPromise = null;
+let waxPackSuggestions = [];
+let activeWaxPackIndex = -1;
+
+const waxPackKey = (pack) => `${pack.year}-${pack.packKey}`;
+// Pack names usually start with their season ("1990-91 Bowman"); the year is added only when one doesn't.
+const waxPackLabel = (pack) => String(pack.name).startsWith(String(pack.year)) ? pack.name : `${pack.name} (${pack.year})`;
+
+// Every pack, fetched once per page; a failed fetch clears the promise so the next keystroke retries.
+function loadWaxPackIndex() {
+  if (!waxPackIndexPromise) {
+    waxPackIndexPromise = fetch(CARD_SET_WAX_PACKS_URL)
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`)))
+      .then((packs) => (Array.isArray(packs) ? packs : []).filter((pack) => pack.packKey && pack.name))
+      .catch((err) => {
+        console.log("Wax pack index fetch failed:", err);
+        waxPackIndexPromise = null;
+        return [];
+      });
+  }
+  return waxPackIndexPromise;
+}
+
+// The note under the field says which pack the set links to, so a half-typed search isn't mistaken for one.
+function showWaxPackNote(text) {
+  const note = document.getElementById("waxPackNote");
+  if (note) note.textContent = text;
+}
+
+// Sets the stored key and shows its pack's name (or the bare key, if that pack has since been deleted).
+function setWaxPackField(key) {
+  const search = document.getElementById("waxPackSearch");
+  document.getElementById("waxPack").value = key;
+  if (!key) {
+    search.value = "";
+    showWaxPackNote("No wax pack linked.");
+    return;
+  }
+  search.value = key;
+  showWaxPackNote(`Links to ${key}.`);
+  loadWaxPackIndex().then((packs) => {
+    const pack = packs.find((item) => waxPackKey(item) === key);
+    if (!pack || document.getElementById("waxPack").value !== key) return;
+    search.value = waxPackLabel(pack);
+    showWaxPackNote(`Links to ${waxPackLabel(pack)}.`);
+  });
+}
+
+function renderWaxPackSuggestions(matches) {
+  const list = document.getElementById("waxPackSuggestions");
+  waxPackSuggestions = matches;
+  activeWaxPackIndex = -1;
+  list.innerHTML = "";
+  if (matches.length === 0) {
+    list.style.display = "none";
+    return;
+  }
+  matches.forEach((pack, i) => {
+    const li = document.createElement("li");
+    li.className = "checklist-typeahead-suggestion";
+    li.setAttribute("role", "option");
+    li.id = `wax-pack-suggestion-${i}`;
+    li.dataset.index = i;
+    li.textContent = waxPackLabel(pack);
+    list.appendChild(li);
+  });
+  list.style.display = "block";
+}
+
+function hideWaxPackSuggestions() {
+  const list = document.getElementById("waxPackSuggestions");
+  list.style.display = "none";
+  list.innerHTML = "";
+  waxPackSuggestions = [];
+  activeWaxPackIndex = -1;
+}
+
+function moveWaxPackActive(delta) {
+  if (waxPackSuggestions.length === 0) return;
+  activeWaxPackIndex = (activeWaxPackIndex + delta + waxPackSuggestions.length) % waxPackSuggestions.length;
+  document.querySelectorAll("#waxPackSuggestions .checklist-typeahead-suggestion").forEach((el, i) => {
+    el.classList.toggle("active", i === activeWaxPackIndex);
+  });
+  document.getElementById(`wax-pack-suggestion-${activeWaxPackIndex}`)?.scrollIntoView({ block: "nearest" });
+}
+
+function selectWaxPackSuggestion(pack) {
+  hideWaxPackSuggestions();
+  setWaxPackField(waxPackKey(pack));
+}
+
+// Typing starts a new search, so the old link is dropped until a pack is picked from the list.
+async function onWaxPackSearchInput() {
+  const input = document.getElementById("waxPackSearch");
+  const query = input.value.trim().toLowerCase();
+  document.getElementById("waxPack").value = "";
+  showWaxPackNote(query ? "Pick a pack from the list to link it." : "No wax pack linked.");
+  if (query.length < 2) {
+    hideWaxPackSuggestions();
+    return;
+  }
+  const packs = await loadWaxPackIndex();
+  if (input.value.trim().toLowerCase() !== query) return;   // the field moved on while the index loaded
+
+  const matches = packs
+    .filter((pack) => waxPackLabel(pack).toLowerCase().includes(query))
+    .sort((a, b) => {
+      const aStarts = a.name.toLowerCase().startsWith(query);
+      const bStarts = b.name.toLowerCase().startsWith(query);
+      if (aStarts !== bStarts) return aStarts ? -1 : 1;
+      return a.year - b.year || a.name.localeCompare(b.name);
+    })
+    .slice(0, 8);
+  renderWaxPackSuggestions(matches);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("waxPackSearch");
+  const list = document.getElementById("waxPackSuggestions");
+  if (!input || !list) return;
+
+  input.addEventListener("input", onWaxPackSearchInput);
+  input.addEventListener("keydown", (e) => {
+    if (list.style.display === "none") return;
+    if (e.key === "ArrowDown") { e.preventDefault(); moveWaxPackActive(1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); moveWaxPackActive(-1); }
+    else if (e.key === "Enter" && activeWaxPackIndex >= 0) {
+      e.preventDefault();
+      selectWaxPackSuggestion(waxPackSuggestions[activeWaxPackIndex]);
+    } else if (e.key === "Escape") hideWaxPackSuggestions();
+  });
+  list.addEventListener("click", (e) => {
+    const li = e.target.closest(".checklist-typeahead-suggestion");
+    if (li) selectWaxPackSuggestion(waxPackSuggestions[Number(li.dataset.index)]);
+  });
+  document.addEventListener("click", (e) => {
+    if (list.style.display !== "none" && !input.contains(e.target) && !list.contains(e.target)) hideWaxPackSuggestions();
+  });
+  document.getElementById("waxPackClear")?.addEventListener("click", () => {
+    hideWaxPackSuggestions();
+    setWaxPackField("");
+  });
+});
+
 //*------------------------------------------ Create New Card Set --------------------------------------*
 
   /**
@@ -59,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
    */
 
   // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
-  async function createCardSet(blogStatus, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, blogCat, printRun) {
+  async function createCardSet(blogStatus, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, blogCat, printRun, waxPack) {
 
   // Basic client-side validation - setName and year are marked required in
   // the HTML, but the Submit button is type="button" (not type="submit"),
@@ -125,7 +274,8 @@ document.addEventListener("DOMContentLoaded", () => {
     headerImgName,
     footerImgName,
     blogCat,
-    printRun
+    printRun,
+    waxPack
   };
 
   // make API call to cardPost endpoint with parameters and use promises to get response
@@ -171,7 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
  * Updates an existing card set review via the updateCardSet API.
  */
 
-async function updateCardSet(blogStatus, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, printRun)
+async function updateCardSet(blogStatus, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, printRun, waxPack)
 {
   const slugProblem = seoSlugProblem(seoURLSlug); // cmsFormUI.js
   if (slugProblem) {
@@ -202,7 +352,8 @@ async function updateCardSet(blogStatus, seoMetaDesc, seoURLSlug, seoTags, autho
     headerImgName,
     footerImgName,
     mfg,
-    printRun
+    printRun,
+    waxPack
   };
 
   getAuthToken().then(token => fetch("https://bb8yehibjb.execute-api.us-east-2.amazonaws.com/dev", {
@@ -556,7 +707,8 @@ async function deleteCardSet(setID, setName, year) {
         set.setName,
         set.headerImgName,
         set.footerImgName,
-        set.printRun
+        set.printRun,
+        set.waxPack
       );
     })
     .catch(err => {
@@ -626,7 +778,8 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
   setName,
   headerImgName,
   footerImgName,
-  printRun
+  printRun,
+  waxPack
 ) {
   // Populate the blogStatus dropdown
   const statusOptions = document.getElementById("blogStatus");
@@ -665,6 +818,7 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
   showCardSetImagePreview("footerImgName");
   // Optional attribute - most sets don't have one, so avoid "undefined".
   document.getElementById("printRun").value = printRun || "";
+  setWaxPackField(waxPack || "");
 
   // The fetch can beat tinymce.init(), so wait for the editor (cmsFormUI.js).
   tinyEditorReady.then((editor) => {
@@ -696,11 +850,12 @@ function openPreview() {
   const headerImg = document.getElementById("headerImgName").value;
   const footerImg = document.getElementById("footerImgName").value;
   const printRun = document.getElementById("printRun").value;
+  const waxPack = document.getElementById("waxPack").value;
   // Get TinyMCE content
   const cardBody = stripEditorOnlyMarkup(tinymce.get("postBody").getContent());
 
   // Call the render function
-  renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,cardBody,printRun);
+  renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,cardBody,printRun,waxPack);
 
   document.getElementById("previewModal").style.display = "block";
   startPreviewEditor();
@@ -736,7 +891,7 @@ function startPreviewEditor() {
 }
 
 
-function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,body,printRun) {
+function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,body,printRun,waxPack) {
 
   // Write into previewContainer instead of cardSetDiv
   const container = document.getElementById("previewContainer");
@@ -753,6 +908,7 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
     postBody: body,
     hasChecklist: _loadedSetHasChecklist,
     printRun,
+    waxPack,
     interactive: false
   }) + `
     <br>

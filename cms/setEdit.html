@@ -200,7 +200,20 @@
                       <label>Print Run</label><br>
                       <input type="text" id="printRun" title="printRun">
                     </td>
-                    <td></td>
+                    <td>
+                      <label for="waxPackSearch">Wax Pack</label>
+                      <button type="button" class="seo-generate-btn" id="waxPackClear">Clear</button><br>
+                      <div class="checklist-typeahead-wrap">
+                        <input
+                          type="text"
+                          id="waxPackSearch"
+                          autocomplete="off"
+                          placeholder="Search The Wax Museum">
+                        <ul id="waxPackSuggestions" class="checklist-typeahead-suggestions" role="listbox"></ul>
+                      </div>
+                      <input type="hidden" id="waxPack" value="">
+                      <p class="cms-field-note" id="waxPackNote">No wax pack linked.</p>
+                    </td>
                   </tr>
                   <tr>
                     <!-- 7th Row -->
@@ -287,7 +300,8 @@
                                                   document.getElementById('headerImgName').value,
                                                   document.getElementById('footerImgName').value,
                                                   document.getElementById('mfg').value,
-                                                  document.getElementById('printRun').value)"
+                                                  document.getElementById('printRun').value,
+                                                  document.getElementById('waxPack').value)"
                           >
                             Update Post</button
                           >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

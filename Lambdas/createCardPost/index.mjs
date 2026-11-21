@@ -10,6 +10,9 @@ import { PutCommand, QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-d
 const client = new DynamoDBClient({ region: "us-east-2" });
 const documentClient = DynamoDBDocumentClient.from(client);
 
+// A Wax Museum pack: its 4-digit year, a hyphen, then its packKey slug (saveWaxPack's SLUG_PATTERN).
+const WAX_PACK_PATTERN = /^\d{4}-[a-z0-9]+(-[a-z0-9]+)*$/;
+
 // A live set's slug is its page address (/reviews/<slug>/), so two live sets
 // can't share one - the site build would refuse. Returns the name of the live
 // set (other than this one) already using the slug, or null.
@@ -80,6 +83,19 @@ export const handler = async (event) => {
     let blogCat = payload.blogCat;
     // Optional (only some sets have one) - stored only when non-blank.
     const printRun = typeof payload.printRun === "string" ? payload.printRun.trim() : "";
+    // Optional link to the set's pack in The Wax Museum: "<year>-<packKey>", stored only when set.
+    const waxPack = typeof payload.waxPack === "string" ? payload.waxPack.trim() : "";
+    if (waxPack && !WAX_PACK_PATTERN.test(waxPack)) {
+        return {
+            statusCode: 400,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "OPTIONS,POST"
+            },
+            body: JSON.stringify({ error: "waxPack must be a pack's year and key, like 1990-o-pee-chee" })
+        };
+    }
 
     // Fix the Year - needs to be converted to a Number
     let year = parseInt(payload.year);
@@ -164,7 +180,8 @@ export const handler = async (event) => {
             author,
             postBody,
             blogCat,
-            ...(printRun && { printRun })
+            ...(printRun && { printRun }),
+            ...(waxPack && { waxPack })
         },
         ConditionExpression: "attribute_not_exists(setName) AND attribute_not_exists(#yr)",
         ExpressionAttributeNames: {

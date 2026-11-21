@@ -132,7 +132,8 @@ function buildCardSetMarkup({
   hasChecklist = false,
   interactive = true,
   printRun = "",
-  checklistHref = "#"
+  checklistHref = "#",
+  waxPack = ""
 }) {
   let cleanStars = "";
   for (let i = 0; i < parseInt(stars); i++) {
@@ -146,6 +147,13 @@ function buildCardSetMarkup({
   // and new tabs; a plain click opens the modal instead.
   const checklistRow = hasChecklist
     ? `<div class="set-detail-row set-detail-row-checklist"><a href="${escapeHtml(checklistHref)}" class="checklist-view-link" data-set-name="${escapeHtml(setName)}"${interactive ? ' onclick="openChecklistModal(this); return false;"' : ''}>Checklist</a></div>`
+    : "";
+
+  // Optional link to the set's pack ("<year>-<packKey>"): opens it in a modal (openWaxPackModal(), wax.js),
+  // styled and placed like the Checklist link. The href is the museum itself, for crawlers and new tabs.
+  const waxPackKey = String(waxPack ?? "").trim();
+  const waxPackRow = waxPackKey
+    ? `<div class="set-detail-row set-detail-row-checklist"><a href="/waxMuseum.html" class="checklist-view-link" data-wax-pack="${escapeHtml(waxPackKey)}"${interactive ? ' onclick="openWaxPackModal(this); return false;"' : ''}>Wax Pack</a></div>`
     : "";
 
   // Optional - only some sets (the Tim Hortons ones) have a print run,
@@ -181,6 +189,7 @@ function buildCardSetMarkup({
                 <div class="set-detail-row"><strong>Formats:</strong> ${formats}</div>
                 <div class="set-detail-row"><strong>Manufacturer:</strong> ${mfg}</div>
                 ${checklistRow}
+                ${waxPackRow}
                 <div class="set-detail-row"><strong>Rating:</strong> ${cleanStars}</div>
             </div>
         </div>

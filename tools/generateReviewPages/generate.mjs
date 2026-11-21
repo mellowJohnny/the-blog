@@ -429,7 +429,8 @@ function prerenderReview(browser, set, record, pageName, linkFor, checklistItems
       footerImgUrl: `${record.footerImg}${record.footerImgName}`,
       author: record.author, date: record.now, postBody: record.postBody,
       hasChecklist: record.hasChecklist, printRun: record.printRun,
-      checklistHref: checklistPath(set)
+      checklistHref: checklistPath(set),
+      waxPack: record.waxPack
     });
   }
   return { title, body, crumbs: browser.breadcrumbHtml(trail), jsonLd, intro: browser.cardIntroHtml(pageName) };

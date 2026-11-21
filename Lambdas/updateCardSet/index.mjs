@@ -4,6 +4,26 @@ import { UpdateCommand, QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/li
 const client = new DynamoDBClient({ region: "us-east-2" });
 const docClient = DynamoDBDocumentClient.from(client);
 
+// A Wax Museum pack: its 4-digit year, a hyphen, then its packKey slug (saveWaxPack's SLUG_PATTERN).
+const WAX_PACK_PATTERN = /^\d{4}-[a-z0-9]+(-[a-z0-9]+)*$/;
+
+// Optional fields (printRun, waxPack): a value SETs it, blank REMOVEs it, and a payload without the key
+// (an older cached CMS script) leaves it alone, so a stale browser can't wipe a value it never showed.
+// Returns the SET part, the REMOVE part (REMOVE may appear only once) and the values.
+function optionalFieldClauses(payload, fields) {
+  const sets = [], removes = [], values = {};
+  for (const [field, token] of fields) {
+    if (!Object.prototype.hasOwnProperty.call(payload, field)) continue;
+    const value = typeof payload[field] === "string" ? payload[field].trim() : "";
+    if (value) { sets.push(`${field} = ${token}`); values[token] = value; } else { removes.push(field); }
+  }
+  return {
+    setClause: sets.map((part) => `, ${part}`).join(""),
+    removeClause: removes.length ? ` REMOVE ${removes.join(", ")}` : "",
+    values
+  };
+}
+
 // A live set's slug is its page address (/reviews/<slug>/), so two live sets
 // can't share one - the site build would refuse. Returns the name of the live
 // set (other than this one) already using the slug, or null.
@@ -132,20 +152,20 @@ if (payload.postBody) {
       }
     }
 
-    // printRun is optional: blank removes it, but a payload with no
-    // printRun key at all (an older cached CMS script) leaves it alone,
-    // so a stale browser can't wipe a value it never displayed.
-    let printRunClause = "";
-    const printRunValues = {};
-    if (Object.prototype.hasOwnProperty.call(payload, "printRun")) {
-      const printRun = typeof payload.printRun === "string" ? payload.printRun.trim() : "";
-      if (printRun) {
-        printRunClause = ", printRun = :pr";
-        printRunValues[":pr"] = printRun;
-      } else {
-        printRunClause = " REMOVE printRun";
-      }
+    const waxPack = typeof payload.waxPack === "string" ? payload.waxPack.trim() : "";
+    if (waxPack && !WAX_PACK_PATTERN.test(waxPack)) {
+      return {
+        statusCode: 400,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Methods": "OPTIONS,PUT"
+        },
+        body: JSON.stringify({ error: "waxPack must be a pack's year and key, like 1990-o-pee-chee" })
+      };
     }
+
+    const optional = optionalFieldClauses(payload, [["printRun", ":pr"], ["waxPack", ":wp"]]);
 
     const command = new UpdateCommand({
       TableName: "Cards",
@@ -168,7 +188,7 @@ if (payload.postBody) {
             stars = :stz,
             formats = :fmt,
             headerImgName = :hi,
-            footerImgName = :fi${printRunClause}
+            footerImgName = :fi${optional.setClause}${optional.removeClause}
       `,
       ExpressionAttributeValues: {
         ":bs": blogStatus,
@@ -186,7 +206,7 @@ if (payload.postBody) {
         ":fmt": formats,
         ":hi": headerImgName,
         ":fi": footerImgName,
-        ...printRunValues
+        ...optional.values
       }
     });
 

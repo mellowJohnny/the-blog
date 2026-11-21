@@ -157,7 +157,8 @@ function renderCardSetPage() {
       item.downvotes,
       item.hasChecklist,
       item.printRun,
-      item.seoURLSlug ? `${reviewPath(item)}checklist/` : "#"
+      item.seoURLSlug ? `${reviewPath(item)}checklist/` : "#",
+      item.waxPack
     );
     // Populate the page title, meta tags, and structured data
     fetchPageTitle(item);
@@ -278,7 +279,7 @@ function cardSetJsonLd({ setName, author, now, updatedAt, stars, mfg }, descript
  * Function to FORMAT & DISPLAY card sets
  */
 
-   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date,upvotes,downvotes,hasChecklist,printRun,checklistHref)
+   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date,upvotes,downvotes,hasChecklist,printRun,checklistHref,waxPack)
    {
 
     // Voting - keyed by setName+year (Cards table's key). voteKey
@@ -299,7 +300,7 @@ function cardSetJsonLd({ setName, author, now, updatedAt, stars, mfg }, descript
         setName, year, mfg, size, subsets, stars, formats,
         headerImgUrl: `${headerImg}${headerImgName}`,
         footerImgUrl: `${footerImg}${footerImgName}`,
-        author, date, postBody, hasChecklist, printRun, checklistHref
+        author, date, postBody, hasChecklist, printRun, checklistHref, waxPack
     }) + `
         <br>
         <hr/>
@@ -523,6 +524,48 @@ function closeChecklistModal() {
 // Runs however the dialog closed: the × button, Esc, the back gesture or a click outside.
 function onChecklistModalClosed() {
   document.body.classList.remove("checklist-modal-open");
+}
+
+// The review's Wax Pack link: shows the set's pack exactly as The Wax Museum does, front flipping to
+// back, using waxMuseum.js's card builder. data-wax-pack is "<year>-<packKey>"; only that year is fetched.
+function openWaxPackModal(link) {
+  const dialog = document.getElementById("waxPackModal");
+  const body = document.getElementById("waxPackModalBody");
+  const [, year, packKey] = String(link.dataset.waxPack || "").match(/^(\d{4})-(.+)$/) || [];
+  if (!dialog.dataset.closeHooked) {
+    dialog.dataset.closeHooked = "on";
+    enableDialogLightDismiss(dialog); // helper.js
+  }
+  const hideSpinner = showSpinner(body); // helper.js
+  if (!dialog.open) dialog.showModal();
+  if (!year) {
+    hideSpinner();
+    body.innerHTML = "<p class=\"wax-pack-modal-message\">This wax pack couldn't be found.</p>";
+    return;
+  }
+
+  fetch(`${WAX_PACK_GET_URL}?year=${year}`) // waxMuseum.js
+    .then((response) => response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`)))
+    .finally(hideSpinner)
+    .then((packs) => {
+      const pack = (Array.isArray(packs) ? packs : []).find((item) => item.packKey === packKey);
+      body.innerHTML = "";
+      if (pack) {
+        body.appendChild(buildWaxPackCard(pack, 0)); // waxMuseum.js
+        // The card's "Read the review" link is pointless when it leads back to this same review.
+        const here = new URL(document.querySelector('link[rel="canonical"]')?.href || location.href).pathname;
+        const review = body.querySelector(".wax-museum-review");
+        if (review && new URL(review.href).pathname === here) review.remove();
+      } else body.innerHTML = "<p class=\"wax-pack-modal-message\">This wax pack couldn't be found.</p>";
+    })
+    .catch((err) => {
+      console.log("Wax pack fetch failed:", err);
+      body.innerHTML = "<p class=\"wax-pack-modal-message\">Couldn't load the wax pack right now - please try again.</p>";
+    });
+}
+
+function closeWaxPackModal() {
+  document.getElementById("waxPackModal").close();
 }
 
 // A set's own checklist page (/reviews/<slug>/checklist/, built by tools/generateReviewPages): the list ships

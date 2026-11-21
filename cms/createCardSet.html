@@ -228,6 +228,24 @@
                 </td>
               </tr>
               <tr>
+                <!-- Wax Pack link: a type-ahead over The Wax Museum's packs (cmsCardSet.js) -->
+                <td>
+                  <label for="waxPackSearch">Wax Pack</label>
+                  <button type="button" class="seo-generate-btn" id="waxPackClear">Clear</button><br>
+                  <div class="checklist-typeahead-wrap">
+                    <input
+                      type="text"
+                      id="waxPackSearch"
+                      autocomplete="off"
+                      placeholder="Search The Wax Museum">
+                    <ul id="waxPackSuggestions" class="checklist-typeahead-suggestions" role="listbox"></ul>
+                  </div>
+                  <input type="hidden" id="waxPack" value="">
+                  <p class="cms-field-note" id="waxPackNote">No wax pack linked.</p>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
                 <!-- 11th Row -->
                 <td>
                   <label>Header Image</label><br>
@@ -286,7 +304,8 @@
             document.getElementById('footerImgName').value,
             document.getElementById('mfg').value,
             document.getElementById('blogCat').value,
-            document.getElementById('printRun').value
+            document.getElementById('printRun').value,
+            document.getElementById('waxPack').value
         )"
                   >
                     Submit Post

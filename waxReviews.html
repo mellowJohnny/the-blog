@@ -127,6 +127,8 @@
     <script src="/scripts/wax.js" defer></script>
     <script src="/scripts/ticker.js" defer></script>
     <script src="/scripts/helper.js" defer></script>
+    <!-- For the Wax Pack modal: its card builder (buildWaxPackCard()); its gallery code only runs on waxMuseum.html -->
+    <script src="/scripts/waxMuseum.js" defer></script>
 
     <!-- Wait for the DOM, then run the Intro script and start the set fetch right
          away - not on window load, which also waits on fonts, analytics and the ticker -->
@@ -293,6 +295,23 @@
           id="checklistModalPrintFooter"
           class="checklist-modal-print-footer"
         ></div>
+    </dialog>
+
+    <!-- Wax Pack modal: the set's pack from The Wax Museum, opened by openWaxPackModal() in wax.js -->
+    <dialog
+      id="waxPackModal"
+      class="checklist-modal-content wax-pack-modal"
+      aria-label="Wax pack"
+      closedby="any">
+        <div class="checklist-modal-controls">
+          <button
+            type="button"
+            class="checklist-modal-close"
+            aria-label="Close"
+            onclick="closeWaxPackModal()"
+          >&times;</button>
+        </div>
+        <div id="waxPackModalBody"></div>
     </dialog>
   </body>
 </html>

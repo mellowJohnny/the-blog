@@ -5345,6 +5345,20 @@ html.back-to-top-pending.back-to-top-scrolled .back-to-top {
   background: var(--color-white);
 }
 
+/* A review's Wax Pack modal (openWaxPackModal(), wax.js): the checklist modal's box, one museum card wide,
+   holding the same card the museum shows. Tall cards scroll inside the box on short screens. */
+.checklist-modal-content.wax-pack-modal {
+  width: min(400px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 8px 16px 16px;
+  color: var(--color-text-dark);
+}
+
+.wax-pack-modal-message {
+  margin: 8px 0 16px;
+  text-align: center;
+}
+
 /* width: auto never goes past the file's own 900 x 1200, so it's as big as the screen allows without stretching. */
 .figure-modal-img {
   display: block;
