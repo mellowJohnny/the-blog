@@ -59,63 +59,42 @@ const RINK_SPRITES = {
     ".kkQSSSSSkk.", "...kkkkkk..."
   ],
   net: [
-    ".kkkkkkkkkkkkkkkkkkkkkkkk.", "kAAAAAAAAAAAAAAAAAAAAAAAAk", "kACCCCCCCCCCCCCCCCCCCCCBCk",
-    "kACccccccccccccccccccccACk", "kACGceGceGceGceGceGceGcACk", "kACGceGceGceGceGceGceGcACk",
-    "kACGGGIGGIGGIGGIGGIGGIGACk", "kACGccGccGccGccGccGccGcACk", "kACGceGceGceGceGceGceGcACk",
-    "kACGGGIGGIGGIGGIGGIGGIGACk", "kACGccGccGccGccGccGccGcACk", "kACGceGceGceGceGceGceGcACk",
-    "kACGGGIGGIGGIGGIGGIGGIGACk", "kACGccGccGccGccGccGccGcACk", "kACGceGceGceGceGceGceGcACk",
-    "kACGGGIGGIGGIGGIGGIGGIGACk", "kACGccGccGccGccGccGccGcACk", "kACGceGceGceGceGceGceGcACk",
-    "kACkkkkkkkkkkkkkkkkkkkkACk", ".kk....................kk."
+    ".kkkkkkkkkkkkkkkk.", "kAAAAAAAAAAAAAAAAk", "kACCCCCCCCCCCCCBCk", "kACccGccGccGcccACk",
+    "kACceGceGceGceeACk", "kACGGIGGIGGIGGGACk", "kACccGccGccGcccACk", "kACceGceGceGceeACk",
+    "kACGGIGGIGGIGGGACk", "kACccGccGccGcccACk", "kACceGceGceGceeACk", "kACGGIGGIGGIGGGACk",
+    "kACccGccGccGcccACk", "kACkkkkkkkkkkkkACk", ".kk............kk."
   ],
   referee: [
-    ".......kkkkk......", "......kQQQQQk.....", ".....kQRRRRRQk....", ".....kQRRRRSSk....",
-    ".....kJQSSSSJk....", ".....kJJJJJkJk....", ".....kJLLLLJMk....", ".....kJLLLLMMk....",
-    "....kkkJMMMMkk....", "...kGQGQGQGQGGk...", "..kGHGIQGQGQGHGk..", ".kkGIIIQGQGQGHIk..",
-    "kZZZGQGQGQGQGHIk..", "kZbbGQGQGQGQGHHGk.", ".kGGIQGQGQGQGHHIk.", ".kGHIQGQGQGQGHHIk.",
-    ".kGHIQGQGQGQGHHIk.", "kGIHIQGQGQGQGHIIGk", "kGJGIQGQGQGQGIIJGk", "kJMJGQGQGQGQGIJMJk",
-    ".kJkGQGQGQGQGIkJk.", "..kkGQGQGQGQGIkk..", "....kQQSkkQRQk....", "....kQRSkkQRSk....",
-    "...kQRRSkkQRRQk...", "...kQRRSkkQRRSk...", "...kQRRSkkQRRSk...", "...kQRSSkkQRRSk...",
-    "...kQRSkk.kQRSkk..", "..kQRRRQQkQRRRQQk.", "..kQSSSSSkQSSSSSk.", "...kTkkkTkkTkkkTk.",
-    "...kTTTTVkkTTTTVk.", "....kkkkk..kkkkk.."
+    "....kkkkk....", "...kQQQQQk...", "...kQRRRSk...", "...kQSSSSk...",
+    "...kJJJJkk...", "...kJLLMJk...", "...kkJMMkk...", "..kGQGQGQGk..",
+    ".kGIGIQGGHGk.", "kZZGQGQGQGIk.", ".kGIQGQGQGIk.", "kGHIQGQGQGHGk",
+    "kGIIQGQGQGIIk", "kJkGQGQGQGkJk", ".kkGQGQGQGkk.", "..kGQGQGQGk..",
+    "...kQQkQSk...", "..kQRSkQRQk..", "..kQRSkQRSkk.", ".kQRRRQRRRQQk",
+    ".kQSSSSSSSSSk", "..kTkkTkTkkTk", "..kTTTVkTTTVk", "...kkkk.kkkk."
   ],
   goalie: [
-    "...............kkkk...............", "..............kGGGGk..............",
-    ".............kGHHHHGk...kk........", "............kGIIIIIIGk.kNNk.......",
-    "............kGIQGQGQGk..kNNk......", "............kGIQGQGQGk...kNNk.....",
-    ".........kkkkGIQGQGQGkkkk.kNNk....", "........kDDDAAGGHGIGAADDDkkkNNk...",
-    ".......kDEEFABAGIIIABCDEEDDkkWWk..", ".....kkDEEFFABBAAAABBCDFEEFDWXXWk.",
-    ".kkkkDDEEFFACCCCCCCCCCAkDEFWXXXXWk", "kGGGGGDFFFGGGGGGGGGGGGGGkDFWXXXXYk",
-    "kGHHHIDFkAGIIIIIIIIIIIIIkkkWXXXYYk", "kGHHHIDkkAAAAAAAAAAAAAAAk..kWXYYk.",
-    "kGHHHIk.kABBBBBBBBBBBBBCkk..kWYk..", "kGIIIIkkGACBCCCCCCCCCBCCGGk..kk...",
-    ".kkkkkkkGGGACGGGkkGGGACGHIkkkkkkk.", "kGGGAAGGHHIACGHIkkGHIACGHHGGAAGGGk",
-    "kGHIACGHHHIACGHIkkGHIACGHHHIACGHIk", "kGHIACGHHHIACGHIkkGHIACGHHHIACGHIk",
-    "kGHIACGHHHIACGHIkkGHIACGHHHIACGHIk", "kGIIACGIIIIACGIIkkGIIACGIIIIACGIIk",
-    ".kkkkkkkkkkkkkkk..kkkkkkkkkkkkkkk."
+    "..........kkkk..........", ".........kGGGGk..k......", "........kGIIIIGkkNkk....",
+    "........kGIQGQGk.kNNk...", ".......kkGIQGQGkk.kNNk..", ".....kkDAAGGIGAADkkkNNk.",
+    "....kDDFDAAAAACDEDDkWWNk", ".kkkDEFFACCCCCCADEFWXXWk", "kGGGDFFGGGGGGGGGGDFWXXYk",
+    "kGHIDFAAAAAAAAAAAkkWXYYk", "kGHIkkACCCCCCCCCCGkkWYk.", "kGIIGGGGAGGkkGGAGHGGAGGk",
+    "kGIAGHHIAGIkkGIAGHHIAGIk", "kGIAGHHIAGIkkGIAGHHIAGIk", "kGIAGIIIAGIkkGIAGIIIAGIk",
+    ".kkkkkkkkkk..kkkkkkkkkk."
   ],
   // Side view, driving left: the snow tank up front, the seat and wheel behind it, and the
   // conditioner box trailing on the ice at the back.
   zamboni: [
-    "....kkkkkkkkkkkkkkkkkkkkkkkkkkkk........kQQk....", "...kGGGGGGGGGGGGGGGGGGGGGGGGGGGGk....kkkkQSk....",
-    "..kGHHHHHHHHHHHHHHHHHHHHHHHHHHHIGkkkkQQQQRSk....", ".kGHHHHHHHHHHHHHHHHHHHHHHHHHHHHIQQQQkQRRRRSk....",
-    "kGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHGQSkDQSSSSSk....", "kGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHGQkDDDkkkk.....",
-    "kGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHIQkDEFk........", "kGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHIQQDEFk........",
-    "kGIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIGQDEFkkkk.....", "kDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDEEEDDDDk....",
-    "kDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFk....", "kDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFk....",
-    "kDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFk....", "kDEEEEFFFFFFEEEEEEEEEEEEEEEFFFFFFEEEEEEEEEFk....",
-    "kDEEEFFfffffDEEEEEEEEEEEEEFFfffffDEEEEEEEEFk....", "kDEEFFfghhggfDEEEEEEEEEEEFFfghhggfDEEEEEEEFk....",
-    "kDFFFfghhTfggfDFFFFFFFFFFFfghhTfggfDFFFFFFFkkkk.", ".kkkkfhhTUTfghkkkkkkkkkkkkfhhTUTfghkkkQQQQQQQQQk",
-    "....kfhTUUVTfhk..........kfhTUUVTfhk.kQRRRRRRRSk", "....kfgfTVVfghk..........kfgfTVVfghk.kQRRRRRRRSk",
-    "....kfggfTfghhk..........kfggfTfghhk.kQRRRRRRRSk", ".....kfggfghhk............kfggfghhk..kQSSSSSSSSk",
-    "......kfhhhhk..............kfhhhhk...kTTTTTTTTTk", ".......kkkkk................kkkkk.....kkkkkkkkk."
+    ".kkkkkkkkkkkkkkkkkkkkk.....kQQk...", "kGGGGGGGGGGGGGGGGGGGGGkk..kkQSk...", "kGHHHHHHHHHHHHHHHHHHHHGQkkQQRSk...",
+    "kGHHHHHHHHHHHHHHHHHHHHIQkDQSSSk...", "kGHHHHHHHHHHHHHHHHHHHHIkQDDkkk....", "kGIIIIIIIIIIIIIIIIIIIIIGQDFkkk....",
+    "kDDDDDDDDDDDDDDDDDDDDDDDDEEDDDk...", "kDEEEEEEEEEEEEEEEEEEEEEEEEEEEFk...", "kDEEEEEEEEEEEEEEEEEEEEEEEEEEEFk...",
+    "kDEFFFFFFEEEEEEEEEFFFFFFEEEEEFk...", "kDEFfffffDEEEEEEEEFfffffDEEEEFk...", "kDFFfhhhhDFFFFFFFFFfhhhhDFFFFFkkk.",
+    ".kkfhTTTffkkkkkkkkfhTTTffkkQQQQQQk", "..kfhTVVfhk......kfhTVVfhkkQRRRRSk", "...kffffhk........kffffhk.kQSSSSSk",
+    "...kfhhhhk........kfhhhhk.kTTTTTTk", "....kkkkk..........kkkkk...kkkkkk."
   ],
   sticks: [
-    "kQQQk............kQQQk", "kQRSk............kQRSk", "kQSSNk..........kNQSSk",
-    ".kkNPk..........kNNkk.", "...kNNk........kNPk...", "....kNNk......kNPk....",
-    ".....kNNk....kNPk.....", "......kNNk..kNPk......", "......kNONkkNPPk......",
-    ".......kNONNPPk.......", "........kNOPPk........", ".........kNPk.........",
-    "........kNPPNk........", ".......kNPkkNNk.......", "......kNPk..kNNk......",
-    ".....kNPk....kNNk.....", ".kkkkNOPk....kNONkkkk.", "kNNNNOOPk....kNOONNNNk",
-    "kNPPPPPPk....kNPPPPPPk", ".kkkkkkk......kkkkkkk."
+    ".kQQk.......kQQk.", ".kQSk.......kQSk.", "..kNNk.....kNNk..", "...kNNk...kNPk...",
+    "....kNNk.kNPk....", ".....kNNkNPk.....", "......kNNPk......", "......kNPPk......",
+    ".....kNPkNNk.....", "....kNPk.kNNk....", ".kkkNPk...kNNkkk.", "kNNNOPk...kNONNNk",
+    "kNPPPPk...kNPPPPk", ".kkkkk.....kkkkk."
   ]
 };
 
@@ -238,11 +217,13 @@ function initRinkRunner(canvasId) {
     obstacles.forEach((o) => ctx.drawImage(o.img, Math.round(o.x), RINK_ICE_Y - o.img.height));
     const frame = skater.y > 0 || state !== "running" ? art.skaterA : (Math.floor(stride / 40) % 2 ? art.skaterB : art.skaterA);
     const top = RINK_ICE_Y - skater.y - skater.h;
-    if (state === "over") {                                                       // knocked flat on the ice
+    if (state === "over") {                                                       // tripped: tipped forward over his toes
       ctx.save();
-      ctx.translate(skater.x + skater.h, RINK_ICE_Y - skater.w);
-      ctx.rotate(Math.PI / 2);
-      ctx.drawImage(frame, 0, 0);
+      const toe = 26 * RINK_PIXEL;                                               // front skate's toe, the pivot
+      ctx.beginPath(); ctx.rect(0, 0, RINK_W, RINK_ICE_Y); ctx.clip();           // the stick stays above the ice
+      ctx.translate(skater.x + toe, RINK_ICE_Y);
+      ctx.rotate(0.9);
+      ctx.drawImage(frame, -toe, -skater.h);
       ctx.restore();
     } else {
       ctx.drawImage(frame, skater.x, Math.round(top));
