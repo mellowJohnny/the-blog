@@ -2,77 +2,138 @@
  * obstacles that slide in on the ice; Space, Up or a click jumps (hold for a higher jump).
  * Everything is drawn from the pixel grids below; initRinkRunner() is the only entry point. */
 
-// One character per pixel; "." is transparent. Monochrome: "S" and "o" are cut-outs in the page
-// colour (faces, stripes), every other letter is drawn in the one dark ink.
-const RINK_INK = "#535353";
-const RINK_CUTOUTS = "So";
+// Full-colour sprites: one character per pixel, "." is transparent. Each colour has a light, mid
+// and dark tone (red A-C, blue D-F, white G-I, skin J-M, wood N-P, black Q-S, steel T-V, glove W-Y,
+// orange Z-b, net c-e, tyre f-h), and "k" is the dark outline around every sprite.
+const RINK_PALETTE = {
+  A: "#e8444b", B: "#b8182e", C: "#7c0f22", D: "#4f78e0", E: "#2a45a8", F: "#19296b",
+  G: "#ffffff", H: "#e3e7ef", I: "#a9b2c4", J: "#ffd8ad", L: "#f2b27e", M: "#c97f4e",
+  N: "#f1c477", O: "#d39a4b", P: "#9a6528", Q: "#5a5c68", R: "#33343d", S: "#1d1e24",
+  T: "#ffffff", U: "#c5ccd6", V: "#8792a3", W: "#8a5a3c", X: "#5e3a26", Y: "#3d2418",
+  Z: "#ffb347", a: "#f28c1e", b: "#b85f0c", c: "#ffffff", d: "#f1f3f7", e: "#cfd5df",
+  f: "#4a4b55", g: "#2b2c33", h: "#18191e", k: "#1a1420"
+};
+const RINK_INK = "#535353";                    // the ice line, scratches and score text
 
 const RINK_SPRITES = {
   // Side view, leaning into the stride, stick out in front with the blade on the ice.
   // A: back leg pushing out behind. B: legs gathered under him for the next push.
   skaterA: [
-    ".............KKK........", "............KKKKK.......", "............KKKSS.......", ".............KSSS.......",
-    "..........KKKK..........", ".........KKKKK..........", "........KKKKKoKK........", ".......KKKKKKKoKK.......",
-    "......KKKKKKK..KKK......", ".....KKKKKKK....KK......", ".....KKKKKKK......K.....", ".....KKKKKKKK.....K.....",
-    "....KKKKKKKKK......K....", "...KKK....KKK.......K...", "..KKK......KK.......K...", "..KK.......KK........K..",
-    "KKK......KKKKKK......KKK"
+    "........................kkk..................", "......................kkAAAkk................",
+    ".....................kAABBBAAk...............", "....................kABBBBBBBAk..............",
+    "....................kACCCCCCCCk..............", "....................kDDDDDDDDDDk.............",
+    ".................kkkkAAAAAJJkJk..............", "...............kkDDDABBBBCJLJMk..............",
+    "..............kDDFFABBBBBCJLLMk..............", "..............kDFAABBBBBBCJMMMk..............",
+    "..............kAABBBBBBBCCkkkk...............", ".............kABBBBBBBBCCk...................",
+    "............kABBBBBBBBBCGGk..................", "...........kABBBBBBBBCCCGHGk.................",
+    "..........kABBBBBBBBBCkAAGIAk................", ".........kABBBBBBBBBCCkkAAABAk...............",
+    "........kACCBBBBBBBCCk..kABCCWk..............", "........kDGGACCBBBBCk....kACWXWk.............",
+    "........kDGIGGGACCCCk.....kWXXYWk............", ".......kkDDDGIIGGGADk......kWYYk.............",
+    "......kDDEEEDDDGIIGGDkk.....kWNNk............", ".....kDFFEEEEEEDDDGIDDDk.....kkNNk...........",
+    "....kDAAADEFFFFFFEDDAAADk......kNNk..........", "...kAACBCDFFkkkkkDFFACCDk.......kNNk.........",
+    "..kAGGGACDFk.....kDGGGGDk........kNNk........", ".kACGIIADkk.......kGIIIk..........kNNk.......",
+    "kQQQQQQkk........kQQQQQQk..........kNNk......", "kQSSSSSQk........kQSSSSSQk..........kNNk.....",
+    ".kkkkkkk..........kkkkkkk...........kNONkkkk.", ".kTkkkTk..........kTkkkTk............kNONNNNk",
+    ".kTTTTVTk.........kTTTTVTk...........kNPPPPPk", "..kkkkkk...........kkkkkk.............kkkkkk."
   ],
   skaterB: [
-    ".............KKK........", "............KKKKK.......", "............KKKSS.......", ".............KSSS.......",
-    "..........KKKK..........", ".........KKKKK..........", "........KKKKKoKK........", ".......KKKKKKKoKK.......",
-    "......KKKKKKK..KKK......", ".....KKKKKKK....KK......", ".....KKKKKK.......K.....", ".....KKKKKKK......K.....",
-    ".....KKKKKKK.......K....", ".....KK..KKK........K...", "....KKK..KKK........K...", "....KK...KK..........K..",
-    "..KKKKKKKKKKK........KKK"
+    "........................kkk..................", "......................kkAAAkk................",
+    ".....................kAABBBAAk...............", "....................kABBBBBBBAk..............",
+    "....................kACCCCCCCCk..............", "....................kDDDDDDDDDDk.............",
+    ".................kkkkAAAAAJJkJk..............", "...............kkDDDABBBBCJLJMk..............",
+    "..............kDDFFABBBBBCJLLMk..............", "..............kDFAABBBBBBCJMMMk..............",
+    "..............kAABBBBBBBCCkkkk...............", ".............kABBBBBBBBCCk...................",
+    "............kABBBBBBBBBCGGk..................", "...........kABBBBBBBBCCCGHGk.................",
+    "..........kABBBBBBBBBCkAAGIAk................", ".........kABBBBBBBBBCCkkAAABAk...............",
+    "........kACCBBBBBBBCCk..kABCCWk..............", "........kDGGACCBBBBCk....kACWXWk.............",
+    "........kDGIGGGACCCCk.....kWXXYWk............", "........kDDDGIIGGGADk......kWYYk.............",
+    ".........kDEDDDGIIGGk.......kWNNk............", ".........kDFFEEDDDGIDk.......kkNNk...........",
+    "........kDAAADFFFFAAADk........kNNk..........", "........kACCCDkkDACCCDk.........kNNk.........",
+    ".......kGGGGADk.kGGGADk..........kNNk........", "......kAGIIIDk.kAGIIDk............kNNk.......",
+    ".....kQQQQQQk.kQQQQQQk.............kNNk......", ".....kQSSSSSQkkQSSSSSQk.............kNNk.....",
+    "......kkkkkkk..kkkkkkk..............kNONkkkk.", "......kTkkkTk..kTkkkTk...............kNONNNNk",
+    "......kTTTTVTk.kTTTTVTk..............kNPPPPPk", ".......kkkkkk...kkkkkk................kkkkkk."
   ],
-  puck: [".KKKKKK.", "KKKKKKKK", ".KKKKKK."],
+  puck: [
+    "...kkkkkk...", ".kkQQQQQQkk.", "kQQRRRRRRQQk", "kQSRRRRRSSSk",
+    ".kkQSSSSSkk.", "...kkkkkk..."
+  ],
   net: [
-    "RRRRRRRRRRRRRRRR", "R.W.W.W.W.W.W.WR", "RW.W.W.W.W.W.W.R", "R.W.W.W.W.W.W.WR",
-    "RW.W.W.W.W.W.W.R", "R.W.W.W.W.W.W.WR", "RW.W.W.W.W.W.W.R", "R.W.W.W.W.W.W.WR",
-    "RW.W.W.W.W.W.W.R", "R..............R"
+    ".kkkkkkkkkkkkkkkkkkkkkkkk.", "kAAAAAAAAAAAAAAAAAAAAAAAAk", "kACCCCCCCCCCCCCCCCCCCCCBCk",
+    "kACccccccccccccccccccccACk", "kACGceGceGceGceGceGceGcACk", "kACGceGceGceGceGceGceGcACk",
+    "kACGGGIGGIGGIGGIGGIGGIGACk", "kACGccGccGccGccGccGccGcACk", "kACGceGceGceGceGceGceGcACk",
+    "kACGGGIGGIGGIGGIGGIGGIGACk", "kACGccGccGccGccGccGccGcACk", "kACGceGceGceGceGceGceGcACk",
+    "kACGGGIGGIGGIGGIGGIGGIGACk", "kACGccGccGccGccGccGccGcACk", "kACGceGceGceGceGceGceGcACk",
+    "kACGGGIGGIGGIGGIGGIGGIGACk", "kACGccGccGccGccGccGccGcACk", "kACGceGceGceGceGceGceGcACk",
+    "kACkkkkkkkkkkkkkkkkkkkkACk", ".kk....................kk."
   ],
   referee: [
-    "...KKKK...", "..KKKKKK..", "...SSSS...", "...SKSK...", "...SSSS...",
-    "..KoKoKoK.", ".SKoKoKoKS", ".SKoKoKoKS", "..KoKoKoK.", "..KoKoKoK.",
-    "..KKKKKKK.", "..KKK.KKK.", "..KKK.KKK.", "..KKK.KKK.", "..KK...KK.",
-    "..WW...WW.", ".GGG..GGG."
+    ".......kkkkk......", "......kQQQQQk.....", ".....kQRRRRRQk....", ".....kQRRRRSSk....",
+    ".....kJQSSSSJk....", ".....kJJJJJkJk....", ".....kJLLLLJMk....", ".....kJLLLLMMk....",
+    "....kkkJMMMMkk....", "...kGQGQGQGQGGk...", "..kGHGIQGQGQGHGk..", ".kkGIIIQGQGQGHIk..",
+    "kZZZGQGQGQGQGHIk..", "kZbbGQGQGQGQGHHGk.", ".kGGIQGQGQGQGHHIk.", ".kGHIQGQGQGQGHHIk.",
+    ".kGHIQGQGQGQGHHIk.", "kGIHIQGQGQGQGHIIGk", "kGJGIQGQGQGQGIIJGk", "kJMJGQGQGQGQGIJMJk",
+    ".kJkGQGQGQGQGIkJk.", "..kkGQGQGQGQGIkk..", "....kQQSkkQRQk....", "....kQRSkkQRSk....",
+    "...kQRRSkkQRRQk...", "...kQRRSkkQRRSk...", "...kQRRSkkQRRSk...", "...kQRSSkkQRRSk...",
+    "...kQRSkk.kQRSkk..", "..kQRRRQQkQRRRQQk.", "..kQSSSSSkQSSSSSk.", "...kTkkkTkkTkkkTk.",
+    "...kTTTTVkkTTTTVk.", "....kkkkk..kkkkk.."
   ],
   goalie: [
-    ".......WWWW.........", "......WoWoWW........", "......WWWWWW........", ".....RRRRRRRR....KK.",
-    "...BBRRooooRRBB..BBB", "..BBBRRRRRRRRBBB.BBB", ".BBB.RRRRRRRR.BBB...", ".....RRRRRRRR.......",
-    "...WWWWWW..WWWWWW...", "..WWooWWW..WWWooWW..", ".WWWooWWW..WWWooWWW.", "WWWWWWWW....WWWWWWWW",
-    "WWWWWWW......WWWWWWW"
+    "...............kkkk...............", "..............kGGGGk..............",
+    ".............kGHHHHGk...kk........", "............kGIIIIIIGk.kNNk.......",
+    "............kGIQGQGQGk..kNNk......", "............kGIQGQGQGk...kNNk.....",
+    ".........kkkkGIQGQGQGkkkk.kNNk....", "........kDDDAAGGHGIGAADDDkkkNNk...",
+    ".......kDEEFABAGIIIABCDEEDDkkWWk..", ".....kkDEEFFABBAAAABBCDFEEFDWXXWk.",
+    ".kkkkDDEEFFACCCCCCCCCCAkDEFWXXXXWk", "kGGGGGDFFFGGGGGGGGGGGGGGkDFWXXXXYk",
+    "kGHHHIDFkAGIIIIIIIIIIIIIkkkWXXXYYk", "kGHHHIDkkAAAAAAAAAAAAAAAk..kWXYYk.",
+    "kGHHHIk.kABBBBBBBBBBBBBCkk..kWYk..", "kGIIIIkkGACBCCCCCCCCCBCCGGk..kk...",
+    ".kkkkkkkGGGACGGGkkGGGACGHIkkkkkkk.", "kGGGAAGGHHIACGHIkkGHIACGHHGGAAGGGk",
+    "kGHIACGHHHIACGHIkkGHIACGHHHIACGHIk", "kGHIACGHHHIACGHIkkGHIACGHHHIACGHIk",
+    "kGHIACGHHHIACGHIkkGHIACGHHHIACGHIk", "kGIIACGIIIIACGIIkkGIIACGIIIIACGIIk",
+    ".kkkkkkkkkkkkkkk..kkkkkkkkkkkkkkk."
   ],
   // Side view, driving left: the snow tank up front, the seat and wheel behind it, and the
   // conditioner box trailing on the ice at the back.
   zamboni: [
-    "..WWWWWWWWWWWWWWWWWW..........KK..", ".WWWWWWWWWWWWWWWWWWWW.........KK..",
-    "WWWWWWWWWWWWWWWWWWWWWW.....K..KK..", "WWWWWWWWWWWWWWWWWWWWWWW.....K.KK..",
-    "WWWWWWWWWWWWWWWWWWWWWWWW....KKKKK.", "WooooooooooooooooooooooWWWWWWWWWW.",
-    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.", "WW.........WWWWWW.........WWWWWWW.",
-    "WW..KKKKK..WWWWWW..KKKKK..WWWWWWW.", "WW.KKoooKK.WWWWWW.KKoooKK.WWWWWWW.",
-    ".W.KoKKKoK.WWWWWW.KoKKKoK.WWWWWWWW", "...KoKKKoK........KoKKKoK.WooooooW",
-    "...KKoooKK........KKoooKK.WooooooW", "....KKKKK..........KKKKK..WWWWWWWW"
+    "....kkkkkkkkkkkkkkkkkkkkkkkkkkkk........kQQk....", "...kGGGGGGGGGGGGGGGGGGGGGGGGGGGGk....kkkkQSk....",
+    "..kGHHHHHHHHHHHHHHHHHHHHHHHHHHHIGkkkkQQQQRSk....", ".kGHHHHHHHHHHHHHHHHHHHHHHHHHHHHIQQQQkQRRRRSk....",
+    "kGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHGQSkDQSSSSSk....", "kGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHGQkDDDkkkk.....",
+    "kGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHIQkDEFk........", "kGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHIQQDEFk........",
+    "kGIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIGQDEFkkkk.....", "kDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDEEEDDDDk....",
+    "kDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFk....", "kDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFk....",
+    "kDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFk....", "kDEEEEFFFFFFEEEEEEEEEEEEEEEFFFFFFEEEEEEEEEFk....",
+    "kDEEEFFfffffDEEEEEEEEEEEEEFFfffffDEEEEEEEEFk....", "kDEEFFfghhggfDEEEEEEEEEEEFFfghhggfDEEEEEEEFk....",
+    "kDFFFfghhTfggfDFFFFFFFFFFFfghhTfggfDFFFFFFFkkkk.", ".kkkkfhhTUTfghkkkkkkkkkkkkfhhTUTfghkkkQQQQQQQQQk",
+    "....kfhTUUVTfhk..........kfhTUUVTfhk.kQRRRRRRRSk", "....kfgfTVVfghk..........kfgfTVVfghk.kQRRRRRRRSk",
+    "....kfggfTfghhk..........kfggfTfghhk.kQRRRRRRRSk", ".....kfggfghhk............kfggfghhk..kQSSSSSSSSk",
+    "......kfhhhhk..............kfhhhhk...kTTTTTTTTTk", ".......kkkkk................kkkkk.....kkkkkkkkk."
   ],
   sticks: [
-    "K..........K", ".K........K.", "..K......K..", "...K....K...", "....K..K....",
-    ".....KK.....", "....K..K....", "...K....K...", ".KK......KK.", "KK........KK"
+    "kQQQk............kQQQk", "kQRSk............kQRSk", "kQSSNk..........kNQSSk",
+    ".kkNPk..........kNNkk.", "...kNNk........kNPk...", "....kNNk......kNPk....",
+    ".....kNNk....kNPk.....", "......kNNk..kNPk......", "......kNONkkNPPk......",
+    ".......kNONNPPk.......", "........kNOPPk........", ".........kNPk.........",
+    "........kNPPNk........", ".......kNPkkNNk.......", "......kNPk..kNNk......",
+    ".....kNPk....kNNk.....", ".kkkkNOPk....kNONkkkk.", "kNNNNOOPk....kNOONNNNk",
+    "kNPPPPPPk....kNPPPPPPk", ".kkkkkkk......kkkkkkk."
   ]
 };
 
 const RINK_OBSTACLES = ["puck", "net", "referee", "goalie", "zamboni", "sticks"];
-const RINK_PIXEL = 3;                          // each grid cell is a 3x3 block on the 600x180 canvas
+const RINK_PIXEL = 2;                          // each grid cell is a 2x2 block on the 600x180 canvas
+const RINK_REACH = 32;                         // grid columns from the skater's back to his glove; the stick beyond doesn't collide
 const RINK_W = 600, RINK_H = 180, RINK_ICE_Y = 165;
 const RINK_BEST_KEY = "rinkRunnerBest";
 
 // A grid turned into an offscreen canvas once, drawn from then on with drawImage.
-function rinkSprite(rows, paper) {
+function rinkSprite(rows) {
   const canvas = document.createElement("canvas");
   canvas.width = rows[0].length * RINK_PIXEL;
   canvas.height = rows.length * RINK_PIXEL;
   const ctx = canvas.getContext("2d");
   rows.forEach((row, y) => [...row].forEach((cell, x) => {
     if (cell === ".") return;
-    ctx.fillStyle = RINK_CUTOUTS.includes(cell) ? paper : RINK_INK;
+    ctx.fillStyle = RINK_PALETTE[cell];
     ctx.fillRect(x * RINK_PIXEL, y * RINK_PIXEL, RINK_PIXEL, RINK_PIXEL);
   }));
   return canvas;
@@ -94,8 +155,7 @@ function initRinkRunner(canvasId) {
   canvas.height = RINK_H;
   ctx.imageSmoothingEnabled = false;
   const status = document.getElementById(`${canvasId}Status`);
-  const paper = getComputedStyle(document.body).backgroundColor;   // cut-outs match the page, so no box shows
-  const art = Object.fromEntries(Object.entries(RINK_SPRITES).map(([name, rows]) => [name, rinkSprite(rows, paper)]));
+  const art = Object.fromEntries(Object.entries(RINK_SPRITES).map(([name, rows]) => [name, rinkSprite(rows)]));
   // Skate scratches under the ice line, scattered once and scrolled past like the ground in a runner game.
   const scratches = Array.from({ length: 18 }, () => ({
     x: Math.random() * RINK_W, y: RINK_ICE_Y + 4 + Math.floor(Math.random() * 3) * 4, w: 2 + Math.floor(Math.random() * 3) * 2
@@ -126,7 +186,7 @@ function initRinkRunner(canvasId) {
 
   // Forgiving boxes: a few pixels in from each sprite's edge, and the stick out front doesn't count.
   function hits(o) {
-    const sx = skater.x + 6, sw = skater.w - 6 - 7 * RINK_PIXEL, sTop = RINK_ICE_Y - skater.y - skater.h + 4;
+    const sx = skater.x + 6, sw = RINK_REACH * RINK_PIXEL - 12, sTop = RINK_ICE_Y - skater.y - skater.h + 4;
     const ox = o.x + 3, ow = o.img.width - 6, oTop = RINK_ICE_Y - o.img.height + 3;
     return sx < ox + ow && sx + sw > ox && RINK_ICE_Y - skater.y > oTop && sTop < RINK_ICE_Y;
   }
