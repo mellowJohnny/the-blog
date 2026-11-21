@@ -4,14 +4,15 @@
 
 // Full-colour sprites: one character per pixel, "." is transparent. Each colour has a light, mid
 // and dark tone (red A-C, blue D-F, white G-I, skin J-M, wood N-P, black Q-S, steel T-V, glove W-Y,
-// orange Z-b, net c-e, tyre f-h), and "k" is the dark outline around every sprite.
+// orange Z-b, net c-e, tyre f-h, mustard i-l, sausage m-o), and "k" is the dark outline around every sprite.
 const RINK_PALETTE = {
   A: "#e8444b", B: "#b8182e", C: "#7c0f22", D: "#4f78e0", E: "#2a45a8", F: "#19296b",
   G: "#ffffff", H: "#e3e7ef", I: "#a9b2c4", J: "#ffd8ad", L: "#f2b27e", M: "#c97f4e",
   N: "#f1c477", O: "#d39a4b", P: "#9a6528", Q: "#5a5c68", R: "#33343d", S: "#1d1e24",
   T: "#ffffff", U: "#c5ccd6", V: "#8792a3", W: "#8a5a3c", X: "#5e3a26", Y: "#3d2418",
   Z: "#ffb347", a: "#f28c1e", b: "#b85f0c", c: "#ffffff", d: "#f1f3f7", e: "#cfd5df",
-  f: "#4a4b55", g: "#2b2c33", h: "#18191e", k: "#1a1420"
+  f: "#4a4b55", g: "#2b2c33", h: "#18191e", i: "#ffe45c", j: "#f5c518", l: "#c4940a",
+  m: "#e2774f", n: "#b9472b", o: "#7c2a16", k: "#1a1420"
 };
 const RINK_INK = "#535353";                    // the ice line, scratches and score text
 
@@ -76,11 +77,11 @@ const RINK_SPRITES = {
   ],
   goalie: [
     "...........kkkk...........", "..........kGGGGk..........", ".........kGHHHHGk.........", ".........kGIIIIIGk........",
-    ".........kGIQGQQGk........", ".........kGIQGQSGk........", "......kkkkGIQGQSkkk.......", ".....kAAAAAGGIGAAAAkk.....",
-    "....kDDDABBAAAABBCDDDk....", "...kDEFFABBBBBBBBCDEEDk...", "...kDEFABBBBBBBBBBADFFDk..", ".kkDFFFACCCCCCCCCCCADWWWk.",
-    "kGGGGDGGGGGGGGGGGGGAWXXXWk", "kGHHIkAAAAAAAAAAAAACWXXXYk", "kGHHIABBBBBBBBBBBBBCWXXXYk", "kGHHIACCCCCCCCCCCCCCkWYYYk",
-    "kGIIIkDDDDDDDDDDDDDk.kkkk.", "kGNNGkDFFFFEEFFFFFFk......", ".kNPkGGGGGGDFFGGGGGGk.....", ".kNPkGIIIIIkkkGIIIIIk.....",
-    "..kNkAAAAAAk.kAAAAAAk.....", "..kNNACCCCCk.kACCCCCk.....", "..kNPGGGGGGk.kGGGGGGk.....", "..kNPAAAAAAkkkAAAAAAk.....",
+    ".........kGIQGQQGk........", ".........kGIQGQSGk........", "......kkkkGIQGQSkkk.......", ".....kDGGGIIGIGGGGGkk.....",
+    "....kDEDDDDDDDDDDDDDDk....", "...kDEEEEEEEEEEEEEEEEDk...", "...kDEFFFFFFFFFFFFFFFFDk..", ".kkDFFFGGGGGGGGGGGGGDWWWk.",
+    "kGGGGDGIIIIIIIIIIIIIWXXXWk", "kGHHIkDDDDDDDDDDDDDDWXXXYk", "kGHHIDEEEEEEEEEEEEEFWXXXYk", "kGHHIDEEEEEEEEEEEEFFkWYYYk",
+    "kGIIIkDEEEEEEEEEEEFk.kkkk.", "kGNNGkDFFFFEEFFFFFFk......", ".kNPkGGGGGGDFFGGGGGGk.....", ".kNPkGIIIIIkkkGIIIIIk.....",
+    "..kNkDDDDDDk.kDDDDDDk.....", "..kNNDFFFFFk.kDFFFFFk.....", "..kNPGGGGGGk.kGGGGGGk.....", "..kNPDDDDDDkkkDDDDDDk.....",
     "..kNONNNNNNNNkGGGGGGk.....", "...kNPPPPPPPPkTTTTTTk.....", "....kkkkkkkkk.kkkkkk......"
   ],
   // Side view, driving left: the snow tank up front, the seat and wheel behind it, and the
@@ -102,10 +103,33 @@ const RINK_SPRITES = {
     ".....kNNk..kNPk.....", "......kNNkkNPPk.....", ".......kNNNPPk......", "........kNOPk.......", ".......kNPPPk.......",
     "......kNPPkNNk......", ".....kNPPk.kNNk.....", ".kkkkNPPk...kNNkkkk.", "kNNNNOPk....kNONNNNk", "kNOOOOPk....kNOOOOPk",
     "kNPPPPPk....kNPPPPPk", ".kkkkkk......kkkkkk."
+  ],
+  // A shaggy orange team mascot: blue cap, googly eyes, red jersey with the stripes, big sneakers.
+  mascot: [
+    ".......kkkkkkk........", "......kDDDDDDDk.......", "......kDFEEFFFDk......", "......kZGDFFGGZk......", "....kkZGIGGGIIGZk.....",
+    "...kZZbGIkGHIkGZZk....", "....kZbGIGZGIGZbk.....", "....kZaZZGGHIZabZk....", "..kkkZabGHHIIZabkkkk..", ".kZZkZaaZGIIZabbZZZZk.",
+    ".kZaZkZaaZZZabbkkZabk.", ".kZabAAZaaaabbAAAZabk.", "kZaabABAZbbbbABCCZaaZk", "kZaabABBAAAAABBCZaaabk", "kZaabABBBBBBBBBCZaabbk",
+    "kZabbACCCCCCCCCCAZabk.", ".kZbGGGGGGGGGGGGGGZbk.", "..kADDDDDDDDDDDDDDkk..", "..kAGGGGGGGGGGGGGGk...", "..kAAAAAAAAAAAAAAk....",
+    "..kABBBBBBBBBBBBCk....", "..kACCCCCCCCCCCCCAk...", "...kkkZZZZkZZZZZkk....", "....kZbbbbZkZbbbZk....", "...kDDGDDDkkDDGGDDk...",
+    "...kDEDEEFkkDEDDEFk...", "...kDEEEEFkkDEEEEFk...", "...kDFFFFFkkDFFFFFk...", "...kGGGGGGkkGGGGGGk...", "....kkkkkk..kkkkkk...."
+  ],
+  // Arena snacks: a red-and-white striped bag heaped with buttery popcorn, and a hot dog with mustard.
+  popcorn: [
+    "........kkk......", ".....kkkGGGkkk...", "....kcccGIHGGGk..", "....kcdeiiGHHIkk.", "...kkcddciGIHIcck",
+    "..kcceeddcciGIcek", ".kGceiicddeiiGiik", ".kGGGilceeeilGGGk", "kAAAGGGAAAGGGAAAk", ".kACGHIABCGHIACCk",
+    ".kABAGIABCGHIACk.", ".kABCGIABCGIIACk.", ".kABCGIABCGIABCk.", ".kABCGIABCGIABCk.", "..kACGIABCGIABCk.",
+    "..kACGIABCGIACCk.", "..kACGIABCGIACk..", "..kACGIABCGIACk..", "..kACGHGACGIACk..", "..kACGHIACGIACk..",
+    "...kAAGIACGIACk..", "...kACGIACGACk...", "....kkkkkkkkk...."
+  ],
+  hotdog: [
+    "........kkkkkkkkkkkk........", "....kkkkNNNNNNNNNNNNkkkk....", ".kkkmmmimmmiimmmimmmimmmkkk.",
+    "kmmmooiliiilliiimiiimiimmmmk", "kmoooimNNiNNNNiNNNiNNmimoook", ".kkmNNNOONOOOONOOONOONNNmkk.",
+    "..kNOOOOOOOOOOOOOOOOOOOONk..", "..kNPOOOOOOOOOOOOOOOOOPPPk..", "...kkNPPPPPOOOOOPPPPPPPkk...",
+    ".....kkkkkkNPPPPPkkkkkk....."
   ]
 };
 
-const RINK_OBSTACLES = ["puck", "net", "referee", "goalie", "zamboni", "sticks"];
+const RINK_OBSTACLES = ["puck", "net", "referee", "goalie", "zamboni", "sticks", "mascot", "popcorn", "hotdog"];
 const RINK_PIXEL = 2;                          // each grid cell is a 2x2 block on the 600x180 canvas
 const RINK_REACH = 32;                         // grid columns from the skater's back to his glove; the stick beyond doesn't collide
 const RINK_W = 600, RINK_H = 180, RINK_ICE_Y = 165;
@@ -138,27 +162,41 @@ function rinkOrganNote(audio, out, freq, start, length, level) {
   lfo.start(start); lfo.stop(start + length + 0.05);
 }
 
-// One cycle of the arena classic: a climb that gets quicker and louder, then "da da da DUM, da DUM!"
-// and a full chord for the crowd's "Charge!". Returns the cycle's length in seconds.
+// A build-up bar from Tommy Walker's organ part: an eighth note and an eighth rest, then three
+// staccato quarters. Notes are [beat, MIDI note, length in beats].
+function rinkBuildBar(lead, a, b, c) {
+  return [[0, lead, 0.5], [1, a, 0.4], [2, b, 0.4], [3, c, 0.4]];
+}
+
+// "Charge!" for organ, in 4/4 bars of [tempo from, tempo to, notes]: the build (its first bar a step
+// lower and slower than the score) speeds up from 96 to 250 a quarter, a bar's rest, the fanfare at 160
+// an octave above the score, then a bar's rest for the crowd. The left hand doubles an octave down.
+const RINK_CHARGE_BARS = [
+  [96, 96, rinkBuildBar(68, 62, 63, 67)], [96, 150, rinkBuildBar(70, 64, 65, 69)],
+  [150, 150, rinkBuildBar(71, 66, 68, 70)], [150, 200, rinkBuildBar(72, 66, 68, 70)],
+  [200, 200, rinkBuildBar(73, 67, 69, 71)], [200, 250, rinkBuildBar(73, 67, 69, 71)],
+  [250, 250, rinkBuildBar(74, 68, 70, 72)], [250, 250, rinkBuildBar(74, 68, 70, 72)],
+  [250, 250, []],
+  [160, 160, [[0, 72, 0.45], [0.5, 76, 0.45], [1, 79, 0.45], [1.5, 79, 0.45], [2.5, 76, 0.45], [3, 79, 3]]],
+  [160, 160, []]
+];
+
 function rinkChargeCycle(audio, out, start) {
   const hz = (midi) => 440 * 2 ** ((midi - 69) / 12);
   let t = start;
-  for (let step = 0; step <= 12; step++) {                       // G3 up a semitone at a time to G4
-    const beat = 0.5 - step * 0.016, level = 0.12 + step * 0.019;
-    [0, beat / 2].forEach((offset) => {
-      rinkOrganNote(audio, out, hz(55 + step), t + offset, beat * 0.35, level);
-      rinkOrganNote(audio, out, hz(67 + step), t + offset, beat * 0.35, level * 0.7);
+  RINK_CHARGE_BARS.forEach(([from, to, notes], bar) => {
+    // Each beat lasts as long as the tempo at its middle, so an accelerando speeds up smoothly.
+    const beats = [0, 1, 2, 3].map((k) => 60 / (from + (to - from) * (k + 0.5) / 4));
+    const beatStart = beats.map((_, k) => t + beats.slice(0, k).reduce((sum, d) => sum + d, 0));
+    const level = bar < 9 ? 0.22 + bar * 0.02 : 0.4;
+    notes.forEach(([beat, note, length]) => {
+      const k = Math.floor(beat), at = beatStart[k] + (beat - k) * beats[k];
+      rinkOrganNote(audio, out, hz(note), at, length * beats[k], level);
+      rinkOrganNote(audio, out, hz(note - 12), at, length * beats[k], level * 0.7);
     });
-    t += beat;
-  }
-  t += 0.25;
-  [[67, 0, 0.13], [72, 0.15, 0.13], [76, 0.3, 0.13], [79, 0.45, 0.45], [76, 0.95, 0.15], [79, 1.12, 0.8]]
-    .forEach(([note, at, length]) => {
-      rinkOrganNote(audio, out, hz(note), t + at, length, 0.4);
-      rinkOrganNote(audio, out, hz(note - 12), t + at, length, 0.18);
-    });
-  [48, 60, 64, 67, 72].forEach((note) => rinkOrganNote(audio, out, hz(note), t + 2.1, 0.6, 0.2));   // Charge!
-  return t + 2.7 - start;
+    t = beatStart[3] + beats[3];
+  });
+  return t - start;
 }
 
 // A grid turned into an offscreen canvas once, drawn from then on with drawImage.
