@@ -126,10 +126,17 @@ const RINK_SPRITES = {
     "kmmmooiliiilliiimiiimiimmmmk", "kmoooimNNiNNNNiNNNiNNmimoook", ".kkmNNNOONOOOONOOONOONNNmkk.",
     "..kNOOOOOOOOOOOOOOOOOOOONk..", "..kNPOOOOOOOOOOOOOOOOOPPPk..", "...kkNPPPPPOOOOOPPPPPPPkk...",
     ".....kkkkkkNPPPPPkkkkkk....."
+  ],
+  // Ball caps thrown on the ice after a hat trick, in a heap.
+  hats: [
+    ".................k......................", "..............kkkGkk....................", ".............kDDDDDDkk..................",
+    "............kDFGGDEEDDk.................", ".....kkkkkkkDEFGIDFFEFk.....kk..........", "...kkAGGDDDDEEFDDFZZDFk...kkGAkkk.......",
+    "..kAABAAAADFFFFQQQQQQQk..kGGHGGGGk......", ".kABBBBCGGAkkkQSSZQRRRQkkGHHHIIAGGk.....", "kABBBBBCGIAkkQRSZbZQRRSkGHHHHIACAGkkkkk.",
+    "kACCCCCCAQQQQRRSQZQSSSSQGIIIIIGGGHGGGGGk", ".kkkkkkkkQSSSSSSkkkkkkkkkkkkkkkkGIIIIIIk", ".........kkkkkkk................kkkkkkk."
   ]
 };
 
-const RINK_OBSTACLES = ["puck", "net", "referee", "goalie", "zamboni", "sticks", "mascot", "popcorn", "hotdog"];
+const RINK_OBSTACLES = ["puck", "net", "referee", "goalie", "zamboni", "sticks", "mascot", "popcorn", "hotdog", "hats"];
 const RINK_PIXEL = 2;                          // each grid cell is a 2x2 block on the 600x180 canvas
 const RINK_REACH = 32;                         // grid columns from the skater's back to his glove; the stick beyond doesn't collide
 const RINK_W = 600, RINK_H = 180, RINK_ICE_Y = 165;
@@ -211,6 +218,73 @@ function rinkSprite(rows) {
     ctx.fillRect(x * RINK_PIXEL, y * RINK_PIXEL, RINK_PIXEL, RINK_PIXEL);
   }));
   return canvas;
+}
+
+// An old-time centre-hung scoreboard: a sky-blue cabinet with a blue name strip, and amber bulbs on
+// black panels with the unlit bulbs faintly visible. Digits are 5x7 bulbs, letters 3x5; "1" is lit.
+const RINK_BOARD = {
+  cabinet: "#8fd0f0", edge: "#2a6fb0", strip: "#1f5fae", panel: "#100d0a", cable: "#5a5c68",
+  amber: { lit: "#ffb52e", glow: "rgba(255, 170, 40, 0.35)", dim: "#3b2c14" }, white: { lit: "#ffffff" }
+};
+const RINK_BOARD_DIGITS = [
+  ["01110", "10001", "10011", "10101", "11001", "10001", "01110"], ["00100", "01100", "00100", "00100", "00100", "00100", "01110"],
+  ["01110", "10001", "00001", "00010", "00100", "01000", "11111"], ["11111", "00010", "00100", "00010", "00001", "10001", "01110"],
+  ["00010", "00110", "01010", "10010", "11111", "00010", "00010"], ["11111", "10000", "11110", "00001", "00001", "10001", "01110"],
+  ["00110", "01000", "10000", "11110", "10001", "10001", "01110"], ["11111", "00001", "00010", "00100", "01000", "01000", "01000"],
+  ["01110", "10001", "10001", "01110", "10001", "10001", "01110"], ["01110", "10001", "10001", "01111", "00001", "00010", "01100"]
+];
+const RINK_BOARD_LETTERS = {
+  S: ["111", "100", "111", "001", "111"], C: ["111", "100", "100", "100", "111"], O: ["111", "101", "101", "101", "111"],
+  R: ["110", "101", "110", "101", "101"], E: ["111", "100", "110", "100", "111"], B: ["110", "101", "110", "101", "110"],
+  T: ["111", "010", "010", "010", "010"], I: ["111", "010", "010", "010", "111"], N: ["110", "101", "101", "101", "101"],
+  K: ["101", "101", "110", "101", "101"], U: ["101", "101", "101", "101", "111"]
+};
+const RINK_BULB = 3;                           // amber bulb pitch in canvas pixels: 2x2 bulbs with a 1px gap
+
+// One character's bulbs at (x, y), `pitch` apart: lit bulbs get the colour's glow, unlit ones its dim tone.
+function rinkBulbs(ctx, rows, x, y, pitch, colour) {
+  rows.forEach((row, r) => [...row].forEach((bulb, c) => {
+    const px = x + c * pitch, py = y + r * pitch;
+    if (bulb === "1" && colour.glow) { ctx.fillStyle = colour.glow; ctx.fillRect(px - 1, py - 1, 4, 4); }
+    if (bulb !== "1" && !colour.dim) return;
+    ctx.fillStyle = bulb === "1" ? colour.lit : colour.dim;
+    ctx.fillRect(px, py, 2, 2);
+  }));
+}
+
+// A word of 3x5 letters, centred on cx.
+function rinkBulbWord(ctx, word, cx, y, pitch, colour) {
+  const width = word.length * 4 * pitch - pitch;
+  [...word].forEach((ch, j) => {
+    if (RINK_BOARD_LETTERS[ch]) rinkBulbs(ctx, RINK_BOARD_LETTERS[ch], cx - width / 2 + j * 4 * pitch, y, pitch, colour);
+  });
+}
+
+// The scoreboard hangs from the rafters in the top-right corner: the game's name on the blue strip,
+// then SCORE and BEST in amber, five digits each on their own black panel.
+function drawRinkScoreboard(ctx, score, best) {
+  const digitW = 6 * RINK_BULB, numberW = 5 * digitW - RINK_BULB, inset = 4, strip = 5 * RINK_BULB + 4;
+  const panelW = numberW + 8, panelH = 5 * RINK_BULB + 5 + 7 * RINK_BULB + 8;
+  const w = inset * 3 + panelW * 2, h = inset + strip + inset + panelH + inset;
+  const x = RINK_W - w - 10, y = 10;
+  ctx.fillStyle = RINK_BOARD.cable;
+  ctx.fillRect(x + 24, 0, 2, y); ctx.fillRect(x + w - 26, 0, 2, y);
+  ctx.fillStyle = RINK_BOARD.edge;
+  ctx.fillRect(x - 2, y - 2, w + 4, h + 4);
+  ctx.fillStyle = RINK_BOARD.cabinet;
+  ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = RINK_BOARD.strip;
+  ctx.fillRect(x + inset, y + inset, w - inset * 2, strip);
+  rinkBulbWord(ctx, "RINK RUNNER", x + w / 2, y + inset + 3, RINK_BULB, RINK_BOARD.white);
+  [["SCORE", score], ["BEST", best]].forEach(([label, value], i) => {
+    const px = x + inset + i * (panelW + inset), py = y + inset + strip + inset;
+    ctx.fillStyle = RINK_BOARD.panel;
+    ctx.fillRect(px, py, panelW, panelH);
+    rinkBulbWord(ctx, label, px + panelW / 2, py + 4, RINK_BULB, RINK_BOARD.amber);
+    [...String(Math.min(value, 99999)).padStart(5, "0")].forEach((d, j) =>
+      rinkBulbs(ctx, RINK_BOARD_DIGITS[d], px + 4 + j * digitW, py + 4 + 5 * RINK_BULB + 5, RINK_BULB, RINK_BOARD.amber));
+  });
+  return x - 2;                                // the board's left edge, frame included
 }
 
 function rinkBest() {
@@ -380,13 +454,13 @@ function initRinkRunner(canvasId) {
       ctx.drawImage(frame, skater.x, Math.round(top));
     }
     const score = Math.floor((distance || 0) / 10);
-    drawText(`HI ${String(best).padStart(5, "0")}  ${String(score).padStart(5, "0")}`, RINK_W - 10, 20, "right");
+    const middle = drawRinkScoreboard(ctx, score, best) / 2;     // messages centre in the space left of the board
     drawText(musicOn ? "MUSIC ON" : "MUSIC OFF", 10, 20);
-    if (state === "ready") drawText("PRESS SPACE TO SKATE", RINK_W / 2, 80, "center", 16);
-    if (state === "paused") drawText("PAUSED: PRESS SPACE", RINK_W / 2, 80, "center", 16);
+    if (state === "ready") drawText("PRESS SPACE TO SKATE", middle, 80, "center", 16);
+    if (state === "paused") drawText("PAUSED: PRESS SPACE", middle, 80, "center", 16);
     if (state === "over") {
-      drawText("GAME OVER", RINK_W / 2, 70, "center", 18);
-      drawText("PRESS SPACE TO GO AGAIN", RINK_W / 2, 92, "center", 12);
+      drawText("GAME OVER", middle, 70, "center", 18);
+      drawText("PRESS SPACE TO GO AGAIN", middle, 92, "center", 12);
     }
   }
 
