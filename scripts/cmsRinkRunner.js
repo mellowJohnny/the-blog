@@ -2,22 +2,21 @@
  * obstacles that slide in on the ice; Space, Up or a click jumps (hold for a higher jump).
  * Everything is drawn from the pixel grids below; initRinkRunner() is the only entry point. */
 
-// One character per pixel; "." is transparent. Colours are the CMS banner's Canadiens palette.
-const RINK_PALETTE = {
-  R: "#c8102e", B: "#1d2d5c", W: "#f6f3ea", S: "#f1c27d", K: "#16181d",
-  G: "#8a96a3", Y: "#f2b300", L: "#9fd3ef"
-};
+// One character per pixel; "." is transparent. Monochrome: "S" and "o" are cut-outs in the page
+// colour (faces, stripes), every other letter is drawn in the one dark ink.
+const RINK_INK = "#535353";
+const RINK_CUTOUTS = "So";
 
 const RINK_SPRITES = {
   skaterA: [
     "....BBBB......", "...BBBBBB.....", "...BBSSSS.....", "....SSSKS.....", "....SSSS......",
-    "...RRRRRR.....", "..RRWWWWRR....", "..RRRRRRRRS...", "..RRRRRRR.SK..", "..WWWWWWW...K.",
+    "...RRRRRR.....", "..RRooooRR....", "..RRRRRRRRS...", "..RRRRRRR.SK..", "..WWWWWWW...K.",
     "...BBBBBB....K", "...BBBBBB....K", "...RR..RR....K", "...RR..RR....K", "...WW..WW...KK",
     "...KK..KK.....", "..GGGG.GGGG..."
   ],
   skaterB: [
     "....BBBB......", "...BBBBBB.....", "...BBSSSS.....", "....SSSKS.....", "....SSSS......",
-    "...RRRRRR.....", "..RRWWWWRR....", "..RRRRRRRRS...", "..RRRRRRR.SK..", "..WWWWWWW...K.",
+    "...RRRRRR.....", "..RRooooRR....", "..RRRRRRRRS...", "..RRRRRRR.SK..", "..WWWWWWW...K.",
     "...BBBBBB....K", "...BBBBBB....K", "..RR....RR...K", ".RR......RR..K", ".WW......WW.KK",
     ".KK.......KK..", "GGGG.....GGGG."
   ],
@@ -29,20 +28,20 @@ const RINK_SPRITES = {
   ],
   referee: [
     "...KKKK...", "..KKKKKK..", "...SSSS...", "...SKSK...", "...SSSS...",
-    "..KWKWKWK.", ".SKWKWKWKS", ".SKWKWKWKS", "..KWKWKWK.", "..KWKWKWK.",
+    "..KoKoKoK.", ".SKoKoKoKS", ".SKoKoKoKS", "..KoKoKoK.", "..KoKoKoK.",
     "..KKKKKKK.", "..KKK.KKK.", "..KKK.KKK.", "..KKK.KKK.", "..KK...KK.",
     "..WW...WW.", ".GGG..GGG."
   ],
   goalie: [
-    ".......WWWW.........", "......WKWKWW........", "......WWWWWW........", ".....RRRRRRRR....KK.",
-    "...BBRRWWWWRRBB..BBB", "..BBBRRRRRRRRBBB.BBB", ".BBB.RRRRRRRR.BBB...", ".....RRRRRRRR.......",
-    "...WWWWWW..WWWWWW...", "..WWRRWWW..WWWRRWW..", ".WWWRRWWW..WWWRRWWW.", "WWWWWWWW....WWWWWWWW",
+    ".......WWWW.........", "......WoWoWW........", "......WWWWWW........", ".....RRRRRRRR....KK.",
+    "...BBRRooooRRBB..BBB", "..BBBRRRRRRRRBBB.BBB", ".BBB.RRRRRRRR.BBB...", ".....RRRRRRRR.......",
+    "...WWWWWW..WWWWWW...", "..WWooWWW..WWWooWW..", ".WWWooWWW..WWWooWWW.", "WWWWWWWW....WWWWWWWW",
     "WWWWWWW......WWWWWWW"
   ],
   zamboni: [
     ".........KK...................", "........KSSK..................", "........KSSK..................",
     ".....KKKKKKKKKK...............", ".....K........K...............", ".....K........K...............",
-    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWW.", "WBBBBBBBBBBBBBBBBBBBBBBBBBBBWW", "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWW.", "WoooooooooooooooooooooooooooWW", "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
     "WRRRRRRRRRRRRRRRRRRRRRRRRRRRRW", "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", ".WW.KKK.WWWWWWWWWWWW.KKK.WWWW.",
     "....KKK..............KKK......"
   ],
@@ -58,14 +57,14 @@ const RINK_W = 600, RINK_H = 180, RINK_ICE_Y = 165;
 const RINK_BEST_KEY = "rinkRunnerBest";
 
 // A grid turned into an offscreen canvas once, drawn from then on with drawImage.
-function rinkSprite(rows) {
+function rinkSprite(rows, paper) {
   const canvas = document.createElement("canvas");
   canvas.width = rows[0].length * RINK_PIXEL;
   canvas.height = rows.length * RINK_PIXEL;
   const ctx = canvas.getContext("2d");
   rows.forEach((row, y) => [...row].forEach((cell, x) => {
     if (cell === ".") return;
-    ctx.fillStyle = RINK_PALETTE[cell];
+    ctx.fillStyle = RINK_CUTOUTS.includes(cell) ? paper : RINK_INK;
     ctx.fillRect(x * RINK_PIXEL, y * RINK_PIXEL, RINK_PIXEL, RINK_PIXEL);
   }));
   return canvas;
@@ -87,14 +86,18 @@ function initRinkRunner(canvasId) {
   canvas.height = RINK_H;
   ctx.imageSmoothingEnabled = false;
   const status = document.getElementById(`${canvasId}Status`);
-  const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const art = Object.fromEntries(Object.entries(RINK_SPRITES).map(([name, rows]) => [name, rinkSprite(rows)]));
+  const paper = getComputedStyle(document.body).backgroundColor;   // cut-outs match the page, so no box shows
+  const art = Object.fromEntries(Object.entries(RINK_SPRITES).map(([name, rows]) => [name, rinkSprite(rows, paper)]));
+  // Skate scratches under the ice line, scattered once and scrolled past like the ground in a runner game.
+  const scratches = Array.from({ length: 18 }, () => ({
+    x: Math.random() * RINK_W, y: RINK_ICE_Y + 4 + Math.floor(Math.random() * 3) * 4, w: 2 + Math.floor(Math.random() * 3) * 2
+  }));
 
   const skater = { x: 60, y: 0, vy: 0, w: art.skaterA.width, h: art.skaterA.height };
-  let state = "ready", speed, distance, obstacles, nextGap, snow, held, best = rinkBest(), last = null, stride = 0;
+  let state = "ready", speed, distance, obstacles, nextGap, held, best = rinkBest(), last = null, stride = 0;
 
   function reset() {
-    speed = 5; distance = 0; obstacles = []; nextGap = 260; snow = [];
+    speed = 5; distance = 0; obstacles = []; nextGap = 260;
     skater.y = 0; skater.vy = 0; held = false;
   }
 
@@ -134,11 +137,6 @@ function initRinkRunner(canvasId) {
     if (nextGap <= 0) spawn();
     obstacles.forEach((o) => { o.x -= speed * step; });
     obstacles = obstacles.filter((o) => o.x + o.img.width > -10);
-    if (!calm && skater.y === 0 && Math.random() < 0.5) {
-      snow.push({ x: skater.x + 4, y: RINK_ICE_Y - 2, vx: -1 - Math.random() * 2, vy: -Math.random() * 1.5, life: 18 });
-    }
-    snow.forEach((p) => { p.x += p.vx * step; p.y += p.vy * step; p.vy += 0.12 * step; p.life -= step; });
-    snow = snow.filter((p) => p.life > 0);
     stride += speed * step;
     if (obstacles.some(hits)) {
       state = "over";
@@ -148,32 +146,28 @@ function initRinkRunner(canvasId) {
     }
   }
 
-  function drawRink() {
-    ctx.fillStyle = "#eef6fb"; ctx.fillRect(0, 0, RINK_W, RINK_H);                // ice
-    ctx.fillStyle = RINK_PALETTE.W; ctx.fillRect(0, 0, RINK_W, 30);               // the boards
-    ctx.fillStyle = RINK_PALETTE.Y; ctx.fillRect(0, 26, RINK_W, 4);               // kickplate
-    const offset = distance % 300;
-    ctx.globalAlpha = 0.3;                                                         // painted under the ice, so soft
-    [[RINK_PALETTE.B, 0], [RINK_PALETTE.R, 150]].forEach(([colour, start]) => {    // blue and red lines scroll past
-      ctx.fillStyle = colour;
-      for (let x = start - offset; x < RINK_W + 300; x += 300) ctx.fillRect(Math.round(x), 30, 6, RINK_H - 30);
+  // No scenery: a transparent canvas with one ice line and the scratches scrolling beneath it.
+  function drawIce() {
+    ctx.clearRect(0, 0, RINK_W, RINK_H);
+    ctx.fillStyle = RINK_INK;
+    ctx.fillRect(0, RINK_ICE_Y, RINK_W, 2);
+    const offset = (distance || 0) % RINK_W;
+    scratches.forEach((s) => {
+      const x = (s.x - offset + RINK_W) % RINK_W;
+      ctx.fillRect(Math.round(x), s.y, s.w, 2);
     });
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = RINK_PALETTE.L; ctx.fillRect(0, RINK_ICE_Y, RINK_W, 1);       // a faint line on the ice
   }
 
   function drawText(text, x, y, align = "left", size = 12) {
-    ctx.fillStyle = RINK_PALETTE.K;
+    ctx.fillStyle = RINK_INK;
     ctx.font = `bold ${size}px "Courier New", monospace`;
     ctx.textAlign = align;
     ctx.fillText(text, x, y);
   }
 
   function draw() {
-    drawRink();
+    drawIce();
     obstacles.forEach((o) => ctx.drawImage(o.img, Math.round(o.x), RINK_ICE_Y - o.img.height));
-    ctx.fillStyle = RINK_PALETTE.W;
-    snow.forEach((p) => ctx.fillRect(Math.round(p.x), Math.round(p.y), 2, 2));
     const frame = skater.y > 0 || state !== "running" ? art.skaterA : (Math.floor(stride / 40) % 2 ? art.skaterB : art.skaterA);
     const top = RINK_ICE_Y - skater.y - skater.h;
     if (state === "over") {                                                       // knocked flat on the ice

@@ -812,8 +812,6 @@ h1 {
   width: 100%;
   aspect-ratio: 10 / 3;
   image-rendering: pixelated;
-  border: 2px solid var(--color-text-dark);
-  border-radius: 6px;
   cursor: pointer;
   touch-action: manipulation;
 }
