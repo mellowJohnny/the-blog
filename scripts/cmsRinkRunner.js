@@ -38,12 +38,16 @@ const RINK_SPRITES = {
     "...WWWWWW..WWWWWW...", "..WWooWWW..WWWooWW..", ".WWWooWWW..WWWooWWW.", "WWWWWWWW....WWWWWWWW",
     "WWWWWWW......WWWWWWW"
   ],
+  // Side view, driving left: the snow tank up front, the seat and wheel behind it, and the
+  // conditioner box trailing on the ice at the back.
   zamboni: [
-    ".........KK...................", "........KSSK..................", "........KSSK..................",
-    ".....KKKKKKKKKK...............", ".....K........K...............", ".....K........K...............",
-    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWW.", "WoooooooooooooooooooooooooooWW", "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-    "WRRRRRRRRRRRRRRRRRRRRRRRRRRRRW", "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", ".WW.KKK.WWWWWWWWWWWW.KKK.WWWW.",
-    "....KKK..............KKK......"
+    "..WWWWWWWWWWWWWWWWWW..........KK..", ".WWWWWWWWWWWWWWWWWWWW.........KK..",
+    "WWWWWWWWWWWWWWWWWWWWWW.....K..KK..", "WWWWWWWWWWWWWWWWWWWWWWW.....K.KK..",
+    "WWWWWWWWWWWWWWWWWWWWWWWW....KKKKK.", "WooooooooooooooooooooooWWWWWWWWWW.",
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.", "WW.........WWWWWW.........WWWWWWW.",
+    "WW..KKKKK..WWWWWW..KKKKK..WWWWWWW.", "WW.KKoooKK.WWWWWW.KKoooKK.WWWWWWW.",
+    ".W.KoKKKoK.WWWWWW.KoKKKoK.WWWWWWWW", "...KoKKKoK........KoKKKoK.WooooooW",
+    "...KKoooKK........KKoooKK.WooooooW", "....KKKKK..........KKKKK..WWWWWWWW"
   ],
   sticks: [
     "K..........K", ".K........K.", "..K......K..", "...K....K...", "....K..K....",
