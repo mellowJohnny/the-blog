@@ -133,7 +133,8 @@ function buildCardSetMarkup({
   interactive = true,
   printRun = "",
   checklistHref = "#",
-  waxPack = ""
+  waxPack = "",
+  waxPack2 = ""
 }) {
   let cleanStars = "";
   for (let i = 0; i < parseInt(stars); i++) {
@@ -149,11 +150,13 @@ function buildCardSetMarkup({
     ? `<div class="set-detail-row set-detail-row-checklist"><a href="${escapeHtml(checklistHref)}" class="checklist-view-link" data-set-name="${escapeHtml(setName)}"${interactive ? ' onclick="openChecklistModal(this); return false;"' : ''}>Checklist</a></div>`
     : "";
 
-  // Optional link to the set's pack ("<year>-<packKey>"): opens it in a modal (openWaxPackModal(), wax.js),
-  // styled and placed like the Checklist link. The href is the museum itself, for crawlers and new tabs.
-  const waxPackKey = String(waxPack ?? "").trim();
-  const waxPackRow = waxPackKey
-    ? `<div class="set-detail-row set-detail-row-checklist"><a href="/waxMuseum.html" class="checklist-view-link" data-wax-pack="${escapeHtml(waxPackKey)}"${interactive ? ' onclick="openWaxPackModal(this); return false;"' : ''}>Wax Pack</a></div>`
+  // Optional links to the set's one or two packs ("<year>-<packKey>"): open them in a modal
+  // (openWaxPackModal(), wax.js), styled and placed like the Checklist link. The href is the museum
+  // itself, for crawlers and new tabs. A lone second pack counts as the first.
+  const waxPackKeys = [waxPack, waxPack2].map((key) => String(key ?? "").trim()).filter(Boolean);
+  const waxPackData = waxPackKeys.map((key, i) => ` data-wax-pack${i ? i + 1 : ""}="${escapeHtml(key)}"`).join("");
+  const waxPackRow = waxPackKeys.length
+    ? `<div class="set-detail-row set-detail-row-checklist"><a href="/waxMuseum.html" class="checklist-view-link"${waxPackData}${interactive ? ' onclick="openWaxPackModal(this); return false;"' : ''}>${waxPackKeys.length > 1 ? "Wax Packs" : "Wax Pack"}</a></div>`
     : "";
 
   // Optional - only some sets (the Tim Hortons ones) have a print run,

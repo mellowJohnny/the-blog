@@ -430,7 +430,8 @@ function prerenderReview(browser, set, record, pageName, linkFor, checklistItems
       author: record.author, date: record.now, postBody: record.postBody,
       hasChecklist: record.hasChecklist, printRun: record.printRun,
       checklistHref: checklistPath(set),
-      waxPack: record.waxPack
+      waxPack: record.waxPack,
+      waxPack2: record.waxPack2
     });
   }
   return { title, body, crumbs: browser.breadcrumbHtml(trail), jsonLd, intro: browser.cardIntroHtml(pageName) };

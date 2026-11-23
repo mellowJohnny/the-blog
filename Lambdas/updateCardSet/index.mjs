@@ -9,7 +9,7 @@ const docClient = DynamoDBDocumentClient.from(client);
 // A Wax Museum pack: its 4-digit year, a hyphen, then its packKey slug (saveWaxPack's SLUG_PATTERN).
 const WAX_PACK_PATTERN = /^\d{4}-[a-z0-9]+(-[a-z0-9]+)*$/;
 
-// Optional fields (printRun, waxPack): a value SETs it, blank REMOVEs it, and a payload without the key
+// Optional fields (printRun, waxPack, waxPack2): a value SETs it, blank REMOVEs it, and a payload without the key
 // (an older cached CMS script) leaves it alone, so a stale browser can't wipe a value it never showed.
 // Returns the SET part, the REMOVE part (REMOVE may appear only once) and the values.
 function optionalFieldClauses(payload, fields) {
@@ -154,8 +154,8 @@ if (payload.postBody) {
       }
     }
 
-    const waxPack = typeof payload.waxPack === "string" ? payload.waxPack.trim() : "";
-    if (waxPack && !WAX_PACK_PATTERN.test(waxPack)) {
+    const waxPackKeys = ["waxPack", "waxPack2"].map((field) => typeof payload[field] === "string" ? payload[field].trim() : "");
+    if (waxPackKeys.some((key) => key && !WAX_PACK_PATTERN.test(key))) {
       return {
         statusCode: 400,
         headers: {
@@ -163,11 +163,11 @@ if (payload.postBody) {
           "Access-Control-Allow-Headers": "Content-Type",
           "Access-Control-Allow-Methods": "OPTIONS,PUT"
         },
-        body: JSON.stringify({ error: "waxPack must be a pack's year and key, like 1990-o-pee-chee" })
+        body: JSON.stringify({ error: "A wax pack must be a pack's year and key, like 1990-o-pee-chee" })
       };
     }
 
-    const optional = optionalFieldClauses(payload, [["printRun", ":pr"], ["waxPack", ":wp"]]);
+    const optional = optionalFieldClauses(payload, [["printRun", ":pr"], ["waxPack", ":wp"], ["waxPack2", ":wp2"]]);
 
     const command = new UpdateCommand({
       TableName: "Cards",

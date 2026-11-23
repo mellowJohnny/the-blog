@@ -83,9 +83,11 @@ export const handler = async (event) => {
     let blogCat = payload.blogCat;
     // Optional (only some sets have one) - stored only when non-blank.
     const printRun = typeof payload.printRun === "string" ? payload.printRun.trim() : "";
-    // Optional link to the set's pack in The Wax Museum: "<year>-<packKey>", stored only when set.
+    // Optional links to the set's packs in The Wax Museum (a second for Series 1/2 or low/high series):
+    // "<year>-<packKey>", each stored only when set.
     const waxPack = typeof payload.waxPack === "string" ? payload.waxPack.trim() : "";
-    if (waxPack && !WAX_PACK_PATTERN.test(waxPack)) {
+    const waxPack2 = typeof payload.waxPack2 === "string" ? payload.waxPack2.trim() : "";
+    if ([waxPack, waxPack2].some((key) => key && !WAX_PACK_PATTERN.test(key))) {
         return {
             statusCode: 400,
             headers: {
@@ -93,7 +95,7 @@ export const handler = async (event) => {
                 "Access-Control-Allow-Headers": "Content-Type",
                 "Access-Control-Allow-Methods": "OPTIONS,POST"
             },
-            body: JSON.stringify({ error: "waxPack must be a pack's year and key, like 1990-o-pee-chee" })
+            body: JSON.stringify({ error: "A wax pack must be a pack's year and key, like 1990-o-pee-chee" })
         };
     }
 
@@ -181,7 +183,8 @@ export const handler = async (event) => {
             postBody,
             blogCat,
             ...(printRun && { printRun }),
-            ...(waxPack && { waxPack })
+            ...(waxPack && { waxPack }),
+            ...(waxPack2 && { waxPack2 })
         },
         ConditionExpression: "attribute_not_exists(setName) AND attribute_not_exists(#yr)",
         ExpressionAttributeNames: {

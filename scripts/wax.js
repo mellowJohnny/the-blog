@@ -158,7 +158,8 @@ function renderCardSetPage() {
       item.hasChecklist,
       item.printRun,
       item.seoURLSlug ? `${reviewPath(item)}checklist/` : "#",
-      item.waxPack
+      item.waxPack,
+      item.waxPack2
     );
     // Populate the page title, meta tags, and structured data
     fetchPageTitle(item);
@@ -279,7 +280,7 @@ function cardSetJsonLd({ setName, author, now, updatedAt, stars, mfg }, descript
  * Function to FORMAT & DISPLAY card sets
  */
 
-   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date,upvotes,downvotes,hasChecklist,printRun,checklistHref,waxPack)
+   function displayCardSet(postBody,year,mfg,size,subsets,stars,formats,headerImg,headerImgName,footerImg,footerImgName,setName, author,date,upvotes,downvotes,hasChecklist,printRun,checklistHref,waxPack,waxPack2)
    {
 
     // Voting - keyed by setName+year (Cards table's key). voteKey
@@ -300,7 +301,7 @@ function cardSetJsonLd({ setName, author, now, updatedAt, stars, mfg }, descript
         setName, year, mfg, size, subsets, stars, formats,
         headerImgUrl: `${headerImg}${headerImgName}`,
         footerImgUrl: `${footerImg}${footerImgName}`,
-        author, date, postBody, hasChecklist, printRun, checklistHref, waxPack
+        author, date, postBody, hasChecklist, printRun, checklistHref, waxPack, waxPack2
     }) + `
         <br>
         <hr/>
@@ -526,42 +527,109 @@ function onChecklistModalClosed() {
   document.body.classList.remove("checklist-modal-open");
 }
 
-// The review's Wax Pack link: shows the set's pack exactly as The Wax Museum does, front flipping to
-// back, using waxMuseum.js's card builder. data-wax-pack is "<year>-<packKey>"; only that year is fetched.
+// The review's Wax Pack link: shows the set's one or two packs exactly as The Wax Museum does, each
+// flipping front to back, using waxMuseum.js's card builder. data-wax-pack / data-wax-pack2 are
+// "<year>-<packKey>"; each distinct year is fetched once. Two packs show one at a time (arrows and dots).
 function openWaxPackModal(link) {
   const dialog = document.getElementById("waxPackModal");
   const body = document.getElementById("waxPackModalBody");
-  const [, year, packKey] = String(link.dataset.waxPack || "").match(/^(\d{4})-(.+)$/) || [];
+  const keys = [link.dataset.waxPack, link.dataset.waxPack2]
+    .map((key) => String(key || "").match(/^(\d{4})-(.+)$/))
+    .filter(Boolean)
+    .map(([, year, packKey]) => ({ year, packKey }));
   if (!dialog.dataset.closeHooked) {
     dialog.dataset.closeHooked = "on";
     enableDialogLightDismiss(dialog); // helper.js
+    dialog.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      if (body.querySelectorAll(".wax-museum-item").length < 2) return;
+      event.preventDefault();
+      showWaxPack(Number(body.dataset.current) + (event.key === "ArrowRight" ? 1 : -1));
+    });
   }
+  dialog.classList.remove("wax-pack-modal-multi");
   const hideSpinner = showSpinner(body); // helper.js
   if (!dialog.open) dialog.showModal();
-  if (!year) {
+  if (!keys.length) {
     hideSpinner();
     body.innerHTML = "<p class=\"wax-pack-modal-message\">This wax pack couldn't be found.</p>";
     return;
   }
 
-  fetch(`${WAX_PACK_GET_URL}?year=${year}`) // waxMuseum.js
-    .then((response) => response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`)))
-    .finally(hideSpinner)
-    .then((packs) => {
-      const pack = (Array.isArray(packs) ? packs : []).find((item) => item.packKey === packKey);
+  const years = [...new Set(keys.map((key) => key.year))];
+  Promise.allSettled(years.map((year) => fetch(`${WAX_PACK_GET_URL}?year=${year}`) // waxMuseum.js
+    .then((response) => response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`)))))
+    .then((results) => {
+      hideSpinner();
+      const byYear = {};
+      results.forEach((result, i) => {
+        if (result.status === "fulfilled" && Array.isArray(result.value)) byYear[years[i]] = result.value;
+        else console.log("Wax pack fetch failed:", result.reason);
+      });
+      const packs = keys.map((key) => (byYear[key.year] || []).find((item) => item.packKey === key.packKey)).filter(Boolean);
       body.innerHTML = "";
-      if (pack) {
-        body.appendChild(buildWaxPackCard(pack, 0)); // waxMuseum.js
-        // The card's "Read the review" link is pointless when it leads back to this same review.
-        const here = new URL(document.querySelector('link[rel="canonical"]')?.href || location.href).pathname;
-        const review = body.querySelector(".wax-museum-review");
-        if (review && new URL(review.href).pathname === here) review.remove();
-      } else body.innerHTML = "<p class=\"wax-pack-modal-message\">This wax pack couldn't be found.</p>";
-    })
-    .catch((err) => {
-      console.log("Wax pack fetch failed:", err);
-      body.innerHTML = "<p class=\"wax-pack-modal-message\">Couldn't load the wax pack right now - please try again.</p>";
+      if (packs.length) renderWaxPackCarousel(dialog, body, packs);
+      else body.innerHTML = Object.keys(byYear).length
+        ? "<p class=\"wax-pack-modal-message\">This wax pack couldn't be found.</p>"
+        : "<p class=\"wax-pack-modal-message\">Couldn't load the wax pack right now - please try again.</p>";
     });
+}
+
+// One card, or two with prev/next arrows either side and a dot per pack underneath.
+function renderWaxPackCarousel(dialog, body, packs) {
+  const here = new URL(document.querySelector('link[rel="canonical"]')?.href || location.href).pathname;
+  const cards = packs.map((pack) => {
+    const card = buildWaxPackCard(pack, 0); // waxMuseum.js
+    // The card's "Read the review" link is pointless when it leads back to this same review.
+    const review = card.querySelector(".wax-museum-review");
+    if (review && new URL(review.href).pathname === here) review.remove();
+    return card;
+  });
+  if (cards.length === 1) {
+    body.appendChild(cards[0]);
+    return;
+  }
+
+  dialog.classList.add("wax-pack-modal-multi");
+  // A chevron drawn in SVG (like the back-to-top button), so the arrow needs no font size.
+  const navButton = (step, label, path) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `wax-pack-modal-nav wax-pack-modal-${step < 0 ? "prev" : "next"}`;
+    button.setAttribute("aria-label", label);
+    button.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="${path}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    button.addEventListener("click", () => showWaxPack(Number(body.dataset.current) + step));
+    return button;
+  };
+  const stage = document.createElement("div");
+  stage.className = "wax-pack-modal-stage";
+  stage.append(navButton(-1, "Previous pack", "M15 5l-7 7 7 7"), ...cards, navButton(1, "Next pack", "M9 5l7 7-7 7"));
+
+  const dots = document.createElement("div");
+  dots.className = "wax-pack-modal-dots";
+  cards.forEach((_, i) => {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = "wax-pack-modal-dot";
+    dot.setAttribute("aria-label", `Pack ${i + 1} of ${cards.length}`);
+    dot.addEventListener("click", () => showWaxPack(i));
+    dots.appendChild(dot);
+  });
+  body.append(stage, dots);
+  showWaxPack(0);
+}
+
+// Shows pack i (wrapping either way) and marks its dot; the other card keeps its own flip state.
+function showWaxPack(i) {
+  const body = document.getElementById("waxPackModalBody");
+  const cards = body.querySelectorAll(".wax-museum-item");
+  const current = ((i % cards.length) + cards.length) % cards.length;
+  cards.forEach((card, k) => { card.hidden = k !== current; });
+  body.querySelectorAll(".wax-pack-modal-dot").forEach((dot, k) => {
+    dot.classList.toggle("is-current", k === current);
+    if (k === current) dot.setAttribute("aria-current", "true"); else dot.removeAttribute("aria-current");
+  });
+  body.dataset.current = current;
 }
 
 function closeWaxPackModal() {

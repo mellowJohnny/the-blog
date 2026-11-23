@@ -243,7 +243,20 @@
                   <input type="hidden" id="waxPack" value="">
                   <p class="cms-field-note" id="waxPackNote">No wax pack linked.</p>
                 </td>
-                <td></td>
+                <td>
+                  <label for="waxPack2Search">Second Wax Pack</label>
+                  <button type="button" class="seo-generate-btn" id="waxPack2Clear">Clear</button><br>
+                  <div class="checklist-typeahead-wrap">
+                    <input
+                      type="text"
+                      id="waxPack2Search"
+                      autocomplete="off"
+                      placeholder="e.g. Series 2 or High Series">
+                    <ul id="waxPack2Suggestions" class="checklist-typeahead-suggestions" role="listbox"></ul>
+                  </div>
+                  <input type="hidden" id="waxPack2" value="">
+                  <p class="cms-field-note" id="waxPack2Note">No wax pack linked.</p>
+                </td>
               </tr>
               <tr>
                 <!-- 11th Row -->
@@ -305,7 +318,8 @@
             document.getElementById('mfg').value,
             document.getElementById('blogCat').value,
             document.getElementById('printRun').value,
-            document.getElementById('waxPack').value
+            document.getElementById('waxPack').value,
+            document.getElementById('waxPack2').value
         )"
                   >
                     Submit Post

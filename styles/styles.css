@@ -5359,6 +5359,92 @@ html.back-to-top-pending.back-to-top-scrolled .back-to-top {
   text-align: center;
 }
 
+/* Two packs: one card at a time between prev/next arrows, with a dot per pack underneath (showWaxPack()).
+   The box widens by the two arrows so the card stays museum size. */
+.checklist-modal-content.wax-pack-modal.wax-pack-modal-multi {
+  width: min(496px, calc(100vw - 32px));
+}
+
+.wax-pack-modal-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+/* .wax-museum-item's display: grid would otherwise beat the hidden attribute. */
+.wax-pack-modal-stage .wax-museum-item[hidden] {
+  display: none;
+}
+
+.wax-pack-modal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-button);
+  color: var(--color-white);
+  cursor: pointer;
+}
+
+.wax-pack-modal-nav:hover {
+  background: var(--color-accent-hover);
+}
+
+.wax-pack-modal-nav:focus-visible,
+.wax-pack-modal-dot:focus-visible {
+  outline: 2px solid var(--color-button);
+  outline-offset: 2px;
+}
+
+.wax-pack-modal-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* Hollow for the other pack, filled for the one showing. */
+.wax-pack-modal-dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 2px solid var(--color-button);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.wax-pack-modal-dot.is-current {
+  background: var(--color-button);
+}
+
+/* Phones: the card keeps the full width and the arrows sit over its sides. */
+@media (max-width: 600px) {
+  .wax-pack-modal-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .wax-pack-modal-nav {
+    position: absolute;
+    top: 40%;
+    z-index: 1;
+  }
+
+  .wax-pack-modal-prev {
+    left: 4px;
+  }
+
+  .wax-pack-modal-next {
+    right: 4px;
+  }
+}
+
 /* width: auto never goes past the file's own 900 x 1200, so it's as big as the screen allows without stretching. */
 .figure-modal-img {
   display: block;

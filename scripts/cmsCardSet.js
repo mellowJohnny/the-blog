@@ -52,13 +52,15 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //*------------------------------------------ Wax Pack link (type-ahead) --------------------------------------*
-// A set can link to its pack in The Wax Museum; the review then opens that pack in a modal (wax.js).
-// Stored as "<year>-<packKey>" in the hidden #waxPack; the visible field only searches and shows the name.
+// A set can link to up to two packs in The Wax Museum (#waxPack, #waxPack2); the review opens them in a
+// modal (wax.js). Each is stored as "<year>-<packKey>" in its hidden input; the visible <id>Search field
+// only searches and shows the name. Every function takes the field's id, so both fields share them.
 
 const CARD_SET_WAX_PACKS_URL = "https://efh9lu4988.execute-api.us-east-2.amazonaws.com/prod"; // getWaxPacks
+const WAX_PACK_FIELDS = ["waxPack", "waxPack2"];
 let waxPackIndexPromise = null;
-let waxPackSuggestions = [];
-let activeWaxPackIndex = -1;
+const waxPackPicker = {};   // per field: { suggestions, active }
+const waxPackState = (id) => (waxPackPicker[id] ||= { suggestions: [], active: -1 });
 
 const waxPackKey = (pack) => `${pack.year}-${pack.packKey}`;
 // Pack names usually start with their season ("1990-91 Bowman"); the year is added only when one doesn't.
@@ -80,34 +82,36 @@ function loadWaxPackIndex() {
 }
 
 // The note under the field says which pack the set links to, so a half-typed search isn't mistaken for one.
-function showWaxPackNote(text) {
-  const note = document.getElementById("waxPackNote");
+function showWaxPackNote(id, text) {
+  const note = document.getElementById(`${id}Note`);
   if (note) note.textContent = text;
 }
 
-// Sets the stored key and shows its pack's name (or the bare key, if that pack has since been deleted).
-function setWaxPackField(key) {
-  const search = document.getElementById("waxPackSearch");
-  document.getElementById("waxPack").value = key;
+// Sets a field's stored key and shows its pack's name (or the bare key, if that pack has since been deleted).
+function setWaxPackField(key, id = "waxPack") {
+  const search = document.getElementById(`${id}Search`);
+  if (!search) return;
+  document.getElementById(id).value = key;
   if (!key) {
     search.value = "";
-    showWaxPackNote("No wax pack linked.");
+    showWaxPackNote(id, "No wax pack linked.");
     return;
   }
   search.value = key;
-  showWaxPackNote(`Links to ${key}.`);
+  showWaxPackNote(id, `Links to ${key}.`);
   loadWaxPackIndex().then((packs) => {
     const pack = packs.find((item) => waxPackKey(item) === key);
-    if (!pack || document.getElementById("waxPack").value !== key) return;
+    if (!pack || document.getElementById(id).value !== key) return;
     search.value = waxPackLabel(pack);
-    showWaxPackNote(`Links to ${waxPackLabel(pack)}.`);
+    showWaxPackNote(id, `Links to ${waxPackLabel(pack)}.`);
   });
 }
 
-function renderWaxPackSuggestions(matches) {
-  const list = document.getElementById("waxPackSuggestions");
-  waxPackSuggestions = matches;
-  activeWaxPackIndex = -1;
+function renderWaxPackSuggestions(id, matches) {
+  const list = document.getElementById(`${id}Suggestions`);
+  const state = waxPackState(id);
+  state.suggestions = matches;
+  state.active = -1;
   list.innerHTML = "";
   if (matches.length === 0) {
     list.style.display = "none";
@@ -117,7 +121,7 @@ function renderWaxPackSuggestions(matches) {
     const li = document.createElement("li");
     li.className = "checklist-typeahead-suggestion";
     li.setAttribute("role", "option");
-    li.id = `wax-pack-suggestion-${i}`;
+    li.id = `${id}-suggestion-${i}`;
     li.dataset.index = i;
     li.textContent = waxPackLabel(pack);
     list.appendChild(li);
@@ -125,36 +129,36 @@ function renderWaxPackSuggestions(matches) {
   list.style.display = "block";
 }
 
-function hideWaxPackSuggestions() {
-  const list = document.getElementById("waxPackSuggestions");
+function hideWaxPackSuggestions(id) {
+  const list = document.getElementById(`${id}Suggestions`);
   list.style.display = "none";
   list.innerHTML = "";
-  waxPackSuggestions = [];
-  activeWaxPackIndex = -1;
+  Object.assign(waxPackState(id), { suggestions: [], active: -1 });
 }
 
-function moveWaxPackActive(delta) {
-  if (waxPackSuggestions.length === 0) return;
-  activeWaxPackIndex = (activeWaxPackIndex + delta + waxPackSuggestions.length) % waxPackSuggestions.length;
-  document.querySelectorAll("#waxPackSuggestions .checklist-typeahead-suggestion").forEach((el, i) => {
-    el.classList.toggle("active", i === activeWaxPackIndex);
+function moveWaxPackActive(id, delta) {
+  const state = waxPackState(id);
+  if (state.suggestions.length === 0) return;
+  state.active = (state.active + delta + state.suggestions.length) % state.suggestions.length;
+  document.querySelectorAll(`#${id}Suggestions .checklist-typeahead-suggestion`).forEach((el, i) => {
+    el.classList.toggle("active", i === state.active);
   });
-  document.getElementById(`wax-pack-suggestion-${activeWaxPackIndex}`)?.scrollIntoView({ block: "nearest" });
+  document.getElementById(`${id}-suggestion-${state.active}`)?.scrollIntoView({ block: "nearest" });
 }
 
-function selectWaxPackSuggestion(pack) {
-  hideWaxPackSuggestions();
-  setWaxPackField(waxPackKey(pack));
+function selectWaxPackSuggestion(id, pack) {
+  hideWaxPackSuggestions(id);
+  setWaxPackField(waxPackKey(pack), id);
 }
 
 // Typing starts a new search, so the old link is dropped until a pack is picked from the list.
-async function onWaxPackSearchInput() {
-  const input = document.getElementById("waxPackSearch");
+async function onWaxPackSearchInput(id) {
+  const input = document.getElementById(`${id}Search`);
   const query = input.value.trim().toLowerCase();
-  document.getElementById("waxPack").value = "";
-  showWaxPackNote(query ? "Pick a pack from the list to link it." : "No wax pack linked.");
+  document.getElementById(id).value = "";
+  showWaxPackNote(id, query ? "Pick a pack from the list to link it." : "No wax pack linked.");
   if (query.length < 2) {
-    hideWaxPackSuggestions();
+    hideWaxPackSuggestions(id);
     return;
   }
   const packs = await loadWaxPackIndex();
@@ -168,36 +172,40 @@ async function onWaxPackSearchInput() {
       if (aStarts !== bStarts) return aStarts ? -1 : 1;
       return a.year - b.year || a.name.localeCompare(b.name);
     });
-  renderWaxPackSuggestions(matches);   // every match: the list scrolls (max-height in .checklist-typeahead-suggestions)
+  renderWaxPackSuggestions(id, matches);   // every match: the list scrolls (max-height in .checklist-typeahead-suggestions)
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const input = document.getElementById("waxPackSearch");
-  const list = document.getElementById("waxPackSuggestions");
+// Wires one Wax Pack field: typing, keys, list clicks, click-outside and its Clear button.
+function initWaxPackField(id) {
+  const input = document.getElementById(`${id}Search`);
+  const list = document.getElementById(`${id}Suggestions`);
   if (!input || !list) return;
+  const state = waxPackState(id);
 
-  input.addEventListener("input", onWaxPackSearchInput);
+  input.addEventListener("input", () => onWaxPackSearchInput(id));
   input.addEventListener("keydown", (e) => {
     if (list.style.display === "none") return;
-    if (e.key === "ArrowDown") { e.preventDefault(); moveWaxPackActive(1); }
-    else if (e.key === "ArrowUp") { e.preventDefault(); moveWaxPackActive(-1); }
-    else if (e.key === "Enter" && activeWaxPackIndex >= 0) {
+    if (e.key === "ArrowDown") { e.preventDefault(); moveWaxPackActive(id, 1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); moveWaxPackActive(id, -1); }
+    else if (e.key === "Enter" && state.active >= 0) {
       e.preventDefault();
-      selectWaxPackSuggestion(waxPackSuggestions[activeWaxPackIndex]);
-    } else if (e.key === "Escape") hideWaxPackSuggestions();
+      selectWaxPackSuggestion(id, state.suggestions[state.active]);
+    } else if (e.key === "Escape") hideWaxPackSuggestions(id);
   });
   list.addEventListener("click", (e) => {
     const li = e.target.closest(".checklist-typeahead-suggestion");
-    if (li) selectWaxPackSuggestion(waxPackSuggestions[Number(li.dataset.index)]);
+    if (li) selectWaxPackSuggestion(id, state.suggestions[Number(li.dataset.index)]);
   });
   document.addEventListener("click", (e) => {
-    if (list.style.display !== "none" && !input.contains(e.target) && !list.contains(e.target)) hideWaxPackSuggestions();
+    if (list.style.display !== "none" && !input.contains(e.target) && !list.contains(e.target)) hideWaxPackSuggestions(id);
   });
-  document.getElementById("waxPackClear")?.addEventListener("click", () => {
-    hideWaxPackSuggestions();
-    setWaxPackField("");
+  document.getElementById(`${id}Clear`)?.addEventListener("click", () => {
+    hideWaxPackSuggestions(id);
+    setWaxPackField("", id);
   });
-});
+}
+
+document.addEventListener("DOMContentLoaded", () => WAX_PACK_FIELDS.forEach(initWaxPackField));
 
 //*------------------------------------------ Create New Card Set --------------------------------------*
 
@@ -207,7 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
    */
 
   // NOTE: We don't pass in the textarea content from the form anymore, we call the TinyMCE API to get it
-  async function createCardSet(blogStatus, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, blogCat, printRun, waxPack) {
+  async function createCardSet(blogStatus, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, blogCat, printRun, waxPack, waxPack2) {
 
   // Basic client-side validation - setName and year are marked required in
   // the HTML, but the Submit button is type="button" (not type="submit"),
@@ -274,7 +282,8 @@ document.addEventListener("DOMContentLoaded", () => {
     footerImgName,
     blogCat,
     printRun,
-    waxPack
+    waxPack,
+    waxPack2
   };
 
   // make API call to cardPost endpoint with parameters and use promises to get response
@@ -320,7 +329,7 @@ document.addEventListener("DOMContentLoaded", () => {
  * Updates an existing card set review via the updateCardSet API.
  */
 
-async function updateCardSet(blogStatus, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, printRun, waxPack)
+async function updateCardSet(blogStatus, seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets, stars, formats, year, headerImgName, footerImgName, mfg, printRun, waxPack, waxPack2)
 {
   const slugProblem = seoSlugProblem(seoURLSlug); // cmsFormUI.js
   if (slugProblem) {
@@ -352,7 +361,8 @@ async function updateCardSet(blogStatus, seoMetaDesc, seoURLSlug, seoTags, autho
     footerImgName,
     mfg,
     printRun,
-    waxPack
+    waxPack,
+    waxPack2
   };
 
   getAuthToken().then(token => fetch("https://bb8yehibjb.execute-api.us-east-2.amazonaws.com/dev", {
@@ -707,7 +717,8 @@ async function deleteCardSet(setID, setName, year) {
         set.headerImgName,
         set.footerImgName,
         set.printRun,
-        set.waxPack
+        set.waxPack,
+        set.waxPack2
       );
     })
     .catch(err => {
@@ -778,7 +789,8 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
   headerImgName,
   footerImgName,
   printRun,
-  waxPack
+  waxPack,
+  waxPack2
 ) {
   // Populate the blogStatus dropdown
   const statusOptions = document.getElementById("blogStatus");
@@ -817,7 +829,8 @@ function initStarRatingWidget(containerId = "starRatingWidget", hiddenInputId = 
   showCardSetImagePreview("footerImgName");
   // Optional attribute - most sets don't have one, so avoid "undefined".
   document.getElementById("printRun").value = printRun || "";
-  setWaxPackField(waxPack || "");
+  setWaxPackField(waxPack || "", "waxPack");
+  setWaxPackField(waxPack2 || "", "waxPack2");
 
   // The fetch can beat tinymce.init(), so wait for the editor (cmsFormUI.js).
   tinyEditorReady.then((editor) => {
@@ -850,11 +863,12 @@ function openPreview() {
   const footerImg = document.getElementById("footerImgName").value;
   const printRun = document.getElementById("printRun").value;
   const waxPack = document.getElementById("waxPack").value;
+  const waxPack2 = document.getElementById("waxPack2").value;
   // Get TinyMCE content
   const cardBody = stripEditorOnlyMarkup(tinymce.get("postBody").getContent());
 
   // Call the render function
-  renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,cardBody,printRun,waxPack);
+  renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,cardBody,printRun,waxPack,waxPack2);
 
   document.getElementById("previewModal").style.display = "block";
   startPreviewEditor();
@@ -890,7 +904,7 @@ function startPreviewEditor() {
 }
 
 
-function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,body,printRun,waxPack) {
+function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,headerImg,footerImg,body,printRun,waxPack,waxPack2) {
 
   // Write into previewContainer instead of cardSetDiv
   const container = document.getElementById("previewContainer");
@@ -908,6 +922,7 @@ function renderPreview(year,author,mfg,size,subsets,stars,formats,setName,header
     hasChecklist: _loadedSetHasChecklist,
     printRun,
     waxPack,
+    waxPack2,
     interactive: false
   }) + `
     <br>
