@@ -5373,6 +5373,20 @@ html.back-to-top-pending.back-to-top-scrolled .back-to-top {
   gap: 8px;
 }
 
+/* Both cards share one cell, so during a swipe (showWaxPack()) one slides out as the other slides in.
+   overflow: hidden clips them at the track's edge; the padding (cancelled by the negative margin) keeps
+   the card's shadow inside that clip. */
+.wax-pack-modal-track {
+  display: grid;
+  overflow: hidden;
+  padding: 4px 6px 10px;
+  margin: -4px -6px -10px;
+}
+
+.wax-pack-modal-track > .wax-museum-item {
+  grid-area: 1 / 1;
+}
+
 /* .wax-museum-item's display: grid would otherwise beat the hidden attribute. */
 .wax-pack-modal-stage .wax-museum-item[hidden] {
   display: none;

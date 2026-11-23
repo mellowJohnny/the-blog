@@ -544,7 +544,8 @@ function openWaxPackModal(link) {
       if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
       if (body.querySelectorAll(".wax-museum-item").length < 2) return;
       event.preventDefault();
-      showWaxPack(Number(body.dataset.current) + (event.key === "ArrowRight" ? 1 : -1));
+      const step = event.key === "ArrowRight" ? 1 : -1;
+      showWaxPack(Number(body.dataset.current) + step, step);
     });
   }
   dialog.classList.remove("wax-pack-modal-multi");
@@ -598,12 +599,16 @@ function renderWaxPackCarousel(dialog, body, packs) {
     button.className = `wax-pack-modal-nav wax-pack-modal-${step < 0 ? "prev" : "next"}`;
     button.setAttribute("aria-label", label);
     button.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="${path}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-    button.addEventListener("click", () => showWaxPack(Number(body.dataset.current) + step));
+    button.addEventListener("click", () => showWaxPack(Number(body.dataset.current) + step, step));
     return button;
   };
+  // The cards share one cell of a clipped track, so a swipe slides one out as the other slides in.
+  const track = document.createElement("div");
+  track.className = "wax-pack-modal-track";
+  track.append(...cards);
   const stage = document.createElement("div");
   stage.className = "wax-pack-modal-stage";
-  stage.append(navButton(-1, "Previous pack", "M15 5l-7 7 7 7"), ...cards, navButton(1, "Next pack", "M9 5l7 7-7 7"));
+  stage.append(navButton(-1, "Previous pack", "M15 5l-7 7 7 7"), track, navButton(1, "Next pack", "M9 5l7 7-7 7"));
 
   const dots = document.createElement("div");
   dots.className = "wax-pack-modal-dots";
@@ -612,7 +617,7 @@ function renderWaxPackCarousel(dialog, body, packs) {
     dot.type = "button";
     dot.className = "wax-pack-modal-dot";
     dot.setAttribute("aria-label", `Pack ${i + 1} of ${cards.length}`);
-    dot.addEventListener("click", () => showWaxPack(i));
+    dot.addEventListener("click", () => showWaxPack(i, i - Number(body.dataset.current)));
     dots.appendChild(dot);
   });
   body.append(stage, dots);
@@ -620,11 +625,24 @@ function renderWaxPackCarousel(dialog, body, packs) {
 }
 
 // Shows pack i (wrapping either way) and marks its dot; the other card keeps its own flip state.
-function showWaxPack(i) {
+// A direction (+1 next, -1 previous) swipes: the old card slides out that way as the new one slides in.
+function showWaxPack(i, direction = 0) {
   const body = document.getElementById("waxPackModalBody");
-  const cards = body.querySelectorAll(".wax-museum-item");
+  const cards = [...body.querySelectorAll(".wax-museum-item")];
   const current = ((i % cards.length) + cards.length) % cards.length;
-  cards.forEach((card, k) => { card.hidden = k !== current; });
+  const previous = Number(body.dataset.current);
+  cards.forEach((card) => card.getAnimations().forEach((animation) => animation.finish()));   // a quick second click
+  const swipe = direction && previous !== current && cards[previous]
+    && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  cards.forEach((card, k) => { card.hidden = k !== current && !(swipe && k === previous); });
+  if (swipe) {
+    const way = direction > 0 ? 1 : -1;
+    const timing = { duration: 320, easing: "ease-in-out" };
+    const outgoing = cards[previous];
+    outgoing.animate([{ transform: "translateX(0)", opacity: 1 }, { transform: `translateX(${-way * 110}%)`, opacity: 0 }], timing)
+      .onfinish = () => { if (Number(body.dataset.current) !== previous) outgoing.hidden = true; };
+    cards[current].animate([{ transform: `translateX(${way * 110}%)`, opacity: 0 }, { transform: "translateX(0)", opacity: 1 }], timing);
+  }
   body.querySelectorAll(".wax-pack-modal-dot").forEach((dot, k) => {
     dot.classList.toggle("is-current", k === current);
     if (k === current) dot.setAttribute("aria-current", "true"); else dot.removeAttribute("aria-current");
