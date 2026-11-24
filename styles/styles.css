@@ -4551,20 +4551,10 @@ body:has(.site-footer) {
     padding: 20px 10px;
   }
 
-  /* Dropdown groups: a button styled like the links, opening a full-width shelf under the bar on hover,
-     keyboard focus or click (.open). static, so the shelf is placed against #global-nav-placeholder. */
+  /* Dropdown groups: a button styled like the links, opening a vertical panel under itself on hover,
+     keyboard focus or click (.open). */
   .nav-group {
-    position: static;
-  }
-
-  /* The bar tints to the shelf colour while a menu is open, so bar and shelf read as one piece */
-  #global-nav-placeholder {
-    border-radius: 6px 6px 0 0;
-    transition: background-color 0.25s ease;
-  }
-
-  #global-nav-placeholder:has(.nav-group:hover, .nav-group:focus-within, .nav-group.open) {
-    background-color: var(--color-nav-shelf);
+    position: relative;
   }
 
   .nav-group-btn {
@@ -4580,7 +4570,7 @@ body:has(.site-footer) {
     transition: color 0.15s ease;
   }
 
-  /* A short underline under the open parent: the shelf's row starts here */
+  /* A short underline under the open parent */
   .nav-group-btn::before {
     content: "";
     position: absolute;
@@ -4614,22 +4604,22 @@ body:has(.site-footer) {
     color: var(--color-link-light);
   }
 
-  /* The shelf: one row of links, starting under its parent (--shelf-start, set by alignNavShelves() in
-     helper.js) and running right. clip-path reveals it top-down; visibility keeps a closed shelf out of tab order. */
+  /* The dropdown: one link per line under its parent, text lined up with the parent's (the cell's 10px
+     padding less the links' 14px). clip-path reveals it top-down; visibility keeps a closed panel out of tab order. */
   .nav-dropdown {
-    display: flex;
+    display: block;
     position: absolute;
     top: 100%;
-    left: 0;
-    right: 0;
+    left: -4px;
+    min-width: max-content;
     box-sizing: border-box;
     list-style: none;
     margin: 0;
-    padding: 0 0 6px var(--shelf-start, 0px);
+    padding: 6px 0;
     white-space: nowrap;
     text-align: left;
     background-color: var(--color-nav-shelf);
-    border-radius: 0 0 6px 6px;
+    border-radius: 6px;
     box-shadow: 0 14px 22px -16px rgba(11, 62, 100, 0.45);
     z-index: 1000;
     visibility: hidden;
@@ -4647,10 +4637,10 @@ body:has(.site-footer) {
 
   .nav-dropdown a {
     display: block;
-    padding: 10px 24px 12px 0;
+    padding: 8px 14px;
     font-size: 20px; /* a step below the bar's 22px parents */
     opacity: 0;
-    transform: translateX(-6px);
+    transform: translateY(-4px);
     transition: opacity 0.2s ease, transform 0.2s ease, color 0.15s ease;
   }
 
@@ -4670,9 +4660,8 @@ body:has(.site-footer) {
   }
 }
 
-/* The shelf opens without sliding or fading for anyone who has asked for less motion */
+/* The dropdown opens without sliding or fading for anyone who has asked for less motion */
 @media (min-width: 1221px) and (prefers-reduced-motion: reduce) {
-  #global-nav-placeholder,
   .nav-group-btn::before,
   .nav-dropdown,
   .nav-dropdown a {
