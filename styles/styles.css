@@ -723,15 +723,24 @@ h1 {
   }
 
 /** Navigation link formatting **/
-/* Same type as the footer: Nunito semi-bold, spaced capitals. */
+/* Nunito semi-bold in sentence case: lowercased, then ::first-letter (which needs a block-ish box,
+   hence inline-block) capitalises the first letter of each top-level link and group name. */
 .nav-td {
   font-family: 'Nunito', 'Nunito Fallback', sans-serif;
   font-size: 20px;
   font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   margin: 15px;
   padding: 20px;
+}
+
+.nav-td > a {
+  display: inline-block;
+}
+
+.nav-td > a::first-letter,
+.nav-group-btn::first-letter {
+  text-transform: uppercase;
 }
 
 /* Dropdown links keep their written capitalisation (and drop the caps spacing). */
