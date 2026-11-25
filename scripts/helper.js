@@ -193,7 +193,7 @@ function buildCardSetMarkup({
                 <div class="set-detail-row"><strong>Manufacturer:</strong> ${mfg}</div>
                 ${checklistRow}
                 ${waxPackRow}
-                <div class="set-detail-row"><strong>Collectability:</strong> ${cleanStars}</div>
+                <div class="set-detail-row"><strong>Rating:</strong> ${cleanStars}</div>
             </div>
         </div>
         <br>
