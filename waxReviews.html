@@ -97,7 +97,7 @@
 
     <!-- Chrome/Edge fetch a same-site page's HTML when a link is hovered or pressed, so the click opens faster.
          Other reviews (pagination, year picker) are fully prerendered on hover instead, so a
-         click shows the new set at once, already loaded and at #year-picker, with no flash of the banner. -->
+         click shows the new set at once, already loaded, then glides down to the year picker (#sets). -->
     <script type="speculationrules">
       {
         "prerender": [{
@@ -138,6 +138,7 @@
         // Set-O-Matic Set Picker: needs only the URL params, so draw it before first
         // paint - on window load it popped in late and pushed the page down
         renderSetPicker(year,resolveBlogCat(blogCat,pageName),pageName);
+        scrollToSetPickerOnArrival();
         //fetchCardSetsByYear() is responsible for calling the underlying AWS web service
         fetchCardSetsByYear(year,sortOrder,resolveBlogCat(blogCat,pageName),setID);
       });
@@ -208,7 +209,7 @@
           <div class="intro" id="card-intro"><!-- card-intro:start --><!-- card-intro:end --></div>
         </div>
 
-        <!-- The Back/Next pagination links jump here (#year-picker), so a new set opens at the picker -->
+        <!-- Kept for old #year-picker links; new year and Back/Next links use #sets (scrollToSetPickerOnArrival()) -->
         <div class="set-o-matic-picker" id="year-picker">the set-o-matic year picker</div>
 
         <div class="flex-container">

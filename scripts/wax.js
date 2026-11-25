@@ -1128,16 +1128,16 @@ function renderPaginationControls() {
     : "Next →";
 
   // Real links to the neighbouring sets' own pages, like the nav, so crawlers can follow them and
-  // Back works; they open at the year picker (#year-picker), not the page top. The end of
-  // the list is plain text, not a link.
+  // Back works; #sets slides the new page down to the year picker (scrollToSetPickerOnArrival() in
+  // helper.js). The end of the list is plain text, not a link.
   const prevLink = prevSet ? `
-    <a href="${reviewHref(prevSet)}#year-picker" class="pagination-link">
+    <a href="${reviewHref(prevSet)}#sets" class="pagination-link">
       ${prevLabel}
     </a>
   ` : "";
 
   const nextLink = nextSet
-    ? `<a href="${reviewHref(nextSet)}#year-picker" class="pagination-link">${nextLabel}</a>`
+    ? `<a href="${reviewHref(nextSet)}#sets" class="pagination-link">${nextLabel}</a>`
     : `<span class="pagination-link disabled">${nextLabel}</span>`;
 
   controls.innerHTML = `
