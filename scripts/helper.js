@@ -801,9 +801,8 @@ function setPickerHtml(year, blogCat, pageName, hrefFor) {
   for (let i = 0; i < totalYears; i++) {
     const y = range.start + i;
     const label = `${y}-${(y + 1).toString().slice(-2)}`;
-    // #sets: the new page slides down to the picker (scrollToSetPickerOnArrival())
-    const href = ((hrefFor && hrefFor(y))
-      || `/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}`) + "#sets";
+    const href = (hrefFor && hrefFor(y))
+      || `/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}`;
 
     cells += (y === parseInt(year))
       ? `<div class="${range.className}">${label}</div>`
@@ -829,20 +828,6 @@ function renderSetPicker(year, blogCat, pageName) {
 
   setPicker.innerHTML = setPickerHtml(year, blogCat, pageName);
   applyReviewLinks();
-}
-
-// Year-picker and Back/Next links end in #sets, which matches no element, so the page opens at the top;
-// this then glides to the picker (scroll-margin-top in styles.css), once a prerendered page is actually shown.
-function scrollToSetPickerOnArrival() {
-  const picker = document.getElementById("set-picker");
-  if (location.hash !== "#sets" || !picker) return;
-  const go = () => requestAnimationFrame(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    picker.scrollIntoView({ behavior: reduce ? "instant" : "smooth", block: "start" });
-    history.replaceState(history.state, "", location.pathname + location.search);
-  });
-  if (document.prerendering) document.addEventListener("prerenderingchange", go, { once: true });
-  else go();
 }
 
 
@@ -885,7 +870,7 @@ async function applyReviewLinks() {
     const { reviewSetid, reviewCat, reviewYear } = link.dataset;
     const set = (reviewSetid && sets.find(s => s.setID === reviewSetid))
       || sets.filter(s => s.blogCat === reviewCat && String(s.year) === reviewYear).sort(compareSetsForDefault)[0];
-    if (set && set.seoURLSlug) link.href = `/reviews/${set.seoURLSlug}/${link.hash}`;
+    if (set && set.seoURLSlug) link.href = `/reviews/${set.seoURLSlug}/`;
   });
 }
 
