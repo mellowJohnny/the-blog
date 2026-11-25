@@ -110,10 +110,12 @@ function hideSuggestions() {
   setSuggestionsExpanded(false);
 }
 
+// Fills the box only; the search runs when the button is clicked (or Enter submits the form).
 function selectSuggestion(name) {
-  document.getElementById("playerSearchInput").value = name;
+  const input = document.getElementById("playerSearchInput");
+  input.value = name;
   hideSuggestions();
-  runPlayerSearch(name);
+  input.focus();
 }
 
 // Highlights suggestion `activeSuggestionIndex + delta` (wrapping),
