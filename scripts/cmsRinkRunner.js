@@ -1,6 +1,6 @@
 /** Rink Runner: the CMS's 8-bit hockey runner, on its own page (cms/rinkRunner.html). A skater jumps the
- * obstacles that slide in on the ice; Space, Up or a click jumps (hold for a higher jump).
- * Everything is drawn from the pixel grids below; initRinkRunner() is the only entry point. */
+ * obstacles that slide in on the ice; Space, Up or a click jumps (hold for a higher jump). Three levels
+ * (Junior, AHL, NHL) set the pace. Everything is drawn from the pixel grids below; initRinkRunner() is the entry point. */
 
 // Full-colour sprites: one character per pixel, "." is transparent. Each colour has a light, mid
 // and dark tone (red A-C, blue D-F, white G-I, skin J-M, wood N-P, black Q-S, steel T-V, glove W-Y,
@@ -152,7 +152,16 @@ const RINK_PIXEL = 2;                          // each grid cell is a 2x2 block 
 const RINK_REACH = 32;                         // grid columns from the skater's back to his glove; the stick beyond doesn't collide
 const RINK_W = 600, RINK_H = 280, RINK_ICE_Y = 265;   // tall enough for the scoreboard to hang clear of the highest jump
 const RINK_MIN_GAP = 36;                       // frames; simulated back-to-back jumps fail below ~27 (speed 11), ~39 (speed 20)
-const RINK_BEST_KEY = "rinkRunnerBest";
+// Difficulty: NHL is the full game. The others top out slower, ramp up more gently, cluster later (AHL) or
+// never (Junior), and add `extraGap` frames between obstacles. Every level starts at speed 5.
+const RINK_LEVELS = {
+  junior: { name: "JUNIOR", label: "Junior", top: 11, ramp: 3600, clusterFrom: null, extraGap: 14 },
+  ahl: { name: "AHL", label: "AHL", top: 15, ramp: 2600, clusterFrom: 13, extraGap: 6 },
+  nhl: { name: "NHL", label: "NHL", top: 20, ramp: 1800, clusterFrom: 11, extraGap: 0 }
+};
+const RINK_LEVEL_IDS = Object.keys(RINK_LEVELS);
+const RINK_LEVEL_KEY = "rinkRunnerLevel";
+const RINK_BEST_KEY = "rinkRunnerBest";        // the NHL best; the other levels add ".ahl" or ".junior"
 const RINK_MUSIC_KEY = "rinkRunnerMusic";
 const RINK_MUSIC_REST = 8;                     // seconds of quiet between one "Charge!" and the next build-up
 
@@ -235,7 +244,8 @@ function rinkSprite(rows) {
 // black panels with the unlit bulbs faintly visible. Digits are 5x7 bulbs, letters 3x5; "1" is lit.
 const RINK_BOARD = {
   cabinet: "#8fd0f0", edge: "#2a6fb0", strip: "#1f5fae", panel: "#100d0a", cable: "#5a5c68",
-  amber: { lit: "#ffb52e", glow: "rgba(255, 170, 40, 0.35)", dim: "#3b2c14" }, white: { lit: "#ffffff" }
+  amber: { lit: "#ffb52e", glow: "rgba(255, 170, 40, 0.35)", dim: "#3b2c14" }, white: { lit: "#ffffff" },
+  unpicked: { lit: "#8a6424" }                 // the level board's other levels: readable, but clearly not lit
 };
 const RINK_BOARD_DIGITS = [
   ["01110", "10001", "10011", "10101", "11001", "10001", "01110"], ["00100", "01100", "00100", "00100", "00100", "00100", "01110"],
@@ -248,7 +258,9 @@ const RINK_BOARD_LETTERS = {
   S: ["111", "100", "111", "001", "111"], C: ["111", "100", "100", "100", "111"], O: ["111", "101", "101", "101", "111"],
   R: ["110", "101", "110", "101", "101"], E: ["111", "100", "110", "100", "111"], B: ["110", "101", "110", "101", "110"],
   T: ["111", "010", "010", "010", "010"], I: ["111", "010", "010", "010", "111"], N: ["110", "101", "101", "101", "101"],
-  K: ["101", "101", "110", "101", "101"], U: ["101", "101", "101", "101", "111"]
+  K: ["101", "101", "110", "101", "101"], U: ["101", "101", "101", "101", "111"], J: ["011", "001", "001", "101", "111"],
+  A: ["111", "101", "111", "101", "101"], H: ["101", "101", "111", "101", "101"], L: ["100", "100", "100", "100", "111"],
+  V: ["101", "101", "101", "101", "010"]
 };
 const RINK_BULB = 3;                           // amber bulb pitch in canvas pixels: 2x2 bulbs with a 1px gap
 
@@ -297,12 +309,55 @@ function drawRinkScoreboard(ctx, score, best) {
   });
 }
 
-function rinkBest() {
-  try { return Number(localStorage.getItem(RINK_BEST_KEY)) || 0; } catch { return 0; }
+// The level picker, hung under the scoreboard on the start and game-over screens: LEVEL on the blue
+// strip, then the three levels with the chosen one lit. Returns each level's click box in canvas pixels.
+function drawRinkLevelBoard(ctx, levelId) {
+  const p = RINK_BULB, inset = 4, strip = 5 * p + 4, gap = 6 * p;
+  const widths = RINK_LEVEL_IDS.map((id) => RINK_LEVELS[id].name.length * 4 * p - p);
+  const panelW = widths.reduce((a, b) => a + b, 0) + gap * (widths.length - 1) + 16, panelH = 5 * p + 8;
+  const w = panelW + inset * 2, h = inset + strip + inset + panelH + inset;
+  const x = Math.round((RINK_W - w) / 2), y = 100;
+  ctx.fillStyle = RINK_BOARD.cable;
+  ctx.fillRect(x + 24, 92, 2, y - 92); ctx.fillRect(x + w - 26, 92, 2, y - 92);
+  ctx.fillStyle = RINK_BOARD.edge;
+  ctx.fillRect(x - 2, y - 2, w + 4, h + 4);
+  ctx.fillStyle = RINK_BOARD.cabinet;
+  ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = RINK_BOARD.strip;
+  ctx.fillRect(x + inset, y + inset, w - inset * 2, strip);
+  rinkBulbWord(ctx, "LEVEL", x + w / 2, y + inset + 3, p, RINK_BOARD.white);
+  const px = x + inset, py = y + inset + strip + inset;
+  ctx.fillStyle = RINK_BOARD.panel;
+  ctx.fillRect(px, py, panelW, panelH);
+  const boxes = {};
+  let wx = px + 8;
+  RINK_LEVEL_IDS.forEach((id, i) => {
+    const colour = id === levelId ? RINK_BOARD.amber : RINK_BOARD.unpicked;
+    rinkBulbWord(ctx, RINK_LEVELS[id].name, wx + widths[i] / 2, py + 4, p, colour);
+    boxes[id] = { x: wx - 6, y: py, w: widths[i] + 12, h: panelH };
+    wx += widths[i] + gap;
+  });
+  return boxes;
 }
 
-function saveRinkBest(score) {
-  try { localStorage.setItem(RINK_BEST_KEY, String(score)); } catch { /* private window: keep it for this visit only */ }
+function rinkBestKey(level) {
+  return level === "nhl" ? RINK_BEST_KEY : `${RINK_BEST_KEY}.${level}`;
+}
+
+function rinkBest(level) {
+  try { return Number(localStorage.getItem(rinkBestKey(level))) || 0; } catch { return 0; }
+}
+
+function saveRinkBest(level, score) {
+  try { localStorage.setItem(rinkBestKey(level), String(score)); } catch { /* private window: keep it for this visit only */ }
+}
+
+function rinkLevel() {
+  try { const id = localStorage.getItem(RINK_LEVEL_KEY); return RINK_LEVELS[id] ? id : "nhl"; } catch { return "nhl"; }
+}
+
+function saveRinkLevel(id) {
+  try { localStorage.setItem(RINK_LEVEL_KEY, id); } catch { /* private window: this visit only */ }
 }
 
 function rinkMusicOn() {
@@ -328,7 +383,8 @@ function initRinkRunner(canvasId) {
   }));
 
   const skater = { x: 60, y: 0, vy: 0, w: art.skaterA.width, h: art.skaterA.height };
-  let state = "ready", speed, distance, obstacles, nextGap, held, best = rinkBest(), last = null, stride = 0;
+  let state = "ready", speed, distance, obstacles, nextGap, held, last = null, stride = 0;
+  let level = rinkLevel(), best = rinkBest(level), levelBoxes = {};
 
   function reset() {
     speed = 5; distance = 0; obstacles = []; nextGap = 260;
@@ -387,12 +443,22 @@ function initRinkRunner(canvasId) {
     if (skater.y === 0) skater.vy = 7.5;   // y counts up from the ice
   }
 
+  // Only between runs: saves the level and shows that level's best on the scoreboard.
+  function setLevel(id) {
+    if ((state !== "ready" && state !== "over") || id === level) return;
+    level = id;
+    saveRinkLevel(id);
+    best = rinkBest(id);
+    say(`Level: ${RINK_LEVELS[id].label}. Space or click to skate.`);
+  }
+
   // Obstacles come at random, closer together as the speed rises, but never nearer than
   // RINK_MIN_GAP frames after the skater has passed the last one, so any two in a row can be jumped.
-  // Past speed 11, low ones also come in clusters of two or three that one held jump clears.
+  // From the level's clusterFrom speed, low ones also come in clusters that one held jump clears.
   function spawn() {
     const pick = (list) => list[Math.floor(Math.random() * list.length)];
-    const fast = Math.max(0, Math.min(1, (speed - 11) / 9));         // 0 up to speed 11, 1 at top speed
+    const lv = RINK_LEVELS[level];
+    const fast = lv.clusterFrom === null ? 0 : Math.max(0, Math.min(1, (speed - lv.clusterFrom) / (RINK_TOP_SPEED - lv.clusterFrom)));
     const size = Math.random() < (fast > 0 ? 0.15 + 0.5 * fast : 0) ? (fast > 0.5 && Math.random() < 0.5 ? 3 : 2) : 1;
     const room = speed * 24 - RINK_REACH * RINK_PIXEL;              // what one held jump clears at this speed
     let x = RINK_W + 10, end = x;
@@ -405,7 +471,7 @@ function initRinkRunner(canvasId) {
     }
     const pace = Math.min(1, (speed - 5) / 6);                        // 0 at the start, 1 from speed 11 on
     const floor = RINK_MIN_GAP + 1.4 * Math.max(0, speed - 11);          // past 11 the safe gap widens a little
-    const frames = floor + 4 * (1 - pace) + Math.random() * (45 - 30 * pace) * (1 - 0.6 * fast);
+    const frames = floor + lv.extraGap + 4 * (1 - pace) + Math.random() * (45 - 30 * pace) * (1 - 0.6 * fast);
     nextGap = speed * frames + RINK_REACH * RINK_PIXEL + (end - (RINK_W + 10));
   }
 
@@ -420,7 +486,7 @@ function initRinkRunner(canvasId) {
 
   function update(step) {
     distance += speed * step;
-    speed = Math.min(RINK_TOP_SPEED, 5 + distance / 1800);
+    speed = Math.min(RINK_LEVELS[level].top, 5 + distance / RINK_LEVELS[level].ramp);
     // Holding the key while rising means less gravity, so a longer press jumps higher.
     const gravity = held && skater.vy > 0 ? 0.3 : 0.55;
     if (skater.y > 0 || skater.vy > 0) {
@@ -437,8 +503,8 @@ function initRinkRunner(canvasId) {
       state = "over";
       stopMusic();
       const score = Math.floor(distance / 10);
-      if (score > best) { best = score; saveRinkBest(best); }
-      say(`Game over. Score ${score}, best ${best}. Space or click to go again.`);
+      if (score > best) { best = score; saveRinkBest(level, best); }
+      say(`Game over (${RINK_LEVELS[level].label}). Score ${score}, best ${best}. Space or click to go again.`);
     }
   }
 
@@ -480,11 +546,12 @@ function initRinkRunner(canvasId) {
     const score = Math.floor((distance || 0) / 10);
     drawRinkScoreboard(ctx, score, best);
     drawText(musicOn ? "MUSIC ON" : "MUSIC OFF", 10, 20);
-    if (state === "ready") drawText("PRESS SPACE TO SKATE", RINK_W / 2, 140, "center", 16);   // under the board
+    levelBoxes = state === "ready" || state === "over" ? drawRinkLevelBoard(ctx, level) : {};
+    if (state === "ready") drawText("PRESS SPACE TO SKATE", RINK_W / 2, 182, "center", 16);   // under the level board
     if (state === "paused") drawText("PAUSED: PRESS SPACE", RINK_W / 2, 140, "center", 16);
     if (state === "over") {
-      drawText("GAME OVER", RINK_W / 2, 132, "center", 18);
-      drawText("PRESS SPACE TO GO AGAIN", RINK_W / 2, 154, "center", 12);
+      drawText("GAME OVER", RINK_W / 2, 178, "center", 18);
+      drawText("PRESS SPACE TO GO AGAIN", RINK_W / 2, 198, "center", 12);
     }
   }
 
@@ -497,17 +564,37 @@ function initRinkRunner(canvasId) {
   }
 
   // Keys only count when they aren't meant for a form field; Space/Up jump and M toggles the music.
+  // Between runs, Left/Right step through the levels and 1, 2, 3 pick one.
   const typing = (el) => el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(el.tagName));
   document.addEventListener("keydown", (event) => {
     if (typing(event.target)) return;
-    if (event.code === "KeyM" && !event.repeat && !event.metaKey && !event.ctrlKey && !event.altKey) { toggleMusic(); return; }
+    const plain = !event.metaKey && !event.ctrlKey && !event.altKey;
+    if (event.code === "KeyM" && !event.repeat && plain) { toggleMusic(); return; }
+    const stepBy = { ArrowLeft: -1, ArrowRight: 1 }[event.code], pickAt = { Digit1: 0, Digit2: 1, Digit3: 2 }[event.code];
+    if ((state === "ready" || state === "over") && plain && (stepBy || pickAt !== undefined)) {
+      event.preventDefault();
+      const i = pickAt !== undefined ? pickAt : RINK_LEVEL_IDS.indexOf(level) + stepBy;
+      setLevel(RINK_LEVEL_IDS[Math.max(0, Math.min(RINK_LEVEL_IDS.length - 1, i))]);
+      return;
+    }
     if (event.code !== "Space" && event.code !== "ArrowUp") return;
     event.preventDefault();
     if (!event.repeat) jump();
     held = true;
   });
   document.addEventListener("keyup", (event) => { if (event.code === "Space" || event.code === "ArrowUp") held = false; });
-  canvas.addEventListener("pointerdown", (event) => { event.preventDefault(); jump(); held = true; });
+  // A click on a level picks it; any other click jumps (or starts a run).
+  canvas.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    const r = canvas.getBoundingClientRect();
+    const cx = (event.clientX - r.left) * RINK_W / r.width, cy = (event.clientY - r.top) * RINK_H / r.height;
+    const hit = RINK_LEVEL_IDS.find((id) => {
+      const b = levelBoxes[id];
+      return b && cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h;
+    });
+    if (hit) { setLevel(hit); return; }
+    jump(); held = true;
+  });
   window.addEventListener("pointerup", () => { held = false; });
   document.addEventListener("visibilitychange", () => {
     if (document.hidden && state === "running") { state = "paused"; stopMusic(); }
