@@ -1189,7 +1189,7 @@ const CMS_NAV_GROUPS = {
   adminTools: { label: "Admin", items: ["admin", "smsAdmin"] }
 };
 
-const CMS_NAV_ORDER = ["wlcms", "rinkRunner", "cards", "waxPacks", "sportspicks", "blogs", "adminTools", "exit"];
+const CMS_NAV_ORDER = ["wlcms", "cards", "waxPacks", "sportspicks", "blogs", "adminTools", "rinkRunner", "exit"];
 
 function fetchCmsNav(pageName) {
   const cells = CMS_NAV_ORDER.filter(id => id !== pageName)
