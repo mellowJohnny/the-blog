@@ -874,11 +874,35 @@ h1 {
   padding: 0;
 }
 
-/* The year being viewed: a filled pill, so it stands out even when the picker wraps onto several rows. */
-#set-picker .junk-set-nav-td[aria-current] {
+/* The year and the set being viewed: a filled pill, so it stands out even when a row wraps. */
+#set-picker .junk-set-nav-td[aria-current],
+.set-shelf-list [aria-current] {
   background-color: var(--color-button);
   color: var(--color-white);
   border-radius: 6px;
+}
+
+/* The set shelf (setShelfHtml() in wax.js): the year's sets on a band in the nav shelf's tint.
+   :has() paints the band only when there is a shelf, so a one-set year leaves no gap. */
+#set-shelf:has(.set-shelf-list) {
+  margin: -4px 0 16px 0;
+  padding: 8px 16px;
+  background-color: var(--color-nav-shelf);
+}
+
+.set-shelf-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 8px;
+  font-family: 'Nunito', 'Nunito Fallback', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--color-text-dark);
+}
+
+.set-shelf-list > * {
+  padding: 4px 10px;
 }
 
 .set-o-matic-picker {
@@ -4123,6 +4147,11 @@ body:has(.site-footer) {
   #set-picker .card-set-nav {
     font-size: 16px;
     gap: 2px;
+  }
+
+  .set-shelf-list {
+    font-size: 16px;
+    gap: 4px;
   }
 
   /* Fixed basis so every row lines up into the same 3 columns, and the

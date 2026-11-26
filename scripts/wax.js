@@ -136,6 +136,9 @@ function renderCardSetPage() {
   // Before fetchPageTitle() below, which reads the URL for its canonical.
   if (pageItems.length) syncSetIdInUrl(pageItems[0]);
 
+  const shelf = document.getElementById("set-shelf");
+  if (shelf && pageItems.length) shelf.innerHTML = setShelfHtml(allCardSets, pageItems[0].setID, reviewHref);
+
   // Let's populate card set
   pageItems.forEach(item => {
     displayCardSet(
@@ -169,6 +172,19 @@ function renderCardSetPage() {
   attachPhoneFallbacks(container); // helper.js: a missing phone copy falls back to the full image
 
   renderPaginationControls();
+}
+
+// The set shelf under the year picker: the year's sets, in page order, the current one as a pill.
+// DOM-free: tools/generateReviewPages runs it too. Empty for a one-set year.
+function setShelfHtml(sets, currentSetID, hrefFor) {
+  if (!sets || sets.length < 2) return "";
+  const cells = sets.map((set) => {
+    const name = escapeHtml(stripYearFromSetName(set.setName));
+    return set.setID === currentSetID
+      ? `<span aria-current="page">${name}</span>`
+      : `<a href="${hrefFor(set)}#year-picker">${name}</a>`;
+  }).join("");
+  return `<div class="set-shelf-list">${cells}</div>`;
 }
 
 // A review's own page, generated per set by tools/generateReviewPages.

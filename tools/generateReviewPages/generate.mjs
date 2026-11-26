@@ -282,12 +282,13 @@ function loadBrowserFunctions(categoryRanges) {
     liftBlock(helperSource, "nav-block", "scripts/helper.js"),
     liftBlock(helperSource, "footer-block", "scripts/helper.js"),
     liftFunction(waxSource, "stripYearFromSetName", "scripts/wax.js"),
+    liftFunction(waxSource, "setShelfHtml", "scripts/wax.js"),
     liftFunction(waxSource, "cardSetJsonLd", "scripts/wax.js"),
     liftFunction(waxSource, "cardIntroHtml", "scripts/wax.js"),
     liftBlock(waxSource, "checklist-block", "scripts/wax.js"),
     fs.readFileSync(BROWSE_SCRIPT_PATH, "utf8")
   ].join("\n"), context);
-  for (const name of ["browseColumnHtml", "setPickerHtml", "compareSetsForDefault", "navHtml", "footerHtml", "phoneImageUrl", ...REVIEW_HELPERS, "cardSetJsonLd", "cardIntroHtml",
+  for (const name of ["browseColumnHtml", "setPickerHtml", "setShelfHtml", "compareSetsForDefault", "navHtml", "footerHtml", "phoneImageUrl", ...REVIEW_HELPERS, "cardSetJsonLd", "cardIntroHtml",
     "renderChecklistGroups", "checklistFilterAvailability"]) {
     if (typeof context[name] !== "function") throw new Error(`${name}() did not load from the browser scripts`);
   }
@@ -442,12 +443,13 @@ function jsonLdTag([id, data]) {
   return `<script type="application/ld+json" id="${id}">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`;
 }
 
-function buildPage(template, set, categoryRanges, warnings, pickerHtml, navMarkup, footerMarkup, review) {
+function buildPage(template, set, categoryRanges, warnings, pickerHtml, shelfHtml, navMarkup, footerMarkup, review) {
   const url = reviewUrl(set);
   const head = [headBlock(set, url, warnings, review.title), ...review.jsonLd.map(jsonLdTag)].join("\n    ");
   let html = replaceBetween(template, "review-head", head);
   html = replaceBetween(html, "review-params", paramsBlock(set, categoryRanges));
   html = replaceBetween(html, "set-picker", pickerHtml, "waxReviews.html", true);
+  html = replaceBetween(html, "set-shelf", shelfHtml, "waxReviews.html", true);
   html = replaceBetween(html, "breadcrumbs", review.crumbs);
   html = replaceBetween(html, "card-intro", review.intro.trim());
   html = replaceBetween(html, "review-body", review.body);
@@ -596,7 +598,7 @@ try {
   const categoryRanges = loadCategoryRanges();
   const warnings = [];
   const browser = loadBrowserFunctions(categoryRanges);
-  const { browseColumnHtml, setPickerHtml, compareSetsForDefault, navHtml, footerHtml } = browser;
+  const { browseColumnHtml, setPickerHtml, setShelfHtml, compareSetsForDefault, navHtml, footerHtml } = browser;
   phoneImageUrl = browser.phoneImageUrl;
   const navLinkFor = navHrefFor(sets, compareSetsForDefault);
   const footerMarkup = footerHtml(navLinkFor);
@@ -607,11 +609,14 @@ try {
   const pages = sets.map((set) => {
     const pageName = pageNameFor(set, categoryRanges);
     const pickerHtml = setPickerHtml(set.year, set.blogCat, pageName, pickerHrefFor(set, sets, compareSetsForDefault));
+    // The same sets and order the page's pagination uses (wax.js sorts with compareSetsForDefault).
+    const yearSets = sets.filter((s) => s.blogCat === set.blogCat && s.year === set.year).sort(compareSetsForDefault);
+    const shelfHtml = setShelfHtml(yearSets, set.setID, (s) => `/reviews/${s.seoURLSlug}/`);
     const record = records.get(set.setID);
     if (record) prerendered++;
     else if (!warnings.some((w) => w.startsWith(`${set.year} ${set.blogCat}:`))) warnings.push(`"${set.setName}": review text not pre-rendered (not in its year's reply)`);
     const review = prerenderReview(browser, set, record, pageName, navLinkFor, checklists.get(set.setID));
-    return { set, html: buildPage(template, set, categoryRanges, warnings, pickerHtml, navHtml(pageName, undefined, navLinkFor), footerMarkup, review) };
+    return { set, html: buildPage(template, set, categoryRanges, warnings, pickerHtml, shelfHtml, navHtml(pageName, undefined, navLinkFor), footerMarkup, review) };
   });
   const checklistTemplate = fs.readFileSync(CHECKLIST_TEMPLATE_PATH, "utf8");
   const checklistPages = [...checklists].map(([setID, items]) => {
