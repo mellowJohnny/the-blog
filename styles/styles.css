@@ -907,10 +907,12 @@ h1 {
     transition: clip-path 0.3s cubic-bezier(.3, .7, .2, 1), visibility 0s linear 0.3s;
   }
 
-  /* A see-through mid blue (35%), so the panel reads clearly yet the review shows through it.
+  /* Frosted glass: 70% tint plus a blur, so the review shows through as soft colour, never hard edges.
      Same selector as the base panel rule, so this one (later in the file) wins. */
   #set-shelf:has(.set-shelf-list) {
-    background-color: color-mix(in srgb, var(--color-input-border) 35%, transparent);
+    background-color: color-mix(in srgb, var(--color-nav-shelf) 70%, transparent);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
   }
 
   #set-shelf.open {
