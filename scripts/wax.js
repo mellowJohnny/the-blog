@@ -203,23 +203,28 @@ async function shelfSetsForYear(year) {
   return sets.filter((s) => s.blogCat === here.blogCat && String(s.year) === String(year)).sort(compareSetsForDefault);
 }
 
-// Hangs the shelf from the bottom of the year row, as wide as the row. On a touch screen the shelf stays
-// in the flow (it can't open on hover), so it's pulled up under the row with a negative margin instead.
+// Hangs the shelf just under the year row, centred on it: as wide as its sets need, but never wider
+// than the review box below. On a touch screen it stays in the flow (it can't open on hover), so it's
+// pulled up under the row with a negative margin instead.
 function positionSetShelf() {
   const shelf = document.getElementById("set-shelf");
   const cells = [...document.querySelectorAll("#set-picker [data-year]")].map((c) => c.getBoundingClientRect());
   if (!shelf || !cells.length) return;
   if (!shelf.querySelector(".set-shelf-list")) { shelf.removeAttribute("style"); return; }
   const box = shelf.parentElement.getBoundingClientRect();
-  const left = Math.min(...cells.map((r) => r.left)), right = Math.max(...cells.map((r) => r.right));
+  const review = (document.getElementById("cardSetDiv") || shelf.parentElement).getBoundingClientRect();
+  const rowCentre = (Math.min(...cells.map((r) => r.left)) + Math.max(...cells.map((r) => r.right))) / 2;
   const bottom = Math.max(...cells.map((r) => r.bottom)) + 4;
-  shelf.style.width = `${right - left}px`;
+  shelf.style.width = "fit-content";
+  shelf.style.maxWidth = `${review.width}px`;
+  const width = shelf.getBoundingClientRect().width;
+  const left = Math.min(Math.max(rowCentre - width / 2, review.left), review.right - width) - box.left;
   if (matchMedia("(hover: hover)").matches) {
-    shelf.style.left = `${left - box.left}px`;
+    shelf.style.left = `${left}px`;
     shelf.style.top = `${bottom - box.top}px`;
     return;
   }
-  shelf.style.marginLeft = `${left - box.left}px`;
+  shelf.style.marginLeft = `${left}px`;
   shelf.style.marginTop = "0px";
   shelf.style.marginTop = `${bottom - shelf.getBoundingClientRect().top}px`;
 }
