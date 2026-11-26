@@ -805,8 +805,8 @@ function setPickerHtml(year, blogCat, pageName, hrefFor) {
       || `/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}`;
 
     cells += (y === parseInt(year))
-      ? `<div class="${range.className}" aria-current="page">${label}</div>`
-      : `<div class="${range.className}">
+      ? `<div class="${range.className}" data-year="${y}" aria-current="page">${label}</div>`
+      : `<div class="${range.className}" data-year="${y}">
            <a href="${href}" data-review-cat="${blogCat}" data-review-year="${y}">
              ${label}
            </a>

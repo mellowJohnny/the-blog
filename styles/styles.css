@@ -882,12 +882,66 @@ h1 {
   border-radius: 6px;
 }
 
-/* The set shelf (setShelfHtml() in wax.js): the year's sets on a band in the nav shelf's tint.
-   :has() paints the band only when there is a shelf, so a one-set year leaves no gap. */
+/* The set shelf (setShelfHtml() in wax.js): a year's sets on a panel in the nav shelf's tint, as wide
+   as the year row and hung just under it by positionSetShelf(). :has() paints it only when it has sets. */
+.set-picker-wrap {
+  position: relative;
+}
+
 #set-shelf:has(.set-shelf-list) {
-  margin: -4px 0 16px 0;
-  padding: 8px 16px;
+  box-sizing: border-box;
+  padding: 8px 12px;
   background-color: var(--color-nav-shelf);
+  border-radius: 6px;
+}
+
+/* Mouse and trackpad: a drop-down over the review, revealed top-down like the nav's dropdowns.
+   visibility keeps a closed shelf out of the tab order. */
+@media (hover: hover) {
+  #set-shelf {
+    position: absolute;
+    z-index: 900;
+    box-shadow: 0 14px 22px -16px rgba(11, 62, 100, 0.45);
+    visibility: hidden;
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 0.3s cubic-bezier(.3, .7, .2, 1), visibility 0s linear 0.3s;
+  }
+
+  #set-shelf.open {
+    visibility: visible;
+    clip-path: inset(0 0 -30px 0); /* the negative bottom keeps the shadow */
+    transition: clip-path 0.3s cubic-bezier(.3, .7, .2, 1), visibility 0s;
+  }
+
+  #set-shelf .set-shelf-list > * {
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  #set-shelf.open .set-shelf-list > * {
+    opacity: 1;
+    transform: none;
+  }
+
+  #set-shelf .set-shelf-list > :nth-child(2) { transition-delay: 0.03s; }
+  #set-shelf .set-shelf-list > :nth-child(3) { transition-delay: 0.06s; }
+  #set-shelf .set-shelf-list > :nth-child(n+4) { transition-delay: 0.09s; }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: reduce) {
+  #set-shelf,
+  #set-shelf.open,
+  #set-shelf .set-shelf-list > * {
+    transition: none;
+  }
+}
+
+/* Touch screens can't hover: the current year's shelf stays open in the page flow. */
+@media (hover: none) {
+  #set-shelf:has(.set-shelf-list) {
+    margin-bottom: 16px;
+  }
 }
 
 .set-shelf-list {

@@ -137,7 +137,12 @@ function renderCardSetPage() {
   if (pageItems.length) syncSetIdInUrl(pageItems[0]);
 
   const shelf = document.getElementById("set-shelf");
-  if (shelf && pageItems.length) shelf.innerHTML = setShelfHtml(allCardSets, pageItems[0].setID, reviewHref);
+  if (shelf && pageItems.length) {
+    currentShelfSetID = pageItems[0].setID;
+    shelf.innerHTML = setShelfHtml(allCardSets, currentShelfSetID, reviewHref);
+    initSetShelf();
+    positionSetShelf();
+  }
 
   // Let's populate card set
   pageItems.forEach(item => {
@@ -185,6 +190,109 @@ function setShelfHtml(sets, currentSetID, hrefFor) {
       : `<a href="${hrefFor(set)}#year-picker">${name}</a>`;
   }).join("");
   return `<div class="set-shelf-list">${cells}</div>`;
+}
+
+let currentShelfSetID = null, setShelfReady = false, setShelfTimer = null;
+
+// A year's sets for the shelf, in page order: this page's own list for its year, else the review manifest.
+async function shelfSetsForYear(year) {
+  const here = allCardSets[0];
+  if (!here) return [];
+  if (String(here.year) === String(year)) return allCardSets;
+  const sets = await loadReviewLinks(); // helper.js
+  return sets.filter((s) => s.blogCat === here.blogCat && String(s.year) === String(year)).sort(compareSetsForDefault);
+}
+
+// Hangs the shelf from the bottom of the year row, as wide as the row. On a touch screen the shelf stays
+// in the flow (it can't open on hover), so it's pulled up under the row with a negative margin instead.
+function positionSetShelf() {
+  const shelf = document.getElementById("set-shelf");
+  const cells = [...document.querySelectorAll("#set-picker [data-year]")].map((c) => c.getBoundingClientRect());
+  if (!shelf || !cells.length) return;
+  if (!shelf.querySelector(".set-shelf-list")) { shelf.removeAttribute("style"); return; }
+  const box = shelf.parentElement.getBoundingClientRect();
+  const left = Math.min(...cells.map((r) => r.left)), right = Math.max(...cells.map((r) => r.right));
+  const bottom = Math.max(...cells.map((r) => r.bottom)) + 4;
+  shelf.style.width = `${right - left}px`;
+  if (matchMedia("(hover: hover)").matches) {
+    shelf.style.left = `${left - box.left}px`;
+    shelf.style.top = `${bottom - box.top}px`;
+    return;
+  }
+  shelf.style.marginLeft = `${left - box.left}px`;
+  shelf.style.marginTop = "0px";
+  shelf.style.marginTop = `${bottom - shelf.getBoundingClientRect().top}px`;
+}
+
+async function openSetShelf(year) {
+  clearTimeout(setShelfTimer);
+  const shelf = document.getElementById("set-shelf");
+  if (shelf.dataset.year === String(year)) return;
+  shelf.dataset.year = String(year);
+  const html = setShelfHtml(await shelfSetsForYear(year), currentShelfSetID, reviewHref);
+  if (shelf.dataset.year !== String(year)) return; // the pointer moved on while the manifest loaded
+  if (!html) { closeSetShelf(); return; }
+  shelf.innerHTML = html;
+  positionSetShelf();
+  shelf.classList.add("open");
+}
+
+function closeSetShelf() {
+  clearTimeout(setShelfTimer);
+  const shelf = document.getElementById("set-shelf");
+  shelf.classList.remove("open");
+  shelf.dataset.year = "";
+}
+
+// The short delay lets the pointer cross from a year down into the shelf without it closing.
+function closeSetShelfSoon() {
+  clearTimeout(setShelfTimer);
+  setShelfTimer = setTimeout(closeSetShelf, 150);
+}
+
+// Hover or keyboard focus on a year opens its shelf; leaving the row and the shelf, or Escape, closes it.
+// Touch screens get no listeners: their shelf is the static current-year one.
+function initSetShelf() {
+  if (setShelfReady) return;
+  setShelfReady = true;
+  window.addEventListener("resize", positionSetShelf);
+  if (document.fonts) document.fonts.ready.then(positionSetShelf);
+  if (!matchMedia("(hover: hover)").matches) return;
+  const picker = document.getElementById("set-picker"), shelf = document.getElementById("set-shelf");
+  const onYear = (event) => {
+    const cell = event.target.closest && event.target.closest("[data-year]");
+    if (cell) openSetShelf(cell.dataset.year);
+  };
+  picker.addEventListener("mouseover", onYear);
+  picker.addEventListener("focusin", onYear);
+  shelf.addEventListener("mouseenter", () => clearTimeout(setShelfTimer));
+  shelf.addEventListener("focusin", () => clearTimeout(setShelfTimer));
+  [picker, shelf].forEach((el) => {
+    el.addEventListener("mouseleave", closeSetShelfSoon);
+    el.addEventListener("focusout", (event) => {
+      if (!picker.contains(event.relatedTarget) && !shelf.contains(event.relatedTarget)) closeSetShelfSoon();
+    });
+  });
+  document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeSetShelf(); });
+  picker.addEventListener("keydown", (event) => shelfTabOrder(event, picker, shelf));
+  shelf.addEventListener("keydown", (event) => shelfTabOrder(event, picker, shelf));
+}
+
+// The shelf comes after the whole year row in the page, so Tab puts it between its year and the next:
+// Tab from an open year enters the shelf, Tab off its end goes to the next year, Shift+Tab back to the year.
+function shelfTabOrder(event, picker, shelf) {
+  if (event.key !== "Tab" || !shelf.classList.contains("open")) return;
+  const links = [...shelf.querySelectorAll("a")];
+  const yearLink = picker.querySelector(`[data-year="${shelf.dataset.year}"] a`);
+  const years = [...picker.querySelectorAll("[data-year] a")];
+  let target = null;
+  if (!event.shiftKey && event.target === yearLink) target = links[0];
+  else if (!event.shiftKey && event.target === links[links.length - 1]) {
+    target = years.find((a) => Number(a.closest("[data-year]").dataset.year) > Number(shelf.dataset.year));
+  } else if (event.shiftKey && event.target === links[0]) target = yearLink;
+  if (!target) return;
+  event.preventDefault();
+  target.focus();
 }
 
 // A review's own page, generated per set by tools/generateReviewPages.

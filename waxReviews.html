@@ -211,13 +211,16 @@
         <!-- The Back/Next pagination links jump here (#year-picker), so a new set opens at the picker -->
         <div class="set-o-matic-picker" id="year-picker">the set-o-matic year picker</div>
 
-        <div class="flex-container">
-          <div id="set-picker"><!-- set-picker:start --><!-- set-picker:end --></div>
-          <!-- Drawn by renderSetPicker() in helper.js; a generated page ships it pre-rendered -->
-        </div>
+        <!-- The wrapper is the set shelf's positioning box (initSetShelf() in wax.js hangs it under the year row) -->
+        <div class="set-picker-wrap">
+          <div class="flex-container">
+            <div id="set-picker"><!-- set-picker:start --><!-- set-picker:end --></div>
+            <!-- Drawn by renderSetPicker() in helper.js; a generated page ships it pre-rendered -->
+          </div>
 
-        <!-- The year's other sets: setShelfHtml() in wax.js, pre-rendered on a generated page; empty for a one-set year -->
-        <div id="set-shelf"><!-- set-shelf:start --><!-- set-shelf:end --></div>
+          <!-- A year's sets, dropped down on hover (static on touch screens): setShelfHtml() in wax.js; the build pre-renders the current year's -->
+          <div id="set-shelf"><!-- set-shelf:start --><!-- set-shelf:end --></div>
+        </div>
       </section>
 
       <!-- The review, drawn by fetchCardSetsByYear() in wax.js; a generated page ships it pre-rendered -->
