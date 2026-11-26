@@ -15,8 +15,8 @@ changing layout CSS on these pages.
 
 ## HTML conventions for `/cms` pages
 
-All the pages under `/cms` (10 at the time; 13 since the three wax pack
-pages were added in November 2026) were brought into a consistent structure on
+All the pages under `/cms` (10 at the time; 17 now, after the wax pack,
+Sportspicks and Rink Runner pages were added in November 2026) were brought into a consistent structure on
 2026-09-03 (script placement, `<head>` element order, dead code). This
 is the convention to follow for any new `/cms` page or edit to an
 existing one. **This is scoped to `/cms` specifically** — the public
@@ -57,8 +57,8 @@ reference, e.g. `cms/admin.html`):
    after `</head>` or at the bottom of `<body>` anymore (`smsAdmin.html`
    and `wlcms.html` both used to do this before the cleanup).
 
-An inline script that touches the DOM (e.g. `wlcms.html`'s nav
-dropdown toggle) still needs to run *after* the DOM is parsed even
+An inline script that touches the DOM (e.g. the `fetchCmsNav()` call
+that fills the nav) still needs to run *after* the DOM is parsed even
 though it now lives in `<head>` — wrap it in
 `window.addEventListener('load', () => { ... })`, the same pattern
 already used for `fetchCopyrightYear()` on every page.
@@ -103,30 +103,51 @@ sed -E 's#<(meta|link|br|img|input|hr)([^>]*)\s*/>#<\1\2>#g'
 
 ## cardStack — blog & card set authoring
 
-Entry point: `cms/wlcms.html` — its centered nav is grouped into
-dropdown/flyout menus (Cards, Wax Packs, Sportspicks, Blogs, Admin) plus
-a plain Exit link (the Wax Packs menu holds New and Edit only; its old
-link to the public museum page was removed on 2026-11-04. Sportspicks
-likewise holds New and Edit only, with no link to the public McFarlane's
-Garage page),
-rather than one flat row of links. Each opens two ways, independently:
-a small inline script scoped to `#wlcms-top-nav` toggles an `open`
-class on click (this is what drives it on touch, where hover isn't
-meaningful), and a `@media (hover: hover) and (pointer: fine)` CSS
-rule opens it on mouse hover on desktop/trackpad. On mobile each
-dropdown becomes an inline accordion instead of a floating flyout (no
-room to sit beside its parent at that width). Its link color
-(`.cms-nav-parent`/`.cms-nav-item-plain > a`/`.cms-nav-dropdown a`,
-`styles.css`) used to be hardcoded to `--color-text-dark`, a dark navy
-that didn't match the light blue (`--color-link`) every other `/cms`
-page's plain `.cms-top-nav` breadcrumb uses — fixed to use
-`--color-link` too, so this nav is visually consistent with the rest.
-Under the nav, the home page holds **Rink Runner**, an 8-bit hockey
-runner game (`scripts/cmsRinkRunner.js`, styled by `.rink-runner` in
-`styles.css`): jump over hockey and arena obstacles as the game speeds
-up, with an arena scoreboard, "Charge!" organ music (M turns it off) and
-the best score kept in this browser. It's there for fun and touches no
-data; see `CMS_PAGE_FLOWS.md` for how it behaves.
+Entry point: `cms/wlcms.html`, the landing page after login. It holds
+just the banner and the CMS nav, centred under the banner by
+`.cms-home-nav`.
+
+**The CMS nav** is the same on every cardStack page. It's the public
+site's nav (same markup, CSS and behaviour) filled with CMS links: each
+page calls `fetchCmsNav("<pageName>")` (`helper.js`) on load, which
+writes it into the page's `#global-nav`. Three tables in `helper.js`
+define it:
+
+- `CMS_NAV_ITEMS`: every link, keyed by page name (label and href).
+- `CMS_NAV_GROUPS`: the dropdowns — Cards (New Card Set, Edit a Card
+  Set, Manage Checklists), Wax Packs (New, Edit), Sports Picks (New
+  Figure, Edit a Figure), Blogs (New, Edit) and Admin (Admin Tools, AMP
+  SMS). Wax Packs and Sports Picks have no links to the public Wax
+  Museum or McFarlane's Garage pages.
+- `CMS_NAV_ORDER`: the top-level order — CMS Home, Rink Runner, the five
+  groups, then Exit (back to the public site).
+
+Because the ids are page names, `fetchCmsNav()` leaves the current page
+out: its top-level item is skipped and its link is dropped from its
+dropdown. To add a page, add it to `CMS_NAV_ITEMS`, then to a group or
+to `CMS_NAV_ORDER`.
+
+The cells come from the public nav's own builders, `buildNavCell()` and
+`buildNavGroupCell()`, so the dropdowns behave exactly as on the public
+site:
+- **Desktop (1221px and up):** a group opens on hover or keyboard focus
+  (CSS: `.nav-group:hover` / `:focus-within`), or on a click, which
+  toggles an `open` class through the shared `toggleNavGroup()`. A click
+  elsewhere or Escape closes it.
+- **Narrower:** the ☰ button (`toggleMenu()`) opens the whole menu with
+  every group expanded. The CMS is only used on desktop, though.
+
+Changing the shared nav's CSS or `helper.js` nav code therefore changes
+the CMS nav too.
+**Rink Runner**, an 8-bit hockey runner game, has its own page,
+`cms/rinkRunner.html`, reached from the top-level "Rink Runner" nav item
+right after CMS Home (`scripts/cmsRinkRunner.js`, styled by
+`.rink-runner` in `styles.css`). It used to sit under the nav on the CMS
+home until 2026-11-25, when it moved to keep the home a plain landing
+page. Jump over hockey and arena obstacles as the game speeds up, with
+an arena scoreboard, "Charge!" organ music (M turns it off) and the best
+score kept in this browser. It's there for fun and touches no data; see
+`CMS_PAGE_FLOWS.md` for how it behaves.
 
 Grouped page links:
 

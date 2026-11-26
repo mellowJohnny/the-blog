@@ -29,14 +29,43 @@ after Cognito login, and exists purely to route the logged-in user to
 whichever of the other pages they actually want, via a dropdown nav.
 Nothing here needs to know about blogs, card sets, or subscribers.
 
+**What loads**: `auth.js`, `helper.js`.
+
+**On `window load`**: `fetchCopyrightYear()` and `fetchCmsNav("wlcms")`
+(both `helper.js`).
+
+**No API calls happen on this page at all** — it's a pure navigation
+hub, because its whole purpose is routing rather than reading or
+writing any data. (Rink Runner, which used to sit under this page's nav,
+moved to its own page on 2026-11-25 — see the next section.)
+
+**User interactions**:
+- Cards / Wax Packs / Sports Picks / Blogs / Admin dropdown buttons →
+  the shared nav code in `helper.js` (the same as the public site's):
+  hover or keyboard focus opens a group through CSS alone, and a click
+  toggles it through `toggleNavGroup()`, closing any other open group.
+  An outside click or Escape closes it. See `CMS_GUIDE.md`'s "The CMS
+  nav" for how `fetchCmsNav()` builds it.
+- Every link inside a dropdown (New Card Set, Edit a Card Set, Manage
+  Checklists, New Wax Pack, Edit a Wax Pack, New Figure, Edit a Figure,
+  New Blog Post, Edit a Blog Post, Admin Tools, AMP SMS) and the plain
+  Rink Runner and Exit links are
+  all ordinary `<a href>` navigations to another page — no JS, no API
+  call, since this page's job ends the moment a destination is chosen.
+
+## `cms/rinkRunner.html` — Rink Runner
+
+A page with one job: the CMS's 8-bit hockey runner game, purely for fun.
+It's the top-level "Rink Runner" item in the CMS nav, right after CMS
+Home (`CMS_NAV_ITEMS`/`CMS_NAV_ORDER` in `helper.js`).
+
 **What loads**: `auth.js`, `helper.js`, `cmsRinkRunner.js`.
 
-**On `window load`**: `fetchCopyrightYear()` (`helper.js`),
-`fetchCmsNav("wlcms")` (`helper.js`) and
+**On `window load`**: `fetchCopyrightYear()` and
+`fetchCmsNav("rinkRunner")` (both `helper.js`), then
 `initRinkRunner("rinkRunnerCanvas")` (`cmsRinkRunner.js`).
 
-**Rink Runner**: the centre of the page is a small 8-bit hockey runner
-game drawn on a `<canvas>`, purely for fun. The skater jumps (Space, Up
+**The game**: a small 8-bit hockey runner drawn on a `<canvas>`. The skater jumps (Space, Up
 arrow or a click; hold for a higher jump) over pucks, nets, referees,
 goalies, crossed sticks, the team mascot, popcorn, hot dogs, a heap of
 hat-trick hats, holes in the ice and the Zamboni. The speed keeps rising
@@ -62,26 +91,7 @@ score (`rinkRunnerBest`) and the music setting (`rinkRunnerMusic`) are
 kept in this browser's `localStorage`; the sprites are pixel grids in
 the script, so there are no image files.
 
-**No API calls happen on this page at all** — it's a pure navigation
-hub, the only CMS page with that property, precisely because its whole
-purpose is routing rather than reading or writing any data.
-
-**User interactions**:
-- Cards / Wax Packs / Sportspicks / Blogs / Admin dropdown buttons → a small inline script
-  written directly in this page (not in any shared `scripts/*.js` file)
-  toggles an `.open` class on click, closes any other open dropdown
-  first, and closes on an outside click or Escape. Independently, a
-  `@media (hover: hover) and (pointer: fine)` CSS rule also opens the
-  same dropdown on mouse hover, with no JS involved — see
-  `CMS_GUIDE.md`'s "Entry point & pages" section for this nav's full
-  description.
-- Every link inside a dropdown (`...new card set`, `...edit a card
-  set`, `...upload a checklist`, `...new wax pack`, `...edit wax pack`,
-  `...new figure`, `...edit figure`,
-  `...new blog post`, `...edit a blog post`, `...admin tools`, `AMP SMS`)
-  and the plain `...exit` link are
-  all ordinary `<a href>` navigations to another page — no JS, no API
-  call, since this page's job ends the moment a destination is chosen.
+**No API calls happen on this page** either: the game touches no data.
 
 ## `cms/createBlogPost.html`
 
