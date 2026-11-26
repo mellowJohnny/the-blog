@@ -515,7 +515,7 @@ function buildSpinner(className) {
 const SPINNER_PHRASES = ["opening wax packs...", "sorting cards...", "reading the Sports page...",
   "sharpening skates...", "bag skate...", "spitting chicklets...", "going bar down...", "taping sticks...",
   "filling water bottles...", "flooding the rink...", "signing autographs...", "checking the standings...",
-  "chirping the ref..."];
+  "chirping the ref...", "forechecking...", "backchecking...", "pulling the goalie..."];
 
 // A different random phrase every 2s, typed out a letter every 50ms behind a block cursor.
 // The untyped rest is laid out but invisible, so the centred text doesn't shift as it grows.
