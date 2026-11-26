@@ -907,6 +907,12 @@ h1 {
     transition: clip-path 0.3s cubic-bezier(.3, .7, .2, 1), visibility 0s linear 0.3s;
   }
 
+  /* 85% of the shelf tint, so the top of the review shows faintly through the open drop-down.
+     Same selector as the base panel rule, so this one (later in the file) wins. */
+  #set-shelf:has(.set-shelf-list) {
+    background-color: color-mix(in srgb, var(--color-nav-shelf) 85%, transparent);
+  }
+
   #set-shelf.open {
     visibility: visible;
     clip-path: inset(0 0 -30px 0); /* the negative bottom keeps the shadow */
