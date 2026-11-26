@@ -796,7 +796,7 @@ h1 {
 }
 
 /* A read-only explanation in place of a field (the card set forms' SEO Title, which the build sets) */
-/* Rink Runner, the CMS home's 8-bit game (scripts/cmsRinkRunner.js): a 600x180 canvas scaled up
+/* Rink Runner, the CMS's 8-bit game (cms/rinkRunner.html, scripts/cmsRinkRunner.js): a 600x180 canvas scaled up
    without smoothing (pixelated), so the pixel art stays crisp at any width */
 .rink-runner {
   max-width: 720px;

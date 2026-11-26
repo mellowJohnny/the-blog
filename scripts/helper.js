@@ -1166,6 +1166,7 @@ function setCookie(cookieName, cookieValue, exp) {
 // so a page leaves its own link out of its dropdown.
 const CMS_NAV_ITEMS = {
   wlcms: { label: "CMS Home", href: "/cms/wlcms.html" },
+  rinkRunner: { label: "Rink Runner", href: "/cms/rinkRunner.html" },
   createCardSet: { label: "New Card Set", href: "/cms/createCardSet.html" },
   pickCardSet: { label: "Edit a Card Set", href: "/cms/pickCardSet.html" },
   uploadChecklist: { label: "Manage Checklists", href: "/cms/uploadChecklist.html" },
@@ -1188,7 +1189,7 @@ const CMS_NAV_GROUPS = {
   adminTools: { label: "Admin", items: ["admin", "smsAdmin"] }
 };
 
-const CMS_NAV_ORDER = ["wlcms", "cards", "waxPacks", "sportspicks", "blogs", "adminTools", "exit"];
+const CMS_NAV_ORDER = ["wlcms", "rinkRunner", "cards", "waxPacks", "sportspicks", "blogs", "adminTools", "exit"];
 
 function fetchCmsNav(pageName) {
   const cells = CMS_NAV_ORDER.filter(id => id !== pageName)

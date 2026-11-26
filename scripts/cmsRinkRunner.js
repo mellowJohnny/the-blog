@@ -1,4 +1,4 @@
-/** Rink Runner: the CMS home page's 8-bit hockey runner (cms/wlcms.html). A skater jumps the
+/** Rink Runner: the CMS's 8-bit hockey runner, on its own page (cms/rinkRunner.html). A skater jumps the
  * obstacles that slide in on the ice; Space, Up or a click jumps (hold for a higher jump).
  * Everything is drawn from the pixel grids below; initRinkRunner() is the only entry point. */
 
