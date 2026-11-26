@@ -512,8 +512,8 @@ function buildSpinner(className) {
   return box;
 }
 
-const SPINNER_PHRASES = ["opening wax packs...", "sorting cards...", "reading the Sports page...",
-  "sharpening skates...", "bag skate...", "spitting chicklets...", "going bar down...", "taping sticks...",
+const SPINNER_PHRASES = ["opening wax packs...", "sorting cards...",
+  "sharpening skates...", "spitting chicklets...", "going bar down...", "taping sticks...",
   "filling water bottles...", "flooding the rink...", "signing autographs...", "checking the standings...",
   "chirping the ref...", "forechecking...", "backchecking...", "pulling the goalie..."];
 
