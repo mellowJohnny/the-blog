@@ -753,7 +753,7 @@ const categoryRanges = {
     junkWax:    { start: 1987, end: 1993, className: "junk-set-nav-td", pageName: "junkWax" }
   },
   mcd: {
-    mcd: { start: 1991, end: 2007, className: "junk-set-nav-td", pageName: "mcd" }
+    mcd: { start: 1991, end: 2007, className: "junk-set-nav-td", pageName: "mcd", decades: true }
   },
   tims: {
     timmies: { start: 2019, end: 2026, className: "junk-set-nav-td", pageName: "timmies" }
@@ -785,6 +785,34 @@ function resolveBlogCat(blogCat, pageName) {
   return null;
 }
 
+// A year's link: hrefFor(y) when it has one (the build's review pages), else the query form.
+function yearHref(y, range, blogCat, hrefFor) {
+  return (hrefFor && hrefFor(y)) || `/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}`;
+}
+
+// One year in the picker (or a decade's shelf): the current year as a plain pill, others as links.
+function yearCellHtml(y, current, range, blogCat, hrefFor) {
+  const label = `${y}-${(y + 1).toString().slice(-2)}`;
+  return current
+    ? `<div class="${range.className}" data-year="${y}" aria-current="page">${label}</div>`
+    : `<div class="${range.className}" data-year="${y}">
+         <a href="${yearHref(y, range, blogCat, hrefFor)}" data-review-cat="${blogCat}" data-review-year="${y}">
+           ${label}
+         </a>
+       </div>`;
+}
+
+// A decade's seasons for the set shelf on a decades range, the current season as the pill.
+function yearShelfHtml(decade, year, blogCat, pageName, hrefFor) {
+  const range = categoryRanges[blogCat] && categoryRanges[blogCat][pageName];
+  if (!range) return "";
+  let cells = "";
+  for (let y = Math.max(decade, range.start); y <= Math.min(decade + 9, range.end); y++) {
+    cells += yearCellHtml(y, y === parseInt(year), range, blogCat, hrefFor);
+  }
+  return `<div class="set-shelf-list">${cells}</div>`;
+}
+
 // The year picker's markup. hrefFor(y), when given, returns a year's final link
 // (tools/generateReviewPages pre-renders it that way); else the query form that
 // applyReviewLinks() upgrades.
@@ -795,22 +823,20 @@ function setPickerHtml(year, blogCat, pageName, hrefFor) {
   const range = catConfig[pageName];
   if (!range) return `<p>No range found for category "${blogCat}" and page "${pageName}"</p>`;
 
-  const totalYears = range.end - range.start + 1;
   let cells = "";
-
-  for (let i = 0; i < totalYears; i++) {
-    const y = range.start + i;
-    const label = `${y}-${(y + 1).toString().slice(-2)}`;
-    const href = (hrefFor && hrefFor(y))
-      || `/waxReviews.html?year=${y}&pageName=${range.pageName}&blogCat=${blogCat}`;
-
-    cells += (y === parseInt(year))
-      ? `<div class="${range.className}" data-year="${y}" aria-current="page">${label}</div>`
-      : `<div class="${range.className}" data-year="${y}">
-           <a href="${href}" data-review-cat="${blogCat}" data-review-year="${y}">
-             ${label}
-           </a>
-         </div>`;
+  if (range.decades) {
+    // A decades range (McDonald's): one cell per decade; its seasons drop down in the set shelf.
+    // The other decade links to its first season, so a click or tap still goes somewhere.
+    for (let d = Math.floor(range.start / 10) * 10; d <= range.end; d += 10) {
+      const first = Math.max(d, range.start);
+      cells += Math.floor(parseInt(year) / 10) * 10 === d
+        ? `<div class="${range.className}" data-decade="${d}" aria-current="page">${d}s</div>`
+        : `<div class="${range.className}" data-decade="${d}">
+             <a href="${yearHref(first, range, blogCat, hrefFor)}" data-review-cat="${blogCat}" data-review-year="${first}">${d}s</a>
+           </div>`;
+    }
+  } else {
+    for (let y = range.start; y <= range.end; y++) cells += yearCellHtml(y, y === parseInt(year), range, blogCat, hrefFor);
   }
 
   // .card-set-nav is a flex-wrap container (styles.css), so it wraps onto

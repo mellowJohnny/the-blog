@@ -274,6 +274,9 @@ function loadBrowserFunctions(categoryRanges) {
   vm.runInContext([
     liftFunction(helperSource, "escapeHtml", "scripts/helper.js"),
     liftFunction(helperSource, "getPageNameForYear", "scripts/helper.js"),
+    liftFunction(helperSource, "yearHref", "scripts/helper.js"),
+    liftFunction(helperSource, "yearCellHtml", "scripts/helper.js"),
+    liftFunction(helperSource, "yearShelfHtml", "scripts/helper.js"),
     liftFunction(helperSource, "setPickerHtml", "scripts/helper.js"),
     liftFunction(helperSource, "compareSetsForDefault", "scripts/helper.js"),
     liftFunction(helperSource, "reviewLinkAttrs", "scripts/helper.js"),
@@ -288,7 +291,7 @@ function loadBrowserFunctions(categoryRanges) {
     liftBlock(waxSource, "checklist-block", "scripts/wax.js"),
     fs.readFileSync(BROWSE_SCRIPT_PATH, "utf8")
   ].join("\n"), context);
-  for (const name of ["browseColumnHtml", "setPickerHtml", "setShelfHtml", "compareSetsForDefault", "navHtml", "footerHtml", "phoneImageUrl", ...REVIEW_HELPERS, "cardSetJsonLd", "cardIntroHtml",
+  for (const name of ["browseColumnHtml", "setPickerHtml", "setShelfHtml", "yearShelfHtml", "compareSetsForDefault", "navHtml", "footerHtml", "phoneImageUrl", ...REVIEW_HELPERS, "cardSetJsonLd", "cardIntroHtml",
     "renderChecklistGroups", "checklistFilterAvailability"]) {
     if (typeof context[name] !== "function") throw new Error(`${name}() did not load from the browser scripts`);
   }
@@ -598,7 +601,7 @@ try {
   const categoryRanges = loadCategoryRanges();
   const warnings = [];
   const browser = loadBrowserFunctions(categoryRanges);
-  const { browseColumnHtml, setPickerHtml, setShelfHtml, compareSetsForDefault, navHtml, footerHtml } = browser;
+  const { browseColumnHtml, setPickerHtml, setShelfHtml, yearShelfHtml, compareSetsForDefault, navHtml, footerHtml } = browser;
   phoneImageUrl = browser.phoneImageUrl;
   const navLinkFor = navHrefFor(sets, compareSetsForDefault);
   const footerMarkup = footerHtml(navLinkFor);
@@ -608,10 +611,14 @@ try {
   let prerendered = 0;
   const pages = sets.map((set) => {
     const pageName = pageNameFor(set, categoryRanges);
-    const pickerHtml = setPickerHtml(set.year, set.blogCat, pageName, pickerHrefFor(set, sets, compareSetsForDefault));
-    // The same sets and order the page's pagination uses (wax.js sorts with compareSetsForDefault).
+    const pickerHref = pickerHrefFor(set, sets, compareSetsForDefault);
+    const pickerHtml = setPickerHtml(set.year, set.blogCat, pageName, pickerHref);
+    // A decades range (McDonald's) shelves the current decade's seasons; others the year's sets, in the
+    // order the page's pagination uses (wax.js sorts with compareSetsForDefault).
     const yearSets = sets.filter((s) => s.blogCat === set.blogCat && s.year === set.year).sort(compareSetsForDefault);
-    const shelfHtml = setShelfHtml(yearSets, set.setID, (s) => `/reviews/${s.seoURLSlug}/`);
+    const shelfHtml = categoryRanges[set.blogCat][pageName].decades
+      ? yearShelfHtml(Math.floor(set.year / 10) * 10, set.year, set.blogCat, pageName, pickerHref)
+      : setShelfHtml(yearSets, set.setID, (s) => `/reviews/${s.seoURLSlug}/`);
     const record = records.get(set.setID);
     if (record) prerendered++;
     else if (!warnings.some((w) => w.startsWith(`${set.year} ${set.blogCat}:`))) warnings.push(`"${set.setName}": review text not pre-rendered (not in its year's reply)`);

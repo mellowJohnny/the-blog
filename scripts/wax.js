@@ -139,7 +139,11 @@ function renderCardSetPage() {
   const shelf = document.getElementById("set-shelf");
   if (shelf && pageItems.length) {
     currentShelfSetID = pageItems[0].setID;
-    shelf.innerHTML = setShelfHtml(allCardSets, currentShelfSetID, reviewHref);
+    const here = pageItems[0], decade = document.querySelector("#set-picker [data-decade][aria-current]");
+    shelf.innerHTML = decade
+      ? yearShelfHtml(Number(decade.dataset.decade), here.year, here.blogCat, getPageNameForYear(here.blogCat, here.year))
+      : setShelfHtml(allCardSets, currentShelfSetID, reviewHref);
+    if (decade) applyReviewLinks(); // helper.js
     initSetShelf();
     positionSetShelf();
   }
@@ -193,6 +197,22 @@ function setShelfHtml(sets, currentSetID, hrefFor) {
 }
 
 let currentShelfSetID = null, setShelfReady = false, setShelfTimer = null;
+// A picker cell: a year, or a decade on a decades range (McDonald's), whose shelf holds its seasons.
+const SHELF_CELL = "[data-year], [data-decade]";
+
+function shelfCellKey(cell) {
+  return cell.dataset.year || cell.dataset.decade;
+}
+
+// The shelf for a picker cell: a decade's seasons (links upgraded by applyReviewLinks()), or a year's sets.
+async function shelfHtmlForCell(cell) {
+  const here = allCardSets[0];
+  if (!here) return "";
+  if (cell.dataset.decade) {
+    return yearShelfHtml(Number(cell.dataset.decade), here.year, here.blogCat, getPageNameForYear(here.blogCat, here.year));
+  }
+  return setShelfHtml(await shelfSetsForYear(cell.dataset.year), currentShelfSetID, reviewHref);
+}
 
 // A year's sets for the shelf, in page order: this page's own list for its year, else the review manifest.
 async function shelfSetsForYear(year) {
@@ -208,7 +228,7 @@ async function shelfSetsForYear(year) {
 // pulled up under the row with a negative margin instead.
 function positionSetShelf() {
   const shelf = document.getElementById("set-shelf");
-  const cells = [...document.querySelectorAll("#set-picker [data-year]")].map((c) => c.getBoundingClientRect());
+  const cells = [...document.querySelectorAll("#set-picker :is(" + SHELF_CELL + ")")].map((c) => c.getBoundingClientRect());
   if (!shelf || !cells.length) return;
   if (!shelf.querySelector(".set-shelf-list")) { shelf.removeAttribute("style"); return; }
   const box = shelf.parentElement.getBoundingClientRect();
@@ -229,15 +249,16 @@ function positionSetShelf() {
   shelf.style.marginTop = `${bottom - shelf.getBoundingClientRect().top}px`;
 }
 
-async function openSetShelf(year) {
+async function openSetShelf(cell) {
   clearTimeout(setShelfTimer);
-  const shelf = document.getElementById("set-shelf");
-  if (shelf.dataset.year === String(year)) return;
-  shelf.dataset.year = String(year);
-  const html = setShelfHtml(await shelfSetsForYear(year), currentShelfSetID, reviewHref);
-  if (shelf.dataset.year !== String(year)) return; // the pointer moved on while the manifest loaded
+  const shelf = document.getElementById("set-shelf"), key = shelfCellKey(cell);
+  if (shelf.dataset.cell === key) return;
+  shelf.dataset.cell = key;
+  const html = await shelfHtmlForCell(cell);
+  if (shelf.dataset.cell !== key) return; // the pointer moved on while the manifest loaded
   if (!html) { closeSetShelf(); return; }
   shelf.innerHTML = html;
+  if (cell.dataset.decade) applyReviewLinks(); // helper.js
   positionSetShelf();
   shelf.classList.add("open");
 }
@@ -246,7 +267,7 @@ function closeSetShelf() {
   clearTimeout(setShelfTimer);
   const shelf = document.getElementById("set-shelf");
   shelf.classList.remove("open");
-  shelf.dataset.year = "";
+  shelf.dataset.cell = "";
 }
 
 // The short delay lets the pointer cross from a year down into the shelf without it closing.
@@ -265,8 +286,8 @@ function initSetShelf() {
   if (!matchMedia("(hover: hover)").matches) return;
   const picker = document.getElementById("set-picker"), shelf = document.getElementById("set-shelf");
   const onYear = (event) => {
-    const cell = event.target.closest && event.target.closest("[data-year]");
-    if (cell) openSetShelf(cell.dataset.year);
+    const cell = event.target.closest && event.target.closest(SHELF_CELL);
+    if (cell) openSetShelf(cell);
   };
   picker.addEventListener("mouseover", onYear);
   picker.addEventListener("focusin", onYear);
@@ -288,13 +309,13 @@ function initSetShelf() {
 function shelfTabOrder(event, picker, shelf) {
   if (event.key !== "Tab" || !shelf.classList.contains("open")) return;
   const links = [...shelf.querySelectorAll("a")];
-  const yearLink = picker.querySelector(`[data-year="${shelf.dataset.year}"] a`);
-  const years = [...picker.querySelectorAll("[data-year] a")];
+  const cellLinks = [...picker.querySelectorAll(SHELF_CELL)].map((c) => [shelfCellKey(c), c.querySelector("a")]).filter(([, a]) => a);
+  const ownLink = (cellLinks.find(([key]) => key === shelf.dataset.cell) || [])[1];
   let target = null;
-  if (!event.shiftKey && event.target === yearLink) target = links[0];
+  if (!event.shiftKey && event.target === ownLink) target = links[0];
   else if (!event.shiftKey && event.target === links[links.length - 1]) {
-    target = years.find((a) => Number(a.closest("[data-year]").dataset.year) > Number(shelf.dataset.year));
-  } else if (event.shiftKey && event.target === links[0]) target = yearLink;
+    target = (cellLinks.find(([key]) => Number(key) > Number(shelf.dataset.cell)) || [])[1];
+  } else if (event.shiftKey && event.target === links[0]) target = ownLink;
   if (!target) return;
   event.preventDefault();
   target.focus();
