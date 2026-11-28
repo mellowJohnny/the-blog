@@ -874,7 +874,7 @@ h1 {
   padding: 0;
 }
 
-/* The same hover and press states as the set shelf's links (below). The padding is on the cell,
+/* The set shelf links' hover outline (below), plus a fill while pressed. The padding is on the cell,
    not its link, so :has() puts the ring and the fill on the cell. */
 #set-picker .junk-set-nav-td {
   border-radius: 6px;
@@ -992,8 +992,8 @@ h1 {
   padding: 4px 10px;
 }
 
-/* A shelf link under the pointer or keyboard focus gets the pill's outline; pressing it fills the
-   pill, as the set will be on its own page. The inset shadow draws the ring inside the padding, so nothing moves. */
+/* A shelf link under the pointer or keyboard focus gets the pill's outline (no press fill: the shelf
+   closes as the page changes). The inset shadow draws the ring inside the padding, so nothing moves. */
 .set-shelf-list a {
   border-radius: 6px;
   transition: background-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
@@ -1003,11 +1003,6 @@ h1 {
 .set-shelf-list a:focus-visible {
   box-shadow: inset 0 0 0 2px var(--color-button);
   outline: none;
-}
-
-.set-shelf-list a:active {
-  background-color: var(--color-button);
-  color: var(--color-white);
 }
 
 .set-o-matic-picker {
