@@ -579,7 +579,7 @@ if (!window.location.pathname.startsWith("/cms/")) {
 // shows dimmed and unlinked. A section with no heading stands on its own.
 const FOOTER_SECTIONS = [
   { heading: "Set Reviews", links: [{ id: "classic" }, { id: "junk" }, { id: "mcd" }, { id: "timmies" }, { id: "browse" }] },
-  { heading: "Explore", links: [{ id: "timeline" }, { id: "search" }, { id: "museum" }, { id: "garage" }] },
+  { heading: "Explore", links: [{ id: "museum" }, { id: "garage" }, { id: "timeline" }, { id: "search" }] },
   { links: [{ id: "home" }, { id: "about" }] }
 ];
 
