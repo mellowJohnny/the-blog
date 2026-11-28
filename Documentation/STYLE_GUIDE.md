@@ -23,7 +23,7 @@ Use the `:root` tokens in `styles.css`. Don't type a colour value into a rule.
 | Token | Value | Use |
 |---|---|---|
 | `--color-page-bg` | `rgb(228, 241, 250)` | Page background |
-| `--color-nav-shelf` | `rgb(211, 232, 247)` | The desktop nav while a menu is open: the bar's tint and the full-width shelf under it (owner-approved 2026-11-21) |
+| `--color-nav-shelf` | `rgb(211, 232, 247)` | The desktop nav's dropdown panels, and the year picker's set shelf (at 70%, frosted, on mouse devices) (owner-approved 2026-11-21) |
 | `--color-text` | `#000` (black) | Body text: intros, review and post bodies |
 | `--color-text-dark` | `rgb(11, 62, 100)` (navy) | h2 and h3 headings, card titles, modal titles, the checklist filter labels |
 | `--color-heading-outline` | `rgb(2, 70, 153)` | Nav links, footer band, masthead text outline |
@@ -123,6 +123,7 @@ other family, and no Google Fonts link.
 | Image caption | Italic, `<em>` or a caption class | Bold italic |
 | Button | `.input-button` (the shared "Buttons" block) | A new button style or inline style |
 | Flip hint on a card | The shared Flip pill (`.timeline-hint`) | A new pill |
+| The current item in a picker (year, decade, set) | `aria-current="page"` on a non-link element, which the shared filled-pill rule (`--color-button`, white text, 6px corners) styles in the year picker and the set shelf | Bold or a darker colour alone, which is easy to miss in a picker that wraps |
 | Breadcrumbs | `#breadcrumbs` filled by `renderBreadcrumbs()`, with its `BreadcrumbList` structured data, on pages below a section only: the review pages and Lockout. Top-level pages have none on purpose (owner decision, 2026-11-07): a "Home › Page" trail adds nothing, and breadcrumbs aren't a ranking factor. | Breadcrumbs on a top-level page |
 | Back to top | `<a href="#top" class="back-to-top">` (inline SVG arrow, `aria-label="Back to top"`) before `</body>`, plus `<span id="top" class="back-to-top-sentinel">` first in `<body>`: a floating, semi-transparent navy circle in the bottom-right corner that shows once the page is scrolled (CSS scroll-state query, with `initBackToTop()` in helper.js as the fallback) and smooth-scrolls up unless the visitor reduces motion. `initBackToTop()` also handles the click, scrolling up without following the `#top` link: following it would add a history entry, so the browser's Back would return to the bottom of the same page instead of the previous page. The link stays as the no-script fallback. Long card pages only: The Wax Museum, the Timeline and McFarlane's Garage (owner-approved 2026-11-11). | A per-page scroll-to-top script, or a scroll listener |
 | Scores ticker | The `#nhlTicker` block, on the hockey content pages. Home and The Wax Museum have none on purpose (owner decision). | Adding it to Home or the Wax Museum |

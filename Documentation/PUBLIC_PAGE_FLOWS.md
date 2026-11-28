@@ -237,8 +237,9 @@ replaced with the set's `/reviews/<slug>/` page. Everything below applies
 to both unless it says otherwise. The generator and why it is built this
 way: `REVIEW_PAGES.md`.
 
-**What loads**: `scripts/wax.js`, `scripts/ticker.js`, `scripts/helper.js`
-(all `defer`), plus several inline `<script>` blocks in `<head>`, in this order:
+**What loads**: `scripts/wax.js`, `scripts/ticker.js`, `scripts/helper.js`,
+`scripts/waxMuseum.js` (only for the Wax Pack modal's card builder; all
+`defer`), plus several inline `<script>` blocks in `<head>`, in this order:
 
 1. A lockout-year redirect check (see "Notable" below) — runs
    immediately, before any other script, since it may bail out of
@@ -308,15 +309,30 @@ everything else the visitor can see or navigate to on this page.
   another year's review within the same category, without going back
   through the nav. It looks up `categoryRanges[blogCat][pageName]` for
   a hardcoded `{start, end}` year range, then builds one `<div>` per
-  year into `#set-picker` — the current year renders as plain text,
-  every other year as a link, first emitted as
+  year into `#set-picker` — the current year renders as a filled pill
+  (plain text with `aria-current="page"`), every other year as a link,
+  first emitted as
   `waxReviews.html?year=<y>&pageName=<...>&blogCat=<...>` with
   `data-review-cat`/`data-review-year` attributes and then upgraded by
   `applyReviewLinks()` to that year's default set's `/reviews/<slug>/`
   page (see "Links to reviews" below). Rendering is purely
   client-side, no API call — like the main nav, the set of valid years
   per category is a hardcoded map, not something that needs a backend
-  round-trip to determine.
+  round-trip to determine. The McDonald's pages, with nearly one set a
+  season, get one cell per decade instead (`decades: true` in
+  `categoryRanges`); the decade's seasons are listed in the set shelf.
+- The **set shelf** (`#set-shelf`, under the picker) lists the year's
+  sets (or the McDonald's decade's seasons) so a visitor can jump
+  straight to one instead of paging through Back/Next. The build
+  pre-renders the current year's; `renderCardSetPage()` (`wax.js`) fills
+  it again once the year's sets have loaded, from the same data (no
+  extra API call). On a mouse or trackpad it stays hidden until a year
+  cell is hovered or focused, then drops down over the review for that
+  year: the current year from the page's own data, another year from the
+  `/reviews/index.json` manifest that `helper.js` already loads for
+  links, so a preview never calls the API. On touch screens the current
+  year's shelf stays open in the page. See `FRONTEND.md`, "The set
+  shelf".
 - `fetchCardSetsByYear(year, sortOrder, blogCat, setID)` (`wax.js`,
   started on `DOMContentLoaded`, listed here with the other page pieces)
   is the call that actually loads the review itself. Its request goes
@@ -549,10 +565,26 @@ everything else the visitor can see or navigate to on this page.
 - Close (`×`) → `closeChecklistModal()`; clicking the dark backdrop
   outside the modal content also triggers it, via a `document`-level
   click listener in `wax.js` that checks `event.target === overlay`.
-- Set-o-matic year-picker links → plain `<a href>` navigations to a new
-  `waxReviews.html?...` URL — no JS beyond the link itself, since
-  changing years is really just a normal page navigation with different
-  query params.
+- "Wax Pack" link (only when the set links to a pack in The Wax Museum;
+  "Wax Packs" for two) exists so a reader can see the set's actual
+  packs, front and back, without leaving the review. Its `href` is
+  `/waxMuseum.html` for crawlers and new tabs; a click runs
+  `openWaxPackModal(this)` (`wax.js`) instead, which reads the
+  `"<year>-<packKey>"` keys off `data-wax-pack`/`data-wax-pack2`, opens
+  `#waxPackModal` with the spinner and calls **Get wax packs** once per
+  distinct year (`?year=`), fronted by the `getWaxPacks` Lambda
+  (`Lambdas/getWaxPacks/`), a `Query` on the `WaxPacks` table's `year`
+  partition key. It picks each pack out by `packKey` and draws it with
+  The Wax Museum's own `buildWaxPackCard()` (`waxMuseum.js`), so it
+  flips the same way; two packs get arrows, dots and a swipe between
+  them. ×, Escape or a click outside closes it. See `FRONTEND.md`, "Wax
+  Pack modal".
+- Set-o-matic year-picker links and set shelf links → plain `<a href>`
+  navigations to another review's `/reviews/<slug>/` page (or the old
+  `waxReviews.html?...` URL before the manifest arrives) — no JS beyond
+  the link itself, since changing years or sets is really just a normal
+  page navigation. A shelf link ends in `#year-picker`, so the new page
+  opens scrolled to the picker.
 - Pagination links (only shown when a year has more than one set) →
   plain `<a href>` links to the neighbouring set's `/reviews/<slug>/`
   page (built by `reviewHref()` in `wax.js`), so each click is a normal
@@ -664,8 +696,10 @@ flow).
   and the order falls back to match quality and length. Arrow keys move a highlighted
   selection, Enter selects it (or, with nothing highlighted, falls
   through to a normal form submit), Escape or an outside click closes
-  the dropdown, and clicking a suggestion fills the input and runs the
-  real search immediately.
+  the dropdown, and clicking a suggestion fills the input. Picking a
+  suggestion (`selectSuggestion()`) only fills the input, closes the
+  dropdown and refocuses the input; since 2026-11-25 it no longer runs
+  the search, which waits for the Search button or Enter.
 - Submitting the form (`onsubmit`, `event.preventDefault()`) →
   `runPlayerSearch(document.getElementById('playerSearchInput').value)`
   (`playerSearch.js`) is still the only way an actual search (`q` mode)

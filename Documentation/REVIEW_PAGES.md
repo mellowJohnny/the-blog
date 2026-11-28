@@ -31,9 +31,9 @@ records how it got here.
 - Old query-string URLs (`waxReviews.html?year=1991&...`) keep working.
 - Since 2026-11-05 the generator also pre-renders the shared blocks
   whose links point at review pages: the nav and footer (every public
-  page and review page), the year picker (every review page) and the
-  Browse By Set columns, with final `/reviews/<slug>/` links in the HTML
-  (see "Links" below).
+  page and review page), the year picker and its set shelf (every review
+  page) and the Browse By Set columns, with final `/reviews/<slug>/`
+  links in the HTML (see "Links" below).
 - The same build then minifies the public scripts and `styles.css` in
   place (see "The rest of the build: minified assets"); the repo keeps the
   readable source.
@@ -61,8 +61,9 @@ Amplify build (amplify.yml)
                 reviews/<slug>/checklist/index.html (one per set with a checklist)
                 reviews/index.json                  (link manifest)
                 sitemap.xml
-        fills in place: the nav and footer of 8 static pages,
-                        browseBySet.html's two columns
+        fills in place: the nav and footer of 9 static pages,
+                        browseBySet.html's two columns,
+                        waxMuseum.html's first-pack image preload
    node tools/minifyAssets/minify.mjs        (public JS + styles.css, in place)
    rm -rf node_modules                       (keep it out of the artifact)
    rm -rf "Old HTML Pages"                   (archived pages aren't published)
@@ -102,11 +103,12 @@ content changes share one path.
    four at a time) and each checklist (64, two at a time); the whole run
    takes about 15 seconds. For each live set it takes `waxReviews.html`
    as a template, replaces two marked blocks (below) and fills the rest
-   (nav, footer, year picker, breadcrumbs, intro, the review), then
-   writes the page, and writes the set's checklist page from
+   (nav, footer, year picker, set shelf, breadcrumbs, intro, the review),
+   then writes the page, and writes the set's checklist page from
    `checklistTemplate.html`. It also writes the manifest and the sitemap,
-   and fills the nav and footer markers of the static pages and the
-   Browse By Set columns in the build's copy.
+   and fills the nav and footer markers of the static pages, the Browse
+   By Set columns and The Wax Museum's image preload (see below) in the
+   build's copy.
 5. **Deploy and notify.** Amplify deploys the artifact. The existing
    `amplifyBuildNotifier` emails the result, including the failing
    step's log link if the build failed.
@@ -118,15 +120,16 @@ Nothing is written unless every live set passes:
 - a `seoURLSlug` that is present, lowercase letters, numbers and single
   hyphens, and unique among live sets;
 - every marker pair found exactly once: `review-head`, `review-params`,
-  `set-picker`, `breadcrumbs`, `card-intro`, `review-body`, `nav` and
-  `footer` in `waxReviews.html`; `checklist-head`, `breadcrumbs`, `nav`
+  `set-picker`, `set-shelf`, `breadcrumbs`, `card-intro`, `review-body`,
+  `nav` and `footer` in `waxReviews.html`; `checklist-head`, `breadcrumbs`, `nav`
   and `footer` (plus its `__TOKEN__` placeholders) in
   `checklistTemplate.html`; `nav` and `footer` in each static page, which
   must also name a known `NAV_MAP` key in `data-nav-page`;
   `browse-major` and `browse-fastfood` in `browseBySet.html`;
 - the browser functions it runs (below) found and loadable: the
   `nav-block` and `footer-block` slices of `helper.js` and the
-  `checklist-block` slice of `wax.js`, `setPickerHtml`,
+  `checklist-block` slice of `wax.js`, `setPickerHtml`, `setShelfHtml`,
+  `yearShelfHtml`,
   `buildCardSetMarkup`, `cardSetJsonLd`, `cardIntroHtml` and friends, and
   `browseColumnHtml` in `browseBySet.js`;
 - every checklist loaded (`CHECKLIST_API_URL`, read from `wax.js`): the
@@ -231,6 +234,17 @@ Old query-string URLs get neither preload: the template doesn't know the
 year until JavaScript reads the address, and those pages replace their
 address with the slug URL anyway.
 
+**The Wax Museum** (since 2026-11-11) gets the same treatment, though it
+isn't a review page: its phone LCP is the first pack's front image,
+which the page only knows after fetching and sorting the pack list. The
+generator fetches that list, sorts it with `sortWaxPacks()` run from
+`waxMuseum.js` in the sandbox, and writes an image preload for the first
+pack between `wax-lcp` markers in the build's copy of `waxMuseum.html`
+(`waxLcpPreload()`). It never fails the build: if the list can't be
+fetched it only logs a warning and leaves the marker empty. It also
+warns if the page's own fetch preload no longer matches
+`WAX_PACK_GET_URL` in `waxMuseum.js`.
+
 ## Links: pre-rendered by the build, upgraded in the browser
 
 **Why pre-render (2026-11-05).** Search Console listed 45 old
@@ -241,16 +255,22 @@ reading the raw HTML only ever found the old URLs (which all share one
 raw HTML with no canonical), and a rendered snapshot could catch them
 before the upgrade.
 
-**How.** The nav, footer, year picker and Browse By Set columns are each
-built by one pure function in the browser code (`navHtml()`,
-`footerHtml()`, `setPickerHtml()` in `helper.js`; `browseColumnHtml()` in
+**How.** The nav, footer, year picker, set shelf and Browse By Set
+columns are each built by one pure function in the browser code
+(`navHtml()`, `footerHtml()`, `setPickerHtml()` and `yearShelfHtml()` in
+`helper.js`; `setShelfHtml()` in `wax.js`; `browseColumnHtml()` in
 `browseBySet.js`). The generator runs those same functions at build time
 in a `node:vm` sandbox: it lifts the `// nav-block:start`/`:end` and
 `// footer-block:start`/`:end` slices of `helper.js`, a few single
-functions by name (`escapeHtml`, `getPageNameForYear`, `setPickerHtml`,
+functions by name (`escapeHtml`, `getPageNameForYear`, `yearHref`,
+`yearCellHtml`, `yearShelfHtml`, `setPickerHtml`,
 `compareSetsForDefault`, `reviewLinkAttrs`, and `stripYearFromSetName`
-from `wax.js`; the review's own functions are listed under "The review,
-pre-rendered"), and all of `browseBySet.js`. It passes each function an
+and `setShelfHtml` from `wax.js`; the review's own functions are listed
+under "The review, pre-rendered"), and all of `browseBySet.js`. The set
+shelf (since 2026-11-25) is written between `set-shelf` markers: the
+year's other live sets, or, for the McDonald's range (`decades: true`
+in `categoryRanges`, since 2026-11-26), the seasons of the set's decade
+(`FRONTEND.md`, "The set shelf"). It passes each function an
 `hrefFor` resolver that returns a link's final `/reviews/<slug>/` URL
 (the year's default set, by `compareSetsForDefault()`, exactly what
 `applyReviewLinks()` would pick), and writes the result between marker

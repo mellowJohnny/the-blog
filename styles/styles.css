@@ -882,8 +882,8 @@ h1 {
   border-radius: 6px;
 }
 
-/* The set shelf (setShelfHtml() in wax.js): a year's sets on a panel in the nav shelf's tint, as wide
-   as the year row and hung just under it by positionSetShelf(). :has() paints it only when it has sets. */
+/* The set shelf (setShelfHtml() in wax.js): a year's sets on a panel in the nav shelf's tint, as wide as
+   its sets need (up to the review) and hung just under the year row by positionSetShelf(). :has() paints it only when it has sets. */
 .set-picker-wrap {
   position: relative;
 }

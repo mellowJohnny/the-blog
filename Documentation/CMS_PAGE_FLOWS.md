@@ -56,8 +56,9 @@ moved to its own page on 2026-11-25 — see the next section.)
 ## `cms/rinkRunner.html` — Rink Runner
 
 A page with one job: the CMS's 8-bit hockey runner game, purely for fun.
-It's the top-level "Rink Runner" item in the CMS nav, right after CMS
-Home (`CMS_NAV_ITEMS`/`CMS_NAV_ORDER` in `helper.js`).
+It's the top-level "Rink Runner" item in the CMS nav, after the Admin
+dropdown and before Exit (`CMS_NAV_ITEMS`/`CMS_NAV_ORDER` in
+`helper.js`).
 
 **What loads**: `auth.js`, `helper.js`, `cmsRinkRunner.js`.
 
@@ -68,13 +69,27 @@ Home (`CMS_NAV_ITEMS`/`CMS_NAV_ORDER` in `helper.js`).
 **The game**: a small 8-bit hockey runner drawn on a `<canvas>`. The skater jumps (Space, Up
 arrow or a click; hold for a higher jump) over pucks, nets, referees,
 goalies, crossed sticks, the team mascot, popcorn, hot dogs, a heap of
-hat-trick hats, holes in the ice and the Zamboni. The speed keeps rising
-until a score of about 2,700, and past speed 11 obstacles come closer
-together and low ones arrive in clusters of two or three. Spacing is
+hat-trick hats, holes in the ice and the Zamboni. On the NHL level the
+speed keeps rising until a score of about 2,700, and past speed 11
+obstacles come closer together and low ones arrive in clusters of two or
+three. Spacing is
 never tighter than a held jump can handle: `RINK_MIN_GAP` (widening a
 little past speed 11) keeps any two separate obstacles jumpable, and a
 cluster is never wider than one held jump clears at the current speed;
 both limits came from simulating the jump physics.
+
+**Difficulty levels** (2026-11-25): Junior, AHL and NHL, in
+`RINK_LEVELS`. NHL is the full game described above. The easier two top
+out at a lower speed (11 for Junior, 15 for AHL, against 20), reach it
+more gradually, add a few frames between obstacles (`extraGap`), and
+bring in clusters later (AHL, from speed 13) or never (Junior). Every
+level starts at speed 5. On the start and game-over screens a level
+board hangs under the scoreboard, in the same 8-bit bulbs
+(`drawRinkLevelBoard()`), with the chosen level lit. Left and Right step
+through the levels, 1, 2 and 3 pick one, and a click on a level picks
+it; any other click starts the run. The level can't change mid-run. The
+choice is remembered (`rinkRunnerLevel`, defaulting to NHL), and each
+level keeps its own best score.
 
 The score and best score show on a centre-hung arena scoreboard drawn in
 amber bulbs (`drawRinkScoreboard()`), with the canvas tall enough that
@@ -87,7 +102,9 @@ or click, as browsers require. M turns the music on or off.
 
 Nothing runs until the first key press, it pauses (music included) when
 the tab is hidden, and it ignores keys typed into form fields. The best
-score (`rinkRunnerBest`) and the music setting (`rinkRunnerMusic`) are
+scores (`rinkRunnerBest` for NHL, `rinkRunnerBest.ahl` and
+`rinkRunnerBest.junior`), the level and the music setting
+(`rinkRunnerMusic`) are
 kept in this browser's `localStorage`; the sprites are pixel grids in
 the script, so there are no image files.
 
@@ -298,10 +315,19 @@ submitted unchanged.
   the filename-only convention above. See `CMS_GUIDE.md`'s "Image picker
   / uploader" for sizes and naming.
 - Close (`×`) → `closeImageBrowser()` (`cmsImageBrowser.js`).
+- Typing in Wax Pack or Second Wax Pack → `onWaxPackSearchInput()`
+  (`cmsCardSet.js`): the field's stored link is dropped, and from two
+  letters the matching packs are listed. The first search fetches every
+  pack once from the public **Get wax packs** endpoint
+  (`loadWaxPackIndex()`, `getWaxPacks` Lambda, `WaxPacks` table), since
+  the form needs the whole list to search and only ever reads it. Picking
+  one (`selectWaxPackSuggestion()`) stores `"<year>-<packKey>"` in the
+  hidden `#waxPack`/`#waxPack2`; **Clear** empties it. See `CMS_GUIDE.md`,
+  "Wax pack links".
 - "Submit Post" button → `createCardSet(blogStatus,
   seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets,
   stars, formats, year, headerImgName, footerImgName, mfg, blogCat,
-  printRun)`
+  printRun, waxPack, waxPack2)`
   (`cmsCardSet.js`) — four separate validation checks, each its own
   `await cmsAlert(...)` + refocus + early return: `setName` non-blank,
   `year` non-blank, the SEO Friendly URL present and URL-safe
@@ -498,14 +524,17 @@ GSI (converted from a PartiQL `WHERE setID=?` scan on 2026-09-04 — see
 `DATA_MODEL.md`), tolerantly unwraps the response the same way
 `fetchAllCardSets()` does, and takes `items[0]`. Empty result shows
 "these aren't the Droids you're looking for..." in `#errorDiv`;
-otherwise calls `populateCardSet(...)` (16 positional args, internal to
+otherwise calls `populateCardSet(...)` (18 positional args, internal to
 `cmsCardSet.js`), which rebuilds the `blogStatus` `<select>`'s options with the correct one
 marked `selected`, and fills every other field directly (`setName` and
 `year` are populated but `disabled`/`readonly` in the HTML, since
 they're the table's actual key and changing them here would mean
 editing the wrong item or orphaning the current one), including the
 optional Print Run field (`printRun || ""`, so a set without one shows
-an empty box rather than "undefined"); it also calls
+an empty box rather than "undefined") and the two Wax Pack fields
+(`setWaxPackField()`, which shows the stored key at once and swaps in
+the pack's name when the pack list arrives from **Get wax packs**); it
+also calls
 `updateSeoCharCounts()` so the SEO length counters and the two
 auto-sizing textareas fit the loaded text. The body goes into TinyMCE
 last, via `tinyEditorReady.then(editor => { editor.setContent(postBody);
@@ -551,9 +580,13 @@ guided flow.
   and read the form by element id, so both pages share them). Here the
   Set Name and Release Year boxes are read-only but still have values,
   so the generators work as soon as the set loads.
+- Wax Pack and Second Wax Pack → the same type-ahead as on
+  `createCardSet.html` (see there); clearing a field and saving removes
+  the stored link.
 - "Update Post" button → `updateCardSet(blogStatus,
   seoMetaDesc, seoURLSlug, seoTags, author, setName, size, subsets,
-  stars, formats, year, headerImgName, footerImgName, mfg, printRun)`
+  stars, formats, year, headerImgName, footerImgName, mfg, printRun,
+  waxPack, waxPack2)`
   (`cmsCardSet.js`) — an `async` function whose only client-side check,
   since 2026-10-30, is the SEO Friendly URL (`seoSlugProblem()`: present
   and URL-safe, else `cmsAlert()` and refocus, nothing sent); the rest

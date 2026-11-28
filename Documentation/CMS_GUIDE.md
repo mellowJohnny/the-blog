@@ -119,8 +119,9 @@ define it:
   Figure, Edit a Figure), Blogs (New, Edit) and Admin (Admin Tools, AMP
   SMS). Wax Packs and Sports Picks have no links to the public Wax
   Museum or McFarlane's Garage pages.
-- `CMS_NAV_ORDER`: the top-level order — CMS Home, Rink Runner, the five
-  groups, then Exit (back to the public site).
+- `CMS_NAV_ORDER`: the top-level order — CMS Home, the five groups,
+  Rink Runner (after Admin since 2026-11-25), then Exit (back to the
+  public site).
 
 Because the ids are page names, `fetchCmsNav()` leaves the current page
 out: its top-level item is skipped and its link is dropped from its
@@ -141,13 +142,14 @@ Changing the shared nav's CSS or `helper.js` nav code therefore changes
 the CMS nav too.
 **Rink Runner**, an 8-bit hockey runner game, has its own page,
 `cms/rinkRunner.html`, reached from the top-level "Rink Runner" nav item
-right after CMS Home (`scripts/cmsRinkRunner.js`, styled by
+after the Admin dropdown (`scripts/cmsRinkRunner.js`, styled by
 `.rink-runner` in `styles.css`). It used to sit under the nav on the CMS
 home until 2026-11-25, when it moved to keep the home a plain landing
 page. Jump over hockey and arena obstacles as the game speeds up, with
-an arena scoreboard, "Charge!" organ music (M turns it off) and the best
-score kept in this browser. It's there for fun and touches no data; see
-`CMS_PAGE_FLOWS.md` for how it behaves.
+an arena scoreboard, "Charge!" organ music (M turns it off), three
+difficulty levels (Junior, AHL and NHL, picked on an 8-bit board between
+runs) and a best score per level kept in this browser. It's there for
+fun and touches no data; see `CMS_PAGE_FLOWS.md` for how it behaves.
 
 Grouped page links:
 
@@ -441,6 +443,8 @@ input (edit) — two different, unpolished representations of the same
 `stars` field. Hovering a star previews the rating (reverting to
 whatever's actually locked in if you move away without clicking);
 clicking locks it in, turning that star and every one before it gold.
+The forms label it **Collectability** (since 2026-11-23, formerly "Star
+Rating"); the public review still calls the same `stars` value "Rating".
 
 Uses the exact same 🌟 emoji as the public "Rating" display
 (`helper.js`) for the lit/selected state — emoji ignore CSS `color`, so
@@ -754,6 +758,42 @@ text, e.g. "13.4 million packs"). Only some sets have one, mainly the
 Tim Hortons sets, so a blank field simply means no "Print Run" row on
 the live page; clearing it on `setEdit.html` removes the stored value.
 See `DATA_MODEL.md`'s `Cards.printRun`.
+
+### Wax pack links
+
+Both card set forms have two optional fields, **Wax Pack** and **Second
+Wax Pack** (added 2026-11-21 and 2026-11-23), that link the review to
+the set's packs in The Wax Museum. The second is for a set with two
+packs, such as Series 1 and 2 or low and high series. On the live review
+a "Wax Pack" link (or "Wax Packs" for two) appears under the Checklist
+link and opens the packs in a modal (`FRONTEND.md`, "Wax Pack modal").
+
+**Picking a pack.** Each field is a type-ahead, like Set Name in the
+Delete Checklist modal: type two or more letters of a pack's name and
+pick from the list (arrow keys and Enter, or a click). The first search
+(or, on `setEdit.html`, loading a stored link) fetches every pack once
+from the public `getWaxPacks` endpoint (`loadWaxPackIndex()`,
+`scripts/cmsCardSet.js`); matches are listed with
+the ones whose name starts with what you typed first, then by year, and
+the list scrolls rather than being cut off. A pack whose name doesn't
+start with its year is shown with the year added, so packs from
+different years can be told apart. The note under the field says which
+pack is linked; **Clear** unlinks it. Typing in a field drops its
+current link until a pack is picked, so a half-typed search is never
+saved as a link (the note then says to pick one).
+
+**What's saved.** The picked pack's two keys, `"<year>-<packKey>"`, in a
+hidden input (`#waxPack`, `#waxPack2`); the visible `...Search` field
+only searches and shows the name. `setEdit.html` loads the stored keys
+and fills in the names (`setWaxPackField()`). Clearing a field on
+`setEdit.html` removes the stored link. The Lambdas reject anything that
+isn't a year, a hyphen and a slug (`DATA_MODEL.md`'s `Cards.waxPack`).
+The preview shows the link, but it does nothing there.
+
+A link is not checked against the museum once saved: if a pack is later
+deleted, the review's modal says it couldn't be found. The museum's own
+link back to the review is separate: the review dropdown on the wax
+pack pages (see "Wax packs (The Wax Museum)" below).
 
 ### Checklist upload
 

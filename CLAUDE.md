@@ -111,10 +111,12 @@ committed, and never run by hand**: each Amplify build runs
 the live `getPublicCardSets` endpoint and writes `reviews/<slug>/index.html`
 for every live set (using `waxReviews.html` as the template, between its
 `review-head` and `review-params` marker comments — keep those markers
-intact; it also fills `set-picker`, `nav` and `footer` markers there, the
-`nav`/`footer` markers of 8 static pages named by their `data-nav-page`,
-and the `browse-*` markers in `browseBySet.html`, by running the browser's
-own `navHtml()`/`footerHtml()`/`setPickerHtml()`/`browseColumnHtml()` in a
+intact; it also fills `set-picker`, `set-shelf`, `nav` and `footer`
+markers there, the `nav`/`footer` markers of 9 static pages named by their
+`data-nav-page`, the `browse-*` markers in `browseBySet.html` and the
+`wax-lcp` marker in `waxMuseum.html` (optional, a warning if it fails), by
+running the browser's own `navHtml()`/`footerHtml()`/`setPickerHtml()`/
+`yearShelfHtml()`/`setShelfHtml()`/`browseColumnHtml()` in a
 sandbox, so keep the `// nav-block`/`// footer-block` sentinels in
 `helper.js` and those functions DOM-free; a local run also rewrites those
 tracked static pages, so discard that). Since 2026-11-19 it also

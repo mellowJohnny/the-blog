@@ -903,11 +903,16 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   chiefly the pair `setEdit.html`'s old `selection.setContent()` insert
   added around every body on load (fixed 2026-10-01, see
   `CMS_PAGE_FLOWS.md`). Kept as a safety net, at the cost of also
-  stripping any deliberately empty paragraph. `printRun` (optional) is
-  three-way: a non-blank value is `SET`, a blank one is `REMOVE`d, and a
-  payload with no `printRun` key leaves it untouched — so a browser
-  still running an older cached `cmsCardSet.js` can't wipe a value it
-  never displayed.
+  stripping any deliberately empty paragraph. The optional fields
+  `printRun`, `waxPack` and `waxPack2` are three-way: a non-blank value
+  is `SET`, a blank one is `REMOVE`d, and a payload without the key
+  leaves it untouched — so a browser still running an older cached
+  `cmsCardSet.js` can't wipe a value it never displayed.
+  `optionalFieldClauses()` builds those parts of the update expression
+  (one `REMOVE` clause for all of them, since an expression may hold only
+  one). `waxPack`/`waxPack2` (2026-11-21 and 2026-11-23, links to The Wax
+  Museum) must match `WAX_PACK_PATTERN`, a 4-digit year, a hyphen and a
+  `packKey` slug, or the save is a 400.
 - **Slug validation and duplicate check (2026-10-30)**: before writing, it
   rejects (400) a missing or malformed `seoURLSlug` (lowercase letters,
   numbers and single hyphens) and, when the save has `blogStatus` "OK", a
@@ -1247,7 +1252,8 @@ nothing on its own. (Misread exactly this way during setup, 2026-09-29.)
   any of `postBody, size, subsets, formats, mfg, author, footerImg,
   footerImgName, printRun, hasChecklist, checklistUpdatedAt`.
   Staged-only changes and vote counts (`upvotes`/`downvotes`) start
-  nothing. Every `updateCardSet`
+  nothing. `waxPack`/`waxPack2` aren't listed, but only a CMS save
+  writes them and that also moves `updatedAt`. Every `updateCardSet`
   save moves `updatedAt`, so every CMS save of a live set does start a
   build; that is deliberate, it keeps the sitemap's `<lastmod>` accurate.
   Values are compared in DynamoDB's typed shape, so no unmarshalling.
@@ -1395,7 +1401,7 @@ section title:
 | `Lambdas/updateBlogPost/` | Update blog post | Plain `UpdateCommand` keyed on `blogType`+`time`. |
 | `Lambdas/listBlogsForUpdate/` | Get all live blogs (for the edit picker) | **Note**: despite the doc's previous description, this does a full unfiltered `Scan` (`published = :p` where `:p = true`) with no `ProjectionExpression` — the response is full blog records under `{items: [...]}`, not just `{title, blogID, blogType}`. `API_ENDPOINTS.md` corrected 2026-08-15. |
 | `Lambdas/getStagedBlogsForUpdate/` | Get all staged (draft) blogs | Same correction as above, mirrored: full `Scan` on `published = false`, full records returned, not a narrow projection. |
-| `Lambdas/createCardPost/` | Create card set | Despite the AWS function name, this is the "create card set" Lambda (its own header comment calls itself `createCardSet Lambda Function`). Generates `setID` via `Math.random().toString(36)` (not a UUID). Hardcodes the S3 image URL prefix (`headerImg`/`footerImg`) server-side — see the CloudFront-migration discussion this repo's git history has around 2026-08-15 for why that matters if image hosting ever moves off direct S3 URLs. Stores the optional `printRun` only when non-blank, so sets without one get no empty attribute. Since 2026-10-30 it rejects (400) a missing or malformed `seoURLSlug` and, for `blogStatus` "OK", a slug another live set already uses (a `blogStatus-year-index` query via `liveSetUsingSlug()`; a failing check returns 500), so its role needs an inline `dynamodb:Query` policy on that GSI like `updateCardSet`'s. A live create also starts a site build through the `Cards` stream. Since 2026-11-18 it trims `setName` (a trailing space broke the exact match with the set's checklist), as `createCardSet()` does in the browser. |
+| `Lambdas/createCardPost/` | Create card set | Despite the AWS function name, this is the "create card set" Lambda (its header comment called itself `createCardSet Lambda Function` until 2026-11-21, when it was corrected to its real name). Generates `setID` via `Math.random().toString(36)` (not a UUID). Hardcodes the S3 image URL prefix (`headerImg`/`footerImg`) server-side — see the CloudFront-migration discussion this repo's git history has around 2026-08-15 for why that matters if image hosting ever moves off direct S3 URLs. Stores the optional `printRun`, `waxPack` and `waxPack2` only when non-blank, so sets without them get no empty attribute; a `waxPack`/`waxPack2` that isn't a year, a hyphen and a `packKey` slug (`WAX_PACK_PATTERN`) is a 400. Since 2026-10-30 it rejects (400) a missing or malformed `seoURLSlug` and, for `blogStatus` "OK", a slug another live set already uses (a `blogStatus-year-index` query via `liveSetUsingSlug()`; a failing check returns 500), so its role needs an inline `dynamodb:Query` policy on that GSI like `updateCardSet`'s. A live create also starts a site build through the `Cards` stream. Since 2026-11-18 it trims `setName` (a trailing space broke the exact match with the set's checklist), as `createCardSet()` does in the browser. |
 | `Lambdas/getCardSets/` | Get all live card sets (for the edit picker) | Queries the `blogStatus-year-index` GSI, `blogStatus = "OK"`. File has old commented-out `ProjectionExpression` variants left in as history of the 2026-08-14 `getStagedCardSets` projection bug fix (see below) — this one already returns full items. |
 | `Lambdas/getStagedCardSets/` | Get all staged (draft) card sets | Same GSI, `blogStatus = "staged"`. This is the Lambda whose `ProjectionExpression` bug (only requesting `setName, setID`, silently dropping `blogCat`/`year`) was found and fixed on 2026-08-14 — see `API_ENDPOINTS.md` for the full story. The fixed projection requests `setName, setID, blogCat, year`; `year` is aliased in the expression (e.g. `#y`) since it's a DynamoDB reserved word. It also projects `hasChecklist` (added 2026-09-30) so `cms/uploadChecklist.html`'s Set Name type-ahead can offer only staged sets that have a checklist; `getCardSets` needed no change since it returns full items. |
 | `Lambdas/getCardSetByID/` | Get a single card set by ID | Converted from PartiQL (`SELECT * FROM Cards WHERE setID=?`, which forced a full-table Scan since `setID` isn't the table's key) to a `QueryCommand` against the `setID-index` GSI on 2026-09-04 — a genuine performance win, not just a style change; see `DATA_MODEL.md`'s `Cards` GSI table. |

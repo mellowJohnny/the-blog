@@ -137,11 +137,11 @@ are open, which load the source map and show the real file and line.
 | File | Responsibility |
 |---|---|
 | `blogs.js` | `fetchBlogs()`/pagination/rendering for the blog stream, which `about.html` uses to load its single editable post. It still holds the Tech pages' intro copy (`renderBlogIntro()`) and the weather widget (OpenWeatherMap, from the visitor's geolocation; the bootstrap does nothing on a page with no `#weather` element), but their only page, `tech.html`, was archived on 2026-11-05. Loaded by `about.html` only. |
-| `wax.js` | Card set intro copy (`renderCardIntro()`, which draws the pure `cardIntroHtml(pageName)` only when the intro isn't already pre-rendered), `fetchCardSetsByYear()`/pagination/rendering for card set reviews (the fetch goes through `fetchJsonWithRetry()` and `waxReviews.html` starts it on `DOMContentLoaded` — see "SEO and social tags"; on a generated page, whose review is pre-rendered, it shows no spinner and a failed or empty reply leaves the pre-rendered review in place), `fetchPageTitle()` (sets each shown set's title, description, social tags, JSON-LD and breadcrumb; the Product/Review object comes from the pure `cardSetJsonLd()`, which the build generator also runs), `initChecklistPage()` (a checklist page's data load, which turns on its filters and Download PDF — see "Checklist display"), `reviewPath(item)` and `buildReviewCanonicalUrl(item)` (a set's `/reviews/<slug>/` address and the canonical built from it; the query form only for a set with no slug), `syncSetIdInUrl()` (replaces the address bar with the shown set's slug page — for every set, so an old query-string URL, and each set reached by pagination, ends up on its own clean address), the sort of a year's sets by `compareSetsForDefault()` from `helper.js`, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; the rendering functions and `checklistFilterAvailability()` sit between `// checklist-block:start`/`:end` comments, which the build generator runs to pre-render the checklist pages, so keep that slice DOM-free; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. The previous and next entries are real `<a href>` links to the neighbouring set's page (`reviewHref(item)`: the `/reviews/<slug>/` path, or the query form for a set with no slug), not click handlers (`nextPage()`/`prevPage()` were removed), so crawlers follow them and Back works; at either end the missing direction is a disabled `<span>`. The prev/next set name in that label always drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle"), since the year picker above already shows the year and the shorter label fits a phone. It used to show the full name on desktop and the short one on phones, via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans that a mobile breakpoint swapped between; that pair and its CSS were removed so one rendering path serves every width. The name goes through `escapeHtml()` before it is inserted. The NHL scores ticker and its game modal used to live here and moved to `ticker.js` — see below. |
+| `wax.js` | Card set intro copy (`renderCardIntro()`, which draws the pure `cardIntroHtml(pageName)` only when the intro isn't already pre-rendered), `fetchCardSetsByYear()`/pagination/rendering for card set reviews (the fetch goes through `fetchJsonWithRetry()` and `waxReviews.html` starts it on `DOMContentLoaded` — see "SEO and social tags"; on a generated page, whose review is pre-rendered, it shows no spinner and a failed or empty reply leaves the pre-rendered review in place), `fetchPageTitle()` (sets each shown set's title, description, social tags, JSON-LD and breadcrumb; the Product/Review object comes from the pure `cardSetJsonLd()`, which the build generator also runs), `initChecklistPage()` (a checklist page's data load, which turns on its filters and Download PDF — see "Checklist display"), `reviewPath(item)` and `buildReviewCanonicalUrl(item)` (a set's `/reviews/<slug>/` address and the canonical built from it; the query form only for a set with no slug), `syncSetIdInUrl()` (replaces the address bar with the shown set's slug page — for every set, so an old query-string URL, and each set reached by pagination, ends up on its own clean address), the sort of a year's sets by `compareSetsForDefault()` from `helper.js`, the thumbs up/down vote widget (`castVote()` — see "Voting feature" below), and the checklist modal (`openChecklistModal()`/`closeChecklistModal()`/`renderChecklistGroups()`, plus PDF export via `exportChecklistPdf()`/`buildChecklistPdfDocument()` — see "Checklist display" below; the rendering functions and `checklistFilterAvailability()` sit between `// checklist-block:start`/`:end` comments, which the build generator runs to pre-render the checklist pages, so keep that slice DOM-free; its HTML-escaping now uses the shared `escapeHtml()` in `helper.js`, moved there 2026-08-24 when `playerSearch.js` needed it too). Pagination controls (`renderPaginationControls()`) only render when there's more than one set for a given year/category — most years have exactly one, only 1989-90 onward have multiple; they render inside `displayCardSet()`'s own template, directly above the vote widget, not as a separate element elsewhere on the page. The previous and next entries are real `<a href>` links to the neighbouring set's page (`reviewHref(item)`: the `/reviews/<slug>/` path, or the query form for a set with no slug), not click handlers (`nextPage()`/`prevPage()` were removed), so crawlers follow them and Back works; at either end the missing direction is a disabled `<span>`. The prev/next set name in that label always drops its leading release year (`stripYearFromSetName()` — e.g. "1991-92 Pinnacle" → "Pinnacle"), since the year picker above already shows the year and the shorter label fits a phone. It used to show the full name on desktop and the short one on phones, via a `.pagination-setname-full`/`.pagination-setname-short` pair of spans that a mobile breakpoint swapped between; that pair and its CSS were removed so one rendering path serves every width. The name goes through `escapeHtml()` before it is inserted. The NHL scores ticker and its game modal used to live here and moved to `ticker.js` — see below. Also the year picker's set shelf (`setShelfHtml()`, pure and run by the build too, plus `initSetShelf()`/`positionSetShelf()` — see "The set shelf" below) and the Wax Pack modal (`openWaxPackModal()`, `renderWaxPackCarousel()`, `showWaxPack()` — see "Wax Pack modal" below). |
 | `ticker.js` | The NHL/PWHL scores ticker under the masthead (`initNhlTicker()` and its helpers — see "NHL scores ticker" below) and the game modal opened from it (`openNhlGameModal()` and its render helpers — see "NHL game modal" below). Moved verbatim out of `wax.js` so pages that have nothing else to do with card sets (Player Search, the essays) can show the ticker. Starts itself on `DOMContentLoaded`. |
 | `timeline.js` | `timeline.html` only: fetches `/timeline/timeline.md`, parses it (`parseTimelineMarkdown()`) and builds the flip cards (`renderTimeline()`, `buildTimelineCard()`). Entry point is `initTimeline()`. See "Junk Wax timeline" below. |
 | `browseBySet.js` | `browseBySet.html` only: fetches the live set list once from `getPublicCardSets` (`BROWSE_SETS_URL`), splits it into the two columns, groups by season and builds the Review/Checklist links (`initBrowseBySet()`; `browseReviewUrl()` builds a set's review URL for both the links and the `ItemList` JSON-LD from `setBrowseItemListJsonLd()`: its `/reviews/<slug>/` page when the set has a slug, else the old query-string form). Checklist links go to the set's checklist page, `/reviews/<slug>/checklist/` (since 2026-11-19; they used to open the modal). The column markup comes from `browseColumnHtml(sets)`, a pure function the build generator also runs (in a Node sandbox) to pre-render the columns into the page, so the two can't drift. See "Browse By Set" below. |
-| `waxMuseum.js` | `waxMuseum.html` only: fetches every pack once from `getWaxPacks`, sorts them (`sortWaxPacks()`: oldest year first, then one set at a time A to Z, then series order, then "Low" before "High" packs, then name) and renders the flip cards in batches of six as the visitor scrolls (`renderWaxMuseum()`, `buildWaxPackCard()`). Entry point is `initWaxMuseum()`. See "The Wax Museum" below. |
+| `waxMuseum.js` | `waxMuseum.html`, plus `waxReviews.html`, which loads it only for `buildWaxPackCard()` and `WAX_PACK_GET_URL` (the Wax Pack modal; only `waxMuseum.html` calls `initWaxMuseum()`). On the museum it fetches every pack once from `getWaxPacks`, sorts them (`sortWaxPacks()`: oldest year first, then one set at a time A to Z, then series order, then "Low" before "High" packs, then name) and renders the flip cards in batches of six as the visitor scrolls (`renderWaxMuseum()`, `buildWaxPackCard()`). Entry point is `initWaxMuseum()`. See "The Wax Museum" below. |
 | `mcfarlanesGarage.js` | `mcfarlanesGarage.html` only: fetches every figure once from `getSportspicks`, sorts them (`sortFigures()`: oldest year first, then series, then A to Z by last name) and renders the cards in batches of six as the visitor scrolls (`buildFigureCard()`), plus the full-size photo pop-up (`openFigureModal()`). Entry point is `initMcfarlanesGarage()`. See "McFarlane's Garage" below. |
 | `cmsWaxPack.js` | The three CMS wax pack pages (`newWaxPack.html`, `pickWaxPack.html`, `waxPackEdit.html`): the shared form, its fixed manufacturer/packaging/type dropdowns, the front/back image pickers (S3 `img/wax-packs/`), the review-link dropdown (from `getPublicCardSets`), and the save and delete calls, which send the Cognito token. See `CMS_GUIDE.md`. |
 | `helper.js` | Cross-page utilities: a generic `escapeHtml()` (moved here from `wax.js` 2026-08-24, shared with `playerSearch.js`), `stripHtmlTags()` (extracted from `estimateReadingTime()`'s own tag-stripping regex so the SEO helpers below can build plain-text descriptions/structured-data fields from the same raw HTML `postBody` without duplicating it), `truncateAtWord(text, max)` (cuts plain text at a word boundary and adds "..." only when it cut — shared by `wax.js`'s description fallback and the CMS SEO generators), `renderBreadcrumbs(pageName, label, url)` with `SITE_ORIGIN` (the visible breadcrumb nav plus its `BreadcrumbList` JSON-LD, built by the DOM-free `breadcrumbTrail()`, `breadcrumbHtml()` and `breadcrumbJsonLd()` that the build generator also runs), `estimateReadingTime()`, date formatting (`fixDate()`, `getMonthName()`), the generic sort comparator `getSortOrder(property, order)` (used for both blogs, by `time`, and card sets, by `stars` — consolidated from two identical functions on 2026-08-12), the dynamic top nav (`NAV_ITEMS`/`NAV_GROUPS`/`NAV_SELF`/`NAV_MAP`, the pure `navHtml()` and the thin `fetchNav()`; see "Navigation system"), `resolveBlogCat()` (the category for an old review URL that has `pageName` but no `blogCat`), the review-link upgrade (`loadReviewLinks()` fetches `/reviews/index.json`, the manifest each build writes, as soon as `helper.js` runs on any non-CMS page; `applyReviewLinks()` swaps the `href` of every link carrying `data-review-cat`/`data-review-year` or `data-review-setid` to its `/reviews/<slug>/` page, called after the nav, footer, breadcrumb, year picker and Player Search results render; `reviewLinkAttrs()` adds those attributes for a `NAV_ITEMS` entry with a `review` year; `compareSetsForDefault()` is the one rule for which set a bare-year link opens — highest `stars`, ties by `setName` — shared with `wax.js`'s sort; see "Linking to one specific set"), the "set-o-matic" year-picker builder (the pure `setPickerHtml()` plus the thin `renderSetPicker()` — renders as plain flex-wrap `<div>`s, not a table; see "Mobile / responsive design" below) and its `categoryRanges` data (hoisted to module scope 2026-08-24 so `getPageNameForYear(blogCat, year)` — used by `playerSearch.js` to build review links — can share it rather than duplicating the ranges a third time; since 2026-10-30 `tools/generateReviewPages/generate.mjs` also reads this literal straight out of the file, so keep it a plain object literal ending in `};` at the start of a line), the SEO/social meta pair `setPageMeta({title, description, image, url, type})` (creates or updates `<title>`, the meta description, `link[rel=canonical]`, and the Open Graph/Twitter Card tags in one call — now used only by `waxReviews.html`, whose values depend on data (it also served the archived `tech.html`); the static pages carry those tags in their HTML instead, see "SEO and social tags") and `setJsonLd(id, data)` (creates or replaces a `<script type="application/ld+json">` block by id, so a page can update its own structured data as new content loads without accumulating duplicate blocks — see `PUBLIC_PAGE_FLOWS.md` for how `waxReviews.html`/`lockout.html` and the blog pages each use both), `cmsAlert(message)` and `cmsConfirm(message)` (styled, Promise-based replacements for the native `alert()`/`confirm()`, used throughout the CMS — `cmsConfirm()` resolves a boolean and uses a red header instead of `cmsAlert()`'s blue, to flag the more serious/destructive action; see `CMS_GUIDE.md`'s "CMS alert / confirm modals" section; kept here rather than a dedicated file, per the site owner's preference for growing `helper.js` over adding a new `<script>` tag per feature), `withWrapSizes(html)` (writes `--wrap-w`/`--wrap-h` custom properties into the inline style of every `.img-wrap-sm`/`.img-wrap-md` image in a `postBody`, read from that style's own size, not the `width`/`height` attributes — see "Mobile / responsive design" below and `CMS_GUIDE.md`'s "Wrapped/middle images in review body content"; run by `buildCardSetMarkup()`, so the sizes are in the markup and a pre-rendered review is right from the first paint; it replaced the DOM-based `applyImgWrapSmSizing()` on 2026-11-19), the phone-copy helpers for CMS-processed card images (`phoneImageUrl(url)` gives an `img/cards/v2/` image's `-sm.webp` phone copy; `withPhoneSource()` wraps an `<img>` in a `<picture>` that serves it at 600px and below; `usePhoneFallback()`/`attachPhoneFallbacks()` drop back to the full image when a phone copy is missing — see "Card set markup is shared with the CMS preview" and `CMS_GUIDE.md`), `buildCardSetMarkup()` (the single source of truth for a card set review's HTML, shared by the live site's `displayCardSet()` and the CMS preview modal's `renderPreview()` — added 2026-09-28 to end the drift between two hand-maintained copies; see "Card set markup is shared with the CMS preview" below), the one loading spinner every public page uses (`showSpinner(container)` — see "Loading spinner" below), hamburger menu toggle, cookie helper, the copyright-year footer line (`fetchCopyrightYear()`) and the public-page footer's link columns (`FOOTER_SECTIONS`, the pure `footerHtml()` and the thin `fetchFooterLinks()` — see "Site footer" below). The nav block and the footer block are each wrapped in `// nav-block:start`/`:end` and `// footer-block:start`/`:end` comments: the build generator runs exactly those slices (plus a few single functions it lifts by name) to pre-render the same markup, so keep the comments and keep those functions free of DOM access. |
@@ -149,7 +149,7 @@ are open, which load the source map and show the real file and line.
 | `adminTools.js` | `cms/admin.html` support code: a growing set of self-service site-health checks (broken images, review-image alt text and size, review pages deployed, orphaned checklists), each its own function calling the site's existing read APIs directly; the orphaned-checklist check can also delete the ticked checklists through `saveChecklist`. Its `fetchAllCardSets()` (every live set, via `getCardSetsByYear`, shared by the two image checks) happens to share a name with a different function in `cmsCardSet.js` (the CMS pick list); the two files are never loaded on the same page, so they don't clash, but rename one before ever loading both. See `CMS_GUIDE.md`'s "Admin Tools" section. |
 | `auth.js` | Cognito OAuth2 code exchange + token refresh, gates every `/cms` page. See `AUTH.md`. |
 | `cmsBlog.js` | Blog post CRUD: `createBlogPost`, `updateBlogPost`, `deleteBlogPost`, `getBlogsForUpdate`, `getStagedBlogsForUpdate`, `displayBlogs`, `displayStagedBlogs`, `fetchBlogByID`, `populateBlog`, and the `BLOG_TYPE_LABELS` lookup object. One of 4 files split out of the former `scripts/cms.js` (1592 lines, deleted) on a by-concern basis, moved verbatim with no logic changes. See `CMS_GUIDE.md`. |
-| `cmsCardSet.js` | Card-set review CRUD: `createCardSet`, `updateCardSet`, `deleteCardSet`, `fetchAllCardSets`, `fetchAllStagedCardSets`, `displayCardSets`, `displayStagedCardSets`, `fetchCardSetByID`, `populateCardSet`, `openPreview`, `renderPreview`, `closePreview`, and the `CARDSET_CATEGORY_LABELS` lookup object. Split out of the former `cms.js` alongside `cmsBlog.js` — see that row above. Also owns the Star Rating widget shared by `createCardSet.html`/`setEdit.html`: `initStarRatingWidget()` (wires click/hover on the five star icons, called once per page on load) and `paintStarRating(value, containerId)` (the actual paint logic, also called by `populateCardSet()` once a set's real rating loads) — see `CMS_GUIDE.md`'s "Star Rating widget". `renderPreview()` no longer carries its own copy of the review markup: it calls `buildCardSetMarkup()` in `helper.js`, the same builder the live site uses, so the preview can't drift from production — see "Card set markup is shared with the CMS preview" below. |
+| `cmsCardSet.js` | Card-set review CRUD: `createCardSet`, `updateCardSet`, `deleteCardSet`, `fetchAllCardSets`, `fetchAllStagedCardSets`, `displayCardSets`, `displayStagedCardSets`, `fetchCardSetByID`, `populateCardSet`, `openPreview`, `renderPreview`, `closePreview`, and the `CARDSET_CATEGORY_LABELS` lookup object. Split out of the former `cms.js` alongside `cmsBlog.js` — see that row above. Also owns the Star Rating widget shared by `createCardSet.html`/`setEdit.html`: `initStarRatingWidget()` (wires click/hover on the five star icons, called once per page on load) and `paintStarRating(value, containerId)` (the actual paint logic, also called by `populateCardSet()` once a set's real rating loads) — see `CMS_GUIDE.md`'s "Star Rating widget". `renderPreview()` no longer carries its own copy of the review markup: it calls `buildCardSetMarkup()` in `helper.js`, the same builder the live site uses, so the preview can't drift from production — see "Card set markup is shared with the CMS preview" below. Also the forms' two Wax Pack type-aheads (`initWaxPackField()`, `loadWaxPackIndex()`, `setWaxPackField()` — see `CMS_GUIDE.md`'s "Wax pack links"). |
 | `cmsImageBrowser.js` | The S3 image browser/upload modal, both families together since they share code (card-set images and blog images both use `uploadNewImage()`/`closeImageBrowser()`): `fetchImageList`, `renderImageList`, `openImageBrowser`, `filterImageList`, `openBlogImageBrowser`, `fetchBlogImageList`, `renderBlogImageList`, `filterBlogImageList`, `uploadNewImage`, `closeImageBrowser`. Split out of the former `cms.js` — see `cmsBlog.js` row above. `openImageBrowser(targetFieldId, onSelect)` gained an optional callback mode 2026-09-22 — when provided, picking/uploading an image calls `onSelect(fileName, imageUrl)` instead of writing to a form field, which is how the card-image-insert toolbar buttons (`cmsFormUI.js`) reuse this same picker. See `CMS_GUIDE.md`. |
 | `cmsFormUI.js` | Generic CMS form UI: `initTinyEditor` (TinyMCE init), `initPreviewEditor` (the inline editor behind the `setEdit.html` preview modal) plus the submit-button state helpers (`cmsButtonSubmit`, `cmsCreateButtonReset`, `changeMeBack`, `cmsUpdateButtonReset`, `changeMeBackUpdate`). Split out of the former `cms.js` — see `cmsBlog.js` row above. `fetchCopyrightYear()`, also formerly in `cms.js`, was dropped entirely during the split rather than migrated to any of these 4 files — it was a byte-identical duplicate of the copy already in `helper.js`, and every page that used the `cms.js` copy already loaded (or gained) `helper.js`. `initTinyEditor(selector, { cardImageBlocks })` gained an options param 2026-09-22 — true only on `createCardSet.html`/`setEdit.html`, it swaps TinyMCE's native image button/plugin for two custom ones (`registerCardImageBlockButtons()`) that insert the site's wrap/middle review images as atomic, non-editable blocks; `stripEditorOnlyMarkup()` removes that editor-only markup before any save. The wrap dialog inserts a fixed 150×150 inline size and offers a **Logo Type** dropdown (All-Star Logo → `img-wrap-sm`, Corporate Logo → `img-wrap-md`, the default) — it briefly auto-computed dimensions from the picked file's `naturalWidth`/`naturalHeight` instead, but that was dropped once wrap images settled on a standard size. See `CMS_GUIDE.md`'s "Wrapped/middle images in review body content". Also hosts the card-set SEO helpers: the **Generate** button functions for the SEO title (no site-name suffix since 2026-10-30), description, keywords and URL slug (`generateSeoTitle()` and friends, built from the form's own values — see `CMS_GUIDE.md`), `seoSlugProblem(slug)` (the required-and-URL-safe check `createCardSet()` and `updateCardSet()` run before saving; the Lambdas repeat it), the length counters and textarea auto-sizing (`updateSeoCharCounts()`, `autosizeTextarea()`), and the middle-image helpers (`imageNaturalSize()`, `fillMiddleImageSizes()`, `middleImageAltDefault()`). Also defines `tinyEditorReady`, a promise resolved with the editor once `tinymce.init()` finishes: `populateCardSet()`/`populateBlog()` set the body through it, since the edit pages' record fetch can finish before the editor exists. |
 | `adminSMS.js` | Autobus SMS admin page logic: character/segment counter, GSM-7 vs Unicode encoding detection, broadcast send, bulk subscriber import, add-subscriber modal. See `CMS_GUIDE.md`. |
@@ -332,27 +332,24 @@ click outside closes it (`closeNavGroups()`). In the phone/tablet
 hamburger menu every group is shown expanded: the group name is a
 non-interactive heading and its links are indented beneath it.
 
-**Look.** The bar is Nunito 600, 18px, uppercase with 0.08em letter
-spacing, the same type as the footer. Dropdown links keep their written
-capitalisation (`text-transform: none`, normal letter spacing) and are
-20px on desktop (the nearest type-scale size, `STYLE_GUIDE.md`), since
-mixed case reads smaller than the bar's capitals.
+**Look.** The bar is Nunito 600, 22px, with labels shown as written in
+`helper.js` (Title Case; the uppercase, letter-spaced bar was dropped on
+2026-11-23). Dropdown links are 20px on desktop, a step below their
+parents.
 
-**The desktop shelf (since 2026-11-21).** At 1221px and up a group opens as
-a full-width shelf under the bar, not a floating card, so the menu reads as
-part of the bar: the bar tints to `--color-nav-shelf` (a shade deeper than
-the page) through a `:has()` rule on `#global-nav-placeholder`, a short
-`--color-link-light` underline grows under the open parent, the shelf slides
-down (`clip-path`, about 0.3s) and its links fade in from the left in one
-row. `.nav-group` is `position: static`, so the shelf is placed against
-`#global-nav-placeholder`. Each row starts under its parent and runs right:
-`alignNavShelves()` (`helper.js`) sets its `--shelf-start` to the button's
-left edge, pulled left only as far as the row needs to fit the bar. It runs
-after the nav is drawn (`fetchNav()`, `fetchCmsNav()`), on resize, and when
-a web font finishes loading, since the font changes the widths. The pointer
-can move straight down from the word into the shelf without it closing. The
-CMS nav uses the same markup, so it has the shelf too; the phone and tablet
-menu is unchanged; reduced motion turns the animation off.
+**Desktop dropdowns (since 2026-11-24).** At 1221px and up a group opens
+as a vertical panel under its own button: one link per line, the text
+lined up with the parent's, on a `--color-nav-shelf` panel (a shade
+deeper than the page) with a soft shadow. A short `--color-link-light`
+underline grows under the open parent, the panel is revealed top-down
+(`clip-path`, about 0.3s, with `visibility` keeping a closed panel out of
+the tab order) and its links fade in one after another. `.nav-group` is
+`position: relative`, so the panel is placed against its own button and
+needs no JavaScript. It replaced the full-width shelf of 2026-11-21 (a
+row of links across the whole bar, tinting the bar, positioned by an
+`alignNavShelves()` script, removed). The CMS nav uses the same markup,
+so it gets the same panels; the phone and tablet menu is unchanged;
+reduced motion turns the animation off.
 
 The "set-o-matic" year picker works the same way: `categoryRanges` maps
 `blogCat` → `{start, end}` year ranges per page, and the pure
@@ -366,6 +363,64 @@ final `/reviews/<slug>/` links (the year's default set, the same one
 `applyReviewLinks()` would pick), and `renderSetPicker()` then leaves it
 alone. A year with no live set (2004 McDonald's, the lockout) keeps its
 query link, which redirects to `lockout.html`.
+
+Each cell carries `data-year` (or `data-decade`, below), and the year
+being viewed is a `<div>` with `aria-current="page"` instead of a link.
+Since 2026-11-25 that cell is a **filled pill** (`--color-button`
+background, white text, 6px corners), because the darker text it had
+before was easy to miss once the picker wrapped onto two or three rows.
+The current set in the set shelf (below) shares the same rule.
+
+**McDonald's decades (2026-11-26).** The McDonald's range (1991 to 2007,
+nearly one set a season) used to wrap onto three rows. Its range in
+`categoryRanges` has `decades: true`, so `setPickerHtml()` draws one cell
+per decade instead (1990s, 2000s): the current decade is the pill, the
+other links to its first season (2000s → 2000-01). The decade's seasons
+appear in the set shelf, each cell built by the same `yearCellHtml()` as
+an ordinary picker (`yearShelfHtml(decade, year, ...)`, `helper.js`;
+`yearHref()` gives each its link). The few seasons with two McDonald's
+sets reach the second through the review's Back/Next.
+
+### The set shelf (2026-11-25)
+
+Under the year picker, `#set-shelf` lists the sets of a year (or, on the
+McDonald's pages, the seasons of a decade), so a visitor can jump to any
+of them without paging through Back/Next. The list is the pure
+`setShelfHtml(sets, currentSetID, hrefFor)` (`wax.js`): the sets in the
+same order as the pagination (`compareSetsForDefault()`, highest rated
+first), names without the year (`stripYearFromSetName()`), the current
+set as a pill `<span aria-current="page">`, the others as links to their
+review that end in `#year-picker`, so the next page opens scrolled to the
+picker. A year with one set gets no shelf. The build pre-renders the
+current year's (or decade's) shelf between `set-shelf` markers in each
+review page, so those links are in the raw HTML for crawlers
+(`REVIEW_PAGES.md`); `renderCardSetPage()` fills it again in the browser.
+
+**Mouse and trackpad (`(hover: hover)`).** The shelf is hidden until the
+pointer rests on (or keyboard focus reaches) a year or decade cell, then
+drops down over the top of the review, so the review never jumps:
+`initSetShelf()` listens for `mouseover`/`focusin` on the picker and fills
+the shelf for that cell (`shelfHtmlForCell()`: the current year's sets
+come from the page's own data, another year's from `/reviews/index.json`,
+sorted the same way). It closes 150ms after the pointer leaves both
+picker and shelf, or on Escape. It is revealed top-down like the nav's
+dropdowns (`clip-path` plus `visibility`), its items fade in one after
+another, and it is frosted glass: 70% of `--color-nav-shelf` with a
+`backdrop-filter: blur(8px)`, so the review shows through as soft colour
+rather than hard edges (an untinted see-through panel let the review
+image's border show through and distract). Keyboard order follows the
+eye, not the DOM: `shelfTabOrder()` sends Tab from the open cell into the
+shelf, from the shelf's last link to the next cell, and Shift+Tab back.
+
+**Touch (`(hover: none)`).** Touch screens can't hover, so the current
+year's shelf simply stays open in the page flow under the picker and
+other years aren't previewed.
+
+**Size and place.** `positionSetShelf()` sizes the shelf to its content
+(`fit-content`), never wider than the review (`#cardSetDiv`), centres it
+on the picker row and keeps it inside the review's edges; it sits 4px
+under the row. It re-runs on resize and when the fonts load. Reduced
+motion turns the animations off.
 
 ## Mobile / responsive design
 
@@ -828,15 +883,15 @@ what would go live.
 
 Worth knowing when changing either side:
 
-- Optional rows (Checklist, Print Run) are left out entirely when their
+- Optional rows (Checklist, Print Run, Wax Pack) are left out entirely when their
   value is absent — `printRun` is also treated as absent when blank or
   whitespace, and is escaped via `escapeHtml()` since it's free text.
 - The builder covers the set-details grid, the author/body table and
   the footer block only. Pagination controls and the vote widget stay
   in `displayCardSet()` — they're live-site interactions, not part of
   what an author previews.
-- `interactive: false` (the preview) renders the Checklist link
-  without its `onclick`. `openChecklistModal()` lives in `wax.js`,
+- `interactive: false` (the preview) renders the Checklist and Wax Pack links
+  without their `onclick`. `openChecklistModal()` and `openWaxPackModal()` live in `wax.js`,
   which `setEdit.html` doesn't load, so a live handler would throw.
   The markup is otherwise identical, so it still looks the same. The
   link's `href` is `checklistHref`: the set's checklist page on the live
@@ -1130,6 +1185,41 @@ its links moved to the checklist pages.) `@media print` rules are scoped under
 
   New CSS: `.checklist-modal-pdf-btn` in `styles/styles.css`, styled to
   match the existing `.checklist-modal-print-btn`.
+
+## Wax Pack modal (waxReviews.html)
+
+**Why.** The Wax Museum holds a photo of most sets' packs, front and
+back, but a review had no way to show its own. Since 2026-11-21 a set
+can link to one pack, and since 2026-11-23 to a second (Series 1 and 2,
+low and high series), chosen in the CMS (`CMS_GUIDE.md`, "Wax pack
+links") and stored as `Cards.waxPack`/`waxPack2`, each
+`"<year>-<packKey>"` (`DATA_MODEL.md`).
+
+**The link.** `buildCardSetMarkup()` adds a "Wax Pack" row (or "Wax
+Packs" for two) straight under the Checklist row, styled like it
+(`.checklist-view-link`). Its `href` is `/waxMuseum.html`, for crawlers
+and new tabs; the keys ride along as `data-wax-pack`/`data-wax-pack2`
+(a lone second pack counts as the first), and a plain click calls
+`openWaxPackModal(this)` instead. The CMS preview draws the link without
+the click handler. The build pre-renders it with the rest of the review.
+
+**The modal** (`#waxPackModal`, a `<dialog>` in `waxReviews.html` sharing
+the checklist modal's box): `openWaxPackModal()` (`wax.js`) opens it with
+the spinner, fetches each distinct year once from `getWaxPacks?year=`
+(`WAX_PACK_GET_URL`, from `waxMuseum.js`, which the page loads for this)
+and finds each pack by its `packKey`. Each pack is drawn by the museum's
+own `buildWaxPackCard()`, so it looks and flips exactly as in The Wax
+Museum; the card's "Read the review" link is removed when it points back
+at the review already open. Two packs show one at a time
+(`renderWaxPackCarousel()`): prev/next chevron buttons either side, a
+dot per pack underneath, and the Left/Right arrow keys. Changing pack
+swipes (`showWaxPack()`): the two cards share one grid cell of a clipped
+track and Web Animations slide the old one out as the new one slides in
+(320ms), with no swipe under reduced motion; each card keeps its own
+flip state. A missing pack (deleted or re-keyed in the museum) shows
+"This wax pack couldn't be found."; a failed fetch asks the visitor to
+try again. The modal closes with its × button, Escape or a click outside
+(`enableDialogLightDismiss()`).
 
 ## NHL scores ticker (Wax Reviews, Player Search, Browse By Set, Lockout, The Junk Wax Years, Timeline)
 
@@ -1771,6 +1861,20 @@ table (`DATA_MODEL.md`). Images are on S3 under `img/wax-packs/`. The
 shared loading spinner shows while it loads (see "Loading spinner"), and
 a status line explains a failure or a `noscript` visitor.
 
+**Loading speed (2026-11-11).** On a phone the page's largest element
+(its LCP) is the first pack's front image, which the browser could only
+start downloading after the pack list had arrived and been sorted. Two
+preloads in the head bring it forward: a fetch preload of the pack list
+(the exact `WAX_PACK_GET_URL` that `initWaxMuseum()` requests, so the
+browser reuses the response), and a high-priority image preload of the
+first pack's front image, which the build writes between `wax-lcp`
+markers. The build finds that image by running the page's own
+`sortWaxPacks()` from `waxMuseum.js` on the live pack list (`waxLcpPreload()`
+in the generator). It is optional: if the list can't be fetched the build
+logs a warning and leaves the marker empty rather than failing, and a
+fetch preload whose URL no longer matches `WAX_PACK_GET_URL` (a wasted
+preload) is also only a warning.
+
 **Order.** `sortWaxPacks()`: oldest year first, then one set at a time
 (A to Z by the name without its season or "Series N"), then series order
 (none, 1, 2, ...), then "Low" before "High" packs (`waxPackRelease()`:
@@ -1949,8 +2053,11 @@ uploaded checklists, with a link to each set's review. Added
   shorter name, keeping the top 8. ArrowUp/ArrowDown highlight a suggestion, Enter selects
   the highlighted one (or falls through to a normal submit if none is
   highlighted), Escape/an outside click closes the dropdown, and
-  clicking a suggestion fills the input and calls `runPlayerSearch()`
-  immediately.
+  clicking a suggestion fills the input. Picking a suggestion
+  (`selectSuggestion()`) fills the input, closes the dropdown and puts
+  focus back in the input; it doesn't search. Since 2026-11-25 the
+  search runs only on the Search button or a second Enter, so the
+  visitor can still edit the name first.
 - **In-progress feedback**: `runPlayerSearch()` clears the old results
   and shows the shared loading spinner (see "Loading spinner") for the
   duration of the fetch, hidden again in a `finally` so it clears on
