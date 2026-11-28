@@ -874,6 +874,30 @@ h1 {
   padding: 0;
 }
 
+/* The same hover and press states as the set shelf's links (below). The padding is on the cell,
+   not its link, so :has() puts the ring and the fill on the cell. */
+#set-picker .junk-set-nav-td {
+  border-radius: 6px;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#set-picker .junk-set-nav-td:has(a:hover),
+#set-picker .junk-set-nav-td:has(a:focus-visible) {
+  box-shadow: inset 0 0 0 2px var(--color-button);
+}
+
+#set-picker .junk-set-nav-td a:focus-visible {
+  outline: none;
+}
+
+#set-picker .junk-set-nav-td:has(a:active) {
+  background-color: var(--color-button);
+}
+
+#set-picker .junk-set-nav-td a:active {
+  color: var(--color-white);
+}
+
 /* The year and the set being viewed: a filled pill, so it stands out even when a row wraps. */
 #set-picker .junk-set-nav-td[aria-current],
 .set-shelf-list [aria-current] {
