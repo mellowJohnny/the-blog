@@ -578,9 +578,8 @@ if (!window.location.pathname.startsWith("/cms/")) {
 // that NAV_ITEMS page (label optional); one without is not built yet, so it
 // shows dimmed and unlinked. A section with no heading stands on its own.
 const FOOTER_SECTIONS = [
-  { heading: "Major Releases", links: [{ id: "classic", label: "Classic '80s" }, { id: "junk" }] },
-  { heading: "Fast Food Releases", links: [{ id: "mcd" }, { id: "timmies" }] },
-  { heading: "Explore", links: [{ id: "timeline" }, { id: "search" }, { id: "browse" }, { id: "museum" }, { id: "garage" }] },
+  { heading: "Set Reviews", links: [{ id: "classic" }, { id: "junk" }, { id: "mcd" }, { id: "timmies" }, { id: "browse" }] },
+  { heading: "Explore", links: [{ id: "timeline" }, { id: "search" }, { id: "museum" }, { id: "garage" }] },
   { links: [{ id: "home" }, { id: "about" }] }
 ];
 
@@ -913,10 +912,10 @@ function reviewLinkAttrs(item) {
 // Step 1: Define the navigation items as data
 const NAV_ITEMS = {
   home: { label: "Home", href: "/" },
-  junk: { label: "90s Junk Wax", href: "/waxReviews.html?year=1987&pageName=junkWax&blogCat=reg", review: { cat: "reg", year: 1987 } },
+  junk: { label: "90s Junk Wax Sets", href: "/waxReviews.html?year=1987&pageName=junkWax&blogCat=reg", review: { cat: "reg", year: 1987 } },
   classic: { label: "Classic 80s Sets", href: "/waxReviews.html?year=1981&pageName=classicWax&blogCat=reg", review: { cat: "reg", year: 1981 } },
-  timmies: { label: "Tim Hortons Hockey", href: "/waxReviews.html?year=2019&pageName=timmies&blogCat=tims", review: { cat: "tims", year: 2019 } },
-  mcd: { label: "McDonald's Hockey", href: "/waxReviews.html?year=1991&pageName=mcd&blogCat=mcd", review: { cat: "mcd", year: 1991 } },
+  timmies: { label: "Tim Hortons Sets", href: "/waxReviews.html?year=2019&pageName=timmies&blogCat=tims", review: { cat: "tims", year: 2019 } },
+  mcd: { label: "McDonald's Sets", href: "/waxReviews.html?year=1991&pageName=mcd&blogCat=mcd", review: { cat: "mcd", year: 1991 } },
   timeline: { label: "Junk Wax Timeline", href: "/timeline.html" },
   search: { label: "Player Search", href: "/playerSearch.html" },
   // The footer shares this label. "about" is linked from the footer only.
@@ -929,8 +928,7 @@ const NAV_ITEMS = {
 // Step 2: Group some items into dropdowns. A group id sits in NAV_MAP like
 // an item id; its links are the NAV_ITEMS ids listed here, in order.
 const NAV_GROUPS = {
-  major: { label: "Major Releases", items: ["classic", "junk", "browse"] },
-  fastfood: { label: "Fast Food Releases", items: ["mcd", "timmies"] },
+  sets: { label: "Set Reviews", items: ["classic", "junk", "mcd", "timmies", "browse"] },
   galleries: { label: "Galleries", items: ["museum", "garage"] }
 };
 
@@ -942,24 +940,24 @@ const NAV_SELF = { classicWax: "classic", junkWax: "junk", mcd: "mcd", timmies: 
 const NAV_MAP = {
   // "search" (Player Search) is on every page except playerSearch itself,
   // always last; "timeline" sits just before it, and both self-exclude from their own page.
-  // The grouped links (the sets, "browse" All Sets, and the Wax Museum and McFarlane's
-  // Garage under "galleries") self-exclude through NAV_SELF.
+  // The grouped links (the set categories and "browse" All Sets under "sets", the Wax Museum
+  // and McFarlane's Garage under "galleries") self-exclude through NAV_SELF.
   // index.html is Home, so it leaves out its own "Home" link as redundant.
-  index: ["major", "fastfood", "galleries", "timeline", "search"],
-  junkWax: ["home", "major", "fastfood", "galleries", "timeline", "search"],
-  classicWax: ["home", "major", "fastfood", "galleries", "timeline", "search"],
-  timmies: ["home", "major", "fastfood", "galleries", "timeline", "search"],
-  mcd: ["home", "major", "fastfood", "galleries", "timeline", "search"],
-  playerSearch: ["home", "major", "fastfood", "galleries", "timeline"],
+  index: ["sets", "galleries", "timeline", "search"],
+  junkWax: ["home", "sets", "galleries", "timeline", "search"],
+  classicWax: ["home", "sets", "galleries", "timeline", "search"],
+  timmies: ["home", "sets", "galleries", "timeline", "search"],
+  mcd: ["home", "sets", "galleries", "timeline", "search"],
+  playerSearch: ["home", "sets", "galleries", "timeline"],
   // theJunkWaxYears.html is a static essay, not one of the junkWax/
   // classicWax/mcd/timmies review pages itself, so nothing self-excludes.
-  junkWaxYears: ["home", "major", "fastfood", "galleries", "timeline", "search"],
-  timeline: ["home", "major", "fastfood", "galleries", "search"],
-  browseBySet: ["home", "major", "fastfood", "galleries", "timeline", "search"],
-  waxMuseum: ["home", "major", "fastfood", "galleries", "timeline", "search"],
-  mcfarlanesGarage: ["home", "major", "fastfood", "galleries", "timeline", "search"],
+  junkWaxYears: ["home", "sets", "galleries", "timeline", "search"],
+  timeline: ["home", "sets", "galleries", "search"],
+  browseBySet: ["home", "sets", "galleries", "timeline", "search"],
+  waxMuseum: ["home", "sets", "galleries", "timeline", "search"],
+  mcfarlanesGarage: ["home", "sets", "galleries", "timeline", "search"],
   // about.html is footer-only, so nothing self-excludes.
-  about: ["home", "major", "fastfood", "galleries", "timeline", "search"]
+  about: ["home", "sets", "galleries", "timeline", "search"]
 };
 
 // Step 4: Build a dynamic table generator. hrefFor(item), when given, returns
