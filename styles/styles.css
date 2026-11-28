@@ -3228,7 +3228,7 @@ body:has(.site-footer) {
 .checklist-modal-masthead a {
   font-family: 'Bebas Neue';
   font-weight: 400;
-  font-size: 40px;
+  font-size: min(56px, 11vw); /* the site masthead's phone size; 11vw keeps it on one line in a phone's modal */
   text-transform: uppercase;
   text-decoration: none;
   color: var(--color-masthead-text);
