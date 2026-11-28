@@ -928,36 +928,35 @@ const NAV_ITEMS = {
 // Step 2: Group some items into dropdowns. A group id sits in NAV_MAP like
 // an item id; its links are the NAV_ITEMS ids listed here, in order.
 const NAV_GROUPS = {
-  sets: { label: "Set Reviews", items: ["classic", "junk", "mcd", "timmies", "browse"] },
-  galleries: { label: "Galleries", items: ["museum", "garage"] }
+  sets: { label: "Set Reviews", items: ["classic", "junk", "mcd", "timmies", "browse"] }
 };
 
 // The grouped item a page leaves out of its own dropdown.
-const NAV_SELF = { classicWax: "classic", junkWax: "junk", mcd: "mcd", timmies: "timmies", browseBySet: "browse", waxMuseum: "museum", mcfarlanesGarage: "garage" };
+const NAV_SELF = { classicWax: "classic", junkWax: "junk", mcd: "mcd", timmies: "timmies", browseBySet: "browse" };
 
 // Step 3: Define which pages show which top-level items
 // The key is the page name, the values are the links to display, in the order they appear
 const NAV_MAP = {
   // "search" (Player Search) is on every page except playerSearch itself,
-  // always last; "timeline" sits just before it, and both self-exclude from their own page.
-  // The grouped links (the set categories and "browse" All Sets under "sets", the Wax Museum
-  // and McFarlane's Garage under "galleries") self-exclude through NAV_SELF.
+  // always last; "timeline" sits just before it. The standalone links ("museum", "garage",
+  // "timeline", "search") are left out of their own page here; the set links under "sets"
+  // self-exclude through NAV_SELF.
   // index.html is Home, so it leaves out its own "Home" link as redundant.
-  index: ["sets", "galleries", "timeline", "search"],
-  junkWax: ["home", "sets", "galleries", "timeline", "search"],
-  classicWax: ["home", "sets", "galleries", "timeline", "search"],
-  timmies: ["home", "sets", "galleries", "timeline", "search"],
-  mcd: ["home", "sets", "galleries", "timeline", "search"],
-  playerSearch: ["home", "sets", "galleries", "timeline"],
+  index: ["sets", "museum", "garage", "timeline", "search"],
+  junkWax: ["home", "sets", "museum", "garage", "timeline", "search"],
+  classicWax: ["home", "sets", "museum", "garage", "timeline", "search"],
+  timmies: ["home", "sets", "museum", "garage", "timeline", "search"],
+  mcd: ["home", "sets", "museum", "garage", "timeline", "search"],
+  playerSearch: ["home", "sets", "museum", "garage", "timeline"],
   // theJunkWaxYears.html is a static essay, not one of the junkWax/
   // classicWax/mcd/timmies review pages itself, so nothing self-excludes.
-  junkWaxYears: ["home", "sets", "galleries", "timeline", "search"],
-  timeline: ["home", "sets", "galleries", "search"],
-  browseBySet: ["home", "sets", "galleries", "timeline", "search"],
-  waxMuseum: ["home", "sets", "galleries", "timeline", "search"],
-  mcfarlanesGarage: ["home", "sets", "galleries", "timeline", "search"],
+  junkWaxYears: ["home", "sets", "museum", "garage", "timeline", "search"],
+  timeline: ["home", "sets", "museum", "garage", "search"],
+  browseBySet: ["home", "sets", "museum", "garage", "timeline", "search"],
+  waxMuseum: ["home", "sets", "garage", "timeline", "search"],
+  mcfarlanesGarage: ["home", "sets", "museum", "timeline", "search"],
   // about.html is footer-only, so nothing self-excludes.
-  about: ["home", "sets", "galleries", "timeline", "search"]
+  about: ["home", "sets", "museum", "garage", "timeline", "search"]
 };
 
 // Step 4: Build a dynamic table generator. hrefFor(item), when given, returns
